@@ -1,0 +1,20 @@
+SYSTEM REQUIREMENTS:
+NVIDIA GPU
+
+addional model and file:
+131 files in the zipped file except note.txt, time_validation.txt, cpsc2018.py
+please put these 131 files into the same file path as record (mat. file of ECG)
+
+package:
+CUDA
+cuDNN
+GPU version of TensorFlow
+random
+os
+argparse
+scipy
+keras
+sklearn
+csv
+numpy
+pandas

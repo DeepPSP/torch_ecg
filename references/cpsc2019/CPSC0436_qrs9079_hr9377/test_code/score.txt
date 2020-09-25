@@ -1,0 +1,4 @@
+Total File Number: 2000
+
+R Detection Acc: 1.0000
+HR Detection Acc: 0.9986

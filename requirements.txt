@@ -1,0 +1,16 @@
+numpy==1.19.1
+scipy==1.4.1
+joblib==0.13.2
+Cython==0.29.10
+pandas==1.1.0
+scikit-learn==0.20.0
+tensorflow==1.15.2
+keras==2.3.1
+packaging
+easydict
+wfdb
+biosppy
+torch==1.3.1
+torchsummary
+tensorboardX
+tqdm
