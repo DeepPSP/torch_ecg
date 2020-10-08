@@ -42,6 +42,7 @@ __all__ = [
     "DownSample",
     "BidirectionalLSTM", "StackedLSTM",
     # "AML_Attention", "AML_GatedAttention",
+    "GlobalContextBlock",
     "AttentionWithContext",
     "MultiHeadAttention", "SelfAttention",
     "AttentivePooling",
@@ -62,7 +63,7 @@ else:
 
 # ---------------------------------------------
 # activations
-class Mish(torch.nn.Module):
+class Mish(nn.Module):
     __name__ = "Mish"
     """ The Mish activation """
     def __init__(self, inplace:bool=False):
@@ -82,7 +83,7 @@ class Mish(torch.nn.Module):
         return output
 
 
-class Swish(torch.nn.Module):
+class Swish(nn.Module):
     __name__ = "Swish"
     """ The Swish activation """
     def __init__(self, inplace:bool=False):
@@ -1677,7 +1678,7 @@ class SeqLin(nn.Sequential):
         Parameters:
         -----------
         input: Tensor,
-            of shape (batch_size, channels) or (batch_size, seq_len, channels)
+            of shape (batch_size, n_channels) or (batch_size, seq_len, n_channels)
         """
         output = super().forward(input)
         return output
@@ -1711,7 +1712,155 @@ class SeqLin(nn.Sequential):
         module_parameters = filter(lambda p: p.requires_grad, self.parameters())
         n_params = sum([np.prod(p.size()) for p in module_parameters])
         return n_params
-    
+
+
+class GlobalContextBlock(nn.Module):
+    """ finished, checked,
+
+    Global Context Block
+
+    References:
+    -----------
+    [1] Cao, Yue, et al. "Gcnet: Non-local networks meet squeeze-excitation networks and beyond." Proceedings of the IEEE International Conference on Computer Vision Workshops. 2019.
+    [2] https://github.com/xvjiarui/GCNet/blob/master/mmdet/ops/gcb/context_block.py
+    [3] entry 0436 of CPSC2019
+    """
+    __DEBUG__ = True
+    __name__ = "GlobalContextBlock"
+    __POOLING_TYPES__ = ["attn", "avg",]
+    __FUSION_TYPES__ = ["add", "mul",]
+
+    def __init__(self, in_channels:int, ratio:int, reduction:bool=False, pooling_type:str="attn", fusion_types:Sequence[str]=["add",]) -> NoReturn:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        in_channels: int,
+            number of channels in the input
+        ratio: int,
+            raise or reduction ratio of the mid-channels to `in_channels`
+            in the "channel attention" sub-block
+        reduction: bool, default False,
+            if True, mid-channels would be `in_channels // ratio`,
+            otherwise, mid-channels would be `in_channels * ratio`,
+        pooling_type: str, default "attn",
+            mode (or type) of subsampling (or pooling) of "spatial attention"
+        fusion_types: sequence of str, default ["add",],
+            types of fusion of context with the input
+        """
+        super().__init__()
+        assert pooling_type in self.__POOLING_TYPES__
+        assert all([f in self.__FUSION_TYPES__ for f in fusion_types])
+        assert len(fusion_types) > 0, "at least one fusion should be used"
+        self.__in_channels = in_channels
+        self.__ratio = ratio
+        if reduction:
+            self.__mid_channels = in_channels // ratio
+        else:
+            self.__mid_channels = in_channels * ratio
+        self.__pooling_type = pooling_type.lower()
+        self.__fusion_types = [item.lower() for item in fusion_types]
+
+        if self.__pooling_type == "attn":
+            self.conv_mask = nn.Conv1d(self.__in_channels, 1, kernel_size=1)
+            self.softmax = nn.Softmax(dim=2)
+        else:
+            self.avg_pool = nn.AdaptiveAvgPool1d(1)
+        if "add" in self.__fusion_types:
+            self.channel_add_conv = nn.Sequential(
+                nn.Conv1d(self.__in_channels, self.__mid_channels, kernel_size=1),
+                nn.LayerNorm([self.__mid_channels, 1]),
+                Activations["relu"](inplace=True),
+                nn.Conv1d(self.__mid_channels, self.__in_channels, kernel_size=1),
+            )
+        else:
+            self.channel_add_conv = None
+        if "mul" in self.__fusion_types:
+            self.channel_mul_conv = nn.Sequential(
+                nn.Conv1d(self.__in_channels, self.__mid_channels, kernel_size=1),
+                nn.LayerNorm([self.__mid_channels, 1]),
+                Activations["relu"](inplace=True),
+                nn.Conv1d(self.__mid_channels, self.__in_channels, kernel_size=1),
+            )
+        else:
+            self.channel_mul_conv = None
+
+    def spatial_pool(self, x:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Paramters:
+        ----------
+        x: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        context: Tensor,
+            of shape (batch_size, n_channels, 1)
+        """
+        if self.__pooling_type == "attn":
+            input_x = x.unsqueeze(1)  # --> (batch_size, 1, n_channels, seq_len)
+            context = self.conv_mask(x)  # --> (batch_size, 1, seq_len)
+            context = self.softmax(context)  # --> (batch_size, 1, seq_len)
+            context = context.unsqueeze(3)  # --> (batch_size, 1, seq_len, 1)
+            # matmul: (batch_size, 1, n_channels, seq_len) x (batch_size, 1, seq_len, 1)
+            context = torch.matmul(input_x, context)  # --> (batch_size, 1, n_channels, 1)
+            context = context.squeeze(1)  # --> (batch_size, n_channels, 1)
+        elif self.__pooling_type == "avg":
+            context = self.avg_pool(x)  # --> (batch_size, n_channels, 1)
+        return context
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+        
+        Paramters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+        """
+        context = self.spatial_pool(input)  # --> (batch_size, n_channels, 1)
+        output = input
+        if self.channel_mul_conv is not None:
+            channel_mul_term = self.channel_mul_conv(context)  # --> (batch_size, n_channels, 1)
+            channel_mul_term = torch.sigmoid(channel_mul_term)  # --> (batch_size, n_channels, 1)
+            # (batch_size, n_channels, seq_len) x (batch_size, n_channels, 1)
+            output = output * channel_mul_term  # --> (batch_size, n_channels, seq_len)
+        if self.channel_add_conv is not None:
+            channel_add_term = self.channel_add_conv(context)  # --> (batch_size, n_channels, 1)
+            output = output + channel_add_term  # --> (batch_size, n_channels, seq_len)
+        return output
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        seq_len: int, optional,
+            length of the 1d sequence,
+            if is None, then the input is composed of single feature vectors for each batch
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns:
+        --------
+        output_shape: sequence,
+            the output shape of this `GlobalContextBlock` layer, given `seq_len` and `batch_size`
+        """
+        return (batch_size, self.__in_channels, seq_len)
+
+    @property
+    def module_size(self) -> int:
+        """
+        """
+        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
+        n_params = sum([np.prod(p.size()) for p in module_parameters])
+        return n_params
+
 
 # custom losses
 def weighted_binary_cross_entropy(sigmoid_x:Tensor, targets:Tensor, pos_weight:Tensor, weight:Optional[Tensor]=None, size_average:bool=True, reduce:bool=True) -> Tensor:
