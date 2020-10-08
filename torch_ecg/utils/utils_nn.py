@@ -322,3 +322,47 @@ def compute_deconv_output_shape(input_shape:Sequence[Union[int, type(None)]], nu
         channel_last,
     )
     return output_shape
+
+
+def intervals_iou(itv_a:Tensor, itv_b:Tensor, iou_type="iou") -> Tensor:
+    """ NOT finished,
+
+    1d analogue of the 2d bounding boxes IoU,
+    for 1d "object detection" models
+
+    Parameters:
+    -----------
+    itv_a, itv_b: Tensor,
+        of shape (N, 2), (K, 2) resp.
+    iou_type: str, default "iou", case insensitive
+        type of IoU
+    """
+    left_intersect = torch.max(itv_a[:,np.newaxis,:1], itvb[...,:1]).squeeze(-1)  # shape (N,K)
+    right_intersect = torch.min(itv_a[:,np.newaxis,1:], itvb[...,1:]).squeeze(-1)  # shape (N,K)
+
+    left_union = torch.min(itv_a[:,np.newaxis,:1], itvb[...,:1]).squeeze(-1)  # shape (N,K)
+    right_union = torch.max(itv_a[:,np.newaxis,1:], itvb[...,1:]).squeeze(-1)  # shape (N,K)
+
+    en = (left_intersect < right_intersect).type(left_intersect.type())
+    len_intersect = (right_intersect-left_intersect) * en
+    len_union = (right_union-left_union)
+
+    iou = _true_divide(len_intersect, len_union)
+
+    if iou_type.lower() == "iou":
+        return iou
+
+    cen_a = torch.mean(itv_a, dim=-1, keepdim=True)  # shape (N,1,1)
+    cen_b = torch.mean(itv_b, dim=-1, keepdim=False)  # shape (K,1)
+    cen_dist = torch.abs(itv_a - itv_b).squeeze(-1)  # shape (N,K)
+
+    diou = iou - _true_divide(cen_dist, len_union)
+
+    if iou_type.lower() == "diou":
+        return diou
+
+    len_a = a[...,1] - a[...,0]
+    len_b = b[...,1] - b[...,0]
+
+    if iou_type.lower() == "ciou":
+        raise NotImplementedError

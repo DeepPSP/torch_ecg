@@ -1724,6 +1724,9 @@ class GlobalContextBlock(nn.Module):
     [1] Cao, Yue, et al. "Gcnet: Non-local networks meet squeeze-excitation networks and beyond." Proceedings of the IEEE International Conference on Computer Vision Workshops. 2019.
     [2] https://github.com/xvjiarui/GCNet/blob/master/mmdet/ops/gcb/context_block.py
     [3] entry 0436 of CPSC2019
+
+    NOTE that in refs. [1,2], `mid-channels` is raised from `in_channels` by a factor of `ratio`,
+    while in [3], it is reduced from `in_channels` (divided) by `ratio`
     """
     __DEBUG__ = True
     __name__ = "GlobalContextBlock"
@@ -1731,7 +1734,7 @@ class GlobalContextBlock(nn.Module):
     __FUSION_TYPES__ = ["add", "mul",]
 
     def __init__(self, in_channels:int, ratio:int, reduction:bool=False, pooling_type:str="attn", fusion_types:Sequence[str]=["add",]) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1864,7 +1867,7 @@ class GlobalContextBlock(nn.Module):
 
 # custom losses
 def weighted_binary_cross_entropy(sigmoid_x:Tensor, targets:Tensor, pos_weight:Tensor, weight:Optional[Tensor]=None, size_average:bool=True, reduce:bool=True) -> Tensor:
-    """ NOT checked,
+    """ finished, checked,
 
     Parameters:
     -----------
@@ -1898,7 +1901,7 @@ def weighted_binary_cross_entropy(sigmoid_x:Tensor, targets:Tensor, pos_weight:T
         return loss.sum()
 
 class WeightedBCELoss(nn.Module):
-    """ NOT checked,
+    """ finished, checked,
 
     Reference (original source):
     https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
@@ -1947,7 +1950,7 @@ class WeightedBCELoss(nn.Module):
 
 
 class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
-    """
+    """ finished, checked,
     """
     __name__ = "BCEWithLogitsWithClassWeightsLoss"
 
@@ -1968,50 +1971,6 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
         loss = super().forward(input, target)
         loss = torch.mean(loss * self.class_weight)
         return loss
-
-
-def intervals_iou(itv_a:Tensor, itv_b:Tensor, iou_type="iou") -> Tensor:
-    """ NOT finished,
-
-    1d analogue of the 2d bounding boxes IoU,
-    for 1d "object detection" models
-
-    Parameters:
-    -----------
-    itv_a, itv_b: Tensor,
-        of shape (N, 2), (K, 2) resp.
-    iou_type: str, default "iou", case insensitive
-        type of IoU
-    """
-    left_intersect = torch.max(itv_a[:,np.newaxis,:1], itvb[...,:1]).squeeze(-1)  # shape (N,K)
-    right_intersect = torch.min(itv_a[:,np.newaxis,1:], itvb[...,1:]).squeeze(-1)  # shape (N,K)
-
-    left_union = torch.min(itv_a[:,np.newaxis,:1], itvb[...,:1]).squeeze(-1)  # shape (N,K)
-    right_union = torch.max(itv_a[:,np.newaxis,1:], itvb[...,1:]).squeeze(-1)  # shape (N,K)
-
-    en = (left_intersect < right_intersect).type(left_intersect.type())
-    len_intersect = (right_intersect-left_intersect) * en
-    len_union = (right_union-left_union)
-
-    iou = _true_divide(len_intersect, len_union)
-
-    if iou_type.lower() == "iou":
-        return iou
-
-    cen_a = torch.mean(itv_a, dim=-1, keepdim=True)  # shape (N,1,1)
-    cen_b = torch.mean(itv_b, dim=-1, keepdim=False)  # shape (K,1)
-    cen_dist = torch.abs(itv_a - itv_b).squeeze(-1)  # shape (N,K)
-
-    diou = iou - _true_divide(cen_dist, len_union)
-
-    if iou_type.lower() == "diou":
-        return diou
-
-    len_a = a[...,1] - a[...,0]
-    len_b = b[...,1] - b[...,0]
-
-    if iou_type.lower() == "ciou":
-        raise NotImplementedError
 
 
 def default_collate_fn(batch:Sequence[Tuple[np.ndarray, np.ndarray]]) -> Tuple[Tensor, Tensor]:
