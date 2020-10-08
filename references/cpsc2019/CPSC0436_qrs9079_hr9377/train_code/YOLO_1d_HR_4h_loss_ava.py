@@ -15,14 +15,25 @@ def layer_1(in_channel,out_channel):
     return layer
 
 class GCModule(nn.Module):
+    """
+    Global Context (GC) block
+
+    the difference with ref. [1,2] lies in the treatment of mid-channels of `channel_att`
+
+    References:
+    -----------
+    [1] Cao, Yue, et al. "Gcnet: Non-local networks meet squeeze-excitation networks and beyond." Proceedings of the IEEE International Conference on Computer Vision Workshops. 2019.
+    [2] https://github.com/xvjiarui/GCNet/blob/master/mmdet/ops/gcb/context_block.py
+    """
     def __init__(self,channels,reduction=16,mode='mul'):
         super(GCModule,self).__init__()
         self.mode = mode
+        mid_channels = channels // reduction
         self.channel_att = nn.Sequential(
-            nn.Conv1d(channels, channels // reduction, kernel_size=1),
-            nn.LayerNorm([channels // reduction,1]),
+            nn.Conv1d(channels, mid_channels, kernel_size=1),
+            nn.LayerNorm([mid_channels,1]),
             nn.ReLU(True),
-            nn.Conv1d(channels // reduction, channels, kernel_size=1),
+            nn.Conv1d(mid_channels, channels, kernel_size=1),
                 )
         self.conv_mask = nn.Conv1d(channels,1,kernel_size=1)
         self.softmax = nn.Softmax(dim=2)
