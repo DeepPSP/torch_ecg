@@ -395,24 +395,27 @@ class ResNetBasicBlock(nn.Module):
 
 class ResNetBottleNeck(nn.Module):
     """
-    to write
+    bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
+    as for 1D ECG, should be of the "baby-giant-baby" pattern?
     """
     __DEBUG__ = True
     __name__ = "ResNetBottleNeck"
     expansion = 4
 
-    def __init__(self, in_channels:int, num_filters:int, subsample_length:int, groups:int=1, dilation:int=1, **config) -> NoReturn:
+    def __init__(self, in_channels:int, num_filters:Sequence[int], filter_lengths:Union[int,Sequence[int]], subsample_length:int, groups:int=1, dilation:int=1, **config) -> NoReturn:
         """ NOT finished, NOT checked,
 
         Parameters:
         -----------
         in_channels: int,
             number of features (channels) of the input
-        num_filters: int,
-            number of filters for the convolutional layers
+        num_filters: sequence of int,
+            number of filters for each convolutional layer
+        filter_lengths: int or sequence of int,
+            length (sizes) of the filter kernels for each convolutional layer
         subsample_length: int,
             subsample length,
-            including pool size for short cut, and stride for the top convolutional layer
+            including pool size for short cut, and stride for the (top or middle) convolutional layer
         groups: int, default 1,
             pattern of connections between inputs and outputs,
             for more details, ref. `nn.Conv1d`
@@ -422,7 +425,88 @@ class ResNetBottleNeck(nn.Module):
             and short cut patterns, etc.
         """
         super().__init__()
-        raise NotImplementedError
+        self.__num_convs = 3
+        self.__in_channels = in_channels
+        self.__out_channels = num_filters
+        assert len(self.__out_channels) == self.__num_convs
+        if isinstance(filter_lengths, int):
+            self.__kernel_size = list(repeat(filter_lengths, self.__num_convs))
+        else:
+            self.__kernel_size = list(filter_lengths)
+        assert len(self.__kernel_size) == self.__num_convs
+        self.__down_scale = subsample_length
+        self.__stride = subsample_length
+        self.__groups = groups
+        self.config = ED(deepcopy(config))
+        if self.__DEBUG__:
+            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+
+        if self.config.increase_channels_method.lower() == 'zero_padding' and self.__groups != 1:
+            raise ValueError("zero padding for increasing channels can not be used with groups != 1")
+        
+        self.__increase_channels = (self.__out_channels > self.__in_channels)
+        self.short_cut = self._make_short_cut_layer()
+
+        self.main_stream = nn.Sequential()
+        conv_in_channels = self.__in_channels
+        for i in range(self.__num_convs):
+            conv_activation = (self.config.activation if i < self.__num_convs-1 else None)
+            conv_out_channels = self.__out_channels[i]
+            self.main_stream.add_module(
+                f"cba_{i}",
+                Conv_Bn_Activation(
+                    in_channels=conv_in_channels,
+                    out_channels=conv_out_channels,
+                    kernel_size=self.__kernel_size[i],
+                    stride=(self.__stride if i == self.config.subsample_at else 1),
+                    groups=self.__groups,
+                    batch_norm=True,
+                    activation=conv_activation,
+                    kw_activation=self.config.kw_activation,
+                    kernel_initializer=self.config.kernel_initializer,
+                    kw_initializer=self.config.kw_initializer,
+                    bias=self.config.bias,
+                )
+            )
+            conv_in_channels = conv_out_channels
+
+        if isinstance(self.config.activation, str):
+            self.out_activation = \
+                Activations[self.config.activation.lower()](**self.config.kw_activation)
+        else:
+            self.out_activation = \
+                self.config.activation(**self.config.kw_activation)
+        
+    def _make_short_cut_layer(self) -> Union[nn.Module, type(None)]:
+        """
+        """
+        if self.__DEBUG__:
+            print(f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}")
+        if self.__down_scale > 1 or self.__increase_channels:
+            if self.config.increase_channels_method.lower() == 'conv':
+                short_cut = DownSample(
+                    down_scale=self.__down_scale,
+                    in_channels=self.__in_channels,
+                    out_channels=self.__out_channels,
+                    groups=self.__groups,
+                    batch_norm=True,
+                    mode=self.config.subsample_mode,
+                )
+            if self.config.increase_channels_method.lower() == 'zero_padding':
+                batch_norm = False if self.config.subsample_mode.lower() != 'conv' else True
+                short_cut = nn.Sequential(
+                    DownSample(
+                        down_scale=self.__down_scale,
+                        in_channels=self.__in_channels,
+                        out_channels=self.__in_channels,
+                        batch_norm=batch_norm,
+                        mode=self.config.subsample_mode,
+                    ),
+                    ZeroPadding(self.__in_channels, self.__out_channels),
+                )
+        else:
+            short_cut = None
+        return short_cut
 
     def forward(self, input:Tensor) -> Tensor:
         """
