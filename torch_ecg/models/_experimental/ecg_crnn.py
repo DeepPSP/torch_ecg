@@ -419,6 +419,8 @@ class ResNetBottleNeck(nn.Module):
         groups: int, default 1,
             pattern of connections between inputs and outputs,
             for more details, ref. `nn.Conv1d`
+        dilation: int, default 1,
+            dilation of the convolutional layers
         config: dict,
             other hyper-parameters, including
             filter length (kernel size), activation choices, weight initializer,

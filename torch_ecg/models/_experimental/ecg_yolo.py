@@ -47,21 +47,193 @@ class ResNetGCBlock(nn.Module):
     __DEBUG__ = True
     __name__ = "ResNetGCBlock"
 
-    def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, **config) -> NoReturn:
-        """
+    def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, dropouts:Union[float, Sequence[float]]=0, **config) -> NoReturn:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        in_channels: int,
+            number of features (channels) of the input
+        num_filters: int,
+            number of filters for the convolutional layers
+        filter_length: int,
+            length (size) of the filter kernels
+        subsample_lengths: int,
+            subsample length,
+            including pool size for short cut, and stride for the top convolutional layer
+        groups: int, default 1,
+            pattern of connections between inputs and outputs,
+            for more details, ref. `nn.Conv1d`
+        dilation: int, default 1,
+            dilation of the convolutional layers
+        dropouts: float, or sequence of float, default 0.0,
+            dropout ratio after each convolution (and batch normalization, and activation, etc.)
+        config: dict,
+            other hyper-parameters, including
+            filter length (kernel size), activation choices, weight initializer,
+            and short cut patterns, etc.
         """
         super().__init__()
-        raise NotImplementedError
+        self.__num_convs = 2
+        self.__in_channels = in_channels
+        self.__out_channels = num_filters
+        self.__kernel_size = filter_length
+        self.__down_scale = subsample_length
+        self.__stride = subsample_length
+        self.__groups = groups
+        self.__dilation = dilation
+        if isinstance(dropouts, float):
+            self.__dropouts = list(repeat(dropouts, self.__num_convs))
+        else:
+            self.__dropouts = list(dropouts)
+        assert len(self.__dropouts) == self.__num_convs
+        self.config = ED(deepcopy(config))
+        if self.__DEBUG__:
+            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
-    def forward(self,):
-        """
-        """
-        raise NotImplementedError
+        self.__increase_channels = (self.__out_channels > self.__in_channels)
+        self.short_cut = self._make_short_cut_layer()
 
-    def compute_output_shape(self,):
+        self.main_stream = nn.Sequential()
+        conv_in_channels = self.__in_channels
+        for i in range(self.__num_convs):
+            conv_activation = (self.config.activation if i < self.__num_convs-1 else None)
+            self.main_stream.add_module(
+                f"cba_{i}",
+                Conv_Bn_Activation(
+                    in_channels=conv_in_channels,
+                    out_channels=self.__out_channels,
+                    kernel_size=self.__kernel_size,
+                    stride=(self.__stride if i == 0 else 1),
+                    dilation=self.__dilation,
+                    groups=self.__groups,
+                    batch_norm=True,
+                    activation=conv_activation,
+                    kw_activation=self.config.kw_activation,
+                    kernel_initializer=self.config.kernel_initializer,
+                    kw_initializer=self.config.kw_initializer,
+                    bias=self.config.bias,
+                )
+            )
+            conv_in_channels = self.__out_channels
+            if i == 0 and self.__dropouts[i] > 0:
+                self.main_stream.add_module(
+                    f"dropout_{i}",
+                    nn.Dropout(self.__dropouts[i])
+                )
+            if i == 1:
+                self.main_stream.add_module(
+                    f"gcb",
+                    GlobalContextBlock(
+                        in_channels=self.__out_channels,
+                        ratio=self.config.gcb.ratio,
+                        reduction=self.config.gcb.reduction,
+                        pooling_type=self.config.gcb.pooling_type,
+                        fusion_types=self.config.gcb.fusion_types,
+                    )
+                )
+
+        if isinstance(self.config.activation, str):
+            self.out_activation = \
+                Activations[self.config.activation.lower()](**self.config.kw_activation)
+        else:
+            self.out_activation = \
+                self.config.activation(**self.config.kw_activation)
+
+        if self.__dropouts[1] > 0:
+            self.out_dropout = nn.Dropout(self.__dropouts[1])
+        else:
+            self.out_dropout = None
+    
+    def _make_short_cut_layer(self) -> Union[nn.Module, type(None)]:
+        """ finished, NOT checked,
+        """
+        if self.__DEBUG__:
+            print(f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}")
+        if self.__down_scale > 1 or self.__increase_channels:
+            if self.config.increase_channels_method.lower() == 'conv':
+                short_cut = DownSample(
+                    down_scale=self.__down_scale,
+                    in_channels=self.__in_channels,
+                    out_channels=self.__out_channels,
+                    groups=self.__groups,
+                    batch_norm=True,
+                    mode=self.config.subsample_mode,
+                )
+            if self.config.increase_channels_method.lower() == 'zero_padding':
+                batch_norm = False if self.config.subsample_mode.lower() != 'conv' else True
+                short_cut = nn.Sequential(
+                    DownSample(
+                        down_scale=self.__down_scale,
+                        in_channels=self.__in_channels,
+                        out_channels=self.__in_channels,
+                        batch_norm=batch_norm,
+                        mode=self.config.subsample_mode,
+                    ),
+                    ZeroPadding(self.__in_channels, self.__out_channels),
+                )
+        else:
+            short_cut = None
+        return short_cut
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+        """
+        identity = input
+
+        output = self.main_stream(input)
+
+        if self.short_cut is not None:
+            identity = self.short_cut(input)
+
+        output += identity
+        output = self.out_activation(output)
+
+        if self.out_dropout:
+            output = self.out_dropout(output)
+
+        return out
+
+    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns:
+        --------
+        output_shape: sequence,
+            the output shape of this block, given `seq_len` and `batch_size`
+        """
+        _seq_len = seq_len
+        for module in self.main_stream:
+            if type(module).__name__ == type(nn.Dropout).__name__:
+                continue
+            output_shape = module.compute_output_shape(_seq_len, batch_size)
+            _, _, _seq_len = output_shape
+        return output_shape
+
+    @property
+    def module_size(self):
         """
         """
-        raise NotImplementedError
+        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
+        n_params = sum([np.prod(p.size()) for p in module_parameters])
+        return n_params
 
 
 class StageModule(nn.Module):
