@@ -37,7 +37,7 @@ __all__ = [
 class ResNetGCBlock(nn.Module):
     """ NOT finished, NOT checked,
 
-    ResNet block with global context
+    ResNet (basic, not bottleneck) block with global context
 
     References:
     -----------
@@ -47,7 +47,7 @@ class ResNetGCBlock(nn.Module):
     __DEBUG__ = True
     __name__ = "ResNetGCBlock"
 
-    def __init__(self,) -> NoReturn:
+    def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, **config) -> NoReturn:
         """
         """
         super().__init__()

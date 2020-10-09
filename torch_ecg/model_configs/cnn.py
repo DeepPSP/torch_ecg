@@ -125,6 +125,9 @@ resnet_block_basic.kw_activation = deepcopy(resnet.kw_activation)
 resnet_block_basic.bias = False
 
 resnet_bottle_neck = ED()
+resnet_bottle_neck.increase_channels_method = 'conv'  # or 'zero_padding'
+resnet_bottle_neck.subsample_mode = 'conv'  # or 'max', 'avg', 'nearest', 'linear', 'bilinear'
+resnet_bottle_neck.subsample_at = 1  # or 0
 resnet_bottle_neck.kernel_initializer = resnet.kernel_initializer
 resnet_bottle_neck.kw_initializer = deepcopy(resnet.kw_initializer)
 resnet_bottle_neck.activation = resnet.activation
