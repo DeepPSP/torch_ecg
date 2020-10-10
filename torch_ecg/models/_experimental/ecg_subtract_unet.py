@@ -47,7 +47,7 @@ class TripleConv(MultiConv):
     __DEBUG__ = True
     __name__ = "TripleConv"
 
-    def __init__(self, in_channels:int, out_channels:Union[Sequence[int],int], filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, **config) -> NoReturn:
+    def __init__(self, in_channels:int, out_channels:Union[Sequence[int],int], filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, out_activation:bool=True, **config) -> NoReturn:
         """ finished, NOT checked,
 
         Parameters:
@@ -64,6 +64,9 @@ class TripleConv(MultiConv):
             connection pattern (of channels) of the inputs and outputs
         dropouts: float or sequence of float, default 0.0,
             dropout ratio after each `Conv_Bn_Activation`
+        out_activation: bool, default True,
+            if True, the last mini-block of `Conv_Bn_Activation` will have activation as in `config`,
+            otherwise None
         config: dict,
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
@@ -85,6 +88,7 @@ class TripleConv(MultiConv):
             subsample_lengths=subsample_lengths,
             groups=groups,
             dropouts=dropouts,
+            out_activation=out_activation,
             **config,
         )
 

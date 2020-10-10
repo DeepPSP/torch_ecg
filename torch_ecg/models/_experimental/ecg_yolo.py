@@ -7,7 +7,7 @@ import sys
 from copy import deepcopy
 from collections import OrderedDict
 from itertools import repeat
-from typing import Union, Optional, Sequence, NoReturn
+from typing import Union, Optional, Sequence, List, NoReturn
 from numbers import Real
 
 import torch
@@ -20,7 +20,7 @@ from ...cfg import Cfg
 from ...utils.utils_nn import compute_deconv_output_shape
 from ...utils.misc import dict_to_str
 from ..nets import (
-    Conv_Bn_Activation,
+    Conv_Bn_Activation, MultiConv,
     DownSample, ZeroPadding,
     GlobalContextBlock,
 )
@@ -242,22 +242,100 @@ class StageModule(nn.Module):
     __DEBUG__ = True
     __name__ = "StageModule"
 
-    def __init__(self,) -> NoReturn:
-        """
+    def __init__(self, stage:int, out_branches:int, in_channels:int, **config) -> NoReturn:
+        """ NOT finished, NOT checked,
         """
         super().__init__()
-        raise NotImplementedError
+        self.stage = stage
+        self.out_branches = out_branches
+        self.in_channels = in_channels
+        self.config = ED(config)
 
-    def forward(self,):
-        """
-        """
-        raise NotImplementedError
+        self.branches = nn.ModuleList()
+        for i in range(self.stage):
+            w = in_channels * (2**i)
+            branch = nn.Sequential(
+                ResNetGCBlock(in_channels=w, num_filters=w, **(config.resnet_gc)),
+                ResNetGCBlock(in_channels=w, num_filters=w, **(config.resnet_gc)),
+                ResNetGCBlock(in_channels=w, num_filters=w, **(config.resnet_gc)),
+            )
+            self.branches.append(branch)
 
-    def compute_output_shape(self,):
-        """
-        """
-        raise NotImplementedError
+        self.fuse_layers = nn.ModuleList()
+        for i in range(self.out_branches):
+            fl = nn.ModuleList()
+            for j in range(self.stage):
+                if i == j :
+                    fl.append(nn.Sequential())
+                elif i < j :
+                    if i == 0:
+                        fl.append(nn.Sequential(
+                            nn.Conv1d(in_channels * (2 ** j), in_channels * (2 ** i), kernel_size=1, stride=1),
+                            nn.BatchNorm1d(in_channels * (2 ** i)),
+                            nn.Upsample(size=625),
+                        ))
+                    elif i == 1:
+                        fl.append(nn.Sequential(
+                            nn.Conv1d(in_channels * (2 ** j), in_channels * (2 ** i), kernel_size=1, stride=1),
+                            nn.BatchNorm1d(in_channels * (2 ** i)),
+                            nn.Upsample(size=313)
+                        ))
+                    elif i == 2:
+                        fl.append(nn.Sequential(
+                            nn.Conv1d(in_channels * (2 ** j), in_channels * (2 ** i), kernel_size=1, stride=1),
+                            nn.BatchNorm1d(in_channels * (2 ** i)),
+                            nn.Upsample(size=157)
+                        ))
 
+                elif i > j:
+                    opts = []
+                    if i == j+1:
+                        opts.append(Conv_Bn_Activation(
+                            in_channels=in_channels * (2 ** j),
+                            out_channels=in_channels * (2 ** i),
+                            kernel_size=7,
+                            stride=2,
+                            batch_norm=True,
+                            activation=None,
+                        ))
+                    elif i == j+2:
+                        opts.append(MultiConv(
+                            in_channels=in_channels * (2 ** j),
+                            out_channels=[in_channels * (2 ** (j+1)), in_channels * (2 ** (j + 2))],
+                            filter_lengths=7,
+                            subsample_lengths=2,
+                            out_activation=False,
+                        ))
+                    elif i == j+3:
+                        opts.append(MultiConv(
+                            in_channels=in_channels * (2 ** j),
+                            out_channels=[in_channels * (2 ** (j+1)), in_channels * (2 ** (j + 2)), in_channels * (2 ** (j + 3))],
+                            filter_lengths=7,
+                            subsample_lengths=2,
+                            out_activation=False,
+                        ))
+                    fl.append(nn.Sequential(*opts))
+            self.fuse_layers.append(fl)
+        self.fuse_activation = nn.ReLU(inplace=True)
+
+    def forward(self, inputs:Sequence[Tensor]) -> List[Tensor]:
+        """ NOT finished, NOT checked,
+        """
+        assert len(self.branches) == len(inputs)
+        x = [branch(b) for branch, b in zip(self.branches, inputs)]
+
+        x_fused = []
+        for i in range(len(self.fuse_layers)):
+            for j in range(0, len(self.branches)):
+                if j == 0:
+                    x_fused.append(self.fuse_layers[i][0](x[0]))
+                else:
+                    x_fused[i] = x_fused[i] + self.fuse_layers[i][j](x[j])
+
+        for i in range(len(x_fused)):
+            x_fused[i] = self.relu(x_fused[i])
+
+        return x_fused
 
 
 class ECG_YOLO(nn.Module):

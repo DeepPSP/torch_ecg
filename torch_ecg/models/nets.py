@@ -385,7 +385,7 @@ class MultiConv(nn.Sequential):
     __DEBUG__ = False
     __name__ = "MultiConv"
     
-    def __init__(self, in_channels:int, out_channels:Sequence[int], filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, dilations:Union[Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, **config) -> NoReturn:
+    def __init__(self, in_channels:int, out_channels:Sequence[int], filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, dilations:Union[Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, out_activation:bool=True, **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -404,6 +404,9 @@ class MultiConv(nn.Sequential):
             connection pattern (of channels) of the inputs and outputs
         dropouts: float or sequence of float, default 0.0,
             dropout ratio after each `Conv_Bn_Activation`
+        out_activation: bool, default True,
+            if True, the last mini-block of `Conv_Bn_Activation` will have activation as in `config`,
+            otherwise None
         config: dict,
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
@@ -445,6 +448,10 @@ class MultiConv(nn.Sequential):
         conv_in_channels = self.__in_channels
         for idx, (oc, ks, sd, dl, dp) in \
             enumerate(zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)):
+            if idx < self.__num_convs - 1 or out_activation:
+                activation = self.config.activation
+            else:
+                activation = None
             self.add_module(
                 f"cba_{idx}",
                 Conv_Bn_Activation(
@@ -455,7 +462,7 @@ class MultiConv(nn.Sequential):
                     dilation=dl,
                     groups=groups,
                     batch_norm=self.config.batch_norm,
-                    activation=self.config.activation,
+                    activation=activation,
                     kw_activation=self.config.kw_activation,
                     kernel_initializer=self.config.kernel_initializer,
                     kw_initializer=self.config.kw_initializer,

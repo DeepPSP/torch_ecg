@@ -160,7 +160,7 @@ class final_layer(nn.Module):
 
 
 class StageModule(nn.Module):
-    def __init__(self,stage,out_branches,c):
+    def __init__(self,stage, out_branches, c):
         super(StageModule,self).__init__()
         self.stage = stage
         # self.num_blocks = num_blocks
@@ -170,7 +170,7 @@ class StageModule(nn.Module):
         for i in range(self.stage):
             w = c * (2**i)
             branch = nn.Sequential(
-                Residual_block(w,w),
+                Residual_block(w, w),
                 Residual_block(w, w),
                 Residual_block(w, w),
             )
@@ -321,7 +321,7 @@ class Yolo_1d(nn.Module):
             layers.append(Residual_block(out_ch,out_ch))
         return nn.Sequential(*layers)
 
-    def forward(self, x,target=None):
+    def forward(self, x, target=None):
         is_training = target is not None
         x = self.layer_1(x)
         x = self.layer_2(x)
@@ -432,12 +432,12 @@ class Yolo_1d(nn.Module):
             r_ans.append(qrs)
         return r_ans, hr_ans
 
-if __name__ == "__main__":
-    t = torch.randn(1,1,5000).cuda()
-    model = Yolo_1d(c=128).cuda()
-    model = torch.nn.DataParallel(model, device_ids=[0, 1])
+# if __name__ == "__main__":
+#     t = torch.randn(1,1,5000).cuda()
+#     model = Yolo_1d(c=128).cuda()
+#     model = torch.nn.DataParallel(model, device_ids=[0, 1])
 
-    # summary(model,(1,5000))
+#     # summary(model,(1,5000))
 
-    tt = model(t)
-    print(1)
+#     tt = model(t)
+#     print(1)

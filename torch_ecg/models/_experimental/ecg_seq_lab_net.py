@@ -28,7 +28,7 @@ from ...utils.misc import dict_to_str
 from ..nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
-    MultiConv,
+    # MultiConv,
     DownSample,
     StackedLSTM,
     AttentivePooling,
