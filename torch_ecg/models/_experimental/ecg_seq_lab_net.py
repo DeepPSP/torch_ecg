@@ -123,8 +123,16 @@ class MultiScopicBasicBlock(nn.Sequential):
             )
 
     def forward(self, input:Tensor) -> Tensor:
-        """
-        input: of shape (batch_size, channels, seq_len)
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
         """
         output = super().forward(input)
         return output

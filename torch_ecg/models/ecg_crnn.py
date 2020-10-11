@@ -44,7 +44,8 @@ __all__ = [
 
 
 class VGGBlock(nn.Sequential):
-    """
+    """ finished, checked,
+
     building blocks of the CNN feature extractor `VGG16`
     """
     __DEBUG__ = False
@@ -112,6 +113,22 @@ class VGGBlock(nn.Sequential):
             nn.MaxPool1d(self.config.pool_size, self.config.pool_stride)
         )
 
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+        """
+        output = super().forward(input)
+        return output
+
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
@@ -153,7 +170,8 @@ class VGGBlock(nn.Sequential):
 
 
 class VGG16(nn.Sequential):
-    """
+    """ finished, checked,
+
     CNN feature extractor of the CRNN models proposed in refs of `ATI_CNN`
     """
     __DEBUG__ = False
@@ -193,13 +211,21 @@ class VGG16(nn.Sequential):
             )
             module_in_channels = nf
 
-    def forward(self, input):
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
-        keep up with `nn.Sequential.forward`
-        """
-        for module in self:
-            input = module(input)
-        return input
+        output = super().forward(input)
+        return output
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
@@ -231,7 +257,7 @@ class VGG16(nn.Sequential):
 
 
 class ResNetBasicBlock(nn.Module):
-    """
+    """ finished, checked,
 
     building blocks for `ResNet`, as implemented in ref. [2] of `ResNet`
     """
@@ -313,7 +339,7 @@ class ResNetBasicBlock(nn.Module):
                 self.config.activation(**self.config.kw_activation)
     
     def _make_short_cut_layer(self) -> Union[nn.Module, type(None)]:
-        """
+        """ finished, checked,
         """
         if self.__DEBUG__:
             print(f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}")
@@ -344,7 +370,17 @@ class ResNetBasicBlock(nn.Module):
         return short_cut
 
     def forward(self, input:Tensor) -> Tensor:
-        """
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        out: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         identity = input
 
@@ -389,7 +425,7 @@ class ResNetBasicBlock(nn.Module):
 
 
 class ResNet(nn.Sequential):
-    """
+    """ finished, checked,
 
     References:
     -----------
@@ -500,8 +536,18 @@ class ResNet(nn.Sequential):
                 )
                 block_in_channels = block_num_filters
 
-    def forward(self, input):
-        """
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         output = super().forward(input)
         return output
@@ -546,14 +592,15 @@ class ResNet(nn.Sequential):
 
 
 class CPSCBlock(nn.Sequential):
-    """
+    """ finished, checked,
+
     building block of the SOTA model of CPSC2018 challenge
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "CPSCBlock"
 
     def __init__(self, in_channels:int, num_filters:int, filter_lengths:Sequence[int], subsample_lengths:Sequence[int], dropout:Optional[float]=None, **config) -> NoReturn:
-        """
+        """  finished, checked,
 
         Parameters:
         -----------
@@ -569,7 +616,7 @@ class CPSCBlock(nn.Sequential):
             if positive, a `Dropout` layer will be introduced with this dropout probability
         config: dict,
             other hyper-parameters, including
-            filter length (kernel size), activation choices, weight initializer, etc.
+            activation choices, weight initializer, etc.
         """
         super().__init__()
         self.__num_convs = len(filter_lengths)
@@ -612,11 +659,20 @@ class CPSCBlock(nn.Sequential):
             )
 
     def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
-        keep up with `nn.Sequential.forward`
-        """
-        out = super().forward(input)
-        return out
+        output = super().forward(input)
+        return output
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
@@ -653,7 +709,8 @@ class CPSCBlock(nn.Sequential):
 
 
 class CPSCCNN(nn.Sequential):
-    """
+    """ finished, checked,
+
     CNN part of the SOTA model of the CPSC2018 challenge
     """
     __DEBUG__ = True
@@ -695,11 +752,20 @@ class CPSCCNN(nn.Sequential):
             blk_in = blk_nf[-1]
 
     def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
-        keep up with `nn.Sequential.forward`
-        """
-        out = super().forward(input)
-        return out
+        output = super().forward(input)
+        return output
     
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
@@ -732,16 +798,18 @@ class CPSCCNN(nn.Sequential):
 
 
 class MultiScopicBasicBlock(nn.Sequential):
-    """
-    basic building block of the CNN part of the SOTA model from CPSC2019 challenge (entry 0416)
+    """ finished, checked,
+
+    basic building block of the CNN part of the SOTA model 
+    from CPSC2019 challenge (entry 0416)
 
     (conv -> activation) * N --> bn --> down_sample
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MultiScopicBasicBlock"
 
     def __init__(self, in_channels:int, scopes:Sequence[int], num_filters:Union[int,Sequence[int]], filter_lengths:Union[int,Sequence[int]], subsample_length:int, groups:int=1, **config) -> NoReturn:
-        """ finished, not checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -815,8 +883,17 @@ class MultiScopicBasicBlock(nn.Sequential):
             )
 
     def forward(self, input:Tensor) -> Tensor:
-        """
-        input: of shape (batch_size, channels, seq_len)
+        """ finished, checked,
+
+        Parameters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         output = super().forward(input)
         return output
@@ -856,18 +933,41 @@ class MultiScopicBasicBlock(nn.Sequential):
 
 
 class MultiScopicBranch(nn.Sequential):
+    """ finished, checked,
+    
+    branch path of the CNN part of the SOTA model
+    from CPSC2019 challenge (entry 0416)
     """
-    branch path of the CNN part of the SOTA model from CPSC2019 challenge (entry 0416)
-    """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MultiScopicBranch"
 
     def __init__(self, in_channels:int, scopes:Sequence[Sequence[int]], num_filters:Union[Sequence[int],Sequence[Sequence[int]]], filter_lengths:Union[Sequence[int],Sequence[Sequence[int]]], subsample_lengths:Union[int,Sequence[int]], groups:int=1, **config) -> NoReturn:
-        """
+        """ finished, checked,
 
         Parameters:
         -----------
-        in_channels
+        in_channels: int,
+            number of features (channels) of the input
+        scopes: sequence of sequence of int,
+            scopes (in terms of `dilation`) for the convolutional layers,
+            each sequence of int is for one branch
+        num_filters: sequence of int, or sequence of sequence of int,
+            number of filters for the convolutional layers,
+            if is sequence of int,
+            then convolutionaly layers in one branch will have the same number of filters
+        filter_lengths: sequence of int, or sequence of sequence of int,
+            filter length (kernel size) of the convolutional layers,
+            if is sequence of int,
+            then convolutionaly layers in one branch will have the same filter length
+        subsample_lengths: int, or sequence of int,
+            subsample length (stride) of the convolutional layers,
+            if is sequence of int,
+            then convolutionaly layers in one branch will have the same subsample length
+        groups: int, default 1,
+            connection pattern (of channels) of the inputs and outputs
+        config: dict,
+            other hyper-parameters, including
+            dropout, activation choices, weight initializer, etc.
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -906,8 +1006,17 @@ class MultiScopicBranch(nn.Sequential):
             block_in_channels = self.__num_filters[idx]
 
     def forward(self, input:Tensor) -> Tensor:
-        """
-        input: of shape (batch_size, channels, seq_len)
+        """ finished, checked,
+
+        Parameters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         output = super().forward(input)
         return output
@@ -943,14 +1052,22 @@ class MultiScopicBranch(nn.Sequential):
 
 
 class MultiScopicCNN(nn.Module):
-    """
+    """ finished, checked,
+
     CNN part of the SOTA model from CPSC2019 challenge (entry 0416)
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MultiScopicCNN"
 
     def __init__(self, in_channels:int, **config) -> NoReturn:
-        """
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        in_channels: int,
+            number of channels in the input
+        config: dict,
+            other hyper-parameters of the Module, ref. corresponding config file
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -975,8 +1092,17 @@ class MultiScopicCNN(nn.Module):
                 )
 
     def forward(self, input:Tensor) -> Tensor:
-        """
-        input: of shape (batch_size, channels, seq_len)
+        """ finished, checked,
+        
+        Parameters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         branch_out = OrderedDict()
         for idx in range(self.__num_branches):
@@ -1021,7 +1147,7 @@ class MultiScopicCNN(nn.Module):
 
 
 class ECG_CRNN(nn.Module):
-    """
+    """ finished, continuously improving,
 
     C(R)NN models modified from the following refs.
 
@@ -1152,8 +1278,15 @@ class ECG_CRNN(nn.Module):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, partly checked (rnn part might have bugs),
 
-        input: of shape (batch_size, channels, seq_len)
-        output: of shape (batch_size, n_classes)
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, channels, seq_len)
+        
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_classes)
         """
         x = self.cnn(input)  # batch_size, channels, seq_len
         # print(f"cnn out shape = {x.shape}")
@@ -1191,7 +1324,7 @@ class ECG_CRNN(nn.Module):
     def inference(self, input:Tensor, class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """ finished, checked,
 
-        auxiliary function to `forward`,
+        auxiliary function to `forward`, for CINC2020,
 
         Parameters:
         -----------
