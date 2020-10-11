@@ -885,7 +885,8 @@ class CINC2020Reader(object):
             if given, data of `rec` will not be used,
             this is useful when plotting filtered data
         ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more
+            the granularity to plot axis ticks, the higher the more,
+            0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
         leads: str or list of str, optional,
             the leads to plot
         same_range: bool, default False,

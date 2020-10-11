@@ -388,6 +388,11 @@ def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[floa
         if `y` is of string type, then `class_weight` should be a dict,
         if `y` is of numeric type, and `class_weight` is array_like,
         then the labels (`y`) should be continuous and start from 0
+    
+    Returns:
+    --------
+    sample_weight: ndarray,
+        the array of sample weight
     """
     if not class_weight:
         sample_weight = np.ones_like(y, dtype=float)
@@ -416,7 +421,15 @@ def plot_single_lead(t:np.ndarray, sig:np.ndarray, ax:Optional[Any]=None, ticks_
 
     Parameters:
     -----------
-    to write
+    t: ndarray,
+        the array of time of the signal
+    sig: ndarray,
+        the signal itself
+    ax: Artist, optional,
+        the `Artist` to plot on
+    ticks_granularity: int, default 0,
+        the granularity to plot axis ticks, the higher the more,
+        0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
     """
     if 'plt' not in dir():
         import matplotlib.pyplot as plt
