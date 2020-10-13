@@ -1,0 +1,3 @@
+[submodule "torch_ecg/train/database_reader"]
+	path = torch_ecg/train/database_reader
+	url = https://github.com/wenh06/database_reader.git
