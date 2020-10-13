@@ -6,6 +6,10 @@ divided by the length (counted by the number of basic blocks) of each branch
 
 pipeline:
 multi-scopic cnn --> (bidi-lstm -->) "attention" --> seq linear
+
+References:
+-----------
+[1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
 """
 from copy import deepcopy
 from itertools import repeat
@@ -395,6 +399,10 @@ class ECG_SEQ_LAB_NET(nn.Module):
 
     pipeline:
     multi-scopic cnn --> (bidi-lstm -->) "attention" --> seq linear
+
+    References:
+    -----------
+    [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
     """
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET"
