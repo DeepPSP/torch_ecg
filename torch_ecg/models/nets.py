@@ -65,8 +65,8 @@ else:
 # ---------------------------------------------
 # activations
 class Mish(nn.Module):
-    __name__ = "Mish"
     """ The Mish activation """
+    __name__ = "Mish"
     def __init__(self):
         """
         """
@@ -79,8 +79,8 @@ class Mish(nn.Module):
 
 
 class Swish(nn.Module):
-    __name__ = "Swish"
     """ The Swish activation """
+    __name__ = "Swish"
     def __init__(self):
         """
         """
@@ -1369,13 +1369,7 @@ class SelfAttention(nn.Module):
     __DEBUG__ = False
     __name__ = "SelfAttention"
 
-    def __init__(self,
-                 in_features:int,
-                 head_num:int,
-                 dropout:float=0.0,
-                 bias:bool=True,
-                 activation:Optional[Union[str,nn.Module]]="relu",
-                 **kwargs):
+    def __init__(self, in_features:int, head_num:int, dropout:float=0.0, bias:bool=True, activation:Optional[Union[str,nn.Module]]="relu", **kwargs):
         """ finished, checked,
 
         Parameters:
@@ -1461,7 +1455,7 @@ class AttentivePooling(nn.Module):
         """
         super().__init__()
         self.__in_channels = in_channels
-        self.__mid_channels = mid_channels or self.__in_channels//2
+        self.__mid_channels = (mid_channels or self.__in_channels//2) or 1
         self.__dropout = dropout
         self.__kw_activation = kwargs.get("kw_activation", {})
         if callable(activation):
@@ -1675,6 +1669,12 @@ class SeqLin(nn.Sequential):
         -----------
         input: Tensor,
             of shape (batch_size, n_channels) or (batch_size, seq_len, n_channels)
+        
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels) or (batch_size, seq_len, n_channels),
+            ndim in accordance with `input`
         """
         output = super().forward(input)
         return output
@@ -1710,6 +1710,101 @@ class SeqLin(nn.Sequential):
         return n_params
 
 
+class NonLocalBlock(nn.Module):
+    """
+
+    Non-local Neural Networks
+
+    References:
+    -----------
+    [1] Wang, Xiaolong, et al. "Non-local neural networks." Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.
+    [2] https://github.com/AlexHex7/Non-local_pytorch
+    """
+    __DEBUG__ = False
+    __name__ = "NonLocalBlock"
+    __MID_LAYERS__ = ["g", "theta", "phi", "W"]
+
+    def __init__(self, in_channels:int, mid_channels:Optional[int]=None, filter_lengths:Union[ED,int], subsample_lengths:Union[ED,int], **config) -> NoReturn:
+        """ NOT finished, NOT checked,
+
+        Paramters:
+        ----------
+        to write
+
+        Returns:
+        --------
+        to write
+        """
+        super().__init__()
+        self.__in_channels = in_channels
+        self.__mid_channels = (mid_channels or self.__in_channels//2) or 1
+        self.__out_channels = self.__in_channels
+        if isinstance(filter_lengths, dict):
+            assert [k.lower() for k in filter_lengths.keys()] == self.__MID_LAYERS__
+            self.__kernel_sizes = ED({k.lower():v for k,v in filter_lengths.items()})
+        else:
+            self.__kernel_sizes = ED({k:filter_lengths for k in self.__MID_LAYERS__})
+        if isinstance(subsample_lengths, dict):
+            assert [k.lower() for k in subsample_lengths.keys()] == self.__MID_LAYERS__
+            self.__pool_sizes = ED({k.lower():v for k,v in subsample_lengths.items()})
+        else:
+            self.__pool_sizes = ED({k:subsample_lengths for k in self.__MID_LAYERS__})
+        self.config = ED(deepcopy(config))
+
+        self.mid_layers = nn.ModuleDict()
+        for k in ["g", "theta", "phi"]:
+            self.mid_layers[k] = Conv_Bn_Activation(
+                in_channels=self.__in_channels,
+                out_channels=self.__mid_channels,
+                kernel_size=self.__kernel_sizes[k],
+                batch_norm=False,
+                activation=None,
+            )
+            if self.__pool_sizes[k] > 1:
+                self.mid_layers[k].add_module(
+                    "max_pool",
+                )
+
+        self.W = Conv_Bn_Activation(
+            in_channels=self.__mid_channels,
+            out_channels=self.__out_channels,
+            kernel_size=self.__kernel_sizes["W"],
+            batch_norm=self.config.batch_norm,
+            activation=None,
+        )
+
+    def forward(self, input:Tensor) -> Tensor:
+        """
+        """
+        raise NotImplementedError
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        seq_len: int, optional,
+            length of the 1d sequence,
+            if is None, then the input is composed of single feature vectors for each batch
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns:
+        --------
+        output_shape: sequence,
+            the output shape of this `SEBlock` layer, given `seq_len` and `batch_size`
+        """
+        return (batch_size, self.__in_channels, seq_len)
+
+    @property
+    def module_size(self) -> int:
+        """
+        """
+        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
+        n_params = sum([np.prod(p.size()) for p in module_parameters])
+        return n_params
+
+
 class SEBlock(nn.Module):
     """ finished, checked,
 
@@ -1724,7 +1819,7 @@ class SEBlock(nn.Module):
     """
     __DEBUG__ = True
     __name__ = "SEBlock"
-    __DEFAULT_CONFIG__ = dict(
+    __DEFAULT_CONFIG__ = ED(
         bias=False, activation="relu", kw_activation={"inplace": True}, dropouts=0.0
     )
 
