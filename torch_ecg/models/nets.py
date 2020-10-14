@@ -66,41 +66,29 @@ else:
 class Mish(nn.Module):
     __name__ = "Mish"
     """ The Mish activation """
-    def __init__(self, inplace:bool=False):
+    def __init__(self):
         """
         """
         super().__init__()
-        self.inplace = inplace
 
     def forward(self, input:Tensor) -> Tensor:
         """
         """
-        if self.inplace:
-            input = input * (torch.tanh(F.softplus(input)))
-            output = input
-        else:
-            output = input * (torch.tanh(F.softplus(input)))
-        return output
+        return input * (torch.tanh(F.softplus(input)))
 
 
 class Swish(nn.Module):
     __name__ = "Swish"
     """ The Swish activation """
-    def __init__(self, inplace:bool=False):
+    def __init__(self):
         """
         """
         super().__init__()
-        self.inplace = inplace
 
     def forward(self, input:Tensor) -> Tensor:
         """
         """
-        if self.inplace:
-            input = input * F.sigmoid(input)
-            output = input
-        else:
-            output = input * F.sigmoid(input)
-        return output
+        return input * F.sigmoid(input)
 
 
 # ---------------------------------------------
@@ -1751,7 +1739,7 @@ class GlobalContextBlock(nn.Module):
             raise or reduction ratio of the mid-channels to `in_channels`
             in the "channel attention" sub-block
         reduction: bool, default False,
-            if True, mid-channels would be `in_channels // ratio`,
+            if True, mid-channels would be `in_channels // ratio` (as in `SELayer`),
             otherwise, mid-channels would be `in_channels * ratio`,
         pooling_type: str, default "attn",
             mode (or type) of subsampling (or pooling) of "spatial attention"
@@ -1870,6 +1858,56 @@ class GlobalContextBlock(nn.Module):
         module_parameters = filter(lambda p: p.requires_grad, self.parameters())
         n_params = sum([np.prod(p.size()) for p in module_parameters])
         return n_params
+
+
+class SEBlock(nn.Module):
+    """
+
+    Squeeze-and-Excitation Block
+
+    References:
+    -----------
+    [1] J. Hu, L. Shen, S. Albanie, G. Sun and E. Wu, "Squeeze-and-Excitation Networks," in IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 42, no. 8, pp. 2011-2023, 1 Aug. 2020, doi: 10.1109/TPAMI.2019.2913372.
+    [2] J. Hu, L. Shen and G. Sun, "Squeeze-and-Excitation Networks," 2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition, Salt Lake City, UT, 2018, pp. 7132-7141, doi: 10.1109/CVPR.2018.00745.
+    [3] https://github.com/hujie-frank/SENet
+    [4] https://github.com/moskomule/senet.pytorch/blob/master/senet/se_module.py
+    """
+    __DEBUG__ = True
+    __name__ = "SEBlock"
+    __DEFAULT_CONFIG__ = dict(bias=False, activation="relu", dropouts=0.0)
+
+    def __init__(self, in_channel:int, reduction:int=16, **config) -> NoReturn:
+        """
+        """
+        super().__init__()
+        self.__in_channels = in_channel
+        self.__mid_channels = in_channel // reduction
+        self.__out_channels = in_channel
+        self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        self.config.update(config)
+
+        self.avg_pool = nn.AdaptiveAvgPool1d(1)
+        self.fc = nn.Sequential(
+            SeqLin(
+                in_channels=self.__in_channels,
+                out_channels=[self.__mid_channels, self.__out_channels],
+                activation=self.config.activation,
+                bias=self.config.bias,
+                dropouts=self.config.dropouts,
+                skip_last_activation=True
+            ),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished,
+        """
+        batch_size, n_channels, seq_len = input.shape
+        y = self.avg_pool(input).squeeze(-1)  # --> batch_size, n_channels
+        y = self.fc(y).unsqueeze(-1)  # --> batch_size, n_channels, 1
+        # output = input * y.expand_as(input)  # equiv. to the following
+        output = input * y
+        return output
 
 
 # custom losses
