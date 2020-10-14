@@ -107,7 +107,7 @@ resnet.init_pool_stride = 2
 resnet.kernel_initializer = "he_normal"
 resnet.kw_initializer = {}
 resnet.activation = "relu"  # "mish", "swish"
-resnet.kw_activation = {}
+resnet.kw_activation = {"inplace": True}
 resnet.bias = False
 
 resnet_leadwise = deepcopy(resnet)
@@ -150,7 +150,7 @@ resnet_stanford.num_filters_start = _base_num_filters*2
 resnet_stanford.kernel_initializer = "he_normal"
 resnet_stanford.kw_initializer = {}
 resnet_stanford.activation = "relu"
-resnet_stanford.kw_activation = {}
+resnet_stanford.kw_activation = {"inplace": True}
 
 
 resnet_block_stanford = ED()
@@ -200,7 +200,7 @@ cpsc_2018.subsample_lengths = [
 cpsc_2018.dropouts = [0.2, 0.2, 0.2, 0.2, 0.2]
 cpsc_2018.groups = 1
 cpsc_2018.activation = "leaky"
-cpsc_2018.kw_activation = ED(negative_slope=0.3)
+cpsc_2018.kw_activation = ED(negative_slope=0.3, inplace=True)
 cpsc_2018.kernel_initializer = "he_normal"
 cpsc_2018.kw_initializer = {}
 
@@ -279,7 +279,7 @@ multi_scopic.bias = True
 multi_scopic.kernel_initializer = "he_normal"
 multi_scopic.kw_initializer = {}
 multi_scopic.activation = "relu"
-multi_scopic.kw_activation = {}
+multi_scopic.kw_activation = {"inplace": True}
 
 multi_scopic_leadwise = deepcopy(multi_scopic)
 multi_scopic_leadwise.groups = 12

@@ -42,7 +42,6 @@ class CINC2020(Dataset):
         config: dict,
             configurations for the Dataset,
             ref. `cfg.TrainCfg`
-            can be one of "A", "B", "AB", "E", "F", or None (or '', defaults to "ABEF")
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         """

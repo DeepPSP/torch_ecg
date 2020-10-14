@@ -23,7 +23,7 @@ ECG_UNET_CONFIG.batch_norm = True
 ECG_UNET_CONFIG.kernel_initializer = "he_normal"
 ECG_UNET_CONFIG.kw_initializer = {}
 ECG_UNET_CONFIG.activation = "relu"
-ECG_UNET_CONFIG.kw_activation = {}
+ECG_UNET_CONFIG.kw_activation = {"inplace": True}
 
 ECG_UNET_CONFIG.down_up_block_num = 4
 

@@ -127,7 +127,7 @@ Activations.softmax = nn.Softmax
 _DEFAULT_CONV_CONFIGS = ED(
     batch_norm=True,
     activation="relu",
-    kw_activation={},
+    kw_activation={"inplace": True},
     kernel_initializer="he_normal",
     kw_initializer={}
 )
@@ -1874,7 +1874,9 @@ class SEBlock(nn.Module):
     """
     __DEBUG__ = True
     __name__ = "SEBlock"
-    __DEFAULT_CONFIG__ = dict(bias=False, activation="relu", dropouts=0.0)
+    __DEFAULT_CONFIG__ = dict(
+        bias=False, activation="relu", kw_activation={"inplace": True}, dropouts=0.0
+    )
 
     def __init__(self, in_channel:int, reduction:int=16, **config) -> NoReturn:
         """
@@ -1892,6 +1894,7 @@ class SEBlock(nn.Module):
                 in_channels=self.__in_channels,
                 out_channels=[self.__mid_channels, self.__out_channels],
                 activation=self.config.activation,
+                kw_activation=self.config.kw_activation,
                 bias=self.config.bias,
                 dropouts=self.config.dropouts,
                 skip_last_activation=True

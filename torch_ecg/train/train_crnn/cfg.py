@@ -8,7 +8,7 @@ from copy import deepcopy
 import numpy as np
 from easydict import EasyDict as ED
 
-from ...cfg import Cfg as MainCfg
+from ...cfg import Cfg as BaseCfg
 from .scoring_aux_data import (
     equiv_class_dict,
     get_class_weight,
@@ -98,7 +98,7 @@ ModelCfg.bin_pred_thr = 0.5
 # along with those with prob. no less than the highest prob. minus `bin_pred_look_again_tol`
 ModelCfg.bin_pred_look_again_tol = 0.03
 ModelCfg.bin_pred_nsr_thr = 0.1
-ModelCfg.torch_dtype = MainCfg.torch_dtype
+ModelCfg.torch_dtype = BaseCfg.torch_dtype
 
 # configs of path of final models
 ModelCfg.tranche_model = ED({
