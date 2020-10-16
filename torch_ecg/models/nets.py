@@ -48,7 +48,7 @@ __all__ = [
     "AttentivePooling",
     "ZeroPadding",
     "SeqLin",
-    "SEBlock", "GlobalContextBlock",
+    "NonLocalBlock", "SEBlock", "GlobalContextBlock",
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
     "default_collate_fn",
 ]
@@ -225,7 +225,7 @@ class Conv_Bn_Activation(nn.Sequential):
     """ finished, checked,
 
     1d convolution --> batch normalization (optional) -- > activation (optional),
-    with "same" padding
+    with "same" padding as default padding
     """
     __name__ = "Conv_Bn_Activation"
 
@@ -261,6 +261,10 @@ class Conv_Bn_Activation(nn.Sequential):
             or name or the initialzer, can be one of the keys of `Initializers`
         bias: bool, default True,
             if True, adds a learnable bias to the output
+
+        NOTE that if `padding` is not specified (default None),
+        then the actual padding used for the convolutional layer is automatically computed
+        to fit the "same" padding (not actually "same" for even kernel sizes)
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -1724,16 +1728,22 @@ class NonLocalBlock(nn.Module):
     __name__ = "NonLocalBlock"
     __MID_LAYERS__ = ["g", "theta", "phi", "W"]
 
-    def __init__(self, in_channels:int, mid_channels:Optional[int]=None, filter_lengths:Union[ED,int], subsample_lengths:Union[ED,int], **config) -> NoReturn:
-        """ NOT finished, NOT checked,
+    def __init__(self, in_channels:int, mid_channels:Optional[int]=None, filter_lengths:Union[ED,int]=1, subsample_length:int=1, **config) -> NoReturn:
+        """ finished, checked,
 
         Paramters:
         ----------
-        to write
-
-        Returns:
-        --------
-        to write
+        in_channels: int,
+            number of channels in the input
+        mid_channels: int, optional,
+            number of output channels for the mid layers ("g", "phi", "theta")
+        filter_lengths: dict or int, default 1,
+            filter lengths (kernel sizes) for each convolutional layers ("g", "phi", 'theta', "W")
+        subsample_length: int, default 1,
+            subsample length (max pool size) of the "g" and "phi" layers
+        config: dict,
+            other parameters, including
+            batch normalization choices, etc.
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -1744,39 +1754,67 @@ class NonLocalBlock(nn.Module):
             self.__kernel_sizes = ED({k.lower():v for k,v in filter_lengths.items()})
         else:
             self.__kernel_sizes = ED({k:filter_lengths for k in self.__MID_LAYERS__})
-        if isinstance(subsample_lengths, dict):
-            assert [k.lower() for k in subsample_lengths.keys()] == self.__MID_LAYERS__
-            self.__pool_sizes = ED({k.lower():v for k,v in subsample_lengths.items()})
-        else:
-            self.__pool_sizes = ED({k:subsample_lengths for k in self.__MID_LAYERS__})
+        self.__subsample_length = subsample_length
         self.config = ED(deepcopy(config))
 
         self.mid_layers = nn.ModuleDict()
         for k in ["g", "theta", "phi"]:
-            self.mid_layers[k] = Conv_Bn_Activation(
-                in_channels=self.__in_channels,
-                out_channels=self.__mid_channels,
-                kernel_size=self.__kernel_sizes[k],
-                batch_norm=False,
-                activation=None,
+            self.mid_layers[k] = nn.Sequential()
+            self.mid_layers[k].add_module(
+                "conv",
+                Conv_Bn_Activation(
+                    in_channels=self.__in_channels,
+                    out_channels=self.__mid_channels,
+                    kernel_size=self.__kernel_sizes[k],
+                    stride=1,
+                    batch_norm=False,
+                    activation=None,
+                )
             )
-            if self.__pool_sizes[k] > 1:
+            if self.__subsample_length > 1 and k != "theta":
                 self.mid_layers[k].add_module(
                     "max_pool",
+                    nn.MaxPool1d(kernel_size=self.__subsample_length)
                 )
 
         self.W = Conv_Bn_Activation(
             in_channels=self.__mid_channels,
             out_channels=self.__out_channels,
             kernel_size=self.__kernel_sizes["W"],
+            stride=1,
             batch_norm=self.config.batch_norm,
             activation=None,
         )
 
-    def forward(self, input:Tensor) -> Tensor:
+    def forward(self, x:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        x: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        y: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
-        """
-        raise NotImplementedError
+        g_x = self.mid_layers["g"](x)  # --> batch_size, n_channels, seq_len'
+        g_x = g_x.permute(0, 2, 1)  # --> batch_size, seq_len', n_channels
+
+        theta_x = self.mid_layers["theta"](x)  # --> batch_size, n_channels, seq_len
+        theta_x = theta_x.permute(0, 2, 1)  # --> batch_size, seq_len, n_channels
+        phi_x = self.mid_layers["phi"](x)  # --> batch_size, n_channels, seq_len'
+        # (batch_size, seq_len, n_channels) x (batch_size, n_channels, seq_len')
+        f = torch.matmul(theta_x, phi_x)  # --> batch_size, seq_len, seq_len'
+        f = F.softmax(f, dim=-1)  # --> batch_size, seq_len, seq_len'
+
+        # (batch_size, seq_len, seq_len') x (batch_size, seq_len', n_channels)
+        y = torch.matmul(f, g_x)  # --> (batch_size, seq_len, n_channels)
+        y = y.permute(0, 2, 1).contiguous()  # --> (batch_size, n_channels, seq_len)
+        y = self.W(y)
+        y += x
+        return y
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
@@ -1792,7 +1830,7 @@ class NonLocalBlock(nn.Module):
         Returns:
         --------
         output_shape: sequence,
-            the output shape of this `SEBlock` layer, given `seq_len` and `batch_size`
+            the output shape of this `NonLocalBlock` layer, given `seq_len` and `batch_size`
         """
         return (batch_size, self.__in_channels, seq_len)
 
