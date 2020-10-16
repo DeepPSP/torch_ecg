@@ -38,7 +38,8 @@ ECG_SEQ_LAB_NET_CONFIG.rnn.lstm.bidirectional = True
 
 ECG_SEQ_LAB_NET_CONFIG.attn = ED()
 ECG_SEQ_LAB_NET_CONFIG.attn.name = 'se'  # 'gc'
-ECG_SEQ_LAB_NET_CONFIG.attn.se.reduction = 16  # not including the last linear layer
+ECG_SEQ_LAB_NET_CONFIG.attn.se = ED()
+ECG_SEQ_LAB_NET_CONFIG.attn.se.reduction = 8  # not including the last linear layer
 ECG_SEQ_LAB_NET_CONFIG.attn.se.activation = "relu"
 ECG_SEQ_LAB_NET_CONFIG.attn.se.kw_activation = ED(inplace=True)
 ECG_SEQ_LAB_NET_CONFIG.attn.se.bias = True

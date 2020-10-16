@@ -472,13 +472,13 @@ class ECG_SEQ_LAB_NET(nn.Module):
                 kw_activation=self.config.attn.se.kw_activation,
                 bias=self.config.attn.se.bias,
             )
+            clf_input_size = attn_input_size
         else:
             raise NotImplementedError(f"attention of {self.config.attn.name} not implemented yet")
         
         if self.__DEBUG__:
             print(f"configs of attn are {dict_to_str(self.config.attn)}")
 
-        clf_input_size = self.config.attn.out_channels[-1]
         clf_out_channels = self.config.clf.out_channels + [self.n_classes]
         self.clf = SeqLin(
             in_channels=clf_input_size,
