@@ -20,7 +20,7 @@ ECG_SEQ_LAB_NET_CONFIG = ED()
 
 
 ECG_SEQ_LAB_NET_CONFIG.cnn = ED()
-ECG_SEQ_LAB_NET_CONFIG.cnn.name = 'multi_scopic'  # 'multi_scopic_leadwise
+ECG_SEQ_LAB_NET_CONFIG.cnn.name = 'multi_scopic'
 ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic = deepcopy(multi_scopic)
 ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic.block = deepcopy(multi_scopic_block)
 ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic_leadwise = deepcopy(multi_scopic_leadwise)
@@ -37,11 +37,13 @@ ECG_SEQ_LAB_NET_CONFIG.rnn.lstm.bidirectional = True
 
 
 ECG_SEQ_LAB_NET_CONFIG.attn = ED()
-ECG_SEQ_LAB_NET_CONFIG.attn.out_channels = [64]  # not including the last linear layer
-ECG_SEQ_LAB_NET_CONFIG.attn.activation = "relu"
-ECG_SEQ_LAB_NET_CONFIG.attn.bias = True
-ECG_SEQ_LAB_NET_CONFIG.attn.kernel_initializer = 'he_normal'
-ECG_SEQ_LAB_NET_CONFIG.attn.dropouts = [0.2, 0.0]
+ECG_SEQ_LAB_NET_CONFIG.attn.name = 'se'  # 'gc'
+ECG_SEQ_LAB_NET_CONFIG.attn.se.reduction = 16  # not including the last linear layer
+ECG_SEQ_LAB_NET_CONFIG.attn.se.activation = "relu"
+ECG_SEQ_LAB_NET_CONFIG.attn.se.kw_activation = ED(inplace=True)
+ECG_SEQ_LAB_NET_CONFIG.attn.se.bias = True
+ECG_SEQ_LAB_NET_CONFIG.attn.se.kernel_initializer = 'he_normal'
+# ECG_SEQ_LAB_NET_CONFIG.attn.se.dropouts = [0.2, 0.0]
 
 
 ECG_SEQ_LAB_NET_CONFIG.clf = ED()

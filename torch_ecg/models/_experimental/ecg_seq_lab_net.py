@@ -5,7 +5,7 @@ the labeling granularity is the frequency of the input signal,
 divided by the length (counted by the number of basic blocks) of each branch
 
 pipeline:
-multi-scopic cnn --> (bidi-lstm -->) "attention" --> seq linear
+multi-scopic cnn --> (bidi-lstm -->) "attention" (se block) --> seq linear
 
 References:
 -----------
@@ -33,6 +33,7 @@ from ..nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
     # MultiConv,
+    SEBlock,
     DownSample,
     StackedLSTM,
     AttentivePooling,
@@ -463,23 +464,16 @@ class ECG_SEQ_LAB_NET(nn.Module):
 
         self.pool = nn.AdaptiveAvgPool1d((1,))
 
-        self.attn = nn.Sequential()
-        attn_out_channels = self.config.attn.out_channels + [attn_input_size]
-        self.attn.add_module(
-            "attn",
-            SeqLin(
+        if self.config.attn.name.lower() == "se":
+            self.attn = SEBlock(
                 in_channels=attn_input_size,
-                out_channels=attn_out_channels,
-                activation=self.config.attn.activation,
-                bias=self.config.attn.bias,
-                kernel_initializer=self.config.attn.kernel_initializer,
-                dropouts=self.config.attn.dropouts,
+                reduction=self.config.attn.se.reduction,
+                activation=self.config.attn.se.activation,
+                kw_activation=self.config.attn.se.kw_activation,
+                bias=self.config.attn.se.bias,
             )
-        )
-        self.attn.add_module(
-            "softmax",
-            nn.Softmax(-1)
-        )
+        else:
+            raise NotImplementedError(f"attention of {self.config.attn.name} not implemented yet")
         
         if self.__DEBUG__:
             print(f"configs of attn are {dict_to_str(self.config.attn)}")

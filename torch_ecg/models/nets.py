@@ -1823,7 +1823,7 @@ class SEBlock(nn.Module):
         bias=False, activation="relu", kw_activation={"inplace": True}, dropouts=0.0
     )
 
-    def __init__(self, in_channel:int, reduction:int=16, **config) -> NoReturn:
+    def __init__(self, in_channels:int, reduction:int=16, **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -1838,9 +1838,9 @@ class SEBlock(nn.Module):
             for the linear layers
         """
         super().__init__()
-        self.__in_channels = in_channel
-        self.__mid_channels = in_channel // reduction
-        self.__out_channels = in_channel
+        self.__in_channels = in_channels
+        self.__mid_channels = in_channels // reduction
+        self.__out_channels = in_channels
         self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(config)
 
