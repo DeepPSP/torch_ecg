@@ -6,6 +6,8 @@ References:
 -----------
 [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
 [2] https://github.com/milesial/Pytorch-UNet/
+
+currently NOT tested on any dataset
 """
 import sys
 from copy import deepcopy
@@ -14,8 +16,6 @@ from itertools import repeat
 from typing import Union, Optional, Sequence, NoReturn
 from numbers import Real
 
-import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
@@ -23,12 +23,12 @@ import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from ..cfg import Cfg
-from .nets import (
-    Conv_Bn_Activation,
-    DownSample, ZeroPadding,
-)
 from ..utils.utils_nn import compute_deconv_output_shape
 from ..utils.misc import dict_to_str
+from .nets import (
+    Conv_Bn_Activation, MultiConv,
+    DownSample, ZeroPadding,
+)
 
 if Cfg.torch_dtype.lower() == 'double':
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -39,7 +39,7 @@ __all__ = [
 ]
 
 
-class DoubleConv(nn.Sequential):
+class DoubleConv(MultiConv):
     """
 
     building blocks of UNet
@@ -48,11 +48,11 @@ class DoubleConv(nn.Sequential):
     -----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
     """
-    __DEBUG__ = False
+    __DEBUG__ = True
     __name__ = "DoubleConv"
 
-    def __init__(self, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, groups:int=1, mid_channels:Optional[int]=None, **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, out_activation:bool=True, mid_channels:Optional[int]=None, **config) -> NoReturn:
+        """ finished, NOT checked,
 
         Parameters:
         -----------
@@ -66,6 +66,11 @@ class DoubleConv(nn.Sequential):
             subsample length(s) (stride(s)) of the convolutions
         groups: int, default 1,
             connection pattern (of channels) of the inputs and outputs
+        dropouts: float or sequence of float, default 0.0,
+            dropout ratio after each `Conv_Bn_Activation`
+        out_activation: bool, default True,
+            if True, the last mini-block of `Conv_Bn_Activation` will have activation as in `config`,
+            otherwise None
         mid_channels: int, optional,
             number of channels produced by the first convolutional layer,
             defaults to `out_channels`
@@ -74,91 +79,19 @@ class DoubleConv(nn.Sequential):
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers
         """
-        super().__init__()
-        self.__num_convs = 2
-        self.__in_channels = in_channels
-        self.__mid_channels = mid_channels if mid_channels is not None else out_channels
-        self.__out_channels = out_channels
-        self.config = ED(deepcopy(config))
-        if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
-
-        if isinstance(filter_lengths, int):
-            kernel_sizes = list(repeat(filter_lengths, self.__num_convs))
-        else:
-            kernel_sizes = filter_lengths
-        assert len(kernel_sizes) == self.__num_convs
-
-        if isinstance(subsample_lengths, int):
-            strides = list(repeat(subsample_lengths, self.__num_convs))
-        else:
-            strides = subsample_lengths
-        assert len(strides) == self.__num_convs
-
-        self.add_module(
-            "cba_1",
-            Conv_Bn_Activation(
-                in_channels=self.__in_channels,
-                out_channels=self.__mid_channels,
-                kernel_size=kernel_sizes[0],
-                stride=strides[0],
-                batch_norm=self.config.batch_norm,
-                activation=self.config.activation,
-                kw_activation=self.config.kw_activation,
-                kernel_initializer=self.config.kernel_initializer,
-                kw_initializer=self.config.kw_initializer,
-            ),
+        _mid_channels = mid_channels if mid_channels is not None else out_channels
+        _out_channels = [_mid_channels, out_channels]
+        
+        super().__init__(
+            in_channels=in_channels,
+            out_channels=_out_channels,
+            filter_lengths=filter_lengths,
+            subsample_lengths=subsample_lengths,
+            groups=groups,
+            dropouts=dropouts,
+            out_activation=out_activation,
+            **config
         )
-        self.add_module(
-            "cba_2",
-            Conv_Bn_Activation(
-                in_channels=self.__mid_channels,
-                out_channels=self.__out_channels,
-                kernel_size=kernel_sizes[1],
-                stride=strides[1],
-                batch_norm=self.config.batch_norm,
-                activation=self.config.activation,
-                kw_activation=self.config.kw_activation,
-                kernel_initializer=self.config.kernel_initializer,
-                kw_initializer=self.config.kw_initializer,
-            )
-        )
-
-    def forward(self, input:Tensor) -> Tensor:
-        """
-        use the forward method of `nn.Sequential`
-        """
-        out = super().forward(input)
-        return out
-
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, checked,
-
-        Parameters:
-        -----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns:
-        --------
-        output_shape: sequence,
-            the output shape of this `DoubleConv` layer, given `seq_len` and `batch_size`
-        """
-        _seq_len = seq_len
-        for module in self:
-            output_shape = module.compute_output_shape(_seq_len, batch_size)
-            _, _, _seq_len = output_shape
-        return output_shape
-
-    @property
-    def module_size(self):
-        """
-        """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
 
 
 class DownDoubleConv(nn.Sequential):
@@ -172,15 +105,17 @@ class DownDoubleConv(nn.Sequential):
     -----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
     """
-    __DEBUG__ = False
+    __DEBUG__ = True
     __name__ = "DownDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
-    def __init__(self, down_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], groups:int=1, mid_channels:Optional[int]=None, mode:str='max', **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, down_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], groups:int=1, dropouts:Union[Sequence[float], float]=0.0, mid_channels:Optional[int]=None, mode:str='max', **config) -> NoReturn:
+        """ finished, NOT checked,
 
         Parameters:
         -----------
+        down_scale: int,
+            down sampling scale
         in_channels: int,
             number of channels in the input
         out_channels: int,
@@ -189,6 +124,8 @@ class DownDoubleConv(nn.Sequential):
             length(s) of the filters (kernel size)
         groups: int, default 1,
             connection pattern (of channels) of the inputs and outputs
+        dropouts: float or sequence of float, default 0.0,
+            dropout ratio after each `Conv_Bn_Activation`
         mid_channels: int, optional,
             number of channels produced by the first convolutional layer,
             defaults to `out_channels`
@@ -228,19 +165,30 @@ class DownDoubleConv(nn.Sequential):
                 filter_lengths=filter_lengths,
                 subsample_lengths=1,
                 groups=groups,
+                dropouts=dropouts,
                 mid_channels=self.__mid_channels,
                 **(self.config)
             ),
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """
+        """ finished, NOT checked,
+        
+        Paramters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         out = super().forward(input)
         return out
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, checked,
+        """ finished, NOT checked,
 
         Parameters:
         -----------
@@ -261,7 +209,7 @@ class DownDoubleConv(nn.Sequential):
         return output_shape
 
     @property
-    def module_size(self):
+    def module_size(self) -> int:
         """
         """
         module_parameters = filter(lambda p: p.requires_grad, self.parameters())
@@ -279,12 +227,12 @@ class UpDoubleConv(nn.Module):
 
     channels are shrinked after up sampling
     """
-    __DEBUG__ = False
+    __DEBUG__ = True
     __name__ = "UpDoubleConv"
     __MODES__ = ['nearest', 'linear', 'area', 'deconv',]
 
-    def __init__(self, up_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], deconv_filter_length:Optional[int]=None, groups:int=1, mode:str='deconv', mid_channels:Optional[int]=None, **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, up_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], deconv_filter_length:Optional[int]=None, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, mode:str='deconv', mid_channels:Optional[int]=None, **config) -> NoReturn:
+        """ finished, NOT checked,
 
         Parameters:
         -----------
@@ -297,10 +245,12 @@ class UpDoubleConv(nn.Module):
         filter_lengths: int or sequence of int,
             length(s) of the filters (kernel size) of the convolutional layers
         deconv_filter_length: int,
-            only used when `mode` == 'conv'
+            only used when `mode` == 'deconv'
             length(s) of the filters (kernel size) of the deconvolutional upsampling layer
         groups: int, default 1, not used currently,
             connection pattern (of channels) of the inputs and outputs
+        dropouts: float or sequence of float, default 0.0,
+            dropout ratio after each `Conv_Bn_Activation`
         mode: str, default 'deconv', case insensitive,
             mode of up sampling
         mid_channels: int, optional,
@@ -350,18 +300,26 @@ class UpDoubleConv(nn.Module):
             filter_lengths=filter_lengths,
             subsample_lengths=1,
             groups=groups,
+            dropouts=dropouts,
             **(self.config),
         )
 
     def forward(self, input:Tensor, down_output:Tensor) -> Tensor:
-        """ finished, checked,
+        """ finished, NOT checked,
 
         Parameters:
         -----------
         input: Tensor,
-            input tensor from the previous layer
+            input tensor from the previous layer,
+            of shape (batch_size, n_channels, seq_len)
         down_output:Tensor: Tensor,
-            input tensor of the last layer of corr. down block
+            input tensor of the last layer of corr. down block,
+            of shape (batch_size, n_channels', seq_len')
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels'', seq_len')
         """
         output = self.up(input)
         output = self.zero_pad(output)
@@ -375,7 +333,7 @@ class UpDoubleConv(nn.Module):
         return output
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, checked,
+        """ finished, NOT checked,
 
         Parameters:
         -----------
@@ -387,7 +345,7 @@ class UpDoubleConv(nn.Module):
         Returns:
         --------
         output_shape: sequence,
-            the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
+            the output shape of this `UpDoubleConv` layer, given `seq_len` and `batch_size`
         """
         _sep_len = seq_len
         if self.__mode == 'deconv':
@@ -407,7 +365,7 @@ class UpDoubleConv(nn.Module):
         return output_shape
 
     @property
-    def module_size(self):
+    def module_size(self) -> int:
         """
         """
         module_parameters = filter(lambda p: p.requires_grad, self.parameters())
@@ -416,9 +374,16 @@ class UpDoubleConv(nn.Module):
 
 
 class ECG_UNET(nn.Module):
+    """ finished, NOT checked,
+
+    UNet for (multi-lead) ECG wave delineation
+
+    References:
+    -----------
+    [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
+    [2] https://github.com/milesial/Pytorch-UNet/
     """
-    """
-    __DEBUG__ = False
+    __DEBUG__ = True
     __name__ = "ECG_UNET"
     
     def __init__(self, classes:Sequence[str], n_leads:int, config:dict) -> NoReturn:
@@ -437,10 +402,12 @@ class ECG_UNET(nn.Module):
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)  # final out_channels
+        self.__out_channels = self.n_classes
         self.__in_channels = n_leads
         self.config = ED(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            __debug_seq_len = 4000
 
         self.init_conv = DoubleConv(
             in_channels=self.__in_channels,
@@ -454,6 +421,10 @@ class ECG_UNET(nn.Module):
             kernel_initializer=self.config.kernel_initializer,
             kw_initializer=self.config.kw_initializer,
         )
+        if self.__DEBUG__:
+            __debug_output_shape = self.init_conv.compute_output_shape(__debug_seq_len)
+            print(f"given seq_len = {__debug_seq_len}, init_conv output shape = {__debug_output_shape}")
+            _, _, __debug_seq_len = __debug_output_shape
 
         self.down_blocks = nn.ModuleDict()
         in_channels = self.n_classes
@@ -469,6 +440,10 @@ class ECG_UNET(nn.Module):
                     **(self.config.down_block)
                 )
             in_channels = self.config.down_num_filters[idx]
+            if self.__DEBUG__:
+                __debug_output_shape = self.down_blocks[f'down_{idx}'].compute_output_shape(__debug_seq_len)
+                print(f"given seq_len = {__debug_seq_len}, down_{idx} output shape = {__debug_output_shape}")
+                _, _, __debug_seq_len = __debug_output_shape
 
         self.up_blocks = nn.ModuleDict()
         in_channels = self.config.down_num_filters[-1]
@@ -485,10 +460,14 @@ class ECG_UNET(nn.Module):
                     **(self.config.up_block)
                 )
             in_channels = self.config.up_num_filters[idx]
+            if self.__DEBUG__:
+                __debug_output_shape = self.up_blocks[f'up_{idx}'].compute_output_shape(__debug_seq_len)
+                print(f"given seq_len = {__debug_seq_len}, up_{idx} output shape = {__debug_output_shape}")
+                _, _, __debug_seq_len = __debug_output_shape
 
         self.out_conv = Conv_Bn_Activation(
             in_channels=self.config.up_num_filters[-1],
-            out_channels=self.n_classes,
+            out_channels=self.__out_channels,
             kernel_size=self.config.out_filter_length,
             stride=1,
             groups=self.config.groups,
@@ -498,37 +477,51 @@ class ECG_UNET(nn.Module):
             kernel_initializer=self.config.kernel_initializer,
             kw_initializer=self.config.kw_initializer,
         )
-
-        self.softmax = nn.Softmax(dim=-1)  # for making inference
+        if self.__DEBUG__:
+            __debug_output_shape = self.out_conv.compute_output_shape(__debug_seq_len)
+            print(f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}")
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         to_concat = [self.init_conv(input)]
+        if self.__DEBUG__:
+            print(f"shape of init conv block output = {to_concat[-1].shape}")
         for idx in range(self.config.down_up_block_num):
             to_concat.append(self.down_blocks[f"down_{idx}"](to_concat[-1]))
+            if self.__DEBUG__:
+                print(f"shape of {idx}-th down block output = {to_concat[-1].shape}")
         up_input = to_concat[-1]
         to_concat = to_concat[-2::-1]
         for idx in range(self.config.down_up_block_num):
             up_output = self.up_blocks[f"up_{idx}"](up_input, to_concat[idx])
             up_input = up_output
+            if self.__DEBUG__:
+                print(f"shape of {idx}-th up block output = {up_output.shape}")
         output = self.out_conv(up_output)
+        if self.__DEBUG__:
+            print(f"shape of out_conv layer output = {output.shape}")
 
         return output
 
     @torch.no_grad()
-    def inference(self, input:Tensor, class_map:Optional[dict]=None) -> np.ndarray:
-        """ finished, checked,
+    def inference(self, input:Tensor) -> Tensor:
+        """ NOT finished, NOT checked,
         """
-        output_masks = self.forward(input)  # batch_size, channels(n_classes), seq_len
-        output_masks = output_masks.permute(0,2,1)  # batch_size, seq_len, channels(n_classes)
-        output_masks = self.softmax(output_masks)  # batch_size, seq_len, channels(n_classes)
-        output_masks = output_masks.cpu().detach().numpy()
-        output_masks = np.argmax(output_masks, axis=-1)
-        return output_masks
+        raise NotImplementedError
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, checked,
+        """ finished, NOT checked,
 
         Parameters:
         -----------
@@ -540,13 +533,13 @@ class ECG_UNET(nn.Module):
         Returns:
         --------
         output_shape: sequence,
-            the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
+            the output shape of this `ECG_UNET` layer, given `seq_len` and `batch_size`
         """
         output_shape = (batch_size, self.n_classes, seq_len)
         return output_shape
 
     @property
-    def module_size(self):
+    def module_size(self) -> int:
         """
         """
         module_parameters = filter(lambda p: p.requires_grad, self.parameters())
