@@ -398,14 +398,11 @@ class ECG_UNET(nn.Module):
         config: dict,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
-        
-        NOTE that classes includes the background (isoelectic) parts,
-        hence out channels be 1 if number of classes is 2 (e.g. for R peak detection)
         """
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)  # final out_channels
-        self.__out_channels = len(classes) if len(classes) > 2 else 1
+        self.__out_channels = self.n_classes
         self.__in_channels = n_leads
         self.config = ED(deepcopy(config))
         if self.__DEBUG__:

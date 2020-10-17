@@ -26,11 +26,11 @@ from torch import Tensor
 import torch.nn.functional as F
 from easydict import EasyDict as ED
 
-from ...cfg import Cfg
-from ...utils.utils_nn import compute_conv_output_shape
-from ...utils.misc import dict_to_str
-from ...model_configs import ECG_SEQ_LAB_NET_CONFIG
-from ..nets import (
+from ..cfg import Cfg
+from ..utils.utils_nn import compute_conv_output_shape
+from ..utils.misc import dict_to_str
+from ..model_configs import ECG_SEQ_LAB_NET_CONFIG
+from .nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
     # MultiConv,
@@ -53,7 +53,7 @@ class MultiScopicBasicBlock(nn.Sequential):
 
     (conv -> activation) * N --> bn --> down_sample
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MultiScopicBasicBlock"
 
     def __init__(self, in_channels:int, scopes:Sequence[int], num_filters:Union[int,Sequence[int]], filter_lengths:Union[int,Sequence[int]], subsample_length:int, groups:int=1, **config) -> NoReturn:
@@ -186,7 +186,7 @@ class MultiScopicBranch(nn.Sequential):
     branch path of the CNN part of the SOTA model
     from CPSC2019 challenge (entry 0416)
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MultiScopicBranch"
 
     def __init__(self, in_channels:int, scopes:Sequence[Sequence[int]], num_filters:Union[Sequence[int],Sequence[Sequence[int]]], filter_lengths:Union[Sequence[int],Sequence[Sequence[int]]], subsample_lengths:Union[int,Sequence[int]], groups:int=1, **config) -> NoReturn:
@@ -304,7 +304,7 @@ class MultiScopicCNN(nn.Module):
 
     CNN part of the SOTA model from CPSC2019 challenge (entry 0416)
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MultiScopicCNN"
 
     def __init__(self, in_channels:int, **config) -> NoReturn:
@@ -406,7 +406,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
     -----------
     [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "ECG_SEQ_LAB_NET"
 
     def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
