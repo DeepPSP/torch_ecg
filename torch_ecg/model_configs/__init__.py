@@ -55,6 +55,7 @@ from .ecg_crnn import *
 from .ecg_unet import *
 from .ecg_subtract_unet import *
 from .ecg_seq_lab_net import *
+from .ecg_yolo import *
 # from .ati_cnn import *
 # from .cpsc import *
 

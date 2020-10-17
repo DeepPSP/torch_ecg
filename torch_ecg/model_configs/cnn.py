@@ -251,7 +251,7 @@ multi_scopic.filter_lengths = [
     [11, 7, 5,],
     [11, 7, 5,],
 ]
-multi_scopic.subsample_lengths = list(repeat(2, len(multi_scopic.scopes)))
+multi_scopic.subsample_lengths = list(repeat(2, len(multi_scopic.scopes[0])))
 _base_num_filters = 36
 multi_scopic.num_filters = [
     [
@@ -309,4 +309,4 @@ multi_scopic_block.bias = multi_scopic.bias
 multi_scopic_block.kernel_initializer = multi_scopic.kernel_initializer
 multi_scopic_block.kw_initializer = deepcopy(multi_scopic.kw_initializer)
 multi_scopic_block.activation = multi_scopic.activation
-multi_scopic_block.kw_activation =deepcopy( multi_scopic.kw_activation)
+multi_scopic_block.kw_activation = deepcopy(multi_scopic.kw_activation)

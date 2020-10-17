@@ -22,9 +22,27 @@ ECG_SEQ_LAB_NET_CONFIG = ED()
 ECG_SEQ_LAB_NET_CONFIG.cnn = ED()
 ECG_SEQ_LAB_NET_CONFIG.cnn.name = 'multi_scopic'
 ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic = deepcopy(multi_scopic)
+_base_num_filters = 4
+ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic.num_filters = [
+    [
+        _base_num_filters*4,
+        _base_num_filters*8,
+        _base_num_filters*16,
+    ],
+    [
+        _base_num_filters*4,
+        _base_num_filters*8,
+        _base_num_filters*16,
+    ],
+    [
+        _base_num_filters*4,
+        _base_num_filters*8,
+        _base_num_filters*16,
+    ],
+]
 ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic.block = deepcopy(multi_scopic_block)
-ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic_leadwise = deepcopy(multi_scopic_leadwise)
-ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic_leadwise.block = deepcopy(multi_scopic_block)
+# ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic_leadwise = deepcopy(multi_scopic_leadwise)
+# ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic_leadwise.block = deepcopy(multi_scopic_block)
 
 
 ECG_SEQ_LAB_NET_CONFIG.rnn = ED()

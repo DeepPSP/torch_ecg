@@ -29,6 +29,7 @@ from easydict import EasyDict as ED
 from ...cfg import Cfg
 from ...utils.utils_nn import compute_conv_output_shape
 from ...utils.misc import dict_to_str
+from ...model_configs import ECG_SEQ_LAB_NET_CONFIG
 from ..nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
@@ -408,7 +409,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:dict) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -429,7 +430,8 @@ class ECG_SEQ_LAB_NET(nn.Module):
         self.n_classes = len(classes)
         self.n_leads = n_leads
         self.input_len = input_len
-        self.config = ED(deepcopy(config))
+        self.config = ED(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
+        self.config.update(config or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
