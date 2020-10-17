@@ -14,6 +14,7 @@ __all__ = [
     "extend_predictions",
     "compute_output_shape",
     "compute_conv_output_shape",
+    "compute_deconv_output_shape",
     "compute_maxpool_output_shape",
     "compute_avgpool_output_shape",
 ]
@@ -120,11 +121,28 @@ def compute_output_shape(layer_type:str, input_shape:Sequence[Union[int, type(No
     dim = len(input_shape) - 2
     assert dim > 0, "input_shape should be a sequence of length at least 3, to be a valid (with batch and channel) shape of a non-degenerate Tensor"
 
-    none_dim_msg = "only batch and channel dimension can be `None`"
+    # none_dim_msg = "only batch and channel dimension can be `None`"
+    # if channel_last:
+    #     assert all([n is not None for n in input_shape[1:-1]]), none_dim_msg
+    # else:
+    #     assert all([n is not None for n in input_shape[2:]]), none_dim_msg
+    none_dim_msg = "spatial dimensions should be all `None`, or all not `None`"
     if channel_last:
-        assert all([n is not None for n in input_shape[1:-1]]), none_dim_msg
+        if all([n is None for n in input_shape[1:-1]]):
+            if out_channels is None:
+                raise ValueError("out channel dimension and spatial dimensions are all `None`")
+            output_shape = tuple(input_shape[:-1] + [out_channels])
+            return output_shape
+        elif any([n is None for n in input_shape[1:-1]]):
+            raise ValueError(none_dim_msg)
     else:
-        assert all([n is not None for n in input_shape[2:]]), none_dim_msg
+        if all([n is None for n in input_shape[2:]]):
+            if out_channels is None:
+                raise ValueError("out channel dimension and spatial dimensions are all `None`")
+            output_shape = tuple([input_shape[0], out_channels] + input_shape[2:])
+            return output_shape
+        elif any([n is None for n in input_shape[2:]]):
+            raise ValueError(none_dim_msg)
 
     if isinstance(kernel_size, int):
         _kernel_size = list(repeat(kernel_size, dim))
@@ -326,7 +344,7 @@ def compute_deconv_output_shape(input_shape:Sequence[Union[int, type(None)]], nu
 
 
 def intervals_iou(itv_a:Tensor, itv_b:Tensor, iou_type="iou") -> Tensor:
-    """ NOT finished,
+    """ NOT finished, NOT checked,
 
     1d analogue of the 2d bounding boxes IoU,
     for 1d "object detection" models
