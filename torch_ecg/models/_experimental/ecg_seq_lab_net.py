@@ -424,10 +424,14 @@ class ECG_SEQ_LAB_NET(nn.Module):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
+        NOTE that classes includes the background (isoelectic) parts,
+        hence out channels be 1 if number of classes is 2 (e.g. for R peak detection)
         """
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)
+        self.__out_channels = len(classes) if len(classes) > 2 else 1
         self.n_leads = n_leads
         self.input_len = input_len
         self.config = ED(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
@@ -470,7 +474,8 @@ class ECG_SEQ_LAB_NET(nn.Module):
                 rnn_output_shape = self.rnn.compute_output_shape(__debug_seq_len, batch_size=None)
             print(f"rnn output shape (seq_len, batch_size, features) = {rnn_output_shape}, given input seq_len = {__debug_seq_len}")
 
-        self.pool = nn.AdaptiveAvgPool1d((1,))
+        # SEBlock already has `AdaptiveAvgPool1d`
+        # self.pool = nn.AdaptiveAvgPool1d((1,))
 
         if self.config.attn.name.lower() == "se":
             self.attn = SEBlock(
@@ -487,7 +492,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
         if self.__DEBUG__:
             print(f"configs of attn are {dict_to_str(self.config.attn)}")
 
-        clf_out_channels = self.config.clf.out_channels + [self.n_classes]
+        clf_out_channels = self.config.clf.out_channels + [self.__out_channels]
         self.clf = SeqLin(
             in_channels=clf_input_size,
             out_channels=clf_out_channels,
@@ -519,16 +524,20 @@ class ECG_SEQ_LAB_NET(nn.Module):
             rnn_output = rnn_output.permute(1,2,0)  # (batch_size, channels, seq_len)
         else:
             rnn_output = cnn_output
-        x = self.pool(rnn_output)  # (batch_size, channels, 1)
-        x = x.squeeze(-1)  # (batch_size, channels)
 
         # attention
-        x = self.attn(x)  # (batch_size, channels)
-        x = x.unsqueeze(-1)  # (batch_size, channels, 1)
-        x = rnn_output * x  # (batch_size, channels, seq_len)
+        x = self.attn(rnn_output)  # (batch_size, channels, seq_len)
         x = x.permute(0,2,1)  # (batch_size, seq_len, channels)
-        ouput = self.clf(x)
+
+        # classify
+        output = self.clf(x)
+
         return output
+
+    # inference will not be included in the model itself
+    # as it is strongly related to the usage scenario
+    # @torch.no_grad()
+    # def inference(self, input:Union[np.ndarray,Tensor]) -> np.ndarray:
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ NOT finished, NOT checked,

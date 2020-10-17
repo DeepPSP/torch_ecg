@@ -3,6 +3,7 @@ UNet structure models,
 mainly for ECG wave delineation
 
 References:
+-----------
 [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
 [2] https://github.com/milesial/Pytorch-UNet/
 
@@ -171,13 +172,23 @@ class DownDoubleConv(nn.Sequential):
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """
+        """ finished, NOT checked,
+        
+        Paramters:
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         out = super().forward(input)
         return out
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, checked,
+        """ finished, NOT checked,
 
         Parameters:
         -----------
@@ -299,9 +310,16 @@ class UpDoubleConv(nn.Module):
         Parameters:
         -----------
         input: Tensor,
-            input tensor from the previous layer
+            input tensor from the previous layer,
+            of shape (batch_size, n_channels, seq_len)
         down_output:Tensor: Tensor,
-            input tensor of the last layer of corr. down block
+            input tensor of the last layer of corr. down block,
+            of shape (batch_size, n_channels', seq_len')
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels'', seq_len')
         """
         output = self.up(input)
         output = self.zero_pad(output)
@@ -315,7 +333,7 @@ class UpDoubleConv(nn.Module):
         return output
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, checked,
+        """ finished, NOT checked,
 
         Parameters:
         -----------
@@ -327,7 +345,7 @@ class UpDoubleConv(nn.Module):
         Returns:
         --------
         output_shape: sequence,
-            the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
+            the output shape of this `UpDoubleConv` layer, given `seq_len` and `batch_size`
         """
         _sep_len = seq_len
         if self.__mode == 'deconv':
@@ -356,7 +374,14 @@ class UpDoubleConv(nn.Module):
 
 
 class ECG_UNET(nn.Module):
-    """
+    """ finished, NOT checked,
+
+    UNet for (multi-lead) ECG wave delineation
+
+    References:
+    -----------
+    [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
+    [2] https://github.com/milesial/Pytorch-UNet/
     """
     __DEBUG__ = True
     __name__ = "ECG_UNET"
@@ -373,10 +398,14 @@ class ECG_UNET(nn.Module):
         config: dict,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+        
+        NOTE that classes includes the background (isoelectic) parts,
+        hence out channels be 1 if number of classes is 2 (e.g. for R peak detection)
         """
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)  # final out_channels
+        self.__out_channels = len(classes) if len(classes) > 2 else 1
         self.__in_channels = n_leads
         self.config = ED(deepcopy(config))
         if self.__DEBUG__:
@@ -441,7 +470,7 @@ class ECG_UNET(nn.Module):
 
         self.out_conv = Conv_Bn_Activation(
             in_channels=self.config.up_num_filters[-1],
-            out_channels=self.n_classes,
+            out_channels=self.__out_channels,
             kernel_size=self.config.out_filter_length,
             stride=1,
             groups=self.config.groups,
@@ -456,11 +485,17 @@ class ECG_UNET(nn.Module):
             print(f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}")
 
     def forward(self, input:Tensor) -> Tensor:
-        """
+        """ finished, NOT checked,
+
         Parameters:
         -----------
         input: Tensor,
-            of shape (batch_size, channels, seq_len)
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         to_concat = [self.init_conv(input)]
         if self.__DEBUG__:
@@ -482,13 +517,14 @@ class ECG_UNET(nn.Module):
 
         return output
 
+    @torch.no_grad()
     def inference(self, input:Tensor) -> Tensor:
-        """
+        """ NOT finished, NOT checked,
         """
         raise NotImplementedError
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, checked,
+        """ finished, NOT checked,
 
         Parameters:
         -----------

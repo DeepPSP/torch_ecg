@@ -407,7 +407,9 @@ class UpTripleConv(nn.Module):
 
 
 class ECG_SUBTRACT_UNET(nn.Module):
-    """
+    """ finished, NOT checked,
+
+    entry 0433 of CPSC2019
     """
     __DEBUG__ = True
     __name__ = "ECG_SUBTRACT_UNET"
@@ -424,6 +426,9 @@ class ECG_SUBTRACT_UNET(nn.Module):
         config: dict,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
+        NOTE that classes includes the background (isoelectic) parts,
+        hence out channels be 1 if number of classes is 2 (e.g. for R peak detection)
         """
         super().__init__()
         self.classes = list(classes)
@@ -535,7 +540,17 @@ class ECG_SUBTRACT_UNET(nn.Module):
             print(f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}")
 
     def forward(self, input:Tensor) -> Tensor:
-        """
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         if self.config.init_batch_norm:
             x = self.init_bn(input)
@@ -568,8 +583,9 @@ class ECG_SUBTRACT_UNET(nn.Module):
 
         return output
 
+    @torch.no_grad()
     def inference(self, input:Tensor) -> Tensor:
-        """
+        """ NOT finished, NOT checked,
         """
         raise NotImplementedError
 
@@ -590,3 +606,11 @@ class ECG_SUBTRACT_UNET(nn.Module):
         """
         output_shape = (batch_size, self.n_classes, seq_len)
         return output_shape
+
+    @property
+    def module_size(self) -> int:
+        """
+        """
+        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
+        n_params = sum([np.prod(p.size()) for p in module_parameters])
+        return n_params

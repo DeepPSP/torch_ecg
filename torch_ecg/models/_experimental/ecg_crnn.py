@@ -1476,14 +1476,14 @@ class ECG_CRNN(nn.Module):
         return pred
 
     @torch.no_grad()
-    def inference(self, input:Tensor, class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+    def inference(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """ finished, checked,
 
         auxiliary function to `forward`, for CINC2020,
 
         Parameters:
         -----------
-        input: Tensor,
+        input: ndarray or Tensor,
             input tensor, of shape (batch_size, channels, seq_len)
         class_names: bool, default False,
             if True, the returned scalar predictions will be a `DataFrame`,
@@ -1504,7 +1504,14 @@ class ECG_CRNN(nn.Module):
             nsr_cid = self.classes.index("426783006")
         else:
             nsr_cid = None
-        pred = self.forward(input)
+        if isinstance(input, np.ndarray):
+            if torch.cuda.is_available():
+                _input = torch.from_numpy(input).to(torch.device("cuda"))
+            else:
+                _input = torch.from_numpy(input).to(torch.device("cpu"))
+        else:
+            _input = input
+        pred = self.forward(_input)
         pred = self.sigmoid(pred)
         bin_pred = (pred>=bin_pred_thr).int()
         pred = pred.cpu().detach().numpy()
