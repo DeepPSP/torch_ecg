@@ -439,13 +439,13 @@ class ECG_SEQ_LAB_NET(nn.Module):
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
-        __debug_seq_len = 4000
+        __debug_seq_len = self.input_len or 4000
         
         # currently, the CNN part only uses `MultiScopicCNN`
         # can be 'multi_scopic' or 'multi_scopic_leadwise'
         cnn_choice = self.config.cnn.name.lower()
         self.cnn = MultiScopicCNN(self.n_leads, **(self.config.cnn[cnn_choice]))
-        rnn_input_size = self.cnn.compute_output_shape(__debug_seq_len, batch_size=None)[1]
+        rnn_input_size = self.cnn.compute_output_shape(self.input_len, batch_size=None)[1]
 
         if self.__DEBUG__:
             cnn_output_shape = self.cnn.compute_output_shape(__debug_seq_len, batch_size=None)
