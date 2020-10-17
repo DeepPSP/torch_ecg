@@ -408,13 +408,18 @@ class ECG_SEQ_LAB_NET(nn.Module):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET"
 
-    def __init__(self, classes:Sequence[str], config:dict) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:dict) -> NoReturn:
         """ finished, checked,
 
         Parameters:
         -----------
         classes: list,
             list of the classes for sequence labeling
+        n_leads: int,
+            number of leads (number of input channels)
+        input_len: int, optional,
+            sequence length (last dim.) of the input,
+            will not be used in the inference mode
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
@@ -422,7 +427,8 @@ class ECG_SEQ_LAB_NET(nn.Module):
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)
-        self.n_leads = 12
+        self.n_leads = n_leads
+        self.input_len = input_len
         self.config = ED(deepcopy(config))
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")

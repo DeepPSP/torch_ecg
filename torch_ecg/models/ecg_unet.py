@@ -429,7 +429,7 @@ class ECG_UNET(nn.Module):
         classes: sequence of int,
             name of the classes
         n_leads: int,
-            number of input leads
+            number of input leads (number of input channels)
         config: dict,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file

@@ -1164,7 +1164,7 @@ class ECG_CRNN(nn.Module):
     __DEBUG__ = True
     __name__ = 'ECG_CRNN'
 
-    def __init__(self, classes:Sequence[str], input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -1173,8 +1173,9 @@ class ECG_CRNN(nn.Module):
             list of the classes for classification
         input_len: int, optional,
             sequence length (last dim.) of the input,
-            defaults to `ModelCfg.dl_siglen`,
             will not be used in the inference mode
+        n_leads: int,
+            number of leads (number of input channels)
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
@@ -1182,8 +1183,8 @@ class ECG_CRNN(nn.Module):
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)
-        self.n_leads = 12
-        self.input_len = input_len or ModelCfg.dl_siglen
+        self.n_leads = n_leads
+        self.input_len = input_len
         self.config = deepcopy(ECG_CRNN_CONFIG)
         self.config.update(config or {})
         if self.__DEBUG__:
