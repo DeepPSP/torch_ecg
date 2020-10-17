@@ -16,29 +16,29 @@ ECG_YOLO_CONFIG = ED()
 
 
 ECG_YOLO_CONFIG.cnn = ED()
-ECG_CRNN_CONFIG.cnn.name = "resnet_gc"
+ECG_YOLO_CONFIG.cnn.name = "resnet_gc"
 
 
-ECG_CRNN_CONFIG.cnn.resnet_gc = ED()
+ECG_YOLO_CONFIG.cnn.resnet_gc = ED()
 
-ECG_CRNN_CONFIG.cnn.resnet_gc.increase_channels_method = "conv"
-ECG_CRNN_CONFIG.cnn.resnet_gc.subsample_mode = "conv"
+ECG_YOLO_CONFIG.cnn.resnet_gc.increase_channels_method = "conv"
+ECG_YOLO_CONFIG.cnn.resnet_gc.subsample_mode = "conv"
 
-ECG_CRNN_CONFIG.cnn.resnet_gc.gc = ED()
-ECG_CRNN_CONFIG.cnn.resnet_gc.gc.ratio = 16
-ECG_CRNN_CONFIG.cnn.resnet_gc.gc.reduction = True
-ECG_CRNN_CONFIG.cnn.resnet_gc.gc.pooling_type = "attn"
-ECG_CRNN_CONFIG.cnn.resnet_gc.gc.fusion_types = ["mul",]
+ECG_YOLO_CONFIG.cnn.resnet_gc.gc = ED()
+ECG_YOLO_CONFIG.cnn.resnet_gc.gc.ratio = 16
+ECG_YOLO_CONFIG.cnn.resnet_gc.gc.reduction = True
+ECG_YOLO_CONFIG.cnn.resnet_gc.gc.pooling_type = "attn"
+ECG_YOLO_CONFIG.cnn.resnet_gc.gc.fusion_types = ["mul",]
 
 
-ECG_CRNN_CONFIG.stage = ED()
-ECG_CRNN_CONFIG.stage.resnet_gc = ED()
+ECG_YOLO_CONFIG.stage = ED()
+ECG_YOLO_CONFIG.stage.resnet_gc = ED()
 
-ECG_CRNN_CONFIG.stage.resnet_gc.increase_channels_method = "conv"
-ECG_CRNN_CONFIG.stage.resnet_gc.subsample_mode = "conv"
+ECG_YOLO_CONFIG.stage.resnet_gc.increase_channels_method = "conv"
+ECG_YOLO_CONFIG.stage.resnet_gc.subsample_mode = "conv"
 
-ECG_CRNN_CONFIG.stage.resnet_gc.gc = ED()
-ECG_CRNN_CONFIG.stage.resnet_gc.gc.ratio = 16
-ECG_CRNN_CONFIG.stage.resnet_gc.gc.reduction = True
-ECG_CRNN_CONFIG.stage.resnet_gc.gc.pooling_type = "attn"
-ECG_CRNN_CONFIG.stage.resnet_gc.gc.fusion_types = ["mul",]
+ECG_YOLO_CONFIG.stage.resnet_gc.gc = ED()
+ECG_YOLO_CONFIG.stage.resnet_gc.gc.ratio = 16
+ECG_YOLO_CONFIG.stage.resnet_gc.gc.reduction = True
+ECG_YOLO_CONFIG.stage.resnet_gc.gc.pooling_type = "attn"
+ECG_YOLO_CONFIG.stage.resnet_gc.gc.fusion_types = ["mul",]
