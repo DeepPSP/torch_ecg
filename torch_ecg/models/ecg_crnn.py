@@ -19,6 +19,8 @@ from easydict import EasyDict as ED
 
 from ..cfg import Cfg
 from ..model_configs import ECG_CRNN_CONFIG
+from ..utils.utils_nn import compute_conv_output_shape
+from ..utils.misc import dict_to_str
 from .nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
@@ -31,8 +33,6 @@ from .nets import (
     AttentivePooling,
     SeqLin,
 )
-from ..utils.utils_nn import compute_conv_output_shape
-from ..utils.misc import dict_to_str
 
 if Cfg.torch_dtype.lower() == 'double':
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -172,7 +172,7 @@ class VGGBlock(nn.Sequential):
 class VGG16(nn.Sequential):
     """ finished, checked,
 
-    CNN feature extractor of the CRNN models proposed in refs of `ATI_CNN`
+    CNN feature extractor of the CRNN models proposed in refs of `ECG_CRNN`
     """
     __DEBUG__ = False
     __name__ = "VGG16"
@@ -320,7 +320,7 @@ class ResNetBasicBlock(nn.Module):
                     out_channels=self.__out_channels,
                     kernel_size=self.__kernel_size,
                     stride=(self.__stride if i == 0 else 1),
-                    groups = self.__groups,
+                    groups=self.__groups,
                     batch_norm=True,
                     activation=conv_activation,
                     kw_activation=self.config.kw_activation,
@@ -600,7 +600,7 @@ class CPSCBlock(nn.Sequential):
     __name__ = "CPSCBlock"
 
     def __init__(self, in_channels:int, num_filters:int, filter_lengths:Sequence[int], subsample_lengths:Sequence[int], dropout:Optional[float]=None, **config) -> NoReturn:
-        """  finished, checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -713,7 +713,7 @@ class CPSCCNN(nn.Sequential):
 
     CNN part of the SOTA model of the CPSC2018 challenge
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "CPSCCNN"
 
     def __init__(self, in_channels:int, **config) -> NoReturn:
@@ -800,7 +800,7 @@ class CPSCCNN(nn.Sequential):
 class MultiScopicBasicBlock(nn.Sequential):
     """ finished, checked,
 
-    basic building block of the CNN part of the SOTA model 
+    basic building block of the CNN part of the SOTA model
     from CPSC2019 challenge (entry 0416)
 
     (conv -> activation) * N --> bn --> down_sample
@@ -1171,11 +1171,11 @@ class ECG_CRNN(nn.Module):
         -----------
         classes: list,
             list of the classes for classification
+        n_leads: int,
+            number of leads (number of input channels)
         input_len: int, optional,
             sequence length (last dim.) of the input,
             will not be used in the inference mode
-        n_leads: int,
-            number of leads (number of input channels)
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
@@ -1213,9 +1213,9 @@ class ECG_CRNN(nn.Module):
         if self.config.rnn.name.lower() == 'none':
             self.rnn = None
             _, clf_input_size, _ = self.cnn.compute_output_shape(self.input_len, batch_size=None)
-            self.max_pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+            self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
         elif self.config.rnn.name.lower() == 'linear':
-            self.max_pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+            self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
             self.rnn = SeqLin(
                 in_channels=rnn_input_size,
                 out_channels=self.config.rnn.linear.out_channels,
@@ -1237,9 +1237,9 @@ class ECG_CRNN(nn.Module):
                 return_sequences=self.config.rnn.lstm.retseq,
             )
             if self.config.rnn.lstm.retseq:
-                self.max_pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+                self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
             else:
-                self.max_pool = None
+                self.pool = None
             clf_input_size = self.rnn.compute_output_shape(None,None)[-1]
         elif self.config.rnn.name.lower() == 'attention':
             hidden_sizes = self.config.rnn.attention.hidden_sizes
@@ -1262,7 +1262,7 @@ class ECG_CRNN(nn.Module):
                     bias=self.config.rnn.attention.bias,
                 )
             )
-            self.max_pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+            self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
             clf_input_size = self.rnn[-1].compute_output_shape(None,None)[-1]
         else:
             raise NotImplementedError
@@ -1295,10 +1295,10 @@ class ECG_CRNN(nn.Module):
             # (batch_size, channels, seq_len) -> (seq_len, batch_size, input_size)
             x = x.permute(2,0,1)
             x = self.rnn(x)
-            if self.max_pool:
+            if self.pool:
                 # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
                 x = x.permute(1,2,0)
-                x = self.max_pool(x)  # (batch_size, channels, 1)
+                x = self.pool(x)  # (batch_size, channels, 1)
                 # x = torch.flatten(x, start_dim=1)  # (batch_size, channels)
                 x = x.squeeze(dim=-1)
             else:
@@ -1307,14 +1307,14 @@ class ECG_CRNN(nn.Module):
             # print(f"rnn out shape = {x.shape}")
         elif self.config.rnn.name.lower() in ['linear']:
             # (batch_size, channels, seq_len) --> (batch_size, channels)
-            x = self.max_pool(x)
+            x = self.pool(x)
             x = x.squeeze(dim=-1)
             # seq_lin
             x = self.rnn(x)
         else:  # 'none'
             # (batch_size, channels, seq_len) --> (batch_size, channels)
-            x = self.max_pool(x)
-            # print(f"max_pool out shape = {x.shape}")
+            x = self.pool(x)
+            # print(f"pool out shape = {x.shape}")
             # x = torch.flatten(x, start_dim=1)
             x = x.squeeze(dim=-1)
         # print(f"clf in shape = {x.shape}")
@@ -1322,14 +1322,14 @@ class ECG_CRNN(nn.Module):
         return pred
 
     @torch.no_grad()
-    def inference(self, input:Tensor, class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+    def inference_CINC2020(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """ finished, checked,
 
         auxiliary function to `forward`, for CINC2020,
 
         Parameters:
         -----------
-        input: Tensor,
+        input: ndarray or Tensor,
             input tensor, of shape (batch_size, channels, seq_len)
         class_names: bool, default False,
             if True, the returned scalar predictions will be a `DataFrame`,
@@ -1344,13 +1344,21 @@ class ECG_CRNN(nn.Module):
         bin_pred: ndarray,
             the array (with values 0, 1 for each class) of binary prediction
         """
+        from torch_ecg.train.train_crnn.cfg import ModelCfg
         if "NSR" in self.classes:
             nsr_cid = self.classes.index("NSR")
         elif "426783006" in self.classes:
             nsr_cid = self.classes.index("426783006")
         else:
             nsr_cid = None
-        pred = self.forward(input)
+        if isinstance(input, np.ndarray):
+            if torch.cuda.is_available():
+                _input = torch.from_numpy(input).to(torch.device("cuda"))
+            else:
+                _input = torch.from_numpy(input).to(torch.device("cpu"))
+        else:
+            _input = input
+        pred = self.forward(_input)
         pred = self.sigmoid(pred)
         bin_pred = (pred>=bin_pred_thr).int()
         pred = pred.cpu().detach().numpy()

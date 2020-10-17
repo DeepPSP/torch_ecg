@@ -19,7 +19,7 @@ from easydict import EasyDict as ED
 
 from ...cfg import Cfg
 from ...model_configs import ECG_CRNN_CONFIG
-from ...model_configs.cpsc import CPSC_CONFIG
+# from ...model_configs.cpsc import CPSC_CONFIG
 from ...utils.utils_nn import compute_conv_output_shape
 from ...utils.misc import dict_to_str
 from ..nets import (
@@ -1476,7 +1476,7 @@ class ECG_CRNN(nn.Module):
         return pred
 
     @torch.no_grad()
-    def inference(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+    def inference_CINC2020(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """ finished, checked,
 
         auxiliary function to `forward`, for CINC2020,
@@ -1498,6 +1498,7 @@ class ECG_CRNN(nn.Module):
         bin_pred: ndarray,
             the array (with values 0, 1 for each class) of binary prediction
         """
+        from torch_ecg.train.train_crnn.cfg import ModelCfg
         if "NSR" in self.classes:
             nsr_cid = self.classes.index("NSR")
         elif "426783006" in self.classes:
