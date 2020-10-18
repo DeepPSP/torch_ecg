@@ -77,17 +77,23 @@ __all__ = [
 ]
 
 
-def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, logger:Optional[logging.Logger]=None, debug:bool=False):
+def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, logger:Optional[logging.Logger]=None, debug:bool=False) -> NoReturn:
     """ finished, checked,
 
     Parameters:
     -----------
     model: Module,
+        the model to train
     device: torch.device,
+        device on which the model trains
     config: dict,
+        configurations of training, ref. `ModelCfg`, `TrainCfg`, etc.
     log_step: int, default 20,
+        number of training steps between loggings
     logger: Logger, optional,
     debug: bool, default False,
+        if True, the training set itself would be evaluated 
+        to check if the model really learns from the training set
     """
     print(f"training configurations are as follows:\n{dict_to_str(config)}")
 

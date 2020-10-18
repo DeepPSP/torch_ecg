@@ -61,13 +61,14 @@ class CPSC2019(Dataset):
         """
         rec = self.records[index]
         raise NotImplementedError
-        return values, labels
+        # return values, labels
 
 
     def __len__(self) -> int:
         """
         """
-        return len(self.records)
+        raise NotImplementedError
+        # return len(self.records)
 
 
     def disable_data_augmentation(self) -> NoReturn:

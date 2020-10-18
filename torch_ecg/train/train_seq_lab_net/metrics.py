@@ -40,7 +40,7 @@ def compute_metrics(rpeaks_truth:Sequence[Union[np.ndarray,Sequence[int]]], rpea
     assert len(rpeaks_truth) == len(rpeaks_pred), \
         f"number of records does not match, truth indicates {len(rpeaks_truth)}, while pred indicates {len(rpeaks_pred)}"
     n_records = len(rpeaks_truth)
-    record_flags = np.ones((len(rpeaks_truth),))
+    record_flags = np.ones((len(rpeaks_truth),), dtype=float)
     thr_ = thr * fs
     if verbose >= 1:
         print(f"number of records = {n_records}")
@@ -49,16 +49,17 @@ def compute_metrics(rpeaks_truth:Sequence[Union[np.ndarray,Sequence[int]]], rpea
         false_negative = 0
         false_positive = 0
         true_positive = 0
-        extended_truth_arr = np.concatenate((truth_arr, [int(9.5*fs)]))
-        for j, ta in enumerate(extended_truth_arr[:-1]):
-            loc = np.where(np.abs(pred_arr - ta) <= thr_)[0]
+        extended_truth_arr = np.concatenate((truth_arr.astype(int), [int(9.5*fs)]))
+        for j, t_ind in enumerate(extended_truth_arr[:-1]):
+            next_t_ind = extended_truth_arr[j+1]
+            loc = np.where(np.abs(pred_arr - t_ind) <= thr_)[0]
             if j == 0:
-                err = np.where((pred_arr >= 0.5*fs + thr_) & (pred_arr <= ta - thr_))[0]
+                err = np.where((pred_arr >= 0.5*fs + thr_) & (pred_arr <= t_ind - thr_))[0]
             else:
                 err = np.array([], dtype=int)
             err = np.append(
                 err,
-                np.where((pred_arr >= ta+thr_) & (pred_arr <= extended_truth_arr[j+1]-thr_))[0]
+                np.where((pred_arr >= t_ind+thr_) & (pred_arr <= next_t_ind-thr_))[0]
             )
 
             false_positive += len(err)
@@ -108,6 +109,7 @@ def score(r_ref, hr_ref, r_ans, hr_ans, fs_, thr_):
         elif hr_der <= 0.2 * hr_ref[i]:
             HR_score = HR_score + 0.25
 
+        r_ref[i] = r_ref[i].astype(int)  # added by wenh06
         for j in range(len(r_ref[i])):
             loc = np.where(np.abs(r_ans[i] - r_ref[i][j]) <= thr_*fs_)[0]
             if j == 0:
@@ -141,7 +143,7 @@ def score(r_ref, hr_ref, r_ans, hr_ans, fs_, thr_):
     rec_acc = round(np.sum(record_flags) / len(r_ref), 4)
     hr_acc = round(HR_score / len(r_ref), 4)
 
-    print( 'QRS_acc: {}'.format(rec_acc))
+    print('QRS_acc: {}'.format(rec_acc))
     print('HR_acc: {}'.format(hr_acc))
     print('Scoring complete.')
 
