@@ -21,8 +21,9 @@ from torch.utils.data import DataLoader
 import torch.nn.functional as F
 from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
+import biosppy.signals.ecg as BSE
 
-from ...models.ecg_crnn import ECG_CRNN
+from ...models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
 from ...models.nets import (
     BCEWithLogitsWithClassWeightLoss,
     default_collate_fn as collate_fn,
@@ -31,6 +32,7 @@ from ...model_configs import ECG_SEQ_LAB_NET_CONFIG
 from ...utils.misc import init_logger, get_date_str, dict_to_str, str2bool
 from .cfg import ModelCfg, TrainCfg
 from .dataset import CPSC2019
+from .metrics import compute_metrics
 
 if ModelCfg.torch_dtype.lower() == 'double':
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -156,3 +158,134 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
     else:
         raise NotImplementedError("lr scheduler `{config.lr_scheduler.lower()}` not implemented for training")
     raise NotImplementedError
+
+
+@torch.no_grad()
+def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=False) -> Tuple[float]:
+    """ finished, checked,
+
+    Parameters:
+    -----------
+    model: Module,
+        the model to evaluate
+    data_loader: DataLoader,
+        the data loader for loading data for evaluation
+    config: dict,
+        evaluation configurations
+    device: torch.device,
+        device for evaluation
+    debug: bool, default False
+
+    Returns:
+    --------
+    eval_res: tuple of float,
+        evaluation results, including
+        auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric
+    """
+    raise NotImplementedError
+
+
+def get_args(**kwargs):
+    """
+    """
+    cfg = deepcopy(kwargs)
+    parser = argparse.ArgumentParser(
+        description='Train the Model on CINC2020',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    # parser.add_argument(
+    #     '-l', '--learning-rate',
+    #     metavar='LR', type=float, nargs='?', default=0.001,
+    #     help='Learning rate',
+    #     dest='learning_rate')
+    parser.add_argument(
+        '-b', '--batch-size',
+        type=int, default=128,
+        help='the batch size for training',
+        dest='batch_size')
+    parser.add_argument(
+        '-c', '--cnn-name',
+        type=str, default='resnet',
+        help='choice of cnn feature extractor',
+        dest='cnn_name')
+    parser.add_argument(
+        '-r', '--rnn-name',
+        type=str, default='lstm',
+        help='choice of rnn structures',
+        dest='rnn_name')
+    parser.add_argument(
+        '-a', '--attn-name',
+        type=str, default='se',
+        help='choice of attention block',
+        dest='attn_name')
+    parser.add_argument(
+        '--keep-checkpoint-max', type=int, default=20,
+        help='maximum number of checkpoints to keep. If set 0, all checkpoints will be kept',
+        dest='keep_checkpoint_max')
+    parser.add_argument(
+        '--optimizer', type=str, default='adam',
+        help='training optimizer',
+        dest='train_optimizer')
+    parser.add_argument(
+        '--debug', type=str2bool, default=False,
+        help='train with more debugging information',
+        dest='debug')
+    
+    args = vars(parser.parse_args())
+
+    cfg.update(args)
+    
+    return ED(cfg)
+
+
+
+DAS = True  # JD DAS platform
+
+if __name__ == "__main__":
+    config = get_args(**TrainCfg)
+    # os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
+    if not DAS:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    else:
+        device = torch.device('cuda')
+    logger = init_logger(log_dir=config.log_dir)
+    logger.info(f"\n{'*'*20}   Start Training   {'*'*20}\n")
+    logger.info(f'Using device {device}')
+    logger.info(f"Using torch of version {torch.__version__}")
+    logger.info(f'with configuration\n{dict_to_str(config)}')
+    print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
+    print(f'Using device {device}')
+    print(f"Using torch of version {torch.__version__}")
+    print(f'with configuration\n{dict_to_str(config)}')
+
+    model_config = deepcopy(ECG_SEQ_LAB_NET_CONFIG)
+    model_config.cnn.name = config.cnn_name
+    model_config.rnn.name = config.rnn_name
+    model_config.attn.name = config.attn_name
+
+    model = ECG_SEQ_LAB_NET(
+        classes=config.classes,
+        n_leads=config.n_leads,
+        input_len=config.input_len,
+        config=model_config,
+    )
+
+    if not DAS and torch.cuda.device_count() > 1:
+        model = torch.nn.DataParallel(model)
+
+    model.to(device=device)
+
+    try:
+        train(
+            model=model,
+            config=config,
+            device=device,
+            logger=logger,
+            debug=config.debug,
+        )
+    except KeyboardInterrupt:
+        torch.save(model.state_dict(), os.path.join(config.checkpoints, 'INTERRUPTED.pth'))
+        logger.info('Saved interrupt')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)

@@ -514,7 +514,12 @@ if __name__ == "__main__":
     model_config.cnn.name = config.cnn_name
     model_config.rnn.name = config.rnn_name
 
-    model = ECG_CRNN(classes=classes, config=model_config)
+    model = ECG_CRNN(
+        classes=classes,
+        n_leads=config.n_leads,
+        input_len=config.input_len,
+        config=model_config,
+    )
 
     if not DAS and torch.cuda.device_count() > 1:
         model = torch.nn.DataParallel(model)

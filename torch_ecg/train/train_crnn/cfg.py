@@ -92,6 +92,7 @@ PlotCfg.t_offset = 60
 ModelCfg = ED()
 ModelCfg.fs = 500
 ModelCfg.spacing = 1000 / ModelCfg.fs
+ModelCfg.n_leads = 12
 ModelCfg.bin_pred_thr = 0.5
 # `bin_pred_look_again_tol` is used when no prob is greater than `bin_pred_thr`,
 # then the prediction would be the one with the highest prob.,
@@ -122,6 +123,7 @@ TrainCfg.keep_checkpoint_max = 20
 
 # configs of training data
 TrainCfg.fs = ModelCfg.fs
+TrainCfg.n_leads = ModelCfg.n_leads
 TrainCfg.data_format = "channel_first"
 TrainCfg.special_classes = ModelCfg.special_classes.copy()
 TrainCfg.normalize_data = True

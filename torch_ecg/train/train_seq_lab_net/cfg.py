@@ -22,6 +22,9 @@ ModelCfg = ED()
 ModelCfg.torch_dtype = BaseCfg.torch_dtype
 ModelCfg.fs = 500
 ModelCfg.spacing = 1000 / ModelCfg.fs
+ModelCfg.classes = ["i", "N"]  # N for qrs, i for other parts
+ModelCfg.class_map = {c:i for i,c in enumerate(ModelCfg.classes)}
+ModelCfg.n_leads = 1
 
 
 TrainCfg = ED()
@@ -46,6 +49,11 @@ TrainCfg.lr_gamma = 0.1
 
 TrainCfg.momentum = 0.949
 TrainCfg.decay = 0.0005
+
+TrainCfg.input_len = int(TrainCfg.fs * 10)  # 10 s
+TrainCfg.classes = ModelCfg.classes
+TrainCfg.class_map = ModelCfg.class_map
+TrainCfg.n_leads = ModelCfg.n_leads
 
 # configs of data aumentation
 TrainCfg.normalize_data = True
