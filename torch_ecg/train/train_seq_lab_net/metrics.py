@@ -116,7 +116,7 @@ def score(r_ref, hr_ref, r_ans, hr_ans, fs_, thr_):
                 err = np.where((r_ans[i] >= 0.5*fs_ + thr_*fs_) & (r_ans[i] <= r_ref[i][j] - thr_*fs_))[0]
             # comments by wenh06:
             # elif j == len(r_ref[i])-1:
-            # the above would mistakenly omit the interval between the 0-th and the 1-st ref rpeaks
+            # the above would falsely omit the interval between the 0-th and the 1-st ref rpeaks
             # for example for 
             # r_ref = [np.array([500, 1000])]
             # r_ans = [np.array([500, 700, 1000])]
