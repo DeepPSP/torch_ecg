@@ -15,8 +15,9 @@ import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 
+# from .data_reader import LUDBReader as LR
+from ..database_reader.database_reader.physionet_databases import LUDB as LR
 from .cfg import TrainCfg
-from .data_reader import LUDBReader as LR
 
 if TrainCfg.torch_dtype.lower() == 'double':
     torch.set_default_tensor_type(torch.DoubleTensor)
