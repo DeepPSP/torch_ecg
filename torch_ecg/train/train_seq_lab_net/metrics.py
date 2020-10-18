@@ -16,7 +16,7 @@ __all__ = [
 
 
 def compute_metrics(rpeaks_truth:Sequence[Union[np.ndarray,Sequence[int]]], rpeaks_pred:Sequence[Union[np.ndarray,Sequence[int]]], fs:Real, thr:float=0.075, verbose:int=0) -> float:
-    """ finished, NOT checked,
+    """ finished, checked,
 
     Parameters:
     -----------
@@ -49,14 +49,17 @@ def compute_metrics(rpeaks_truth:Sequence[Union[np.ndarray,Sequence[int]]], rpea
         false_negative = 0
         false_positive = 0
         true_positive = 0
-        for j in range(len(truth_arr)):
-            loc = np.where(np.abs(pred_arr - truth_arr[j]) <= thr_)[0]
+        extended_truth_arr = np.concatenate((truth_arr, [int(9.5*fs)]))
+        for j, ta in enumerate(extended_truth_arr[:-1]):
+            loc = np.where(np.abs(pred_arr - ta) <= thr_)[0]
             if j == 0:
-                err = np.where((pred_arr >= 0.5*fs + thr_) & (pred_arr <= truth_arr[j] - thr_))[0]
-            elif j == len(truth_arr)-1:
-                err = np.where((pred_arr >= truth_arr[j]+thr_) & (pred_arr <= 9.5*fs - thr_))[0]
+                err = np.where((pred_arr >= 0.5*fs + thr_) & (pred_arr <= ta - thr_))[0]
             else:
-                err = np.where((pred_arr >= truth_arr[j]+thr_) & (pred_arr <= truth_arr[j+1]-thr_))[0]
+                err = np.array([], dtype=int)
+            err = np.append(
+                err,
+                np.where((pred_arr >= ta+thr_) & (pred_arr <= extended_truth_arr[j+1]-thr_))[0]
+            )
 
             false_positive += len(err)
             if len(loc) >= 1:
@@ -76,7 +79,7 @@ def compute_metrics(rpeaks_truth:Sequence[Union[np.ndarray,Sequence[int]]], rpea
             print(f"for the {idx}-th record,\ntrue positive = {true_positive}\nfalse positive = {false_positive}\nfalse negative = {false_negative}")
 
     rec_acc = round(np.sum(record_flags) / n_records, 4)
-    print('QRS_acc: {}'.format(rec_acc))
+    print(f'QRS_acc: {rec_acc}')
     print('Scoring complete.')
 
     return rec_acc
@@ -109,7 +112,14 @@ def score(r_ref, hr_ref, r_ans, hr_ans, fs_, thr_):
             loc = np.where(np.abs(r_ans[i] - r_ref[i][j]) <= thr_*fs_)[0]
             if j == 0:
                 err = np.where((r_ans[i] >= 0.5*fs_ + thr_*fs_) & (r_ans[i] <= r_ref[i][j] - thr_*fs_))[0]
-            elif j == len(r_ref[i])-1:
+            # comments by wenh06:
+            # elif j == len(r_ref[i])-1:
+            # the above would mistakenly omit the interval between the 0-th and the 1-st ref rpeaks
+            # for example for 
+            # r_ref = [np.array([500, 1000])]
+            # r_ans = [np.array([500, 700, 1000])]
+            # a false positive is missed
+            if j == len(r_ref[i])-1:
                 err = np.where((r_ans[i] >= r_ref[i][j]+thr_*fs_) & (r_ans[i] <= 9.5*fs_ - thr_*fs_))[0]
             else:
                 err = np.where((r_ans[i] >= r_ref[i][j]+thr_*fs_) & (r_ans[i] <= r_ref[i][j+1]-thr_*fs_))[0]
