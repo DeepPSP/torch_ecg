@@ -13,9 +13,12 @@ from collections import deque
 from typing import Union, Optional, Tuple, Sequence, NoReturn
 from numbers import Real, Number
 
-from tqdm import tqdm
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
 import torch
 from torch import nn
 from torch import optim
