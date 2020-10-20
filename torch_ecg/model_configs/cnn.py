@@ -251,7 +251,8 @@ multi_scopic.filter_lengths = [
     [11, 7, 5,],
     [11, 7, 5,],
 ]
-multi_scopic.subsample_lengths = list(repeat(2, len(multi_scopic.scopes[0])))
+# subsample_lengths for each branch
+multi_scopic.subsample_lengths = list(repeat(2, len(multi_scopic.scopes)))
 _base_num_filters = 36
 multi_scopic.num_filters = [
     [
