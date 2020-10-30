@@ -131,7 +131,7 @@ def compute_output_shape(layer_type:str, input_shape:Sequence[Union[int, type(No
         if all([n is None for n in input_shape[1:-1]]):
             if out_channels is None:
                 raise ValueError("out channel dimension and spatial dimensions are all `None`")
-            output_shape = tuple(input_shape[:-1] + [out_channels])
+            output_shape = tuple(list(input_shape[:-1]) + [out_channels])
             return output_shape
         elif any([n is None for n in input_shape[1:-1]]):
             raise ValueError(none_dim_msg)
@@ -139,7 +139,7 @@ def compute_output_shape(layer_type:str, input_shape:Sequence[Union[int, type(No
         if all([n is None for n in input_shape[2:]]):
             if out_channels is None:
                 raise ValueError("out channel dimension and spatial dimensions are all `None`")
-            output_shape = tuple([input_shape[0], out_channels] + input_shape[2:])
+            output_shape = tuple([input_shape[0], out_channels] + list(input_shape[2:]))
             return output_shape
         elif any([n is None for n in input_shape[2:]]):
             raise ValueError(none_dim_msg)
@@ -180,9 +180,9 @@ def compute_output_shape(layer_type:str, input_shape:Sequence[Union[int, type(No
         raise ValueError(f"input has {dim} dimensions, while kernel has {len(dilation)} dimensions, both not including the channel dimension")
     
     if channel_last:
-        _input_shape = input_shape[1:-1]
+        _input_shape = list(input_shape[1:-1])
     else:
-        _input_shape = input_shape[2:]
+        _input_shape = list(input_shape[2:])
     
     if lt in ['deconv', 'deconvolution', 'transposeconv', 'transposeconvolution',]:
         output_shape = [
