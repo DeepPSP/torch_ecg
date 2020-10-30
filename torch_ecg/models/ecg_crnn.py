@@ -1273,8 +1273,9 @@ class ECG_CRNN(nn.Module):
         # input of `self.clf` has shape: batch_size, channels
         self.clf = nn.Linear(clf_input_size, self.n_classes)
 
-        # sigmoid for inference
-        self.sigmoid = nn.Sigmoid()  # for making inference
+        # sigmoid/softmax for inference
+        self.sigmoid = nn.Sigmoid()  # for multi-label classification
+        self.softmax = nn.Softmax(-1)  # for single-label classification
 
     def forward(self, input:Tensor) -> Tensor:
         """ finished, partly checked (rnn part might have bugs),
@@ -1322,10 +1323,8 @@ class ECG_CRNN(nn.Module):
         return pred
 
     @torch.no_grad()
-    def inference_CINC2020(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+    def inference(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """ finished, checked,
-
-        auxiliary function to `forward`, for CINC2020,
 
         Parameters:
         -----------
@@ -1344,44 +1343,7 @@ class ECG_CRNN(nn.Module):
         bin_pred: ndarray,
             the array (with values 0, 1 for each class) of binary prediction
         """
-        from torch_ecg.train.train_crnn.cfg import ModelCfg
-        if "NSR" in self.classes:
-            nsr_cid = self.classes.index("NSR")
-        elif "426783006" in self.classes:
-            nsr_cid = self.classes.index("426783006")
-        else:
-            nsr_cid = None
-        if isinstance(input, np.ndarray):
-            if torch.cuda.is_available():
-                _input = torch.from_numpy(input).to(torch.device("cuda"))
-            else:
-                _input = torch.from_numpy(input).to(torch.device("cpu"))
-        else:
-            _input = input
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        bin_pred = (pred>=bin_pred_thr).int()
-        pred = pred.cpu().detach().numpy()
-        bin_pred = bin_pred.cpu().detach().numpy()
-        for row_idx, row in enumerate(bin_pred):
-            row_max_prob = pred[row_idx,...].max()
-            if row_max_prob < ModelCfg.bin_pred_nsr_thr and nsr_cid is not None:
-                bin_pred[row_idx, nsr_cid] = 1
-            elif row.sum() == 0:
-                bin_pred[row_idx,...] = \
-                    (((pred[row_idx,...]+ModelCfg.bin_pred_look_again_tol) >= row_max_prob) & (pred[row_idx,...] >= ModelCfg.bin_pred_nsr_thr)).astype(int)
-        if class_names:
-            pred = pd.DataFrame(pred)
-            pred.columns = self.classes
-            # pred['bin_pred'] = pred.apply(
-            #     lambda row: np.array(self.classes)[np.where(row.values>=bin_pred_thr)[0]],
-            #     axis=1
-            # )
-            pred['bin_pred'] = ''
-            for row_idx in range(len(pred)):
-                pred.at[row_idx, 'bin_pred'] = \
-                    np.array(self.classes)[np.where(bin_pred==1)[0]].tolist()
-        return pred, bin_pred
+        raise NotImplementedError(f"implement a task specific inference method")
 
     @property
     def module_size(self):
