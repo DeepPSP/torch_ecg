@@ -470,7 +470,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
         if self.__DEBUG__:
             if self.rnn:
                 rnn_output_shape = self.rnn.compute_output_shape(__debug_seq_len, batch_size=None)
-            print(f"rnn output shape (seq_len, batch_size, features) = {rnn_output_shape}, given input seq_len = {__debug_seq_len}")
+                print(f"rnn output shape (seq_len, batch_size, features) = {rnn_output_shape}, given input seq_len = {__debug_seq_len}")
 
         # SEBlock already has `AdaptiveAvgPool1d`
         # self.pool = nn.AdaptiveAvgPool1d((1,))
