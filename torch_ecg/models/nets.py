@@ -1702,9 +1702,9 @@ class SeqLin(nn.Sequential):
             the output shape of this `SeqLin` layer, given `seq_len` and `batch_size`
         """
         if input_seq:
-            output_shape = (batch_size, self.__out_channels[-1])
-        else:
             output_shape = (batch_size, seq_len, self.__out_channels[-1])
+        else:
+            output_shape = (batch_size, self.__out_channels[-1])
         return output_shape
 
     @property
