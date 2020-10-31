@@ -1683,23 +1683,25 @@ class SeqLin(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None, input_seq:bool=True) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
         -----------
         seq_len: int, optional,
             length of the 1d sequence,
-            if is None, then the input is composed of single feature vectors for each batch
         batch_size: int, optional,
             the batch size, can be None
+        input_seq: bool, default True,
+            if True, the input is a sequence (Tensor of dim 3) of vectors of features,
+            otherwise a vector of features (Tensor of dim 2)
 
         Returns:
         --------
         output_shape: sequence,
             the output shape of this `SeqLin` layer, given `seq_len` and `batch_size`
         """
-        if seq_len is None:
+        if input_seq:
             output_shape = (batch_size, self.__out_channels[-1])
         else:
             output_shape = (batch_size, seq_len, self.__out_channels[-1])
@@ -1913,7 +1915,8 @@ class SEBlock(nn.Module):
         y = self.avg_pool(input).squeeze(-1)  # --> batch_size, n_channels
         y = self.fc(y).unsqueeze(-1)  # --> batch_size, n_channels, 1
         # output = input * y.expand_as(input)  # equiv. to the following
-        output = input * y
+        # (batch_size, n_channels, seq_len) x (batch_size, n_channels, 1)
+        output = input * y  # --> (batch_size, n_channels, seq_len)
         return output
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:

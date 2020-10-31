@@ -5,9 +5,9 @@ from typing import Union, Optional, Any, List, Tuple
 import numpy as np
 from easydict import EasyDict as ED
 
-from utils import dict_to_str, in_generalized_interval
-from cfg import BaseCfg
-from metrics import CPSC2020_loss, CPSC2020_score
+from .utils import dict_to_str, in_generalized_interval
+from .cfg import BaseCfg
+from .metrics import CPSC2020_loss, CPSC2020_score
 
 
 __all__ = [

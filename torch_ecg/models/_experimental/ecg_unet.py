@@ -481,6 +481,12 @@ class ECG_UNET(nn.Module):
             __debug_output_shape = self.out_conv.compute_output_shape(__debug_seq_len)
             print(f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}")
 
+        # for inference
+        # if background counted in `classes`, use softmax
+        # otherwise use sigmoid
+        self.softmax = nn.Softmax(-1)
+        self.sigmoid = nn.Sigmoid()
+
     def forward(self, input:Tensor) -> Tensor:
         """ finished, NOT checked,
 

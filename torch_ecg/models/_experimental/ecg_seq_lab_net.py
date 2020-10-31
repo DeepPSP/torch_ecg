@@ -429,6 +429,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
         self.classes = list(classes)
         self.n_classes = len(classes)
         self.__out_channels = self.n_classes
+        # self.__out_channels = self.n_classes if self.n_classes > 2 else 1
         self.n_leads = n_leads
         self.input_len = input_len
         self.config = ED(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
@@ -500,8 +501,11 @@ class ECG_SEQ_LAB_NET(nn.Module):
             skip_last_activation=True,
         )
         
-        # softmax for inference
+        # for inference
+        # if background counted in `classes`, use softmax
+        # otherwise use sigmoid
         self.softmax = nn.Softmax(-1)
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,

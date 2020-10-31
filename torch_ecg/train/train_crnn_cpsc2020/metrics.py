@@ -6,8 +6,8 @@ from typing import Union, Optional, Any, List, Tuple, Sequence
 import numpy as np
 from easydict import EasyDict as ED
 
-from utils import dict_to_str
-from cfg import BaseCfg
+from .utils import dict_to_str
+from .cfg import BaseCfg
 
 
 __all__ = [
