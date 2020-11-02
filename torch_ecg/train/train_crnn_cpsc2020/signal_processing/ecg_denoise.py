@@ -20,7 +20,7 @@ from numbers import Real
 import numpy as np
 from easydict import EasyDict as ED
 
-from utils import mask_to_intervals
+from ..utils import mask_to_intervals
 
 
 __all__ = [

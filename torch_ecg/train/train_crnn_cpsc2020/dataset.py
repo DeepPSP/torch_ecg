@@ -71,8 +71,8 @@ import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 
-from cfg import TrainCfg, ModelCfg, PreprocCfg
-from data_reader import CPSC2020Reader as CR
+from .cfg import TrainCfg, ModelCfg, PreprocCfg
+from ..database_reader.database_reader.other_databases import CPSC2020 as CR
 from signal_processing.ecg_preproc import parallel_preprocess_signal
 from signal_processing.ecg_denoise import ecg_denoise
 from .utils import (

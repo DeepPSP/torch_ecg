@@ -21,8 +21,8 @@ import numpy as np
 from scipy.io import savemat
 from easydict import EasyDict as ED
 
-from cfg import FeatureCfg
-from utils import list_sum, compute_local_average
+from ..cfg import FeatureCfg
+from ..utils import list_sum, compute_local_average
 
 
 __all__ = [
