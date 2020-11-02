@@ -5,7 +5,7 @@ import re
 
 import scipy.io as sio
 
-from .CPSC2020_challenge import *
+from CPSC2020_challenge import *
 
 
 FS = 400
@@ -81,7 +81,7 @@ def CPSC2020_score(S_refs, V_refs, S_results, V_results):
                     s_fn += 1
                 else:
                     s_tp += 1
-        s_fp += (len(s_pos) - s_tp)
+            s_fp += (len(s_pos) - s_tp)
 
         if v_ref.size == 0:
             v_fp = len(v_pos)
@@ -92,7 +92,7 @@ def CPSC2020_score(S_refs, V_refs, S_results, V_results):
                     v_fn += 1
                 else:
                     v_tp += 1
-        v_fp += (len(v_pos) - v_tp)
+            v_fp += (len(v_pos) - v_tp)
 
         # calculate the score
         s_score[i] = s_fp * (-1) + s_fn * (-5)

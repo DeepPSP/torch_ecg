@@ -34,7 +34,7 @@ def CPSC2020_loss(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray, dt
     Returns:
     --------
     total_loss: int,
-        the total loss of all ectopic beat types (SBP, PVC)
+        the total loss of all ectopic beat types (SPB, PVC)
     """
     classes = ['S', 'V']
 
@@ -80,37 +80,40 @@ def CPSC2020_loss(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray, dt
     return total_loss
 
 
-def CPSC2020_score(sbp_true:List[np.ndarray], pvc_true:List[np.ndarray], sbp_pred:List[np.ndarray], pvc_pred:List[np.ndarray], verbose:int=0) -> Union[Tuple[int],dict]:
+def CPSC2020_score(spb_true:List[np.ndarray], pvc_true:List[np.ndarray], spb_pred:List[np.ndarray], pvc_pred:List[np.ndarray], verbose:int=0) -> Union[Tuple[int],dict]:
     """ finished, checked,
 
     Score Function for all (test) records
 
     Parameters:
     -----------
-    sbp_true, pvc_true, sbp_pred, pvc_pred: list of ndarray,
+    spb_true, pvc_true, spb_pred, pvc_pred: list of ndarray,
     verbose: int
 
     Returns:
     --------
     retval: tuple or dict,
-        tuple of (negative) scores for each ectopic beat type (SBP, PVC), or
+        tuple of (negative) scores for each ectopic beat type (SPB, PVC), or
         dict of more scoring details, including
         - total_loss: sum of loss of each ectopic beat type (PVC and SPB)
         - true_positive: number of true positives of each ectopic beat type
         - false_positive: number of false positives of each ectopic beat type
         - false_negative: number of false negatives of each ectopic beat type
     """
-    s_score = np.zeros([len(sbp_true), ], dtype=int)
-    v_score = np.zeros([len(sbp_true), ], dtype=int)
+    s_score = np.zeros([len(spb_true), ], dtype=int)
+    v_score = np.zeros([len(spb_true), ], dtype=int)
+    true_positive = ED({'S':0, 'V':0})
+    false_positive = ED({'S':0, 'V':0})
+    false_negative = ED({'S':0, 'V':0})
     ## Scoring ##
-    for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(zip(sbp_true, pvc_true, sbp_pred, pvc_pred)):
+    for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(zip(spb_true, pvc_true, spb_pred, pvc_pred)):
         s_tp = 0
         s_fp = 0
         s_fn = 0
         v_tp = 0
         v_fp = 0
         v_fn = 0
-        # SBP
+        # SPB
         if s_ref.size == 0:
             s_fp = len(s_pos)
         else:
@@ -136,11 +139,18 @@ def CPSC2020_score(sbp_true:List[np.ndarray], pvc_true:List[np.ndarray], sbp_pre
         s_score[i] = s_fp * (-1) + s_fn * (-5)
         v_score[i] = v_fp * (-1) + v_fn * (-5)
 
-        if verbose >= 1:
+        if verbose >= 3:
             print(f"for the {i}-th record")
             print(f"s_tp = {s_tp}, s_fp = {s_fp}, s_fn = {s_fn}")
-            print(f"v_tp = {v_tp}, v_fp = {v_fp}, s_fn = {v_fn}")
+            print(f"v_tp = {v_tp}, v_fp = {v_fp}, v_fn = {v_fn}")
             print(f"s_score[{i}] = {s_score[i]}, v_score[{i}] = {v_score[i]}")
+
+        true_positive.S += s_tp
+        true_positive.V += v_tp
+        false_positive.S += s_fp
+        false_positive.V += v_fp
+        false_negative.S += s_fn
+        false_negative.V += v_fn
 
     Score1 = np.sum(s_score)
     Score2 = np.sum(v_score)
@@ -149,9 +159,9 @@ def CPSC2020_score(sbp_true:List[np.ndarray], pvc_true:List[np.ndarray], sbp_pre
         retval = ED(
             total_loss=-(Score1+Score2),
             class_loss={'S':-Score1, 'V':-Score2},
-            true_positive={'S':s_tp, 'V':v_tp},
-            false_positive={'S':s_fp, 'V':v_fp},
-            false_negative={'S':s_fn, 'V':v_fn},
+            true_positive=true_positive,
+            false_positive=false_positive,
+            false_negative=false_negative,
         )
     else:
         retval = Score1, Score2
@@ -162,7 +172,7 @@ def CPSC2020_score(sbp_true:List[np.ndarray], pvc_true:List[np.ndarray], sbp_pre
 
 # -------------------------------------------------------
 # the following are borrowed from CINC2020
-# for classification of segments of ECGs
+# for classification of segments of ECGs using ECG_CRNN
 
 def eval_score(classes:List[str], truth:Sequence, binary_pred:Sequence, scalar_pred:Sequence) -> Tuple[float]:
     """ finished, checked,

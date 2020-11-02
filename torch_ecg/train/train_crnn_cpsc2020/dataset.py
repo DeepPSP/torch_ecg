@@ -75,7 +75,7 @@ from cfg import TrainCfg, ModelCfg, PreprocCfg
 from data_reader import CPSC2020Reader as CR
 from signal_processing.ecg_preproc import parallel_preprocess_signal
 from signal_processing.ecg_denoise import ecg_denoise
-from utils import (
+from .utils import (
     dict_to_str, mask_to_intervals, list_sum,
     gen_gaussian_noise, gen_sinusoidal_noise, gen_baseline_wander,
     get_record_list_recursive3,
@@ -83,6 +83,9 @@ from utils import (
 
 if ModelCfg.torch_dtype.lower() == 'double':
     torch.set_default_tensor_type(torch.DoubleTensor)
+    _DTYPE = np.float32
+else:
+    _DTYPE = np.float64
 
 
 __all__ = [
@@ -146,7 +149,8 @@ class CPSC2020(Dataset):
         self.rpeaks_dir = os.path.join(config.db_dir, "rpeaks")
         os.makedirs(self.rpeaks_dir, exist_ok=True)
 
-        if self.config.model_name.lower() == "crnn":  # for classification
+        if self.config.model_name.lower() in ["crnn", "seq_lab"]:
+            # for classification, or for sequence labeling
             self.segments_dirs = ED()
             self.__all_segments = ED()
             self.segments_json = os.path.join(self.segments_dir, "crnn_segments.json")
@@ -154,10 +158,9 @@ class CPSC2020(Dataset):
 
             if self.training:
                 self.segments = list_sum([self.__all_segments[rec] for rec in split_res.train])
+                shuffle(self.segments)
             else:
                 self.segments = list_sum([self.__all_segments[rec] for rec in split_res.test])
-        # elif self.config.model_name.lower() == "seq_lab":  # sequence labelling
-        #     pass
         # elif self.config.model_name.lower() == "od":  # object detection
         #     pass
         else:
@@ -200,7 +203,13 @@ class CPSC2020(Dataset):
         """
         seg_name = self.segments[index]
         seg_data = self._load_seg_data(seg_name)
-        seg_label = self._load_seg_label(seg_name)
+        if self.config.model_name.lower() == "crnn":
+            seg_label = self._load_seg_label(seg_name)
+        elif self.config.model_name.lower() == "seq_lab":
+            seg_label = self._load_seg_seq_lab(
+                seg=seg_name,
+                reduction=self.config.seq_lab_reduction,
+            )
         # seg_ampl = np.max(seg_data) - np.min(seg_data)
         seg_ampl = self._get_seg_ampl(seg_data)
         # spb_indices = ann["SPB_indices"]
@@ -372,6 +381,44 @@ class CPSC2020(Dataset):
             k:v.flatten() for k,v in seg_beat_ann.items() if k in ["SPB_indices", "PVC_indices"]
         }
         return seg_beat_ann
+
+
+    def _load_seg_seq_lab(self, seg:str, reduction:int=8) -> np.ndarray:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        seg: str,
+            name of the segment, of pattern like "S01_0000193"
+        reduction: int, default 8,
+            reduction (granularity) of length of the model output,
+            compared to the original signal length
+
+        Returns:
+        --------
+        seq_lab: np.ndarray,
+            label of the sequence,
+            of shape (self.seglen//reduction, self.n_classes)
+        """
+        seg_beat_ann = {
+            k: np.round(v/reduction).astype(int) \
+                for k,v in self._load_seg_beat_ann(seg).items()
+        }
+        bias_thr = int(round(self.config.bias_thr / reduction))
+        seq_lab = np.zeros(
+            shape=(self.seglen//reduction, self.n_classes),
+            dtype=_DTYPE,
+        )
+        for p in seg_beat_ann["SPB_indices"]:
+            start_idx = max(0, p-bias_thr)
+            end_idx = min(seq_lab.shape[0], p+bias_thr+1)
+            seq_lab[start_idx:end_idx, self.config.classes.index("S")] = 1
+        for p in seg_beat_ann["PVC_indices"]:
+            start_idx = max(0, p-bias_thr)
+            end_idx = min(seq_lab.shape[0], p+bias_thr+1)
+            seq_lab[start_idx:end_idx, self.config.classes.index("V")] = 1
+
+        return seq_lab
 
 
     def disable_data_augmentation(self) -> NoReturn:
@@ -667,7 +714,8 @@ class CPSC2020(Dataset):
                     if verbose >= 2:
                         print(f"{n_added} aug seg generated, start_idx at {start_idx}/{len(data)}", end="\r")
 
-                start_idx += forward_len
+                # start_idx += forward_len  # should be randomly forwarded
+                start_idx += randint(forward_len//4, forward_len)
 
         if verbose >= 1:
             print(f"\ngenerate {n_added} premature segments out from {n_original} in total via data augmentation")
