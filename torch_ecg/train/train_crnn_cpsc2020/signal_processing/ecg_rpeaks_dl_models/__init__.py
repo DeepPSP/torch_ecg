@@ -88,3 +88,64 @@ def _load_pytorch_ecg_seq_lab_net():
     """
     """
     raise NotImplementedError
+
+
+
+"""
+Observations:
+-------------
+Weights of the CNN part of both the keras CNN model and the keras CRNN model
+are very similar (or close).
+These weights can serve as "pretrained backbone" as in the field of vision.
+The weights can be extracted as follows
+(to use these weights in pytorch models, one has to do some permutations):
+
+d_key_map = {
+    "conv1d_1": "branch_0.block_0.ca_0",
+    "conv1d_2": "branch_0.block_1.ca_0",
+    "conv1d_3": "branch_0.block_1.ca_1",
+    "conv1d_4": "branch_0.block_2.ca_0",
+    "conv1d_5": "branch_0.block_2.ca_1",
+    "conv1d_6": "branch_0.block_2.ca_2",
+    "conv1d_7": "branch_1.block_0.ca_0",
+    "conv1d_8": "branch_1.block_1.ca_0",
+    "conv1d_9": "branch_1.block_1.ca_1",
+    "conv1d_10": "branch_1.block_2.ca_0",
+    "conv1d_11": "branch_1.block_2.ca_1",
+    "conv1d_12": "branch_1.block_2.ca_2",
+    "conv1d_13": "branch_2.block_0.ca_0",
+    "conv1d_14": "branch_2.block_1.ca_0",
+    "conv1d_15": "branch_2.block_1.ca_1",
+    "conv1d_16": "branch_2.block_2.ca_0",
+    "conv1d_17": "branch_2.block_2.ca_1",
+    "conv1d_18": "branch_2.block_2.ca_2",
+    "batch_normalization_1": "branch_0.block_0.bn",
+    "batch_normalization_2": "branch_0.block_1.bn",
+    "batch_normalization_3": "branch_0.block_2.bn",
+    "batch_normalization_4": "branch_0.block_0.bn",
+    "batch_normalization_5": "branch_0.block_1.bn",
+    "batch_normalization_6": "branch_0.block_2.bn",
+    "batch_normalization_7": "branch_0.block_0.bn",
+    "batch_normalization_8": "branch_0.block_1.bn",
+    "batch_normalization_9": "branch_0.block_2.bn",
+    "kernel": "weight",
+    "bias": "bias",
+    "gamma": "weight",
+    "beta": "bias",
+    "moving_mean": "running_mean",
+    "moving_variance": "running_var",
+}
+
+d_weights_cnn = {}
+for l in cnn_model.layers[1:41]:  # or crnn_model
+    if len(l.weights) > 0:
+        key = d_key_map[l.name]
+        d_weights_cnn[key] = {}
+        for v in l.variables:
+            minor_key = d_key_map[v.name.split("/")[1].split(":")[0]]
+            d_weights_cnn[key][minor_key] = v.value().numpy()
+
+
+However, a better "pretrained backbone" I think should be a one trained for the task of
+wave delineation (detection of P,T waves and QRS complexes, rather than just R peaks).
+"""
