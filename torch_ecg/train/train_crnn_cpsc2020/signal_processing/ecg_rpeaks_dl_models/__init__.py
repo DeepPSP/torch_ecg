@@ -1,7 +1,7 @@
 """
 NOTE:
 -----
-.h5 files are gitignored, corresponding files can be downloaded at
+corresponding model (weight) files can be downloaded at
 https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/CPSC2019-opensource.zip
 
 References:

@@ -143,3 +143,10 @@ log
 # dl models
 *.h5
 *.pth
+
+
+# models used
+!torch_ecg/train/train_crnn_cpsc2020/saved_models/crnn_10s.pth
+!torch_ecg/train/train_crnn_cpsc2020/saved_models/seq_lab_10s.pth
+!torch_ecg/train/train_crnn_cpsc2020/signal_processing/ecg_rpeaks_dl_models/CPSC2019_0416/CNN.h5
+!torch_ecg/train/train_crnn_cpsc2020/signal_processing/ecg_rpeaks_dl_models/CPSC2019_0416/CRNN.h5
