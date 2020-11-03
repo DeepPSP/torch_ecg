@@ -157,7 +157,7 @@ def parallel_preprocess_signal(raw_sig:np.ndarray, fs:Real, config:Optional[ED]=
         retval = preprocess_signal(raw_sig, fs, cfg)
         if cfg.rpeaks and cfg.rpeaks.lower() in DL_QRS_DETECTORS:
             rpeaks = QRS_DETECTORS[cfg.rpeaks.lower()](sig=raw_sig, fs=fs, verbose=verbose).astype(int)
-        retval.rpeaks = rpeaks
+            retval.rpeaks = rpeaks
         return retval
     
     l_epoch = [

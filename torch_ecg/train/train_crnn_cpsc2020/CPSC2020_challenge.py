@@ -151,3 +151,18 @@ def CPSC2020_challenge(ECG, fs):
     print("*"*80 + "\n")
 
     return S_pos, V_pos
+
+
+if __name__ == "__main__":
+    from ..database_reader.database_reader.other_databases import CPSC2020 as CR
+    from .cfg import TrainCfg
+
+    dr = CR(TrainCfg.db_dir)
+    for rec in dr.all_records:
+        print(f"rec = {rec}")
+        input_ecg = dr.load_data(rec, keep_dim=False)
+        print(f"input_ecg.shape = {input_ecg.shape}")
+        S_pos, V_pos = CPSC2020_challenge(input_ecg, 400)
+        print(f"S_pos = {S_pos}")
+        print(f"V_pos = {V_pos}")
+        print("\n" + "*"*80 + "\n")

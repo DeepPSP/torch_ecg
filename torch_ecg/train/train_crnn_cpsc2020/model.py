@@ -71,13 +71,15 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         bin_pred: ndarray,
             the array (with values 0, 1 for each class) of binary prediction
         """
-        if isinstance(input, np.ndarray):
-            if torch.cuda.is_available():
-                _input = torch.from_numpy(input).to(torch.device("cuda"))
-            else:
-                _input = torch.from_numpy(input).to(torch.device("cpu"))
+        if torch.cuda.is_available():
+            device = torch.device("cuda")
         else:
-            _input = input
+            device = torch.device("cpu")
+        self.to(device)
+        if isinstance(input, np.ndarray):
+            _input = torch.from_numpy(input).to(device)
+        else:
+            _input = input.to(device)
         pred = self.forward(_input)
         pred = self.sigmoid(pred)
         bin_pred = (pred>=bin_pred_thr).int()
@@ -159,14 +161,16 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         PVC_indices: list,
             list of predicted indices of PVC
         """
+        if torch.cuda.is_available():
+            device = torch.device("cuda")
+        else:
+            device = torch.device("cpu")
+        self.to(device)
         batch_size, channels, seq_len = input.shape
         if isinstance(input, np.ndarray):
-            if torch.cuda.is_available():
-                _input = torch.from_numpy(input).to(torch.device("cuda"))
-            else:
-                _input = torch.from_numpy(input).to(torch.device("cpu"))
+            _input = torch.from_numpy(input).to(device)
         else:
-            _input = input
+            _input = input.to(device)
         pred = self.forward(_input)
         if self.n_classes == 2:
             pred = self.sigmoid(pred)  # (batch_size, seq_len, 2)
