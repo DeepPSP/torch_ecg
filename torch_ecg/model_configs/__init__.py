@@ -1,4 +1,9 @@
 """
+
+This folder acts as examples for configuring corresponding models.
+These configurations are those when the corresponding models were initially developed,
+but can be generalized for a broader range of scenarios
+
 Problems:
 ---------
 1. CNN:
