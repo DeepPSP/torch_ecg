@@ -101,24 +101,24 @@ The weights can be extracted as follows
 (to use these weights in pytorch models, one has to do some permutations):
 
 d_key_map = {
-    "conv1d_1": "branch_0.block_0.ca_0",
-    "conv1d_2": "branch_0.block_1.ca_0",
-    "conv1d_3": "branch_0.block_1.ca_1",
-    "conv1d_4": "branch_0.block_2.ca_0",
-    "conv1d_5": "branch_0.block_2.ca_1",
-    "conv1d_6": "branch_0.block_2.ca_2",
-    "conv1d_7": "branch_1.block_0.ca_0",
-    "conv1d_8": "branch_1.block_1.ca_0",
-    "conv1d_9": "branch_1.block_1.ca_1",
-    "conv1d_10": "branch_1.block_2.ca_0",
-    "conv1d_11": "branch_1.block_2.ca_1",
-    "conv1d_12": "branch_1.block_2.ca_2",
-    "conv1d_13": "branch_2.block_0.ca_0",
-    "conv1d_14": "branch_2.block_1.ca_0",
-    "conv1d_15": "branch_2.block_1.ca_1",
-    "conv1d_16": "branch_2.block_2.ca_0",
-    "conv1d_17": "branch_2.block_2.ca_1",
-    "conv1d_18": "branch_2.block_2.ca_2",
+    "conv1d_1": "branch_0.block_0.ca_0.conv1d",
+    "conv1d_2": "branch_0.block_1.ca_0.conv1d",
+    "conv1d_3": "branch_0.block_1.ca_1.conv1d",
+    "conv1d_4": "branch_0.block_2.ca_0.conv1d",
+    "conv1d_5": "branch_0.block_2.ca_1.conv1d",
+    "conv1d_6": "branch_0.block_2.ca_2.conv1d",
+    "conv1d_7": "branch_1.block_0.ca_0.conv1d",
+    "conv1d_8": "branch_1.block_1.ca_0.conv1d",
+    "conv1d_9": "branch_1.block_1.ca_1.conv1d",
+    "conv1d_10": "branch_1.block_2.ca_0.conv1d",
+    "conv1d_11": "branch_1.block_2.ca_1.conv1d",
+    "conv1d_12": "branch_1.block_2.ca_2.conv1d",
+    "conv1d_13": "branch_2.block_0.ca_0.conv1d",
+    "conv1d_14": "branch_2.block_1.ca_0.conv1d",
+    "conv1d_15": "branch_2.block_1.ca_1.conv1d",
+    "conv1d_16": "branch_2.block_2.ca_0.conv1d",
+    "conv1d_17": "branch_2.block_2.ca_1.conv1d",
+    "conv1d_18": "branch_2.block_2.ca_2.conv1d",
     "batch_normalization_1": "branch_0.block_0.bn",
     "batch_normalization_2": "branch_0.block_1.bn",
     "batch_normalization_3": "branch_0.block_2.bn",
@@ -137,14 +137,21 @@ d_key_map = {
 }
 
 d_weights_cnn = {}
-for l in cnn_model.layers[1:41]:  # or crnn_model
+prefix = "cnn.branches"
+for l in cnn_model.layers[1:41]:
     if len(l.weights) > 0:
         key = d_key_map[l.name]
-        d_weights_cnn[key] = {}
         for v in l.variables:
             minor_key = d_key_map[v.name.split("/")[1].split(":")[0]]
-            d_weights_cnn[key][minor_key] = v.value().numpy()
+            d_weights_cnn[f"{prefix}.{key}.{minor_key}"] = v.value().numpy()
 
+torch_model = ECG_SEQ_LAB_NET_CPSC2020(classes=["S", "V"], n_leads=1, input_len=4000)
+with torch.no_grad():
+    for k, v in d_weights_cnn.items():
+        if v.ndim == 3:
+            exec(f"torch_model.{k} = torch.nn.Parameter(torch.from_numpy(v).permute((2,1,0)))")
+        else:
+            exec(f"torch_model.{k} = torch.nn.Parameter(torch.from_numpy(v))")
 
 However, a better "pretrained backbone" I think should be a one trained for the task of
 wave delineation (detection of P,T waves and QRS complexes, rather than just R peaks).
