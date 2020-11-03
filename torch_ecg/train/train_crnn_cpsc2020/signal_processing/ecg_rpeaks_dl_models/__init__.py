@@ -153,6 +153,6 @@ with torch.no_grad():
         else:
             exec(f"torch_model.{k} = torch.nn.Parameter(torch.from_numpy(v))")
 
-However, a better "pretrained backbone" I think should be a one trained for the task of
+However, a better "pretrained backbone" I think should be one trained for the task of
 wave delineation (detection of P,T waves and QRS complexes, rather than just R peaks).
 """
