@@ -3,7 +3,7 @@ import re
 
 import numpy as np
 np.set_printoptions(threshold=np.inf)
-from scipy.io as sio
+import scipy.io as sio
 
 from .CPSC2019_challenge import *
 
@@ -49,7 +49,7 @@ def score(r_ref, hr_ref, r_ans, hr_ans, fs_, thr_):
         FP = 0
         TP = 0
 
-        if math.isnan(hr_ans[i]):
+        if np.isnan(hr_ans[i]):
             hr_ans[i] = 0
         hr_der = abs(int(hr_ans[i]) - int(hr_ref[i]))
         if hr_der <= 0.02 * hr_ref[i]:

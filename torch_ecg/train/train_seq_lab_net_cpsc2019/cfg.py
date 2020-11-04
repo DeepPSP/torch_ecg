@@ -22,7 +22,7 @@ BaseCfg = ED()
 BaseCfg.fs = 500  # Hz, CPSC2019 data fs
 # BaseCfg.training_data = os.path.join(_BASE_DIR, "training_data")
 BaseCfg.db_dir = "/media/cfs/wenhao71/data/CPSC2019/train/"
-BaseCfg.bias_thr = 0.15 * BaseCfg.fs  # keep the same with `THR` in `cpsc2019_score.py`
+BaseCfg.bias_thr = 0.075 * BaseCfg.fs  # keep the same with `THR` in `cpsc2019_score.py`
 
 BaseCfg.torch_dtype = "float"  # "double"
 
