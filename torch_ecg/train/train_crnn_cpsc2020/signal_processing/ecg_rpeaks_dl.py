@@ -33,10 +33,12 @@ def seq_lab_net_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
     use model of entry 0416 of CPSC2019,
     to detect R peaks in single-lead ECGs of arbitrary length
 
+    NOTE: `sig` should have units in mV, NOT in μV!
+
     Parameters:
     -----------
     sig: ndarray,
-        the (raw) ECG signal or arbitrary length
+        the (raw) ECG signal of arbitrary length, with units in mV
     fs: real number,
         sampling frequency of `sig`
     kwargs: dict,
@@ -289,7 +291,7 @@ def _remove_spikes_naive(sig:np.ndarray) -> np.ndarray:
     filtered_sig: ndarray,
         ECG signal with `spikes` removed
     """
-    b = list(filter(lambda k: k > 0, np.argwhere(np.abs(sig)>20).squeeze()))
+    b = list(filter(lambda k: k > 0, np.argwhere(np.abs(sig)>20).squeeze(-1)))
     filtered_sig = sig.copy()
     for k in b:
         filtered_sig[k] = filtered_sig[k-1]
