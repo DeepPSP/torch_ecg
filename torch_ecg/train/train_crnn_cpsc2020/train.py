@@ -475,6 +475,12 @@ def evaluate_seq_lab(model:nn.Module, data_loader:DataLoader, config:dict, devic
     --------
     eval_res: tuple of float,
         evaluation results, including
+
+    CAUTION:
+    --------
+    without rpeaks detection, consecutive SPBs or consecutive PVCs might be falsely missed,
+    hence resulting higher than normal false negatives.
+    for a more suitable eval pipeline, ref. CPSC2020_challenge.py
     """
     model.eval()
     # data_loader.dataset.disable_data_augmentation()
