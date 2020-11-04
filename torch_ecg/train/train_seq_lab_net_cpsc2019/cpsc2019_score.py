@@ -1,9 +1,12 @@
-import numpy as np
-np.set_printoptions(threshold=np.inf)
 import os
 import re
+
+import numpy as np
+np.set_printoptions(threshold=np.inf)
 from scipy.io as sio
-from CPSC2019_challenge import *
+
+from .CPSC2019_challenge import *
+
 
 def load_ans(data_path_, rpos_path_, fs_):
     '''

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def CPSC2019_challenge(ECG):
     '''
     This function is your detection function, the input parameters is self-definedself.

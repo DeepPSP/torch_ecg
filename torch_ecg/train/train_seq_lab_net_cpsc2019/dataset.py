@@ -79,6 +79,12 @@ class CPSC2019(Dataset):
         """
         self.__data_aug = False
 
+
+    def enable_data_augmentation(self) -> NoReturn:
+        """
+        """
+        self.__data_aug = True
+
     
     def _train_test_split(self, train_ratio:float=0.8, force_recompute:bool=False) -> List[str]:
         """
