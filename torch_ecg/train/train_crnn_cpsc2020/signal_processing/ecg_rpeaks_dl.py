@@ -236,7 +236,6 @@ def _seq_lab_net_post_process(prob:np.ndarray, prob_thr:float=0.5, duration_thr:
                 break
     if len(_dist_thr) == 1:
         return rpeaks
-    check = True
     # further search should be performed to locate where the
     # distances are greater than 1200 ms between adjacent QRS complexes
     # if there exists at least one point that is great than 0.5, 

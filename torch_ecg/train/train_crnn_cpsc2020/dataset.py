@@ -519,8 +519,8 @@ class CPSC2020(Dataset):
             config=config,
             verbose=verbose,
         )
-        # `rpeaks_dist2border` useless for `seq_lab_detect`, as already set internally
-        # pps['rpeaks'] = pps['rpeaks'][np.where( (pps['rpeaks']>=config.rpeaks_dist2border) & (pps['rpeaks']<len(pps['filtered_ecg'])-config.rpeaks_dist2border) )[0]]
+        # `rpeaks_skip_dist` useless for `seq_lab_detect`, as already set internally
+        # pps['rpeaks'] = pps['rpeaks'][np.where( (pps['rpeaks']>=config.rpeaks_skip_dist) & (pps['rpeaks']<len(pps['filtered_ecg'])-config.rpeaks_skip_dist) )[0]]
         # save mat, keep in accordance with original mat files
         savemat(save_fp.data, {'ecg': np.atleast_2d(pps['filtered_ecg']).T}, format='5')
         savemat(save_fp.rpeaks, {'rpeaks': np.atleast_2d(pps['rpeaks']).T}, format='5')

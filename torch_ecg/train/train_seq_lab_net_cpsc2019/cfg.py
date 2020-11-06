@@ -6,7 +6,7 @@ from copy import deepcopy
 import numpy as np
 from easydict import EasyDict as ED
 
-from ...cfg import Cfg as BaseCfg
+from ...cfg import Cfg
 
 
 __all__ = [
@@ -23,19 +23,30 @@ BaseCfg.fs = 500  # Hz, CPSC2019 data fs
 # BaseCfg.training_data = os.path.join(_BASE_DIR, "training_data")
 BaseCfg.db_dir = "/media/cfs/wenhao71/data/CPSC2019/train/"
 BaseCfg.bias_thr = 0.075 * BaseCfg.fs  # keep the same with `THR` in `cpsc2019_score.py`
-
-BaseCfg.torch_dtype = "float"  # "double"
+# detected rpeaks that are within `skip_dist` from two ends of the signal will be ignored,
+# as in the official entry function
+BaseCfg.skip_dist = 0.5 * BaseCfg.fs
+BaseCfg.torch_dtype = Cfg.torch_dtype
 
 
 
 ModelCfg = ED()
+ModelCfg.skip_dist = BaseCfg.skip_dist
 ModelCfg.torch_dtype = BaseCfg.torch_dtype
 ModelCfg.fs = BaseCfg.fs
 ModelCfg.spacing = 1000 / ModelCfg.fs
 # NOTE(update): "background" now do not count as a class
 # ModelCfg.classes = ["i", "N"]  # N for qrs, i for other parts
 # ModelCfg.class_map = {c:i for i,c in enumerate(ModelCfg.classes)}
-ModelCfg.crnn.n_leads = 1
+ModelCfg.n_leads = 1
+ModelCfg.skip_dist = BaseCfg.skip_dist
+
+
+ModelCfg.seq_lab_crnn = ED()
+ModelCfg.seq_lab_crnn.fs = ModelCfg.fs
+ModelCfg.seq_lab_crnn.n_leads = ModelCfg.n_leads
+ModelCfg.seq_lab_crnn.skip_dist = ModelCfg.skip_dist
+ModelCfg.seq_lab_crnn.torch_dtype = ModelCfg.torch_dtype
 
 ModelCfg.seq_lab_crnn.cnn = ED()
 ModelCfg.seq_lab_crnn.cnn.name = 'multi_scopic'  # resnet, resnet_gc, vgg, cpsc2018, etc.
@@ -58,10 +69,6 @@ ModelCfg.seq_lab_crnn.cnn.multi_scopic.scopes = [
         [16,32,64,],
     ],
 ]
-# TODO:
-# as sampling frequencies of CPSC2019 and CINC2020 are 500Hz
-# while CPSC2020 is 400 Hz
-# should the filter_lengths be adjusted?
 ModelCfg.seq_lab_crnn.cnn.multi_scopic.filter_lengths = [
     [11, 7, 5,],  # branch 0
     [11, 7, 5,],  # branch 1
@@ -144,9 +151,10 @@ ModelCfg.seq_lab_crnn.rnn.lstm.activation = 'mish'
 
 
 ModelCfg.seq_lab_cnn = ED()
-ModelCfg.seq_lab_cnn.fs = BaseCfg.fs
-ModelCfg.seq_lab_cnn.n_leads = 1
-ModelCfg.seq_lab_cnn.torch_dtype = BaseCfg.torch_dtype
+ModelCfg.seq_lab_cnn.fs = ModelCfg.fs
+ModelCfg.seq_lab_cnn.n_leads = ModelCfg.n_leads
+ModelCfg.seq_lab_cnn.skip_dist = ModelCfg.skip_dist
+ModelCfg.seq_lab_cnn.torch_dtype = ModelCfg.torch_dtype
 
 ModelCfg.seq_lab_cnn.cnn = ModelCfg.seq_lab_crnn.cnn.copy()
 
@@ -172,14 +180,17 @@ ModelCfg.seq_lab_cnn.clf.dropouts = [0.2, 0.2, 0.0]
 
 TrainCfg = ED()
 TrainCfg.fs = ModelCfg.fs
-TrainCfg.db_dir = 
+TrainCfg.db_dir = BaseCfg.db_dir
 TrainCfg.log_dir = os.path.join(_BASE_DIR, 'log')
 TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
-TrainCfg.keep_checkpoint_max = 20
+TrainCfg.keep_checkpoint_max = 50
+
 TrainCfg.input_len = int(TrainCfg.fs * 10)  # 10 s
 # TrainCfg.classes = ModelCfg.classes
 # TrainCfg.class_map = ModelCfg.class_map
 TrainCfg.n_leads = ModelCfg.n_leads
+TrainCfg.bias_thr = BaseCfg.bias_thr
+TrainCfg.skip_dist = BaseCfg.skip_dist
 
 # configs of data aumentation
 # NOTE: compared to data augmentation of CPSC2020,
@@ -208,6 +219,8 @@ TrainCfg.bw_gaussian = np.array([  # mean and std, ratio
 ])
 TrainCfg.flip = [-1] + [1]*4  # making the signal upside down, with probability 1/(1+4)
 
+TrainCfg.seq_lab_reduction = 2**3  # TODO: automatic adjust via model config
+
 # configs of training epochs, batch, etc.
 TrainCfg.n_epochs = 300
 TrainCfg.batch_size = 256
@@ -228,3 +241,6 @@ TrainCfg.decay = 0.0005
 TrainCfg.loss = 'BCEWithLogitsLoss'
 # TrainCfg.loss = 'BCEWithLogitsWithClassWeightLoss'
 TrainCfg.eval_every = 20
+
+# model selection
+TrainCfg.model_name = "crnn"  # "seq_lab", "unet"

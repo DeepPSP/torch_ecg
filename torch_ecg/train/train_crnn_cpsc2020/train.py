@@ -588,7 +588,7 @@ def get_args(**kwargs):
         help='choice of rnn structures',
         dest='rnn_name')
     parser.add_argument(
-        '--keep-checkpoint-max', type=int, default=20,
+        '--keep-checkpoint-max', type=int, default=50,
         help='maximum number of checkpoints to keep. If set 0, all checkpoints will be kept',
         dest='keep_checkpoint_max')
     parser.add_argument(

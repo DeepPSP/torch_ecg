@@ -193,7 +193,7 @@ def get_args(**kwargs):
     """
     cfg = deepcopy(kwargs)
     parser = argparse.ArgumentParser(
-        description='Train the Model on CINC2020',
+        description='Train the Model on CINC2019',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # parser.add_argument(
     #     '-l', '--learning-rate',
@@ -207,7 +207,7 @@ def get_args(**kwargs):
         dest='batch_size')
     parser.add_argument(
         '-c', '--cnn-name',
-        type=str, default='resnet',
+        type=str, default='multi_scopic',
         help='choice of cnn feature extractor',
         dest='cnn_name')
     parser.add_argument(
@@ -221,7 +221,7 @@ def get_args(**kwargs):
         help='choice of attention block',
         dest='attn_name')
     parser.add_argument(
-        '--keep-checkpoint-max', type=int, default=20,
+        '--keep-checkpoint-max', type=int, default=50,
         help='maximum number of checkpoints to keep. If set 0, all checkpoints will be kept',
         dest='keep_checkpoint_max')
     parser.add_argument(

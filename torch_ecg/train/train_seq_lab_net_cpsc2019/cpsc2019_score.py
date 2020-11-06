@@ -42,6 +42,9 @@ def load_ans(data_path_, rpos_path_, fs_):
     return R_ref, HR_ref, R_ans, HR_ans
 
 def score(r_ref, hr_ref, r_ans, hr_ans, fs_, thr_):
+    """
+    this function has small bugs, ref. `.metrics.score`
+    """
     HR_score = 0
     record_flags = np.ones(len(r_ref))
     for i in range(len(r_ref)):

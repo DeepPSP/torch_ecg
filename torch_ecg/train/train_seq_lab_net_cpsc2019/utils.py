@@ -390,3 +390,28 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:
     logger.addHandler(f_handler)
 
     return logger
+
+
+def _remove_spikes_naive(sig:np.ndarray) -> np.ndarray:
+    """ finished, checked,
+
+    remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
+
+    `spikes` here refers to abrupt large bumps with (abs) value larger than 20 mV,
+    do NOT confuse with `spikes` in paced rhythm
+
+    Parameters:
+    -----------
+    sig: ndarray,
+        single-lead ECG signal with potential spikes
+    
+    Returns:
+    --------
+    filtered_sig: ndarray,
+        ECG signal with `spikes` removed
+    """
+    b = list(filter(lambda k: k > 0, np.argwhere(np.abs(sig)>20).squeeze(-1)))
+    filtered_sig = sig.copy()
+    for k in b:
+        filtered_sig[k] = filtered_sig[k-1]
+    return filtered_sig

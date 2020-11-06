@@ -11,6 +11,8 @@ import pywt
 import numpy as np
 from easydict import EasyDict as ED
 
+from ...cfg import Cfg
+
 
 __all__ = [
     "BaseCfg",
@@ -37,7 +39,7 @@ BaseCfg.beat_ann_bias_thr = 0.1 * BaseCfg.fs  # half width of broad qrs complex
 BaseCfg.beat_winL = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
 BaseCfg.beat_winR = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
 
-BaseCfg.torch_dtype = "float"  # "double"
+BaseCfg.torch_dtype = Cfg.torch_dtype
 
 
 
@@ -61,7 +63,7 @@ for qrs detectors:
     but according to Jeethan, `xqrs` has the best performance
 """
 # least distance of an valid R peak to two ends of ECG signals
-PreprocCfg.rpeaks_dist2border = int(0.5 * PreprocCfg.fs)  # 0.5s
+PreprocCfg.rpeaks_skip_dist = int(0.5 * PreprocCfg.fs)  # 0.5s
 
 
 # FeatureCfg only for ML models, deprecated
@@ -240,6 +242,7 @@ TrainCfg.n_leads = 1
 TrainCfg.db_dir = BaseCfg.db_dir
 TrainCfg.log_dir = os.path.join(_BASE_DIR, 'log')
 TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
+TrainCfg.keep_checkpoint_max = 50
 TrainCfg.input_len = int(30 * TrainCfg.fs)  # 30 s
 TrainCfg.overlap_len = int(20 * TrainCfg.fs)  # 20 s
 TrainCfg.bias_thr = BaseCfg.bias_thr
