@@ -195,6 +195,7 @@ TrainCfg.skip_dist = BaseCfg.skip_dist
 # configs of data aumentation
 # NOTE: compared to data augmentation of CPSC2020,
 # `stretch_compress` and `label_smoothing` are not used in CPSC2019
+TrainCfg.label_smoothing = 0.0
 TrainCfg.random_normalize = True  # (re-)normalize to random mean and std
 TrainCfg.random_normalize_mean = [-0.05, 0.1]
 TrainCfg.random_normalize_std = [0.08, 0.32]

@@ -3,6 +3,7 @@ data generator for feeding data into pytorch models
 """
 import os, sys
 import json
+import math
 from random import shuffle, randint
 from copy import deepcopy
 from functools import reduce
@@ -36,6 +37,9 @@ __all__ = [
 class CPSC2019(Dataset):
     """
     """
+    __DEBUG__ = True
+    __name__ = "CPSC2019"
+
     def __init__(self, config:ED, training:bool=True) -> NoReturn:
         """
 
@@ -51,27 +55,88 @@ class CPSC2019(Dataset):
         self.config = deepcopy(config)
         self.reader = CR(db_dir=config.db_dir)
         self.training = training
+        self.n_classes = 1
         if ModelCfg.torch_dtype.lower() == 'double':
             self.dtype = np.float64
         else:
             self.dtype = np.float32
         self.__data_aug = self.training
-        raise NotImplementedError
+
+        self.siglen = self.config.input_len  # alias, for simplicity
+        self.records = []
+        self._train_test_split(
+            train_ratio=self.config.train_ratio,
+            force_recompute=False,
+        )
+
+        if self.config.bw:
+            self._n_bw_choices = len(self.config.bw_ampl_ratio)
+            self._n_gn_choices = len(self.config.bw_gaussian)
 
 
     def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
+        """ NOT finished, not checked,
         """
-        """
-        rec = self.records[index]
-        raise NotImplementedError
-        # return values, labels
+        rec_name = self.records[index]
+        ann_name = rec_name.replace("data", "R")
+        values = self.reader.load_data(rec_name, units='mV', keep_dim=False)
+        rpeaks = self.reader.load_ann(rec_name, keep_dim=False)
+        labels = np.zeros((self.siglen//self.config.seq_lab_reduction))
+        for r in rpeaks:
+            if r < self.config.skip_dist or r >= self.siglen - self.config.skip_dist:
+                continue
+            start_idx = math.floor((r-self.config.bias_thr)/self.config.seq_lab_reduction)
+            end_idx = math.ceil((r+self.config.bias_thr)/self.config.seq_lab_reduction)
+            labels[start_idx:end_idx] = 1
+
+        # data augmentation, NOT finished yet
+        sig_ampl = self._get_ampl(values)
+        if self.__data_aug:
+            if self.config.bw:
+                ar = self.config.bw_ampl_ratio[randint(0, self._n_bw_choices-1)]
+                gm, gs = self.config.bw_gaussian[randint(0, self._n_gn_choices-1)]
+                bw_ampl = ar * sig_ampl
+                g_ampl = gm * sig_ampl
+                bw = gen_baseline_wander(
+                    siglen=self.siglen,
+                    fs=self.config.fs,
+                    bw_fs=self.config.bw_fs,
+                    amplitude=bw_ampl,
+                    amplitude_mean=gm,
+                    amplitude_std=gs,
+                )
+                values = values + bw
+            if len(self.config.flip) > 0:
+                sign = sample(self.config.flip, 1)[0]
+                values *= sign
+            if self.config.random_normalize:
+                rn_mean = uniform(
+                    self.config.random_normalize_mean[0],
+                    self.config.random_normalize_mean[1],
+                )
+                rn_std = uniform(
+                    self.config.random_normalize_std[0],
+                    self.config.random_normalize_std[1],
+                )
+                values = (values-np.mean(values)+rn_mean) / np.std(values) * rn_std
+            if self.config.label_smoothing > 0:
+                label = (1 - self.config.label_smoothing) * label \
+                    + self.config.label_smoothing / self.n_classes
+
+        # if self.__DEBUG__:
+        #     self.reader.plot(
+        #         rec="",  # unnecessary indeed
+        #         data=seg_data,
+        #         ann=self._load_seg_beat_ann(seg_name),
+        #         ticks_granularity=2,
+        #     )
+        return values, labels
 
 
     def __len__(self) -> int:
         """
         """
-        raise NotImplementedError
-        # return len(self.records)
+        return len(self.records)
 
 
     def disable_data_augmentation(self) -> NoReturn:
@@ -84,6 +149,31 @@ class CPSC2019(Dataset):
         """
         """
         self.__data_aug = True
+
+
+    def _get_ampl(self, values:np.ndarray, window:int=100) -> float:
+        """ finished, checked,
+
+        get amplitude of a segment
+
+        Parameters:
+        -----------
+        values: ndarray,
+            data of the segment
+        window: int, default 100 (corr. to 200ms),
+            window length of a window for computing amplitude, with units in number of sample points
+
+        Returns:
+        --------
+        ampl: float,
+            amplitude of `values`
+        """
+        half_window = window // 2
+        ampl = 0
+        for idx in range(len(values)//half_window-1):
+            s = values[idx*half_window: idx*half_window+window]
+            ampl = max(ampl, np.max(s)-np.min(s))
+        return ampl
 
     
     def _train_test_split(self, train_ratio:float=0.8, force_recompute:bool=False) -> List[str]:
@@ -105,15 +195,26 @@ class CPSC2019(Dataset):
         records: list of str,
             list of the records split for training or validation
         """
-        raise NotImplementedError
-
-
-    def persistence(self) -> NoReturn:
-        """
-
-        make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
-        """
-        raise NotImplementedError
+        assert 0 < train_ratio < 100
+        _train_ratio = train_ratio if train_ratio < 1 else train_ratio/100
+        split_fn = os.path.join(self.reader.db_dir, f"train_test_split_{_train_ratio:.2f}.json")
+        if os.path.isfile(split_fn) and not force_recompute:
+            with open(split_fn, "r") as f:
+                split_res = json.load(f)
+                if self.training:
+                    self.records = split_res["train"]
+                    shuffle(self.records)
+                else:
+                    self.records = split_res["test"]
+            return
+        records = deepcopy(self.reader.all_records)
+        shuffle(records)
+        split_num = int(_train_ratio*len(records))
+        train = sorted(records[:split_num])
+        test = sorted(records[split_num:])
+        split_res = {"train":train, "test":test}
+        with open(split_fn, "w") as f:
+            json.dump(split_res, f, ensure_ascii=False)
 
 
     def _check_nan(self) -> NoReturn:
