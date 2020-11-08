@@ -75,13 +75,14 @@ class CPSC2019(Dataset):
 
 
     def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ NOT finished, not checked,
+        """ finished, NOT checked,
         """
         rec_name = self.records[index]
         ann_name = rec_name.replace("data", "R")
         values = self.reader.load_data(rec_name, units='mV', keep_dim=False)
         rpeaks = self.reader.load_ann(rec_name, keep_dim=False)
         labels = np.zeros((self.siglen//self.config.seq_lab_reduction))
+        # rpeak indices to mask
         for r in rpeaks:
             if r < self.config.skip_dist or r >= self.siglen - self.config.skip_dist:
                 continue
@@ -89,7 +90,7 @@ class CPSC2019(Dataset):
             end_idx = math.ceil((r+self.config.bias_thr)/self.config.seq_lab_reduction)
             labels[start_idx:end_idx] = 1
 
-        # data augmentation, NOT finished yet
+        # data augmentation, finished yet
         sig_ampl = self._get_ampl(values)
         if self.__data_aug:
             if self.config.bw:
@@ -123,13 +124,13 @@ class CPSC2019(Dataset):
                 label = (1 - self.config.label_smoothing) * label \
                     + self.config.label_smoothing / self.n_classes
 
-        # if self.__DEBUG__:
-        #     self.reader.plot(
-        #         rec="",  # unnecessary indeed
-        #         data=seg_data,
-        #         ann=self._load_seg_beat_ann(seg_name),
-        #         ticks_granularity=2,
-        #     )
+        if self.__DEBUG__:
+            self.reader.plot(
+                rec="",  # unnecessary indeed
+                data=values,
+                ann=rpeaks,
+                ticks_granularity=2,
+            )
         return values, labels
 
 
@@ -217,7 +218,7 @@ class CPSC2019(Dataset):
             json.dump(split_res, f, ensure_ascii=False)
 
 
-    def _check_nan(self) -> NoReturn:
-        """
-        """
-        raise NotImplementedError
+    # def _check_nan(self) -> NoReturn:
+    #     """
+    #     """
+    #     raise NotImplementedError
