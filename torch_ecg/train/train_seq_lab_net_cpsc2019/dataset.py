@@ -4,7 +4,7 @@ data generator for feeding data into pytorch models
 import os, sys
 import json
 import math
-from random import shuffle, randint
+from random import shuffle, randint, uniform, sample
 from copy import deepcopy
 from functools import reduce
 from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
@@ -20,9 +20,10 @@ from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 from easydict import EasyDict as ED
 
-from ...utils.misc import ensure_siglen, dict_to_str
+# from ...utils.misc import ensure_siglen, dict_to_str
 from ..database_reader.database_reader.other_databases import CPSC2019 as CR
 from .cfg import TrainCfg, ModelCfg
+from .utils import gen_baseline_wander
 
 
 if ModelCfg.torch_dtype.lower() == 'double':
@@ -131,6 +132,9 @@ class CPSC2019(Dataset):
                 ann=rpeaks,
                 ticks_granularity=2,
             )
+
+        values = values.reshape((self.config.n_leads, self.siglen))
+
         return values, labels
 
 
@@ -216,6 +220,11 @@ class CPSC2019(Dataset):
         split_res = {"train":train, "test":test}
         with open(split_fn, "w") as f:
             json.dump(split_res, f, ensure_ascii=False)
+        if self.training:
+            self.records = train
+            shuffle(self.records)
+        else:
+            self.records = test
 
 
     # def _check_nan(self) -> NoReturn:

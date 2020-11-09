@@ -2,6 +2,7 @@
 """
 import os
 from copy import deepcopy
+from itertools import repeat
 
 import numpy as np
 from easydict import EasyDict as ED
@@ -184,6 +185,7 @@ TrainCfg.db_dir = BaseCfg.db_dir
 TrainCfg.log_dir = os.path.join(_BASE_DIR, 'log')
 TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
 TrainCfg.keep_checkpoint_max = 50
+TrainCfg.train_ratio = 0.8
 
 TrainCfg.input_len = int(TrainCfg.fs * 10)  # 10 s
 # TrainCfg.classes = ModelCfg.classes

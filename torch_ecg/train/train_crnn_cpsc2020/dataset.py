@@ -76,8 +76,8 @@ from ..database_reader.database_reader.other_databases import CPSC2020 as CR
 from signal_processing.ecg_preproc import parallel_preprocess_signal
 from signal_processing.ecg_denoise import ecg_denoise
 from .utils import (
-    dict_to_str, mask_to_intervals, list_sum,
-    gen_gaussian_noise, gen_sinusoidal_noise, gen_baseline_wander,
+    mask_to_intervals, list_sum,
+    gen_baseline_wander,
     get_record_list_recursive3,
 )
 
