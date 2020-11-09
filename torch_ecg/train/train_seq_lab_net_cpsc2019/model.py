@@ -71,7 +71,10 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
 
         Returns:
         --------
-        to write
+        pred: ndarray,
+            the array of scalar predictions
+        rpeaks: list of ndarray,
+            list of rpeak indices for each batch element
         """
         if torch.cuda.is_available():
             device = torch.device("cuda")
@@ -105,7 +108,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
                 )[0] for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
             ]
 
-        return rpeaks
+        return pred, rpeaks
 
     def _inference_post_process(self, pred:np.ndarray, bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200) -> List[np.ndarray]:
         """ finished, NOT checked,

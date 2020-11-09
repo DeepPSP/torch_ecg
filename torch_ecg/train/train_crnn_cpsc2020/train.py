@@ -226,7 +226,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
             writer.add_scalar('train/epoch_loss', epoch_loss, global_step)
 
-            # eval for each epoch using `evaluate`
+            # eval for each epoch using corresponding `evaluate` function
             if debug:
                 if config.model_name == "crnn":
                     eval_train_res = evaluate_crnn(

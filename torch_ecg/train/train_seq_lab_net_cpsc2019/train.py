@@ -32,7 +32,10 @@ from ...models.nets import (
     default_collate_fn as collate_fn,
 )
 from ...model_configs import ECG_SEQ_LAB_NET_CONFIG
-from ...utils.misc import init_logger, get_date_str, dict_to_str, str2bool
+from .utils import (
+    init_logger, get_date_str, dict_to_str, str2bool,
+    mask_to_intervals,
+)
 from .cfg import ModelCfg, TrainCfg
 from .dataset import CPSC2019
 from .metrics import compute_metrics
@@ -70,11 +73,14 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
     print(f"training configurations are as follows:\n{dict_to_str(config)}")
 
     train_dataset = CPSC2019(config=config, training=True)
+    train_dataset.__DEBUG__ = False
 
     if debug:
         val_train_dataset = CPSC2019(config=config, training=True)
         val_train_dataset.disable_data_augmentation()
+        val_train_dataset.__DEBUG__ = False
     val_dataset = CPSC2019(config=config, training=False)
+    val_dataset.__DEBUG__ = False
 
     n_train = len(train_dataset)
     n_val = len(val_dataset)
@@ -160,11 +166,127 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         scheduler = optim.lr_scheduler.StepLR(optimizer, config.lr_step_size, config.lr_gamma)
     else:
         raise NotImplementedError("lr scheduler `{config.lr_scheduler.lower()}` not implemented for training")
-    raise NotImplementedError
+
+    if config.loss == "BCEWithLogitsLoss":
+        criterion = nn.BCEWithLogitsLoss()
+    elif config.loss == "BCEWithLogitsWithClassWeightLoss":
+        criterion = BCEWithLogitsWithClassWeightLoss(
+            class_weight=train_dataset.class_weights.to(device=device, dtype=_DTYPE)
+        )
+    else:
+        raise NotImplementedError(f"loss `{config.loss}` not implemented!")
+    # scheduler = ReduceLROnPlateau(optimizer, mode='max', verbose=True, patience=6, min_lr=1e-7)
+    # scheduler = CosineAnnealingWarmRestarts(optimizer, 0.001, 1e-6, 20)
+
+    save_prefix = f"{model.__name__}_{config.cnn_name}_{config.rnn_name}_epoch"
+
+    saved_models = deque()
+    model.train()
+    global_step = 0
+    for epoch in range(n_epochs):
+        model.train()
+        epoch_loss = 0
+
+        with tqdm(total=n_train, desc=f'Epoch {epoch + 1}/{n_epochs}', ncols=100) as pbar:
+            for epoch_step, (signals, labels) in enumerate(train_loader):
+                global_step += 1
+                signals = signals.to(device=device, dtype=_DTYPE)
+                labels = labels.to(device=device, dtype=_DTYPE)
+
+                preds = model(signals)
+                loss = criterion(preds, labels)
+                epoch_loss += loss.item()
+                
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                if global_step % log_step == 0:
+                    writer.add_scalar('train/loss', loss.item(), global_step)
+                    if scheduler:
+                        writer.add_scalar('lr', scheduler.get_lr()[0], global_step)
+                        pbar.set_postfix(**{
+                            'loss (batch)': loss.item(),
+                            'lr': scheduler.get_lr()[0],
+                        })
+                        msg = f'Train step_{global_step}: loss : {loss.item()}, lr : {scheduler.get_lr()[0] * batch_size}'
+                    else:
+                        pbar.set_postfix(**{
+                            'loss (batch)': loss.item(),
+                        })
+                        msg = f'Train step_{global_step}: loss : {loss.item()}'
+                    print(msg)  # in case no logger
+                    if logger:
+                        logger.info(msg)
+                pbar.update(signals.shape[0])
+            
+            writer.add_scalar('train/epoch_loss', epoch_loss, global_step)
+
+            # eval for each epoch using corresponding `evaluate` function
+            if debug:
+                eval_train_res = evaluate(
+                    model, val_train_loader, config, device, debug
+                )
+                writer.add_scalar('train/auroc', eval_train_res, global_step)
+
+            eval_res = evaluate_crnn(
+                model, val_loader, config, device, debug
+            )
+            model.train()
+            writer.add_scalar('test/auroc', eval_res, global_step)
+
+            if config.lr_scheduler is None:
+                pass
+            elif config.lr_scheduler.lower() == 'plateau':
+                scheduler.step(metrics=eval_res[6])
+            elif config.lr_scheduler.lower() == 'step':
+                scheduler.step()
+            
+            if debug:
+                eval_train_msg = f"""
+                train/qrs_score:             {eval_train_res}
+            """
+            else:
+                eval_train_msg = ""
+            msg = f"""
+                Train epoch_{epoch + 1}:
+                --------------------
+                train/epoch_loss:        {epoch_loss}{eval_train_msg}
+                test/qrs_score:              {eval_res}
+                ---------------------------------
+            """
+
+            print(msg)  # in case no logger
+            if logger:
+                logger.info(msg)
+
+            try:
+                os.makedirs(config.checkpoints, exist_ok=True)
+                if logger:
+                    logger.info('Created checkpoint directory')
+            except OSError:
+                pass
+            save_suffix = f'epochloss_{epoch_loss:.5f}_challenge_loss(qrs_score)_{eval_res}'
+            save_filename = f'{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth'
+            save_path = os.path.join(config.checkpoints, save_filename)
+            torch.save(model.state_dict(), save_path)
+            if logger:
+                logger.info(f'Checkpoint {epoch + 1} saved!')
+            saved_models.append(save_path)
+            # remove outdated models
+            if len(saved_models) > config.keep_checkpoint_max > 0:
+                model_to_remove = saved_models.popleft()
+                try:
+                    os.remove(model_to_remove)
+                except:
+                    logger.info(f'failed to remove {model_to_remove}')
+
+    writer.close()
+
 
 
 @torch.no_grad()
-def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=False) -> Tuple[float]:
+def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=False) -> float:
     """ finished, checked,
 
     Parameters:
@@ -181,11 +303,43 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
 
     Returns:
     --------
-    eval_res: tuple of float,
-        evaluation results, including
-        auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric
+    qrs_score: float,
+        evaluation results, a score defined in `compute_metrics`
     """
-    raise NotImplementedError
+    model.eval()
+    all_rpeak_preds = []
+    all_rpeak_labels = []
+
+    for signals, labels in data_loader:
+        signals = signals.to(device=device, dtype=_DTYPE)
+        labels = labels.numpy()
+        labels = [mask_to_intervals(item, 1) for item in labels]
+        labels = [
+            (TrainCfg.seq_lab_reduction//2) * np.array([itv[0]+itv[1] for itv in item] \
+                for item in labels
+        ]
+        all_rpeak_labels += labels
+
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+        prob, rpeak_preds = model.inference(
+            signals,
+            bin_pred_thr=0.5,
+            duration_thr=4*16,
+            dist_thr=200,
+            correction=False
+        )
+        all_rpeak_preds += rpeak_preds
+
+    qrs_score = compute_metrics(
+        rpeaks_truths=all_rpeak_labels,
+        rpeaks_preds=all_rpeak_preds,
+        fs=TrainCfg.fs,
+        thr=TrainCfg.bias_thr,
+    )
+
+    model.train()
+    return qrs_score
 
 
 def get_args(**kwargs):
