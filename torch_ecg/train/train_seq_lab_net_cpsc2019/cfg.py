@@ -47,6 +47,7 @@ ModelCfg.skip_dist = BaseCfg.skip_dist
 
 ModelCfg.seq_lab_crnn = ED()
 ModelCfg.seq_lab_crnn.fs = ModelCfg.fs
+ModelCfg.seq_lab_crnn.classes = deepcopy(ModelCfg.classes)
 ModelCfg.seq_lab_crnn.n_leads = ModelCfg.n_leads
 ModelCfg.seq_lab_crnn.skip_dist = ModelCfg.skip_dist
 ModelCfg.seq_lab_crnn.torch_dtype = ModelCfg.torch_dtype
@@ -155,6 +156,7 @@ ModelCfg.seq_lab_crnn.clf.dropouts = [0.2, 0.2, 0.0]
 
 ModelCfg.seq_lab_cnn = ED()
 ModelCfg.seq_lab_cnn.fs = ModelCfg.fs
+ModelCfg.seq_lab_cnn.classes = deepcopy(ModelCfg.classes)
 ModelCfg.seq_lab_cnn.n_leads = ModelCfg.n_leads
 ModelCfg.seq_lab_cnn.skip_dist = ModelCfg.skip_dist
 ModelCfg.seq_lab_cnn.torch_dtype = ModelCfg.torch_dtype
