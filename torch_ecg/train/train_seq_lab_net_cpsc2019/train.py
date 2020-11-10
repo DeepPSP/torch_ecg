@@ -26,11 +26,11 @@ from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 import biosppy.signals.ecg as BSE
 
-from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
 from torch_ecg.models.nets import (
     BCEWithLogitsWithClassWeightLoss,
     default_collate_fn as collate_fn,
 )
+from .model import ECG_SEQ_LAB_NET_CPSC2019
 from .utils import (
     init_logger, get_date_str, dict_to_str, str2bool,
     mask_to_intervals,
@@ -431,7 +431,7 @@ if __name__ == "__main__":
     model_config.rnn.name = config.rnn_name
     model_config.attn.name = config.attn_name
 
-    model = ECG_SEQ_LAB_NET(
+    model = ECG_SEQ_LAB_NET_CPSC2019(
         classes=config.classes,
         n_leads=config.n_leads,
         input_len=config.input_len,
