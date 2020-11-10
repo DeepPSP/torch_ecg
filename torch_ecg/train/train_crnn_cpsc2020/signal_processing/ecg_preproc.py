@@ -27,7 +27,7 @@ from scipy.io import savemat
 # https://github.com/scipy/scipy/issues/9680
 from biosppy.signals.tools import filter_signal
 
-from ..cfg import PreprocCfg
+from torch_ecg.train.train_crnn_cpsc2020.cfg import PreprocCfg
 from .ecg_rpeaks import (
     xqrs_detect, gqrs_detect, pantompkins,
     hamilton_detect, ssf_detect, christov_detect, engzee_detect, gamboa_detect,
@@ -38,7 +38,6 @@ from .ecg_rpeaks_dl import seq_lab_net_detect
 __all__ = [
     "preprocess_signal",
     "parallel_preprocess_signal",
-    "denoise_signal",
 ]
 
 

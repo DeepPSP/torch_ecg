@@ -19,10 +19,10 @@ import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 
-from ...utils.utils_signal import butter_bandpass_filter
-from ...utils.misc import ensure_siglen, dict_to_str
+from torch_ecg.utils.utils_signal import butter_bandpass_filter
+from torch_ecg.utils.misc import ensure_siglen, dict_to_str
 # from .data_reader import CINC2020Reader as CR
-from ..database_reader.database_reader.physionet_databases import CINC2020 as CR
+from torch_ecg.train.database_reader.database_reader.physionet_databases import CINC2020 as CR
 from .cfg import TrainCfg, ModelCfg
 
 

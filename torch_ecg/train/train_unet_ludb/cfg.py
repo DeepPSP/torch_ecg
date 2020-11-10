@@ -8,7 +8,7 @@ from copy import deepcopy
 
 from easydict import EasyDict as ED
 
-from ...cfg import Cfg as MainCfg
+from torch_ecg.cfg import Cfg as MainCfg
 
 
 __all__ = [

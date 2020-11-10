@@ -26,11 +26,11 @@ from torch import Tensor
 import torch.nn.functional as F
 from easydict import EasyDict as ED
 
-from ...cfg import Cfg
-from ...utils.utils_nn import compute_conv_output_shape
-from ...utils.misc import dict_to_str
-from ...model_configs import ECG_SEQ_LAB_NET_CONFIG
-from ..nets import (
+from torch_ecg.cfg import Cfg
+from torch_ecg.utils.utils_nn import compute_conv_output_shape
+from torch_ecg.utils.misc import dict_to_str
+from torch_ecg.model_configs import ECG_SEQ_LAB_NET_CONFIG
+from torch_ecg.models.nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
     # MultiConv,

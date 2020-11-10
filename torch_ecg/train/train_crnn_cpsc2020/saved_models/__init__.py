@@ -6,8 +6,10 @@ from typing import Union, Optional, Tuple
 import torch
 from torch import nn
 
-from ..model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
-from ..cfg import ModelCfg
+from torch_ecg.train.train_crnn_cpsc2020.model import (
+    ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020,
+)
+from torch_ecg.train.train_crnn_cpsc2020.cfg import ModelCfg
 
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))

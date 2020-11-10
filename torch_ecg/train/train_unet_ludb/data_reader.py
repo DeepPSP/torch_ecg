@@ -14,7 +14,7 @@ import pandas as pd
 import wfdb
 from easydict import EasyDict as ED
 
-from ...utils.misc import (
+from torch_ecg.utils.misc import (
     get_record_list_recursive,
     get_record_list_recursive2,
     get_record_list_recursive3,

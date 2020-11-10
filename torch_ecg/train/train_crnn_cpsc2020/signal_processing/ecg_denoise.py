@@ -20,7 +20,7 @@ from numbers import Real
 import numpy as np
 from easydict import EasyDict as ED
 
-from ..utils import mask_to_intervals
+from torch_ecg.train.train_crnn_cpsc2020.utils import mask_to_intervals
 
 
 __all__ = [

@@ -10,8 +10,9 @@ import torch
 from torch import Tensor
 from easydict import EasyDict as ED
 
-from ...models.ecg_crnn import ECG_CRNN
-from ...models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
+from torch_ecg.models import (
+    ECG_CRNN, ECG_SEQ_LAB_NET
+)
 from .cfg import ModelCfg
 from .utils import mask_to_intervals
 

@@ -8,7 +8,7 @@ from copy import deepcopy
 import numpy as np
 from easydict import EasyDict as ED
 
-from ...cfg import Cfg as BaseCfg
+from torch_ecg.cfg import Cfg as BaseCfg
 from .scoring_aux_data import (
     equiv_class_dict,
     get_class_weight,

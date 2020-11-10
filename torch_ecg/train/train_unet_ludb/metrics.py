@@ -19,7 +19,7 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 from easydict import EasyDict as ED
 
-from ...utils.misc import (
+from torch_ecg.utils.misc import (
     ECGWaveForm,
     masks_to_waveforms,
 )

@@ -11,7 +11,7 @@ from torch import Tensor
 from easydict import EasyDict as ED
 import biosppy.signals.ecg as BSE
 
-from ...models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
+from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
 from .cfg import ModelCfg
 from .utils import mask_to_intervals, _remove_spikes_naive
 

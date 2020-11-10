@@ -9,7 +9,7 @@ import torch
 from torch import Tensor
 from easydict import EasyDict as ED
 
-from ...models.ecg_crnn import ECG_CRNN
+from torch_ecg.models.ecg_crnn import ECG_CRNN
 from .cfg import ModelCfg
 
 

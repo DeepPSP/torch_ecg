@@ -8,8 +8,8 @@ from typing import Tuple
 import numpy as np
 from scipy.signal import resample_poly
 
-from .signal_processing.ecg_preproc import parallel_preprocess_signal
-from .signal_processing.ecg_denoise import ecg_denoise
+from .signal_processing import parallel_preprocess_signal
+from .signal_processing import ecg_denoise
 from .saved_models import load_model
 from .cfg import ModelCfg
 
@@ -154,7 +154,7 @@ def CPSC2020_challenge(ECG, fs):
 
 
 if __name__ == "__main__":
-    from ..database_reader.database_reader.other_databases import CPSC2020 as CR
+    from torch_ecg.train.database_reader.database_reader.other_databases import CPSC2020 as CR
     from .cfg import TrainCfg
 
     dr = CR(TrainCfg.db_dir)

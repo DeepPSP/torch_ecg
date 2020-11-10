@@ -71,10 +71,9 @@ import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 
+from torch_ecg.train.database_reader.database_reader.other_databases import CPSC2020 as CR
+from torch_ecg.train.train_crnn_cpsc2020 import signal_processing as SP
 from .cfg import TrainCfg, ModelCfg, PreprocCfg
-from ..database_reader.database_reader.other_databases import CPSC2020 as CR
-from signal_processing.ecg_preproc import parallel_preprocess_signal
-from signal_processing.ecg_denoise import ecg_denoise
 from .utils import (
     mask_to_intervals, list_sum,
     gen_baseline_wander,
@@ -513,7 +512,7 @@ class CPSC2020(Dataset):
         if (not force_recompute) and os.path.isfile(save_fp.data) and os.path.isfile(save_fp.rpeaks):
             return
         # perform pre-process
-        pps = parallel_preprocess_signal(
+        pps = SP.parallel_preprocess_signal(
             self.reader.load_data(rec, keep_dim=False),
             fs=self.reader.fs,
             config=config,
@@ -731,7 +730,7 @@ class CPSC2020(Dataset):
             seg = segments[ind, ...]
             # if self._get_seg_ampl(seg) < 0.1:  # drop out flat segments
             #     continue
-            if ecg_denoise(seg, self.reader.fs, config={"ampl_min":0.15}) != [[0, self.seglen]]:
+            if SP.ecg_denoise(seg, self.reader.fs, config={"ampl_min":0.15}) != [[0, self.seglen]]:
                 continue
             savemat(save_fp.data, {"ecg": seg}, format="5")
             seg_label = labels[ind, ...]

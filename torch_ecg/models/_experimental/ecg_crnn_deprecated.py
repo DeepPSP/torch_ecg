@@ -12,9 +12,9 @@ from torch import Tensor
 import torch.nn.functional as F
 from easydict import EasyDict as ED
 
-from ...cfg import Cfg
-from ...model_configs.ati_cnn import ATI_CNN_CONFIG
-from ...model_configs.cpsc import CPSC_CONFIG
+from torch_ecg.cfg import Cfg
+from torch_ecg.model_configs.ati_cnn import ATI_CNN_CONFIG
+from torch_ecg.model_configs.cpsc import CPSC_CONFIG
 from .nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
@@ -25,8 +25,8 @@ from .nets import (
     AttentionWithContext, MultiHeadAttention,
 )
 from .ecg_crnn import CPSCBlock, CPSCCNN
-from ...utils.utils_nn import compute_conv_output_shape
-from ...utils.misc import dict_to_str
+from torch_ecg.utils.utils_nn import compute_conv_output_shape
+from torch_ecg.utils.misc import dict_to_str
 
 
 if Cfg.torch_dtype.lower() == 'double':

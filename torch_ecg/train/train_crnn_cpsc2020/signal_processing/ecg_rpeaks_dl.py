@@ -16,7 +16,7 @@ from scipy.signal import resample_poly
 import biosppy.signals.ecg as BSE
 
 from .ecg_rpeaks_dl_models import load_model
-from ..utils import mask_to_intervals
+from torch_ecg.train.train_crnn_cpsc2020.utils import mask_to_intervals
 
 
 __all__ = [

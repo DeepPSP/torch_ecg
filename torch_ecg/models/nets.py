@@ -18,14 +18,14 @@ import torch.nn.functional as F
 from torch.nn.utils.rnn import PackedSequence
 from easydict import EasyDict as ED
 
-from ..cfg import Cfg
-from ..utils.utils_nn import (
+from torch_ecg.cfg import Cfg
+from torch_ecg.utils.utils_nn import (
     compute_output_shape,
     compute_conv_output_shape,
     compute_maxpool_output_shape,
     compute_avgpool_output_shape,
 )
-from ..utils.misc import dict_to_str
+from torch_ecg.utils.misc import dict_to_str
 
 if Cfg.torch_dtype.lower() == 'double':
     torch.set_default_tensor_type(torch.DoubleTensor)

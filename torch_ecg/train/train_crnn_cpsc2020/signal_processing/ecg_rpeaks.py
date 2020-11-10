@@ -29,14 +29,14 @@ import biosppy.signals.ecg as BSE
 
 
 __all__ = [
-    "xqrs_detect", "gqrs_detect", "pantompkins",
+    "xqrs_detect", "gqrs_detect", "pantompkins_detect",
     "hamilton_detect", "ssf_detect", "christov_detect", "engzee_detect", "gamboa_detect",
 ]
 
 
 # ---------------------------------------------------------------------
 # algorithms from wfdb
-def pantompkins(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
+def pantompkins_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
     """ to keep in accordance of parameters with `xqrs` and `gqrs`
     
     References:

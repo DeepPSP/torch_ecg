@@ -14,7 +14,7 @@ from torch import nn
 from torch import Tensor
 from torch.autograd import Function
 
-from ..cfg import Cfg
+from torch_ecg.cfg import Cfg
 
 if Cfg.torch_dtype.lower() == 'double':
     torch.set_default_tensor_type(torch.DoubleTensor)

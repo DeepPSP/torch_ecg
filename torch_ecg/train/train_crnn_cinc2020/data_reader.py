@@ -19,7 +19,7 @@ from scipy.io import loadmat
 from scipy.signal import resample, resample_poly
 from easydict import EasyDict as ED
 
-from ...utils.misc import (
+from torch_ecg.utils.misc import (
     get_record_list_recursive,
     get_record_list_recursive2,
     get_record_list_recursive3,
@@ -27,7 +27,7 @@ from ...utils.misc import (
     ms2samples,
     ensure_siglen,
 )
-from ...utils import ecg_arrhythmia_knowledge as EAK
+from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
 from .scoring_aux_data import (
     dx_mapping_all, dx_mapping_scored, dx_mapping_unscored,
     normalize_class, abbr_to_snomed_ct_code,

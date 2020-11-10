@@ -19,7 +19,7 @@ from sklearn.preprocessing import StandardScaler
 from easydict import EasyDict as ED
 
 # from .data_reader import LUDBReader as LR
-from ..database_reader.database_reader.physionet_databases import LUDB as LR
+from torch_ecg.train.database_reader.database_reader.physionet_databases import LUDB as LR
 from .cfg import TrainCfg
 
 if TrainCfg.torch_dtype.lower() == 'double':

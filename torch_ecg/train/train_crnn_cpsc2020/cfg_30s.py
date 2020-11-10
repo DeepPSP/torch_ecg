@@ -11,7 +11,7 @@ import pywt
 import numpy as np
 from easydict import EasyDict as ED
 
-from ...cfg import Cfg
+from torch_ecg.cfg import Cfg
 
 
 __all__ = [
