@@ -432,7 +432,6 @@ if __name__ == "__main__":
     model_config.attn.name = config.attn_name
 
     model = ECG_SEQ_LAB_NET_CPSC2019(
-        classes=config.classes,
         n_leads=config.n_leads,
         input_len=config.input_len,
         config=model_config,

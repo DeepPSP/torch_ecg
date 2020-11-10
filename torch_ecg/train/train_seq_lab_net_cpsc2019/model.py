@@ -22,13 +22,11 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2019"
     
-    def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters:
         -----------
-        classes: list,
-            list of the classes for sequence labeling
         n_leads: int,
             number of leads (number of input channels)
         input_len: int, optional,
@@ -40,7 +38,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         """
         model_config = deepcopy(ModelCfg.seq_lab_crnn)
         model_config.update(config or {})
-        super().__init__(classes, n_leads, input_len, model_config)
+        super().__init__(model_config.classes, n_leads, input_len, model_config)
 
     @torch.no_grad()
     def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200, correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
