@@ -403,6 +403,8 @@ def get_args(**kwargs):
 DAS = True  # JD DAS platform
 
 if __name__ == "__main__":
+    sys.path.append(os.path.dirname(__file__))
+    
     config = get_args(**TrainCfg)
     # os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
     if not DAS:
