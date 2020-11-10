@@ -227,13 +227,13 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 eval_train_res = evaluate(
                     model, val_train_loader, config, device, debug
                 )
-                writer.add_scalar('train/auroc', eval_train_res, global_step)
+                writer.add_scalar('train/qrs_score', eval_train_res, global_step)
 
-            eval_res = evaluate_crnn(
+            eval_res = evaluate(
                 model, val_loader, config, device, debug
             )
             model.train()
-            writer.add_scalar('test/auroc', eval_res, global_step)
+            writer.add_scalar('test/qrs_score', eval_res, global_step)
 
             if config.lr_scheduler is None:
                 pass
@@ -244,7 +244,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
             
             if debug:
                 eval_train_msg = f"""
-                train/qrs_score:             {eval_train_res}
+                train/qrs_score:         {eval_train_res}
             """
             else:
                 eval_train_msg = ""
@@ -252,7 +252,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 Train epoch_{epoch + 1}:
                 --------------------
                 train/epoch_loss:        {epoch_loss}{eval_train_msg}
-                test/qrs_score:              {eval_res}
+                test/qrs_score:          {eval_res}
                 ---------------------------------
             """
 
@@ -315,7 +315,11 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
         labels = labels.numpy()
         labels = [mask_to_intervals(item, 1) for item in labels]
         labels = [
-            (TrainCfg.seq_lab_reduction//2) * np.array([itv[0]+itv[1] for itv in item] \
+            (TrainCfg.seq_lab_reduction//2) * np.array([itv[0]+itv[1] for itv in item]) \
+                for item in labels
+        ]
+        labels = [
+            item[np.where((item>=config.skip_dist) & (item<config.input_len-config.skip_dist))[0]] \
                 for item in labels
         ]
         all_rpeak_labels += labels
@@ -334,11 +338,12 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
     qrs_score = compute_metrics(
         rpeaks_truths=all_rpeak_labels,
         rpeaks_preds=all_rpeak_preds,
-        fs=TrainCfg.fs,
-        thr=TrainCfg.bias_thr,
+        fs=config.fs,
+        thr=config.bias_thr/config.fs,
     )
 
     model.train()
+
     return qrs_score
 
 
