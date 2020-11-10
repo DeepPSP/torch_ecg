@@ -364,6 +364,11 @@ def get_args(**kwargs):
         help='the batch size for training',
         dest='batch_size')
     parser.add_argument(
+        '-m', '--model-name',
+        type=str, default="crnn",
+        help='name of the model to train, `cnn` or `crnn`',
+        dest='model_name')
+    parser.add_argument(
         '-c', '--cnn-name',
         type=str, default='multi_scopic',
         help='choice of cnn feature extractor',
@@ -420,7 +425,8 @@ if __name__ == "__main__":
     print(f"Using torch of version {torch.__version__}")
     print(f'with configuration\n{dict_to_str(config)}')
 
-    model_config = deepcopy(ECG_SEQ_LAB_NET_CONFIG)
+    model_name = f"seq_lab_{config.model_name.lower()}"
+    model_config = deepcopy(ModelCfg[model_name])
     model_config.cnn.name = config.cnn_name
     model_config.rnn.name = config.rnn_name
     model_config.attn.name = config.attn_name
