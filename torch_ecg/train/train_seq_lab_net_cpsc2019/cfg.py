@@ -130,21 +130,21 @@ ModelCfg.seq_lab_crnn.rnn.lstm.bias = True
 ModelCfg.seq_lab_crnn.rnn.lstm.dropouts = 0.2
 ModelCfg.seq_lab_crnn.rnn.lstm.activation = 'mish'
 
-# ModelCfg.seq_lab_crnn.attn = ED()
-# ModelCfg.seq_lab_crnn.attn.name = 'se'  # 'gc'
-# ModelCfg.seq_lab_crnn.attn.se = ED()
-# ModelCfg.seq_lab_crnn.attn.se.reduction = 8  # not including the last linear layer
-# ModelCfg.seq_lab_crnn.attn.se.activation = "relu"
-# ModelCfg.seq_lab_crnn.attn.se.kw_activation = ED(inplace=True)
-# ModelCfg.seq_lab_crnn.attn.se.bias = True
-# ModelCfg.seq_lab_crnn.attn.se.kernel_initializer = 'he_normal'
+ModelCfg.seq_lab_crnn.attn = ED()
+ModelCfg.seq_lab_crnn.attn.name = 'se'  # 'gc'
+ModelCfg.seq_lab_crnn.attn.se = ED()
+ModelCfg.seq_lab_crnn.attn.se.reduction = 8  # not including the last linear layer
+ModelCfg.seq_lab_crnn.attn.se.activation = "relu"
+ModelCfg.seq_lab_crnn.attn.se.kw_activation = ED(inplace=True)
+ModelCfg.seq_lab_crnn.attn.se.bias = True
+ModelCfg.seq_lab_crnn.attn.se.kernel_initializer = 'he_normal'
 
-# ModelCfg.seq_lab_crnn.clf = ED()
-# ModelCfg.seq_lab_crnn.clf.out_channels = [256, 64]  # not including the last linear layer
-# ModelCfg.seq_lab_crnn.clf.activation = "mish"
-# ModelCfg.seq_lab_crnn.clf.bias = True
-# ModelCfg.seq_lab_crnn.clf.kernel_initializer = 'he_normal'
-# ModelCfg.seq_lab_crnn.clf.dropouts = [0.2, 0.2, 0.0]
+ModelCfg.seq_lab_crnn.clf = ED()
+ModelCfg.seq_lab_crnn.clf.out_channels = [256, 64]  # not including the last linear layer
+ModelCfg.seq_lab_crnn.clf.activation = "mish"
+ModelCfg.seq_lab_crnn.clf.bias = True
+ModelCfg.seq_lab_crnn.clf.kernel_initializer = 'he_normal'
+ModelCfg.seq_lab_crnn.clf.dropouts = [0.2, 0.2, 0.0]
 
 # global pooling
 # currently is fixed using `AdaptiveMaxPool1d`
@@ -176,7 +176,6 @@ ModelCfg.seq_lab_cnn.clf.activation = "mish"
 ModelCfg.seq_lab_cnn.clf.bias = True
 ModelCfg.seq_lab_cnn.clf.kernel_initializer = 'he_normal'
 ModelCfg.seq_lab_cnn.clf.dropouts = [0.2, 0.2, 0.0]
-
 
 
 TrainCfg = ED()
