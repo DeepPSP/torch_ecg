@@ -27,7 +27,7 @@ ECG_UNET_CONFIG.kw_activation = {"inplace": True}
 
 ECG_UNET_CONFIG.down_up_block_num = 4
 
-ECG_UNET_CONFIG.down_mode = 'max'
+ECG_UNET_CONFIG.down_mode = "max"
 ECG_UNET_CONFIG.down_scales = list(repeat(2, ECG_UNET_CONFIG.down_up_block_num))
 ECG_UNET_CONFIG.down_num_filters = [
     ECG_UNET_CONFIG.init_num_filters * (2**idx) \
@@ -36,7 +36,7 @@ ECG_UNET_CONFIG.down_num_filters = [
 ECG_UNET_CONFIG.down_filter_lengths = \
     list(repeat(ECG_UNET_CONFIG.init_filter_length, ECG_UNET_CONFIG.down_up_block_num))
 
-ECG_UNET_CONFIG.up_mode = 'nearest'
+ECG_UNET_CONFIG.up_mode = "nearest"
 ECG_UNET_CONFIG.up_scales = list(repeat(2, ECG_UNET_CONFIG.down_up_block_num))
 ECG_UNET_CONFIG.up_num_filters = [
     ECG_UNET_CONFIG.init_num_filters * (2**idx) \

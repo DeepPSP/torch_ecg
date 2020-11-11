@@ -116,8 +116,8 @@ resnet_leadwise.init_num_filters = 96
 
 
 resnet_block_basic = ED()
-resnet_block_basic.increase_channels_method = 'conv'  # or 'zero_padding'
-resnet_block_basic.subsample_mode = 'conv'  # or 'max', 'avg', 'nearest', 'linear', 'bilinear'
+resnet_block_basic.increase_channels_method = "conv"  # or "zero_padding"
+resnet_block_basic.subsample_mode = "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
 resnet_block_basic.kernel_initializer = resnet.kernel_initializer
 resnet_block_basic.kw_initializer = deepcopy(resnet.kw_initializer)
 resnet_block_basic.activation = resnet.activation
@@ -125,8 +125,8 @@ resnet_block_basic.kw_activation = deepcopy(resnet.kw_activation)
 resnet_block_basic.bias = False
 
 resnet_bottle_neck = ED()
-resnet_bottle_neck.increase_channels_method = 'conv'  # or 'zero_padding'
-resnet_bottle_neck.subsample_mode = 'conv'  # or 'max', 'avg', 'nearest', 'linear', 'bilinear'
+resnet_bottle_neck.increase_channels_method = "conv"  # or "zero_padding"
+resnet_bottle_neck.subsample_mode = "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
 resnet_bottle_neck.subsample_at = 1  # or 0
 resnet_bottle_neck.kernel_initializer = resnet.kernel_initializer
 resnet_bottle_neck.kw_initializer = deepcopy(resnet.kw_initializer)
@@ -155,9 +155,9 @@ resnet_stanford.kw_activation = {"inplace": True}
 
 resnet_block_stanford = ED()
 resnet_block_stanford.increase_channels_at = 4
-resnet_block_stanford.increase_channels_method = 'conv'  # or 'zero_padding'
+resnet_block_stanford.increase_channels_method = "conv"  # or "zero_padding"
 resnet_block_stanford.num_skip = 2
-resnet_block_stanford.subsample_mode = 'conv'  # 'max', 'avg'
+resnet_block_stanford.subsample_mode = "conv"  # "max", "avg"
 resnet_block_stanford.kernel_initializer = resnet_stanford.kernel_initializer
 resnet_block_stanford.kw_initializer = deepcopy(resnet_stanford.kw_initializer)
 resnet_block_stanford.activation = resnet_stanford.activation
@@ -305,7 +305,7 @@ multi_scopic_leadwise.num_filters = [
 
 
 multi_scopic_block = ED()
-multi_scopic_block.subsample_mode = 'max'  # or 'conv', 'avg', 'nearest', 'linear', 'bilinear'
+multi_scopic_block.subsample_mode = "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
 multi_scopic_block.bias = multi_scopic.bias
 multi_scopic_block.kernel_initializer = multi_scopic.kernel_initializer
 multi_scopic_block.kw_initializer = deepcopy(multi_scopic.kw_initializer)

@@ -30,7 +30,7 @@ ECG_CRNN_CONFIG = ED()
 
 # cnn part
 ECG_CRNN_CONFIG.cnn = ED()
-ECG_CRNN_CONFIG.cnn.name = 'resnet_leadwise'
+ECG_CRNN_CONFIG.cnn.name = "resnet_leadwise"
 
 
 ECG_CRNN_CONFIG.cnn.vgg16 = deepcopy(vgg16)
@@ -62,7 +62,7 @@ ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise.block = deepcopy(multi_scopic_block)
 
 # rnn part
 ECG_CRNN_CONFIG.rnn = ED()
-ECG_CRNN_CONFIG.rnn.name = 'linear'  # 'none', 'lstm', 'attention'
+ECG_CRNN_CONFIG.rnn.name = "linear"  # "none", "lstm", "attention"
 
 ECG_CRNN_CONFIG.rnn.lstm = deepcopy(lstm)
 ECG_CRNN_CONFIG.rnn.attention = deepcopy(attention)
@@ -71,4 +71,4 @@ ECG_CRNN_CONFIG.rnn.linear = deepcopy(linear)
 
 # global pooling
 # currently is fixed using `AdaptiveMaxPool1d`
-ECG_CRNN_CONFIG.global_pool = 'max'  # 'avg', 'attentive'
+ECG_CRNN_CONFIG.global_pool = "max"  # "avg", "attentive"

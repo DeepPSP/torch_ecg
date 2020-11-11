@@ -34,7 +34,7 @@ _num_convs = 3  # TripleConv
 # down, triple conv
 ECG_SUBTRACT_UNET_CONFIG.down_up_block_num = 3
 
-ECG_SUBTRACT_UNET_CONFIG.down_mode = 'max'
+ECG_SUBTRACT_UNET_CONFIG.down_mode = "max"
 ECG_SUBTRACT_UNET_CONFIG.down_scales = [10, 5, 2]
 init_down_num_filters = 24
 ECG_SUBTRACT_UNET_CONFIG.down_num_filters = [
@@ -71,7 +71,7 @@ ECG_SUBTRACT_UNET_CONFIG.bottom_dropouts = [
 
 
 # up, triple conv
-ECG_SUBTRACT_UNET_CONFIG.up_mode = 'nearest'
+ECG_SUBTRACT_UNET_CONFIG.up_mode = "nearest"
 ECG_SUBTRACT_UNET_CONFIG.up_scales = [2, 5, 10]
 ECG_SUBTRACT_UNET_CONFIG.up_num_filters = [
     list(repeat(48, _num_convs)),

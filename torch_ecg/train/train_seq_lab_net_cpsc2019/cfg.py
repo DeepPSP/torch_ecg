@@ -53,7 +53,7 @@ ModelCfg.seq_lab_crnn.skip_dist = ModelCfg.skip_dist
 ModelCfg.seq_lab_crnn.torch_dtype = ModelCfg.torch_dtype
 
 ModelCfg.seq_lab_crnn.cnn = ED()
-ModelCfg.seq_lab_crnn.cnn.name = 'multi_scopic'  # resnet, resnet_gc, vgg, cpsc2018, etc.
+ModelCfg.seq_lab_crnn.cnn.name = "multi_scopic"  # resnet, resnet_gc, vgg, cpsc2018, etc.
 ModelCfg.seq_lab_crnn.cnn.multi_scopic = ED()
 ModelCfg.seq_lab_crnn.cnn.multi_scopic.groups = 1
 ModelCfg.seq_lab_crnn.cnn.multi_scopic.scopes = [
@@ -109,7 +109,7 @@ ModelCfg.seq_lab_crnn.cnn.multi_scopic.kw_initializer = {}
 ModelCfg.seq_lab_crnn.cnn.multi_scopic.activation = "relu"
 ModelCfg.seq_lab_crnn.cnn.multi_scopic.kw_activation = {"inplace": True}
 ModelCfg.seq_lab_crnn.cnn.multi_scopic.block = ED()
-ModelCfg.seq_lab_crnn.cnn.multi_scopic.block.subsample_mode = 'max'  # or 'conv', 'avg', 'nearest', 'linear', 'bilinear'
+ModelCfg.seq_lab_crnn.cnn.multi_scopic.block.subsample_mode = "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
 ModelCfg.seq_lab_crnn.cnn.multi_scopic.block.bias = \
     ModelCfg.seq_lab_crnn.cnn.multi_scopic.bias
 ModelCfg.seq_lab_crnn.cnn.multi_scopic.block.kernel_initializer = \
@@ -124,7 +124,7 @@ ModelCfg.seq_lab_crnn.cnn.multi_scopic.block.kw_activation = \
 # rnn part
 # abuse of notation
 ModelCfg.seq_lab_crnn.rnn = ED()
-ModelCfg.seq_lab_crnn.rnn.name = 'lstm'  # 'none', 'lstm', 'attention'
+ModelCfg.seq_lab_crnn.rnn.name = "lstm"  # "none", "lstm", "attention"
 ModelCfg.seq_lab_crnn.rnn.lstm = ED()
 ModelCfg.seq_lab_crnn.rnn.lstm.hidden_sizes = [
     256, 64,
@@ -134,24 +134,24 @@ ModelCfg.seq_lab_crnn.rnn.lstm.dropouts = 0.2
 ModelCfg.seq_lab_crnn.rnn.lstm.bidirectional = True
 
 ModelCfg.seq_lab_crnn.attn = ED()
-ModelCfg.seq_lab_crnn.attn.name = 'se'  # 'gc'
+ModelCfg.seq_lab_crnn.attn.name = "se"  # "gc"
 ModelCfg.seq_lab_crnn.attn.se = ED()
 ModelCfg.seq_lab_crnn.attn.se.reduction = 8  # not including the last linear layer
 ModelCfg.seq_lab_crnn.attn.se.activation = "relu"
 ModelCfg.seq_lab_crnn.attn.se.kw_activation = ED(inplace=True)
 ModelCfg.seq_lab_crnn.attn.se.bias = True
-ModelCfg.seq_lab_crnn.attn.se.kernel_initializer = 'he_normal'
+ModelCfg.seq_lab_crnn.attn.se.kernel_initializer = "he_normal"
 
 ModelCfg.seq_lab_crnn.clf = ED()
 ModelCfg.seq_lab_crnn.clf.out_channels = [256, 64]  # not including the last linear layer
 ModelCfg.seq_lab_crnn.clf.activation = "mish"
 ModelCfg.seq_lab_crnn.clf.bias = True
-ModelCfg.seq_lab_crnn.clf.kernel_initializer = 'he_normal'
+ModelCfg.seq_lab_crnn.clf.kernel_initializer = "he_normal"
 ModelCfg.seq_lab_crnn.clf.dropouts = [0.2, 0.2, 0.0]
 
 # global pooling
 # currently is fixed using `AdaptiveMaxPool1d`
-# ModelCfg.seq_lab_crnn.global_pool = 'max'  # 'avg', 'attentive'
+# ModelCfg.seq_lab_crnn.global_pool = "max"  # "avg", "attentive"
 
 
 ModelCfg.seq_lab_cnn = ED()
@@ -164,28 +164,28 @@ ModelCfg.seq_lab_cnn.torch_dtype = ModelCfg.torch_dtype
 ModelCfg.seq_lab_cnn.cnn = ModelCfg.seq_lab_crnn.cnn.copy()
 
 ModelCfg.seq_lab_cnn.rnn = ED()
-ModelCfg.seq_lab_cnn.rnn.name = 'none'  # 'lstm'
+ModelCfg.seq_lab_cnn.rnn.name = "none"  # "lstm"
 ModelCfg.seq_lab_cnn.attn = ED()
-ModelCfg.seq_lab_cnn.attn.name = 'se'  # 'gc'
+ModelCfg.seq_lab_cnn.attn.name = "se"  # "gc"
 ModelCfg.seq_lab_cnn.attn.se = ED()
 ModelCfg.seq_lab_cnn.attn.se.reduction = 8  # not including the last linear layer
 ModelCfg.seq_lab_cnn.attn.se.activation = "relu"
 ModelCfg.seq_lab_cnn.attn.se.kw_activation = ED(inplace=True)
 ModelCfg.seq_lab_cnn.attn.se.bias = True
-ModelCfg.seq_lab_cnn.attn.se.kernel_initializer = 'he_normal'
+ModelCfg.seq_lab_cnn.attn.se.kernel_initializer = "he_normal"
 
 ModelCfg.seq_lab_cnn.clf = ED()
 ModelCfg.seq_lab_cnn.clf.out_channels = [256, 64]  # not including the last linear layer
 ModelCfg.seq_lab_cnn.clf.activation = "mish"
 ModelCfg.seq_lab_cnn.clf.bias = True
-ModelCfg.seq_lab_cnn.clf.kernel_initializer = 'he_normal'
+ModelCfg.seq_lab_cnn.clf.kernel_initializer = "he_normal"
 ModelCfg.seq_lab_cnn.clf.dropouts = [0.2, 0.2, 0.0]
 
 
 TrainCfg = ED()
 TrainCfg.fs = ModelCfg.fs
 TrainCfg.db_dir = BaseCfg.db_dir
-TrainCfg.log_dir = os.path.join(_BASE_DIR, 'log')
+TrainCfg.log_dir = os.path.join(_BASE_DIR, "log")
 TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
 TrainCfg.keep_checkpoint_max = 50
 TrainCfg.train_ratio = 0.8
@@ -240,13 +240,18 @@ TrainCfg.lr = TrainCfg.learning_rate
 TrainCfg.lr_step_size = 50
 TrainCfg.lr_gamma = 0.1
 
+TrainCfg.lr_scheduler = None  # 'plateau', 'burn_in', 'step', None
+
 TrainCfg.momentum = 0.949
 TrainCfg.decay = 0.0005
 
 # configs of loss function
-TrainCfg.loss = 'BCEWithLogitsLoss'
-# TrainCfg.loss = 'BCEWithLogitsWithClassWeightLoss'
+TrainCfg.loss = "BCEWithLogitsLoss"
+# TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
 TrainCfg.eval_every = 20
 
 # model selection
-TrainCfg.model_name = "crnn"  # "seq_lab", "unet"
+TrainCfg.model_name = "cnn"  # one of "cnn", "crnn"
+TrainCfg.cnn_name = ModelCfg[f"seq_lab_{TrainCfg.model_name.lower()}"].cnn.name
+TrainCfg.rnn_name = ModelCfg[f"seq_lab_{TrainCfg.model_name.lower()}"].rnn.name
+TrainCfg.attn_name = ModelCfg[f"seq_lab_{TrainCfg.model_name.lower()}"].attn.name

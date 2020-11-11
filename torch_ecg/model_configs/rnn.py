@@ -31,7 +31,7 @@ attention.hidden_sizes = [12*24, 12*6]
 attention.nonlinearity = "tanh"
 
 
-# previously, if rnn is set 'none',
+# previously, if rnn is set "none",
 # then cnn is followed by only ONE linear layer to make predictions
 # split this linear layer into several and adding non-linear activation function
 # might be able to let the model learn better classifying hyper-surfaces
@@ -41,4 +41,4 @@ linear.out_channels = [
 ]
 linear.bias = True
 linear.dropouts = 0.2
-linear.activation = 'mish'
+linear.activation = "mish"
