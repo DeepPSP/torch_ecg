@@ -126,12 +126,12 @@ ModelCfg.seq_lab_crnn.cnn.multi_scopic.block.kw_activation = \
 ModelCfg.seq_lab_crnn.rnn = ED()
 ModelCfg.seq_lab_crnn.rnn.name = 'lstm'  # 'none', 'lstm', 'attention'
 ModelCfg.seq_lab_crnn.rnn.lstm = ED()
-ModelCfg.seq_lab_crnn.rnn.lstm.out_channels = [
+ModelCfg.seq_lab_crnn.rnn.lstm.hidden_sizes = [
     256, 64,
 ]
 ModelCfg.seq_lab_crnn.rnn.lstm.bias = True
 ModelCfg.seq_lab_crnn.rnn.lstm.dropouts = 0.2
-ModelCfg.seq_lab_crnn.rnn.lstm.activation = 'mish'
+ModelCfg.seq_lab_crnn.rnn.lstm.bidirectional = True
 
 ModelCfg.seq_lab_crnn.attn = ED()
 ModelCfg.seq_lab_crnn.attn.name = 'se'  # 'gc'
