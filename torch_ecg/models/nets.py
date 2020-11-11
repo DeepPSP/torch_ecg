@@ -821,12 +821,11 @@ class BidirectionalLSTM(nn.Module):
             if True, returns the the full output sequence,
             otherwise the last output in the output sequence
         kwargs: dict,
-            other parameters, including `nonlinearity`, etc.
+            other parameters,
         """
         super().__init__()
         self.__output_size = 2 * hidden_size
         self.return_sequence = return_sequences
-        self.nonlinearity = kwargs.get("nonlinearity","tanh")
 
         self.lstm = nn.LSTM(
             input_size=input_size,
@@ -836,7 +835,6 @@ class BidirectionalLSTM(nn.Module):
             bias=bias,
             dropout=dropout,
             bidirectional=True,
-            nonlinearity=self.nonlinearity,
         )
 
     def forward(self, input:Tensor) -> Tensor:
@@ -912,7 +910,7 @@ class StackedLSTM(nn.Sequential):
             if True, returns the the full output sequence,
             otherwise the last output in the output sequence
         kwargs: dict,
-            other parameters, including `nonlinearity`, etc.
+            other parameters,
         """
         super().__init__()
         self.__hidden_sizes = hidden_sizes
@@ -922,7 +920,6 @@ class StackedLSTM(nn.Sequential):
         self.bidirectional = bidirectional
         self.batch_first = False
         self.return_sequences = return_sequences
-        self.nonlinearity = kwargs.get("nonlinearity","tanh")
 
         layer_name_prefix = "bidirectional_lstm" if bidirectional else "lstm"
         for idx, (hs, b) in enumerate(zip(hidden_sizes, l_bias)):
@@ -941,7 +938,6 @@ class StackedLSTM(nn.Sequential):
                     bias=b,
                     batch_first=self.batch_first,
                     bidirectional=self.bidirectional,
-                    nonlinearity=self.nonlinearity,
                 )
             )
             if self.__dropouts[idx] > 0 and idx < self.num_lstm_layers-1:

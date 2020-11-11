@@ -1389,7 +1389,7 @@ class ECG_CRNN(nn.Module):
                 dropouts=self.config.rnn.lstm.dropouts,
                 bidirectional=self.config.rnn.lstm.bidirectional,
                 return_sequences=self.config.rnn.lstm.retseq,
-                nonlinearity=self.config.rnn.lstm.nonlinearity,
+                # nonlinearity=self.config.rnn.lstm.nonlinearity,
             )
             if self.config.rnn.lstm.retseq:
                 self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
@@ -1409,7 +1409,7 @@ class ECG_CRNN(nn.Module):
                     dropouts=self.config.rnn.attention.dropouts,
                     bidirectional=self.config.rnn.attention.bidirectional,
                     return_sequences=True,
-                    nonlinearity=self.config.rnn.attention.nonlinearity,
+                    # nonlinearity=self.config.rnn.attention.nonlinearity,
                 ),
                 SelfAttention(
                     in_features=attn_in_channels,

@@ -466,7 +466,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
                 dropouts=self.config.rnn.lstm.dropouts,
                 bidirectional=self.config.rnn.lstm.bidirectional,
                 return_sequences=True,
-                nonlinearity=self.config.rnn.lstm.nonlinearity,
+                # nonlinearity=self.config.rnn.lstm.nonlinearity,
             )
             # rnn output shape (seq_len, batch_size, n_channels)
             attn_input_size = self.rnn.compute_output_shape(None,None)[-1]
