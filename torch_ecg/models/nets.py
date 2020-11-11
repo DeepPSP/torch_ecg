@@ -818,12 +818,15 @@ class BidirectionalLSTM(nn.Module):
             if non-zero, introduces a `Dropout` layer on the outputs of each
             LSTM layer EXCEPT the last layer, with dropout probability equal to this value
         return_sequences: bool, default True,
-            if True, returns the last output in the output sequence,
-            otherwise the full sequence.
+            if True, returns the the full output sequence,
+            otherwise the last output in the output sequence
+        kwargs: dict,
+            other parameters, including `nonlinearity`, etc.
         """
         super().__init__()
         self.__output_size = 2 * hidden_size
         self.return_sequence = return_sequences
+        self.nonlinearity = kwargs.get("nonlinearity","tanh")
 
         self.lstm = nn.LSTM(
             input_size=input_size,
@@ -833,6 +836,7 @@ class BidirectionalLSTM(nn.Module):
             bias=bias,
             dropout=dropout,
             bidirectional=True,
+            nonlinearity=self.nonlinearity,
         )
 
     def forward(self, input:Tensor) -> Tensor:
@@ -902,7 +906,12 @@ class StackedLSTM(nn.Sequential):
             if non-zero, introduces a `Dropout` layer on the outputs of each
             LSTM layer EXCEPT the last layer, with dropout probability equal to this value
         bidirectional: bool, default True,
+            if True, each LSTM layer becomes bidirectional
         return_sequences: bool, default True,
+            if True, returns the the full output sequence,
+            otherwise the last output in the output sequence
+        kwargs: dict,
+            other parameters, including `nonlinearity`, etc.
         """
         super().__init__()
         self.__hidden_sizes = hidden_sizes
@@ -912,6 +921,7 @@ class StackedLSTM(nn.Sequential):
         self.bidirectional = bidirectional
         self.batch_first = False
         self.return_sequences = return_sequences
+        self.nonlinearity = kwargs.get("nonlinearity","tanh")
 
         layer_name_prefix = "bidirectional_lstm" if bidirectional else "lstm"
         for idx, (hs, b) in enumerate(zip(hidden_sizes, l_bias)):
@@ -930,6 +940,7 @@ class StackedLSTM(nn.Sequential):
                     bias=b,
                     batch_first=self.batch_first,
                     bidirectional=self.bidirectional,
+                    nonlinearity=self.nonlinearity,
                 )
             )
             if self.__dropout > 0 and idx < self.num_lstm_layers-1:

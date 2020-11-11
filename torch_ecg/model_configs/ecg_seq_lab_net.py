@@ -52,6 +52,7 @@ ECG_SEQ_LAB_NET_CONFIG.rnn.lstm.hidden_sizes = [256, 256]
 ECG_SEQ_LAB_NET_CONFIG.rnn.lstm.bias = True
 ECG_SEQ_LAB_NET_CONFIG.rnn.lstm.dropout = 0
 ECG_SEQ_LAB_NET_CONFIG.rnn.lstm.bidirectional = True
+ECG_SEQ_LAB_NET_CONFIG.rnn.lstm.nonlinearity = "tanh"
 
 
 ECG_SEQ_LAB_NET_CONFIG.attn = ED()
