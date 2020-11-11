@@ -86,7 +86,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
             _input = input.to(device)
         pred = self.forward(_input)
         pred = self.sigmoid(pred)
-        pred = pred.detach().numpy()
+        pred = pred.cpu().detach().numpy()
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = self._inference_post_process(
