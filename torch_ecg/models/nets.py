@@ -891,7 +891,7 @@ class StackedLSTM(nn.Sequential):
     __DEBUG__ = False
     __name__ = "StackedLSTM"
 
-    def __init__(self, input_size:int, hidden_sizes:Sequence[int], bias:Union[Sequence[bool], bool]=True, dropout:float=0.0, bidirectional:bool=True, return_sequences:bool=True, **kwargs) -> NoReturn:
+    def __init__(self, input_size:int, hidden_sizes:Sequence[int], bias:Union[Sequence[bool], bool]=True, dropouts:Union[float,Sequence[float]]=0.0, bidirectional:bool=True, return_sequences:bool=True, **kwargs) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -902,9 +902,10 @@ class StackedLSTM(nn.Sequential):
             the number of features in the hidden state of each LSTM layer
         bias: bool, or sequence of bool, default True,
             use bias weights or not
-        dropout: float, default 0.0,
+        dropouts: float or sequence of float, default 0.0,
             if non-zero, introduces a `Dropout` layer on the outputs of each
             LSTM layer EXCEPT the last layer, with dropout probability equal to this value
+            or corresponding value in the sequence (except for the last LSTM layer)
         bidirectional: bool, default True,
             if True, each LSTM layer becomes bidirectional
         return_sequences: bool, default True,
@@ -917,7 +918,7 @@ class StackedLSTM(nn.Sequential):
         self.__hidden_sizes = hidden_sizes
         self.num_lstm_layers = len(hidden_sizes)
         l_bias = bias if isinstance(bias, Sequence) else list(repeat(bias, self.num_lstm_layers))
-        self.__dropout = dropout
+        self.__dropouts = dropouts if isinstance(dropouts, Sequence) else list(repeat(dropouts, self.num_lstm_layers))
         self.bidirectional = bidirectional
         self.batch_first = False
         self.return_sequences = return_sequences
@@ -943,10 +944,10 @@ class StackedLSTM(nn.Sequential):
                     nonlinearity=self.nonlinearity,
                 )
             )
-            if self.__dropout > 0 and idx < self.num_lstm_layers-1:
+            if self.__dropouts[idx] > 0 and idx < self.num_lstm_layers-1:
                 self.add_module(
                     name=f"dropout_{idx+1}",
-                    module=nn.Dropout(self.__dropout),
+                    module=nn.Dropout(self.__dropouts[idx]),
                 )
     
     def forward(self, input:Union[Tensor, PackedSequence], hx:Optional[Tuple[Tensor, Tensor]]=None) -> Union[Tensor, Tuple[Union[Tensor, PackedSequence], Tuple[Tensor, Tensor]]]:

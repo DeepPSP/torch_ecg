@@ -1232,7 +1232,7 @@ class ECG_CRNN(nn.Module):
                 input_size=rnn_input_size,
                 hidden_sizes=hidden_sizes,
                 bias=self.config.rnn.lstm.bias,
-                dropout=self.config.rnn.lstm.dropout,
+                dropouts=self.config.rnn.lstm.dropouts,
                 bidirectional=self.config.rnn.lstm.bidirectional,
                 return_sequences=self.config.rnn.lstm.retseq,
                 nonlinearity=self.config.rnn.lstm.nonlinearity,
@@ -1252,7 +1252,7 @@ class ECG_CRNN(nn.Module):
                     input_size=rnn_input_size,
                     hidden_sizes=hidden_sizes,
                     bias=self.config.rnn.attention.bias,
-                    dropout=self.config.rnn.attention.dropout,
+                    dropouts=self.config.rnn.attention.dropouts,
                     bidirectional=self.config.rnn.attention.bidirectional,
                     return_sequences=True,
                     nonlinearity=self.config.rnn.attention.nonlinearity
