@@ -134,6 +134,7 @@ class CPSC2019(Dataset):
             )
 
         values = values.reshape((self.config.n_leads, self.siglen))
+        labels = labels[..., np.newaxis]
 
         return values, labels
 
