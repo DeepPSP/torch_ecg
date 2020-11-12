@@ -17,6 +17,7 @@ from torch.nn import Parameter
 import torch.nn.functional as F
 from torch.nn.utils.rnn import PackedSequence
 from easydict import EasyDict as ED
+from deprecated import deprecated
 
 from torch_ecg.cfg import Cfg
 from torch_ecg.utils.utils_nn import (
@@ -370,7 +371,7 @@ class Conv_Bn_Activation(nn.Sequential):
 
 
 class MultiConv(nn.Sequential):
-    """ finished, NOT checked,
+    """ finished, checked,
 
     a sequence (stack) of `Conv_Bn_Activation` blocks,
     perhaps with `Dropout` between
@@ -516,7 +517,7 @@ class BranchedConv(nn.Module):
     __name__ = "BranchedConv"
 
     def __init__(self, in_channels:int, out_channels:Sequence[Sequence[int]], filter_lengths:Union[Sequence[Sequence[int]],Sequence[int],int], subsample_lengths:Union[Sequence[Sequence[int]],Sequence[int],int]=1, dilations:Union[Sequence[Sequence[int]],Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[Sequence[float]], Sequence[float],float]=0.0, **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1013,7 +1014,7 @@ class StackedLSTM(nn.Sequential):
 
 # ---------------------------------------------
 # attention mechanisms, from various sources
-@DeprecationWarning
+@deprecated(reason="not checked yet")
 class AML_Attention(nn.Module):
     """ NOT checked,
 
@@ -1047,7 +1048,7 @@ class AML_Attention(nn.Module):
         return A
 
 
-@DeprecationWarning
+@deprecated(reason="not checked yet")
 class AML_GatedAttention(nn.Module):
     """ NOT checked,
 
