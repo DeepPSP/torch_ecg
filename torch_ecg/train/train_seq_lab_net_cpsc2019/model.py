@@ -127,8 +127,10 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         for b_idx in range(batch_size):
             b_prob = pred[b_idx,...]
             b_mask = (b_prob >= bin_pred_thr).astype(int)
-            b_qrs_intervals = mask_to_intervals(b_mask[b_idx,...], 1)
+            b_qrs_intervals = mask_to_intervals(b_mask, 1)
             b_rpeaks = (model_granularity//2) * np.array([itv[0]+itv[1] for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr])
+            # print(f"before post-process, b_qrs_intervals = {b_qrs_intervals}")
+            # print(f"before post-process, b_rpeaks = {b_rpeaks}")
 
             check = True
             dist_thr_inds = _dist_thr[0] / model_spacing
