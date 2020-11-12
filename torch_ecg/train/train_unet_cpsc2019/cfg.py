@@ -44,11 +44,156 @@ ModelCfg.classes = deepcopy(BaseCfg.classes)
 ModelCfg.n_leads = 1
 ModelCfg.skip_dist = BaseCfg.skip_dist
 
+ModelCfg.model_name = "subtract_unet"
 
 
+# subtract unet, from CPSC2019 entry 0433
+ModelCfg.subtract_unet = ED()
+ModelCfg.subtract_unet.fs = ModelCfg.fs
+ModelCfg.subtract_unet.classes = deepcopy(ModelCfg.classes)
+ModelCfg.subtract_unet.n_leads = ModelCfg.n_leads
+ModelCfg.subtract_unet.skip_dist = ModelCfg.skip_dist
+ModelCfg.subtract_unet.torch_dtype = ModelCfg.torch_dtype
+
+ModelCfg.subtract_unet.groups = 1
+ModelCfg.subtract_unet.init_batch_norm = False
+
+# in triple conv
+ModelCfg.subtract_unet.init_num_filters = 16
+ModelCfg.subtract_unet.init_filter_length = 21
+ModelCfg.subtract_unet.init_dropouts = [0.0, 0.15, 0.0]
+ModelCfg.subtract_unet.batch_norm = True
+ModelCfg.subtract_unet.kernel_initializer = "he_normal"
+ModelCfg.subtract_unet.kw_initializer = {}
+ModelCfg.subtract_unet.activation = "relu"
+ModelCfg.subtract_unet.kw_activation = {"inplace": True}
+
+# down, triple conv
+ModelCfg.subtract_unet.down_up_block_num = 3
+ModelCfg.subtract_unet.down_mode = "max"
+ModelCfg.subtract_unet.down_scales = [10, 5, 2]
+init_down_num_filters = 24
+_num_convs = 3  # TripleConv
+ModelCfg.subtract_unet.down_num_filters = [
+    list(repeat(init_down_num_filters * (2**idx), _num_convs)) \
+        for idx in range(0, ModelCfg.subtract_unet.down_up_block_num-1)
+]
+ModelCfg.subtract_unet.down_filter_lengths = [11, 5]
+ModelCfg.subtract_unet.down_dropouts = \
+    list(repeat([0.0, 0.15, 0.0], ModelCfg.subtract_unet.down_up_block_num-1))
+
+# bottom, double conv
+ModelCfg.subtract_unet.bottom_num_filters = [
+    # branch 1
+    list(repeat(init_down_num_filters*(2**(ModelCfg.subtract_unet.down_up_block_num-1)), 2)),
+    # branch 2
+    list(repeat(init_down_num_filters*(2**(ModelCfg.subtract_unet.down_up_block_num-1)), 2)),
+    # branch 1 and branch 2 should have the same `num_filters`,
+    # otherwise `subtraction` would be infeasible
+]
+ModelCfg.subtract_unet.bottom_filter_lengths = [
+    list(repeat(5, 2)),  # branch 1
+    list(repeat(5, 2)),  # branch 2
+]
+ModelCfg.subtract_unet.bottom_dilations = [
+    # the ordering matters
+    list(repeat(1, 2)),  # branch 1
+    list(repeat(10, 2)),  # branch 2
+]
+ModelCfg.subtract_unet.bottom_dropouts = [
+    [0.15, 0.0],  # branch 1
+    [0.15, 0.0],  # branch 2
+]
+
+# up, triple conv
+ModelCfg.subtract_unet.up_mode = "nearest"
+ModelCfg.subtract_unet.up_scales = [2, 5, 10]
+ModelCfg.subtract_unet.up_num_filters = [
+    list(repeat(48, _num_convs)),
+    list(repeat(24, _num_convs)),
+    list(repeat(16, _num_convs)),
+]
+ModelCfg.subtract_unet.up_deconv_filter_lengths = \
+    list(repeat(9, ModelCfg.subtract_unet.down_up_block_num))
+ModelCfg.subtract_unet.up_conv_filter_lengths = [5, 11, 21]
+ModelCfg.subtract_unet.up_dropouts = [
+    [0.15, 0.15, 0.0],
+    [0.15, 0.15, 0.0],
+    [0.15, 0.15, 0.0],
+]
+
+# out conv
+ModelCfg.subtract_unet.out_filter_length = 1
+
+ModelCfg.subtract_unet.down_block = ED()
+ModelCfg.subtract_unet.down_block.batch_norm = ModelCfg.subtract_unet.batch_norm
+ModelCfg.subtract_unet.down_block.kernel_initializer = ModelCfg.subtract_unet.kernel_initializer 
+ModelCfg.subtract_unet.down_block.kw_initializer = deepcopy(ModelCfg.subtract_unet.kw_initializer)
+ModelCfg.subtract_unet.down_block.activation = ModelCfg.subtract_unet.activation
+ModelCfg.subtract_unet.down_block.kw_activation = deepcopy(ModelCfg.subtract_unet.kw_activation)
+
+ModelCfg.subtract_unet.up_block = ED()
+ModelCfg.subtract_unet.up_block.batch_norm = ModelCfg.subtract_unet.batch_norm
+ModelCfg.subtract_unet.up_block.kernel_initializer = ModelCfg.subtract_unet.kernel_initializer 
+ModelCfg.subtract_unet.up_block.kw_initializer = deepcopy(ModelCfg.subtract_unet.kw_initializer)
+ModelCfg.subtract_unet.up_block.activation = ModelCfg.subtract_unet.activation
+ModelCfg.subtract_unet.up_block.kw_activation = deepcopy(ModelCfg.subtract_unet.kw_activation)
 
 
+# vanila unet
+ModelCfg.unet = ED()
+ModelCfg.unet.fs = ModelCfg.fs
+ModelCfg.unet.classes = deepcopy(ModelCfg.classes)
+ModelCfg.unet.n_leads = ModelCfg.n_leads
+ModelCfg.unet.skip_dist = ModelCfg.skip_dist
+ModelCfg.unet.torch_dtype = ModelCfg.torch_dtype
 
+ModelCfg.unet.groups = 1
+
+ModelCfg.unet.init_num_filters = len(ModelCfg.unet.classes)  # keep the same with n_classes
+ModelCfg.unet.init_filter_length = 9
+ModelCfg.unet.out_filter_length = 9
+ModelCfg.unet.batch_norm = True
+ModelCfg.unet.kernel_initializer = "he_normal"
+ModelCfg.unet.kw_initializer = {}
+ModelCfg.unet.activation = "relu"
+ModelCfg.unet.kw_activation = {"inplace": True}
+
+ModelCfg.unet.down_up_block_num = 4
+
+ModelCfg.unet.down_mode = "max"
+ModelCfg.unet.down_scales = list(repeat(2, ModelCfg.unet.down_up_block_num))
+ModelCfg.unet.down_num_filters = [
+    ModelCfg.unet.init_num_filters * (2**idx) \
+        for idx in range(1, ModelCfg.unet.down_up_block_num+1)
+]
+ModelCfg.unet.down_filter_lengths = \
+    list(repeat(ModelCfg.unet.init_filter_length, ModelCfg.unet.down_up_block_num))
+
+ModelCfg.unet.up_mode = "nearest"
+ModelCfg.unet.up_scales = list(repeat(2, ModelCfg.unet.down_up_block_num))
+ModelCfg.unet.up_num_filters = [
+    ModelCfg.unet.init_num_filters * (2**idx) \
+        for idx in range(ModelCfg.unet.down_up_block_num-1,-1,-1)
+]
+ModelCfg.unet.up_deconv_filter_lengths = \
+    list(repeat(9, ModelCfg.unet.down_up_block_num))
+ModelCfg.unet.up_conv_filter_lengths = \
+    list(repeat(ModelCfg.unet.init_filter_length, ModelCfg.unet.down_up_block_num))
+
+ModelCfg.unet.down_block = ED()
+ModelCfg.unet.down_block.batch_norm = ModelCfg.unet.batch_norm
+ModelCfg.unet.down_block.kernel_initializer = ModelCfg.unet.kernel_initializer 
+ModelCfg.unet.down_block.kw_initializer = deepcopy(ModelCfg.unet.kw_initializer)
+ModelCfg.unet.down_block.activation = ModelCfg.unet.activation
+ModelCfg.unet.down_block.kw_activation = deepcopy(ModelCfg.unet.kw_activation)
+
+ModelCfg.unet.up_block = ED()
+ModelCfg.unet.up_block.batch_norm = ModelCfg.unet.batch_norm
+ModelCfg.unet.up_block.kernel_initializer = ModelCfg.unet.kernel_initializer 
+ModelCfg.unet.up_block.kw_initializer = deepcopy(ModelCfg.unet.kw_initializer)
+ModelCfg.unet.up_block.activation = ModelCfg.unet.activation
+ModelCfg.unet.up_block.kw_activation = deepcopy(ModelCfg.unet.kw_activation)
 
 
 
