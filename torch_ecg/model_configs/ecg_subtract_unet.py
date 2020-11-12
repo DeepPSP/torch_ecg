@@ -54,6 +54,8 @@ ECG_SUBTRACT_UNET_CONFIG.bottom_num_filters = [
     list(repeat(init_down_num_filters*(2**(ECG_SUBTRACT_UNET_CONFIG.down_up_block_num-1)), 2)),
     # branch 2
     list(repeat(init_down_num_filters*(2**(ECG_SUBTRACT_UNET_CONFIG.down_up_block_num-1)), 2)),
+    # branch 1 and branch 2 should have the same `num_filters`,
+    # otherwise `subtraction` would be infeasible
 ]
 ECG_SUBTRACT_UNET_CONFIG.bottom_filter_lengths = [
     list(repeat(5, 2)),  # branch 1

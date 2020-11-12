@@ -538,8 +538,11 @@ class ECG_SEQ_LAB_NET(nn.Module):
 
     # inference will not be included in the model itself
     # as it is strongly related to the usage scenario
-    # @torch.no_grad()
-    # def inference(self, input:Union[np.ndarray,Tensor]) -> np.ndarray:
+    @torch.no_grad()
+    def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5) -> Tuple[np.ndarray, List[np.ndarray]]:
+        """
+        """
+        raise NotImplementedError("implement a task specific inference method")
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,

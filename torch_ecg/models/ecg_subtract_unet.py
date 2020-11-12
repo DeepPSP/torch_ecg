@@ -276,7 +276,9 @@ class DownBranchedDoubleConv(nn.Module):
         output_shape = self.down_sample.compute_output_shape(seq_len=_seq_len)
         _, _, _seq_len = output_shape
         output_shapes = self.branched_conv.compute_output_shape(seq_len=_seq_len)
-        output_shape = output_shapes[0][0], sum([s[1] for s in output_shapes]), output_shapes[0][-1]
+        # output_shape = output_shapes[0][0], sum([s[1] for s in output_shapes]), output_shapes[0][-1]
+        n_branches = len(output_shapes)
+        output_shape = output_shapes[0][0], (n_branches+1)*output_shapes[0][1], output_shapes[0][-1]
         return output_shape
 
 
@@ -500,7 +502,8 @@ class ECG_SUBTRACT_UNET(nn.Module):
             _, _, __debug_seq_len = __debug_output_shape
 
         self.up_blocks = nn.ModuleDict()
-        in_channels = sum([branch[-1] for branch in self.config.bottom_num_filters])
+        # in_channels = sum([branch[-1] for branch in self.config.bottom_num_filters])
+        in_channels = self.bottom_block.compute_output_shape(None,None)[1]
         for idx in range(self.config.down_up_block_num):
             self.up_blocks[f'up_{idx}'] = \
                 UpTripleConv(
@@ -537,7 +540,7 @@ class ECG_SUBTRACT_UNET(nn.Module):
             print(f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}")
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -557,12 +560,14 @@ class ECG_SUBTRACT_UNET(nn.Module):
         # down
         to_concat = [self.init_conv(x)]
         if self.__DEBUG__:
-            print(f"shape of init conv block output = {to_concat[-1].shape}")
+            print(f"shape of the init conv block output = {to_concat[-1].shape}")
         for idx in range(self.config.down_up_block_num-1):
             to_concat.append(self.down_blocks[f"down_{idx}"](to_concat[-1]))
             if self.__DEBUG__:
-                print(f"shape of {idx}-th down block output = {to_concat[-1].shape}")
+                print(f"shape of the {idx}-th down block output = {to_concat[-1].shape}")
         to_concat.append(self.bottom_block(to_concat[-1]))
+        if self.__DEBUG__:
+            print(f"shape of the bottom block output = {to_concat[-1].shape}")
         
         # up
         up_input = to_concat[-1]
@@ -571,7 +576,7 @@ class ECG_SUBTRACT_UNET(nn.Module):
             up_output = self.up_blocks[f"up_{idx}"](up_input, to_concat[idx])
             up_input = up_output
             if self.__DEBUG__:
-                print(f"shape of {idx}-th up block output = {up_output.shape}")
+                print(f"shape of the {idx}-th up block output = {up_output.shape}")
         
         # output
         output = self.out_conv(up_output)
@@ -581,10 +586,10 @@ class ECG_SUBTRACT_UNET(nn.Module):
         return output
 
     @torch.no_grad()
-    def inference(self, input:Tensor) -> Tensor:
-        """ NOT finished, NOT checked,
+    def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5) -> Tensor:
         """
-        raise NotImplementedError
+        """
+        NotImplementedError("implement a task specific inference method")
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, NOT checked,
