@@ -76,12 +76,13 @@ class CPSC2019(Dataset):
 
 
     def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ finished, checked,
+        """ NOT finished, NOT checked,
         """
         rec_name = self.records[index]
+        ann_name = rec_name.replace("data", "R")
         values = self.reader.load_data(rec_name, units='mV', keep_dim=False)
         rpeaks = self.reader.load_ann(rec_name, keep_dim=False)
-        labels = np.zeros((self.siglen//self.config.seq_lab_reduction))
+        labels = np.zeros((self.siglen,))
         # rpeak indices to mask
         for r in rpeaks:
             if r < self.config.skip_dist or r >= self.siglen - self.config.skip_dist:
