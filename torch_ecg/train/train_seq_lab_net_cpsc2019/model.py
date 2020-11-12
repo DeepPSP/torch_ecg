@@ -86,7 +86,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
             _input = input.to(device)
         pred = self.forward(_input)
         pred = self.sigmoid(pred)
-        pred = pred.cpu().detach().numpy()
+        pred = pred.cpu().detach().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = self._inference_post_process(
@@ -122,11 +122,11 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         _dist_thr = [dist_thr] if isinstance(dist_thr, int) else dist_thr
         assert len(_dist_thr) <= 2
 
-        # mask = (pred >= prob_thr).astype(int)
+        # mask = (pred >= bin_pred_thr).astype(int)
         rpeaks = []
         for b_idx in range(batch_size):
             b_prob = pred[b_idx,...]
-            b_mask = (b_prob >= prob_thr).astype(int)
+            b_mask = (b_prob >= bin_pred_thr).astype(int)
             b_qrs_intervals = mask_to_intervals(b_mask[b_idx,...], 1)
             b_rpeaks = (model_granularity//2) * np.array([itv[0]+itv[1] for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr])
 
@@ -147,6 +147,8 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
                         check = True
                         break
             if len(_dist_thr) == 1:
+                b_rpeaks = b_rpeaks[np.where((b_rpeaks>=self.config.skip_dist) & (b_rpeaks<self.input_len-self.config.skip_dist))[0]]
+                rpeaks.append(b_rpeaks)
                 continue
             check = True
             # TODO: parallel the following block
