@@ -42,7 +42,7 @@ class CPSC2019(Dataset):
     __name__ = "CPSC2019"
 
     def __init__(self, config:ED, training:bool=True) -> NoReturn:
-        """
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -76,7 +76,7 @@ class CPSC2019(Dataset):
 
 
     def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ finished, NOT checked,
+        """ finished, checked,
         """
         rec_name = self.records[index]
         ann_name = rec_name.replace("data", "R")

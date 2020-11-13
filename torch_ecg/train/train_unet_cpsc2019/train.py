@@ -436,25 +436,29 @@ if __name__ == "__main__":
             n_leads=config.n_leads,
             config=model_config,
         )
-    
+    elif model_name == "unet":
+        model = ECG_UNET_CPSC2019(
+            n_leads=config.n_leads,
+            config=model_config,
+        )
 
     if not DAS and torch.cuda.device_count() > 1:
         model = torch.nn.DataParallel(model)
 
-    # model.to(device=device)
+    model.to(device=device)
 
-    # try:
-    #     train(
-    #         model=model,
-    #         config=config,
-    #         device=device,
-    #         logger=logger,
-    #         debug=config.debug,
-    #     )
-    # except KeyboardInterrupt:
-    #     torch.save(model.state_dict(), os.path.join(config.checkpoints, 'INTERRUPTED.pth'))
-    #     logger.info('Saved interrupt')
-    #     try:
-    #         sys.exit(0)
-    #     except SystemExit:
-    #         os._exit(0)
+    try:
+        train(
+            model=model,
+            config=config,
+            device=device,
+            logger=logger,
+            debug=config.debug,
+        )
+    except KeyboardInterrupt:
+        torch.save(model.state_dict(), os.path.join(config.checkpoints, 'INTERRUPTED.pth'))
+        logger.info('Saved interrupt')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)

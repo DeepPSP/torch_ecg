@@ -42,7 +42,7 @@ class CPSC2019(Dataset):
     __name__ = "CPSC2019"
 
     def __init__(self, config:ED, training:bool=True) -> NoReturn:
-        """
+        """ finished, checked,
 
         Parameters:
         -----------
