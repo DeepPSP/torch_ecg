@@ -428,7 +428,7 @@ class ECG_UNET(nn.Module):
             _, _, __debug_seq_len = __debug_output_shape
 
         self.down_blocks = nn.ModuleDict()
-        in_channels = self.n_classes
+        in_channels = self.config.init_num_filters
         for idx in range(self.config.down_up_block_num):
             self.down_blocks[f'down_{idx}'] = \
                 DownDoubleConv(
