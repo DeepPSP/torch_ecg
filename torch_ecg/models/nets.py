@@ -1553,6 +1553,7 @@ class ZeroPadding(nn.Module):
         assert self.__increase_channels >= 0
         self.__loc = loc.lower()
         assert self.__loc in self.__LOC__
+        self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def forward(self, input:Tensor) -> Tensor:
         """
@@ -1564,6 +1565,7 @@ class ZeroPadding(nn.Module):
         batch_size, _, seq_len = input.shape
         if self.__increase_channels > 0:
             output = torch.zeros((batch_size, self.__increase_channels, seq_len))
+            output = output.to(device=self.__device)
             if self.__loc == "head":
                 output = torch.cat((output, input), dim=1)
             elif self.__loc == "tail":
