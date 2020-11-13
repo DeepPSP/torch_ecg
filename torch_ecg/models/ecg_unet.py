@@ -412,7 +412,7 @@ class ECG_UNET(nn.Module):
 
         self.init_conv = DoubleConv(
             in_channels=self.__in_channels,
-            out_channels=self.n_classes,
+            out_channels=self.config.init_num_filters,
             filter_lengths=self.config.init_filter_length,
             subsample_lengths=1,
             groups=self.config.groups,
