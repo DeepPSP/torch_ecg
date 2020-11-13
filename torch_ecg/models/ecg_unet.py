@@ -49,11 +49,11 @@ class DoubleConv(MultiConv):
     -----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "DoubleConv"
 
     def __init__(self, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, out_activation:bool=True, mid_channels:Optional[int]=None, **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -106,12 +106,12 @@ class DownDoubleConv(nn.Sequential):
     -----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "DownDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
     def __init__(self, down_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], groups:int=1, dropouts:Union[Sequence[float], float]=0.0, mid_channels:Optional[int]=None, mode:str='max', **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -173,7 +173,7 @@ class DownDoubleConv(nn.Sequential):
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
         
         Paramters:
         ----------
@@ -189,7 +189,7 @@ class DownDoubleConv(nn.Sequential):
         return out
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -228,12 +228,12 @@ class UpDoubleConv(nn.Module):
 
     channels are shrinked after up sampling
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "UpDoubleConv"
     __MODES__ = ['nearest', 'linear', 'area', 'deconv',]
 
     def __init__(self, up_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], deconv_filter_length:Optional[int]=None, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, mode:str='deconv', mid_channels:Optional[int]=None, **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -306,7 +306,7 @@ class UpDoubleConv(nn.Module):
         )
 
     def forward(self, input:Tensor, down_output:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -334,7 +334,7 @@ class UpDoubleConv(nn.Module):
         return output
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -375,7 +375,7 @@ class UpDoubleConv(nn.Module):
 
 
 class ECG_UNET(nn.Module):
-    """ finished, NOT checked,
+    """ finished, checked,
 
     UNet for (multi-lead) ECG wave delineation
 
@@ -489,7 +489,7 @@ class ECG_UNET(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -511,6 +511,9 @@ class ECG_UNET(nn.Module):
         up_input = to_concat[-1]
         to_concat = to_concat[-2::-1]
         for idx in range(self.config.down_up_block_num):
+            if self.__DEBUG__:
+                print(f"shape of {idx}-th up block 1st input = {up_input.shape}")
+                print(f"shape of {idx}-th up block 2nd input (from down) = {to_concat[idx].shape}")
             up_output = self.up_blocks[f"up_{idx}"](up_input, to_concat[idx])
             up_input = up_output
             if self.__DEBUG__:
@@ -522,13 +525,13 @@ class ECG_UNET(nn.Module):
         return output
 
     @torch.no_grad()
-    def inference(self, input:Tensor) -> Tensor:
-        """ NOT finished, NOT checked,
+    def inference(self, input:Tensor, bin_pred_thr:float=0.5) -> Tensor:
         """
-        raise NotImplementedError
+        """
+        raise NotImplementedError("implement a task specific inference method")
 
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
