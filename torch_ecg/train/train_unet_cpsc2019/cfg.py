@@ -24,10 +24,10 @@ BaseCfg.fs = 500  # Hz, CPSC2019 data fs
 BaseCfg.classes = ["N",]
 # BaseCfg.training_data = os.path.join(_BASE_DIR, "training_data")
 BaseCfg.db_dir = "/media/cfs/wenhao71/data/CPSC2019/train/"
-BaseCfg.bias_thr = 0.075 * BaseCfg.fs  # keep the same with `THR` in `cpsc2019_score.py`
+BaseCfg.bias_thr = int(0.075 * BaseCfg.fs)  # keep the same with `THR` in `cpsc2019_score.py`
 # detected rpeaks that are within `skip_dist` from two ends of the signal will be ignored,
 # as in the official entry function
-BaseCfg.skip_dist = 0.5 * BaseCfg.fs
+BaseCfg.skip_dist = int(0.5 * BaseCfg.fs)
 BaseCfg.torch_dtype = Cfg.torch_dtype
 
 
