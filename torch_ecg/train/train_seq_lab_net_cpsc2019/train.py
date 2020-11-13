@@ -404,7 +404,7 @@ def get_args(**kwargs):
 
 
 
-DAS = True  # JD DAS platform
+DAS = False  # JD DAS platform
 
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(__file__))

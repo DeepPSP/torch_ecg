@@ -608,7 +608,7 @@ def get_args(**kwargs):
 
 
 
-DAS = True  # JD DAS platform
+DAS = False  # JD DAS platform
 
 if __name__ == "__main__":
     from utils import init_logger

@@ -490,7 +490,7 @@ def get_args(**kwargs):
 
 
 
-DAS = True  # JD DAS platform
+DAS = False  # JD DAS platform
 
 if __name__ == "__main__":
     config = get_args(**TrainCfg)
