@@ -140,7 +140,7 @@ ModelCfg.subtract_unet.up_block.activation = ModelCfg.subtract_unet.activation
 ModelCfg.subtract_unet.up_block.kw_activation = deepcopy(ModelCfg.subtract_unet.kw_activation)
 
 
-# vanila unet
+# vanilla unet
 ModelCfg.unet = ED()
 ModelCfg.unet.fs = ModelCfg.fs
 ModelCfg.unet.classes = deepcopy(ModelCfg.classes)
@@ -150,7 +150,8 @@ ModelCfg.unet.torch_dtype = ModelCfg.torch_dtype
 
 ModelCfg.unet.groups = 1
 
-ModelCfg.unet.init_num_filters = len(ModelCfg.unet.classes)  # keep the same with n_classes
+# ModelCfg.unet.init_num_filters = len(ModelCfg.unet.classes)  # keep the same with n_classes
+ModelCfg.unet.init_num_filters = 16
 ModelCfg.unet.init_filter_length = 9
 ModelCfg.unet.out_filter_length = 9
 ModelCfg.unet.batch_norm = True

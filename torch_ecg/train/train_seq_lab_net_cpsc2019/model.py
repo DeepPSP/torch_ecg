@@ -42,7 +42,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
 
     @torch.no_grad()
     def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200, correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         auxiliary function to `forward`, for CPSC2019,
 
@@ -109,7 +109,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         return pred, rpeaks
 
     def _inference_post_process(self, pred:np.ndarray, bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200) -> List[np.ndarray]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         prob --> qrs mask --> qrs intervals --> rpeaks
 
@@ -128,7 +128,8 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
             b_prob = pred[b_idx,...]
             b_mask = (b_prob >= bin_pred_thr).astype(int)
             b_qrs_intervals = mask_to_intervals(b_mask, 1)
-            b_rpeaks = (model_granularity//2) * np.array([itv[0]+itv[1] for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr])
+            b_rpeaks = np.array([itv[0]+itv[1] for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr])
+            b_rpeaks = (model_granularity//2) * b_rpeaks
             # print(f"before post-process, b_qrs_intervals = {b_qrs_intervals}")
             # print(f"before post-process, b_rpeaks = {b_rpeaks}")
 
