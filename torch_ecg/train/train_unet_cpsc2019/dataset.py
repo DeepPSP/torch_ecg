@@ -76,7 +76,7 @@ class CPSC2019(Dataset):
 
 
     def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ NOT finished, NOT checked,
+        """ finished, NOT checked,
         """
         rec_name = self.records[index]
         ann_name = rec_name.replace("data", "R")
@@ -87,8 +87,8 @@ class CPSC2019(Dataset):
         for r in rpeaks:
             if r < self.config.skip_dist or r >= self.siglen - self.config.skip_dist:
                 continue
-            start_idx = math.floor((r-self.config.bias_thr)/self.config.seq_lab_reduction)
-            end_idx = math.ceil((r+self.config.bias_thr)/self.config.seq_lab_reduction)
+            start_idx = r - self.config.bias_thr
+            end_idx = r + self.config.bias_thr
             labels[start_idx:end_idx] = 1
 
         # data augmentation, finished yet

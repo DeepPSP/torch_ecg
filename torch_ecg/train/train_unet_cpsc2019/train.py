@@ -404,7 +404,7 @@ def get_args(**kwargs):
 
 
 
-DAS = True  # JD DAS platform
+DAS = False  # JD DAS platform
 
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(__file__))
@@ -425,20 +425,21 @@ if __name__ == "__main__":
     print(f"Using torch of version {torch.__version__}")
     print(f'with configuration\n{dict_to_str(config)}')
 
-    # model_name = f"seq_lab_{config.model_name.lower()}"
-    # model_config = deepcopy(ModelCfg[model_name])
+    model_name = config.model_name.lower()
+    model_config = deepcopy(ModelCfg[model_name])
     # model_config.cnn.name = config.cnn_name
     # model_config.rnn.name = config.rnn_name
     # model_config.attn.name = config.attn_name
 
-    # model = ECG_SEQ_LAB_NET_CPSC2019(
-    #     n_leads=config.n_leads,
-    #     input_len=config.input_len,
-    #     config=model_config,
-    # )
+    if model_name == "subtract_unet":
+        model = ECG_SUBTRACT_UNET_CPSC2019(
+            n_leads=config.n_leads,
+            config=model_config,
+        )
+    
 
-    # if not DAS and torch.cuda.device_count() > 1:
-    #     model = torch.nn.DataParallel(model)
+    if not DAS and torch.cuda.device_count() > 1:
+        model = torch.nn.DataParallel(model)
 
     # model.to(device=device)
 
