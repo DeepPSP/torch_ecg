@@ -16,6 +16,11 @@ from .cfg import ModelCfg
 from .utils import mask_to_intervals, _remove_spikes_naive
 
 
+__all__ = [
+    "ECG_SEQ_LAB_NET_CPSC2019",
+]
+
+
 class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
     """
     """
