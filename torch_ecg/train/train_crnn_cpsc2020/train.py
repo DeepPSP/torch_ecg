@@ -655,6 +655,7 @@ if __name__ == "__main__":
     if not DAS and torch.cuda.device_count() > 1:
         model = torch.nn.DataParallel(model)
     model.to(device=device)
+    model.__DEBUG__ = False
 
     logger = init_logger(log_dir=train_config.log_dir)
     logger.info(f"\n{'*'*20}   Start Training   {'*'*20}\n")

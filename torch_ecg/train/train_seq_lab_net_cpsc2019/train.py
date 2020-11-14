@@ -441,6 +441,7 @@ if __name__ == "__main__":
         model = torch.nn.DataParallel(model)
 
     model.to(device=device)
+    model.__DEBUG__ = False
 
     try:
         train(

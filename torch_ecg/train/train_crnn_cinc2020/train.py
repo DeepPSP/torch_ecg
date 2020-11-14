@@ -533,6 +533,7 @@ if __name__ == "__main__":
     # else:
     #     model.cuda()
     model.to(device=device)
+    model.__DEBUG__ = False
 
     try:
         train(
