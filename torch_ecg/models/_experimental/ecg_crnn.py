@@ -35,7 +35,7 @@ from torch_ecg.models.nets import (
     SeqLin,
 )
 
-if Cfg.torch_dtype.lower() == 'double':
+if Cfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 
@@ -308,7 +308,7 @@ class ResNetBasicBlock(nn.Module):
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
-        if self.config.increase_channels_method.lower() == 'zero_padding' and self.__groups != 1:
+        if self.config.increase_channels_method.lower() == "zero_padding" and self.__groups != 1:
             raise ValueError("zero padding for increasing channels can not be used with groups != 1")
         
         self.__increase_channels = (self.__out_channels > self.__in_channels)
@@ -349,7 +349,7 @@ class ResNetBasicBlock(nn.Module):
         if self.__DEBUG__:
             print(f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}")
         if self.__down_scale > 1 or self.__increase_channels:
-            if self.config.increase_channels_method.lower() == 'conv':
+            if self.config.increase_channels_method.lower() == "conv":
                 short_cut = DownSample(
                     down_scale=self.__down_scale,
                     in_channels=self.__in_channels,
@@ -358,8 +358,8 @@ class ResNetBasicBlock(nn.Module):
                     batch_norm=True,
                     mode=self.config.subsample_mode,
                 )
-            if self.config.increase_channels_method.lower() == 'zero_padding':
-                batch_norm = False if self.config.subsample_mode.lower() != 'conv' else True
+            if self.config.increase_channels_method.lower() == "zero_padding":
+                batch_norm = False if self.config.subsample_mode.lower() != "conv" else True
                 short_cut = nn.Sequential(
                     DownSample(
                         down_scale=self.__down_scale,
@@ -480,7 +480,7 @@ class ResNetBottleNeck(nn.Module):
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
-        if self.config.increase_channels_method.lower() == 'zero_padding' and self.__groups != 1:
+        if self.config.increase_channels_method.lower() == "zero_padding" and self.__groups != 1:
             raise ValueError("zero padding for increasing channels can not be used with groups != 1")
         
         self.__increase_channels = (self.__out_channels > self.__in_channels)
@@ -522,7 +522,7 @@ class ResNetBottleNeck(nn.Module):
         if self.__DEBUG__:
             print(f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}")
         if self.__down_scale > 1 or self.__increase_channels:
-            if self.config.increase_channels_method.lower() == 'conv':
+            if self.config.increase_channels_method.lower() == "conv":
                 short_cut = DownSample(
                     down_scale=self.__down_scale,
                     in_channels=self.__in_channels,
@@ -531,8 +531,8 @@ class ResNetBottleNeck(nn.Module):
                     batch_norm=True,
                     mode=self.config.subsample_mode,
                 )
-            if self.config.increase_channels_method.lower() == 'zero_padding':
-                batch_norm = False if self.config.subsample_mode.lower() != 'conv' else True
+            if self.config.increase_channels_method.lower() == "zero_padding":
+                batch_norm = False if self.config.subsample_mode.lower() != "conv" else True
                 short_cut = nn.Sequential(
                     DownSample(
                         down_scale=self.__down_scale,
@@ -611,7 +611,7 @@ class ResNet(nn.Sequential):
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
         # self.__building_block = \
-        #     ResNetBasicBlock if self.config.name == 'resnet' else ResNetBottleNeck
+        #     ResNetBasicBlock if self.config.name == "resnet" else ResNetBottleNeck
         
         self.add_module(
             "init_cba",
@@ -1316,7 +1316,7 @@ class ECG_CRNN(nn.Module):
     [7] CPSC2019 entry 0416
     """
     __DEBUG__ = True
-    __name__ = 'ECG_CRNN'
+    __name__ = "ECG_CRNN"
 
     def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
@@ -1364,12 +1364,19 @@ class ECG_CRNN(nn.Module):
             cnn_output_shape = self.cnn.compute_output_shape(self.input_len, batch_size=None)
             print(f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}")
 
-        if self.config.rnn.name.lower() == 'none':
+        if self.config.rnn.name.lower() == "none":
             self.rnn = None
             _, clf_input_size, _ = self.cnn.compute_output_shape(self.input_len, batch_size=None)
             self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
-        elif self.config.rnn.name.lower() == 'linear':
-            self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+        elif self.config.rnn.name.lower() == "linear":
+            if self.config.global_pool.lower() == "max":
+                self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+            elif self.config.global_pool.lower() == "avg":
+                self.pool = nn.AdaptiveAvgPool1d((1,))
+            elif self.config.global_pool.lower() == "attn":
+                raise NotImplementedError("Attentive pooling not implemented yet!")
+            else:
+                raise NotImplementedError(f"pooling method {self.config.global_pool} not implemented yet!")
             self.rnn = SeqLin(
                 in_channels=rnn_input_size,
                 out_channels=self.config.rnn.linear.out_channels,
@@ -1378,13 +1385,13 @@ class ECG_CRNN(nn.Module):
                 dropouts=self.config.rnn.linear.dropouts,
             )
             clf_input_size = self.rnn.compute_output_shape(None,None)[-1]
-        elif self.config.rnn.name.lower() == 'lstm':
-            hidden_sizes = self.config.rnn.lstm.hidden_sizes + [self.n_classes]
+        elif self.config.rnn.name.lower() == "lstm":
+            # hidden_sizes = self.config.rnn.lstm.hidden_sizes + [self.n_classes]
             if self.__DEBUG__:
                 print(f"lstm hidden sizes {self.config.rnn.lstm.hidden_sizes} ---> {hidden_sizes}")
             self.rnn = StackedLSTM(
                 input_size=rnn_input_size,
-                hidden_sizes=hidden_sizes,
+                hidden_sizes=self.config.rnn.lstm.hidden_sizes,
                 bias=self.config.rnn.lstm.bias,
                 dropouts=self.config.rnn.lstm.dropouts,
                 bidirectional=self.config.rnn.lstm.bidirectional,
@@ -1392,11 +1399,18 @@ class ECG_CRNN(nn.Module):
                 # nonlinearity=self.config.rnn.lstm.nonlinearity,
             )
             if self.config.rnn.lstm.retseq:
-                self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+                if self.config.global_pool.lower() == "max":
+                    self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+                elif self.config.global_pool.lower() == "avg":
+                    self.pool = nn.AdaptiveAvgPool1d((1,))
+                elif self.config.global_pool.lower() == "attn":
+                    raise NotImplementedError("Attentive pooling not implemented yet!")
+                else:
+                    raise NotImplementedError(f"pooling method {self.config.global_pool} not implemented yet!")
             else:
                 self.pool = None
             clf_input_size = self.rnn.compute_output_shape(None,None)[-1]
-        elif self.config.rnn.name.lower() == 'attention':
+        elif self.config.rnn.name.lower() == "attention":
             hidden_sizes = self.config.rnn.attention.hidden_sizes
             attn_in_channels = hidden_sizes[-1]
             if self.config.rnn.attention.bidirectional:
@@ -1418,7 +1432,14 @@ class ECG_CRNN(nn.Module):
                     bias=self.config.rnn.attention.bias,
                 )
             )
-            self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+            if self.config.global_pool.lower() == "max":
+                self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+            elif self.config.global_pool.lower() == "avg":
+                self.pool = nn.AdaptiveAvgPool1d((1,))
+            elif self.config.global_pool.lower() == "attn":
+                raise NotImplementedError("Attentive pooling not implemented yet!")
+            else:
+                raise NotImplementedError(f"pooling method {self.config.global_pool} not implemented yet!")
             clf_input_size = self.rnn[-1].compute_output_shape(None,None)[-1]
         else:
             raise NotImplementedError
@@ -1447,7 +1468,7 @@ class ECG_CRNN(nn.Module):
         """
         x = self.cnn(input)  # batch_size, channels, seq_len
         # print(f"cnn out shape = {x.shape}")
-        if self.config.rnn.name.lower() in ['lstm', 'attention']:
+        if self.config.rnn.name.lower() in ["lstm", "attention"]:
             # (batch_size, channels, seq_len) -> (seq_len, batch_size, input_size)
             x = x.permute(2,0,1)
             x = self.rnn(x)
@@ -1461,13 +1482,13 @@ class ECG_CRNN(nn.Module):
                 # x of shape (batch_size, channels)
                 pass
             # print(f"rnn out shape = {x.shape}")
-        elif self.config.rnn.name.lower() in ['linear']:
+        elif self.config.rnn.name.lower() in ["linear"]:
             # (batch_size, channels, seq_len) --> (batch_size, channels)
             x = self.pool(x)
             x = x.squeeze(dim=-1)
             # seq_lin
             x = self.rnn(x)
-        else:  # 'none'
+        else:  # "none"
             # (batch_size, channels, seq_len) --> (batch_size, channels)
             x = self.pool(x)
             # print(f"pool out shape = {x.shape}")
