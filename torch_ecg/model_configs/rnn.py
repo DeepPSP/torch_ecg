@@ -28,7 +28,6 @@ attention.bias = True
 attention.dropouts = 0.2
 attention.bidirectional = True
 attention.hidden_sizes = [12*24, 12*6]
-attention.nonlinearity = "tanh"
 
 
 # previously, if rnn is set "none",

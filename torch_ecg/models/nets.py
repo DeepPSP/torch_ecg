@@ -1742,7 +1742,7 @@ class NonLocalBlock(nn.Module):
     __name__ = "NonLocalBlock"
     __MID_LAYERS__ = ["g", "theta", "phi", "W"]
 
-    def __init__(self, in_channels:int, mid_channels:Optional[int]=None, filter_lengths:Union[ED,int]=1, subsample_length:int=1, **config) -> NoReturn:
+    def __init__(self, in_channels:int, mid_channels:Optional[int]=None, filter_lengths:Union[ED,int]=1, subsample_length:int=2, **config) -> NoReturn:
         """ finished, checked,
 
         Paramters:
@@ -1753,7 +1753,7 @@ class NonLocalBlock(nn.Module):
             number of output channels for the mid layers ("g", "phi", "theta")
         filter_lengths: dict or int, default 1,
             filter lengths (kernel sizes) for each convolutional layers ("g", "phi", 'theta', "W")
-        subsample_length: int, default 1,
+        subsample_length: int, default 2,
             subsample length (max pool size) of the "g" and "phi" layers
         config: dict,
             other parameters, including
