@@ -9,6 +9,11 @@ from .cnn import (
     multi_scopic_block,
     multi_scopic, multi_scopic_leadwise,
 )
+from .attn import (
+    non_local,
+    squeeze_excitation,
+    global_context,
+)
 
 
 __all__ = [

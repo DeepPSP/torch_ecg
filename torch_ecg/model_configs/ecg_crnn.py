@@ -19,6 +19,11 @@ from .rnn import (
     attention,
     linear,
 )
+from .attn import (
+    non_local,
+    squeeze_excitation,
+    global_context,
+)
 
 
 __all__ = [
@@ -74,23 +79,11 @@ ECG_CRNN_CONFIG.rnn.linear = deepcopy(linear)
 ECG_CRNN_CONFIG.attn = ED()
 ECG_CRNN_CONFIG.attn.name = "se"  # "none", "se", "gc", "nl"
 
-ECG_CRNN_CONFIG.attn.se = ED()
-ECG_CRNN_CONFIG.attn.se.reduction = 8  # not including the last linear layer
-ECG_CRNN_CONFIG.attn.se.activation = "relu"
-ECG_CRNN_CONFIG.attn.se.kw_activation = ED(inplace=True)
-ECG_CRNN_CONFIG.attn.se.bias = True
-ECG_CRNN_CONFIG.attn.se.kernel_initializer = "he_normal"
+ECG_CRNN_CONFIG.attn.se = deepcopy(squeeze_excitation)
 
-ECG_CRNN_CONFIG.attn.gc = ED()
-ECG_CRNN_CONFIG.attn.gc.ratio = 8
-ECG_CRNN_CONFIG.attn.gc.reduction = False
-ECG_CRNN_CONFIG.attn.gc.pooling_type = "attn"
-ECG_CRNN_CONFIG.attn.gc.fusion_types = ["mul",]
+ECG_CRNN_CONFIG.attn.gc = deepcopy(global_context)
 
-ECG_CRNN_CONFIG.attn.nl = ED()
-ECG_CRNN_CONFIG.attn.nl.filter_lengths=1,
-ECG_CRNN_CONFIG.attn.nl.subsample_length=2,
-ECG_CRNN_CONFIG.attn.nl.batch_norm=self.config.attn.nl.batch_norm,
+ECG_CRNN_CONFIG.attn.nl = deepcopy(non_local)
 
 
 
