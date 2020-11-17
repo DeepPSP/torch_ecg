@@ -1399,10 +1399,9 @@ class ECG_CRNN(nn.Module):
         elif self.config.attn.name.lower() == "none":
             self.attn = None
             clf_input_size = attn_input_size
-        elif self.config.attn.name.lower() == "ll":  # non_local
+        elif self.config.attn.name.lower() == "nl":  # non_local
             self.attn = NonLocalBlock(
                 in_channels=attn_input_size,
-                mid_channels=self.config.attn.nl.mid_channels,
                 filter_lengths=self.config.attn.nl.filter_lengths,
                 subsample_length=self.config.attn.nl.subsample_length,
                 batch_norm=self.config.attn.nl.batch_norm,
