@@ -1442,7 +1442,7 @@ class ECG_CRNN(nn.Module):
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:
             self.pool = None
             if self.config.global_pool.lower() != "none":
-                print(f"since `retseq` of rnn is False, hence global pooling `{self.config.global_pool.}` is ignored")
+                print(f"since `retseq` of rnn is False, hence global pooling `{self.config.global_pool}` is ignored")
         elif self.config.global_pool.lower() == "max":
             self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
         elif self.config.global_pool.lower() == "avg":
@@ -1459,6 +1459,7 @@ class ECG_CRNN(nn.Module):
             activation=self.config.clf.activation,
             bias=self.config.clf.bias,
             dropouts=self.config.clf.dropouts,
+            skip_last_activation=True,
         )
 
         # sigmoid for inference

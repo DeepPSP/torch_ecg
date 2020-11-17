@@ -89,7 +89,7 @@ ECG_CRNN_CONFIG.attn.nl = deepcopy(non_local)
 
 # global pooling
 # currently is fixed using `AdaptiveMaxPool1d`
-ECG_CRNN_CONFIG.global_pool = "max"  # "avg", "attentive"
+ECG_CRNN_CONFIG.global_pool = "max"  # "avg", "attn"
 
 
 
