@@ -1,4 +1,5 @@
 """
+legacy of the initial versions of ECG_CRNN models
 """
 from copy import deepcopy
 
