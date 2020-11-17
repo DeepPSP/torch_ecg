@@ -923,7 +923,8 @@ class StackedLSTM(nn.Sequential):
         self.batch_first = False
         self.return_sequences = return_sequences
 
-        layer_name_prefix = "bidirectional_lstm" if bidirectional else "lstm"
+        module_name_prefix = "bidirectional_lstm" if bidirectional else "lstm"
+        self.__module_names = []
         for idx, (hs, b) in enumerate(zip(hidden_sizes, l_bias)):
             if idx == 0:
                 _input_size = input_size
@@ -932,7 +933,7 @@ class StackedLSTM(nn.Sequential):
                 if self.bidirectional:
                     _input_size = 2*_input_size
             self.add_module(
-                name=f"{layer_name_prefix}_{idx+1}",
+                name=f"{module_name_prefix}_{idx+1}",
                 module=nn.LSTM(
                     input_size=_input_size,
                     hidden_size=hs,
@@ -942,11 +943,13 @@ class StackedLSTM(nn.Sequential):
                     bidirectional=self.bidirectional,
                 )
             )
+            self.__module_names.append("lstm")
             if self.__dropouts[idx] > 0 and idx < self.num_lstm_layers-1:
                 self.add_module(
                     name=f"dropout_{idx+1}",
                     module=nn.Dropout(self.__dropouts[idx]),
                 )
+                self.__module_names.append("dp")
     
     def forward(self, input:Union[Tensor, PackedSequence], hx:Optional[Tuple[Tensor, Tensor]]=None) -> Union[Tensor, Tuple[Union[Tensor, PackedSequence], Tuple[Tensor, Tensor]]]:
         """
@@ -958,22 +961,14 @@ class StackedLSTM(nn.Sequential):
             of shape (seq_len, batch_size, n_channels)
         hx: 2-tuple of Tensor, optional,
         """
-        n_layers = 0
         output, _hx = input, hx
-        div = 2 if self.__dropout > 0 else 1
-        for module in self:
-            n_lstm, res = divmod(n_layers, div)
-            if res == 1:
+        for idx, (name, module) in enumerate(zip(self.__module_names, self)):
+            if name == "dp":
                 output = module(output)
-                # print(f"module = {type(module).__name__}")
-            else:
-                # print(f"n_layers = {n_layers}, input shape = {output.shape}")
-                if n_lstm > 0:
+            elif name == "lstm":
+                if idx > 0:
                     _hx = None
                 output, _hx = module(output, _hx)
-                # print(f"module = {type(module).__name__}")
-                # print(f"n_layers = {n_layers}, input shape = {output.shape}")
-            n_layers += 1
         if self.return_sequences:
             final_output = output  # seq_len, batch_size, n_direction*hidden_size
         else:
