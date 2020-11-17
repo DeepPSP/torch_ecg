@@ -34,6 +34,7 @@ from models.utils.torch_utils import (
 from utils.utils_nn import compute_conv_output_shape
 from utils.misc import dict_to_str
 
+
 if ModelCfg.torch_dtype.lower() == 'double':
     torch.set_default_tensor_type(torch.DoubleTensor)
 

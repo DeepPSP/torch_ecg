@@ -9,7 +9,7 @@ import torch
 from torch import Tensor
 from easydict import EasyDict as ED
 
-from torch_ecg.models.ecg_crnn import ECG_CRNN
+from torch_ecg.models._legacy.legacy_ecg_crnn_v03 import ECG_CRNN
 from .cfg import ModelCfg
 
 
@@ -24,7 +24,7 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
     __DEBUG__ = True
     __name__ = "ECG_CRNN_CINC2020"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -33,6 +33,9 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
             list of the classes for classification
         n_leads: int,
             number of leads (number of input channels)
+        input_len: int, optional,
+            sequence length (last dim.) of the input,
+            will not be used in the inference mode
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file

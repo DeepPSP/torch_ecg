@@ -30,7 +30,8 @@ from torch_ecg.models.nets import (
     default_collate_fn as collate_fn,
 )
 # from torch_ecg.torch_ecg.models.ecg_crnn import ECG_CRNN
-from .model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
+# from .model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
+from .model_legacy import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
 from .utils import (
     get_date_str, dict_to_str, str2bool,
     mask_to_intervals, list_sum,

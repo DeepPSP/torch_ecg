@@ -57,12 +57,15 @@ import torch.nn.functional as F
 from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 
-from torch_ecg.models.ecg_crnn import ECG_CRNN
+# from torch_ecg.models.ecg_crnn import ECG_CRNN
+# from .model import ECG_CRNN_CINC2020
+from .model_legacy import ECG_CRNN_CINC2020
+# from torch_ecg.model_configs import ECG_CRNN_CONFIG
+from torch_ecg.model_configs._legacy.legacy_ecg_crnn_v03 import ECG_CRNN_CONFIG
 from torch_ecg.models.nets import (
     BCEWithLogitsWithClassWeightLoss,
     default_collate_fn as collate_fn,
 )
-from torch_ecg.model_configs import ECG_CRNN_CONFIG
 from torch_ecg.utils.misc import (
     init_logger, get_date_str, dict_to_str, str2bool,
 )
@@ -519,7 +522,7 @@ if __name__ == "__main__":
     model_config.cnn.name = config.cnn_name
     model_config.rnn.name = config.rnn_name
 
-    model = ECG_CRNN(
+    model = ECG_CRNN_CINC2020(
         classes=classes,
         n_leads=config.n_leads,
         input_len=config.input_len,

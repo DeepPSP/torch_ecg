@@ -18,20 +18,19 @@ import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from torch_ecg.cfg import Cfg
-from torch_ecg.model_configs import ECG_CRNN_CONFIG
+from torch_ecg.model_configs._legacy.legacy_ecg_crnn_v03 import ECG_CRNN_CONFIG
 from torch_ecg.utils.utils_nn import compute_conv_output_shape
 from torch_ecg.utils.misc import dict_to_str
-from .nets import (
+from torch_ecg.models.nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
     DownSample,
     ZeroPadding,
-    StackedLSTM,
+    StackedLSTM, BidirectionalLSTM,
     # AML_Attention, AML_GatedAttention,
     AttentionWithContext,
     SelfAttention, MultiHeadAttention,
     AttentivePooling,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
     SeqLin,
 )
 
@@ -1166,7 +1165,7 @@ class ECG_CRNN(nn.Module):
     __DEBUG__ = True
     __name__ = "ECG_CRNN"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -1175,6 +1174,9 @@ class ECG_CRNN(nn.Module):
             list of the classes for classification
         n_leads: int,
             number of leads (number of input channels)
+        input_len: int, optional,
+            sequence length (last dim.) of the input,
+            will not be used in the inference mode
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
@@ -1183,12 +1185,12 @@ class ECG_CRNN(nn.Module):
         self.classes = list(classes)
         self.n_classes = len(classes)
         self.n_leads = n_leads
+        self.input_len = input_len
         self.config = deepcopy(ECG_CRNN_CONFIG)
         self.config.update(config or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
-            debug_input_len = 4000
         
         cnn_choice = self.config.cnn.name.lower()
         if "vgg16" in cnn_choice:
@@ -1203,29 +1205,25 @@ class ECG_CRNN(nn.Module):
             # rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
         else:
             raise NotImplementedError
-        rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
+        rnn_input_size = self.cnn.compute_output_shape(self.input_len, batch_size=None)[1]
 
         if self.__DEBUG__:
-            cnn_output_shape = self.cnn.compute_output_shape(debug_input_len, None)
-            print(f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}, given input_len = {debug_input_len}")
+            cnn_output_shape = self.cnn.compute_output_shape(self.input_len, batch_size=None)
+            print(f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}")
 
         if self.config.rnn.name.lower() == "none":
             self.rnn = None
-            attn_input_size = rnn_input_size
-        elif self.config.rnn.name.lower() == "lstm":
-            # hidden_sizes = self.config.rnn.lstm.hidden_sizes + [self.n_classes]
-            # if self.__DEBUG__:
-            #     print(f"lstm hidden sizes {self.config.rnn.lstm.hidden_sizes} ---> {hidden_sizes}")
-            self.rnn = StackedLSTM(
-                input_size=rnn_input_size,
-                hidden_sizes=self.config.rnn.lstm.hidden_sizes,
-                bias=self.config.rnn.lstm.bias,
-                dropouts=self.config.rnn.lstm.dropouts,
-                bidirectional=self.config.rnn.lstm.bidirectional,
-                return_sequences=self.config.rnn.lstm.retseq,
-            )
-            attn_input_size = self.rnn.compute_output_shape(None, None)[-1]
+            _, clf_input_size, _ = self.cnn.compute_output_shape(self.input_len, batch_size=None)
+            self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
         elif self.config.rnn.name.lower() == "linear":
+            if self.config.global_pool.lower() == "max":
+                self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+            elif self.config.global_pool.lower() == "avg":
+                self.pool = nn.AdaptiveAvgPool1d((1,))
+            elif self.config.global_pool.lower() == "attn":
+                raise NotImplementedError("Attentive pooling not implemented yet!")
+            else:
+                raise NotImplementedError(f"pooling method {self.config.global_pool} not implemented yet!")
             self.rnn = SeqLin(
                 in_channels=rnn_input_size,
                 out_channels=self.config.rnn.linear.out_channels,
@@ -1233,85 +1231,75 @@ class ECG_CRNN(nn.Module):
                 bias=self.config.rnn.linear.bias,
                 dropouts=self.config.rnn.linear.dropouts,
             )
-            attn_input_size = self.rnn.compute_output_shape(None, None)[-1]
-        else:
-            raise NotImplementedError
-
-        # attention
-        if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:
-            self.attn = None
-            clf_input_size = attn_input_size
-            if self.config.attn.name.lower() != "none":
-                print(f"since `retseq` of rnn is False, hence attention `{self.config.attn.name}` is ignored")
-        elif self.config.attn.name.lower() == "none":
-            self.attn = None
-            clf_input_size = attn_input_size
-        elif self.config.attn.name.lower() == "nl":  # non_local
-            self.attn = NonLocalBlock(
-                in_channels=attn_input_size,
-                filter_lengths=self.config.attn.nl.filter_lengths,
-                subsample_length=self.config.attn.nl.subsample_length,
-                batch_norm=self.config.attn.nl.batch_norm,
+            clf_input_size = self.rnn.compute_output_shape(None,None)[-1]
+        elif self.config.rnn.name.lower() == "lstm":
+            # hidden_sizes = self.config.rnn.lstm.hidden_sizes + [self.n_classes]
+            if self.__DEBUG__:
+                print(f"lstm hidden sizes {self.config.rnn.lstm.hidden_sizes} ---> {hidden_sizes}")
+            self.rnn = StackedLSTM(
+                input_size=rnn_input_size,
+                hidden_sizes=self.config.rnn.lstm.hidden_sizes,
+                bias=self.config.rnn.lstm.bias,
+                dropouts=self.config.rnn.lstm.dropouts,
+                bidirectional=self.config.rnn.lstm.bidirectional,
+                return_sequences=self.config.rnn.lstm.retseq,
+                # nonlinearity=self.config.rnn.lstm.nonlinearity,
             )
-            clf_input_size = self.attn.compute_output_shape(None, None)[1]
-        elif self.config.attn.name.lower() == "se":  # squeeze_exitation
-            self.attn = SEBlock(
-                in_channels=attn_input_size,
-                reduction=self.config.attn.se.reduction,
-                activation=self.config.attn.se.activation,
-                kw_activation=self.config.attn.se.kw_activation,
-                bias=self.config.attn.se.bias,
+            if self.config.rnn.lstm.retseq:
+                if self.config.global_pool.lower() == "max":
+                    self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+                elif self.config.global_pool.lower() == "avg":
+                    self.pool = nn.AdaptiveAvgPool1d((1,))
+                elif self.config.global_pool.lower() == "attn":
+                    raise NotImplementedError("Attentive pooling not implemented yet!")
+                else:
+                    raise NotImplementedError(f"pooling method {self.config.global_pool} not implemented yet!")
+            else:
+                self.pool = None
+            clf_input_size = self.rnn.compute_output_shape(None,None)[-1]
+        elif self.config.rnn.name.lower() == "attention":
+            hidden_sizes = self.config.rnn.attention.hidden_sizes
+            attn_in_channels = hidden_sizes[-1]
+            if self.config.rnn.attention.bidirectional:
+                attn_in_channels *= 2
+            self.rnn = nn.Sequential(
+                StackedLSTM(
+                    input_size=rnn_input_size,
+                    hidden_sizes=hidden_sizes,
+                    bias=self.config.rnn.attention.bias,
+                    dropouts=self.config.rnn.attention.dropouts,
+                    bidirectional=self.config.rnn.attention.bidirectional,
+                    return_sequences=True,
+                    # nonlinearity=self.config.rnn.attention.nonlinearity,
+                ),
+                SelfAttention(
+                    in_features=attn_in_channels,
+                    head_num=self.config.rnn.attention.head_num,
+                    dropout=self.config.rnn.attention.dropout,
+                    bias=self.config.rnn.attention.bias,
+                )
             )
-            clf_input_size = self.attn.compute_output_shape(None, None)[1]
-        elif self.config.attn.name.lower() == "gc":  # global_context
-            self.attn = GlobalContextBlock(
-                in_channels=attn_input_size,
-                ratio=self.config.attn.gc.ratio,
-                reduction=self.config.attn.gc.reduction,
-                pooling_type=self.config.attn.gc.pooling_type,
-                fusion_types=self.config.attn.gc.fusion_types,
-            )
-            clf_input_size = self.attn.compute_output_shape(None, None)[1]
-        elif self.config.attn.name.lower() == "sa":  # self_attention
-            # NOTE: this branch NOT tested
-            self.attn = SelfAttention(
-                in_features=attn_in_channels,
-                head_num=self.config.attn.sa.head_num,
-                dropout=self.config.attn.sa.dropout,
-                bias=self.config.attn.sa.bias,
-            )
-            clf_input_size = self.attn.compute_output_shape(None, None)[-1]
+            if self.config.global_pool.lower() == "max":
+                self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+            elif self.config.global_pool.lower() == "avg":
+                self.pool = nn.AdaptiveAvgPool1d((1,))
+            elif self.config.global_pool.lower() == "attn":
+                raise NotImplementedError("Attentive pooling not implemented yet!")
+            else:
+                raise NotImplementedError(f"pooling method {self.config.global_pool} not implemented yet!")
+            clf_input_size = self.rnn[-1].compute_output_shape(None,None)[-1]
         else:
             raise NotImplementedError
 
         if self.__DEBUG__:
             print(f"clf_input_size = {clf_input_size}")
 
-        if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:
-            self.pool = None
-            if self.config.global_pool.lower() != "none":
-                print(f"since `retseq` of rnn is False, hence global pooling `{self.config.global_pool}` is ignored")
-        elif self.config.global_pool.lower() == "max":
-            self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
-        elif self.config.global_pool.lower() == "avg":
-            self.pool = nn.AdaptiveAvgPool1d((1,))
-        elif self.config.global_pool.lower() == "attn":
-            raise NotImplementedError("Attentive pooling not implemented yet!")
-        else:
-            raise NotImplementedError(f"pooling method {self.config.global_pool} not implemented yet!")
-
         # input of `self.clf` has shape: batch_size, channels
-        self.clf = SeqLin(
-            in_channels=clf_input_size,
-            out_channels=self.config.clf.out_channels + [self.n_classes],
-            activation=self.config.clf.activation,
-            bias=self.config.clf.bias,
-            dropouts=self.config.clf.dropouts,
-            skip_last_activation=True,
-        )
+        self.clf = nn.Linear(clf_input_size, self.n_classes)
 
-        # sigmoid for inference
-        self.sigmoid = nn.Sigmoid()  # for making inference
+        # sigmoid/softmax for inference
+        self.sigmoid = nn.Sigmoid()  # for multi-label classification
+        self.softmax = nn.Softmax(-1)  # for single-label classification
 
     def forward(self, input:Tensor) -> Tensor:
         """ finished, partly checked (rnn part might have bugs),
@@ -1326,48 +1314,36 @@ class ECG_CRNN(nn.Module):
         output: Tensor,
             of shape (batch_size, n_classes)
         """
-        # CNN
         x = self.cnn(input)  # batch_size, channels, seq_len
         # print(f"cnn out shape = {x.shape}")
-
-        # RNN (optional)
-        if self.config.rnn.name.lower() in ["lstm"]:
-            # (batch_size, channels, seq_len) --> (seq_len, batch_size, channels)
+        if self.config.rnn.name.lower() in ["lstm", "attention"]:
+            # (batch_size, channels, seq_len) -> (seq_len, batch_size, input_size)
             x = x.permute(2,0,1)
-            x = self.rnn(x)  # (seq_len, batch_size, channels) or (batch_size, channels)
+            x = self.rnn(x)
+            if self.pool:
+                # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
+                x = x.permute(1,2,0)
+                x = self.pool(x)  # (batch_size, channels, 1)
+                # x = torch.flatten(x, start_dim=1)  # (batch_size, channels)
+                x = x.squeeze(dim=-1)
+            else:
+                # x of shape (batch_size, channels)
+                pass
+            # print(f"rnn out shape = {x.shape}")
         elif self.config.rnn.name.lower() in ["linear"]:
-            # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
-            x = x.permute(0,2,1)
-            x = self.rnn(x)  # (batch_size, seq_len, channels)
-            # (batch_size, seq_len, channels) --> (seq_len, batch_size, channels)
-            x = x.permute(1,0,2)
-        else:
-            # (batch_size, channels, seq_len) --> (seq_len, batch_size, channels)
-            x = x.permute(2,0,1)
-
-        # Attention (optional)
-        if self.attn is None and x.ndim == 3:
-            # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
-            x = x.permute(1,2,0)
-        elif self.config.attn.name.lower() in ["nl", "se", "gc"]:
-            # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
-            x = x.permute(1,2,0)
-            x = self.attn(x)  # (batch_size, channels, seq_len)
-        elif self.config.attn.name.lower() in ["sa"]:
-            x = self.attn(x)  # (seq_len, batch_size, channels)
-            # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
-            x = x.permute(1,2,0)
-
-        if self.pool:
-            x = self.pool(x)  # (batch_size, channels, 1)
+            # (batch_size, channels, seq_len) --> (batch_size, channels)
+            x = self.pool(x)
             x = x.squeeze(dim=-1)
-        else:
-            # x of shape (batch_size, channels)
-            pass
-
+            # seq_lin
+            x = self.rnn(x)
+        else:  # "none"
+            # (batch_size, channels, seq_len) --> (batch_size, channels)
+            x = self.pool(x)
+            # print(f"pool out shape = {x.shape}")
+            # x = torch.flatten(x, start_dim=1)
+            x = x.squeeze(dim=-1)
         # print(f"clf in shape = {x.shape}")
         pred = self.clf(x)  # batch_size, n_classes
-
         return pred
 
     @torch.no_grad()

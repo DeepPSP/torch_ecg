@@ -1426,6 +1426,7 @@ class ECG_CRNN(nn.Module):
             )
             clf_input_size = self.attn.compute_output_shape(None, None)[1]
         elif self.config.attn.name.lower() == "sa":  # self_attention
+            # NOTE: this branch NOT tested
             self.attn = SelfAttention(
                 in_features=attn_in_channels,
                 head_num=self.config.attn.sa.head_num,
