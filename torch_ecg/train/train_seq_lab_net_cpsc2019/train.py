@@ -5,6 +5,7 @@ import sys
 import time
 import logging
 import argparse
+import textwrap
 from copy import deepcopy
 from collections import deque
 from typing import Union, Optional, Tuple, Sequence, NoReturn
@@ -37,7 +38,7 @@ from .cfg import ModelCfg, TrainCfg
 from .dataset import CPSC2019
 from .metrics import compute_metrics
 
-if ModelCfg.torch_dtype.lower() == 'double':
+if ModelCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
     _DTYPE = torch.float64
 else:
@@ -122,7 +123,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         comment=f"OPT_{model.__name__}_{config.cnn_name}_{config.rnn_name}_{config.attn_name}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
     )
 
-    msg = f'''
+    msg = textwrap.dedent(f"""
         Starting training:
         ------------------
         Epochs:          {n_epochs}
@@ -133,19 +134,19 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         Device:          {device.type}
         Optimizer:       {config.train_optimizer}
         -----------------------------------------
-    '''
+    """)
     print(msg)  # in case no logger
     if logger:
         logger.info(msg)
 
-    if config.train_optimizer.lower() == 'adam':
+    if config.train_optimizer.lower() == "adam":
         optimizer = optim.Adam(
             params=model.parameters(),
             lr=lr,
             betas=(0.9, 0.999),  # default
             eps=1e-08,  # default
         )
-    elif config.train_optimizer.lower() == 'sgd':
+    elif config.train_optimizer.lower() == "sgd":
         optimizer = optim.SGD(
             params=model.parameters(),
             lr=lr,
@@ -157,9 +158,9 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
     
     if config.lr_scheduler is None:
         scheduler = None
-    elif config.lr_scheduler.lower() == 'plateau':
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=2)
-    elif config.lr_scheduler.lower() == 'step':
+    elif config.lr_scheduler.lower() == "plateau":
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", patience=2)
+    elif config.lr_scheduler.lower() == "step":
         scheduler = optim.lr_scheduler.StepLR(optimizer, config.lr_step_size, config.lr_gamma)
     else:
         raise NotImplementedError("lr scheduler `{config.lr_scheduler.lower()}` not implemented for training")
@@ -172,7 +173,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         )
     else:
         raise NotImplementedError(f"loss `{config.loss}` not implemented!")
-    # scheduler = ReduceLROnPlateau(optimizer, mode='max', verbose=True, patience=6, min_lr=1e-7)
+    # scheduler = ReduceLROnPlateau(optimizer, mode="max", verbose=True, patience=6, min_lr=1e-7)
     # scheduler = CosineAnnealingWarmRestarts(optimizer, 0.001, 1e-6, 20)
 
     save_prefix = f"{model.__name__}_{config.cnn_name}_{config.rnn_name}_epoch"
@@ -184,7 +185,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         model.train()
         epoch_loss = 0
 
-        with tqdm(total=n_train, desc=f'Epoch {epoch + 1}/{n_epochs}', ncols=100) as pbar:
+        with tqdm(total=n_train, desc=f"Epoch {epoch + 1}/{n_epochs}", ncols=100) as pbar:
             for epoch_step, (signals, labels) in enumerate(train_loader):
                 global_step += 1
                 signals = signals.to(device=device, dtype=_DTYPE)
@@ -199,59 +200,59 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 optimizer.step()
 
                 if global_step % log_step == 0:
-                    writer.add_scalar('train/loss', loss.item(), global_step)
+                    writer.add_scalar("train/loss", loss.item(), global_step)
                     if scheduler:
-                        writer.add_scalar('lr', scheduler.get_lr()[0], global_step)
+                        writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
                         pbar.set_postfix(**{
-                            'loss (batch)': loss.item(),
-                            'lr': scheduler.get_lr()[0],
+                            "loss (batch)": loss.item(),
+                            "lr": scheduler.get_lr()[0],
                         })
-                        msg = f'Train step_{global_step}: loss : {loss.item()}, lr : {scheduler.get_lr()[0] * batch_size}'
+                        msg = f"Train step_{global_step}: loss : {loss.item()}, lr : {scheduler.get_lr()[0] * batch_size}"
                     else:
                         pbar.set_postfix(**{
-                            'loss (batch)': loss.item(),
+                            "loss (batch)": loss.item(),
                         })
-                        msg = f'Train step_{global_step}: loss : {loss.item()}'
+                        msg = f"Train step_{global_step}: loss : {loss.item()}"
                     print(msg)  # in case no logger
                     if logger:
                         logger.info(msg)
                 pbar.update(signals.shape[0])
             
-            writer.add_scalar('train/epoch_loss', epoch_loss, global_step)
+            writer.add_scalar("train/epoch_loss", epoch_loss, global_step)
 
             # eval for each epoch using corresponding `evaluate` function
             if debug:
                 eval_train_res = evaluate(
                     model, val_train_loader, config, device, debug
                 )
-                writer.add_scalar('train/qrs_score', eval_train_res, global_step)
+                writer.add_scalar("train/qrs_score", eval_train_res, global_step)
 
             eval_res = evaluate(
                 model, val_loader, config, device, debug
             )
             model.train()
-            writer.add_scalar('test/qrs_score', eval_res, global_step)
+            writer.add_scalar("test/qrs_score", eval_res, global_step)
 
             if config.lr_scheduler is None:
                 pass
-            elif config.lr_scheduler.lower() == 'plateau':
+            elif config.lr_scheduler.lower() == "plateau":
                 scheduler.step(metrics=eval_res[6])
-            elif config.lr_scheduler.lower() == 'step':
+            elif config.lr_scheduler.lower() == "step":
                 scheduler.step()
             
             if debug:
-                eval_train_msg = f"""
+                eval_train_msg = textwrap.dedent(f"""
                 train/qrs_score:         {eval_train_res}
-            """
+            """)
             else:
                 eval_train_msg = ""
-            msg = f"""
+            msg = textwrap.dedent(f"""
                 Train epoch_{epoch + 1}:
                 --------------------
                 train/epoch_loss:        {epoch_loss}{eval_train_msg}
                 test/qrs_score:          {eval_res}
                 ---------------------------------
-            """
+            """)
 
             print(msg)  # in case no logger
             if logger:
@@ -260,15 +261,15 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
             try:
                 os.makedirs(config.checkpoints, exist_ok=True)
                 if logger:
-                    logger.info('Created checkpoint directory')
+                    logger.info("Created checkpoint directory")
             except OSError:
                 pass
-            save_suffix = f'epochloss_{epoch_loss:.5f}_challenge_loss(qrs_score)_{eval_res}'
-            save_filename = f'{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth'
+            save_suffix = f"epochloss_{epoch_loss:.5f}_challenge_loss(qrs_score)_{eval_res}"
+            save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth"
             save_path = os.path.join(config.checkpoints, save_filename)
             torch.save(model.state_dict(), save_path)
             if logger:
-                logger.info(f'Checkpoint {epoch + 1} saved!')
+                logger.info(f"Checkpoint {epoch + 1} saved!")
             saved_models.append(save_path)
             # remove outdated models
             if len(saved_models) > config.keep_checkpoint_max > 0:
@@ -276,7 +277,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 try:
                     os.remove(model_to_remove)
                 except:
-                    logger.info(f'failed to remove {model_to_remove}')
+                    logger.info(f"failed to remove {model_to_remove}")
 
     writer.close()
 
@@ -349,50 +350,50 @@ def get_args(**kwargs):
     """
     cfg = deepcopy(kwargs)
     parser = argparse.ArgumentParser(
-        description='Train the Model on CINC2019',
+        description="Train the Model on CINC2019",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # parser.add_argument(
-    #     '-l', '--learning-rate',
-    #     metavar='LR', type=float, nargs='?', default=0.001,
-    #     help='Learning rate',
-    #     dest='learning_rate')
+    #     "-l", "--learning-rate",
+    #     metavar="LR", type=float, nargs="?", default=0.001,
+    #     help="Learning rate",
+    #     dest="learning_rate")
     parser.add_argument(
-        '-b', '--batch-size',
+        "-b", "--batch-size",
         type=int, default=128,
-        help='the batch size for training',
-        dest='batch_size')
+        help="the batch size for training",
+        dest="batch_size")
     parser.add_argument(
-        '-m', '--model-name',
+        "-m", "--model-name",
         type=str, default="crnn",
-        help='name of the model to train, `cnn` or `crnn`',
-        dest='model_name')
+        help="name of the model to train, `cnn` or `crnn`",
+        dest="model_name")
     parser.add_argument(
-        '-c', '--cnn-name',
-        type=str, default='multi_scopic',
-        help='choice of cnn feature extractor',
-        dest='cnn_name')
+        "-c", "--cnn-name",
+        type=str, default="multi_scopic",
+        help="choice of cnn feature extractor",
+        dest="cnn_name")
     parser.add_argument(
-        '-r', '--rnn-name',
-        type=str, default='lstm',
-        help='choice of rnn structures',
-        dest='rnn_name')
+        "-r", "--rnn-name",
+        type=str, default="lstm",
+        help="choice of rnn structures",
+        dest="rnn_name")
     parser.add_argument(
-        '-a', '--attn-name',
-        type=str, default='se',
-        help='choice of attention block',
-        dest='attn_name')
+        "-a", "--attn-name",
+        type=str, default="se",
+        help="choice of attention block",
+        dest="attn_name")
     parser.add_argument(
-        '--keep-checkpoint-max', type=int, default=50,
-        help='maximum number of checkpoints to keep. If set 0, all checkpoints will be kept',
-        dest='keep_checkpoint_max')
+        "--keep-checkpoint-max", type=int, default=50,
+        help="maximum number of checkpoints to keep. If set 0, all checkpoints will be kept",
+        dest="keep_checkpoint_max")
     parser.add_argument(
-        '--optimizer', type=str, default='adam',
-        help='training optimizer',
-        dest='train_optimizer')
+        "--optimizer", type=str, default="adam",
+        help="training optimizer",
+        dest="train_optimizer")
     parser.add_argument(
-        '--debug', type=str2bool, default=False,
-        help='train with more debugging information',
-        dest='debug')
+        "--debug", type=str2bool, default=False,
+        help="train with more debugging information",
+        dest="debug")
     
     args = vars(parser.parse_args())
 
@@ -410,18 +411,18 @@ if __name__ == "__main__":
     config = get_args(**TrainCfg)
     # os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
     if not DAS:
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     else:
-        device = torch.device('cuda')
+        device = torch.device("cuda")
     logger = init_logger(log_dir=config.log_dir)
     logger.info(f"\n{'*'*20}   Start Training   {'*'*20}\n")
-    logger.info(f'Using device {device}')
+    logger.info(f"Using device {device}")
     logger.info(f"Using torch of version {torch.__version__}")
-    logger.info(f'with configuration\n{dict_to_str(config)}')
+    logger.info(f"with configuration\n{dict_to_str(config)}")
     print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
-    print(f'Using device {device}')
+    print(f"Using device {device}")
     print(f"Using torch of version {torch.__version__}")
-    print(f'with configuration\n{dict_to_str(config)}')
+    print(f"with configuration\n{dict_to_str(config)}")
 
     model_name = f"seq_lab_{config.model_name.lower()}"
     model_config = deepcopy(ModelCfg[model_name])
@@ -450,8 +451,8 @@ if __name__ == "__main__":
             debug=config.debug,
         )
     except KeyboardInterrupt:
-        torch.save(model.state_dict(), os.path.join(config.checkpoints, 'INTERRUPTED.pth'))
-        logger.info('Saved interrupt')
+        torch.save(model.state_dict(), os.path.join(config.checkpoints, "INTERRUPTED.pth"))
+        logger.info("Saved interrupt")
         try:
             sys.exit(0)
         except SystemExit:

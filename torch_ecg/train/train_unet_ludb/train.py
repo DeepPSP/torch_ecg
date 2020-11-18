@@ -8,6 +8,7 @@ import sys
 import time
 import logging
 import argparse
+import textwrap
 from copy import deepcopy
 from collections import deque
 from typing import Union, Optional, Tuple, Sequence, NoReturn
@@ -38,7 +39,7 @@ from .cfg import TrainCfg
 from .dataset import LUDB
 from .metrics import compute_metrics
 
-if TrainCfg.torch_dtype.lower() == 'double':
+if TrainCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 
@@ -104,7 +105,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
     
     # max_itr = n_epochs * n_train
 
-    msg = f'''
+    msg = textwrap.dedent(f"""
         Starting training:
         ------------------
         Epochs:          {n_epochs}
@@ -115,12 +116,12 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         Device:          {device.type}
         Optimizer:       {config.train_optimizer}
         -----------------------------------------
-    '''
+    """)
     print(msg)  # in case no logger
     if logger:
         logger.info(msg)
 
-    if config.train_optimizer.lower() == 'adam':
+    if config.train_optimizer.lower() == "adam":
         optimizer = optim.Adam(
             params=model.parameters(),
             lr=lr,
@@ -128,7 +129,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
             eps=1e-08,  # default
         )
         scheduler = None
-    elif config.train_optimizer.lower() == 'sgd':
+    elif config.train_optimizer.lower() == "sgd":
         optimizer = optim.SGD(
             params=model.parameters(),
             lr=lr,
@@ -136,7 +137,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
             weight_decay=config.decay,
         )
         scheduler = optim.lr_scheduler.StepLR(optimizer, config.lr_step_size, config.lr_gamma)
-    elif config.train_optimizer.lower() == 'rmsprop':
+    elif config.train_optimizer.lower() == "rmsprop":
         optimizer = optim.RMSprop(
             params=model.parameters,
             lr=lr,
@@ -145,7 +146,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
             weight_decay=config.weight_decay,
             momentum=config.momentum,
         )
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min' if model.n_classes > 1 else 'max', patience=2)
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "min" if model.n_classes > 1 else "max", patience=2)
     else:
         raise NotImplementedError(f"optimizer `{config.train_optimizer}` not implemented!")
     # scheduler = optim.lr_scheduler.LambdaLR(optimizer, burnin_schedule)
@@ -164,7 +165,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         model.train()
         epoch_loss = 0
 
-        with tqdm(total=n_train, desc=f'Epoch {epoch + 1}/{n_epochs}', ncols=110) as pbar:
+        with tqdm(total=n_train, desc=f"Epoch {epoch + 1}/{n_epochs}", ncols=110) as pbar:
             for epoch_step, (signals, truth_masks) in enumerate(train_loader):
                 global_step += 1
                 signals = signals.to(device=device, dtype=torch.float64)
@@ -181,25 +182,25 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 epoch_loss += loss.item()
 
                 if global_step % log_step == 0:
-                    writer.add_scalar('train/loss', loss.item(), global_step)
+                    writer.add_scalar("train/loss", loss.item(), global_step)
                     if scheduler:
-                        writer.add_scalar('lr', scheduler.get_lr()[0], global_step)
+                        writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
                         pbar.set_postfix(**{
-                            'loss (batch)': loss.item(),
-                            'lr': scheduler.get_lr()[0],
+                            "loss (batch)": loss.item(),
+                            "lr": scheduler.get_lr()[0],
                         })
-                        msg = f'Train step_{global_step}: loss : {loss.item()}, lr : {scheduler.get_lr()[0] * batch_size}'
+                        msg = f"Train step_{global_step}: loss : {loss.item()}, lr : {scheduler.get_lr()[0] * batch_size}"
                     else:
                         pbar.set_postfix(**{
-                            'loss (batch)': loss.item(),
+                            "loss (batch)": loss.item(),
                         })
-                        msg = f'Train step_{global_step}: loss : {loss.item()}'
+                        msg = f"Train step_{global_step}: loss : {loss.item()}"
                     print(msg)  # in case no logger
                     if logger:
                         logger.info(msg)
                 pbar.update(signals.shape[0])
 
-            writer.add_scalar('train/epoch_loss', epoch_loss, global_step)
+            writer.add_scalar("train/epoch_loss", epoch_loss, global_step)
 
             if debug:
                 eval_train_res = evaluate(model, val_train_loader, config, device, debug)
@@ -208,7 +209,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                         for metric in ["sensitivity", "precision", "f1_score", "mean_error", "standard_deviation"]:
                             scalar_name = f"{wave}_{term}_{metric}"
                             scalar = eval(f"eval_train_res.{wave}_{term}.{metric}")
-                            writer.add_scalar(f'train/{scalar_name}', scalar, global_step)
+                            writer.add_scalar(f"train/{scalar_name}", scalar, global_step)
             
             eval_res = evaluate(model, val_loader, config, device, debug)
             model.train()
@@ -217,20 +218,20 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                     for metric in ["sensitivity", "precision", "f1_score", "mean_error", "standard_deviation"]:
                         scalar_name = f"{wave}_{term}_{metric}"
                         scalar = eval(f"eval_res.{wave}_{term}.{metric}")
-                        writer.add_scalar(f'test/{scalar_name}', scalar, global_step)
+                        writer.add_scalar(f"test/{scalar_name}", scalar, global_step)
 
             try:
                 os.makedirs(config.checkpoints, exist_ok=True)
                 if logger:
-                    logger.info('Created checkpoint directory')
+                    logger.info("Created checkpoint directory")
             except OSError:
                 pass
-            save_suffix = f'epochloss_{epoch_loss:.5f}'
-            save_filename = f'{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth'
+            save_suffix = f"epochloss_{epoch_loss:.5f}"
+            save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth"
             save_path = os.path.join(config.checkpoints, save_filename)
             torch.save(model.state_dict(), save_path)
             if logger:
-                logger.info(f'Checkpoint {epoch + 1} saved!')
+                logger.info(f"Checkpoint {epoch + 1} saved!")
             saved_models.append(save_path)
             # remove outdated models
             if len(saved_models) > config.keep_checkpoint_max > 0:
@@ -238,7 +239,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 try:
                     os.remove(model_to_remove)
                 except:
-                    logger.info(f'failed to remove {model_to_remove}')
+                    logger.info(f"failed to remove {model_to_remove}")
 
     writer.close()
 
@@ -284,18 +285,18 @@ if __name__ == "__main__":
     config = get_args(**TrainCfg)
     # os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
     if not DAS:
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     else:
-        device = torch.device('cuda')
+        device = torch.device("cuda")
     logger = init_logger(log_dir=config.log_dir)
     logger.info(f"\n{'*'*20}   Start Training   {'*'*20}\n")
-    logger.info(f'Using device {device}')
+    logger.info(f"Using device {device}")
     logger.info(f"Using torch of version {torch.__version__}")
-    logger.info(f'with configuration {config}')
+    logger.info(f"with configuration {config}")
     print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
-    print(f'Using device {device}')
+    print(f"Using device {device}")
     print(f"Using torch of version {torch.__version__}")
-    print(f'with configuration {config}')
+    print(f"with configuration {config}")
 
     model_config = deepcopy(ECG_UNET_CONFIG)
 
@@ -318,8 +319,8 @@ if __name__ == "__main__":
             debug=config.debug,
         )
     except KeyboardInterrupt:
-        torch.save(model.state_dict(), os.path.join(config.checkpoints, 'INTERRUPTED.pth'))
-        logger.info('Saved interrupt')
+        torch.save(model.state_dict(), os.path.join(config.checkpoints, "INTERRUPTED.pth"))
+        logger.info("Saved interrupt")
         try:
             sys.exit(0)
         except SystemExit:
