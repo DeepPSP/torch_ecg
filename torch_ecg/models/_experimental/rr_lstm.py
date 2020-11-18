@@ -24,6 +24,7 @@ from easydict import EasyDict as ED
 from torch_ecg.cfg import Cfg
 from torch_ecg.model_configs import RR_LSTM_CONFIG
 from torch_ecg.utils.misc import dict_to_str
+from torch_ecg.utils.utils_nn import compute_module_size
 from torch_ecg.models.nets import (
     Mish, Swish, Activations,
     StackedLSTM,
@@ -66,7 +67,6 @@ class RR_LSTM(nn.Module):
         self.classes = list(classes)
         self.n_classes = len(classes)
         self.n_leads = n_leads
-        self.input_len = input_len
         self.config = deepcopy(RR_LSTM_CONFIG)
         self.config.update(config or {})
         if self.__DEBUG__:
@@ -74,13 +74,16 @@ class RR_LSTM(nn.Module):
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
         
         self.lstm = StackedLSTM(
-            input_size=rnn_input_size,
+            input_size=self.n_leads,
             hidden_sizes=self.config.lstm.hidden_sizes,
             bias=self.config.lstm.bias,
             dropouts=self.config.lstm.dropouts,
             bidirectional=self.config.lstm.bidirectional,
             return_sequences=self.config.lstm.retseq,
         )
+
+        if self.__DEBUG__:
+            print(f"lstm module has size {self.lstm.module_size}")
 
         attn_input_size = self.lstm.compute_output_shape(None, None)[-1]
 
@@ -127,6 +130,9 @@ class RR_LSTM(nn.Module):
         else:
             raise NotImplementedError
 
+        if self.__DEBUG__ and self.attn:
+            print(f"attn module has size {self.attn.module_size}")
+
         if not self.config.lstm.retseq:
             self.pool = None
             self.clf = None
@@ -141,24 +147,27 @@ class RR_LSTM(nn.Module):
                     dropouts=self.config.clf.linear.dropouts,
                     skip_last_activation=True,
                 )
+            if self.__DEBUG__:
+                print(f"linear clf module has size {self.clf.module_size}")
         elif self.config.clf.name.lower() == "crf":
             self.pool = None
             self.clf = nn.Sequential()
+            proj = nn.Linear(
+                in_features=clf_input_size,
+                out_features=self.n_classes,
+                bias=self.config.clf.crf.proj_bias,
+            )
+            crf = CRF(num_tags=self.n_classes, batch_first=True,)
             self.clf.add_module(
                 name="proj",
-                module=nn.Linear(
-                    in_features=clf_input_size,
-                    out_features=self.n_classes,
-                    bias=self.config.clf.crf.proj_bias,
-                )
+                module=proj,
             )
             self.clf.add_module(
                 name="crf",
-                module=CRF(
-                    num_tags=self.n_classes,
-                    batch_first=True,
-                )
+                module=crf,
             )
+            if self.__DEBUG__:
+                print(f"for crf clf, proj module has size {compute_module_size(proj)}, crf module has size {crf.module_size}")
 
         # for inference, except for crf
         self.softmax = nn.Softmax(dim=-1)
@@ -235,6 +244,4 @@ class RR_LSTM(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
