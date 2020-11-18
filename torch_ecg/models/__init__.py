@@ -30,7 +30,6 @@ from .nets import (
     ZeroPadding,
     SeqLin,
     WeightedBCELoss, BCEWithLogitsWithClassWeightLoss,
-    default_collate_fn,
 )
 
 
@@ -56,5 +55,4 @@ __all__ = [
     "SeqLin",
     "NonLocalBlock", "SEBlock", "GlobalContextBlock",
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
-    "default_collate_fn",
 ]

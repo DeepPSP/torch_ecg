@@ -230,7 +230,7 @@ class RR_LSTM(nn.Module):
         Returns:
         --------
         output_shape: sequence,
-            the output shape of this `CRF` layer, given `seq_len` and `batch_size`
+            the output shape of this module, given `seq_len` and `batch_size`
         """
         if self.config.clf.name.lower() == "crf":
             output_shape = (batch_size, seq_len, self.n_classes)

@@ -19,7 +19,6 @@ from torch.nn.utils.rnn import PackedSequence
 from easydict import EasyDict as ED
 from deprecated import deprecated
 
-from torch_ecg.cfg import Cfg
 from torch_ecg.utils.utils_nn import (
     compute_output_shape,
     compute_conv_output_shape,
@@ -28,12 +27,6 @@ from torch_ecg.utils.utils_nn import (
     compute_module_size,
 )
 from torch_ecg.utils.misc import dict_to_str
-
-if Cfg.torch_dtype.lower() == "double":
-    torch.set_default_tensor_type(torch.DoubleTensor)
-    _DTYPE = np.float64
-else:
-    _DTYPE = np.float32
 
 
 __all__ = [
@@ -53,7 +46,6 @@ __all__ = [
     "NonLocalBlock", "SEBlock", "GlobalContextBlock",
     "CRF",
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
-    "default_collate_fn",
 ]
 
 
@@ -2654,32 +2646,3 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
         loss = super().forward(input, target)
         loss = torch.mean(loss * self.class_weight)
         return loss
-
-
-def default_collate_fn(batch:Sequence[Tuple[np.ndarray, np.ndarray]]) -> Tuple[Tensor, Tensor]:
-    """ finished, checked,
-
-    collate functions for model training
-
-    the data generator (`Dataset`) should generate (`__getitem__`) 2-tuples `signals, labels`
-
-    Parameters:
-    -----------
-    batch: sequence,
-        sequence of 2-tuples,
-        in which the first element is the signal, the second is the label
-    
-    Returns:
-    --------
-    values: Tensor,
-        the concatenated values as input for training
-    labels: Tensor,
-        the concatenated labels as ground truth for training
-    """
-    values = [[item[0]] for item in batch]
-    labels = [[item[1]] for item in batch]
-    values = np.concatenate(values, axis=0).astype(_DTYPE)
-    values = torch.from_numpy(values)
-    labels = np.concatenate(labels, axis=0).astype(_DTYPE)
-    labels = torch.from_numpy(labels)
-    return values, labels

@@ -26,10 +26,8 @@ from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 import biosppy.signals.ecg as BSE
 
-from torch_ecg.models.nets import (
-    BCEWithLogitsWithClassWeightLoss,
-    default_collate_fn as collate_fn,
-)
+from torch_ecg.models.nets import BCEWithLogitsWithClassWeightLoss
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from .model import ECG_SEQ_LAB_NET_CPSC2019
 from .utils import (
     init_logger, get_date_str, dict_to_str, str2bool,
