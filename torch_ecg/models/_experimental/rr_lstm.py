@@ -31,7 +31,8 @@ from torch_ecg.models.nets import (
     AttentionWithContext,
     SelfAttention, MultiHeadAttention,
     AttentivePooling,
-    SeqLin, CRF,
+    SeqLin,
+    CRF, ExtendedCRF,
 )
 
 if Cfg.torch_dtype.lower() == 'double':
@@ -131,7 +132,7 @@ class RR_LSTM(nn.Module):
             raise NotImplementedError
 
         if self.__DEBUG__ and self.attn:
-            print(f"attn module has size {self.attn.module_size}")
+            print(f"attn module \042{self.config.attn.name}\042 has size {self.attn.module_size}")
 
         if not self.config.lstm.retseq:
             self.pool = None
@@ -147,27 +148,16 @@ class RR_LSTM(nn.Module):
                     dropouts=self.config.clf.linear.dropouts,
                     skip_last_activation=True,
                 )
-            if self.__DEBUG__:
-                print(f"linear clf module has size {self.clf.module_size}")
         elif self.config.clf.name.lower() == "crf":
             self.pool = None
-            self.clf = nn.Sequential()
-            proj = nn.Linear(
-                in_features=clf_input_size,
-                out_features=self.n_classes,
-                bias=self.config.clf.crf.proj_bias,
+            self.clf = ExtendedCRF(
+                in_channels=clf_input_size,
+                num_tags=self.n_classes,
+                bias=self.config.clf.crf.proj_bias
             )
-            crf = CRF(num_tags=self.n_classes, batch_first=True,)
-            self.clf.add_module(
-                name="proj",
-                module=proj,
-            )
-            self.clf.add_module(
-                name="crf",
-                module=crf,
-            )
-            if self.__DEBUG__:
-                print(f"for crf clf, proj module has size {compute_module_size(proj)}, crf module has size {crf.module_size}")
+
+        if self.__DEBUG__ and self.clf:
+            print(f"clf module \042{self.config.clf.name}\042 has size {self.clf.module_size}")
 
         # for inference, except for crf
         self.softmax = nn.Softmax(dim=-1)
@@ -175,7 +165,7 @@ class RR_LSTM(nn.Module):
 
 
     def forward(self, input:Tensor) -> Tensor:
-        """ NOT finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------

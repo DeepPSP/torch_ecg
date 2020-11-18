@@ -37,14 +37,13 @@ __all__ = [
     "DownSample",
     "BidirectionalLSTM", "StackedLSTM",
     # "AML_Attention", "AML_GatedAttention",
-    "GlobalContextBlock",
     "AttentionWithContext",
     "MultiHeadAttention", "SelfAttention",
     "AttentivePooling",
     "ZeroPadding",
     "SeqLin",
     "NonLocalBlock", "SEBlock", "GlobalContextBlock",
-    "CRF",
+    "CRF", "ExtendedCRF",
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
 ]
 
@@ -2469,7 +2468,7 @@ class ExtendedCRF(nn.Sequential):
     """
     __DEBUG__ = False
     __name__ = "ExtendedCRF"
-    def __init__(self, in_channels:int, num_tags:int) -> NoReturn:
+    def __init__(self, in_channels:int, num_tags:int, bias:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -2477,18 +2476,21 @@ class ExtendedCRF(nn.Sequential):
         in_channels: int,
             number of channels in the input
         num_tags: int,
-            number of tags.
+            number of tags
+        bias: bool, default True,
+            if True, adds a learnable bias to the linear (projection) layer
         """
         super().__init__()
         self.__in_channels = in_channels
         self.__num_tags = num_tags
+        self.__bias = bias
         if self.__in_channels != self.__num_tags:
             self.add_module(
                 name="proj",
                 module=nn.Linear(
                     in_features=self.__in_channels,
                     out_features=self.__num_tags,
-                    bias=True,
+                    bias=self.__bias,
                 )
             )
         self.add_module(

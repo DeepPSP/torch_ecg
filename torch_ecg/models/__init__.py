@@ -29,6 +29,8 @@ from .nets import (
     AttentivePooling,
     ZeroPadding,
     SeqLin,
+    NonLocalBlock, SEBlock, GlobalContextBlock,
+    CRF, ExtendedCRF,
     WeightedBCELoss, BCEWithLogitsWithClassWeightLoss,
 )
 
@@ -47,12 +49,12 @@ __all__ = [
     "DownSample",
     "BidirectionalLSTM", "StackedLSTM",
     # "AML_Attention", "AML_GatedAttention",
-    "GlobalContextBlock",
     "AttentionWithContext",
     "MultiHeadAttention", "SelfAttention",
     "AttentivePooling",
     "ZeroPadding",
     "SeqLin",
     "NonLocalBlock", "SEBlock", "GlobalContextBlock",
+    "CRF", "ExtendedCRF",
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
 ]
