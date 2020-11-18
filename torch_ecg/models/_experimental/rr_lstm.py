@@ -232,7 +232,7 @@ class RR_LSTM(nn.Module):
         output_shape: sequence,
             the output shape of this `CRF` layer, given `seq_len` and `batch_size`
         """
-        if self.clf.name.lower() == "crf":
+        if self.config.clf.name.lower() == "crf":
             output_shape = (batch_size, seq_len, self.n_classes)
         else:
             # clf is "linear" or lstm.retseq is False
