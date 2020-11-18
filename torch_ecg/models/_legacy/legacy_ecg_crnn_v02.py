@@ -31,7 +31,7 @@ from models.utils.torch_utils import (
     SelfAttention, MultiHeadAttention,
     AttentivePooling,
 )
-from utils.utils_nn import compute_conv_output_shape
+from utils.utils_nn import compute_conv_output_shape, compute_module_size
 from utils.misc import dict_to_str
 
 
@@ -148,9 +148,7 @@ class VGGBlock(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class VGG16(nn.Sequential):
@@ -226,9 +224,7 @@ class VGG16(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class ResNetBasicBlock(nn.Module):
@@ -384,9 +380,7 @@ class ResNetBasicBlock(nn.Module):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class ResNet(nn.Sequential):
@@ -541,9 +535,7 @@ class ResNet(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class CPSCBlock(nn.Sequential):
@@ -648,9 +640,7 @@ class CPSCBlock(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class CPSCCNN(nn.Sequential):
@@ -740,9 +730,7 @@ class CPSCCNN(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class ECG_CRNN(nn.Module):
@@ -949,6 +937,4 @@ class ECG_CRNN(nn.Module):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)

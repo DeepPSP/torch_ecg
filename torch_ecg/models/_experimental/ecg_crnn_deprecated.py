@@ -25,7 +25,7 @@ from .nets import (
     AttentionWithContext, MultiHeadAttention,
 )
 from .ecg_crnn import CPSCBlock, CPSCCNN
-from torch_ecg.utils.utils_nn import compute_conv_output_shape
+from torch_ecg.utils.utils_nn import compute_conv_output_shape, compute_module_size
 from torch_ecg.utils.misc import dict_to_str
 
 
@@ -120,9 +120,7 @@ class CPSC(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 @DeprecationWarning
@@ -272,9 +270,7 @@ class ResNetStanfordBlock(nn.Module):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 @DeprecationWarning
@@ -390,6 +386,4 @@ class ResNetStanford(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)

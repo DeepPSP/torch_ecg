@@ -19,7 +19,7 @@ from easydict import EasyDict as ED
 
 from torch_ecg.cfg import Cfg
 from torch_ecg.model_configs import ECG_CRNN_CONFIG
-from torch_ecg.utils.utils_nn import compute_conv_output_shape
+from torch_ecg.utils.utils_nn import compute_conv_output_shape, compute_module_size
 from torch_ecg.utils.misc import dict_to_str
 from .nets import (
     Mish, Swish, Activations,
@@ -166,9 +166,7 @@ class VGGBlock(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class VGG16(nn.Sequential):
@@ -253,9 +251,7 @@ class VGG16(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class ResNetBasicBlock(nn.Module):
@@ -421,9 +417,7 @@ class ResNetBasicBlock(nn.Module):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class ResNet(nn.Sequential):
@@ -588,9 +582,7 @@ class ResNet(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class CPSCBlock(nn.Sequential):
@@ -705,9 +697,7 @@ class CPSCBlock(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class CPSCCNN(nn.Sequential):
@@ -794,9 +784,7 @@ class CPSCCNN(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class MultiScopicBasicBlock(nn.Sequential):
@@ -929,9 +917,7 @@ class MultiScopicBasicBlock(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class MultiScopicBranch(nn.Sequential):
@@ -1048,9 +1034,7 @@ class MultiScopicBranch(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class MultiScopicCNN(nn.Module):
@@ -1143,9 +1127,7 @@ class MultiScopicCNN(nn.Module):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class ECG_CRNN(nn.Module):
@@ -1397,6 +1379,4 @@ class ECG_CRNN(nn.Module):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)

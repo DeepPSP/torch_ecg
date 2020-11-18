@@ -17,7 +17,7 @@ import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from torch_ecg.cfg import Cfg
-from torch_ecg.utils.utils_nn import compute_deconv_output_shape
+from torch_ecg.utils.utils_nn import compute_deconv_output_shape, compute_module_size
 from torch_ecg.utils.misc import dict_to_str
 from torch_ecg.models.nets import (
     Conv_Bn_Activation, MultiConv,
@@ -231,9 +231,7 @@ class ResNetGCBlock(nn.Module):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class StageModule(nn.Module):

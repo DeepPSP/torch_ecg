@@ -27,7 +27,7 @@ import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from torch_ecg.cfg import Cfg
-from torch_ecg.utils.utils_nn import compute_conv_output_shape
+from torch_ecg.utils.utils_nn import compute_conv_output_shape, compute_module_size
 from torch_ecg.utils.misc import dict_to_str
 from torch_ecg.model_configs import ECG_SEQ_LAB_NET_CONFIG
 from .nets import (
@@ -180,9 +180,7 @@ class MultiScopicBasicBlock(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class MultiScopicBranch(nn.Sequential):
@@ -299,9 +297,7 @@ class MultiScopicBranch(nn.Sequential):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class MultiScopicCNN(nn.Module):
@@ -394,9 +390,7 @@ class MultiScopicCNN(nn.Module):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class ECG_SEQ_LAB_NET(nn.Module):
@@ -579,6 +573,4 @@ class ECG_SEQ_LAB_NET(nn.Module):
     def module_size(self):
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)

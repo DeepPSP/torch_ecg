@@ -24,7 +24,7 @@ import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from torch_ecg.cfg import Cfg
-from torch_ecg.utils.utils_nn import compute_deconv_output_shape
+from torch_ecg.utils.utils_nn import compute_deconv_output_shape, compute_module_size
 from torch_ecg.utils.misc import dict_to_str
 from .nets import (
     Conv_Bn_Activation, MultiConv,
@@ -213,9 +213,7 @@ class DownDoubleConv(nn.Sequential):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class UpDoubleConv(nn.Module):
@@ -369,9 +367,7 @@ class UpDoubleConv(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class ECG_UNET(nn.Module):
@@ -552,6 +548,4 @@ class ECG_UNET(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)

@@ -25,6 +25,7 @@ from torch_ecg.utils.utils_nn import (
     compute_conv_output_shape,
     compute_maxpool_output_shape,
     compute_avgpool_output_shape,
+    compute_module_size,
 )
 from torch_ecg.utils.misc import dict_to_str
 
@@ -218,9 +219,7 @@ class Bn_Activation(nn.Sequential):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class Conv_Bn_Activation(nn.Sequential):
@@ -366,9 +365,7 @@ class Conv_Bn_Activation(nn.Sequential):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class MultiConv(nn.Sequential):
@@ -504,9 +501,7 @@ class MultiConv(nn.Sequential):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class BranchedConv(nn.Module):
@@ -792,9 +787,7 @@ class DownSample(nn.Sequential):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class BidirectionalLSTM(nn.Module):
@@ -873,9 +866,7 @@ class BidirectionalLSTM(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class StackedLSTM(nn.Sequential):
@@ -1009,9 +1000,7 @@ class StackedLSTM(nn.Sequential):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 # ---------------------------------------------
@@ -1218,9 +1207,7 @@ class AttentionWithContext(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class _ScaledDotProductAttention(nn.Module):
@@ -1368,9 +1355,7 @@ class MultiHeadAttention(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
     def extra_repr(self):
         return "in_features={}, head_num={}, bias={}, activation={}".format(
@@ -1443,9 +1428,7 @@ class SelfAttention(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class AttentivePooling(nn.Module):
@@ -1523,9 +1506,7 @@ class AttentivePooling(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class ZeroPadding(nn.Module):
@@ -1598,9 +1579,7 @@ class ZeroPadding(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class SeqLin(nn.Sequential):
@@ -1724,9 +1703,7 @@ class SeqLin(nn.Sequential):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class NonLocalBlock(nn.Module):
@@ -1853,9 +1830,7 @@ class NonLocalBlock(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class SEBlock(nn.Module):
@@ -1954,9 +1929,7 @@ class SEBlock(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class GlobalContextBlock(nn.Module):
@@ -2105,9 +2078,7 @@ class GlobalContextBlock(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 class CRF(nn.Module):
@@ -2492,9 +2463,7 @@ class CRF(nn.Module):
     def module_size(self) -> int:
         """
         """
-        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
-        n_params = sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
+        return compute_module_size(self)
 
 
 # custom losses
