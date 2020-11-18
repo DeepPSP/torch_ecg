@@ -2111,10 +2111,7 @@ class CRF(nn.Module):
     [4] https://en.wikipedia.org/wiki/Viterbi_algorithm
     [5] https://github.com/s14t284/TorchCRF
     [6] https://github.com/allenai/allennlp/blob/master/allennlp/modules/conditional_random_field.py
-    [7] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/layers/crf.py
-    [8] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/text/crf.py
-    [9] https://github.com/keras-team/keras-contrib/blob/master/keras_contrib/layers/crf.py
-    [10] https://pytorch.org/tutorials/beginner/nlp/advanced_tutorial.html
+    [7] https://pytorch.org/tutorials/beginner/nlp/advanced_tutorial.html
     """
     __DEBUG__ = True
     __name__ = "CRF"
@@ -2458,6 +2455,91 @@ class CRF(nn.Module):
         else:
             output_shape = (seq_len, batch_size, self.num_tags)
         return output_shape
+
+    @property
+    def module_size(self) -> int:
+        """
+        """
+        return compute_module_size(self)
+
+
+class ExtendedCRF(nn.Sequential):
+    """
+    (possibly) combination of a linear (projection) layer and a `CRF` layer,
+    which allows the input size to be unequal to (usually greater than) num_tags,
+    as in ref. 
+
+    References:
+    -----------
+    [1] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/layers/crf.py
+    [2] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/text/crf.py
+    [3] https://github.com/keras-team/keras-contrib/blob/master/keras_contrib/layers/crf.py
+    """
+    __DEBUG__ = False
+    __name__ = "ExtendedCRF"
+    def __init__(self, in_channels:int, num_tags:int) -> NoReturn:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        in_channels: int,
+            number of channels in the input
+        num_tags: int,
+            number of tags.
+        """
+        super().__init__()
+        self.__in_channels = in_channels
+        self.__num_tags = num_tags
+        if self.__in_channels != self.__num_tags:
+            self.add_module(
+                name="proj",
+                module=nn.Linear(
+                    in_features=self.__in_channels,
+                    out_features=self.__num_tags,
+                    bias=True,
+                )
+            )
+        self.add_module(
+            name="crf",
+            module=CRF(
+                num_tags=self.__num_tags,
+                batch_first=True,
+            )
+        )
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, seq_len, n_channels)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, seq_len, n_channels)
+        """
+        output = super().forward(input)
+        return output
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        seq_len: int, optional,
+            length of the 1d sequence,
+            if is None, then the input is composed of single feature vectors for each batch
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns:
+        --------
+        output_shape: sequence,
+            the output shape of this layer, given `seq_len` and `batch_size`
+        """
+        return (batch_size, seq_len, self.__num_tags)
 
     @property
     def module_size(self) -> int:
