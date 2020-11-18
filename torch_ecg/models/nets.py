@@ -28,7 +28,7 @@ from torch_ecg.utils.utils_nn import (
 )
 from torch_ecg.utils.misc import dict_to_str
 
-if Cfg.torch_dtype.lower() == 'double':
+if Cfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
     _DTYPE = np.float64
 else:
@@ -56,7 +56,7 @@ __all__ = [
 ]
 
 
-if version.parse(torch.__version__) >= version.parse('1.5.0'):
+if version.parse(torch.__version__) >= version.parse("1.5.0"):
     def _true_divide(dividend, divisor):
         return torch.true_divide(dividend, divisor)
 else:
@@ -275,7 +275,7 @@ class Conv_Bn_Activation(nn.Sequential):
         self.__stride = stride
         self.__dilation = dilation
         if padding is None:
-            # 'same' padding
+            # "same" padding
             self.__padding = (self.__dilation * (self.__kernel_size - 1)) // 2
         elif isinstance(padding, int):
             self.__padding = padding
@@ -640,12 +640,12 @@ class DownSample(nn.Sequential):
     NOTE: this down sampling module allows changement of number of channels,
     via additional convolution, with some abuse of terminology
 
-    the 'conv' mode is not simply down 'sampling' if `group` != `in_channels`
+    the "conv" mode is not simply down "sampling" if `group` != `in_channels`
     """
     __name__ = "DownSample"
-    __MODES__ = ['max', 'avg', 'conv', 'nearest', 'area', 'linear',]
+    __MODES__ = ["max", "avg", "conv", "nearest", "area", "linear",]
 
-    def __init__(self, down_scale:int, in_channels:int, out_channels:Optional[int]=None, groups:Optional[int]=None, padding:int=0, batch_norm:Union[bool,nn.Module]=False, mode:str='max') -> NoReturn:
+    def __init__(self, down_scale:int, in_channels:int, out_channels:Optional[int]=None, groups:Optional[int]=None, padding:int=0, batch_norm:Union[bool,nn.Module]=False, mode:str="max") -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -663,7 +663,7 @@ class DownSample(nn.Sequential):
         batch_norm: bool or Module, default False,
             batch normalization,
             the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
-        mode: str, default 'max',
+        mode: str, default "max",
         """
         super().__init__()
         self.__mode = mode.lower()
@@ -674,7 +674,7 @@ class DownSample(nn.Sequential):
         self.__groups = groups or self.__in_channels
         self.__padding = padding
 
-        if self.__mode == 'max':
+        if self.__mode == "max":
             if self.__in_channels == self.__out_channels:
                 down_layer = nn.MaxPool1d(
                     kernel_size=self.__down_scale, padding=self.__padding
@@ -689,7 +689,7 @@ class DownSample(nn.Sequential):
                         kernel_size=1, groups=self.__groups, bias=False
                     ),
                 ))
-        elif self.__mode == 'avg':
+        elif self.__mode == "avg":
             if self.__in_channels == self.__out_channels:
                 down_layer = nn.AvgPool1d(
                     kernel_size=self.__down_scale, padding=self.__padding
@@ -706,7 +706,7 @@ class DownSample(nn.Sequential):
                         ),
                     )
                 )
-        elif self.__mode == 'conv':
+        elif self.__mode == "conv":
             down_layer = nn.Conv1d(
                 in_channels=self.__in_channels,
                 out_channels=self.__out_channels,
@@ -740,10 +740,10 @@ class DownSample(nn.Sequential):
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
-        if self.__mode in ['max', 'avg', 'conv',]:
+        if self.__mode in ["max", "avg", "conv",]:
             output = super().forward(input)
         else:
-            # align_corners = False if mode in ['nearest', 'area'] else True
+            # align_corners = False if mode in ["nearest", "area"] else True
             output = F.interpolate(
                 input=input,
                 scale_factor=1/self.__down_scale,
@@ -767,19 +767,19 @@ class DownSample(nn.Sequential):
         output_shape: sequence,
             the output shape of this `DownSample` layer, given `seq_len` and `batch_size`
         """
-        if self.__mode == 'conv':
+        if self.__mode == "conv":
             out_seq_len = compute_conv_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
                 stride=self.__down_scale,
                 padding=self.__padding,
             )[-1]
-        elif self.__mode == 'max':
+        elif self.__mode == "max":
             out_seq_len = compute_maxpool_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
                 kernel_size=self.__down_scale, stride=self.__down_scale,
                 padding=self.__padding,
             )[-1]
-        elif self.__mode in ['avg', 'nearest', 'area', 'linear',]:
+        elif self.__mode in ["avg", "nearest", "area", "linear",]:
             out_seq_len = compute_avgpool_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
                 kernel_size=self.__down_scale, stride=self.__down_scale,
@@ -951,7 +951,7 @@ class StackedLSTM(nn.Sequential):
                 )
                 self.__module_names.append("dp")
     
-    def forward(self, input:Union[Tensor, PackedSequence], hx:Optional[Tuple[Tensor, Tensor]]=None) -> Union[Tensor, Tuple[Union[Tensor, PackedSequence], Tuple[Tensor, Tensor]]]:
+    def forward(self, input:Union[Tensor, PackedSequence], hx:Optional[Tuple[Tensor, Tensor]]=None) -> Tensor:
         """
         keep up with `nn.LSTM.forward`, parameters ref. `nn.LSTM.forward`
 
@@ -960,6 +960,12 @@ class StackedLSTM(nn.Sequential):
         input: Tensor,
             of shape (seq_len, batch_size, n_channels)
         hx: 2-tuple of Tensor, optional,
+
+        Returns:
+        --------
+        final_output: Tensor,
+            of shape (seq_len, batch_size, n_channels) if `return_sequences` is True,
+            otherwise of shape (batch_size, n_channels)
         """
         output, _hx = input, hx
         for idx, (name, module) in enumerate(zip(self.__module_names, self)):
@@ -1094,7 +1100,7 @@ class AttentionWithContext(nn.Module):
     __DEBUG__ = False
     __name__ = "AttentionWithContext"
 
-    def __init__(self, in_channels:int, bias:bool=True, initializer:str='glorot_uniform'):
+    def __init__(self, in_channels:int, bias:bool=True, initializer:str="glorot_uniform"):
         """ finished, checked (might have bugs),
 
         Parameters:
@@ -1103,7 +1109,7 @@ class AttentionWithContext(nn.Module):
             number of channels in the input signal
         bias: bool, default True,
             if True, adds a learnable bias to the output
-        initializer: str, default 'glorot_uniform',
+        initializer: str, default "glorot_uniform",
             weight initializer
         """
         super().__init__()
@@ -1121,15 +1127,15 @@ class AttentionWithContext(nn.Module):
             Initializers.zeros(self.b)
             if self.__DEBUG__:
                 print(f"AttentionWithContext b.shape = {self.b.shape}")
-            # Initializers['zeros'](self.b)
+            # Initializers["zeros"](self.b)
             self.u = Parameter(torch.Tensor(in_channels))
             Initializers.constant(self.u, 1/in_channels)
             if self.__DEBUG__:
                 print(f"AttentionWithContext u.shape = {self.u.shape}")
             # self.init(self.u)
         else:
-            self.register_parameter('b', None)
-            self.register_parameter('u', None)
+            self.register_parameter("b", None)
+            self.register_parameter("u", None)
 
     def compute_mask(self, input:Tensor, input_mask:Optional[Tensor]=None):
         """
@@ -1276,7 +1282,7 @@ class MultiHeadAttention(nn.Module):
         """
         super().__init__()
         if in_features % head_num != 0:
-            raise ValueError(f'`in_features`({in_features}) should be divisible by `head_num`({head_num})')
+            raise ValueError(f"`in_features`({in_features}) should be divisible by `head_num`({head_num})")
         self.in_features = in_features
         self.head_num = head_num
         self.activation = Activations[activation.lower()]() if isinstance(activation, str) else activation
@@ -1367,7 +1373,7 @@ class MultiHeadAttention(nn.Module):
         return n_params
 
     def extra_repr(self):
-        return 'in_features={}, head_num={}, bias={}, activation={}'.format(
+        return "in_features={}, head_num={}, bias={}, activation={}".format(
             self.in_features, self.head_num, self.bias, self.activation,
         )
 
@@ -1394,7 +1400,7 @@ class SelfAttention(nn.Module):
         """
         super().__init__()
         if in_features % head_num != 0:
-            raise ValueError(f'`in_features`({in_features}) should be divisible by `head_num`({head_num})')
+            raise ValueError(f"`in_features`({in_features}) should be divisible by `head_num`({head_num})")
         self.in_features = in_features
         self.head_num = head_num
         self.dropout = dropout
@@ -1448,7 +1454,7 @@ class AttentivePooling(nn.Module):
     __DEBUG__ = False
     __name__ = "AttentivePooling"
 
-    def __init__(self, in_channels:int, mid_channels:Optional[int]=None, activation:Optional[Union[str,nn.Module]]='tanh', dropout:float=0.2, **kwargs) -> NoReturn:
+    def __init__(self, in_channels:int, mid_channels:Optional[int]=None, activation:Optional[Union[str,nn.Module]]="tanh", dropout:float=0.2, **kwargs) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -1747,7 +1753,7 @@ class NonLocalBlock(nn.Module):
         mid_channels: int, optional,
             number of output channels for the mid layers ("g", "phi", "theta")
         filter_lengths: dict or int, default 1,
-            filter lengths (kernel sizes) for each convolutional layers ("g", "phi", 'theta', "W")
+            filter lengths (kernel sizes) for each convolutional layers ("g", "phi", "theta", "W")
         subsample_length: int, default 2,
             subsample length (max pool size) of the "g" and "phi" layers
         config: dict,
@@ -2137,7 +2143,7 @@ class CRF(nn.Module):
     [7] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/layers/crf.py
     [8] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/text/crf.py
     [9] https://github.com/keras-team/keras-contrib/blob/master/keras_contrib/layers/crf.py
-    [10] https://github.com/xuxingya/tf2crf
+    [10] https://pytorch.org/tutorials/beginner/nlp/advanced_tutorial.html
     """
     __DEBUG__ = True
     __name__ = "CRF"
@@ -2154,7 +2160,7 @@ class CRF(nn.Module):
             otherwise as (seq_len, batch, num_tags)
         """
         if num_tags <= 0:
-            raise ValueError(f'invalid number of tags: {num_tags}')
+            raise ValueError(f"invalid number of tags: {num_tags}")
         super().__init__()
         self.num_tags = num_tags
         self.batch_first = batch_first
@@ -2176,31 +2182,21 @@ class CRF(nn.Module):
         nn.init.uniform_(self.transitions, -0.1, 0.1)
 
     def __repr__(self) -> str:
-        return f'{self.__name__}(num_tags={self.num_tags})'
+        return f"{self.__name__}(num_tags={self.num_tags})"
 
-    def forward(
-            self,
-            emissions: Tensor,
-            tags: torch.LongTensor,
-            mask: Optional[torch.ByteTensor] = None,
-            reduction:str="sum",
-    ) -> Tensor:
+    def neg_log_likelihood(self, emissions:Tensor, tags:torch.LongTensor, mask:Optional[torch.ByteTensor]=None, reduction:str="sum") -> Tensor:
         """
-        Compute the conditional log likelihood of a sequence of tags given emission scores.
+        Compute the negative conditional log likelihood (the loss function)
+        of a sequence of tags given emission scores.
 
         Parameters:
         -----------
         emissions: Tensor,
-            emission score tensor of size
-            ``(seq_len, batch_size, num_tags)`` if ``batch_first`` is ``False``,
-            ``(batch_size, seq_len, num_tags)`` otherwise.
-        tags: LongTensor,
-            sequence of tags tensor of size
-            ``(seq_len, batch_size)`` if ``batch_first`` is ``False``,
-            ``(batch_size, seq_len)`` otherwise.
+            emission score tensor of shape (seq_len, batch_size, num_tags)
+        tags: torch.LongTensor,
+            sequence of tags tensor of shape (seq_len, batch_size)
         mask: torch.ByteTensor,
-            mask tensor of size ``(seq_len, batch_size)``
-            if ``batch_first`` is ``False``, ``(batch_size, seq_len)`` otherwise.
+            mask tensor of shape (seq_len, batch_size)
         reduction: str, default "sum",
             specifies the reduction to apply to the output:
             can be one of ``none|sum|mean|token_mean``, case insensitive
@@ -2211,15 +2207,15 @@ class CRF(nn.Module):
 
         Returns:
         --------
-        llh: Tensor,
-            The log likelihood.
+        nll: Tensor,
+            The negative log likelihood.
             This will have size ``(batch_size,)`` if reduction is ``none``,
             otherwise ``()``.
         """
         self._validate(emissions, tags=tags, mask=mask)
         _reduction = reduction.lower()
-        if _reduction not in ('none', 'sum', 'mean', 'token_mean'):
-            raise ValueError(f'invalid reduction: {_reduction}')
+        if _reduction not in ("none", "sum", "mean", "token_mean"):
+            raise ValueError(f"invalid reduction: {_reduction}")
         if mask is None:
             mask = torch.ones_like(tags, dtype=torch.uint8, device=self.__device)
 
@@ -2233,76 +2229,72 @@ class CRF(nn.Module):
         # shape: (batch_size,)
         denominator = self._compute_normalizer(emissions, mask)
         # shape: (batch_size,)
-        llh = numerator - denominator
+        llh = numerator - denominator  # log likelihood
+        nll = - llh  # negative log likelihood
 
-        if _reduction == 'none':
+        if _reduction == "none":
             pass
-        elif _reduction == 'sum':
-            llh = llh.sum()
-        elif _reduction == 'mean':
-            llh = llh.mean()
-        # elif _reduction == 'token_mean':
+        elif _reduction == "sum":
+            nll = nll.sum()
+        elif _reduction == "mean":
+            nll = nll.mean()
+        # elif _reduction == "token_mean":
         else:
-            llh = llh.sum() / mask.float().sum()
-        return llh
+            nll = nll.sum() / mask.float().sum()
+        return nll
 
-    def decode(self, emissions:Tensor, mask:Optional[torch.ByteTensor]=None) -> List[List[int]]:
+    def forward(self, emissions:Tensor, mask:Optional[torch.ByteTensor]=None) -> Tensor:
         """
         Find the most likely tag sequence using Viterbi algorithm.
 
         Parameters:
         -----------
         emissions: Tensor,
-            emission score tensor of size
-            ``(seq_len, batch_size, num_tags)`` if ``batch_first`` is ``False``,
-            ``(batch_size, seq_len, num_tags)`` otherwise.
+            emission score tensor of shape (seq_len, batch_size, num_tags)
         mask: torch.ByteTensor
-            mask tensor of size ``(seq_len, batch_size)``
-            if ``batch_first`` is ``False``, ``(batch_size, seq_len)`` otherwise.
+            mask tensor of shape (seq_len, batch_size)
 
         Returns:
         --------
-            list of list, containing the best tag sequence for each batch.
+        output: Tensor,
+            one hot encoding Tensor of the most likely tag sequence
         """
         self._validate(emissions, mask=mask)
         if mask is None:
-            mask = emissions.new_ones(emissions.shape[:2], dtype=torch.uint8)
-
+            mask = emissions.new_ones(emissions.shape[:2], dtype=torch.uint8, device=self.__device)
         if self.batch_first:
-            emissions = emissions.transpose(0, 1)
+            emmissions = emmissions.transpose(0, 1)
             mask = mask.transpose(0, 1)
+        best_tags = Tensor(self._viterbi_decode(emissions, mask)).to(torch.int64)
+        output = F.one_hot(best_tags.to(self.__device), num_classes=self.num_tags).permute(1,0,2)
+        return output
 
-        return self._viterbi_decode(emissions, mask)
-
-    def _validate(
-            self,
-            emissions:Tensor,
-            tags:Optional[torch.LongTensor]=None,
-            mask:Optional[torch.ByteTensor]=None) -> NoReturn:
+    def _validate(self, emissions:Tensor, tags:Optional[torch.LongTensor]=None, mask:Optional[torch.ByteTensor]=None) -> NoReturn:
         """
+        check validity of input `Tensor`s
         """
         if emissions.dim() != 3:
-            raise ValueError(f'emissions must have dimension of 3, got {emissions.dim()}')
-        if emissions.size(2) != self.num_tags:
+            raise ValueError(f"emissions must have dimension of 3, got {emissions.dim()}")
+        if emissions.shape[2] != self.num_tags:
             raise ValueError(
-                f'expected last dimension of emissions is {self.num_tags}, '
-                f'got {emissions.size(2)}')
+                f"expected last dimension of emissions is {self.num_tags}, "
+                f"got {emissions.shape[2]}")
 
         if tags is not None:
             if emissions.shape[:2] != tags.shape:
                 raise ValueError(
-                    'the first two dimensions of emissions and tags must match, '
-                    f'got {tuple(emissions.shape[:2])} and {tuple(tags.shape)}')
+                    "the first two dimensions of emissions and tags must match, "
+                    f"got {tuple(emissions.shape[:2])} and {tuple(tags.shape)}")
 
         if mask is not None:
             if emissions.shape[:2] != mask.shape:
                 raise ValueError(
-                    'the first two dimensions of emissions and mask must match, '
-                    f'got {tuple(emissions.shape[:2])} and {tuple(mask.shape)}')
+                    "the first two dimensions of emissions and mask must match, "
+                    f"got {tuple(emissions.shape[:2])} and {tuple(mask.shape)}")
             no_empty_seq = not self.batch_first and mask[0].all()
             no_empty_seq_bf = self.batch_first and mask[:, 0].all()
             if not no_empty_seq and not no_empty_seq_bf:
-                raise ValueError('mask of the first timestep must all be on')
+                raise ValueError("mask of the first timestep must all be on")
 
     def _compute_score(self, emissions:Tensor, tags:torch.LongTensor, mask:torch.ByteTensor) -> Tensor:
         """
@@ -2311,8 +2303,9 @@ class CRF(nn.Module):
         # mask: (seq_len, batch_size)
         """
         assert emissions.dim() == 3 and tags.dim() == 2
+        seq_len, batch_size, num_tags = emissions.shape
         assert emissions.shape[:2] == tags.shape
-        assert emissions.size(2) == self.num_tags
+        assert emissions.shape[2] == self.num_tags
         assert mask.shape == tags.shape
         assert mask[0].all()
 
@@ -2350,10 +2343,10 @@ class CRF(nn.Module):
         """
         assert emissions.dim() == 3 and mask.dim() == 2
         assert emissions.shape[:2] == mask.shape
-        assert emissions.size(2) == self.num_tags
+        assert emissions.shape[2] == self.num_tags
         assert mask[0].all()
 
-        seq_len = emissions.size(0)
+        seq_len, batch_size, num_tags = emissions.shape
 
         # Start transition score and first emission; score has size of
         # (batch_size, num_tags) where for each batch, the j-th column stores
@@ -2402,7 +2395,7 @@ class CRF(nn.Module):
         """
         assert emissions.dim() == 3 and mask.dim() == 2
         assert emissions.shape[:2] == mask.shape
-        assert emissions.size(2) == self.num_tags
+        assert emissions.shape[2] == self.num_tags
         assert mask[0].all()
 
         seq_len, batch_size = mask.shape
@@ -2473,6 +2466,36 @@ class CRF(nn.Module):
 
         return best_tags_list
 
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        seq_len: int, optional,
+            length of the 1d sequence,
+            if is None, then the input is composed of single feature vectors for each batch
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns:
+        --------
+        output_shape: sequence,
+            the output shape of this `CRF` layer, given `seq_len` and `batch_size`
+        """
+        if self.batch_first:
+            output_shape = (batch_size, seq_len, self.num_tags)
+        else:
+            output_shape = (seq_len, batch_size, self.num_tags)
+        return output_shape
+
+    @property
+    def module_size(self) -> int:
+        """
+        """
+        module_parameters = filter(lambda p: p.requires_grad, self.parameters())
+        n_params = sum([np.prod(p.size()) for p in module_parameters])
+        return n_params
+
 
 # custom losses
 def weighted_binary_cross_entropy(sigmoid_x:Tensor, targets:Tensor, pos_weight:Tensor, weight:Optional[Tensor]=None, size_average:bool=True, reduce:bool=True) -> Tensor:
@@ -2497,7 +2520,7 @@ def weighted_binary_cross_entropy(sigmoid_x:Tensor, targets:Tensor, pos_weight:T
     if not (targets.size() == sigmoid_x.size()):
         raise ValueError("Target size ({}) must be the same as input size ({})".format(targets.size(), sigmoid_x.size()))
 
-    loss = -pos_weight* targets * sigmoid_x.log() - (1-targets)*(1-sigmoid_x).log()
+    loss = -pos_weight * targets * sigmoid_x.log() - (1-targets) * (1-sigmoid_x).log()
 
     if weight is not None:
         loss = loss * weight
@@ -2537,8 +2560,8 @@ class WeightedBCELoss(nn.Module):
         """
         super().__init__()
 
-        self.register_buffer('weight', weight)
-        self.register_buffer('pos_weight', pos_weight)
+        self.register_buffer("weight", weight)
+        self.register_buffer("pos_weight", pos_weight)
         self.size_average = size_average
         self.reduce = reduce
         self.PosWeightIsDynamic = PosWeightIsDynamic
@@ -2571,7 +2594,7 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
         class_weight: Tensor,
             class weight, of shape (1, n_classes)
         """
-        super().__init__(reduction='none')
+        super().__init__(reduction="none")
         self.class_weight = class_weight
 
     def forward(self, input:Tensor, target:Tensor) -> Tensor:
