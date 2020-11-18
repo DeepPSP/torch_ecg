@@ -14,6 +14,7 @@ from .ecg_crnn import ECG_CRNN
 from .ecg_seq_lab_net import ECG_SEQ_LAB_NET
 from .ecg_subtract_unet import ECG_SUBTRACT_UNET
 from .ecg_unet import ECG_UNET
+from .rr_lstm import RR_LSTM
 from .grad_cam import GradCam
 
 from .nets import (

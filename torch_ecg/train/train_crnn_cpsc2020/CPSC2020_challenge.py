@@ -17,7 +17,7 @@ from .cfg import ModelCfg
 CRNN_MODEL, SEQ_LAB_MODEL = load_model(which="both")
 CRNN_CFG, SEQ_LAB_CFG = ModelCfg.crnn, ModelCfg.seq_lab
 
-if ModelCfg.torch_dtype.lower() == 'double':
+if ModelCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
     _DTYPE = np.float64
 else:

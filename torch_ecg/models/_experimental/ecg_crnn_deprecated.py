@@ -29,7 +29,7 @@ from torch_ecg.utils.utils_nn import compute_conv_output_shape, compute_module_s
 from torch_ecg.utils.misc import dict_to_str
 
 
-if Cfg.torch_dtype.lower() == 'double':
+if Cfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

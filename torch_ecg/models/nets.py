@@ -2502,7 +2502,7 @@ class ExtendedCRF(nn.Sequential):
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------

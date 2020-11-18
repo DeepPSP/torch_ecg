@@ -54,12 +54,13 @@ References:
 [7] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
 """
 
+from .attn import *
 from .cnn import *
 from .rnn import *
 from .ecg_crnn import *
 from .ecg_unet import *
-from .ecg_subtract_unet import *
 from .ecg_seq_lab_net import *
+from .ecg_subtract_unet import *
 from .ecg_yolo import *
 from .rr_lstm import *
 # from .ati_cnn import *

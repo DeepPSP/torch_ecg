@@ -22,7 +22,7 @@ from easydict import EasyDict as ED
 from torch_ecg.train.database_reader.database_reader.physionet_databases import LUDB as LR
 from .cfg import TrainCfg
 
-if TrainCfg.torch_dtype.lower() == 'double':
+if TrainCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

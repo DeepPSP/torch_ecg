@@ -26,7 +26,7 @@ from torch_ecg.train.database_reader.database_reader.physionet_databases import 
 from .cfg import TrainCfg, ModelCfg
 
 
-if ModelCfg.torch_dtype.lower() == 'double':
+if ModelCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 
@@ -55,7 +55,7 @@ class CINC2020(Dataset):
         self.reader = CR(db_dir=config.db_dir)
         self.tranches = config.tranches_for_training
         self.training = training
-        if ModelCfg.torch_dtype.lower() == 'double':
+        if ModelCfg.torch_dtype.lower() == "double":
             self.dtype = np.float64
         else:
             self.dtype = np.float32

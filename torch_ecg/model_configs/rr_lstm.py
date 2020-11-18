@@ -7,6 +7,7 @@ from easydict import EasyDict as ED
 
 __all__ = [
     "RR_AF_VANILLA_CONFIG",
+    "RR_AF_CRF_CONFIG",
     "RR_LSTM_CONFIG",
 ]
 

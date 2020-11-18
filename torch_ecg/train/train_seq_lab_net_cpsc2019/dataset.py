@@ -26,7 +26,7 @@ from .cfg import TrainCfg, ModelCfg
 from .utils import gen_baseline_wander
 
 
-if ModelCfg.torch_dtype.lower() == 'double':
+if ModelCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 
@@ -57,7 +57,7 @@ class CPSC2019(Dataset):
         self.reader = CR(db_dir=config.db_dir)
         self.training = training
         self.n_classes = 1
-        if ModelCfg.torch_dtype.lower() == 'double':
+        if ModelCfg.torch_dtype.lower() == "double":
             self.dtype = np.float64
         else:
             self.dtype = np.float32

@@ -31,7 +31,7 @@ from .nets import (
     DownSample, ZeroPadding,
 )
 
-if Cfg.torch_dtype.lower() == 'double':
+if Cfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

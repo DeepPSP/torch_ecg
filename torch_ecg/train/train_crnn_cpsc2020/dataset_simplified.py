@@ -35,7 +35,7 @@ from .utils import (
     get_record_list_recursive3,
 )
 
-if ModelCfg.torch_dtype.lower() == 'double':
+if ModelCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
     _DTYPE = np.float32
 else:
@@ -75,7 +75,7 @@ class CPSC2020(Dataset):
         super().__init__()
         self.config = deepcopy(config)
         self.reader = CR(db_dir=config.db_dir)
-        if ModelCfg.torch_dtype.lower() == 'double':
+        if ModelCfg.torch_dtype.lower() == "double":
             self.dtype = np.float64
         else:
             self.dtype = np.float32
