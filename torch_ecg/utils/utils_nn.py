@@ -8,6 +8,7 @@ from typing import Union, Sequence, List, Tuple, Optional, NoReturn
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 from torch import Tensor
+from torch import nn
 
 
 __all__ = [
@@ -17,6 +18,7 @@ __all__ = [
     "compute_deconv_output_shape",
     "compute_maxpool_output_shape",
     "compute_avgpool_output_shape",
+    "compute_module_size",
 ]
 
 
@@ -341,6 +343,26 @@ def compute_deconv_output_shape(input_shape:Sequence[Union[int, type(None)]], nu
         channel_last,
     )
     return output_shape
+
+
+def compute_module_size(module:nn.Module) -> int:
+    """ finished, checked,
+
+    compute the size (number of parameters) of a module
+
+    Parameters:
+    -----------
+    module: Module,
+        a torch Module
+    
+    Returns:
+    --------
+    n_params: int,
+        size (number of parameters) of this torch module
+    """
+    module_parameters = filter(lambda p: p.requires_grad, module.parameters())
+    n_params = sum([np.prod(p.size()) for p in module_parameters])
+    return n_params
 
 
 def intervals_iou(itv_a:Tensor, itv_b:Tensor, iou_type="iou") -> Tensor:
