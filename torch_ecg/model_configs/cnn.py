@@ -73,6 +73,17 @@ del vgg_block_swish.kw_activation
 
 
 # ResNet
+resnet_vanilla_18 = ED()
+
+resnet_vanilla_34 = ED()
+
+resnet_vanilla_50 = ED()
+
+resnet_vanilla_101 = ED()
+
+resnet_vanilla_152 = ED()
+
+
 resnet = ED()
 resnet.subsample_lengths = 2
 # resnet.num_blocks = [

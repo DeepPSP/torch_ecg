@@ -35,6 +35,12 @@ from .nets import (
     WeightedBCELoss, BCEWithLogitsWithClassWeightLoss,
 )
 
+from .cnn import (
+    VGGBlock, VGG16,
+    ResNetBasicBlock, ResNet,
+    MultiScopicBasicBlock, MultiScopicBranch, MultiScopicCNN,
+)
+
 
 # __all__ = [s for s in dir() if not s.startswith('_')]
 __all__ = [
@@ -42,7 +48,9 @@ __all__ = [
     "ECG_SEQ_LAB_NET",
     "ECG_SUBTRACT_UNET",
     "ECG_UNET",
+
     "GradCam",
+
     "Mish", "Swish",
     "Initializers", "Activations",
     "Bn_Activation", "Conv_Bn_Activation",
@@ -58,4 +66,8 @@ __all__ = [
     "NonLocalBlock", "SEBlock", "GlobalContextBlock",
     "CRF", "ExtendedCRF",
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
+
+    "VGGBlock", "VGG16",
+    "ResNetBasicBlock", "ResNet",
+    "MultiScopicBasicBlock", "MultiScopicBranch", "MultiScopicCNN",
 ]
