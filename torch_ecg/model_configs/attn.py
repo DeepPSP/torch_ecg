@@ -15,10 +15,10 @@ __all__ = [
 
 
 non_local = ED()
-non_local.filter_lengths=1,
-non_local.subsample_length={
-    "g":2, "phi":2, 'theta':2, "W":2,
+non_local.filter_lengths = {
+    "g":1, "phi":1, 'theta':1, "W":1,
 }
+non_local.subsample_length = 2
 non_local.batch_norm=True
 
 

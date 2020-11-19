@@ -1733,8 +1733,8 @@ class NonLocalBlock(nn.Module):
         self.__mid_channels = (mid_channels or self.__in_channels//2) or 1
         self.__out_channels = self.__in_channels
         if isinstance(filter_lengths, dict):
-            assert [k.lower() for k in filter_lengths.keys()] == self.__MID_LAYERS__
-            self.__kernel_sizes = ED({k.lower():v for k,v in filter_lengths.items()})
+            assert set(filter_lengths.keys()) == set(self.__MID_LAYERS__)
+            self.__kernel_sizes = ED({k:v for k,v in filter_lengths.items()})
         else:
             self.__kernel_sizes = ED({k:filter_lengths for k in self.__MID_LAYERS__})
         self.__subsample_length = subsample_length
