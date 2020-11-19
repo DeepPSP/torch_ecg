@@ -84,7 +84,7 @@ class RR_LSTM(nn.Module):
         )
 
         if self.__DEBUG__:
-            print(f"lstm module has size {self.lstm.module_size}")
+            print(f"\042lstm\042 module has size {self.lstm.module_size}")
 
         attn_input_size = self.lstm.compute_output_shape(None, None)[-1]
 
