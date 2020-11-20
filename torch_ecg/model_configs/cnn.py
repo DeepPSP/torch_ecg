@@ -10,6 +10,8 @@ from easydict import EasyDict as ED
 __all__ = [
     "vgg_block_basic", "vgg_block_mish", "vgg_block_swish",
     "vgg16", "vgg16_leadwise",
+    "resnet_vanilla_18", "resnet_vanilla_34",
+    # "resnet_vanilla_50", "resnet_vanilla_101", "resnet_vanilla_152",
     "resnet_block_basic", "resnet_bottle_neck",
     "resnet", "resnet_leadwise",
     "resnet_block_stanford",
@@ -73,15 +75,50 @@ del vgg_block_swish.kw_activation
 
 
 # ResNet
+resnet_vanilla_common = ED()
+resnet_vanilla_common.subsample_lengths = 2
+resnet_vanilla_common.filter_lengths = 3
+resnet_vanilla_common.groups = 1
+resnet_vanilla_common.init_num_filters = 64
+resnet_vanilla_common.init_filter_length = 7
+resnet_vanilla_common.init_conv_stride = 2
+resnet_vanilla_common.init_pool_size = 3
+resnet_vanilla_common.init_pool_stride = 2
+resnet_vanilla_common.kernel_initializer = "he_normal"
+resnet_vanilla_common.kw_initializer = {}
+resnet_vanilla_common.activation = "relu"  # "mish", "swish"
+resnet_vanilla_common.kw_activation = {"inplace": True}
+resnet_vanilla_common.bias = False
+
 resnet_vanilla_18 = ED()
+resnet_vanilla_18.num_blocks = [
+    2, 2, 2, 2,
+]
+resnet_vanilla_18.update(resnet_vanilla_common)
 
 resnet_vanilla_34 = ED()
+resnet_vanilla_34.num_blocks = [
+    3, 4, 6, 3,
+]
+resnet_vanilla_34.update(resnet_vanilla_common)
 
-resnet_vanilla_50 = ED()
+# resnet_vanilla_50 = ED()  # uses bottleneck
+# resnet_vanilla_50.num_blocks = [
+#     3, 4, 6, 3,
+# ]
+# resnet_vanilla_50.update(resnet_vanilla_common)
 
-resnet_vanilla_101 = ED()
+# resnet_vanilla_101 = ED()  # uses bottleneck
+# resnet_vanilla_101.num_blocks = [
+#     3, 4, 23, 3,
+# ]
+# resnet_vanilla_101.update(resnet_vanilla_common)
 
-resnet_vanilla_152 = ED()
+# resnet_vanilla_152 = ED()  # uses bottleneck
+# resnet_vanilla_152.num_blocks = [
+#     3, 8, 36, 3,
+# ]
+# resnet_vanilla_152.update(resnet_vanilla_common)
 
 
 resnet = ED()
