@@ -8,16 +8,21 @@ from easydict import EasyDict as ED
 
 
 __all__ = [
+    # vgg
     "vgg_block_basic", "vgg_block_mish", "vgg_block_swish",
     "vgg16", "vgg16_leadwise",
+    # vanilla resnet
     "resnet_vanilla_18", "resnet_vanilla_34",
     # "resnet_vanilla_50", "resnet_vanilla_101", "resnet_vanilla_152",
+    # custom resnet
     "resnet_block_basic", "resnet_bottle_neck",
     "resnet", "resnet_leadwise",
-    "resnet_block_stanford",
-    "resnet_stanford",
+    # stanford resnet
+    "resnet_block_stanford", "resnet_stanford",
+    # cpsc2018 SOTA
     "cpsc_block_basic", "cpsc_block_mish", "cpsc_block_swish",
     "cpsc_2018", "cpsc_2018_leadwise",
+    # multi_scopic
     "multi_scopic_block",
     "multi_scopic", "multi_scopic_leadwise",
 ]
