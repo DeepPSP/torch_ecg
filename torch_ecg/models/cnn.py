@@ -423,7 +423,7 @@ class ResNetBasicBlock(nn.Module):
 
 
 class ResNetBottleNeck(nn.Module):
-    """ NOT finished, NOT checked,
+    """ finished, NOT checked,
 
     bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
     as for 1D ECG, should be of the "baby-giant-baby" pattern?
@@ -526,7 +526,7 @@ class ResNetBottleNeck(nn.Module):
                 self.config.activation(**self.config.kw_activation)
         
     def _make_short_cut_layer(self) -> Union[nn.Module, type(None)]:
-        """ NOT finished, NOT checked,
+        """ finished, NOT checked,
         """
         if self.__DEBUG__:
             print(f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}")
@@ -688,12 +688,12 @@ class ResNet(nn.Sequential):
         # grouped resnet (basic) blocks,
         # number of channels are doubled at the first block of each macro-block
         for macro_idx, nb in enumerate(self.config.num_blocks):
-            macro_in_channels = (2**macro_idx) * self.config.init_num_filters
-            block_num_filters = 2 * block_in_channels
-            macro_in_channels *= self.building_block.expansion
+            base_n_channels = (2**macro_idx) * self.config.init_num_filters
+            macro_in_channels = base_n_channels * self.building_block.expansion
             macro_filter_lengths = self.__filter_lengths[macro_idx]
             macro_subsample_lengths = self.__subsample_lengths[macro_idx]
             block_in_channels = macro_in_channels
+            block_num_filters = 2 * base_n_channels
             if isinstance(macro_filter_lengths, int):
                 block_filter_lengths = list(repeat(macro_filter_lengths, nb))
             else:
