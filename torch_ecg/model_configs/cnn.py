@@ -116,7 +116,7 @@ resnet_vanilla_18.num_blocks = [
 resnet_vanilla_18.filter_lengths = [
     list(repeat(3, n)) for n in resnet_vanilla_18.num_blocks
 ]
-resnet_vanilla_18.update(resnet_vanilla_common)
+resnet_vanilla_18.update(deepcopy(resnet_vanilla_common))
 
 resnet_vanilla_34 = ED()
 resnet_vanilla_34.block_name = "basic"
@@ -124,16 +124,16 @@ resnet_vanilla_34.num_blocks = [
     3, 4, 6, 3,
 ]
 resnet_vanilla_34.filter_lengths = [
-    list(repeat(3, n)) for n in resnet_vanilla_18.num_blocks
+    list(repeat(3, n)) for n in resnet_vanilla_34.num_blocks
 ]
-resnet_vanilla_34.update(resnet_vanilla_common)
+resnet_vanilla_34.update(deepcopy(resnet_vanilla_common))
 
 resnet_vanilla_50 = ED()  # uses bottleneck
 resnet_vanilla_50.block_name = "bottleneck"
 resnet_vanilla_50.num_blocks = [
     3, 4, 6, 3,
 ]
-resnet_vanilla_50.update(resnet_vanilla_common)
+resnet_vanilla_50.update(deepcopy(resnet_vanilla_common))
 resnet_vanilla_50.block.subsample_at = 1
 resnet_vanilla_50.block.expansion = 4
 
@@ -142,7 +142,7 @@ resnet_vanilla_101.block_name = "bottleneck"
 resnet_vanilla_101.num_blocks = [
     3, 4, 23, 3,
 ]
-resnet_vanilla_101.update(resnet_vanilla_common)
+resnet_vanilla_101.update(deepcopy(resnet_vanilla_common))
 resnet_vanilla_101.block.subsample_at = 1
 resnet_vanilla_101.block.expansion = 4
 
@@ -151,7 +151,7 @@ resnet_vanilla_152.block_name = "bottleneck"
 resnet_vanilla_152.num_blocks = [
     3, 8, 36, 3,
 ]
-resnet_vanilla_152.update(resnet_vanilla_common)
+resnet_vanilla_152.update(deepcopy(resnet_vanilla_common))
 resnet_vanilla_152.block.subsample_at = 1
 resnet_vanilla_152.block.expansion = 4
 
@@ -160,7 +160,7 @@ resnext_vanilla_50_32x4d.block_name = "bottleneck"
 resnext_vanilla_50_32x4d.num_blocks = [
     3, 4, 6, 3,
 ]
-resnext_vanilla_50_32x4d.update(resnet_vanilla_common)
+resnext_vanilla_50_32x4d.update(deepcopy(resnet_vanilla_common))
 resnext_vanilla_50_32x4d.groups = 32
 resnext_vanilla_50_32x4d.base_width = 4
 resnext_vanilla_50_32x4d.block.subsample_at = 1
@@ -171,7 +171,7 @@ resnext_vanilla_101_32x8d.block_name = "bottleneck"
 resnext_vanilla_101_32x8d.num_blocks = [
     3, 4, 23, 3,
 ]
-resnext_vanilla_101_32x8d.update(resnet_vanilla_common)
+resnext_vanilla_101_32x8d.update(deepcopy(resnet_vanilla_common))
 resnext_vanilla_101_32x8d.groups = 32
 resnext_vanilla_101_32x8d.base_width = 8
 resnext_vanilla_101_32x8d.block.subsample_at = 1
@@ -182,7 +182,7 @@ resnet_vanilla_wide_50_2.block_name = "bottleneck"
 resnet_vanilla_wide_50_2.num_blocks = [
     3, 8, 36, 3,
 ]
-resnet_vanilla_wide_50_2.update(resnet_vanilla_common)
+resnet_vanilla_wide_50_2.update(deepcopy(resnet_vanilla_common))
 resnet_vanilla_wide_50_2.base_width = 64 * 2
 resnet_vanilla_wide_50_2.block.subsample_at = 1
 resnet_vanilla_wide_50_2.block.expansion = 4
@@ -192,7 +192,7 @@ resnet_vanilla_wide_101_2.block_name = "bottleneck"
 resnet_vanilla_wide_101_2.num_blocks = [
     3, 8, 36, 3,
 ]
-resnet_vanilla_wide_101_2.update(resnet_vanilla_common)
+resnet_vanilla_wide_101_2.update(deepcopy(resnet_vanilla_common))
 resnet_vanilla_wide_101_2.base_width = 64 * 2
 resnet_vanilla_wide_101_2.block.subsample_at = 1
 resnet_vanilla_wide_101_2.block.expansion = 4
