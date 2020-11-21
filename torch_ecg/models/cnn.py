@@ -659,7 +659,7 @@ class ResNet(nn.Sequential):
             self.building_block = ResNetBottleNeck
             self.additional_kw = ED({
                 k: self.config[k] for k in ["base_width", "base_groups", "base_filter_length"] \
-                    if k in self.config.keys
+                    if k in self.config.keys()
             })
         else:
             self.additional_kw = ED()

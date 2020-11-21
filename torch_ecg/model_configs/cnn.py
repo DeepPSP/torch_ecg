@@ -102,10 +102,10 @@ resnet_vanilla_common.bias = False
 resnet_vanilla_common.block = ED()
 resnet_vanilla_common.block.increase_channels_method = "conv"
 resnet_vanilla_common.block.subsample_mode = "conv"
-resnet_vanilla_common.block.kernel_initializer = resnet.kernel_initializer
-resnet_vanilla_common.block.kw_initializer = deepcopy(resnet.kw_initializer)
-resnet_vanilla_common.block.activation = resnet.activation
-resnet_vanilla_common.block.kw_activation = deepcopy(resnet.kw_activation)
+resnet_vanilla_common.block.kernel_initializer = resnet_vanilla_common.kernel_initializer
+resnet_vanilla_common.block.kw_initializer = deepcopy(resnet_vanilla_common.kw_initializer)
+resnet_vanilla_common.block.activation = resnet_vanilla_common.activation
+resnet_vanilla_common.block.kw_activation = deepcopy(resnet_vanilla_common.kw_activation)
 resnet_vanilla_common.block.bias = False
 
 resnet_vanilla_18 = ED()
