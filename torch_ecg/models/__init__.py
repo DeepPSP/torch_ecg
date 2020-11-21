@@ -2,12 +2,11 @@
 Resources:
 ----------
 1. ECG CRNN
-2. special detectors
-3. to add more
-
-Rules:
-------
-to write
+2. ECG sequence labeling models
+3. ECG UNets
+4. LSTM models using RR intervals as inputs
+5. ECG ``Object Detection'' models
+6. to add more...
 """
 
 from .ecg_crnn import ECG_CRNN
@@ -24,7 +23,6 @@ from .nets import (
     MultiConv, BranchedConv,
     DownSample,
     BidirectionalLSTM, StackedLSTM,
-    # "AML_Attention", "AML_GatedAttention",
     AttentionWithContext,
     MultiHeadAttention, SelfAttention,
     AttentivePooling,
@@ -44,20 +42,23 @@ from .cnn import (
 
 # __all__ = [s for s in dir() if not s.startswith('_')]
 __all__ = [
+    # large models
     "ECG_CRNN",
     "ECG_SEQ_LAB_NET",
     "ECG_SUBTRACT_UNET",
     "ECG_UNET",
+    "RR_LSTM",
 
+    # grad cam
     "GradCam",
 
+    # building blocks
     "Mish", "Swish",
     "Initializers", "Activations",
     "Bn_Activation", "Conv_Bn_Activation",
     "MultiConv", "BranchedConv",
     "DownSample",
     "BidirectionalLSTM", "StackedLSTM",
-    # "AML_Attention", "AML_GatedAttention",
     "AttentionWithContext",
     "MultiHeadAttention", "SelfAttention",
     "AttentivePooling",
@@ -67,7 +68,8 @@ __all__ = [
     "CRF", "ExtendedCRF",
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
 
+    # named CNNs
     "VGGBlock", "VGG16",
-    "ResNetBasicBlock", "ResNet",
+    "ResNetBasicBlock", "ResNetBottleNeck", "ResNet",
     "MultiScopicBasicBlock", "MultiScopicBranch", "MultiScopicCNN",
 ]

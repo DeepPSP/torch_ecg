@@ -42,10 +42,9 @@ if Cfg.torch_dtype.lower() == "double":
 
 __all__ = [
     "VGGBlock", "VGG16",
-    "ResNetBasicBlock", "ResNet",
+    "ResNetBasicBlock", "ResNetBottleNeck", "ResNet",
     "MultiScopicBasicBlock", "MultiScopicBranch", "MultiScopicCNN",
 ]
-
 
 
 class VGGBlock(nn.Sequential):
@@ -134,7 +133,7 @@ class VGGBlock(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -230,7 +229,7 @@ class VGG16(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -264,7 +263,7 @@ class ResNetBasicBlock(nn.Module):
     """
     __DEBUG__ = False
     __name__ = "ResNetBasicBlock"
-    expansion = 1
+    expansion = 1  # not used
 
     def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, **config) -> NoReturn:
         """ finished, checked,
@@ -354,7 +353,7 @@ class ResNetBasicBlock(nn.Module):
                     batch_norm=True,
                     mode=self.config.subsample_mode,
                 )
-            if self.config.increase_channels_method.lower() == "zero_padding":
+            elif self.config.increase_channels_method.lower() == "zero_padding":
                 batch_norm = False if self.config.subsample_mode.lower() != "conv" else True
                 short_cut = nn.Sequential(
                     DownSample(
@@ -395,8 +394,195 @@ class ResNetBasicBlock(nn.Module):
 
         return out
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
+
+        Parameters:
+        -----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns:
+        --------
+        output_shape: sequence,
+            the output shape of this block, given `seq_len` and `batch_size`
+        """
+        _seq_len = seq_len
+        for module in self.main_stream:
+            output_shape = module.compute_output_shape(_seq_len, batch_size)
+            _, _, _seq_len = output_shape
+        return output_shape
+
+    @property
+    def module_size(self):
+        """
+        """
+        return compute_module_size(self)
+
+
+class ResNetBottleNeck(nn.Module):
+    """ NOT finished, NOT checked,
+
+    bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
+    as for 1D ECG, should be of the "baby-giant-baby" pattern?
+    """
+    __DEBUG__ = True
+    __name__ = "ResNetBottleNeck"
+    expansion = 4
+    __DEFAULT_CONFIG__ = ED(
+        subsample_at=1, base_width=16,
+    )
+
+    def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, ends_filter_length:int=1, base_width:int=16, **config) -> NoReturn:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        in_channels: int,
+            number of features (channels) of the input
+        num_filters: sequence of int,
+            number of filters for the neck convolutional layer
+        filter_length: int,
+            lengths (sizes) of the filter kernels for each neck convolutional layer
+        subsample_length: int,
+            subsample length,
+            including pool size for short cut,
+            and stride for the (top or neck) convolutional layer
+        groups: int, default 1,
+            pattern of connections between inputs and outputs,
+            for more details, ref. `nn.Conv1d`
+        dilation: int, default 1,
+            dilation of the convolutional layers
+        ends_filter_length: int, default 1,
+            lengths (sizes) of the filter kernels for convolutional layers at the two ends
+        base_width: int, default 16,
+        config: dict,
+            other hyper-parameters, including
+            filter length (kernel size), activation choices, weight initializer,
+            and short cut patterns, etc.
+        """
+        super().__init__()
+        self.__num_convs = 3
+        self.config = deepcopy(self.__DEFAULT_CONFIG__)
+        self.config.update(config)
+        if self.__DEBUG__:
+            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+        self.expansion = self.config.get("expansion", self.expansion)
+
+        self.__in_channels = in_channels
+        self.__out_channels = [
+            num_filters,
+            num_filters,
+            num_filters * self.expansion,
+        ]
+        self.__neck_kernel_size = filter_length
+        self.__ends_kernel_size = ends_filter_length
+        self.__kernel_size = [
+            self.__ends_kernel_size,
+            self.__neck_kernel_size,
+            self.__ends_kernel_size,
+        ]
+        self.__down_scale = subsample_length
+        self.__stride = subsample_length
+        self.__groups = groups
+
+        if self.config.increase_channels_method.lower() == "zero_padding" and self.__groups != 1:
+            raise ValueError("zero padding for increasing channels can not be used with groups != 1")
+
+        self.__increase_channels = (self.__out_channels > self.__in_channels)
+        self.short_cut = self._make_short_cut_layer()
+
+        self.main_stream = nn.Sequential()
+        conv_names = {0:"head", 1:"neck", 2:"tail"}
+        conv_in_channels = self.__in_channels
+        for i in range(self.__num_convs):
+            conv_activation = (self.config.activation if i < self.__num_convs-1 else None)
+            conv_out_channels = self.__out_channels[i]
+            self.main_stream.add_module(
+                conv_names[i],
+                Conv_Bn_Activation(
+                    in_channels=conv_in_channels,
+                    out_channels=conv_out_channels,
+                    kernel_size=self.__kernel_size[i],
+                    stride=(self.__stride if i == self.config.subsample_at else 1),
+                    groups=self.__groups,
+                    batch_norm=True,
+                    activation=conv_activation,
+                    kw_activation=self.config.kw_activation,
+                    kernel_initializer=self.config.kernel_initializer,
+                    kw_initializer=self.config.kw_initializer,
+                    bias=self.config.bias,
+                )
+            )
+            conv_in_channels = conv_out_channels
+
+        if isinstance(self.config.activation, str):
+            self.out_activation = \
+                Activations[self.config.activation.lower()](**self.config.kw_activation)
+        else:
+            self.out_activation = \
+                self.config.activation(**self.config.kw_activation)
+        
+    def _make_short_cut_layer(self) -> Union[nn.Module, type(None)]:
+        """ NOT finished, NOT checked,
+        """
+        if self.__DEBUG__:
+            print(f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}")
+        if self.__down_scale > 1 or self.__increase_channels:
+            if self.config.increase_channels_method.lower() == "conv":
+                short_cut = DownSample(
+                    down_scale=self.__down_scale,
+                    in_channels=self.__in_channels,
+                    out_channels=self.__out_channels[-1],
+                    groups=self.__groups,
+                    batch_norm=True,
+                    mode=self.config.subsample_mode,
+                )
+            elif self.config.increase_channels_method.lower() == "zero_padding":
+                batch_norm = False if self.config.subsample_mode.lower() != "conv" else True
+                short_cut = nn.Sequential(
+                    DownSample(
+                        down_scale=self.__down_scale,
+                        in_channels=self.__in_channels,
+                        out_channels=self.__in_channels,
+                        batch_norm=batch_norm,
+                        mode=self.config.subsample_mode,
+                    ),
+                    ZeroPadding(self.__in_channels, self.__out_channels),
+                )
+        else:
+            short_cut = None
+        return short_cut
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        out: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+        """
+        identity = input
+
+        out = self.main_stream(input)
+
+        if self.short_cut is not None:
+            identity = self.short_cut(input)
+
+        out += identity
+        out = self.out_activation(out)
+
+        return out
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+        """ finished, NOT checked,
 
         Parameters:
         -----------
@@ -455,8 +641,8 @@ class ResNet(nn.Sequential):
         self.config = ED(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
-        # self.__building_block = \
-        #     ResNetBasicBlock if self.config.name == "resnet" else ResNetBottleNeck
+        if self.config.get("block", "").lower() in ["bottleneck", "bottle_neck",]:
+            self.building_block = ResNetBottleNeck
         
         self.add_module(
             "init_cba",
@@ -503,10 +689,11 @@ class ResNet(nn.Sequential):
         # number of channels are doubled at the first block of each macro-block
         for macro_idx, nb in enumerate(self.config.num_blocks):
             macro_in_channels = (2**macro_idx) * self.config.init_num_filters
+            block_num_filters = 2 * block_in_channels
+            macro_in_channels *= self.building_block.expansion
             macro_filter_lengths = self.__filter_lengths[macro_idx]
             macro_subsample_lengths = self.__subsample_lengths[macro_idx]
             block_in_channels = macro_in_channels
-            block_num_filters = 2 * block_in_channels
             if isinstance(macro_filter_lengths, int):
                 block_filter_lengths = list(repeat(macro_filter_lengths, nb))
             else:
@@ -533,7 +720,7 @@ class ResNet(nn.Sequential):
                         **(self.config.block)
                     )
                 )
-                block_in_channels = block_num_filters
+                block_in_channels = block_num_filters * self.building_block.expansion
 
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
@@ -551,7 +738,7 @@ class ResNet(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -689,7 +876,7 @@ class MultiScopicBasicBlock(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -810,7 +997,7 @@ class MultiScopicBranch(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -901,7 +1088,7 @@ class MultiScopicCNN(nn.Module):
         )
         return output
     
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:

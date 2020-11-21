@@ -188,7 +188,7 @@ class Bn_Activation(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -325,7 +325,7 @@ class Conv_Bn_Activation(nn.Sequential):
         out = super().forward(input)
         return out
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -466,7 +466,7 @@ class MultiConv(nn.Sequential):
         out = super().forward(input)
         return out
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -585,7 +585,7 @@ class BranchedConv(nn.Module):
             out.append(self.branches[f"multi_conv_{idx}"](input))
         return out
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> List[Sequence[Union[int, type(None)]]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> List[Sequence[Union[int, type(None)]]]:
         """ finished, checked,
 
         Parameters:
@@ -738,7 +738,7 @@ class DownSample(nn.Sequential):
             )
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -835,7 +835,7 @@ class BidirectionalLSTM(nn.Module):
             output = output[-1,...]
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -963,7 +963,7 @@ class StackedLSTM(nn.Sequential):
             final_output = output[-1,...]  # batch_size, n_direction*hidden_size
         return final_output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -1176,7 +1176,7 @@ class AttentionWithContext(nn.Module):
             print(f"AttentionWithContext forward: output.shape = {output.shape}")
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -1324,7 +1324,7 @@ class MultiHeadAttention(nn.Module):
                     .reshape(batch_size, seq_len, out_dim)
         return reshaped
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -1397,7 +1397,7 @@ class SelfAttention(nn.Module):
         # output = self.mha(input, input, input)
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -1475,7 +1475,7 @@ class AttentivePooling(nn.Module):
         output = weighted_input.sum(1)  # -> (batch_size, n_channels)
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -1548,7 +1548,7 @@ class ZeroPadding(nn.Module):
             output = input
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:

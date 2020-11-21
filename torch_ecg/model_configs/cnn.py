@@ -99,11 +99,17 @@ resnet_vanilla_18 = ED()
 resnet_vanilla_18.num_blocks = [
     2, 2, 2, 2,
 ]
+resnet_vanilla_18.filter_lengths = [
+    list(repeat(3, n)) for n in resnet_vanilla_18.num_blocks
+]
 resnet_vanilla_18.update(resnet_vanilla_common)
 
 resnet_vanilla_34 = ED()
 resnet_vanilla_34.num_blocks = [
     3, 4, 6, 3,
+]
+resnet_vanilla_34.filter_lengths = [
+    list(repeat(3, n)) for n in resnet_vanilla_18.num_blocks
 ]
 resnet_vanilla_34.update(resnet_vanilla_common)
 
@@ -127,6 +133,8 @@ resnet_vanilla_34.update(resnet_vanilla_common)
 
 
 resnet = ED()
+resnet.block = "basic"  # "bottleneck"
+resnet.expansion = 1
 resnet.subsample_lengths = 2
 # resnet.num_blocks = [
 #     2, 2, 2, 2, 2,
@@ -151,7 +159,7 @@ resnet.filter_lengths = [
     [5, 5, 49],
 ]
 resnet.groups = 1
-_base_num_filters = 36
+_base_num_filters = 12 * 4
 resnet.init_num_filters = _base_num_filters
 resnet.init_filter_length = 15  # corr. to 30 ms
 resnet.init_conv_stride = 2
@@ -165,7 +173,7 @@ resnet.bias = False
 
 resnet_leadwise = deepcopy(resnet)
 resnet_leadwise.groups = 12
-resnet_leadwise.init_num_filters = 96
+resnet_leadwise.init_num_filters = 12 * 8
 
 
 resnet_block_basic = ED()
@@ -178,6 +186,7 @@ resnet_block_basic.kw_activation = deepcopy(resnet.kw_activation)
 resnet_block_basic.bias = False
 
 resnet_bottle_neck = ED()
+resnet_bottle_neck.expansion = 4
 resnet_bottle_neck.increase_channels_method = "conv"  # or "zero_padding"
 resnet_bottle_neck.subsample_mode = "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
 resnet_bottle_neck.subsample_at = 1  # or 0

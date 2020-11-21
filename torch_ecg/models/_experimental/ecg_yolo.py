@@ -204,7 +204,7 @@ class ResNetGCBlock(nn.Module):
 
         return out
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, NOT checked,
 
         Parameters:

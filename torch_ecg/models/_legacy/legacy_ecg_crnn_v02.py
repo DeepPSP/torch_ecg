@@ -113,7 +113,7 @@ class VGGBlock(nn.Sequential):
             nn.MaxPool1d(self.config.pool_size, self.config.pool_stride)
         )
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -200,7 +200,7 @@ class VGG16(nn.Sequential):
             input = module(input)
         return input
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -355,7 +355,7 @@ class ResNetBasicBlock(nn.Module):
 
         return out
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -501,7 +501,7 @@ class ResNet(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -611,7 +611,7 @@ class CPSCBlock(nn.Sequential):
         out = super().forward(input)
         return out
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
@@ -705,7 +705,7 @@ class CPSCCNN(nn.Sequential):
         out = super().forward(input)
         return out
     
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,
 
         Parameters:
