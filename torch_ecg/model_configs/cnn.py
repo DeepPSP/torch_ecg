@@ -99,6 +99,7 @@ resnet_vanilla_common.kw_initializer = {}
 resnet_vanilla_common.activation = "relu"  # "mish", "swish"
 resnet_vanilla_common.kw_activation = {"inplace": True}
 resnet_vanilla_common.bias = False
+resnet_vanilla_common.block = ED()
 resnet_vanilla_common.block.increase_channels_method = "conv"
 resnet_vanilla_common.block.subsample_mode = "conv"
 resnet_vanilla_common.block.kernel_initializer = resnet.kernel_initializer
