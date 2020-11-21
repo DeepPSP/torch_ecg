@@ -657,10 +657,10 @@ class ResNet(nn.Sequential):
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
         if self.config.get("block_name", "").lower() in ["bottleneck", "bottle_neck",]:
             self.building_block = ResNetBottleNeck
-            self.additional_kw = ED(
+            self.additional_kw = ED({
                 k: self.config[k] for k in ["base_width", "base_groups", "base_filter_length"] \
                     if k in self.config.keys
-            )
+            })
         else:
             self.additional_kw = ED()
         
