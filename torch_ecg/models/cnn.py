@@ -495,7 +495,7 @@ class ResNetBottleNeck(nn.Module):
         self.short_cut = self._make_short_cut_layer()
 
         self.main_stream = nn.Sequential()
-        conv_names = {0:"head", 1:"neck", 2:"tail"}
+        conv_names = {0:"cba_head", 1:"cba_neck", 2:"cba_tail",}
         conv_in_channels = self.__in_channels
         for i in range(self.__num_convs):
             conv_activation = (self.config.activation if i < self.__num_convs-1 else None)
@@ -641,7 +641,7 @@ class ResNet(nn.Sequential):
         self.config = ED(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
-        if self.config.get("block", "").lower() in ["bottleneck", "bottle_neck",]:
+        if self.config.get("block_name", "").lower() in ["bottleneck", "bottle_neck",]:
             self.building_block = ResNetBottleNeck
         
         self.add_module(

@@ -133,7 +133,7 @@ resnet_vanilla_34.update(resnet_vanilla_common)
 
 
 resnet = ED()
-resnet.block = "basic"  # "bottleneck"
+resnet.block_name = "basic"  # "bottleneck"
 resnet.expansion = 1
 resnet.subsample_lengths = 2
 # resnet.num_blocks = [
