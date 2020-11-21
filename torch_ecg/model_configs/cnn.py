@@ -31,7 +31,7 @@ __all__ = [
 # VGG
 vgg16 = ED()
 vgg16.num_convs = [2, 2, 3, 3, 3]
-_base_num_filters = 36
+_base_num_filters = 12
 vgg16.num_filters = [
     _base_num_filters*4,
     _base_num_filters*8,
@@ -47,7 +47,7 @@ vgg16.kw_activation = {}
 
 vgg16_leadwise = deepcopy(vgg16)
 vgg16_leadwise.groups = 12
-_base_num_filters = 96
+_base_num_filters = 12 * 4
 vgg16_leadwise.num_filters = [
     _base_num_filters*4,
     _base_num_filters*8,
@@ -80,10 +80,13 @@ del vgg_block_swish.kw_activation
 
 
 # ResNet
+
+# vanilla ResNets
 resnet_vanilla_common = ED()
 resnet_vanilla_common.subsample_lengths = 2
 resnet_vanilla_common.filter_lengths = 3
 resnet_vanilla_common.groups = 1
+resnet_vanilla_common.increase_channels_method = "conv"
 resnet_vanilla_common.init_num_filters = 64
 resnet_vanilla_common.init_filter_length = 7
 resnet_vanilla_common.init_conv_stride = 2
@@ -96,6 +99,7 @@ resnet_vanilla_common.kw_activation = {"inplace": True}
 resnet_vanilla_common.bias = False
 
 resnet_vanilla_18 = ED()
+resnet_vanilla_18.block_name = "basic"
 resnet_vanilla_18.num_blocks = [
     2, 2, 2, 2,
 ]
@@ -105,6 +109,7 @@ resnet_vanilla_18.filter_lengths = [
 resnet_vanilla_18.update(resnet_vanilla_common)
 
 resnet_vanilla_34 = ED()
+resnet_vanilla_34.block_name = "basic"
 resnet_vanilla_34.num_blocks = [
     3, 4, 6, 3,
 ]
@@ -113,25 +118,63 @@ resnet_vanilla_34.filter_lengths = [
 ]
 resnet_vanilla_34.update(resnet_vanilla_common)
 
-# resnet_vanilla_50 = ED()  # uses bottleneck
-# resnet_vanilla_50.num_blocks = [
-#     3, 4, 6, 3,
-# ]
-# resnet_vanilla_50.update(resnet_vanilla_common)
+resnet_vanilla_50 = ED()  # uses bottleneck
+resnet_vanilla_50.block_name = "bottleneck"
+resnet_vanilla_50.num_blocks = [
+    3, 4, 6, 3,
+]
+resnet_vanilla_50.update(resnet_vanilla_common)
 
-# resnet_vanilla_101 = ED()  # uses bottleneck
-# resnet_vanilla_101.num_blocks = [
-#     3, 4, 23, 3,
-# ]
-# resnet_vanilla_101.update(resnet_vanilla_common)
+resnet_vanilla_101 = ED()  # uses bottleneck
+resnet_vanilla_101.block_name = "bottleneck"
+resnet_vanilla_101.num_blocks = [
+    3, 4, 23, 3,
+]
+resnet_vanilla_101.update(resnet_vanilla_common)
 
-# resnet_vanilla_152 = ED()  # uses bottleneck
-# resnet_vanilla_152.num_blocks = [
-#     3, 8, 36, 3,
-# ]
-# resnet_vanilla_152.update(resnet_vanilla_common)
+resnet_vanilla_152 = ED()  # uses bottleneck
+resnet_vanilla_152.block_name = "bottleneck"
+resnet_vanilla_152.num_blocks = [
+    3, 8, 36, 3,
+]
+resnet_vanilla_152.update(resnet_vanilla_common)
+
+resnext_vanilla_50_32x4d = ED()  # uses bottleneck
+resnext_vanilla_50_32x4d.block_name = "bottleneck"
+resnext_vanilla_50_32x4d.num_blocks = [
+    3, 4, 6, 3,
+]
+resnext_vanilla_50_32x4d.update(resnet_vanilla_common)
+resnext_vanilla_50_32x4d.groups = 32
+resnext_vanilla_50_32x4d.base_width = 4
+
+resnext_vanilla_101_32x8d = ED()  # uses bottleneck
+resnext_vanilla_101_32x8d.block_name = "bottleneck"
+resnext_vanilla_101_32x8d.num_blocks = [
+    3, 4, 23, 3,
+]
+resnext_vanilla_101_32x8d.update(resnet_vanilla_common)
+resnext_vanilla_101_32x8d.groups = 32
+resnext_vanilla_101_32x8d.base_width = 8
+
+resnet_vanilla_wide_50_2 = ED()  # uses bottleneck
+resnet_vanilla_wide_50_2.block_name = "bottleneck"
+resnext_vanilla_wide_50_2.num_blocks = [
+    3, 8, 36, 3,
+]
+resnet_vanilla_wide_50_2.update(resnet_vanilla_common)
+resnet_vanilla_wide_50_2.base_width = 64 * 2
+
+resnet_vanilla_wide_101_2 = ED()  # uses bottleneck
+resnet_vanilla_wide_101_2.block_name = "bottleneck"
+resnet_vanilla_wide_101_2.num_blocks = [
+    3, 8, 36, 3,
+]
+resnet_vanilla_wide_101_2.update(resnet_vanilla_common)
+resnet_vanilla_wide_101_2.base_width = 64 * 2
 
 
+# custom ResNets
 resnet = ED()
 resnet.block_name = "basic"  # "bottleneck"
 resnet.expansion = 1
@@ -170,6 +213,7 @@ resnet.kw_initializer = {}
 resnet.activation = "relu"  # "mish", "swish"
 resnet.kw_activation = {"inplace": True}
 resnet.bias = False
+
 
 resnet_leadwise = deepcopy(resnet)
 resnet_leadwise.groups = 12

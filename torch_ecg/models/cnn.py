@@ -431,11 +431,12 @@ class ResNetBottleNeck(nn.Module):
     __DEBUG__ = True
     __name__ = "ResNetBottleNeck"
     expansion = 4
+    __DEFAULT_BASE_WIDTH__ = 12 * 4
     __DEFAULT_CONFIG__ = ED(
-        subsample_at=1, base_width=16,
+        subsample_at=1, base_width=12*4,
     )
 
-    def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, ends_filter_length:int=1, base_width:int=16, **config) -> NoReturn:
+    def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, base_width:int=12*4, base_groups:int=1, base_filter_length:int=1, **config) -> NoReturn:
         """ finished, NOT checked,
 
         Parameters:
@@ -443,21 +444,26 @@ class ResNetBottleNeck(nn.Module):
         in_channels: int,
             number of features (channels) of the input
         num_filters: sequence of int,
-            number of filters for the neck convolutional layer
+            number of filters for the neck conv layer
         filter_length: int,
-            lengths (sizes) of the filter kernels for each neck convolutional layer
+            lengths (sizes) of the filter kernels for each neck conv layer
         subsample_length: int,
             subsample length,
             including pool size for short cut,
-            and stride for the (top or neck) convolutional layer
+            and stride for the (top or neck) conv layer
         groups: int, default 1,
-            pattern of connections between inputs and outputs,
+            pattern of connections between inputs and outputs of the neck conv layer,
             for more details, ref. `nn.Conv1d`
         dilation: int, default 1,
-            dilation of the convolutional layers
-        ends_filter_length: int, default 1,
-            lengths (sizes) of the filter kernels for convolutional layers at the two ends
-        base_width: int, default 16,
+            dilation of the conv layers
+        base_width: int, default 12*4,
+            number of filters per group for the neck conv layer
+            usually number of filters of the initial conv layer of the whole ResNet
+        base_groups: int, default 1,
+            pattern of connections between inputs and outputs of conv layers at the two ends,
+            should divide `groups`
+        base_filter_length: int, default 1,
+            lengths (sizes) of the filter kernels for conv layers at the two ends
         config: dict,
             other hyper-parameters, including
             filter length (kernel size), activation choices, weight initializer,
@@ -477,21 +483,29 @@ class ResNetBottleNeck(nn.Module):
             num_filters,
             num_filters * self.expansion,
         ]
-        self.__neck_kernel_size = filter_length
-        self.__ends_kernel_size = ends_filter_length
+        self.__DEFAULT_BASE_WIDTH__ = \
+            self.config.get("init_num_filters", self.__DEFAULT_BASE_WIDTH__)
+        neck_filter_length = \
+            int(filter_length * (base_width / self.__DEFAULT_BASE_WIDTH__)) * neck_groups
         self.__kernel_size = [
-            self.__ends_kernel_size,
-            self.__neck_kernel_size,
-            self.__ends_kernel_size,
+            base_filter_length,
+            neck_filter_length,
+            base_filter_length,
         ]
         self.__down_scale = subsample_length
         self.__stride = subsample_length
-        self.__groups = groups
+        if groups % base_groups != 0:
+            raise ValueError("`neck_groups` should be divisible by `groups`")
+        self.__groups = [
+            base_groups,
+            groups,
+            base_groups,
+        ]
 
         if self.config.increase_channels_method.lower() == "zero_padding" and self.__groups != 1:
             raise ValueError("zero padding for increasing channels can not be used with groups != 1")
 
-        self.__increase_channels = (self.__out_channels > self.__in_channels)
+        self.__increase_channels = (self.__out_channels[-1] > self.__in_channels)
         self.short_cut = self._make_short_cut_layer()
 
         self.main_stream = nn.Sequential()
@@ -507,7 +521,7 @@ class ResNetBottleNeck(nn.Module):
                     out_channels=conv_out_channels,
                     kernel_size=self.__kernel_size[i],
                     stride=(self.__stride if i == self.config.subsample_at else 1),
-                    groups=self.__groups,
+                    groups=self.__groups[idx],
                     batch_norm=True,
                     activation=conv_activation,
                     kw_activation=self.config.kw_activation,
@@ -643,6 +657,12 @@ class ResNet(nn.Sequential):
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
         if self.config.get("block_name", "").lower() in ["bottleneck", "bottle_neck",]:
             self.building_block = ResNetBottleNeck
+            self.additional_kw = ED(
+                k: self.config[k] for k in ["base_width", "base_groups", "base_filter_length"] \
+                    if k in self.config.keys
+            )
+        else:
+            self.additional_kw = ED()
         
         self.add_module(
             "init_cba",
@@ -717,7 +737,9 @@ class ResNet(nn.Sequential):
                         subsample_length=block_subsample_lengths[block_idx],
                         groups=self.config.groups,
                         dilation=1,
-                        **(self.config.block)
+                        init_num_filters=self.config.init_num_filters,
+                        **(self.additional_kw),
+                        **(self.config.block),
                     )
                 )
                 block_in_channels = block_num_filters * self.building_block.expansion
