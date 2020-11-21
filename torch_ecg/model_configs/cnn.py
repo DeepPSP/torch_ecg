@@ -13,7 +13,9 @@ __all__ = [
     "vgg16", "vgg16_leadwise",
     # vanilla resnet
     "resnet_vanilla_18", "resnet_vanilla_34",
-    # "resnet_vanilla_50", "resnet_vanilla_101", "resnet_vanilla_152",
+    "resnet_vanilla_50", "resnet_vanilla_101", "resnet_vanilla_152",
+    "resnext_vanilla_50_32x4d", "resnext_vanilla_101_32x8d",
+    "resnet_vanilla_wide_50_2", "resnet_vanilla_wide_101_2",
     # custom resnet
     "resnet_block_basic", "resnet_bottle_neck",
     "resnet", "resnet_leadwise",
@@ -159,7 +161,7 @@ resnext_vanilla_101_32x8d.base_width = 8
 
 resnet_vanilla_wide_50_2 = ED()  # uses bottleneck
 resnet_vanilla_wide_50_2.block_name = "bottleneck"
-resnext_vanilla_wide_50_2.num_blocks = [
+resnet_vanilla_wide_50_2.num_blocks = [
     3, 8, 36, 3,
 ]
 resnet_vanilla_wide_50_2.update(resnet_vanilla_common)

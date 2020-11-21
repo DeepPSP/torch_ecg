@@ -58,13 +58,64 @@ from .attn import *
 from .cnn import *
 from .rnn import *
 from .ecg_crnn import *
-from .ecg_unet import *
 from .ecg_seq_lab_net import *
 from .ecg_subtract_unet import *
+from .ecg_unet import *
 from .ecg_yolo import *
 from .rr_lstm import *
 # from .ati_cnn import *
 # from .cpsc import *
 
 
-__all__ = [s for s in dir() if not s.startswith('_')]
+# __all__ = [s for s in dir() if not s.startswith('_')]
+__all__ = [
+    # attn
+    "non_local",
+    "squeeze_excitation",
+    "global_context",
+
+    # cnn
+    # vgg
+    "vgg_block_basic", "vgg_block_mish", "vgg_block_swish",
+    "vgg16", "vgg16_leadwise",
+    # vanilla resnet
+    "resnet_vanilla_18", "resnet_vanilla_34",
+    "resnet_vanilla_50", "resnet_vanilla_101", "resnet_vanilla_152",
+    "resnext_vanilla_50_32x4d", "resnext_vanilla_101_32x8d",
+    "resnet_vanilla_wide_50_2", "resnet_vanilla_wide_101_2",
+    # custom resnet
+    "resnet_block_basic", "resnet_bottle_neck",
+    "resnet", "resnet_leadwise",
+    # stanford resnet
+    "resnet_block_stanford", "resnet_stanford",
+    # cpsc2018 SOTA
+    "cpsc_block_basic", "cpsc_block_mish", "cpsc_block_swish",
+    "cpsc_2018", "cpsc_2018_leadwise",
+    # multi_scopic
+    "multi_scopic_block",
+    "multi_scopic", "multi_scopic_leadwise",
+
+    # rnn
+    "lstm",
+    "attention",
+
+    # ecg_crnn
+    "ECG_CRNN_CONFIG",
+
+    # ecg_seq_lab_net
+    "ECG_SEQ_LAB_NET_CONFIG",
+
+    # ecg_subtract_unet
+    "ECG_SUBTRACT_UNET_CONFIG",
+
+    # ecg_unet
+    "ECG_UNET_CONFIG",
+
+    # ecg_yolo
+    "ECG_YOLO_CONFIG",
+
+    # rr_lstm
+    "RR_AF_VANILLA_CONFIG",
+    "RR_AF_CRF_CONFIG",
+    "RR_LSTM_CONFIG",
+]
