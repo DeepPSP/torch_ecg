@@ -43,7 +43,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
             ref. the corresponding config file
         """
         model_config = deepcopy(ModelCfg.crnn)
-        model_config.update(config or {})
+        model_config.update(deepcopy(config) or {})
         super().__init__(classes, n_leads, input_len, model_config)
 
     @torch.no_grad()
@@ -127,7 +127,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
             ref. the corresponding config file
         """
         model_config = deepcopy(ModelCfg.seq_lab)
-        model_config.update(config or {})
+        model_config.update(deepcopy(config) or {})
         super().__init__(classes, n_leads, input_len, model_config)
         self.reduction = reduce(
             lambda a,b: a*b,

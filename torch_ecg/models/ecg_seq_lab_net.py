@@ -432,7 +432,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
         self.n_leads = n_leads
         self.input_len = input_len
         self.config = ED(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
-        self.config.update(config or {})
+        self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")

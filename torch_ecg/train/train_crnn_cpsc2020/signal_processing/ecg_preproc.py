@@ -80,7 +80,7 @@ def preprocess_signal(raw_sig:np.ndarray, fs:Real, config:Optional[ED]=None) -> 
     filtered_ecg = raw_sig.copy()
 
     cfg = deepcopy(PreprocCfg)
-    cfg.update(config or {})
+    cfg.update(deepcopy(config) or {})
 
     if fs != cfg.fs:
         filtered_ecg = resample(filtered_ecg, int(round(len(filtered_ecg)*cfg.fs/fs)))
@@ -145,7 +145,7 @@ def parallel_preprocess_signal(raw_sig:np.ndarray, fs:Real, config:Optional[ED]=
     """
     start_time = time.time()
     cfg = deepcopy(PreprocCfg)
-    cfg.update(config or {})
+    cfg.update(deepcopy(config) or {})
 
     epoch_len = int(cfg.parallel_epoch_len * fs)
     epoch_overlap_half = int(cfg.parallel_epoch_overlap * fs) // 2

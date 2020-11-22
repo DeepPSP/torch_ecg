@@ -60,7 +60,7 @@ class CPSC(nn.Sequential):
         self.n_leads = 12
         self.input_len = input_len
         self.config = deepcopy(CPSC_CONFIG)
-        self.config.update(config)
+        self.config.update(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of CPSC is as follows\n{dict_to_str(self.config)}")
 

@@ -428,16 +428,13 @@ class ResNetBottleNeck(nn.Module):
     bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
     as for 1D ECG, should be of the "baby-giant-baby" pattern?
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "ResNetBottleNeck"
     expansion = 4
     __DEFAULT_BASE_WIDTH__ = 12 * 4
-    __DEFAULT_CONFIG__ = ED(
-        subsample_at=1, base_width=12*4,
-    )
 
     def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, base_width:int=12*4, base_groups:int=1, base_filter_length:int=1, **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -446,7 +443,7 @@ class ResNetBottleNeck(nn.Module):
         num_filters: sequence of int,
             number of filters for the neck conv layer
         filter_length: int,
-            lengths (sizes) of the filter kernels for each neck conv layer
+            lengths (sizes) of the filter kernels for the neck conv layer
         subsample_length: int,
             subsample length,
             including pool size for short cut,
@@ -471,31 +468,35 @@ class ResNetBottleNeck(nn.Module):
         """
         super().__init__()
         self.__num_convs = 3
-        self.config = deepcopy(self.__DEFAULT_CONFIG__)
-        self.config.update(config)
+        self.config = ED(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
         self.expansion = self.config.get("expansion", self.expansion)
 
         self.__in_channels = in_channels
-        self.__out_channels = [
-            num_filters,
-            num_filters,
-            num_filters * self.expansion,
-        ]
+        # update denominator of computing neck_num_filters by init_num_filters
         self.__DEFAULT_BASE_WIDTH__ = \
             self.config.get("init_num_filters", self.__DEFAULT_BASE_WIDTH__)
-        neck_filter_length = \
-            int(filter_length * (base_width / self.__DEFAULT_BASE_WIDTH__)) * neck_groups
+        neck_num_filters = \
+            int(num_filters * (base_width / self.__DEFAULT_BASE_WIDTH__)) * groups
+        self.__out_channels = [
+            neck_num_filters,
+            neck_num_filters,
+            num_filters * self.expansion,
+        ]
+        if self.__DEBUG__:
+            print(f"__DEFAULT_BASE_WIDTH__ = {self.__DEFAULT_BASE_WIDTH__}, in_channels = {in_channels}, num_filters = {num_filters}, base_width = {base_width}, neck_num_filters = {neck_num_filters}")
+        self.__base_filter_length = base_filter_length
         self.__kernel_size = [
             base_filter_length,
-            neck_filter_length,
+            filter_length,
             base_filter_length,
         ]
         self.__down_scale = subsample_length
         self.__stride = subsample_length
         if groups % base_groups != 0:
-            raise ValueError("`neck_groups` should be divisible by `groups`")
+            raise ValueError("`groups` should be divisible by `base_groups`")
+        self.__base_groups = base_groups
         self.__groups = [
             base_groups,
             groups,
@@ -521,7 +522,7 @@ class ResNetBottleNeck(nn.Module):
                     out_channels=conv_out_channels,
                     kernel_size=self.__kernel_size[i],
                     stride=(self.__stride if i == self.config.subsample_at else 1),
-                    groups=self.__groups[idx],
+                    groups=self.__groups[i],
                     batch_norm=True,
                     activation=conv_activation,
                     kw_activation=self.config.kw_activation,
@@ -540,7 +541,7 @@ class ResNetBottleNeck(nn.Module):
                 self.config.activation(**self.config.kw_activation)
         
     def _make_short_cut_layer(self) -> Union[nn.Module, type(None)]:
-        """ finished, NOT checked,
+        """ finished, checked,
         """
         if self.__DEBUG__:
             print(f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}")
@@ -550,7 +551,7 @@ class ResNetBottleNeck(nn.Module):
                     down_scale=self.__down_scale,
                     in_channels=self.__in_channels,
                     out_channels=self.__out_channels[-1],
-                    groups=self.__groups,
+                    groups=self.__base_groups,
                     batch_norm=True,
                     mode=self.config.subsample_mode,
                 )
@@ -564,14 +565,14 @@ class ResNetBottleNeck(nn.Module):
                         batch_norm=batch_norm,
                         mode=self.config.subsample_mode,
                     ),
-                    ZeroPadding(self.__in_channels, self.__out_channels),
+                    ZeroPadding(self.__in_channels, self.__out_channels[-1]),
                 )
         else:
             short_cut = None
         return short_cut
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -596,7 +597,7 @@ class ResNetBottleNeck(nn.Module):
         return out
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -634,9 +635,9 @@ class ResNet(nn.Sequential):
     TODO:
     -----
     1. check performances of activations other than "nn.ReLU", especially mish and swish
-    2. to add
+    2. add functionality of "replace_stride_with_dilation"
     """
-    __DEBUG__ = False
+    __DEBUG__ = True
     __name__ = "ResNet"
     building_block = ResNetBasicBlock
 
@@ -657,12 +658,14 @@ class ResNet(nn.Sequential):
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
         if self.config.get("block_name", "").lower() in ["bottleneck", "bottle_neck",]:
             self.building_block = ResNetBottleNeck
+            # additional parameters for bottleneck
             self.additional_kw = ED({
                 k: self.config[k] for k in ["base_width", "base_groups", "base_filter_length"] \
                     if k in self.config.keys()
             })
         else:
             self.additional_kw = ED()
+        print(f"additional_kw = {self.additional_kw}")
         
         self.add_module(
             "init_cba",
@@ -671,7 +674,8 @@ class ResNet(nn.Sequential):
                 out_channels=self.config.init_num_filters,
                 kernel_size=self.config.init_filter_length,
                 stride=self.config.init_conv_stride,
-                groups=self.config.groups,
+                # bottleneck use "base_groups"
+                groups=self.additional_kw.get("base_groups", self.config.groups),
                 activation=self.config.activation,
                 kw_activation=self.config.kw_activation,
                 kernel_initializer=self.config.kernel_initializer,
@@ -707,13 +711,13 @@ class ResNet(nn.Sequential):
 
         # grouped resnet (basic) blocks,
         # number of channels are doubled at the first block of each macro-block
+        macro_in_channels = self.config.init_num_filters
         for macro_idx, nb in enumerate(self.config.num_blocks):
-            base_n_channels = (2**macro_idx) * self.config.init_num_filters
-            macro_in_channels = base_n_channels * self.building_block.expansion
+            macro_num_filters = (2**macro_idx) * self.config.init_num_filters
             macro_filter_lengths = self.__filter_lengths[macro_idx]
             macro_subsample_lengths = self.__subsample_lengths[macro_idx]
             block_in_channels = macro_in_channels
-            block_num_filters = 2 * base_n_channels
+            block_num_filters = macro_num_filters
             if isinstance(macro_filter_lengths, int):
                 block_filter_lengths = list(repeat(macro_filter_lengths, nb))
             else:
@@ -721,15 +725,16 @@ class ResNet(nn.Sequential):
             assert len(block_filter_lengths) == nb, \
                 f"at the {macro_idx}-th macro block, `macro_subsample_lengths` indicates {len(macro_subsample_lengths)} building blocks, while `config.num_blocks[{macro_idx}]` indicates {nb}"
             if isinstance(macro_subsample_lengths, int):
+                # subsample at the first building block
                 block_subsample_lengths = list(repeat(1, nb))
-                block_subsample_lengths[-1] = macro_subsample_lengths
+                block_subsample_lengths[0] = macro_subsample_lengths
             else:
                 block_subsample_lengths = macro_subsample_lengths
             assert len(block_subsample_lengths) == nb, \
                 f"at the {macro_idx}-th macro block, `macro_subsample_lengths` indicates {len(macro_subsample_lengths)} building blocks, while `config.num_blocks[{macro_idx}]` indicates {nb}"
             for block_idx in range(nb):
                 self.add_module(
-                    f"block_{macro_idx}_{block_idx}",
+                    f"{self.building_block.__name__}_{macro_idx}_{block_idx}",
                     self.building_block(
                         in_channels=block_in_channels,
                         num_filters=block_num_filters,
@@ -743,6 +748,7 @@ class ResNet(nn.Sequential):
                     )
                 )
                 block_in_channels = block_num_filters * self.building_block.expansion
+            macro_in_channels = macro_num_filters * self.building_block.expansion
 
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,

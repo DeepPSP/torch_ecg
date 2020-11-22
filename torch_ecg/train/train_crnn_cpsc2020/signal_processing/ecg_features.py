@@ -54,7 +54,7 @@ def compute_ecg_features(sig:np.ndarray, rpeaks:np.ndarray, config:Optional[ED]=
             n = the dimension of the features
     """
     cfg = deepcopy(FeatureCfg)
-    cfg.update(config or {})
+    cfg.update(deepcopy(config) or {})
 
     filtered_rpeaks = rpeaks[np.where( (rpeaks>=cfg.beat_winL) & (rpeaks<len(sig)-cfg.beat_winR) )[0]]
 
@@ -135,7 +135,7 @@ def compute_rr_descriptor(rpeaks:np.ndarray, config:Optional[ED]=None) -> np.nda
         global_rr: mean rr interval of the previous n (c.f. `FeatureCfg`) minutes
     """
     cfg = deepcopy(FeatureCfg)
-    cfg.update(config or {})
+    cfg.update(deepcopy(config) or {})
     
     # NOTE that for np.diff:
     # The first difference is given by ``out[n] = a[n+1] - a[n]``

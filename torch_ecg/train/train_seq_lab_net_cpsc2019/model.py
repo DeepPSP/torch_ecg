@@ -42,7 +42,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
             ref. the corresponding config file
         """
         model_config = deepcopy(ModelCfg.seq_lab_crnn)
-        model_config.update(config or {})
+        model_config.update(deepcopy(config) or {})
         super().__init__(model_config.classes, n_leads, input_len, model_config)
 
     @torch.no_grad()

@@ -400,7 +400,7 @@ class MultiConv(nn.Sequential):
         self.__out_channels = list(out_channels)
         self.__num_convs = len(self.__out_channels)
         self.config = deepcopy(_DEFAULT_CONV_CONFIGS)
-        self.config.update(config)
+        self.config.update(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
@@ -533,7 +533,7 @@ class BranchedConv(nn.Module):
         assert all([isinstance(item, (Sequence,np.ndarray)) for item in self.__out_channels])
         self.__num_branches = len(self.__out_channels)
         self.config = deepcopy(_DEFAULT_CONV_CONFIGS)
-        self.config.update(config)
+        self.config.update(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
@@ -1861,7 +1861,7 @@ class SEBlock(nn.Module):
         self.__mid_channels = in_channels // reduction
         self.__out_channels = in_channels
         self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
-        self.config.update(config)
+        self.config.update(deepcopy(config))
 
         self.avg_pool = nn.AdaptiveAvgPool1d(1)
         self.fc = nn.Sequential(

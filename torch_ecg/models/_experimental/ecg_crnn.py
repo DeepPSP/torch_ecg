@@ -292,7 +292,7 @@ class ECG_CRNN(nn.Module):
         self.n_classes = len(classes)
         self.n_leads = n_leads
         self.config = deepcopy(ECG_CRNN_CONFIG)
-        self.config.update(config or {})
+        self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")

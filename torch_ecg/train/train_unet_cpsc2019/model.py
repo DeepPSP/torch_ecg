@@ -41,7 +41,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
             ref. the corresponding config file
         """
         model_config = deepcopy(ModelCfg.subtract_unet)
-        model_config.update(config or {})
+        model_config.update(deepcopy(config) or {})
         super().__init__(model_config.classes, n_leads, model_config)
 
     @torch.no_grad()
@@ -213,7 +213,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
             ref. the corresponding config file
         """
         model_config = deepcopy(ModelCfg.unet)
-        model_config.update(config or {})
+        model_config.update(deepcopy(config) or {})
         super().__init__(model_config.classes, n_leads, model_config)
 
     @torch.no_grad()
