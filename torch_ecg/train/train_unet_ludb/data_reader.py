@@ -173,8 +173,8 @@ class LUDBReader(object):
         self.logger = None
         self._set_logger(prefix=self.db_name)
 
-        self.freq = 500
-        self.spacing = 1000 / self.freq
+        self.fs = 500
+        self.spacing = 1000 / self.fs
         self.data_ext = "dat"
         self.all_leads = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6',]
         self.all_leads_lower = [l.lower() for l in self.all_leads]
@@ -271,7 +271,7 @@ class LUDBReader(object):
         self.logger.addHandler(f_handler)
 
 
-    def load_data(self, rec:str, leads:Optional[Union[str, List[str]]]=None, data_format='channel_first', units:str='mV', freq:Optional[Real]=None) -> np.ndarray:
+    def load_data(self, rec:str, leads:Optional[Union[str, List[str]]]=None, data_format='channel_first', units:str='mV', fs:Optional[Real]=None) -> np.ndarray:
         """ finished, checked,
 
         load physical (converted from digital) ecg data,
@@ -289,7 +289,7 @@ class LUDBReader(object):
             'channel_first' (alias 'lead_first')
         units: str, default 'mV',
             units of the output signal, can also be 'μV', with an alias of 'uV'
-        freq: real number, optional,
+        fs: real number, optional,
             if not None, the loaded data will be resampled to this frequency
         
         Returns:
@@ -309,8 +309,8 @@ class LUDBReader(object):
         if units.lower() in ['uv', 'μv']:
             data = data * 1000
 
-        if freq is not None and freq != self.freq:
-            data = resample_poly(data, freq, self.freq, axis=1)
+        if fs is not None and fs != self.fs:
+            data = resample_poly(data, fs, self.fs, axis=1)
 
         if data_format.lower() in ['channel_last', 'lead_last']:
             data = data.T
@@ -456,7 +456,7 @@ class LUDBReader(object):
         return masks
 
 
-    def from_masks(self, masks:np.ndarray, mask_format:str="channel_first", leads:Optional[Sequence[str]]=None, class_map:Optional[Dict[str, int]]=None, freq:Optional[Real]=None) -> Dict[str, List[ECGWaveForm]]:
+    def from_masks(self, masks:np.ndarray, mask_format:str="channel_first", leads:Optional[Sequence[str]]=None, class_map:Optional[Dict[str, int]]=None, fs:Optional[Real]=None) -> Dict[str, List[ECGWaveForm]]:
         """ finished, checked,
 
         convert masks into lists of waveforms
@@ -475,10 +475,10 @@ class LUDBReader(object):
         class_map: dict, optional,
             custom class map,
             if not set, `self.class_map` will be used
-        freq: real number, optional,
+        fs: real number, optional,
             sampling frequency of the signal corresponding to the `masks`,
             used to compute the duration of each waveform
-            if is None, `self.freq` will be used, to compute `duration` of the ecg waveforms
+            if is None, `self.fs` will be used, to compute `duration` of the ecg waveforms
 
         Returns:
         --------
@@ -496,12 +496,12 @@ class LUDBReader(object):
         _class_map = ED(class_map) if class_map is not None else self.class_map
         _class_map = ED({self._symbol_to_wavename[k]:v for k,v in _class_map.items()})
 
-        _freq = freq if freq is not None else self.freq
+        _freq = fs if fs is not None else self.fs
 
         waves = masks_to_waveforms(
             masks=masks,
             class_map=_class_map,
-            freq=_freq,
+            fs=_freq,
             mask_format=mask_format,
             leads=_leads,
         )
@@ -575,7 +575,7 @@ class LUDBReader(object):
         """ finished, checked, to improve,
 
         plot the signals of a record or external signals (units in μV),
-        with metadata (freq, labels, tranche, etc.),
+        with metadata (fs, labels, tranche, etc.),
         possibly also along with wave delineations
 
         Parameters:
@@ -656,11 +656,11 @@ class LUDBReader(object):
 
         nb_leads = len(_leads)
 
-        seg_len = self.freq * 25  # 25 seconds
+        seg_len = self.fs * 25  # 25 seconds
         nb_segs = _data.shape[1] // seg_len
 
-        t = np.arange(_data.shape[1]) / self.freq
-        duration = len(t) / self.freq
+        t = np.arange(_data.shape[1]) / self.fs
+        duration = len(t) / self.fs
         fig_sz_w = int(round(4.8 * duration))
         fig_sz_h = 6 * y_ranges / 1500
         fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
@@ -684,7 +684,7 @@ class LUDBReader(object):
             for w in ['pwaves', 'qrs', 'twaves']:
                 for itv in eval(f"{w}['{lead_name}']"):
                     axes[idx].axvspan(
-                        itv[0]/self.freq, itv[1]/self.freq,
+                        itv[0]/self.fs, itv[1]/self.fs,
                         color=palette[w], alpha=plot_alpha,
                     )
             axes[idx].legend(loc='upper left')

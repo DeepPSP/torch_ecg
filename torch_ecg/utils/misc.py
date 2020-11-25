@@ -703,7 +703,7 @@ ECGWaveForm = namedtuple(
 )
 
 
-def masks_to_waveforms(masks:np.ndarray, class_map:Dict[str, int], freq:Real, mask_format:str="channel_first", leads:Optional[Sequence[str]]=None) -> Dict[str, List[ECGWaveForm]]:
+def masks_to_waveforms(masks:np.ndarray, class_map:Dict[str, int], fs:Real, mask_format:str="channel_first", leads:Optional[Sequence[str]]=None) -> Dict[str, List[ECGWaveForm]]:
     """ finished, checked,
 
     convert masks into lists of waveforms
@@ -716,7 +716,7 @@ def masks_to_waveforms(masks:np.ndarray, class_map:Dict[str, int], freq:Real, ma
     class_map: dict,
         class map, mapping names to waves to numbers from 0 to n_classes-1,
         the keys should contain 'pwave', 'qrs', 'twave'
-    freq: real number,
+    fs: real number,
         sampling frequency of the signal corresponding to the `masks`,
         used to compute the duration of each waveform
     mask_format: str, default "channel_first",
@@ -769,7 +769,7 @@ def masks_to_waveforms(masks:np.ndarray, class_map:Dict[str, int], freq:Real, ma
                     onset=itv_start,
                     offset=itv_end,
                     peak=np.nan,
-                    duration=1000*(itv_end-itv_start)/freq,  # ms
+                    duration=1000*(itv_end-itv_start)/fs,  # ms
                 )
                 waves[lead_name].append(w)
         waves[lead_name].sort(key=lambda w: w.onset)

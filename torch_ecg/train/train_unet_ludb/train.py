@@ -271,7 +271,7 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
         truth_masks=all_masks_truth,
         pred_masks=all_masks_pred,
         class_map=config.class_map,
-        freq=config.fs,
+        fs=config.fs,
         mask_format="channel_first",
     )
     model.train()

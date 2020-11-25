@@ -189,16 +189,16 @@ class CINC2020Reader(object):
         self._diagnoses_records_list = None
         self._ls_diagnoses_records()
 
-        self.freq = {
+        self.fs = {
             "A": 500, "B": 500, "C": 257, "D": 1000, "E": 500, "F": 500,
         }
-        self.spacing = {t: 1000 / f for t,f in self.freq.items()}
+        self.spacing = {t: 1000 / f for t,f in self.fs.items()}
 
         self.all_leads = deepcopy(Standard12Leads)
 
         self.df_ecg_arrhythmia = dx_mapping_all[['Dx','SNOMED CT Code','Abbreviation']]
         self.ann_items = [
-            'rec_name', 'nb_leads','freq','nb_samples','datetime','age','sex',
+            'rec_name', 'nb_leads','fs','nb_samples','datetime','age','sex',
             'diagnosis','df_leads',
             'medical_prescription','history','symptom_or_surgery',
         ]
@@ -437,7 +437,7 @@ class CINC2020Reader(object):
         return fp
 
 
-    def load_data(self, rec:str, leads:Optional[Union[str, List[str]]]=None, data_format:str='channel_first', backend:str='wfdb', units:str='mV', freq:Optional[Real]=None) -> np.ndarray:
+    def load_data(self, rec:str, leads:Optional[Union[str, List[str]]]=None, data_format:str='channel_first', backend:str='wfdb', units:str='mV', fs:Optional[Real]=None) -> np.ndarray:
         """ finished, checked,
 
         load physical (converted from digital) ecg data,
@@ -457,7 +457,7 @@ class CINC2020Reader(object):
             the backend data reader, can also be 'scipy'
         units: str, default 'mV',
             units of the output signal, can also be 'μV', with an alias of 'uV'
-        freq: real number, optional,
+        fs: real number, optional,
             if not None, the loaded data will be resampled to this frequency
         
         Returns:
@@ -473,7 +473,7 @@ class CINC2020Reader(object):
             _leads = [leads]
         else:
             _leads = leads
-        # if tranche in "CD" and freq == 500:  # resample will be done at the end of the function
+        # if tranche in "CD" and fs == 500:  # resample will be done at the end of the function
         #     data = self.load_resampled_data(rec)
         if backend.lower() == 'wfdb':
             rec_fp = self.get_data_filepath(rec, with_ext=False)
@@ -501,8 +501,8 @@ class CINC2020Reader(object):
         if units.lower() in ['uv', 'μv']:
             data = data * 1000
 
-        if freq is not None and freq != self.freq[tranche]:
-            data = resample_poly(data, freq, self.freq[tranche], axis=1)
+        if fs is not None and fs != self.fs[tranche]:
+            data = resample_poly(data, fs, self.fs[tranche], axis=1)
 
         if data_format.lower() in ['channel_last', 'lead_last']:
             data = data.T
@@ -568,10 +568,10 @@ class CINC2020Reader(object):
         header_fp = self.get_header_filepath(rec, with_ext=False)
         header_reader = wfdb.rdheader(header_fp, pb_dir=None, rd_segments=False)
         ann_dict = {}
-        ann_dict['rec_name'], ann_dict['nb_leads'], ann_dict['freq'], ann_dict['nb_samples'], ann_dict['datetime'], daytime = header_data[0].split(' ')
+        ann_dict['rec_name'], ann_dict['nb_leads'], ann_dict['fs'], ann_dict['nb_samples'], ann_dict['datetime'], daytime = header_data[0].split(' ')
 
         ann_dict['nb_leads'] = int(ann_dict['nb_leads'])
-        ann_dict['freq'] = int(ann_dict['freq'])
+        ann_dict['fs'] = int(ann_dict['fs'])
         ann_dict['nb_samples'] = int(ann_dict['nb_samples'])
         ann_dict['datetime'] = datetime.strptime(' '.join([ann_dict['datetime'], daytime]), '%d-%b-%Y %H:%M:%S')
         try: # see NOTE. 1.
@@ -625,10 +625,10 @@ class CINC2020Reader(object):
             the annotations with items: ref. `self.ann_items`
         """
         ann_dict = {}
-        ann_dict['rec_name'], ann_dict['nb_leads'], ann_dict['freq'], ann_dict['nb_samples'], ann_dict['datetime'], daytime = header_data[0].split(' ')
+        ann_dict['rec_name'], ann_dict['nb_leads'], ann_dict['fs'], ann_dict['nb_samples'], ann_dict['datetime'], daytime = header_data[0].split(' ')
 
         ann_dict['nb_leads'] = int(ann_dict['nb_leads'])
-        ann_dict['freq'] = int(ann_dict['freq'])
+        ann_dict['fs'] = int(ann_dict['fs'])
         ann_dict['nb_samples'] = int(ann_dict['nb_samples'])
         ann_dict['datetime'] = datetime.strptime(' '.join([ann_dict['datetime'], daytime]), '%d-%b-%Y %H:%M:%S')
         try: # see NOTE. 1.
@@ -798,12 +798,12 @@ class CINC2020Reader(object):
 
         Returns:
         --------
-        freq: real number,
+        fs: real number,
             sampling frequency of the record `rec`
         """
         tranche = self._get_tranche(rec)
-        freq = self.freq[tranche]
-        return freq
+        fs = self.fs[tranche]
+        return fs
 
     
     def get_subject_info(self, rec:str, items:Optional[List[str]]=None) -> dict:
@@ -872,7 +872,7 @@ class CINC2020Reader(object):
         """ finished, checked, to improve,
 
         plot the signals of a record or external signals (units in μV),
-        with metadata (freq, labels, tranche, etc.),
+        with metadata (fs, labels, tranche, etc.),
         possibly also along with wave delineations
 
         Parameters:
@@ -1000,11 +1000,11 @@ class CINC2020Reader(object):
 
         nb_leads = len(_leads)
 
-        seg_len = self.freq[tranche] * 25  # 25 seconds
+        seg_len = self.fs[tranche] * 25  # 25 seconds
         nb_segs = _data.shape[1] // seg_len
 
-        t = np.arange(_data.shape[1]) / self.freq[tranche]
-        duration = len(t) / self.freq[tranche]
+        t = np.arange(_data.shape[1]) / self.fs[tranche]
+        duration = len(t) / self.fs[tranche]
         fig_sz_w = int(round(4.8 * duration))
         fig_sz_h = 6 * y_ranges / 1500
         fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
@@ -1027,7 +1027,7 @@ class CINC2020Reader(object):
             axes[idx].plot([], [], ' ', label=f"labels_s - {','.join(diag_scored)}")
             axes[idx].plot([], [], ' ', label=f"labels_a - {','.join(diag_all)}")
             axes[idx].plot([], [], ' ', label=f"tranche - {self.tranche_names[tranche]}")
-            axes[idx].plot([], [], ' ', label=f"freq - {self.freq[tranche]}")
+            axes[idx].plot([], [], ' ', label=f"fs - {self.fs[tranche]}")
             for w in ['p_waves', 'qrs', 't_waves']:
                 for itv in eval(w):
                     axes[idx].axvspan(itv[0], itv[1], color=palette[w], alpha=plot_alpha)
@@ -1148,9 +1148,9 @@ class CINC2020Reader(object):
             rec_fp = os.path.join(self.db_dirs[tranche], f'{rec}_500Hz_siglen_{siglen}.npy')
         if not os.path.isfile(rec_fp):
             # print(f"corresponding file {os.basename(rec_fp)} does not exist")
-            data = self.load_data(rec, data_format='channel_first', units='mV', freq=None)
-            if self.freq[tranche] != 500:
-                data = resample_poly(data, 500, self.freq[tranche], axis=1)
+            data = self.load_data(rec, data_format='channel_first', units='mV', fs=None)
+            if self.fs[tranche] != 500:
+                data = resample_poly(data, 500, self.fs[tranche], axis=1)
             if siglen is not None and data.shape[1] >= siglen:
                 # slice_start = (data.shape[1] - siglen)//2
                 # slice_end = slice_start + siglen
