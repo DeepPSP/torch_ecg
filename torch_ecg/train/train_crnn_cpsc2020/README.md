@@ -4,6 +4,16 @@
 Searching for Premature Ventricular Contraction and Supraventricular Premature Beat from Long-term ECGs: The 3rd China Physiological Signal Challenge 2020
 
 
+[Evaluation result](http://www.icbeb.org/CSPC2020) on the final full hidden test set
+-----------
+
+not fully listed
+
+![final_eval_img](CPSC2020_final_result.png)
+
+phase one result using traditional machine learning models can be found [here](https://github.com/wenh06/cpsc2020/tree/master/phase_one_legacy)
+
+
 References:
 -----------
 [1] [ecg-classification](https://github.com/mondejar/ecg-classification)
@@ -27,6 +37,8 @@ TODO:
 
 [5] etc....
 
-[original repository](https://github.com/wenh06/cpsc2020)
 
+
+[original repository](https://github.com/wenh06/cpsc2020)
+-------
 
