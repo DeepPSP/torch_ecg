@@ -19,7 +19,7 @@ images can be re-produced via ``downloading`` the data csv file from the ``tfeve
 the sequence labeling CRNN model NOT tested yet.
 
 
-# Example on real data
+# Example on real data (sampling frequency 250 Hz)
 
 <img src="results/comparison_rpeaks_detect.png" width="800" height="400">
 
