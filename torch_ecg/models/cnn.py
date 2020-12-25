@@ -1147,6 +1147,52 @@ class MultiScopicCNN(nn.Module):
         return compute_module_size(self)
 
 
+class DenseBasicBlock(nn.Module):
+    """ NOT finished,
+    """
+    __DEBUG__ = True
+    __name__ = "DenseBasicBlock"
+
+    def __init__(self,) -> NoReturn:
+        """ NOT finished,
+        """
+        super().__init__()
+        raise NotImplementedError
+
+    def forward(self,):
+        """ NOT finished,
+        """
+        raise NotImplementedError
+
+    def compute_output_shape(self):
+        """ NOT finished,
+        """
+        raise NotImplementedError
+
+
+class DenseBottleNeck(nn.Module):
+    """ NOT finished,
+    """
+    __DEBUG__ = True
+    __name__ = "DenseBottleNeck"
+
+    def __init__(self,) -> NoReturn:
+        """ NOT finished,
+        """
+        super().__init__()
+        raise NotImplementedError
+
+    def forward(self,):
+        """ NOT finished,
+        """
+        raise NotImplementedError
+
+    def compute_output_shape(self):
+        """ NOT finished,
+        """
+        raise NotImplementedError
+
+
 class DenseBlock(nn.Module):
     """ NOT finished,
     """
@@ -1169,10 +1215,18 @@ class DenseBlock(nn.Module):
         """
         raise NotImplementedError
 
+
 class DenseNet(nn.Sequential):
-    """
+    """ NOT finished,
 
     The core part of the SOTA model (framework) of CPSC2020
+
+    References:
+    -----------
+    [1] G. Huang, Z. Liu, L. Van Der Maaten and K. Q. Weinberger, "Densely Connected Convolutional Networks," 2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI, 2017, pp. 2261-2269, doi: 10.1109/CVPR.2017.243.
+    [2] G. Huang, Z. Liu, G. Pleiss, L. Van Der Maaten and K. Weinberger, "Convolutional Networks with Dense Connectivity," in IEEE Transactions on Pattern Analysis and Machine Intelligence, doi: 10.1109/TPAMI.2019.2918284.
+    [3] https://github.com/gpleiss/efficient_densenet_pytorch/blob/master/models/densenet.py
+    [4] https://github.com/liuzhuang13/DenseNet/tree/master/models
     """
     __DEBUG__ = True
     __name__ = "DenseNet"
