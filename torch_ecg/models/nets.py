@@ -221,7 +221,7 @@ class Conv_Bn_Activation(nn.Sequential):
     """
     __name__ = "Conv_Bn_Activation"
 
-    def __init__(self, in_channels:int, out_channels:int, kernel_size:int, stride:int, padding:Optional[int]=None, dilation:int=1, groups:int=1, batch_norm:Union[bool,nn.Module]=True, activation:Optional[Union[str,nn.Module]]=None, kernel_initializer:Optional[Union[str,callable]]=None, bias:bool=True, **kwargs) -> NoReturn:
+    def __init__(self, in_channels:int, out_channels:int, kernel_size:int, stride:int, padding:Optional[int]=None, dilation:int=1, groups:int=1, batch_norm:Union[bool,nn.Module]=True, activation:Optional[Union[str,nn.Module]]=None, kernel_initializer:Optional[Union[str,callable]]=None, bias:bool=True, ordering:str="cba", **kwargs) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -253,6 +253,8 @@ class Conv_Bn_Activation(nn.Sequential):
             or name or the initialzer, can be one of the keys of `Initializers`
         bias: bool, default True,
             if True, adds a learnable bias to the output
+        ordering: str, default "cba",
+            ordering of the layers, case insensitive
 
         NOTE that if `padding` is not specified (default None),
         then the actual padding used for the convolutional layer is automatically computed
@@ -273,6 +275,7 @@ class Conv_Bn_Activation(nn.Sequential):
         self.__bias = bias
         self.__kw_activation = kwargs.get("kw_activation", {})
         self.__kw_initializer = kwargs.get("kw_initializer", {})
+        self.__ordering = ordering.lower()
 
         conv_layer = nn.Conv1d(
             self.__in_channels, self.__out_channels,
@@ -287,11 +290,15 @@ class Conv_Bn_Activation(nn.Sequential):
                 Initializers[kernel_initializer.lower()](conv_layer.weight, **self.__kw_initializer)
             else:  # TODO: add more initializers
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
-        self.add_module("conv1d", conv_layer)
-
+        
+        if self.__ordering.index("c") < self.__ordering.index("b"):
+            bn_in_channels = out_channels
+        else:
+            bn_in_channels = in_channels
         if batch_norm:
-            bn_layer = nn.BatchNorm1d(out_channels) if isinstance(batch_norm, bool) else batch_norm(out_channels)
-            self.add_module("batch_norm", bn_layer)
+            bn_layer = nn.BatchNorm1d(bn_in_channels) if isinstance(batch_norm, bool) else batch_norm(bn_in_channels)
+        else:
+            bn_layer = None
 
         if isinstance(activation, str):
             activation = activation.lower()
@@ -310,8 +317,18 @@ class Conv_Bn_Activation(nn.Sequential):
             act_layer = None
             act_name = None
 
-        if act_layer:
-            self.add_module(act_name, act_layer)
+        if self.__ordering == "cba":
+            self.add_module("conv1d", conv_layer)
+            if bn_layer:
+                self.add_module("batch_norm", bn_layer)
+            if act_layer:
+                self.add_module(act_name, act_layer)
+        elif self.__ordering == "bac":
+            if bn_layer:
+                self.add_module("batch_norm", bn_layer)
+            if act_layer:
+                self.add_module(act_name, act_layer)
+            self.add_module("conv1d", conv_layer)
 
     def forward(self, input:Tensor) -> Tensor:
         """
