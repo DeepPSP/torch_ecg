@@ -44,6 +44,7 @@ __all__ = [
     "VGGBlock", "VGG16",
     "ResNetBasicBlock", "ResNetBottleNeck", "ResNet",
     "MultiScopicBasicBlock", "MultiScopicBranch", "MultiScopicCNN",
+    "DenseBlock", "DenseNet",
 ]
 
 
@@ -1144,3 +1145,50 @@ class MultiScopicCNN(nn.Module):
         """
         """
         return compute_module_size(self)
+
+
+class DenseBlock(nn.Module):
+    """ NOT finished,
+    """
+    __DEBUG__ = True
+    __name__ = "DenseBlock"
+
+    def __init__(self,) -> NoReturn:
+        """ NOT finished,
+        """
+        super().__init__()
+        raise NotImplementedError
+
+    def forward(self,):
+        """ NOT finished,
+        """
+        raise NotImplementedError
+
+    def compute_output_shape(self):
+        """ NOT finished,
+        """
+        raise NotImplementedError
+
+class DenseNet(nn.Sequential):
+    """
+
+    The core part of the SOTA model (framework) of CPSC2020
+    """
+    __DEBUG__ = True
+    __name__ = "DenseNet"
+
+    def __init__(self,) -> NoReturn:
+        """ NOT finished,
+        """
+        super().__init__()
+        raise NotImplementedError
+
+    def forward(self,):
+        """ NOT finished,
+        """
+        raise NotImplementedError
+
+    def compute_output_shape(self):
+        """ NOT finished,
+        """
+        raise NotImplementedError

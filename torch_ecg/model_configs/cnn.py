@@ -455,3 +455,9 @@ multi_scopic_block.kernel_initializer = multi_scopic.kernel_initializer
 multi_scopic_block.kw_initializer = deepcopy(multi_scopic.kw_initializer)
 multi_scopic_block.activation = multi_scopic.activation
 multi_scopic_block.kw_activation = deepcopy(multi_scopic.kw_activation)
+
+
+
+dense_net = ED()
+
+dense_block = ED()
