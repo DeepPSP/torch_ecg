@@ -276,6 +276,7 @@ class Conv_Bn_Activation(nn.Sequential):
         self.__kw_activation = kwargs.get("kw_activation", {})
         self.__kw_initializer = kwargs.get("kw_initializer", {})
         self.__ordering = ordering.lower()
+        assert "c" in self.__ordering
 
         conv_layer = nn.Conv1d(
             self.__in_channels, self.__out_channels,
@@ -291,7 +292,7 @@ class Conv_Bn_Activation(nn.Sequential):
             else:  # TODO: add more initializers
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
         
-        if self.__ordering.index("c") < self.__ordering.index("b"):
+        if "b" in self.__ordering and self.__ordering.index("c") < self.__ordering.index("b"):
             bn_in_channels = out_channels
         else:
             bn_in_channels = in_channels
@@ -317,13 +318,13 @@ class Conv_Bn_Activation(nn.Sequential):
             act_layer = None
             act_name = None
 
-        if self.__ordering == "cba":
+        if self.__ordering in ["cba", "cb", "ca"]:
             self.add_module("conv1d", conv_layer)
             if bn_layer:
                 self.add_module("batch_norm", bn_layer)
             if act_layer:
                 self.add_module(act_name, act_layer)
-        elif self.__ordering == "bac":
+        elif self.__ordering in ["bac", "bc"]:
             if bn_layer:
                 self.add_module("batch_norm", bn_layer)
             if act_layer:
