@@ -4,6 +4,7 @@ import os, sys
 import re
 import logging
 import datetime
+from functools import reduce
 from collections import namedtuple
 from glob import glob
 from copy import deepcopy
@@ -36,6 +37,7 @@ __all__ = [
     "rdheader",
     "ensure_lead_fmt", "ensure_siglen",
     "ECGWaveForm", "masks_to_waveforms",
+    "list_sum",
 ]
 
 
@@ -774,3 +776,21 @@ def masks_to_waveforms(masks:np.ndarray, class_map:Dict[str, int], fs:Real, mask
                 waves[lead_name].append(w)
         waves[lead_name].sort(key=lambda w: w.onset)
     return waves
+
+
+def list_sum(l:Sequence[list]) -> list:
+    """ finished, checked,
+
+    Parameters:
+    -----------
+    l: sequence of list,
+        the sequence of lists to obtain the summation
+
+    Returns:
+    --------
+    l_sum: list,
+        sum of `l`,
+        i.e. if l = [list1, list2, ...], then l_sum = list1 + list2 + ...
+    """
+    l_sum = reduce(lambda a,b: a+b, l, [])
+    return l_sum
