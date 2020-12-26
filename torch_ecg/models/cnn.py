@@ -23,7 +23,7 @@ from easydict import EasyDict as ED
 from torch_ecg.cfg import Cfg
 from torch_ecg.model_configs import ECG_CRNN_CONFIG
 from torch_ecg.utils.utils_nn import compute_conv_output_shape, compute_module_size
-from torch_ecg.utils.misc import dict_to_str
+from torch_ecg.utils.misc import dict_to_str, list_sum
 from .nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
@@ -287,8 +287,8 @@ class ResNetBasicBlock(nn.Module):
             not used
         config: dict,
             other hyper-parameters, including
-            filter length (kernel size), activation choices, weight initializer,
-            and short cut patterns, etc.
+            increase channel method, subsample method,
+            activation choices, weight initializer, and short cut patterns, etc.
         """
         super().__init__()
         if dilation > 1:
@@ -464,8 +464,8 @@ class ResNetBottleNeck(nn.Module):
             lengths (sizes) of the filter kernels for conv layers at the two ends
         config: dict,
             other hyper-parameters, including
-            filter length (kernel size), activation choices, weight initializer,
-            and short cut patterns, etc.
+            increase channel method, subsample method,
+            activation choices, weight initializer, and short cut patterns, etc.
         """
         super().__init__()
         self.__num_convs = 3
@@ -1153,10 +1153,146 @@ class DenseBasicBlock(nn.Module):
     __DEBUG__ = True
     __name__ = "DenseBasicBlock"
 
-    def __init__(self,) -> NoReturn:
-        """ NOT finished,
+    def __init__(self, in_channels:int, growth_rate:int, filter_length:int, groups:int=1, bias:bool=False, dropout:float=0.0) -> NoReturn:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        in_channels: int,
+            number of features (channels) of the input
+        growth_rate: int,
+            number of features of (channels) output from the main stream,
+            further concatenated to the shortcut,
+            hence making the final number of output channels grow by this value
+        filter_length: int,
+            length (size) of the filter kernels
+        groups: int, default 1,
+            pattern of connections between inputs and outputs,
+            for more details, ref. `nn.Conv1d`
+        bias: bool, default False,
+            if True, the convolutional layer has `bias` set `True`, otherwise `False`
+        dropout: float, default 0.0,
+            dropout rate of the new features produced from the main stream
         """
         super().__init__()
+        self.__in_channels = in_channels
+        self.__growth_rate = growth_rate
+        self.__kernel_size = filter_length
+        self.__groups = groups
+        assert all([in_channels % groups == 0, growth_rate % groups == 0])
+
+        self.bn = nn.BatchNorm1d(self.__in_channels)
+        self.conv = nn.Conv1d(
+            in_channels=self.__in_channels,
+            out_channels=self.__growth_rate,
+            kernel_size=self.__kernel_size,
+            stride=1,
+            padding=(self.__kernel_size-1)//2,
+            dilation=1,
+            groups=self.__groups,
+            bias=bias,
+        )
+        if dropout > 0:
+            self.dropout = nn.Dropout(dropout)
+        else:
+            self.dropout = None
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+        """
+        new_features = self.bn(input)
+        new_features = self.conv(new_features)
+        if self.dropout:
+            new_features = self.dropout(new_features)
+        if self.__groups == 1:
+            output = torch.cat([input, new_features], dim=1)
+        else:  # see TODO of `DenseNet`
+            # input width per group
+            iw_per_group = self.__in_channels // self.__groups
+            # new features width per group
+            nfw_per_group = self.__growth_rate // self.__groups
+            output = torch.cat(
+                list_sum(
+                    [
+                        [
+                            input[..., iw_per_group*i: iw_per_group*(i+1), ...],
+                            new_features[..., nfw_per_group*i: nfw_per_group*(i+1), ...]
+                        ]  for i in range(self.__groups)
+                    ]
+                ), 1
+            )
+        return output
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns:
+        --------
+        output_shape: sequence,
+            the output shape of this block, given `seq_len` and `batch_size`
+        """
+        out_channels = self.__in_channels + self.__growth_rate
+        return (batch_size, out_channels, seq_len)
+
+    @property
+    def module_size(self):
+        """
+        """
+        return compute_module_size(self)
+
+
+class DenseBottleNeck(nn.Module):
+    """ NOT finished,
+    """
+    __DEBUG__ = True
+    __name__ = "DenseBottleNeck"
+
+    def __init__(self, in_channels:int, growth_rate:int, bn_size:int, filter_length:int, groups:int=1, bias:bool=False, dropout:float=0.0, **config) -> NoReturn:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        in_channels: int,
+            number of features (channels) of the input
+        growth_rate: int,
+            number of features of (channels) output from the main stream,
+            further concatenated to the shortcut,
+            hence making the final number of output channels grow by this value
+        bn_size: int,
+            base width of intermediate layers
+        filter_length: int,
+            length (size) of the filter kernels of the second convolutional layer
+        groups: int, default 1,
+            pattern of connections between inputs and outputs,
+            for more details, ref. `nn.Conv1d`
+        bias: bool, default False,
+            if True, the convolutional layer has `bias` set `True`, otherwise `False`
+        dropout: float, default 0.0,
+            dropout rate of the new features produced from the main stream
+        config: dict,
+            other hyper-parameters, including
+            activation choices, weight initializer, etc.
+        """
+        super().__init__()
+        self.__in_channels = in_channels
+        self.__growth_rate = growth_rate
+        self.__bn_size = bn_size
+        self.__kernel_size = filter_length
+        self.__groups = groups
+        self.config = ED(deepcopy(config))
+
         raise NotImplementedError
 
     def forward(self,):
@@ -1170,11 +1306,11 @@ class DenseBasicBlock(nn.Module):
         raise NotImplementedError
 
 
-class DenseBottleNeck(nn.Module):
+class DenseTransition(nn.Sequential):
     """ NOT finished,
     """
     __DEBUG__ = True
-    __name__ = "DenseBottleNeck"
+    __name__ = "DenseTransition"
 
     def __init__(self,) -> NoReturn:
         """ NOT finished,
@@ -1225,8 +1361,14 @@ class DenseNet(nn.Sequential):
     -----------
     [1] G. Huang, Z. Liu, L. Van Der Maaten and K. Q. Weinberger, "Densely Connected Convolutional Networks," 2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI, 2017, pp. 2261-2269, doi: 10.1109/CVPR.2017.243.
     [2] G. Huang, Z. Liu, G. Pleiss, L. Van Der Maaten and K. Weinberger, "Convolutional Networks with Dense Connectivity," in IEEE Transactions on Pattern Analysis and Machine Intelligence, doi: 10.1109/TPAMI.2019.2918284.
-    [3] https://github.com/gpleiss/efficient_densenet_pytorch/blob/master/models/densenet.py
-    [4] https://github.com/liuzhuang13/DenseNet/tree/master/models
+    [3] https://github.com/pytorch/vision/blob/master/torchvision/models/densenet.py
+    [4] https://github.com/gpleiss/efficient_densenet_pytorch/blob/master/models/densenet.py
+    [5] https://github.com/bamos/densenet.pytorch/blob/master/densenet.py
+    [6] https://github.com/liuzhuang13/DenseNet/tree/master/models
+
+    NOTE: the difference of forward output of [5] from others, however [5] doesnot support dropout
+
+    TODO: for `groups` > 1, the concatenated output should be re-organized in the channel dimension?
     """
     __DEBUG__ = True
     __name__ = "DenseNet"
