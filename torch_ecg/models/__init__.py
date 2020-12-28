@@ -37,7 +37,7 @@ from .cnn import (
     VGGBlock, VGG16,
     ResNetBasicBlock, ResNet,
     MultiScopicBasicBlock, MultiScopicBranch, MultiScopicCNN,
-    DenseBlock, DenseNet,
+    DenseBasicBlock, DenseBottleNeck, DenseMacroBlock, DenseTransition, DenseNet,
 )
 
 
@@ -73,5 +73,5 @@ __all__ = [
     "VGGBlock", "VGG16",
     "ResNetBasicBlock", "ResNetBottleNeck", "ResNet",
     "MultiScopicBasicBlock", "MultiScopicBranch", "MultiScopicCNN",
-    "DenseBlock", "DenseNet",
+    "DenseBasicBlock", "DenseBottleNeck", "DenseMacroBlock", "DenseTransition", "DenseNet",
 ]

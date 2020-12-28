@@ -50,7 +50,7 @@ __all__ = [
     "VGGBlock", "VGG16",
     "ResNetBasicBlock", "ResNetBottleNeck", "ResNet",
     "MultiScopicBasicBlock", "MultiScopicBranch", "MultiScopicCNN",
-    "DenseBlock", "DenseNet",
+    "DenseBasicBlock", "DenseBottleNeck", "DenseMacroBlock", "DenseTransition", "DenseNet",
 ]
 
 
@@ -1178,7 +1178,7 @@ class MultiScopicCNN(nn.Module):
 
 
 class DenseBasicBlock(nn.Module):
-    """ finished, NOT checked,
+    """ finished, checked,
 
     the basic building block for DenseNet,
     consisting of normalization -> activation -> convolution (-> dropout (optional)),
@@ -1191,7 +1191,7 @@ class DenseBasicBlock(nn.Module):
     )
 
     def __init__(self, in_channels:int, growth_rate:int, filter_length:int, groups:int=1, bias:bool=False, dropout:float=0.0, **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1242,7 +1242,7 @@ class DenseBasicBlock(nn.Module):
             self.dropout = None
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1277,7 +1277,7 @@ class DenseBasicBlock(nn.Module):
         return output
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1302,7 +1302,7 @@ class DenseBasicBlock(nn.Module):
 
 
 class DenseBottleNeck(nn.Module):
-    """ finished, NOT checked,
+    """ finished, checked,
 
     bottleneck modification of `DenseBasicBlock`,
     with an additional prefixed sequence of
@@ -1315,7 +1315,7 @@ class DenseBottleNeck(nn.Module):
     )
 
     def __init__(self, in_channels:int, growth_rate:int, bn_size:int, filter_length:int, groups:int=1, bias:bool=False, dropout:float=0.0, **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1382,7 +1382,7 @@ class DenseBottleNeck(nn.Module):
             self.dropout = None
 
     def bn_function(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         the `not memory_efficient` way
 
@@ -1400,7 +1400,7 @@ class DenseBottleNeck(nn.Module):
         return bottleneck_output
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1439,7 +1439,7 @@ class DenseBottleNeck(nn.Module):
         return output
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1464,7 +1464,7 @@ class DenseBottleNeck(nn.Module):
 
 
 class DenseMacroBlock(nn.Sequential):
-    """ finished, NOT checked,
+    """ finished, checked,
 
     macro blocks for `DenseNet`,
     stacked sequence of builing blocks of similar pattern
@@ -1474,7 +1474,7 @@ class DenseMacroBlock(nn.Sequential):
     building_block = DenseBottleNeck
 
     def __init__(self, in_channels:int, num_layers:int, growth_rates:Union[Sequence[int],int], bn_size:int, filter_lengths:Union[Sequence[int],int], groups:int=1, bias:bool=False, dropout:float=0.0, **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1526,18 +1526,18 @@ class DenseMacroBlock(nn.Sequential):
             self.add_module(
                 f"denselayer_{idx}",
                 self.building_block(
-                    in_channels=self.__in_channels + idx * growth_rate,
+                    in_channels=self.__in_channels + idx * self.__growth_rates[idx],
                     growth_rate=self.__growth_rates[idx],
                     bn_size=self.__bn_size,
                     filter_length=self.__filter_lengths[idx],
-                    bias=bais,
+                    bias=bias,
                     dropout=dropout,
                     **(self.config),
                 )
             )
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1553,7 +1553,7 @@ class DenseMacroBlock(nn.Sequential):
         return output
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1569,7 +1569,7 @@ class DenseMacroBlock(nn.Sequential):
         """
         _seq_len = seq_len
         for m in self:
-            _, output_channels, _seq_len = m.compute_output_shape()
+            _, out_channels, _seq_len = m.compute_output_shape()
         return (batch_size, out_channels, seq_len)
 
     @property
@@ -1580,7 +1580,7 @@ class DenseMacroBlock(nn.Sequential):
 
 
 class DenseTransition(nn.Sequential):
-    """ finished, NOT checked,
+    """ finished, checked,
 
     transition blocks between `DenseMacroBlock`s,
     used to perform sub-sampling,
@@ -1593,7 +1593,7 @@ class DenseTransition(nn.Sequential):
     )
 
     def __init__(self, in_channels:int, compression:float=1.0, subsample_length:int=2, groups:int=1, bias:bool=False, **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1656,7 +1656,7 @@ class DenseTransition(nn.Sequential):
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1669,9 +1669,10 @@ class DenseTransition(nn.Sequential):
             of shape (batch_size, n_channels, seq_len)
         """
         output = super().forward(input)
+        return output
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -1695,7 +1696,6 @@ class DenseTransition(nn.Sequential):
             kernel_size=self.__subsample_length,
             stride=self.__subsample_length,
         )
-        out_channels = self.__in_channels + self.__growth_rate
         return (batch_size, out_channels, _seq_len)
 
     @property
