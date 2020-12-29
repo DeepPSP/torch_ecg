@@ -30,7 +30,7 @@ from torch_ecg.utils.utils_nn import (
     compute_module_size,
 )
 from torch_ecg.utils.misc import dict_to_str, list_sum
-from .nets import (
+from torch_ecg.models.nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
     DownSample,
@@ -161,9 +161,8 @@ class VGGBlock(nn.Sequential):
                 output_shape = module.compute_output_shape(seq_len, batch_size)
                 _, _, seq_len = output_shape
             else:
-                output_shape = compute_conv_output_shape(
+                output_shape = compute_maxpool_output_shape(
                     input_shape=[batch_size, self.__out_channels, seq_len],
-                    num_filters=self.__out_channels,
                     kernel_size=self.config.pool_size,
                     stride=self.config.pool_size,
                     channel_last=False,
@@ -196,7 +195,17 @@ class VGG16(nn.Sequential):
         config: dict,
             other hyper-parameters of the Module, including
             number of convolutional layers, number of filters for each layer,
-            and more for `VGGBlock`
+            and more for `VGGBlock`.
+            key word arguments that have to be set:
+            num_convs: sequence of int,
+                number of convolutional layers for each `VGGBlock`
+            num_filters: sequence of int,
+                number of filters for each `VGGBlock`
+            groups: int,
+                connection pattern (of channels) of the inputs and outputs
+            block: dict,
+                other parameters that can be set for `VGGBlock`
+            for a full list of configurable parameters, ref. corr. config file
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -251,9 +260,10 @@ class VGG16(nn.Sequential):
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
+        _seq_len = seq_len
         for module in self:
-            output_shape = module.compute_output_shape(seq_len, batch_size)
-            _, _, seq_len = output_shape
+            output_shape = module.compute_output_shape(_seq_len, batch_size)
+            _, _, _seq_len = output_shape
         return output_shape
 
     @property
@@ -670,6 +680,11 @@ class ResNet(nn.Sequential):
     __DEBUG__ = True
     __name__ = "ResNet"
     building_block = ResNetBasicBlock
+    __DEFAULT_CONFIG__ = ED(
+        activation="relu", kw_activation={"inplace": True},
+        kernel_initializer="he_normal", kw_initializer={},
+        init_subsample_mode="max",
+    )
 
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """ finished, checked,
@@ -680,10 +695,40 @@ class ResNet(nn.Sequential):
             number of channels in the input
         config: dict,
             other hyper-parameters of the Module, ref. corresponding config file
+            key word arguments that have to be set:
+            init_num_filters: sequence of int,
+                number of filters of the first convolutional layer
+            init_filter_length: sequence of int,
+                filter length (kernel size) of the first convolutional layer
+            init_conv_stride: int,
+                stride of the first convolutional layer
+            init_pool_size: int,
+                pooling kernel size of the first pooling layer
+            init_pool_stride: int,
+                pooling stride of the first pooling layer
+            bias: bool,
+                if True, each convolution will have a bias term
+            num_blocks: sequence of int,
+                number of building blocks in each macro block
+            filter_lengths: int or sequence of int or sequence of sequences of int,
+                filter length(s) (kernel size(s)) of the convolutions,
+                with granularity to the whole network, to each macro block,
+                or to each building block
+            subsample_lengths: int or sequence of int or sequence of sequences of int,
+                subsampling length(s) (ratio(s)) of all blocks,
+                with granularity to the whole network, to each macro block,
+                or to each building block,
+                the former 2 subsample at the first building block
+            groups: int,
+                connection pattern (of channels) of the inputs and outputs
+            block: dict,
+                other parameters that can be set for the building blocks
+            for a full list of configurable parameters, ref. corr. config file
         """
         super().__init__()
         self.__in_channels = in_channels
-        self.config = ED(deepcopy(config))
+        self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        self.config.update(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
         if self.config.get("building_block", "").lower() in ["bottleneck", "bottle_neck",]:
@@ -715,14 +760,16 @@ class ResNet(nn.Sequential):
             )
         )
         
-        if self.config.init_pool_size > 0:
+        if self.config.init_pool_stride > 0:
             self.add_module(
                 "init_pool",
-                nn.MaxPool1d(
-                    kernel_size=self.config.init_pool_size,
-                    stride=self.config.init_pool_stride,
+                DownSample(
+                    down_scale=self.config.init_pool_stride,
+                    in_channels=self.config.init_num_filters,
+                    pool_size=self.config.init_pool_size,
                     padding=(self.config.init_pool_size-1)//2,
-                )
+                    mode=self.config.init_subsample_mode.lower(),
+                ),
             )
 
         if isinstance(self.config.filter_lengths, int):
@@ -814,16 +861,7 @@ class ResNet(nn.Sequential):
         """
         _seq_len = seq_len
         for module in self:
-            if type(module).__name__ == "MaxPool1d":
-                output_shape = compute_conv_output_shape(
-                    input_shape=(batch_size, self.config.init_filter_length, _seq_len),
-                    num_filters=self.config.init_filter_length,
-                    kernel_size=self.config.init_pool_size,
-                    stride=self.config.init_pool_stride,
-                    padding=(self.config.init_pool_size-1)//2,
-                )
-            else:
-                output_shape = module.compute_output_shape(_seq_len, batch_size)
+            output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
         return output_shape
 
@@ -855,8 +893,11 @@ class MultiScopicBasicBlock(nn.Sequential):
         scopes: sequence of int,
             scopes of the convolutional layers, via `dilation`
         num_filters: int or sequence of int,
+            number of filters of the convolutional layer(s)
         filter_lengths: int or sequence of int,
+            filter length(s) (kernel size(s)) of the convolutional layer(s)
         subsample_length: int,
+            subsample length (ratio) at the last layer of the block
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -983,14 +1024,14 @@ class MultiScopicBranch(nn.Sequential):
         -----------
         in_channels: int,
             number of features (channels) of the input
-        scopes: sequence of sequence of int,
+        scopes: sequence of sequences of int,
             scopes (in terms of `dilation`) for the convolutional layers,
             each sequence of int is for one branch
-        num_filters: sequence of int, or sequence of sequence of int,
+        num_filters: sequence of int, or sequence of sequences of int,
             number of filters for the convolutional layers,
             if is sequence of int,
             then convolutionaly layers in one branch will have the same number of filters
-        filter_lengths: sequence of int, or sequence of sequence of int,
+        filter_lengths: sequence of int, or sequence of sequences of int,
             filter length (kernel size) of the convolutional layers,
             if is sequence of int,
             then convolutionaly layers in one branch will have the same filter length
@@ -1101,6 +1142,30 @@ class MultiScopicCNN(nn.Module):
             number of channels in the input
         config: dict,
             other hyper-parameters of the Module, ref. corresponding config file
+            key word arguments that have to be set:
+            scopes: sequence of sequences of sequences of int,
+                scopes (in terms of dilation) of each convolution
+            num_filters: sequence of sequences (of int or of sequences of int),
+                number of filters of the convolutional layers,
+                with granularity to each block of each branch,
+                or to each convolution of each block of each branch
+            filter_lengths: sequence of sequences (of int or of sequences of int),
+                filter length(s) (kernel size(s)) of the convolutions,
+                with granularity to each block of each branch,
+                or to each convolution of each block of each branch
+            subsample_lengths: sequence of int or sequence of sequences of int,
+                subsampling length(s) (ratio(s)) of all blocks,
+                with granularity to each branch or to each block of each branch,
+                each subsamples after the last convolution of each block
+            dropouts: sequence of int or sequence of sequences of int,
+                dropout rates of all blocks,
+                with granularity to each branch or to each block of each branch,
+                each dropouts at the last of each block
+            groups: int,
+                connection pattern (of channels) of the inputs and outputs
+            block: dict,
+                other parameters that can be set for the building blocks
+            for a full list of configurable parameters, ref. corr. config file
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -1168,7 +1233,8 @@ class MultiScopicCNN(nn.Module):
             _, _branch_oc, _seq_len = \
                 self.branches[key].compute_output_shape(seq_len, batch_size)
             out_channels += _branch_oc
-        return (batch_size, out_channels, _seq_len)
+        output_shape = (batch_size, out_channels, _seq_len)
+        return output_shape
 
     @property
     def module_size(self):
@@ -1292,7 +1358,8 @@ class DenseBasicBlock(nn.Module):
             the output shape of this block, given `seq_len` and `batch_size`
         """
         out_channels = self.__in_channels + self.__growth_rate
-        return (batch_size, out_channels, seq_len)
+        output_shape = (batch_size, out_channels, seq_len)
+        return output_shape
 
     @property
     def module_size(self):
@@ -1454,7 +1521,8 @@ class DenseBottleNeck(nn.Module):
             the output shape of this block, given `seq_len` and `batch_size`
         """
         out_channels = self.__in_channels + self.__growth_rate
-        return (batch_size, out_channels, seq_len)
+        output_shape = (batch_size, out_channels, seq_len)
+        return output_shape
 
     @property
     def module_size(self):
@@ -1524,7 +1592,7 @@ class DenseMacroBlock(nn.Sequential):
 
         for idx in range(self.__num_layers):
             self.add_module(
-                f"denselayer_{idx}",
+                f"dense_building_block_{idx}",
                 self.building_block(
                     in_channels=self.__in_channels + idx * self.__growth_rates[idx],
                     growth_rate=self.__growth_rates[idx],
@@ -1568,9 +1636,10 @@ class DenseMacroBlock(nn.Sequential):
             the output shape of this block, given `seq_len` and `batch_size`
         """
         _seq_len = seq_len
-        for m in self:
-            _, out_channels, _seq_len = m.compute_output_shape()
-        return (batch_size, out_channels, seq_len)
+        for module in self:
+            output_shape = module.compute_output_shape(_seq_len, batch_size)
+            _, _, _seq_len = output_shape
+        return output_shape
 
     @property
     def module_size(self):
@@ -1644,15 +1713,13 @@ class DenseTransition(nn.Sequential):
                 ordering="bac",
             )
         )
-        if self.config.subsample_mode.lower() == "avg":
-            subsample = nn.AvgPool1d(self.__subsample_length)
-        elif self.config.subsample_mode.lower() == "max":
-            subsample = nn.MaxPool1d(self.__subsample_length)
-        else:
-            raise NotImplementedError(f"subsampling method {self.config.subsample_mode.lower()} not implemented yet!")
         self.add_module(
-            "subsample",
-            subsample,
+            "down",
+            DownSample(
+                down_scale=self.__subsample_length,
+                in_channels=self.__out_channels,
+                mode=self.config.subsample_mode.lower(),
+            ),
         )
 
     def forward(self, input:Tensor) -> Tensor:
@@ -1686,17 +1753,11 @@ class DenseTransition(nn.Sequential):
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
-        _, out_channels, _seq_len = self.bac.compute_output_shape(seq_len, batch_size)
-        if self.config.subsample_mode.lower() == "avg":
-            ss_func = compute_avgpool_output_shape
-        elif self.config.subsample_mode.lower() == "max":
-            ss_func = compute_maxpool_output_shape
-        _, out_channels, _seq_len = ss_func(
-            input_shape=(batch_size, out_channels, _seq_len),
-            kernel_size=self.__subsample_length,
-            stride=self.__subsample_length,
-        )
-        return (batch_size, out_channels, _seq_len)
+        _seq_len = seq_len
+        for module in self:
+            output_shape = module.compute_output_shape(_seq_len, batch_size)
+            _, _, _seq_len = output_shape
+        return output_shape
 
     @property
     def module_size(self):
@@ -1706,7 +1767,7 @@ class DenseTransition(nn.Sequential):
 
 
 class DenseNet(nn.Sequential):
-    """ NOT finished,
+    """ finished, checked,
 
     The core part of the SOTA model (framework) of CPSC2020
 
@@ -1730,22 +1791,183 @@ class DenseNet(nn.Sequential):
     """
     __DEBUG__ = True
     __name__ = "DenseNet"
+    __DEFAULT_CONFIG__ = ED(
+        bias=False,
+        activation="relu", kw_activation={"inplace": True},
+        kernel_initializer="he_normal", kw_initializer={},
+        init_subsample_mode="avg",
+    )
 
-    def __init__(self,) -> NoReturn:
-        """ NOT finished,
+    def __init__(self, in_channels:int, **config) -> NoReturn:
+        """ finished, checked,
+        
+        Parameters:
+        -----------
+        in_channels: int,
+            number of channels in the input
+        config: dict,
+            other hyper-parameters of the Module, ref. corresponding config file
+            config: dict,
+            other hyper-parameters of the Module, ref. corresponding config file
+            key word arguments that have to be set:
+            num_layers: sequence of int,
+                number of building block layers of each dense (macro) block
+            init_num_filters: sequence of int,
+                number of filters of the first convolutional layer
+            init_filter_length: sequence of int,
+                filter length (kernel size) of the first convolutional layer
+            init_conv_stride: int,
+                stride of the first convolutional layer
+            init_pool_size: int,
+                pooling kernel size of the first pooling layer
+            init_pool_stride: int,
+                pooling stride of the first pooling layer
+            growth_rates: int or sequence of int or sequence of sequences of int,
+                growth rates of the building blocks,
+                with granularity to the whole network, or to each dense (macro) block,
+                or to each building block
+            filter_lengths: int or sequence of int or sequence of sequences of int,
+                filter length(s) (kernel size(s)) of the convolutions,
+                with granularity to the whole network, or to each macro block,
+                or to each building block
+            subsample_lengths: int or sequence of int,
+                subsampling length(s) (ratio(s)) of the transition blocks
+            compression: float,
+                compression factor of the transition blocks
+            bn_size: int,
+                bottleneck base width, used only when building block is `DenseBottleNeck`
+            dropouts: int,
+                dropout ratio of each building block
+            groups: int,
+                connection pattern (of channels) of the inputs and outputs
+            block: dict,
+                other parameters that can be set for the building blocks
+            for a full list of configurable parameters, ref. corr. config file
         """
         super().__init__()
-        raise NotImplementedError
+        self.__in_channels = in_channels
+        self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        self.config.update(deepcopy(config))
+        self.__num_blocks = len(self.config.num_layers)
+        if self.__DEBUG__:
+            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
-    def forward(self,):
-        """ NOT finished,
-        """
-        raise NotImplementedError
+        self.add_module(
+            "init_cba",
+            Conv_Bn_Activation(
+                in_channels=self.__in_channels,
+                out_channels=self.config.init_num_filters,
+                kernel_size=self.config.init_filter_length,
+                stride=1,
+                dilation=1,
+                groups=self.config.groups,
+                batch_norm=True,
+                activation=self.config.activation.lower(),
+                kw_activation=self.config.kw_activation,
+                bias=self.config.bias,
+            )
+        )
+        self.add_module(
+            "init_pool",
+            DownSample(
+                down_scale=self.config.init_pool_stride,
+                in_channels=self.config.init_num_filters,
+                pool_size=self.config.init_pool_size,
+                padding=(self.config.init_pool_size-1)//2,
+                mode=self.config.init_subsample_mode.lower(),
+            )
+        )
 
-    def compute_output_shape(self):
-        """ NOT finished,
+        if isinstance(self.config.growth_rates, int):
+            self.__growth_rates = list(repeat(self.config.growth_rates, self.__num_blocks))
+        else:
+            self.__growth_rates = list(self.config.growth_rates)
+        assert len(self.__growth_rates) == self.__num_blocks, \
+                f"`config.growth_rates` indicates {len(self.__growth_rates)} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
+        if isinstance(self.config.filter_lengths, int):
+            self.__filter_lengths = \
+                list(repeat(self.config.filter_lengths, self.__num_blocks))
+        else:
+            self.__filter_lengths = list(self.config.filter_lengths)
+            assert len(self.__filter_lengths) == self.__num_blocks, \
+                f"`config.filter_lengths` indicates {len(self.__filter_lengths)} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
+        if isinstance(self.config.subsample_lengths, int):
+            self.__subsample_lengths = \
+                list(repeat(self.config.subsample_lengths, self.__num_blocks-1))
+        else:
+            self.__subsample_lengths = list(self.config.subsample_lengths)
+            assert len(self.__subsample_lengths) == self.__num_blocks-1, \
+                f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)+1} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
+
+        macro_in_channels = self.config.init_num_filters
+        for idx, macro_num_layers in enumerate(self.config.num_layers):
+            dmb = DenseMacroBlock(
+                in_channels=macro_in_channels,
+                num_layers=macro_num_layers,
+                growth_rates=self.__growth_rates[idx],
+                bn_size=self.config.bn_size,
+                filter_lengths=self.__filter_lengths[idx],
+                groups=self.config.groups,
+                bias=self.config.bias,
+                dropout=self.config.dropout,
+                **(self.config.block),
+            )
+            _, transition_in_channels, _ = dmb.compute_output_shape()
+            self.add_module(
+                f"dense_macro_block_{idx}",
+                dmb
+            )
+            if idx < self.__num_blocks-1:
+                dt = DenseTransition(
+                    in_channels=transition_in_channels,
+                    compression=self.config.compression,
+                    subsample_length=self.__subsample_lengths[idx],
+                    groups=self.config.groups,
+                    bias=self.config.bias,
+                    **(self.config.transition),
+                )
+                _, macro_in_channels, _ = dt.compute_output_shape()
+                self.add_module(
+                    f"transition_{idx}",
+                    dt
+                )
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
-        raise NotImplementedError
+        output = super().forward(input)
+        return output
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns:
+        --------
+        output_shape: sequence,
+            the output shape of this block, given `seq_len` and `batch_size`
+        """
+        _seq_len = seq_len
+        for module in self:
+            output_shape = module.compute_output_shape(_seq_len, batch_size)
+            _, _, _seq_len = output_shape
+        return output_shape
 
     @property
     def module_size(self):
