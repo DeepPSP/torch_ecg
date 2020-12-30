@@ -36,9 +36,7 @@ from torch_ecg.models.nets import (
     SeqLin,
 )
 from torch_ecg.models.cnn import (
-    VGGBlock, VGG16,
-    ResNetBasicBlock, ResNetBottleNeck, ResNet,
-    MultiScopicBasicBlock, MultiScopicBranch, MultiScopicCNN,
+    VGG16, ResNet, MultiScopicCNN, DenseNet,
 )
 
 
@@ -48,212 +46,7 @@ if Cfg.torch_dtype.lower() == "double":
 
 __all__ = [
     "ECG_CRNN",
-    "VGGBlock", "VGG16",
-    "CPSCBlock", "CPSCCNN",
-    "MultiScopicBasicBlock", "MultiScopicBranch", "MultiScopicCNN",
 ]
-
-
-class CPSCBlock(nn.Sequential):
-    """ finished, checked,
-
-    building block of the SOTA model of CPSC2018 challenge
-    """
-    __DEBUG__ = True
-    __name__ = "CPSCBlock"
-
-    def __init__(self, in_channels:int, num_filters:int, filter_lengths:Sequence[int], subsample_lengths:Sequence[int], dropout:Optional[float]=None, **config) -> NoReturn:
-        """ finished, checked,
-
-        Parameters:
-        -----------
-        in_channels: int,
-            number of features (channels) of the input
-        num_filters:int,
-            number of filters for the convolutional layers
-        filter_lengths: sequence of int,
-            filter length (kernel size) of each convolutional layer
-        subsample_lengths: sequence of int,
-            subsample length (stride) of each convolutional layer
-        dropout: float, optional,
-            if positive, a `Dropout` layer will be introduced with this dropout probability
-        config: dict,
-            other hyper-parameters, including
-            activation choices, weight initializer, etc.
-        """
-        super().__init__()
-        self.__num_convs = len(filter_lengths)
-        self.__in_channels = in_channels
-        self.__out_channels = num_filters
-        self.__dropout = dropout or 0.0
-        self.config = deepcopy(config)
-        if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
-
-        for idx, (kernel_size, stride) in enumerate(zip(filter_lengths[:-1], subsample_lengths[:-1])):
-            self.add_module(
-                f"baby_{idx+1}",
-                Conv_Bn_Activation(
-                    self.__in_channels, self.__out_channels,
-                    kernel_size=kernel_size,
-                    stride=stride,
-                    activation=self.config.activation,
-                    kw_activation=self.config.kw_activation,
-                    kernel_initializer=self.config.kernel_initializer,
-                    batch_norm=self.config.batch_norm,
-                )
-            )
-        self.add_module(
-            "giant",
-            Conv_Bn_Activation(
-                self.__out_channels, self.__out_channels,
-                kernel_size=filter_lengths[-1],
-                stride=subsample_lengths[-1],
-                activation=self.config.activation,
-                kw_activation=self.config.kw_activation,
-                kernel_initializer=self.config.kernel_initializer,
-                batch_norm=self.config.batch_norm,
-            )
-        )
-        if self.__dropout > 0:
-            self.add_module(
-                "dropout",
-                nn.Dropout(self.__dropout),
-            )
-
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
-
-        Parameters:
-        ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-
-        Returns:
-        --------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-        """
-        output = super().forward(input)
-        return output
-
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, checked,
-
-        Parameters:
-        -----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns:
-        --------
-        output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
-        """
-        n_layers = 0
-        _seq_len = seq_len
-        for module in self:
-            if n_layers >= self.__num_convs:
-                break
-            output_shape = module.compute_output_shape(_seq_len, batch_size)
-            _, _, _seq_len = output_shape
-            n_layers += 1
-        return output_shape
-
-    @property
-    def module_size(self):
-        """
-        """
-        return compute_module_size(self)
-
-
-class CPSCCNN(nn.Sequential):
-    """ finished, checked,
-
-    CNN part of the SOTA model of the CPSC2018 challenge
-    """
-    __DEBUG__ = True
-    __name__ = "CPSCCNN"
-
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """ finished, checked,
-        
-        Parameters:
-        -----------
-        in_channels: int,
-            number of channels in the input
-        config: dict,
-            other hyper-parameters of the Module, ref. corresponding config file
-        """
-        super().__init__()
-        self.__in_channels = in_channels
-        self.config = ED(deepcopy(config))
-        if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
-
-        num_filters = self.config.num_filters
-        filter_lengths = self.config.filter_lengths
-        subsample_lengths = self.config.subsample_lengths
-        dropouts = self.config.dropouts
-        blk_in = self.__in_channels
-        for blk_idx, (blk_nf, blk_fl, blk_sl, blk_dp) \
-            in enumerate(zip(num_filters, filter_lengths, subsample_lengths, dropouts)):
-            self.add_module(
-                f"cpsc_block_{blk_idx+1}",
-                CPSCBlock(
-                    in_channels=blk_in,
-                    num_filters=blk_nf,
-                    filter_lengths=blk_fl,
-                    subsample_lengths=blk_sl,
-                    dropout=blk_dp,
-                )
-            )
-            blk_in = blk_nf[-1]
-
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
-
-        Parameters:
-        ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-
-        Returns:
-        --------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-        """
-        output = super().forward(input)
-        return output
-    
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, checked,
-
-        Parameters:
-        -----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns:
-        --------
-        output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
-        """
-        _seq_len = seq_len
-        for module in self:
-            output_shape = module.compute_output_shape(_seq_len, batch_size)
-            _, _, _seq_len = output_shape
-        return output_shape
-
-    @property
-    def module_size(self):
-        """
-        """
-        return compute_module_size(self)
 
 
 class ECG_CRNN(nn.Module):
@@ -309,8 +102,10 @@ class ECG_CRNN(nn.Module):
         elif "multi_scopic" in cnn_choice:
             self.cnn = MultiScopicCNN(self.n_leads, **(self.config.cnn[cnn_choice]))
             # rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
+        elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
+            self.cnn = DenseNet(self.n_leads, **(self.config.cnn[cnn_choice]))
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"the CNN \042{cnn_choice}\042 not implemented yet")
         rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
 
         if self.__DEBUG__:
