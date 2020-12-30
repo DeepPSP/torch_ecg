@@ -65,7 +65,7 @@ def CPSC2020_challenge(ECG, fs):
         sig = resample_poly(np.array(ECG).flatten(), up=FS, down=int(fs))
     else:
         sig = np.array(ECG).flatten()
-    pps = parallel_preprocess_signal(sig, fs)  # use default config in `cfg`
+    pps = parallel_preprocess_signal(sig, FS)  # use default config in `cfg`
     filtered_ecg = pps['filtered_ecg']
     rpeaks = pps['rpeaks']
     valid_intervals = ecg_denoise(filtered_ecg, fs=FS, config={"ampl_min":0.15})
