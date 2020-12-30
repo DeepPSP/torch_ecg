@@ -76,6 +76,11 @@ def preprocess_signal(raw_sig:np.ndarray, fs:Real, config:Optional[ED]=None) -> 
         with items
         - 'filtered_ecg': the array of the processed ecg signal
         - 'rpeaks': the array of indices of rpeaks; empty if 'rpeaks' in `config` is not set
+
+    NOTE:
+    -----
+    output (`retval`) are resampled to have sampling frequency
+    equal to `config.fs` (if `config` has item `fs`) or `PreprocCfg.fs`
     """
     filtered_ecg = raw_sig.copy()
 
@@ -142,6 +147,11 @@ def parallel_preprocess_signal(raw_sig:np.ndarray, fs:Real, config:Optional[ED]=
         with items
         - 'filtered_ecg': the array of the processed ecg signal
         - 'rpeaks': the array of indices of rpeaks; empty if 'rpeaks' in `config` is not set
+
+    NOTE:
+    -----
+    output (`retval`) are resampled to have sampling frequency
+    equal to `config.fs` (if `config` has item `fs`) or `PreprocCfg.fs`
     """
     start_time = time.time()
     cfg = deepcopy(PreprocCfg)
