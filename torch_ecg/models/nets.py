@@ -34,6 +34,7 @@ __all__ = [
     "Initializers", "Activations",
     "Bn_Activation", "Conv_Bn_Activation",
     "MultiConv", "BranchedConv",
+    "SeparableConv",
     "DownSample",
     "BidirectionalLSTM", "StackedLSTM",
     # "AML_Attention", "AML_GatedAttention",
@@ -231,7 +232,7 @@ class Conv_Bn_Activation(nn.Sequential):
         out_channels: int,
             number of channels produced by the convolution
         kernel_size: int,
-            size (length) of the convolving kernel
+            size (length) of the convolution kernel
         stride: int,
             stride (subsample length) of the convolution
         padding: int, optional,
@@ -255,6 +256,9 @@ class Conv_Bn_Activation(nn.Sequential):
             if True, adds a learnable bias to the output
         ordering: str, default "cba",
             ordering of the layers, case insensitive
+        kwargs: dict, optional,
+            other key word arguments, including
+            kw_activation, kw_initializer, etc.
 
         NOTE that if `padding` is not specified (default None),
         then the actual padding used for the convolutional layer is automatically computed
@@ -273,10 +277,10 @@ class Conv_Bn_Activation(nn.Sequential):
             self.__padding = padding
         self.__groups = groups
         self.__bias = bias
-        self.__kw_activation = kwargs.get("kw_activation", {})
-        self.__kw_initializer = kwargs.get("kw_initializer", {})
         self.__ordering = ordering.lower()
         assert "c" in self.__ordering
+        kw_activation = kwargs.get("kw_activation", {})
+        kw_initializer = kwargs.get("kw_initializer", {})
 
         conv_layer = nn.Conv1d(
             self.__in_channels, self.__out_channels,
@@ -288,7 +292,7 @@ class Conv_Bn_Activation(nn.Sequential):
             if callable(kernel_initializer):
                 kernel_initializer(conv_layer.weight)
             elif isinstance(kernel_initializer, str) and kernel_initializer.lower() in Initializers.keys():
-                Initializers[kernel_initializer.lower()](conv_layer.weight, **self.__kw_initializer)
+                Initializers[kernel_initializer.lower()](conv_layer.weight, **kw_initializer)
             else:  # TODO: add more initializers
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
         
@@ -311,7 +315,7 @@ class Conv_Bn_Activation(nn.Sequential):
             act_layer = activation
             act_name = f"activation_{type(act_layer).__name__}"
         elif isinstance(activation, str) and activation.lower() in Activations.keys():
-            act_layer = Activations[activation.lower()](**self.__kw_activation)
+            act_layer = Activations[activation.lower()](**kw_activation)
             act_name = f"activation_{activation.lower()}"
         else:
             print(f"activate error !!! {sys._getframe().f_code.co_filename} {sys._getframe().f_code.co_name} {sys._getframe().f_lineno}")
@@ -636,6 +640,148 @@ class BranchedConv(nn.Module):
                 filter(lambda p: p.requires_grad, self.branches[f"multi_conv_{idx}"].parameters())
             n_params += sum([np.prod(p.size()) for p in module_parameters])
         return n_params
+
+
+class SeparableConv(nn.Sequential):
+    """
+
+    (Super-)Separable Convolution
+
+    References:
+    -----------
+    [1] Kaiser, Lukasz, Aidan N. Gomez, and Francois Chollet. "Depthwise separable convolutions for neural machine translation." arXiv preprint arXiv:1706.03059 (2017).
+    [2] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
+    """
+    __DEBUG__ = True
+    __name__ = "SeparableConv"
+
+    def __init__(self, in_channels:int, out_channels:int, kernel_size:int, stride:int, padding:Optional[int]=None, dilation:int=1, groups:int=1, kernel_initializer:Optional[Union[str,callable]]=None, bias:bool=True, **kwargs) -> NoReturn:
+        """ finished, NOT checked,
+
+        Parameters:
+        -----------
+        in_channels: int,
+            number of channels in the input signal
+        out_channels: int,
+            number of channels produced by the convolution
+        kernel_size: int,
+            size (length) of the convolution kernel
+        stride: int,
+            stride (subsample length) of the convolution
+        padding: int, optional,
+            zero-padding added to both sides of the input
+        dilation: int, default 1,
+            spacing between the kernel points
+        groups: int, default 1,
+            connection pattern (of channels) of the inputs and outputs
+        kernel_initializer: str or callable (function), optional,
+            a function to initialize kernel weights of the convolution,
+            or name or the initialzer, can be one of the keys of `Initializers`
+        bias: bool, default True,
+            if True, adds a learnable bias to the output
+        """
+        super().__init__()
+        self.__in_channels = in_channels
+        self.__out_channels = out_channels
+        self.__kernel_size = kernel_size
+        self.__stride = stride
+        self.__dilation = dilation
+        if padding is None:
+            # "same" padding
+            self.__padding = (self.__dilation * (self.__kernel_size - 1)) // 2
+        elif isinstance(padding, int):
+            self.__padding = padding
+        self.__groups = groups
+        self.__bias = bias
+        kw_initializer = kwargs.get("kw_initializer", {})
+
+        self.add_module(
+            "depthwise_conv",
+            nn.Conv1d(
+                in_channels=self.__in_channels,
+                out_channels=self.__in_channels,
+                kernel_size=self.__kernel_size,
+                stride=self.__stride,
+                padding=self.__padding,
+                dilation=self.__dilation,
+                groups=self.__in_channels,
+                bias=self.__bias,
+            )
+        )
+        self.add_module(
+            "pointwise_conv",
+            nn.Conv1d(
+                in_channels=self.__in_channels,
+                out_channels=self.__out_channels,
+                groups=self.__groups,
+                bias=self.__bias,
+                kernel_size=1, stride=1, padding=0, dilation=1,
+            )
+        )
+
+        if kernel_initializer:
+            if callable(kernel_initializer):
+                for module in self:
+                    kernel_initializer(module.weight)
+            elif isinstance(kernel_initializer, str) and kernel_initializer.lower() in Initializers.keys():
+                for module in self:
+                    Initializers[kernel_initializer.lower()](module.weight, **kw_initializer)
+            else:  # TODO: add more initializers
+                raise ValueError(f"initializer `{kernel_initializer}` not supported")
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, n_channles, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channles, seq_len)
+        """
+        output = super().forward(input)
+        return output
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns:
+        --------
+        output_shape: sequence,
+            the output shape, given `seq_len` and `batch_size`
+        """
+        # depthwise_conv
+        output_shape = compute_conv_output_shape(
+            input_shape=(batch_size, self.__in_channels, seq_len),
+            num_filters=self.__in_channels,
+            kernel_size=self.__kernel_size,
+            stride=self.__stride,
+            padding=self.__padding,
+            dilation=self.__dilation,
+        )
+        # pointwise_conv
+        output_shape = compute_conv_output_shape(
+            input_shape=output_shape,
+            num_filters=self.__out_channels,
+            kernel_size=1, stride=1, padding=0, dilation=1,
+        )
+        return output_shape
+
+    @property
+    def module_size(self) -> int:
+        """
+        """
+        return compute_module_size(self)
 
 
 class DownSample(nn.Sequential):
@@ -1477,11 +1623,11 @@ class AttentivePooling(nn.Module):
         self.__in_channels = in_channels
         self.__mid_channels = (mid_channels or self.__in_channels//2) or 1
         self.__dropout = dropout
-        self.__kw_activation = kwargs.get("kw_activation", {})
+        kw_activation = kwargs.get("kw_activation", {})
         if callable(activation):
             self.activation = activation
         elif isinstance(activation, str) and activation.lower() in Activations.keys():
-            self.activation = Activations[activation.lower()](**self.__kw_activation)
+            self.activation = Activations[activation.lower()](**kw_activation)
 
         self.dropout = nn.Dropout(self.__dropout, inplace=False)
         self.mid_linear = nn.Linear(self.__in_channels, self.__mid_channels)
@@ -1634,8 +1780,8 @@ class SeqLin(nn.Sequential):
         self.__in_channels = in_channels
         self.__out_channels = out_channels
         self.__num_layers = len(self.__out_channels)
-        self.__kw_activation = kwargs.get("kw_activation", {})
-        self.__kw_initializer = kwargs.get("kw_initializer", {})
+        kw_activation = kwargs.get("kw_activation", {})
+        kw_initializer = kwargs.get("kw_initializer", {})
         if activation.lower() in Activations.keys():
             self.__activation = activation.lower()
         else:
@@ -1664,7 +1810,7 @@ class SeqLin(nn.Sequential):
                 bias=self.__bias,
             )
             if self.__kernel_initializer:
-                self.__kernel_initializer(lin_layer.weight, **self.__kw_initializer)
+                self.__kernel_initializer(lin_layer.weight, **kw_initializer)
             self.add_module(
                 f"lin_{idx}",
                 lin_layer,
@@ -1672,7 +1818,7 @@ class SeqLin(nn.Sequential):
             if idx < self.__num_layers-1 or not self.__skip_last_activation:
                 self.add_module(
                     f"act_{idx}",
-                    Activations[self.__activation](**self.__kw_activation),
+                    Activations[self.__activation](**kw_activation),
                 )
                 if self.__dropouts[idx] > 0:
                     self.add_module(
