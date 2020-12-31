@@ -258,7 +258,7 @@ class Conv_Bn_Activation(nn.Sequential):
             ordering of the layers, case insensitive
         kwargs: dict, optional,
             other key word arguments, including
-            kw_activation, kw_initializer, etc.
+            conv_type, kw_activation, kw_initializer, etc.
 
         NOTE that if `padding` is not specified (default None),
         then the actual padding used for the convolutional layer is automatically computed
@@ -281,20 +281,38 @@ class Conv_Bn_Activation(nn.Sequential):
         assert "c" in self.__ordering
         kw_activation = kwargs.get("kw_activation", {})
         kw_initializer = kwargs.get("kw_initializer", {})
+        self.__conv_type = kwargs.get("conv_type", None)
+        if isinstance(self.__conv_type, str):
+            self.__conv_type = self.__conv_type.lower()
 
-        conv_layer = nn.Conv1d(
-            self.__in_channels, self.__out_channels,
-            self.__kernel_size, self.__stride, self.__padding, self.__dilation, self.__groups,
-            bias=self.__bias,
-        )
-
-        if kernel_initializer:
-            if callable(kernel_initializer):
-                kernel_initializer(conv_layer.weight)
-            elif isinstance(kernel_initializer, str) and kernel_initializer.lower() in Initializers.keys():
-                Initializers[kernel_initializer.lower()](conv_layer.weight, **kw_initializer)
-            else:  # TODO: add more initializers
-                raise ValueError(f"initializer `{kernel_initializer}` not supported")
+        if self.__conv_type is None:
+            conv_layer = nn.Conv1d(
+                self.__in_channels, self.__out_channels,
+                self.__kernel_size, self.__stride, self.__padding, self.__dilation, self.__groups,
+                bias=self.__bias,
+            )
+            if kernel_initializer:
+                if callable(kernel_initializer):
+                    kernel_initializer(conv_layer.weight)
+                elif isinstance(kernel_initializer, str) and kernel_initializer.lower() in Initializers.keys():
+                    Initializers[kernel_initializer.lower()](conv_layer.weight, **kw_initializer)
+                else:  # TODO: add more initializers
+                    raise ValueError(f"initializer `{kernel_initializer}` not supported")
+        elif self.__conv_type == "separable":
+            conv_layer = SeparableConv(
+                in_channels=self.__in_channels,
+                out_channels=self.__out_channels,
+                kernel_size=self.__kernel_size,
+                stride=self.__stride,
+                padding=self.__padding,
+                dilation=self.__dilation,
+                groups=self.__groups,
+                kernel_initializer=kernel_initializer,
+                bias=self.__bias,
+                **kwargs
+            )
+        else:
+            raise NotImplementedError(f"convolution of type {conv_type} not implemented yet!")
         
         if "b" in self.__ordering and self.__ordering.index("c") < self.__ordering.index("b"):
             bn_in_channels = out_channels
@@ -362,16 +380,19 @@ class Conv_Bn_Activation(nn.Sequential):
         output_shape: sequence,
             the output shape of this `Conv_Bn_Activation` layer, given `seq_len` and `batch_size`
         """
-        input_shape = [batch_size, self.__in_channels, seq_len]
-        output_shape = compute_conv_output_shape(
-            input_shape=input_shape,
-            num_filters=self.__out_channels,
-            kernel_size=self.__kernel_size,
-            stride=self.__stride,
-            dilation=self.__dilation,
-            padding=self.__padding,
-            channel_last=False,
-        )
+        if self.__conv_type is None:
+            input_shape = [batch_size, self.__in_channels, seq_len]
+            output_shape = compute_conv_output_shape(
+                input_shape=input_shape,
+                num_filters=self.__out_channels,
+                kernel_size=self.__kernel_size,
+                stride=self.__stride,
+                dilation=self.__dilation,
+                padding=self.__padding,
+                channel_last=False,
+            )
+        elif self.__conv_type == "separable":
+            output_shape = self.conv1d.compute_output_shape(seq_len, batch_size)
         return output_shape
 
     @property
