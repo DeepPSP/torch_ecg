@@ -6,7 +6,7 @@ Searching for Premature Ventricular Contraction and Supraventricular Premature B
 
 ## Update on 2020/12/31
 --------------------
-Tests are done on a 60s segment (median-filtered and bandpassed) of a subject with frequent PVC.
+Tests are done on a 60s segment (median-filtered and bandpassed, `sample1_fs250.mat` in [this folder](sample_data/)) of a subject with frequent PVC.
 * r peak detections are done using [this function](https://github.com/wenh06/cpsc2020/blob/master/signal_processing/ecg_rpeaks_dl.py#L33).
 * PVC beats are labeled using red vertical lines.
 * missed PVC beats are labeled using yellow boxes.
