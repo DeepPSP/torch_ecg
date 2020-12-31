@@ -19,7 +19,7 @@ from .grad_cam import GradCam
 from .nets import (
     Mish, Swish,
     Initializers, Activations,
-    Bn_Activation, Conv_Bn_Activation,
+    Bn_Activation, Conv_Bn_Activation, CBA,
     MultiConv, BranchedConv,
     SeparableConv,
     DownSample,
@@ -57,7 +57,7 @@ __all__ = [
     # building blocks
     "Mish", "Swish",
     "Initializers", "Activations",
-    "Bn_Activation", "Conv_Bn_Activation",
+    "Bn_Activation", "Conv_Bn_Activation", "CBA",
     "MultiConv", "BranchedConv",
     "SeparableConv",
     "DownSample",

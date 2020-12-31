@@ -32,7 +32,7 @@ from torch_ecg.utils.misc import dict_to_str
 __all__ = [
     "Mish", "Swish",
     "Initializers", "Activations",
-    "Bn_Activation", "Conv_Bn_Activation",
+    "Bn_Activation", "Conv_Bn_Activation", "CBA",
     "MultiConv", "BranchedConv",
     "SeparableConv",
     "DownSample",
@@ -536,6 +536,9 @@ class MultiConv(nn.Sequential):
         """
         """
         return compute_module_size(self)
+
+# alias
+CBA = Conv_Bn_Activation
 
 
 class BranchedConv(nn.Module):
