@@ -170,7 +170,7 @@ class ResNetStanfordBlock(nn.Module):
         self.__num_convs = self.config.num_skip
         
         self.__increase_channels = (self.__out_channels > self.__in_channels)
-        self.short_cut = self._make_short_cut_layer()
+        self.shortcut = self._make_shortcut_layer()
         
         self.main_stream = nn.Sequential()
         conv_in_channels = self.__in_channels
@@ -208,22 +208,22 @@ class ResNetStanfordBlock(nn.Module):
             args = {k.split("__")[1]:v for k,v in self.__dict__.items() if isinstance(v, Number) and '__' in k}
             print(f"input arguments:\n{args}")
             print(f"input shape = {input.shape}")
-        if self.short_cut:
-            sc = self.short_cut(input)
+        if self.shortcut:
+            sc = self.shortcut(input)
         else:
             sc = input
         output = self.main_stream(input)
         if self.__DEBUG__:
-            print(f"shape of short_cut output = {sc.shape}, shape of main stream output = {output.shape}")
+            print(f"shape of shortcut output = {sc.shape}, shape of main stream output = {output.shape}")
         output = output +sc
         return output
 
-    def _make_short_cut_layer(self) -> Union[nn.Module, type(None)]:
+    def _make_shortcut_layer(self) -> Union[nn.Module, type(None)]:
         """
         """
         if self.__down_scale > 1 or self.__increase_channels:
             if self.config.increase_channels_method.lower() == 'conv':
-                short_cut = DownSample(
+                shortcut = DownSample(
                     down_scale=self.__down_scale,
                     in_channels=self.__in_channels,
                     out_channels=self.__out_channels,
@@ -231,7 +231,7 @@ class ResNetStanfordBlock(nn.Module):
                     mode=self.config.subsample_mode,
                 )
             if self.config.increase_channels_method.lower() == 'zero_padding':
-                short_cut = nn.Sequential(
+                shortcut = nn.Sequential(
                     DownSample(
                         down_scale=self.__down_scale,
                         in_channels=self.__in_channels,
@@ -242,8 +242,8 @@ class ResNetStanfordBlock(nn.Module):
                     ZeroPadding(self.__in_channels, self.__out_channels),
                 )
         else:
-            short_cut = None
-        return short_cut
+            shortcut = None
+        return shortcut
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
         """ finished, checked,

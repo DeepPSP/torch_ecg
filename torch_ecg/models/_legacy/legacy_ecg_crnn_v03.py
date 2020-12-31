@@ -304,7 +304,7 @@ class ResNetBasicBlock(nn.Module):
             raise ValueError("zero padding for increasing channels can not be used with groups != 1")
         
         self.__increase_channels = (self.__out_channels > self.__in_channels)
-        self.short_cut = self._make_short_cut_layer()
+        self.shortcut = self._make_shortcut_layer()
 
         self.main_stream = nn.Sequential()
         conv_in_channels = self.__in_channels
@@ -335,14 +335,14 @@ class ResNetBasicBlock(nn.Module):
             self.out_activation = \
                 self.config.activation(**self.config.kw_activation)
     
-    def _make_short_cut_layer(self) -> Union[nn.Module, type(None)]:
+    def _make_shortcut_layer(self) -> Union[nn.Module, type(None)]:
         """ finished, checked,
         """
         if self.__DEBUG__:
             print(f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}")
         if self.__down_scale > 1 or self.__increase_channels:
             if self.config.increase_channels_method.lower() == "conv":
-                short_cut = DownSample(
+                shortcut = DownSample(
                     down_scale=self.__down_scale,
                     in_channels=self.__in_channels,
                     out_channels=self.__out_channels,
@@ -352,7 +352,7 @@ class ResNetBasicBlock(nn.Module):
                 )
             if self.config.increase_channels_method.lower() == "zero_padding":
                 batch_norm = False if self.config.subsample_mode.lower() != "conv" else True
-                short_cut = nn.Sequential(
+                shortcut = nn.Sequential(
                     DownSample(
                         down_scale=self.__down_scale,
                         in_channels=self.__in_channels,
@@ -363,8 +363,8 @@ class ResNetBasicBlock(nn.Module):
                     ZeroPadding(self.__in_channels, self.__out_channels),
                 )
         else:
-            short_cut = None
-        return short_cut
+            shortcut = None
+        return shortcut
 
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
@@ -383,8 +383,8 @@ class ResNetBasicBlock(nn.Module):
 
         out = self.main_stream(input)
 
-        if self.short_cut is not None:
-            identity = self.short_cut(input)
+        if self.shortcut is not None:
+            identity = self.shortcut(input)
 
         out += identity
         out = self.out_activation(out)
