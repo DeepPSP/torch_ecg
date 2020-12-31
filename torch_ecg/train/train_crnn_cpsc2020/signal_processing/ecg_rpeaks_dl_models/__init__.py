@@ -73,7 +73,7 @@ def _load_keras_ecg_seq_lab_net(which:str="both", **kwargs) -> Union[Tuple[Model
         cnn_model.trainable = False
         if _which == "cnn":
             return cnn_model
-    if _which in ["both", "cnn"]:
+    if _which in ["both", "crnn"]:
         crnn_config_path = os.path.join(_BASE_DIR, "CPSC2019_0416", "CRNN.json")
         crnn_h5_path = os.path.join(_BASE_DIR, "CPSC2019_0416", "CRNN.h5")
         crnn_model = model_from_json(open(crnn_config_path).read())
