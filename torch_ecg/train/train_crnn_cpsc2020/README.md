@@ -13,7 +13,7 @@ Tests are done on a 60s segment (median-filtered and bandpassed, `sample1_fs250.
 ![pred_ml](images/pred_ml.png)
 ![pred_dl_0.3](images/pred_dl_0.3_filtered.png)
 ![pred_dl_0.5](images/pred_dl_0.5_filtered.png)
-* the first image is the result by a <strong>modified version</strong> of machine learning algorithms from [this repo](https://github.com/mondejar/ecg-classification) using rr features and wavelet features, with post-processing using clinical rules.
+* the first image is the result by a <strong>modified version</strong> of machine learning algorithms from [this repo](https://github.com/mondejar/ecg-classification) using rr features and wavelet features, with post-processing using clinical rules. Note that [phase_one_legacy](phase_one_legacy/) is one such modified version, which uses XGBoost instead of SVM and without clinical post-processing.
 * the second image is the result of the sequence labeling deep learning model with probability threshold 0.3, and filtered by a deep learning classifier. The missed PVC beats are caused by this classifier.
 * the last image is the result of the sequence labeling deep learning model with probability threshold 0.5, and filtered by a deep learning classifier.
 
