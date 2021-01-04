@@ -125,7 +125,8 @@ _DEFAULT_CONV_CONFIGS = ED(
     activation="relu",
     kw_activation={"inplace": True},
     kernel_initializer="he_normal",
-    kw_initializer={}
+    kw_initializer={},
+    ordering="cba",
 )
 
 
@@ -352,6 +353,20 @@ class Conv_Bn_Activation(nn.Sequential):
             if act_layer:
                 self.add_module(act_name, act_layer)
             self.add_module("conv1d", conv_layer)
+        elif self.__ordering in ["acb", "ac"]:
+            if act_layer:
+                self.add_module(act_name, act_layer)
+            self.add_module("conv1d", conv_layer)
+            if bn_layer:
+                self.add_module("batch_norm", bn_layer)
+        elif self.__ordering in ["bca"]:
+            if bn_layer:
+                self.add_module("batch_norm", bn_layer)
+            self.add_module("conv1d", conv_layer)
+            if act_layer:
+                self.add_module(act_name, act_layer)
+        else:
+            raise ValueError(f"ordering \042{self.__ordering}\042 not supported!")
 
     def forward(self, input:Tensor) -> Tensor:
         """
@@ -437,6 +452,7 @@ class MultiConv(nn.Sequential):
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers
+            and ordering of convolutions and batch normalizations, activations if applicable
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -492,6 +508,7 @@ class MultiConv(nn.Sequential):
                     kw_activation=self.config.kw_activation,
                     kernel_initializer=self.config.kernel_initializer,
                     kw_initializer=self.config.kw_initializer,
+                    ordering=self.config.ordering,
                 ),
             )
             conv_in_channels = oc
@@ -819,7 +836,7 @@ class DownSample(nn.Sequential):
     __name__ = "DownSample"
     __MODES__ = ["max", "avg", "conv", "nearest", "area", "linear",]
 
-    def __init__(self, down_scale:int, in_channels:int, out_channels:Optional[int]=None, pool_size:Optional[int]=None, groups:Optional[int]=None, padding:int=0, batch_norm:Union[bool,nn.Module]=False, mode:str="max") -> NoReturn:
+    def __init__(self, down_scale:int, in_channels:int, out_channels:Optional[int]=None, kernel_size:Optional[int]=None, groups:Optional[int]=None, padding:int=0, batch_norm:Union[bool,nn.Module]=False, mode:str="max") -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -830,8 +847,8 @@ class DownSample(nn.Sequential):
             number of channels of the input
         out_channels: int, optional,
             number of channels of the output
-        pool_size: int, optional,
-            kernel size of down sampling, used only in pooling `mode` ("max", "avg")
+        kernel_size: int, optional,
+            kernel size of down sampling,
             if not specified, defaults to `down_scale`,
         groups: int, optional,
             connection pattern (of channels) of the inputs and outputs
@@ -847,7 +864,7 @@ class DownSample(nn.Sequential):
         self.__mode = mode.lower()
         assert self.__mode in self.__MODES__
         self.__down_scale = down_scale
-        self.__pool_size = pool_size or down_scale
+        self.__kernel_size = kernel_size or down_scale
         self.__in_channels = in_channels
         self.__out_channels = out_channels or in_channels
         self.__groups = groups or self.__in_channels
@@ -856,14 +873,14 @@ class DownSample(nn.Sequential):
         if self.__mode == "max":
             if self.__in_channels == self.__out_channels:
                 down_layer = nn.MaxPool1d(
-                    kernel_size=self.__pool_size,
+                    kernel_size=self.__kernel_size,
                     stride=self.__down_scale,
                     padding=self.__padding,
                 )
             else:
                 down_layer = nn.Sequential((
                     nn.MaxPool1d(
-                        kernel_size=self.__pool_size,
+                        kernel_size=self.__kernel_size,
                         stride=self.__down_scale,
                         padding=self.__padding,
                     ),
@@ -875,7 +892,7 @@ class DownSample(nn.Sequential):
         elif self.__mode == "avg":
             if self.__in_channels == self.__out_channels:
                 down_layer = nn.AvgPool1d(
-                    kernel_size=self.__pool_size,
+                    kernel_size=self.__kernel_size,
                     stride=self.__down_scale,
                     padding=self.__padding,
                 )
@@ -883,7 +900,7 @@ class DownSample(nn.Sequential):
                 down_layer = nn.Sequential(
                     (
                         nn.AvgPool1d(
-                            kernel_size=self.__pool_size,
+                            kernel_size=self.__kernel_size,
                             stride=self.__down_scale,
                             padding=self.__padding,
                         ),
@@ -963,13 +980,13 @@ class DownSample(nn.Sequential):
         elif self.__mode == "max":
             out_seq_len = compute_maxpool_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
-                kernel_size=self.__pool_size, stride=self.__down_scale,
+                kernel_size=self.__kernel_size, stride=self.__down_scale,
                 padding=self.__padding,
             )[-1]
         elif self.__mode in ["avg", "nearest", "area", "linear",]:
             out_seq_len = compute_avgpool_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
-                kernel_size=self.__pool_size, stride=self.__down_scale,
+                kernel_size=self.__kernel_size, stride=self.__down_scale,
                 padding=self.__padding,
             )[-1]
         output_shape = (batch_size, self.__out_channels, out_seq_len)
