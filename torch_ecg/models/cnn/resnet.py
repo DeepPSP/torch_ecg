@@ -28,9 +28,9 @@ if Cfg.torch_dtype.lower() == "double":
 
 
 __all__ = [
+    "ResNet",
     "ResNetBasicBlock",
     "ResNetBottleNeck",
-    "ResNet",
 ]
 
 
@@ -43,7 +43,14 @@ class ResNetBasicBlock(nn.Module):
     __name__ = "ResNetBasicBlock"
     expansion = 1  # not used
 
-    def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 num_filters:int,
+                 filter_length:int,
+                 subsample_length:int,
+                 groups:int=1,
+                 dilation:int=1,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -211,7 +218,17 @@ class ResNetBottleNeck(nn.Module):
     expansion = 4
     __DEFAULT_BASE_WIDTH__ = 12 * 4
 
-    def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, base_width:int=12*4, base_groups:int=1, base_filter_length:int=1, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 num_filters:int,
+                 filter_length:int,
+                 subsample_length:int,
+                 groups:int=1,
+                 dilation:int=1,
+                 base_width:int=12*4,
+                 base_groups:int=1,
+                 base_filter_length:int=1,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -527,7 +544,7 @@ class ResNet(nn.Sequential):
                 DownSample(
                     down_scale=self.config.init_pool_stride,
                     in_channels=self.config.init_num_filters,
-                    pool_size=self.config.init_pool_size,
+                    kernel_size=self.config.init_pool_size,
                     padding=(self.config.init_pool_size-1)//2,
                     mode=self.config.init_subsample_mode.lower(),
                 ),

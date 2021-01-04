@@ -35,10 +35,11 @@ from .nets import (
 )
 
 from .cnn import (
-    VGGBlock, VGG16,
-    ResNetBasicBlock, ResNet,
-    MultiScopicBasicBlock, MultiScopicBranch, MultiScopicCNN,
-    DenseBasicBlock, DenseBottleNeck, DenseMacroBlock, DenseTransition, DenseNet,
+    VGG16, VGGBlock,
+    ResNet, ResNetBasicBlock, ResNetBottleNeck,
+    MultiScopicCNN, MultiScopicBasicBlock, MultiScopicBranch,
+    DenseNet, DenseBasicBlock, DenseBottleNeck, DenseMacroBlock, DenseTransition,
+    Xception, XceptionEntryFlow, XceptionMiddleFlow, XceptionExitFlow, XceptionMultiConv,
 )
 
 
@@ -72,8 +73,9 @@ __all__ = [
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
 
     # named CNNs
-    "VGGBlock", "VGG16",
-    "ResNetBasicBlock", "ResNetBottleNeck", "ResNet",
-    "MultiScopicBasicBlock", "MultiScopicBranch", "MultiScopicCNN",
-    "DenseBasicBlock", "DenseBottleNeck", "DenseMacroBlock", "DenseTransition", "DenseNet",
+    "VGG16", "VGGBlock",
+    "ResNet", "ResNetBasicBlock", "ResNetBottleNeck",
+    "MultiScopicCNN", "MultiScopicBasicBlock", "MultiScopicBranch",
+    "DenseNet", "DenseBasicBlock", "DenseBottleNeck", "DenseMacroBlock", "DenseTransition",
+    "Xception", "XceptionEntryFlow", "XceptionMiddleFlow", "XceptionExitFlow", "XceptionMultiConv",
 ]

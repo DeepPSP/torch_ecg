@@ -28,11 +28,11 @@ if Cfg.torch_dtype.lower() == "double":
 
 
 __all__ = [
+    "DenseNet",
     "DenseBasicBlock",
     "DenseBottleNeck",
     "DenseMacroBlock",
     "DenseTransition",
-    "DenseNet",
 ]
 
 
@@ -49,7 +49,14 @@ class DenseBasicBlock(nn.Module):
         activation="relu", kw_activation={"inplace": True}, memory_efficient=False,
     )
 
-    def __init__(self, in_channels:int, growth_rate:int, filter_length:int, groups:int=1, bias:bool=False, dropout:float=0.0, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 growth_rate:int,
+                 filter_length:int,
+                 groups:int=1,
+                 bias:bool=False,
+                 dropout:float=0.0,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -174,7 +181,15 @@ class DenseBottleNeck(nn.Module):
         activation="relu", kw_activation={"inplace": True}, memory_efficient=False,
     )
 
-    def __init__(self, in_channels:int, growth_rate:int, bn_size:int, filter_length:int, groups:int=1, bias:bool=False, dropout:float=0.0, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 growth_rate:int,
+                 bn_size:int,
+                 filter_length:int,
+                 groups:int=1,
+                 bias:bool=False,
+                 dropout:float=0.0,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -334,7 +349,16 @@ class DenseMacroBlock(nn.Sequential):
     __name__ = "DenseMacroBlock"
     building_block = DenseBottleNeck
 
-    def __init__(self, in_channels:int, num_layers:int, growth_rates:Union[Sequence[int],int], bn_size:int, filter_lengths:Union[Sequence[int],int], groups:int=1, bias:bool=False, dropout:float=0.0, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 num_layers:int,
+                 growth_rates:Union[Sequence[int],int],
+                 bn_size:int,
+                 filter_lengths:Union[Sequence[int],int],
+                 groups:int=1,
+                 bias:bool=False,
+                 dropout:float=0.0,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -454,7 +478,13 @@ class DenseTransition(nn.Sequential):
         activation="relu", kw_activation={"inplace": True}, subsample_mode="avg",
     )
 
-    def __init__(self, in_channels:int, compression:float=1.0, subsample_length:int=2, groups:int=1, bias:bool=False, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 compression:float=1.0,
+                 subsample_length:int=2,
+                 groups:int=1,
+                 bias:bool=False,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -665,7 +695,7 @@ class DenseNet(nn.Sequential):
             DownSample(
                 down_scale=self.config.init_pool_stride,
                 in_channels=self.config.init_num_filters,
-                pool_size=self.config.init_pool_size,
+                kernel_size=self.config.init_pool_size,
                 padding=(self.config.init_pool_size-1)//2,
                 mode=self.config.init_subsample_mode.lower(),
             )

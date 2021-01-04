@@ -119,6 +119,7 @@ def compute_output_shape(layer_type:str, input_shape:Sequence[Union[int, type(No
     lt = "".join(layer_type.lower().split("_"))
     assert lt in __TYPES__
     if lt in ['conv', 'convolution',]:
+        # as function of dilation, kernel_size
         minus_term = lambda d, k: d * (k - 1) + 1
         out_channels = num_filters
     elif lt in ['maxpool', 'maxpooling',]:

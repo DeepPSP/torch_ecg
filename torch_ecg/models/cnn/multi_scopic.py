@@ -27,9 +27,9 @@ if Cfg.torch_dtype.lower() == "double":
 
 
 __all__ = [
+    "MultiScopicCNN",
     "MultiScopicBasicBlock",
     "MultiScopicBranch",
-    "MultiScopicCNN",
 ]
 
 
@@ -44,7 +44,14 @@ class MultiScopicBasicBlock(nn.Sequential):
     __DEBUG__ = False
     __name__ = "MultiScopicBasicBlock"
 
-    def __init__(self, in_channels:int, scopes:Sequence[int], num_filters:Union[int,Sequence[int]], filter_lengths:Union[int,Sequence[int]], subsample_length:int, groups:int=1, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 scopes:Sequence[int],
+                 num_filters:Union[int,Sequence[int]],
+                 filter_lengths:Union[int,Sequence[int]],
+                 subsample_length:int,
+                 groups:int=1,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -178,7 +185,14 @@ class MultiScopicBranch(nn.Sequential):
     __DEBUG__ = False
     __name__ = "MultiScopicBranch"
 
-    def __init__(self, in_channels:int, scopes:Sequence[Sequence[int]], num_filters:Union[Sequence[int],Sequence[Sequence[int]]], filter_lengths:Union[Sequence[int],Sequence[Sequence[int]]], subsample_lengths:Union[int,Sequence[int]], groups:int=1, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 scopes:Sequence[Sequence[int]],
+                 num_filters:Union[Sequence[int],Sequence[Sequence[int]]],
+                 filter_lengths:Union[Sequence[int],Sequence[Sequence[int]]],
+                 subsample_lengths:Union[int,Sequence[int]],
+                 groups:int=1,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:

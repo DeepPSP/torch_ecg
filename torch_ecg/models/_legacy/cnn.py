@@ -767,7 +767,7 @@ class ResNet(nn.Sequential):
                 DownSample(
                     down_scale=self.config.init_pool_stride,
                     in_channels=self.config.init_num_filters,
-                    pool_size=self.config.init_pool_size,
+                    kernel_size=self.config.init_pool_size,
                     padding=(self.config.init_pool_size-1)//2,
                     mode=self.config.init_subsample_mode.lower(),
                 ),
@@ -1873,7 +1873,7 @@ class DenseNet(nn.Sequential):
             DownSample(
                 down_scale=self.config.init_pool_stride,
                 in_channels=self.config.init_num_filters,
-                pool_size=self.config.init_pool_size,
+                kernel_size=self.config.init_pool_size,
                 padding=(self.config.init_pool_size-1)//2,
                 mode=self.config.init_subsample_mode.lower(),
             )

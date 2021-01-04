@@ -51,7 +51,7 @@ class RR_LSTM(nn.Module):
     __DEBUG__ = True
     __name__ = "RR_LSTM"
 
-    def __init__(self,classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters:

@@ -127,6 +127,7 @@ _DEFAULT_CONV_CONFIGS = ED(
     kernel_initializer="he_normal",
     kw_initializer={},
     ordering="cba",
+    conv_type=None,
 )
 
 
@@ -139,7 +140,11 @@ class Bn_Activation(nn.Sequential):
     """
     __name__ = "Bn_Activation"
 
-    def __init__(self, num_features:int, activation:Union[str,nn.Module], kw_activation:Optional[dict]=None, dropout:float=0.0) -> NoReturn:
+    def __init__(self, 
+                 num_features:int,
+                 activation:Union[str,nn.Module],
+                 kw_activation:Optional[dict]=None, 
+                 dropout:float=0.0) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -223,7 +228,20 @@ class Conv_Bn_Activation(nn.Sequential):
     """
     __name__ = "Conv_Bn_Activation"
 
-    def __init__(self, in_channels:int, out_channels:int, kernel_size:int, stride:int, padding:Optional[int]=None, dilation:int=1, groups:int=1, batch_norm:Union[bool,nn.Module]=True, activation:Optional[Union[str,nn.Module]]=None, kernel_initializer:Optional[Union[str,callable]]=None, bias:bool=True, ordering:str="cba", **kwargs) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:int,
+                 kernel_size:int,
+                 stride:int,
+                 padding:Optional[int]=None,
+                 dilation:int=1,
+                 groups:int=1,
+                 batch_norm:Union[bool,nn.Module]=True,
+                 activation:Optional[Union[str,nn.Module]]=None,
+                 kernel_initializer:Optional[Union[str,callable]]=None,
+                 bias:bool=True,
+                 ordering:str="cba",
+                 **kwargs) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -280,10 +298,10 @@ class Conv_Bn_Activation(nn.Sequential):
         self.__bias = bias
         self.__ordering = ordering.lower()
         assert "c" in self.__ordering
-        assert bool(batch_norm) == ("b" in self.__ordering), \
-            f"`batch_norm` is {batch_norm}, while `ordering` = \042{self.__ordering}\042 contains {'' if 'b' in self.__ordering else 'no '}\042b\042"
-        assert bool(activation) == ("a" in self.__ordering), \
-            f"`activation` is {activation}, while `ordering` = \042{self.__ordering}\042 contains {'' if 'a' in self.__ordering else 'no '}\042a\042"
+        # assert bool(batch_norm) == ("b" in self.__ordering), \
+        #     f"`batch_norm` is {batch_norm}, while `ordering` = \042{self.__ordering}\042 contains {'' if 'b' in self.__ordering else 'no '}\042b\042"
+        # assert bool(activation) == ("a" in self.__ordering), \
+        #     f"`activation` is {activation}, while `ordering` = \042{self.__ordering}\042 contains {'' if 'a' in self.__ordering else 'no '}\042a\042"
         kw_activation = kwargs.get("kw_activation", {})
         kw_initializer = kwargs.get("kw_initializer", {})
         self.__conv_type = kwargs.get("conv_type", None)
@@ -430,7 +448,16 @@ class MultiConv(nn.Sequential):
     __DEBUG__ = False
     __name__ = "MultiConv"
     
-    def __init__(self, in_channels:int, out_channels:Sequence[int], filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, dilations:Union[Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, out_activation:bool=True, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:Sequence[int],
+                 filter_lengths:Union[Sequence[int],int],
+                 subsample_lengths:Union[Sequence[int],int]=1,
+                 dilations:Union[Sequence[int],int]=1,
+                 groups:int=1,
+                 dropouts:Union[Sequence[float], float]=0.0,
+                 out_activation:bool=True,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -450,8 +477,10 @@ class MultiConv(nn.Sequential):
         dropouts: float or sequence of float, default 0.0,
             dropout ratio after each `Conv_Bn_Activation`
         out_activation: bool, default True,
-            if True, the last mini-block of `Conv_Bn_Activation` will have activation as in `config`,
-            otherwise None
+            if True, the last mini-block of `Conv_Bn_Activation`
+            will have activation as in `config`, otherwise None;
+            if activation is before convolution,
+            then `out_activation` refers to the first activation
         config: dict,
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
@@ -491,15 +520,23 @@ class MultiConv(nn.Sequential):
             _dilations = list(dilations)
         assert len(_dilations) == self.__num_convs
 
+        __ordering = self.config.ordering.lower()
+        if "a" in __ordering and __ordering.index("a") < __ordering.index("c"):
+            in_activation = out_activation
+            out_activation = True
+        else:
+            in_activation = True
+
         conv_in_channels = self.__in_channels
         for idx, (oc, ks, sd, dl, dp) in \
             enumerate(zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)):
-            if idx < self.__num_convs - 1 or out_activation:
-                activation = self.config.activation
-            else:
+            activation = self.config.activation
+            if idx == 0 and not in_activation:
+                activation = None
+            if idx == self.__num_convs - 1 and not out_activation:
                 activation = None
             self.add_module(
-                f"cba_{idx}",
+                f"{__ordering}_{idx}",
                 Conv_Bn_Activation(
                     in_channels=conv_in_channels,
                     out_channels=oc,
@@ -513,6 +550,7 @@ class MultiConv(nn.Sequential):
                     kernel_initializer=self.config.kernel_initializer,
                     kw_initializer=self.config.kw_initializer,
                     ordering=self.config.ordering,
+                    conv_type=self.config.conv_type,
                 ),
             )
             conv_in_channels = oc
@@ -570,7 +608,15 @@ class BranchedConv(nn.Module):
     __DEBUG__ = False
     __name__ = "BranchedConv"
 
-    def __init__(self, in_channels:int, out_channels:Sequence[Sequence[int]], filter_lengths:Union[Sequence[Sequence[int]],Sequence[int],int], subsample_lengths:Union[Sequence[Sequence[int]],Sequence[int],int]=1, dilations:Union[Sequence[Sequence[int]],Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[Sequence[float]], Sequence[float],float]=0.0, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:Sequence[Sequence[int]],
+                 filter_lengths:Union[Sequence[Sequence[int]],Sequence[int],int],
+                 subsample_lengths:Union[Sequence[Sequence[int]],Sequence[int],int]=1,
+                 dilations:Union[Sequence[Sequence[int]],Sequence[int],int]=1,
+                 groups:int=1,
+                 dropouts:Union[Sequence[Sequence[float]],Sequence[float],float]=0.0,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -700,7 +746,17 @@ class SeparableConv(nn.Sequential):
     __DEBUG__ = True
     __name__ = "SeparableConv"
 
-    def __init__(self, in_channels:int, out_channels:int, kernel_size:int, stride:int, padding:Optional[int]=None, dilation:int=1, groups:int=1, kernel_initializer:Optional[Union[str,callable]]=None, bias:bool=True, **kwargs) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:int,
+                 kernel_size:int,
+                 stride:int,
+                 padding:Optional[int]=None,
+                 dilation:int=1,
+                 groups:int=1,
+                 kernel_initializer:Optional[Union[str,callable]]=None,
+                 bias:bool=True,
+                 **kwargs) -> NoReturn:
         """ finished, NOT checked,
 
         Parameters:
@@ -840,7 +896,15 @@ class DownSample(nn.Sequential):
     __name__ = "DownSample"
     __MODES__ = ["max", "avg", "conv", "nearest", "area", "linear",]
 
-    def __init__(self, down_scale:int, in_channels:int, out_channels:Optional[int]=None, kernel_size:Optional[int]=None, groups:Optional[int]=None, padding:int=0, batch_norm:Union[bool,nn.Module]=False, mode:str="max") -> NoReturn:
+    def __init__(self,
+                 down_scale:int,
+                 in_channels:int,
+                 out_channels:Optional[int]=None,
+                 kernel_size:Optional[int]=None,
+                 groups:Optional[int]=None,
+                 padding:int=0,
+                 batch_norm:Union[bool,nn.Module]=False,
+                 mode:str="max") -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -1009,7 +1073,14 @@ class BidirectionalLSTM(nn.Module):
     """
     __name__ = "BidirectionalLSTM"
 
-    def __init__(self, input_size:int, hidden_size:int, num_layers:int=1, bias:bool=True, dropout:float=0.0, return_sequences:bool=True, **kwargs) -> NoReturn:
+    def __init__(self,
+                 input_size:int,
+                 hidden_size:int,
+                 num_layers:int=1,
+                 bias:bool=True,
+                 dropout:float=0.0,
+                 return_sequences:bool=True,
+                 **kwargs) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -1095,7 +1166,14 @@ class StackedLSTM(nn.Sequential):
     __DEBUG__ = False
     __name__ = "StackedLSTM"
 
-    def __init__(self, input_size:int, hidden_sizes:Sequence[int], bias:Union[Sequence[bool], bool]=True, dropouts:Union[float,Sequence[float]]=0.0, bidirectional:bool=True, return_sequences:bool=True, **kwargs) -> NoReturn:
+    def __init__(self,
+                 input_size:int,
+                 hidden_sizes:Sequence[int],
+                 bias:Union[Sequence[bool],bool]=True,
+                 dropouts:Union[float,Sequence[float]]=0.0,
+                 bidirectional:bool=True,
+                 return_sequences:bool=True,
+                 **kwargs) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -1582,7 +1660,13 @@ class SelfAttention(nn.Module):
     __DEBUG__ = False
     __name__ = "SelfAttention"
 
-    def __init__(self, in_features:int, head_num:int, dropout:float=0.0, bias:bool=True, activation:Optional[Union[str,nn.Module]]="relu", **kwargs):
+    def __init__(self,
+                 in_features:int, 
+                 head_num:int,
+                 dropout:float=0.0,
+                 bias:bool=True,
+                 activation:Optional[Union[str,nn.Module]]="relu",
+                 **kwargs):
         """ finished, checked,
 
         Parameters:
@@ -1650,7 +1734,12 @@ class AttentivePooling(nn.Module):
     __DEBUG__ = False
     __name__ = "AttentivePooling"
 
-    def __init__(self, in_channels:int, mid_channels:Optional[int]=None, activation:Optional[Union[str,nn.Module]]="tanh", dropout:float=0.2, **kwargs) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 mid_channels:Optional[int]=None,
+                 activation:Optional[Union[str,nn.Module]]="tanh",
+                 dropout:float=0.2,
+                 **kwargs) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -1803,7 +1892,14 @@ class SeqLin(nn.Sequential):
     __DEBUG__ = False
     __name__ = "SeqLin"
 
-    def __init__(self, in_channels:int, out_channels:Sequence[int], activation:str="relu", kernel_initializer:Optional[str]=None, bias:bool=True, dropouts:Union[float,Sequence[float]]=0.0, **kwargs) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:Sequence[int],
+                 activation:str="relu",
+                 kernel_initializer:Optional[str]=None,
+                 bias:bool=True,
+                 dropouts:Union[float,Sequence[float]]=0.0,
+                 **kwargs) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -1933,7 +2029,12 @@ class NonLocalBlock(nn.Module):
     __name__ = "NonLocalBlock"
     __MID_LAYERS__ = ["g", "theta", "phi", "W"]
 
-    def __init__(self, in_channels:int, mid_channels:Optional[int]=None, filter_lengths:Union[ED,int]=1, subsample_length:int=2, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 mid_channels:Optional[int]=None,
+                 filter_lengths:Union[ED,int]=1,
+                 subsample_length:int=2,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Paramters:
@@ -2164,7 +2265,12 @@ class GlobalContextBlock(nn.Module):
     __POOLING_TYPES__ = ["attn", "avg",]
     __FUSION_TYPES__ = ["add", "mul",]
 
-    def __init__(self, in_channels:int, ratio:int, reduction:bool=False, pooling_type:str="attn", fusion_types:Sequence[str]=["add",]) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 ratio:int,
+                 reduction:bool=False,
+                 pooling_type:str="attn",
+                 fusion_types:Sequence[str]=["add",]) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -2765,7 +2871,12 @@ class ExtendedCRF(nn.Sequential):
 
 
 # custom losses
-def weighted_binary_cross_entropy(sigmoid_x:Tensor, targets:Tensor, pos_weight:Tensor, weight:Optional[Tensor]=None, size_average:bool=True, reduce:bool=True) -> Tensor:
+def weighted_binary_cross_entropy(sigmoid_x:Tensor,
+                                  targets:Tensor,
+                                  pos_weight:Tensor,
+                                  weight:Optional[Tensor]=None,
+                                  size_average:bool=True,
+                                  reduce:bool=True) -> Tensor:
     """ finished, checked,
 
     Parameters:
@@ -2807,7 +2918,13 @@ class WeightedBCELoss(nn.Module):
     """
     __name__ = "WeightedBCELoss"
 
-    def __init__(self, pos_weight:Tensor=1, weight:Optional[Tensor]=None, PosWeightIsDynamic:bool=False, WeightIsDynamic:bool=False, size_average:bool=True, reduce:bool=True) -> NoReturn:
+    def __init__(self,
+                 pos_weight:Tensor=1,
+                 weight:Optional[Tensor]=None,
+                 PosWeightIsDynamic:bool=False,
+                 WeightIsDynamic:bool=False,
+                 size_average:bool=True,
+                 reduce:bool=True) -> NoReturn:
         """ checked,
 
         Parameters:

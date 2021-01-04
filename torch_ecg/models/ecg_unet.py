@@ -52,7 +52,16 @@ class DoubleConv(MultiConv):
     __DEBUG__ = False
     __name__ = "DoubleConv"
 
-    def __init__(self, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, out_activation:bool=True, mid_channels:Optional[int]=None, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:int,
+                 filter_lengths:Union[Sequence[int],int],
+                 subsample_lengths:Union[Sequence[int],int]=1,
+                 groups:int=1,
+                 dropouts:Union[Sequence[float],float]=0.0,
+                 out_activation:bool=True,
+                 mid_channels:Optional[int]=None,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -110,7 +119,16 @@ class DownDoubleConv(nn.Sequential):
     __name__ = "DownDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
-    def __init__(self, down_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], groups:int=1, dropouts:Union[Sequence[float], float]=0.0, mid_channels:Optional[int]=None, mode:str='max', **config) -> NoReturn:
+    def __init__(self,
+                 down_scale:int,
+                 in_channels:int,
+                 out_channels:int,
+                 filter_lengths:Union[Sequence[int],int],
+                 groups:int=1,
+                 dropouts:Union[Sequence[float],float]=0.0,
+                 mid_channels:Optional[int]=None,
+                 mode:str="max",
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -230,7 +248,17 @@ class UpDoubleConv(nn.Module):
     __name__ = "UpDoubleConv"
     __MODES__ = ['nearest', 'linear', 'area', 'deconv',]
 
-    def __init__(self, up_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], deconv_filter_length:Optional[int]=None, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, mode:str='deconv', mid_channels:Optional[int]=None, **config) -> NoReturn:
+    def __init__(self,
+                 up_scale:int,
+                 in_channels:int,
+                 out_channels:int,
+                 filter_lengths:Union[Sequence[int],int],
+                 deconv_filter_length:Optional[int]=None,
+                 groups:int=1,
+                 dropouts:Union[Sequence[float],float]=0.0,
+                 mode:str="deconv",
+                 mid_channels:Optional[int]=None,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:

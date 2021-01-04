@@ -48,7 +48,15 @@ class TripleConv(MultiConv):
     __DEBUG__ = True
     __name__ = "TripleConv"
 
-    def __init__(self, in_channels:int, out_channels:Union[Sequence[int],int], filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, out_activation:bool=True, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:Union[Sequence[int],int],
+                 filter_lengths:Union[Sequence[int],int],
+                 subsample_lengths:Union[Sequence[int],int]=1,
+                 groups:int=1,
+                 dropouts:Union[Sequence[float],float]=0.0,
+                 out_activation:bool=True,
+                 **config) -> NoReturn:
         """ finished, NOT checked,
 
         Parameters:
@@ -101,7 +109,15 @@ class DownTripleConv(nn.Sequential):
     __name__ = "DownTripleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
     
-    def __init__(self, down_scale:int, in_channels:int, out_channels:Union[Sequence[int],int], filter_lengths:Union[Sequence[int],int], groups:int=1, dropouts:Union[Sequence[float], float]=0.0, mode:str='max', **config) -> NoReturn:
+    def __init__(self,
+                 down_scale:int,
+                 in_channels:int,
+                 out_channels:Union[Sequence[int],int],
+                 filter_lengths:Union[Sequence[int],int],
+                 groups:int=1,
+                 dropouts:Union[Sequence[float],float]=0.0,
+                 mode:str="max",
+                 **config) -> NoReturn:
         """ finished, NOT checked,
 
         Parameters:
@@ -193,7 +209,16 @@ class DownBranchedDoubleConv(nn.Module):
     __name__ = "DownBranchedDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
-    def __init__(self, down_scale:int, in_channels:int, out_channels:Sequence[Sequence[int]], filter_lengths:Union[Sequence[Sequence[int]],Sequence[int],int], dilations:Union[Sequence[Sequence[int]],Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float],float]=0.0, mode:str='max', **config) -> NoReturn:
+    def __init__(self,
+                 down_scale:int,
+                 in_channels:int,
+                 out_channels:Sequence[Sequence[int]],
+                 filter_lengths:Union[Sequence[Sequence[int]],Sequence[int],int],
+                 dilations:Union[Sequence[Sequence[int]],Sequence[int],int]=1,
+                 groups:int=1,
+                 dropouts:Union[Sequence[float],float]=0.0,
+                 mode:str="max",
+                 **config) -> NoReturn:
         """ finished, NOT checked,
 
         Parameters:
@@ -297,7 +322,16 @@ class UpTripleConv(nn.Module):
     __name__ = "UpTripleConv"
     __MODES__ = ['nearest', 'linear', 'area', 'deconv',]
 
-    def __init__(self, up_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], deconv_filter_length:Optional[int]=None, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, mode:str='deconv', **config) -> NoReturn:
+    def __init__(self,
+                 up_scale:int,
+                 in_channels:int,
+                 out_channels:int,
+                 filter_lengths:Union[Sequence[int],int],
+                 deconv_filter_length:Optional[int]=None,
+                 groups:int=1,
+                 dropouts:Union[Sequence[float],float]=0.0,
+                 mode:str="deconv",
+                 **config) -> NoReturn:
         """ finished, NOT checked,
 
         Parameters:

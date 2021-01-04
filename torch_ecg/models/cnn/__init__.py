@@ -9,26 +9,39 @@ named CNNs, which are frequently used by more complicated models, including
 """
 
 from .densenet import (
+    DenseNet,
     DenseBasicBlock, DenseBottleNeck,
     DenseMacroBlock, DenseTransition,
-    DenseNet,
 )
-from .multi_scopic import MultiScopicBasicBlock, MultiScopicBranch, MultiScopicCNN
-from .resnet import ResNetBasicBlock, ResNetBottleNeck, ResNet
-from .vgg import VGGBlock, VGG16
-# from .xception import
+from .multi_scopic import MultiScopicCNN, MultiScopicBasicBlock, MultiScopicBranch
+from .resnet import ResNet, ResNetBasicBlock, ResNetBottleNeck
+from .vgg import VGG16, VGGBlock
+from .xception import (
+    Xception,
+    XceptionEntryFlow, XceptionMiddleFlow, XceptionExitFlow,
+    XceptionMultiConv,
+)
 
 
 __all__ = [
     # VGG
-    "VGGBlock", "VGG16",
+    "VGG16",
+    "VGGBlock",
 
     # ResNet
-    "ResNetBasicBlock", "ResNetBottleNeck", "ResNet",
+    "ResNet",
+    "ResNetBasicBlock", "ResNetBottleNeck",
 
     # MultiScopic
-    "MultiScopicBasicBlock", "MultiScopicBranch", "MultiScopicCNN",
+    "MultiScopicCNN",
+    "MultiScopicBasicBlock", "MultiScopicBranch",
 
     # DenseNet
-    "DenseBasicBlock", "DenseBottleNeck", "DenseMacroBlock", "DenseTransition", "DenseNet",
+    "DenseNet",
+    "DenseBasicBlock", "DenseBottleNeck", "DenseMacroBlock", "DenseTransition",
+
+    # Xception
+    "Xception",
+    "XceptionEntryFlow", "XceptionMiddleFlow", "XceptionExitFlow",
+    "XceptionMultiConv",
 ]
