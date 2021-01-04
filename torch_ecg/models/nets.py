@@ -280,6 +280,10 @@ class Conv_Bn_Activation(nn.Sequential):
         self.__bias = bias
         self.__ordering = ordering.lower()
         assert "c" in self.__ordering
+        assert bool(batch_norm) == ("b" in self.__ordering), \
+            f"`batch_norm` is {batch_norm}, while `ordering` = \042{self.__ordering}\042 contains {'' if 'b' in self.__ordering else 'no '}\042b\042"
+        assert bool(activation) == ("a" in self.__ordering), \
+            f"`activation` is {activation}, while `ordering` = \042{self.__ordering}\042 contains {'' if 'a' in self.__ordering else 'no '}\042a\042"
         kw_activation = kwargs.get("kw_activation", {})
         kw_initializer = kwargs.get("kw_initializer", {})
         self.__conv_type = kwargs.get("conv_type", None)
