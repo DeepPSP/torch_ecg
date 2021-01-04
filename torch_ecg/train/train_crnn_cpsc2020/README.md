@@ -60,3 +60,8 @@ not fully listed
 ## [original repository](https://github.com/wenh06/cpsc2020)
 -------
 
+
+## NOTE
+
+if you find [this function](https://github.com/wenh06/cpsc2020/blob/master/signal_processing/ecg_rpeaks_dl.py#L33) useful, please cite Reference [3]
+
