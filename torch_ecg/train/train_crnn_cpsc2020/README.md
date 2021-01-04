@@ -5,7 +5,7 @@ Searching for Premature Ventricular Contraction and Supraventricular Premature B
 
 
 ## Update on 2020/12/31
---------------------
+
 Tests are done on a 60s segment (median-filtered and bandpassed, `sample1_fs250.mat` in [this folder](sample_data/)) of a subject with frequent PVC.
 * r peak detections are done using [this function](https://github.com/wenh06/cpsc2020/blob/master/signal_processing/ecg_rpeaks_dl.py#L33).
 * PVC beats are labeled using red vertical lines.
@@ -18,13 +18,13 @@ Tests are done on a 60s segment (median-filtered and bandpassed, `sample1_fs250.
 * the last image is the result of the sequence labeling deep learning model with probability threshold 0.5, and filtered by a deep learning classifier.
 
 ### Observations
-* a good rpeak (qrs complex) detector is crucial.
+* an effective and robust rpeak (qrs complex) detector is crucial.
 * the sequence labeling deep learning model (trained only for a dozen epochs because of the approaching deadline) tends to make false positive predictions but seldom has false negatives; while the deep learning classifier (trained only for several hundred epochs) has few false positives but has slightly higher probability to have false negatives.
 * given a good rpeak detector, machine learning models might well be competitive against deep learning models.
 * changing the threshold of the sequence labeling deep learning model from 0.5 to 0.3 can largely reduce the PVCerr score (punishment); further removing the post-filtering of the deep learning classifier might further reduce the scores, raising more false positives while reducing false negatives, considering that false negative has punishment 5 times as the punishment of false positives.
 
 ## Evaluation result
------------------
+
 [Evaluation result](http://www.icbeb.org/CSPC2020) on the final full hidden test set
 
 not fully listed
@@ -33,7 +33,7 @@ not fully listed
 
 
 ## References:
------------
+
 [1] [ecg-classification](https://github.com/mondejar/ecg-classification)
 
 [2] [BioSPPy](https://github.com/PIA-Group/BioSPPy)
@@ -44,7 +44,7 @@ not fully listed
 
 
 ## TODO:
------
+
 [1] more robust qrs detector (finished)
 
 [2] feature engineering (deprecated)
