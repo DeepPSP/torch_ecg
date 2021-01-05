@@ -1,4 +1,5 @@
 """
+the most basic CNN
 """
 from copy import deepcopy
 from typing import Union, Optional, Tuple, Sequence, NoReturn

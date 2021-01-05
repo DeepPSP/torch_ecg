@@ -36,7 +36,7 @@ from torch_ecg.models.nets import (
     SeqLin,
 )
 from torch_ecg.models.cnn import (
-    VGG16, ResNet, MultiScopicCNN, DenseNet,
+    VGG16, ResNet, MultiScopicCNN, DenseNet, Xception,
 )
 
 

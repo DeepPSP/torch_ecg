@@ -34,7 +34,7 @@ from .nets import (
     SeqLin,
 )
 from .cnn import (
-    VGG16, ResNet, MultiScopicCNN, DenseNet,
+    VGG16, ResNet, MultiScopicCNN, DenseNet, Xception,
 )
 
 

@@ -1,4 +1,6 @@
 """
+The core part of the SOTA model of CPSC2019,
+branched, and has different scope (in terms of dilation) in each branch
 """
 from copy import deepcopy
 from itertools import repeat

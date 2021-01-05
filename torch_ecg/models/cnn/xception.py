@@ -1,4 +1,7 @@
 """
+famous for its use of separable convolutions,
+usually the SOTA image classifier,
+however seems not have been used in physiological signal processing tasks
 """
 import math
 from copy import deepcopy
@@ -321,6 +324,8 @@ class XceptionEntryFlow(nn.Sequential):
 
         block_in_channels = init_num_filters[-1]
         for idx, nf in enumerate(self.__num_filters):
+            # in the case of ordering of "acb",
+            # `out_activation` is indeed `in_activation`
             if idx == 0:
                 out_activation = False
             else:

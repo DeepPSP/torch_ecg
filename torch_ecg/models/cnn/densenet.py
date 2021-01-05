@@ -1,4 +1,13 @@
 """
+The core part of the SOTA model (framework) of CPSC2020
+
+Its key points: 
+[1] ECG signal pre-processing: filters out the high frequency noise and baseline drift in the ECG signal
+[2] QRS complex detection
+[3] noisy heartbeat recognition: transient noise and artifacts
+[4] atrial fibrillation recognition: remove SPB and carefully distinguish PVC and AF beats with aberrant ventricular conduction in episodes with atrial fibrillation
+[5] PVC and SPB model detection: DenseNet \cite{densenet, huang2019densenet2}
+[6] post-processing with clinical rules: a set of clinical experiences and rules including rhythm and morphological rules to suppress false positives and search for false negatives of PVC and SPB detection
 """
 import math
 from copy import deepcopy
