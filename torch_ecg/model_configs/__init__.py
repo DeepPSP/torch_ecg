@@ -70,11 +70,13 @@ from .rr_lstm import *
 # __all__ = [s for s in dir() if not s.startswith('_')]
 __all__ = [
     # attn
+    # -----
     "non_local",
     "squeeze_excitation",
     "global_context",
 
     # cnn
+    # -----
     # vgg
     "vgg_block_basic", "vgg_block_mish", "vgg_block_swish",
     "vgg16", "vgg16_leadwise",
@@ -94,11 +96,18 @@ __all__ = [
     # multi_scopic
     "multi_scopic_block",
     "multi_scopic", "multi_scopic_leadwise",
+    # dense_net
+    "dense_net_vanilla",
+    # xception
+    "xception_vanilla",
 
-    # rnn
+    # rnn and attn
+    # -------------
     "lstm",
     "attention",
 
+    # large networks
+    # ---------------
     # ecg_crnn
     "ECG_CRNN_CONFIG",
 

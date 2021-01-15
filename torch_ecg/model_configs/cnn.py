@@ -27,6 +27,10 @@ __all__ = [
     # multi_scopic
     "multi_scopic_block",
     "multi_scopic", "multi_scopic_leadwise",
+    # dense_net
+    "dense_net_vanilla",
+    # xception
+    "xception_vanilla",
 ]
 
 
@@ -458,6 +462,56 @@ multi_scopic_block.kw_activation = deepcopy(multi_scopic.kw_activation)
 
 
 
+dense_net_vanilla = ED()
+
+dense_net_vanilla.num_layers = [6, 6, 6, 6]
+dense_net_vanilla.init_num_filters = 64
+dense_net_vanilla.init_filter_length = 7
+dense_net_vanilla.init_pool_stride = 2
+dense_net_vanilla.init_pool_size = 3
+dense_net_vanilla.init_subsample_mode = "avg"
+dense_net_vanilla.growth_rates = 16
+dense_net_vanilla.filter_lengths = 3
+dense_net_vanilla.subsample_lengths = 2
+dense_net_vanilla.bn_size = 4
+dense_net_vanilla.dropout = 0
+dense_net_vanilla.compression = 0.5
+dense_net_vanilla.groups = 1
+
+dense_net_vanilla.block = {"building_block":"basic",}
+dense_net_vanilla.transition = {}
+
+
 dense_net = ED()
 
+
 dense_block = ED()
+
+
+
+xception_vanilla = ED()
+
+xception_vanilla.entry_flow = ED(
+    init_num_filters=[32,64],
+    init_filter_lengths=3,
+    init_subsample_lengths=[2,1],
+    num_filters=[128,256,728],
+    filter_lengths=3,
+    subsample_lengths=2,
+    subsample_kernels=3,
+)
+xception_vanilla.middle_flow = ED(
+    num_filters=list(repeat(728, 8)),
+    filter_lengths=3,
+)
+xception_vanilla.exit_flow = ED(
+    final_num_filters=[1536,2048],
+    final_filter_lengths=3,
+    num_filters=[[728,1024]],
+    filter_lengths=3,
+    subsample_lengths=2,
+    subsample_kernels=3,
+)
+
+
+xception = ED()
