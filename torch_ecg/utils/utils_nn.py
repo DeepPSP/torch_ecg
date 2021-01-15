@@ -74,7 +74,15 @@ def extend_predictions(preds:Sequence, classes:List[str], extended_classes:List[
 
 
 # utils for computing output shape
-def compute_output_shape(layer_type:str, input_shape:Sequence[Union[int, type(None)]], num_filters:Optional[int]=None, kernel_size:Union[Sequence[int], int]=1, stride:Union[Sequence[int], int]=1, padding:Union[Sequence[int], int]=0, output_padding:Union[Sequence[int], int]=0, dilation:Union[Sequence[int], int]=1, channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
+def compute_output_shape(layer_type:str,
+                         input_shape:Sequence[Union[int, type(None)]],
+                         num_filters:Optional[int]=None,
+                         kernel_size:Union[Sequence[int], int]=1,
+                         stride:Union[Sequence[int], int]=1,
+                         padding:Union[Sequence[int], int]=0,
+                         output_padding:Union[Sequence[int], int]=0,
+                         dilation:Union[Sequence[int], int]=1,
+                         channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
     """ finished, checked,
 
     compute the output shape of a (transpose) convolution/maxpool/avgpool layer
@@ -218,7 +226,13 @@ def compute_output_shape(layer_type:str, input_shape:Sequence[Union[int, type(No
     return output_shape
 
 
-def compute_conv_output_shape(input_shape:Sequence[Union[int, type(None)]], num_filters:Optional[int]=None, kernel_size:Union[Sequence[int], int]=1, stride:Union[Sequence[int], int]=1, padding:Union[Sequence[int], int]=0, dilation:Union[Sequence[int], int]=1, channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
+def compute_conv_output_shape(input_shape:Sequence[Union[int, type(None)]],
+                              num_filters:Optional[int]=None,
+                              kernel_size:Union[Sequence[int], int]=1,
+                              stride:Union[Sequence[int], int]=1,
+                              padding:Union[Sequence[int], int]=0,
+                              dilation:Union[Sequence[int], int]=1,
+                              channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
     """ finished, cheched,
 
     compute the output shape of a convolution/maxpool/avgpool layer
@@ -253,7 +267,12 @@ def compute_conv_output_shape(input_shape:Sequence[Union[int, type(None)]], num_
     return output_shape
 
 
-def compute_maxpool_output_shape(input_shape:Sequence[Union[int, type(None)]], kernel_size:Union[Sequence[int], int]=1, stride:Union[Sequence[int], int]=1, padding:Union[Sequence[int], int]=0, dilation:Union[Sequence[int], int]=1, channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
+def compute_maxpool_output_shape(input_shape:Sequence[Union[int, type(None)]],
+                                 kernel_size:Union[Sequence[int], int]=1,
+                                 stride:Union[Sequence[int], int]=1,
+                                 padding:Union[Sequence[int], int]=0,
+                                 dilation:Union[Sequence[int], int]=1,
+                                 channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
     """ finished, cheched,
 
     compute the output shape of a maxpool layer
@@ -286,7 +305,11 @@ def compute_maxpool_output_shape(input_shape:Sequence[Union[int, type(None)]], k
     return output_shape
 
 
-def compute_avgpool_output_shape(input_shape:Sequence[Union[int, type(None)]], kernel_size:Union[Sequence[int], int]=1, stride:Union[Sequence[int], int]=1, padding:Union[Sequence[int], int]=0, channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
+def compute_avgpool_output_shape(input_shape:Sequence[Union[int, type(None)]],
+                                 kernel_size:Union[Sequence[int], int]=1,
+                                 stride:Union[Sequence[int], int]=1,
+                                 padding:Union[Sequence[int], int]=0,
+                                 channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
     """ finished, cheched,
 
     compute the output shape of a avgpool layer
@@ -317,7 +340,14 @@ def compute_avgpool_output_shape(input_shape:Sequence[Union[int, type(None)]], k
     return output_shape
 
 
-def compute_deconv_output_shape(input_shape:Sequence[Union[int, type(None)]], num_filters:Optional[int]=None, kernel_size:Union[Sequence[int], int]=1, stride:Union[Sequence[int], int]=1, padding:Union[Sequence[int], int]=0, output_padding:Union[Sequence[int], int]=0, dilation:Union[Sequence[int], int]=1, channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
+def compute_deconv_output_shape(input_shape:Sequence[Union[int, type(None)]],
+                                num_filters:Optional[int]=None,
+                                kernel_size:Union[Sequence[int], int]=1,
+                                stride:Union[Sequence[int], int]=1,
+                                padding:Union[Sequence[int], int]=0,
+                                output_padding:Union[Sequence[int], int]=0,
+                                dilation:Union[Sequence[int], int]=1,
+                                channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
     """ finished, checked,
 
     compute the output shape of a transpose convolution layer
@@ -377,12 +407,31 @@ def compute_module_size(module:nn.Module) -> int:
     return n_params
 
 
-def compute_receptive_field(kernel_sizes:Union[Sequence[int], int]=1, strides:Union[Sequence[int], int]=1, dilations:Union[Sequence[int], int]=1, input_len:Optional[int]=None) -> Union[int, float]:
-    """ finished, checked,
+def compute_receptive_field(kernel_sizes:Union[Sequence[int], int]=1,
+                            strides:Union[Sequence[int], int]=1,
+                            dilations:Union[Sequence[int], int]=1,
+                            input_len:Optional[int]=None) -> Union[int, float]:
+    r""" finished, checked,
 
     computes the receptive field of feature map of certain channel,
     from certain flow (if not merged, different flows, e.g. shortcut, must be computed separately),
     for convolutions, (non-global) poolings
+
+    .. math::
+        Let the layers has kernel size, stride, dilation $(k_n, s_n, d_n)$ respectively.
+        Let each feature map has receptive field length $r_n$,
+        and difference of receptive fields of adjacent positions be $f_n$.
+        By convention, $(r_0, f_0) = (1, 1)$. Then one has
+        \begin{eqnarray}
+        r_{n+1} & = & r_n + d_n(k_n-1)f_n, \\
+        f_{n+1} & = & s_n f_n.
+        \end{eqnarray}
+        Hence
+        \begin{eqnarray}
+        f_{n} & = & \prod\limits_{i=0}^{n-1} s_i, \\
+        r_{n} & = & 1 + \sum\limits_{i=0}^{n-1} d_i(k_i-1) \prod\limits_{i=0}^{j-1} s_j,
+        \end{eqnarray}
+        with empty products equaling 1 by convention.
 
     Parameters:
     -----------

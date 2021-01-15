@@ -705,7 +705,11 @@ ECGWaveForm = namedtuple(
 )
 
 
-def masks_to_waveforms(masks:np.ndarray, class_map:Dict[str, int], fs:Real, mask_format:str="channel_first", leads:Optional[Sequence[str]]=None) -> Dict[str, List[ECGWaveForm]]:
+def masks_to_waveforms(masks:np.ndarray,
+                       class_map:Dict[str, int],
+                       fs:Real,
+                       mask_format:str="channel_first",
+                       leads:Optional[Sequence[str]]=None) -> Dict[str, List[ECGWaveForm]]:
     """ finished, checked,
 
     convert masks into lists of waveforms
