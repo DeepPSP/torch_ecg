@@ -9,6 +9,7 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 from torch import Tensor
 from torch import nn
+
 from torch_ecg.cfg import Cfg
 
 
@@ -28,6 +29,7 @@ __all__ = [
     "compute_avgpool_output_shape",
     "compute_module_size",
     "default_collate_fn",
+    "compute_receptive_field",
 ]
 
 
@@ -373,6 +375,55 @@ def compute_module_size(module:nn.Module) -> int:
     module_parameters = filter(lambda p: p.requires_grad, module.parameters())
     n_params = sum([np.prod(p.size()) for p in module_parameters])
     return n_params
+
+
+def compute_receptive_field(kernel_sizes:Union[Sequence[int], int]=1, strides:Union[Sequence[int], int]=1, dilations:Union[Sequence[int], int]=1, input_len:Optional[int]=None) -> Union[int, float]:
+    """ finished, checked,
+
+    computes the receptive field of feature map of certain channel,
+    from certain flow (if not merged, different flows, e.g. shortcut, must be computed separately),
+    for convolutions, (non-global) poolings
+
+    Parameters:
+    -----------
+    kernel_sizes: int or sequence of int,
+        the sequence of kernel size for all the layers in the flow
+    strides: int or sequence of int, default 1,
+        the sequence of strides for all the layers in the flow
+    dilations: int or sequence of int, default 1,
+        the sequence of strides for all the layers in the flow
+    input_len: int, optional,
+        length of the first feature map in the flow
+
+    Returns:
+    --------
+    receptive_field: int,
+        (length) of the receptive field
+
+    Example:
+    --------
+    >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2])
+    ... 90
+    >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[2,1,2,4,1,8,8,8,1])
+    ... 484
+    >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[4,1,4,8,1,16,32,64,1])
+    ... 1984
+    this is the receptive fields of the output feature maps
+    of the 3 branches of the multi-scopic net, using its original hyper-parameters,
+    (note the 3 max pooling layers)
+    """
+    _kernel_sizes = [kernel_size] if isinstance(kernel_sizes, int) else list(kernel_sizes)
+    num_layers = len(_kernel_sizes)
+    _strides = list(repeat(strides, num_layers)) if isinstance(strides, int) else list(strides)
+    _dilations = list(repeat(dilations, num_layers)) if isinstance(dilations, int) else list(dilations)
+    assert num_layers == len(_strides) == len(_dilations)
+    receptive_field = 1
+    for idx, (k, d) in enumerate(zip(_kernel_sizes, _dilations)):
+        s = np.prod(_strides[:idx]) if idx > 0 else 1
+        receptive_field += d * (k-1) * s
+    if input_len is not None:
+        receptive_field = min(receptive_field, input_len)
+    return receptive_field
 
 
 def default_collate_fn(batch:Sequence[Tuple[np.ndarray, np.ndarray]]) -> Tuple[Tensor, Tensor]:
