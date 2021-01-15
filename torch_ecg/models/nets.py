@@ -2246,6 +2246,47 @@ class SEBlock(nn.Module):
         return compute_module_size(self)
 
 
+class GEBlock(nn.Module):
+    """
+
+    Gather-excite Network
+
+    References:
+    -----------
+    [1] Hu, J., Shen, L., Albanie, S., Sun, G., & Vedaldi, A. (2018). Gather-excite: Exploiting feature context in convolutional neural networks. Advances in neural information processing systems, 31, 9401-9411.
+    [2] https://github.com/hujie-frank/GENet
+    [3] https://github.com/BayesWatch/pytorch-GENet
+    """
+    __DEBUG__ = True
+    __name__ = "GEBlock"
+
+    def __init__(self) -> NoReturn:
+        """
+        """
+        super().__init__()
+        raise NotImplementedError
+
+
+class SKBlock(nn.Module):
+    """
+
+    Selective Kernel Networks
+
+    References:
+    -----------
+    [1] Li, X., Wang, W., Hu, X., & Yang, J. (2019). Selective kernel networks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 510-519).
+    [2] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/sknet.py
+    """
+    __DEBUG__ = True
+    __name__ = "SKBlock"
+
+    def __init__(self) -> NoReturn:
+        """
+        """
+        super().__init__()
+        raise NotImplementedError
+
+
 class GlobalContextBlock(nn.Module):
     """ finished, checked,
 
