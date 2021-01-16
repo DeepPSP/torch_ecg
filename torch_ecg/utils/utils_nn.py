@@ -413,9 +413,11 @@ def compute_receptive_field(kernel_sizes:Union[Sequence[int], int]=1,
                             input_len:Optional[int]=None) -> Union[int, float]:
     r""" finished, checked,
 
-    computes the receptive field of feature map of certain channel,
+    computes the (generic) receptive field of feature map of certain channel,
     from certain flow (if not merged, different flows, e.g. shortcut, must be computed separately),
-    for convolutions, (non-global) poolings
+    for convolutions, (non-global) poolings.
+    "generic" refers to a general position, rather than specific positions,
+    like on the edges, whose receptive field is definitely different
 
     .. math::
         Let the layers has kernel size, stride, dilation $(k_n, s_n, d_n)$ respectively.
