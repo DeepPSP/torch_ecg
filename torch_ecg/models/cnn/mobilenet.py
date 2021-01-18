@@ -89,6 +89,10 @@ class MobileNetV1(nn.Module):
 
 class MobileNetV2(nn.Module):
     """
+
+    References:
+    -----------
+    [1] https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv2.py
     """
     __DEBUG__ = True
     __name__ = "MobileNetV2"
@@ -112,6 +116,10 @@ class MobileNetV2(nn.Module):
 
 class MobileNetV3(nn.Module):
     """
+
+    References:
+    -----------
+    [1] https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv3.py
     """
     __DEBUG__ = True
     __name__ = "MobileNetV3"
