@@ -3,7 +3,7 @@ EfficientNet,
 
 References:
 -----------
-[1]
+[1] Tan, M., & Le, Q. V. (2019). Efficientnet: Rethinking model scaling for convolutional neural networks. arXiv preprint arXiv:1905.11946.
 """
 
 from copy import deepcopy
