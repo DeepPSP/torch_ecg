@@ -6,7 +6,7 @@ Its key points:
 2. QRS complex detection
 3. noisy heartbeat recognition: transient noise and artifacts
 4. atrial fibrillation recognition: remove SPB and carefully distinguish PVC and AF beats with aberrant ventricular conduction in episodes with atrial fibrillation
-5. PVC and SPB model detection: DenseNet \cite{densenet, huang2019densenet2}
+5. PVC and SPB model detection: DenseNet
 6. post-processing with clinical rules: a set of clinical experiences and rules including rhythm and morphological rules to suppress false positives and search for false negatives of PVC and SPB detection
 """
 import math

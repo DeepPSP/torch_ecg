@@ -751,12 +751,17 @@ class Xception(nn.Sequential):
     __name__ = "Xception"
 
     def __init__(self, in_channels:int, **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
         in_channels: int,
+            number of channels in the input
         config: dict,
+            other hyper-parameters of the Module, ref. corresponding config file
+            key word arguments that have to be set in 3 sub-dict,
+            namely in "entry_flow", "middle_flow", and "exit_flow",
+            ref. corresponding docstring of each class
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -795,7 +800,17 @@ class Xception(nn.Sequential):
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns:
+        --------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         output = super().forward(input)
         return output
