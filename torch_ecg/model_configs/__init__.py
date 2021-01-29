@@ -94,6 +94,10 @@ __all__ = [
     # multi_scopic
     "multi_scopic_block",
     "multi_scopic", "multi_scopic_leadwise",
+    # vanilla dense_net
+    "dense_net_vanilla",
+    # vanilla xception
+    "xception_vanilla",
 
     # rnn
     "lstm",
