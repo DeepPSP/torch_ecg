@@ -509,6 +509,7 @@ class MultiConv(nn.Sequential):
             then `out_activation` refers to the first activation
         config: dict,
             other parameters, including
+            type (separable or normal, etc.),
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers
             and ordering of convolutions and batch normalizations, activations if applicable
