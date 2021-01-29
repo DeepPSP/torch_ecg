@@ -120,6 +120,32 @@ Activations.softmax = nn.Softmax
 # Activations.linear = None
 
 
+# ---------------------------------------------
+# normalizations
+Normalizations = ED()
+Normalizations.batch_norm = nn.BatchNorm1d
+Normalizations.batch_normalization = Normalizations.batch_norm
+Normalizations.group_norm = nn.GroupNorm
+Normalizations.group_normalization = Normalizations.group_norm
+Normalizations.layer_norm = nn.LayerNorm
+Normalizations.layer_normalization = Normalizations.layer_norm
+Normalizations.instance_norm = nn.InstanceNorm1d
+Normalizations.instance_normalization = Normalizations.instance_norm
+Normalizations.local_response_norm = nn.LocalResponseNorm
+Normalizations.local_response_normalization = Normalizations.local_response_norm
+# other normalizations:
+# weight normalization
+# batch re-normalization
+# batch-instance normalization
+# switchable normalization
+# spectral normalization
+# ScaleNorm
+# batch group normalization
+# ref. https://mlexplained.com/2018/11/30/an-overview-of-normalization-methods-in-deep-learning/
+# and ref. Zhou, Xiao-Yun, et al. "Batch Group Normalization." arXiv preprint arXiv:2012.02782 (2020).
+# problem: parameters of different normalizations are different
+
+
 _DEFAULT_CONV_CONFIGS = ED(
     batch_norm=True,
     activation="relu",
@@ -483,6 +509,7 @@ class MultiConv(nn.Sequential):
             then `out_activation` refers to the first activation
         config: dict,
             other parameters, including
+            type (separable or normal, etc.),
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers
             and ordering of convolutions and batch normalizations, activations if applicable

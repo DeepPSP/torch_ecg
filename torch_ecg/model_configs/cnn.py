@@ -27,9 +27,9 @@ __all__ = [
     # multi_scopic
     "multi_scopic_block",
     "multi_scopic", "multi_scopic_leadwise",
-    # dense_net
+    # vanilla dense_net
     "dense_net_vanilla",
-    # xception
+    # vanilla xception
     "xception_vanilla",
 ]
 
@@ -463,7 +463,6 @@ multi_scopic_block.kw_activation = deepcopy(multi_scopic.kw_activation)
 
 
 dense_net_vanilla = ED()
-
 dense_net_vanilla.num_layers = [6, 6, 6, 6]
 dense_net_vanilla.init_num_filters = 64
 dense_net_vanilla.init_filter_length = 7
@@ -477,15 +476,8 @@ dense_net_vanilla.bn_size = 4
 dense_net_vanilla.dropout = 0
 dense_net_vanilla.compression = 0.5
 dense_net_vanilla.groups = 1
-
-dense_net_vanilla.block = {"building_block":"basic",}
-dense_net_vanilla.transition = {}
-
-
-dense_net = ED()
-
-
-dense_block = ED()
+dense_net_vanilla.block = ED(building_block="basic")
+dense_net_vanilla.transition = ED()
 
 
 
@@ -512,6 +504,3 @@ xception_vanilla.exit_flow = ED(
     subsample_lengths=2,
     subsample_kernels=3,
 )
-
-
-xception = ED()
