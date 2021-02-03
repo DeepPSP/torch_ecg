@@ -29,7 +29,7 @@ from biosppy.signals.tools import filter_signal
 
 from torch_ecg.train.train_crnn_cpsc2020.cfg import PreprocCfg
 from .ecg_rpeaks import (
-    xqrs_detect, gqrs_detect, pantompkins,
+    xqrs_detect, gqrs_detect, pantompkins_detect,
     hamilton_detect, ssf_detect, christov_detect, engzee_detect, gamboa_detect,
 )
 from .ecg_rpeaks_dl import seq_lab_net_detect
@@ -44,7 +44,7 @@ __all__ = [
 QRS_DETECTORS = {
     "xqrs": xqrs_detect,
     "gqrs": gqrs_detect,
-    "pantompkins": pantompkins,
+    "pantompkins": pantompkins_detect,
     "hamilton": hamilton_detect,
     "ssf": ssf_detect,
     "christov": christov_detect,
