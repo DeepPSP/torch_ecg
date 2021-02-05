@@ -21,6 +21,7 @@ __all__ = [
 ]
 
 
+# vanilla config, for delineation using single-lead ECG in corresponding papers
 ECG_SEQ_LAB_NET_CONFIG = ED()
 
 
