@@ -118,7 +118,7 @@ __all__ = [
     "ECG_SUBTRACT_UNET_CONFIG",
 
     # ecg_unet
-    "ECG_UNET_CONFIG",
+    "ECG_UNET_VANILLA_CONFIG",
 
     # ecg_yolo
     "ECG_YOLO_CONFIG",
