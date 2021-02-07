@@ -7,6 +7,7 @@ from typing import Union, Sequence, List, Tuple, Optional, NoReturn
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
+import torch
 from torch import Tensor
 from torch import nn
 
