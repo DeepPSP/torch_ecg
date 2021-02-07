@@ -144,7 +144,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         Device:          {device.type}
         Optimizer:       {config.train_optimizer}
         -----------------------------------------
-    """)
+        """)
     # print(msg)  # in case no logger
     if logger:
         logger.info(msg)
@@ -288,7 +288,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                     train/f_measure:         {eval_train_res[3]}
                     train/f_beta_measure:    {eval_train_res[4]}
                     train/g_beta_measure:    {eval_train_res[5]}
-                """)
+                    """)
                 else:
                     eval_train_msg = ""
                 msg = textwrap.dedent(f"""
@@ -302,7 +302,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                     test/f_beta_measure:     {eval_res[4]}
                     test/g_beta_measure:     {eval_res[5]}
                     ---------------------------------
-                """)
+                    """)
             elif config.model_name == "seq_lab":
                 eval_res = evaluate_seq_lab(
                     model, val_loader, config, device, debug
@@ -336,7 +336,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                     train/pvc_fp:            {eval_train_res.pvc_fp}
                     train/spb_fn:            {eval_train_res.spb_fn}
                     train/pvc_fn:            {eval_train_res.pvc_fn}
-                """)
+                    """)
                 else:
                     eval_train_msg = ""
                 msg = textwrap.dedent(f"""
@@ -353,7 +353,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                     test/spb_fn:             {eval_res.spb_fn}
                     test/pvc_fn:             {eval_res.pvc_fn}
                     ---------------------------------
-                """)
+                    """)
 
             # print(msg)  # in case no logger
             if logger:

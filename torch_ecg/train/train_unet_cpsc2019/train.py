@@ -128,7 +128,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         comment=f"OPT_{model.__name__}_{config.cnn_name}_{config.rnn_name}_{config.attn_name}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
     )
 
-    msg =textwrap.dedent( f"""
+    msg = textwrap.dedent( f"""
         Starting training:
         ------------------
         Epochs:          {n_epochs}
@@ -139,7 +139,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         Device:          {device.type}
         Optimizer:       {config.train_optimizer}
         -----------------------------------------
-    """)
+        """)
     # print(msg)  # in case no logger
     if logger:
         logger.info(msg)
@@ -250,9 +250,9 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 scheduler.step()
             
             if debug:
-                eval_train_msg = textwrap.dedent(f"""
+                eval_train_msg = f"""
                 train/qrs_score:         {eval_train_res}
-            """)
+                """
             else:
                 eval_train_msg = ""
             msg = textwrap.dedent(f"""
@@ -261,7 +261,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 train/epoch_loss:        {epoch_loss}{eval_train_msg}
                 test/qrs_score:          {eval_res}
                 ---------------------------------
-            """)
+                """)
 
             # print(msg)  # in case no logger
             if logger:

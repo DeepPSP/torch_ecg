@@ -174,7 +174,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         Dataset classes: {train_dataset.all_classes}
         Class weights:   {train_dataset.class_weights}
         -----------------------------------------
-    """)
+        """)
     # print(msg)  # in case no logger
     if logger:
         logger.info(msg)
@@ -316,7 +316,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 train/f_beta_measure:    {eval_train_res[4]}
                 train/g_beta_measure:    {eval_train_res[5]}
                 train/challenge_metric:  {eval_train_res[6]}
-            """)
+                """)
             else:
                 eval_train_msg = ""
             msg = textwrap.dedent(f"""
@@ -331,7 +331,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 test/g_beta_measure:     {eval_res[5]}
                 test/challenge_metric:   {eval_res[6]}
                 ---------------------------------
-            """)
+                """)
             # print(msg)  # in case no logger
             if logger:
                 logger.info(msg)
