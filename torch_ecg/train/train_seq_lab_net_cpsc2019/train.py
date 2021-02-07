@@ -295,7 +295,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
 
 @torch.no_grad()
-def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, , debug:bool=True, logger:Optional[logging.Logger]=None) -> float:
+def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None) -> float:
     """ finished, checked,
 
     Parameters:
