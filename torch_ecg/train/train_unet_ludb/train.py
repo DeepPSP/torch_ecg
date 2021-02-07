@@ -52,7 +52,11 @@ __all__ = [
 def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, logger:Optional[logging.Logger]=None, debug:bool=False):
     """
     """
-    print(f"training configurations are as follows:\n{dict_to_str(config)}")
+    msg = f"training configurations are as follows:\n{dict_to_str(config)}"
+    if logger:
+        logger.info(msg)
+    else:
+        print(msg)
 
     train_dataset = LUDB(config=config, training=True)
 
@@ -118,9 +122,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         Optimizer:       {config.train_optimizer}
         -----------------------------------------
     """)
-    print(msg)  # in case no logger
+    # print(msg)  # in case no logger
     if logger:
         logger.info(msg)
+    else:
+        print(msg)
 
     if config.train_optimizer.lower() == "adam":
         optimizer = optim.Adam(
@@ -196,9 +202,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                             "loss (batch)": loss.item(),
                         })
                         msg = f"Train step_{global_step}: loss : {loss.item()}"
-                    print(msg)  # in case no logger
+                    # print(msg)  # in case no logger
                     if logger:
                         logger.info(msg)
+                    else:
+                        print(msg)
                 pbar.update(signals.shape[0])
 
             writer.add_scalar("train/epoch_loss", epoch_loss, global_step)
@@ -246,8 +254,30 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
 
 @torch.no_grad()
-def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=False) -> Tuple[float]:
-    """
+def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None) -> Tuple[float]:
+    """ NOT finished, NOT checked,
+
+    Parameters:
+    -----------
+    model: Module,
+        the model to evaluate
+    data_loader: DataLoader,
+        the data loader for loading data for evaluation
+    config: dict,
+        evaluation configurations
+    device: torch.device,
+        device for evaluation
+    debug: bool, default True,
+        more detailed evaluation output
+    logger: Logger, optional,
+        logger to record detailed evaluation output,
+        if is None, detailed evaluation output will be printed
+
+    Returns:
+    --------
+    eval_res: tuple of float,
+        evaluation results, including
+        sensitivity, precision, f1_score, mean_error, standard_deviation, etc.
     """
     model.eval()
     data_loader.dataset.disable_data_augmentation()
@@ -294,10 +324,10 @@ if __name__ == "__main__":
     logger.info(f"Using device {device}")
     logger.info(f"Using torch of version {torch.__version__}")
     logger.info(f"with configuration {config}")
-    print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
-    print(f"Using device {device}")
-    print(f"Using torch of version {torch.__version__}")
-    print(f"with configuration {config}")
+    # print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
+    # print(f"Using device {device}")
+    # print(f"Using torch of version {torch.__version__}")
+    # print(f"with configuration {config}")
 
     model_config = deepcopy(ECG_UNET_VANILLA_CONFIG)
 

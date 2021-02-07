@@ -69,7 +69,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         if True, the training set itself would be evaluated 
         to check if the model really learns from the training set
     """
-    print(f"training configurations are as follows:\n{dict_to_str(config)}")
+    msg = f"training configurations are as follows:\n{dict_to_str(config)}"
+    if logger:
+        logger.info(msg)
+    else:
+        print(msg)
 
     train_dataset = CPSC2019(config=config, training=True)
     train_dataset.__DEBUG__ = False
@@ -136,9 +140,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         Optimizer:       {config.train_optimizer}
         -----------------------------------------
     """)
-    print(msg)  # in case no logger
+    # print(msg)  # in case no logger
     if logger:
         logger.info(msg)
+    else:
+        print(msg)
 
     if config.train_optimizer.lower() == "adam":
         optimizer = optim.Adam(
@@ -214,9 +220,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                             "loss (batch)": loss.item(),
                         })
                         msg = f"Train step_{global_step}: loss : {loss.item()}"
-                    print(msg)  # in case no logger
+                    # print(msg)  # in case no logger
                     if logger:
                         logger.info(msg)
+                    else:
+                        print(msg)
                 pbar.update(signals.shape[0])
             
             writer.add_scalar("train/epoch_loss", epoch_loss, global_step)
@@ -255,9 +263,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 ---------------------------------
             """)
 
-            print(msg)  # in case no logger
+            # print(msg)  # in case no logger
             if logger:
                 logger.info(msg)
+            else:
+                print(msg)
 
             try:
                 os.makedirs(config.checkpoints, exist_ok=True)
@@ -285,7 +295,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
 
 @torch.no_grad()
-def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=False) -> float:
+def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, , debug:bool=True, logger:Optional[logging.Logger]=None) -> float:
     """ finished, checked,
 
     Parameters:
@@ -298,7 +308,11 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
         evaluation configurations
     device: torch.device,
         device for evaluation
-    debug: bool, default False
+    debug: bool, default True,
+        more detailed evaluation output
+    logger: Logger, optional,
+        logger to record detailed evaluation output,
+        if is None, detailed evaluation output will be printed
 
     Returns:
     --------
@@ -420,10 +434,10 @@ if __name__ == "__main__":
     logger.info(f"Using device {device}")
     logger.info(f"Using torch of version {torch.__version__}")
     logger.info(f"with configuration\n{dict_to_str(config)}")
-    print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
-    print(f"Using device {device}")
-    print(f"Using torch of version {torch.__version__}")
-    print(f"with configuration\n{dict_to_str(config)}")
+    # print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
+    # print(f"Using device {device}")
+    # print(f"Using torch of version {torch.__version__}")
+    # print(f"with configuration\n{dict_to_str(config)}")
 
     model_name = f"seq_lab_{config.model_name.lower()}"
     model_config = deepcopy(ModelCfg[model_name])

@@ -71,7 +71,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         if True, the training set itself would be evaluated 
         to check if the model really learns from the training set
     """
-    print(f"training configurations are as follows:\n{dict_to_str(config)}")
+    msg = f"training configurations are as follows:\n{dict_to_str(config)}"
+    if logger:
+        logger.info(msg)
+    else:
+        print(msg)
 
     ds = CPSC2020_SIMPLIFIED
     train_dataset = ds(config=config, training=True)
@@ -141,9 +145,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         Optimizer:       {config.train_optimizer}
         -----------------------------------------
     """)
-    print(msg)  # in case no logger
+    # print(msg)  # in case no logger
     if logger:
         logger.info(msg)
+    else:
+        print(msg)
 
     if config.train_optimizer.lower() == "adam":
         optimizer = optim.Adam(
@@ -220,9 +226,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                             "loss (batch)": loss.item(),
                         })
                         msg = f"Train step_{global_step}: loss : {loss.item()}"
-                    print(msg)  # in case no logger
+                    # print(msg)  # in case no logger
                     if logger:
                         logger.info(msg)
+                    else:
+                        print(msg)
                 pbar.update(signals.shape[0])
 
             writer.add_scalar("train/epoch_loss", epoch_loss, global_step)
@@ -347,9 +355,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                     ---------------------------------
                 """)
 
-            print(msg)  # in case no logger
+            # print(msg)  # in case no logger
             if logger:
                 logger.info(msg)
+            else:
+                print(msg)
 
             try:
                 os.makedirs(config.checkpoints, exist_ok=True)
@@ -379,7 +389,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
 
 @torch.no_grad()
-def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=False) -> Tuple[float]:
+def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None)) -> Tuple[float]:
     """ finished, checked,
 
     Parameters:
@@ -392,7 +402,11 @@ def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:t
         evaluation configurations
     device: torch.device,
         device for evaluation
-    debug: bool, default False
+    debug: bool, default True,
+        more detailed evaluation output
+    logger: Logger, optional,
+        logger to record detailed evaluation output,
+        if is None, detailed evaluation output will be printed
 
     Returns:
     --------
@@ -424,7 +438,11 @@ def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:t
     classes = data_loader.dataset.all_classes
 
     if debug:
-        print(f"all_scalar_preds.shape = {all_scalar_preds.shape}, all_labels.shape = {all_labels.shape}")
+        msg = f"all_scalar_preds.shape = {all_scalar_preds.shape}, all_labels.shape = {all_labels.shape}"
+        if logger:
+            logger.info(msg)
+        else:
+            print(msg)
         head_num = 5
         head_scalar_preds = all_scalar_preds[:head_num,...]
         head_bin_preds = all_bin_preds[:head_num,...]
@@ -432,7 +450,7 @@ def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:t
         head_labels = all_labels[:head_num,...]
         head_labels_classes = [np.array(classes)[np.where(row)] for row in head_labels]
         for n in range(head_num):
-            print(textwrap.dedent(f"""
+            msg = textwrap.dedent(f"""
             ----------------------------------------------
             scalar prediction:    {[round(n, 3) for n in head_scalar_preds[n].tolist()]}
             binary prediction:    {head_bin_preds[n].tolist()}
@@ -440,7 +458,11 @@ def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:t
             predicted classes:    {head_preds_classes[n].tolist()}
             label classes:        {head_labels_classes[n].tolist()}
             ----------------------------------------------
-            """))
+            """)
+            if logger:
+                logger.info(msg)
+            else:
+                print(msg)
 
     auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure = \
         eval_score(
@@ -457,7 +479,7 @@ def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:t
 
 
 @torch.no_grad()
-def evaluate_seq_lab(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=False) -> Dict[str, int]:
+def evaluate_seq_lab(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None) -> Dict[str, int]:
     """ finished, checked,
 
     Parameters:
@@ -470,7 +492,11 @@ def evaluate_seq_lab(model:nn.Module, data_loader:DataLoader, config:dict, devic
         evaluation configurations
     device: torch.device,
         device for evaluation
-    debug: bool, default False
+    debug: bool, default True,
+        more detailed evaluation output
+    logger: Logger, optional,
+        logger to record detailed evaluation output,
+        if is None, detailed evaluation output will be printed
 
     Returns:
     --------
@@ -664,10 +690,10 @@ if __name__ == "__main__":
     logger.info(f"Using device {device}")
     logger.info(f"Using torch of version {torch.__version__}")
     logger.info(f"with configuration\n{dict_to_str(train_config)}")
-    print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
-    print(f"Using device {device}")
-    print(f"Using torch of version {torch.__version__}")
-    print(f"with configuration\n{dict_to_str(train_config)}")
+    # print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
+    # print(f"Using device {device}")
+    # print(f"Using torch of version {torch.__version__}")
+    # print(f"with configuration\n{dict_to_str(train_config)}")
 
     try:
         train(

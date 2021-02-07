@@ -103,7 +103,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         if True, the training set itself would be evaluated 
         to check if the model really learns from the training set
     """
-    print(f"training configurations are as follows:\n{dict_to_str(config)}")
+    msg = f"training configurations are as follows:\n{dict_to_str(config)}"
+    if logger:
+        logger.info(msg)
+    else:
+        print(msg)
 
     train_dataset = CINC2020(config=config, training=True)
 
@@ -171,9 +175,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         Class weights:   {train_dataset.class_weights}
         -----------------------------------------
     """)
-    print(msg)  # in case no logger
+    # print(msg)  # in case no logger
     if logger:
         logger.info(msg)
+    else:
+        print(msg)
 
     # learning rate setup
     def burnin_schedule(i):
@@ -264,16 +270,18 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                             "loss (batch)": loss.item(),
                         })
                         msg = f"Train step_{global_step}: loss : {loss.item()}"
-                    print(msg)  # in case no logger
+                    # print(msg)  # in case no logger
                     if logger:
                         logger.info(msg)
+                    else:
+                        print(msg)
                 pbar.update(signals.shape[0])
 
             writer.add_scalar("train/epoch_loss", epoch_loss, global_step)
 
             # eval for each epoch using `evaluate`
             if debug:
-                eval_train_res = evaluate(model, val_train_loader, config, device, debug)
+                eval_train_res = evaluate(model, val_train_loader, config, device, debug, logger=logger)
                 writer.add_scalar("train/auroc", eval_train_res[0], global_step)
                 writer.add_scalar("train/auprc", eval_train_res[1], global_step)
                 writer.add_scalar("train/accuracy", eval_train_res[2], global_step)
@@ -282,7 +290,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 writer.add_scalar("train/g_beta_measure", eval_train_res[5], global_step)
                 writer.add_scalar("train/challenge_metric", eval_train_res[6], global_step)
 
-            eval_res = evaluate(model, val_loader, config, device, debug)
+            eval_res = evaluate(model, val_loader, config, device, debug, logger=logger)
             model.train()
             writer.add_scalar("test/auroc", eval_res[0], global_step)
             writer.add_scalar("test/auprc", eval_res[1], global_step)
@@ -324,9 +332,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 test/challenge_metric:   {eval_res[6]}
                 ---------------------------------
             """)
-            print(msg)  # in case no logger
+            # print(msg)  # in case no logger
             if logger:
                 logger.info(msg)
+            else:
+                print(msg)
 
             try:
                 os.makedirs(config.checkpoints, exist_ok=True)
@@ -358,7 +368,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
 
 @torch.no_grad()
-def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=False) -> Tuple[float]:
+def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None) -> Tuple[float]:
     """ finished, checked,
 
     Parameters:
@@ -371,7 +381,11 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
         evaluation configurations
     device: torch.device,
         device for evaluation
-    debug: bool, default False
+    debug: bool, default True,
+        more detailed evaluation output
+    logger: Logger, optional,
+        logger to record detailed evaluation output,
+        if is None, detailed evaluation output will be printed
 
     Returns:
     --------
@@ -403,7 +417,11 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
     classes = data_loader.dataset.all_classes
 
     if debug:
-        print(f"all_scalar_preds.shape = {all_scalar_preds.shape}, all_labels.shape = {all_labels.shape}")
+        msg = f"all_scalar_preds.shape = {all_scalar_preds.shape}, all_labels.shape = {all_labels.shape}"
+        if logger:
+            logger.debug(msg)
+        else:
+            print(msg)
         head_num = 5
         head_scalar_preds = all_scalar_preds[:head_num,...]
         head_bin_preds = all_bin_preds[:head_num,...]
@@ -411,7 +429,7 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
         head_labels = all_labels[:head_num,...]
         head_labels_classes = [np.array(classes)[np.where(row)] for row in head_labels]
         for n in range(head_num):
-            print(textwrap.dedent(f"""
+            msg = textwrap.dedent(f"""
             ----------------------------------------------
             scalar prediction:    {[round(n, 3) for n in head_scalar_preds[n].tolist()]}
             binary prediction:    {head_bin_preds[n].tolist()}
@@ -419,7 +437,11 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
             predicted classes:    {head_preds_classes[n].tolist()}
             label classes:        {head_labels_classes[n].tolist()}
             ----------------------------------------------
-            """))
+            """)
+            if logger:
+                logger.debug(msg)
+            else:
+                print(msg)
 
     auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric = \
         evaluate_12ECG_score(
@@ -507,10 +529,10 @@ if __name__ == "__main__":
     logger.info(f"Using device {device}")
     logger.info(f"Using torch of version {torch.__version__}")
     logger.info(f"with configuration\n{dict_to_str(config)}")
-    print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
-    print(f"Using device {device}")
-    print(f"Using torch of version {torch.__version__}")
-    print(f"with configuration\n{dict_to_str(config)}")
+    # print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
+    # print(f"Using device {device}")
+    # print(f"Using torch of version {torch.__version__}")
+    # print(f"with configuration\n{dict_to_str(config)}")
 
     tranches = config.tranches_for_training
     if tranches:
