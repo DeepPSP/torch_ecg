@@ -658,7 +658,7 @@ if __name__ == "__main__":
     model.to(device=device)
     model.__DEBUG__ = False
 
-    logger = init_logger(log_dir=train_config.log_dir)
+    logger = init_logger(log_dir=train_config.log_dir, verbose=2)
     logger.info(f"\n{'*'*20}   Start Training   {'*'*20}\n")
     logger.info(f"Model name = {train_config.model_name}")
     logger.info(f"Using device {device}")

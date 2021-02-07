@@ -45,9 +45,9 @@ def get_record_list_recursive(db_dir:str, rec_ext:str) -> List[str]:
     """ finished, checked,
 
     get the list of records in `db_dir` recursively,
-    for example, there are two folders 'patient1', 'patient2' in `db_dir`,
-    and there are records 'A0001', 'A0002', ... in 'patient1'; 'B0001', 'B0002', ... in 'patient2',
-    then the output would be 'patient1{sep}A0001', ..., 'patient2{sep}B0001', ...,
+    for example, there are two folders "patient1", "patient2" in `db_dir`,
+    and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
+    then the output would be "patient1{sep}A0001", ..., "patient2{sep}B0001", ...,
     sep is determined by the system
 
     Parameters:
@@ -82,9 +82,9 @@ def get_record_list_recursive2(db_dir:str, rec_pattern:str) -> List[str]:
     """ finished, checked,
 
     get the list of records in `db_dir` recursively,
-    for example, there are two folders 'patient1', 'patient2' in `db_dir`,
-    and there are records 'A0001', 'A0002', ... in 'patient1'; 'B0001', 'B0002', ... in 'patient2',
-    then the output would be 'patient1{sep}A0001', ..., 'patient2{sep}B0001', ...,
+    for example, there are two folders "patient1", "patient2" in `db_dir`,
+    and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
+    then the output would be "patient1{sep}A0001", ..., "patient2{sep}B0001", ...,
     sep is determined by the system
 
     Parameters:
@@ -92,7 +92,7 @@ def get_record_list_recursive2(db_dir:str, rec_pattern:str) -> List[str]:
     db_dir: str,
         the parent (root) path of the whole database
     rec_pattern: str,
-        pattern of the record filenames, e.g. 'A*.mat'
+        pattern of the record filenames, e.g. "A*.mat"
 
     Returns:
     --------
@@ -120,9 +120,9 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
     """ finished, checked,
 
     get the list of records in `db_dir` recursively,
-    for example, there are two folders 'patient1', 'patient2' in `db_dir`,
-    and there are records 'A0001', 'A0002', ... in 'patient1'; 'B0001', 'B0002', ... in 'patient2',
-    then the output would be 'patient1{sep}A0001', ..., 'patient2{sep}B0001', ...,
+    for example, there are two folders "patient1", "patient2" in `db_dir`,
+    and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
+    then the output would be "patient1{sep}A0001", ..., "patient2{sep}B0001", ...,
     sep is determined by the system
 
     Parameters:
@@ -246,12 +246,12 @@ def dict_to_str(d:Union[dict, list, tuple], current_depth:int=1, indent_spaces:i
 def str2bool(v:Union[str, bool]) -> bool:
     """ finished, checked,
 
-    converts a 'boolean' value possibly in the format of str to bool
+    converts a "boolean" value possibly in the format of str to bool
 
     Parameters:
     -----------
     v: str or bool,
-        the 'boolean' value
+        the "boolean" value
 
     Returns:
     --------
@@ -264,12 +264,12 @@ def str2bool(v:Union[str, bool]) -> bool:
     """
     if isinstance(v, bool):
        b = v
-    elif v.lower() in ('yes', 'true', 't', 'y', '1'):
+    elif v.lower() in ("yes", "true", "t", "y", "1"):
         b = True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    elif v.lower() in ("no", "false", "f", "n", "0"):
         b = False
     else:
-        raise ValueError('Boolean value expected.')
+        raise ValueError("Boolean value expected.")
     return b
 
 
@@ -375,7 +375,7 @@ def get_mask(shape:Union[int, Sequence[int]], critical_points:np.ndarray, left_b
     return mask
 
 
-def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[float],np.ndarray,dict]='balanced') -> np.ndarray:
+def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[float],np.ndarray,dict]="balanced") -> np.ndarray:
     """ finished, checked,
 
     transform class weight to sample weight
@@ -384,9 +384,9 @@ def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[floa
     -----------
     y: ndarray,
         the label (class) of each sample
-    class_weight: str, or list, or ndarray, or dict, default 'balanced',
+    class_weight: str, or list, or ndarray, or dict, default "balanced",
         the weight for each sample class,
-        if is 'balanced', the class weight will automatically be given by 
+        if is "balanced", the class weight will automatically be given by 
         if `y` is of string type, then `class_weight` should be a dict,
         if `y` is of numeric type, and `class_weight` is array_like,
         then the labels (`y`) should be continuous and start from 0
@@ -404,12 +404,12 @@ def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[floa
         sample_weight = y.copy().astype(int)
     except:
         sample_weight = y.copy()
-        assert isinstance(class_weight, dict) or class_weight.lower()=='balanced', \
-            "if `y` are of type str, then class_weight should be 'balanced' or a dict"
+        assert isinstance(class_weight, dict) or class_weight.lower()=="balanced", \
+            "if `y` are of type str, then class_weight should be \042balanced\042 or a dict"
     
-    if isinstance(class_weight, str) and class_weight.lower() == 'balanced':
+    if isinstance(class_weight, str) and class_weight.lower() == "balanced":
         classes = np.unique(y).tolist()
-        cw = compute_class_weight('balanced', classes=classes, y=y)
+        cw = compute_class_weight("balanced", classes=classes, y=y)
         trans_func = lambda s: cw[classes.index(s)]
     else:
         trans_func = lambda s: class_weight[s]
@@ -433,44 +433,44 @@ def plot_single_lead(t:np.ndarray, sig:np.ndarray, ax:Optional[Any]=None, ticks_
         the granularity to plot axis ticks, the higher the more,
         0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
     """
-    if 'plt' not in dir():
+    if "plt" not in dir():
         import matplotlib.pyplot as plt
-    palette = {'p_waves': 'green', 'qrs': 'red', 't_waves': 'pink',}
+    palette = {"p_waves": "green", "qrs": "red", "t_waves": "pink",}
     plot_alpha = 0.4
     y_range = np.max(np.abs(sig)) + 100
     if ax is None:
         fig_sz_w = int(round(4.8 * (t[-1]-t[0])))
         fig_sz_h = 6 * y_range / 1500
         fig, ax = plt.subplots(figsize=(fig_sz_w, fig_sz_h))
-    label = kwargs.get('label', None)
+    label = kwargs.get("label", None)
     if label:
-        ax.plot(t, sig, label=kwargs.get('label'))
+        ax.plot(t, sig, label=kwargs.get("label"))
     else:
         ax.plot(t, sig)
-    ax.axhline(y=0, linestyle='-', linewidth='1.0', color='red')
+    ax.axhline(y=0, linestyle="-", linewidth="1.0", color="red")
     # NOTE that `Locator` has default `MAXTICKS` equal to 1000
     if ticks_granularity >= 1:
         ax.xaxis.set_major_locator(plt.MultipleLocator(0.2))
         ax.yaxis.set_major_locator(plt.MultipleLocator(500))
-        ax.grid(which='major', linestyle='-', linewidth='0.5', color='red')
+        ax.grid(which="major", linestyle="-", linewidth="0.5", color="red")
     if ticks_granularity >= 2:
         ax.xaxis.set_minor_locator(plt.MultipleLocator(0.04))
         ax.yaxis.set_minor_locator(plt.MultipleLocator(100))
-        ax.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+        ax.grid(which="minor", linestyle=":", linewidth="0.5", color="black")
     
-    waves = kwargs.get('waves', {'p_waves':[], 'qrs':[], 't_waves':[]})
+    waves = kwargs.get("waves", {"p_waves":[], "qrs":[], "t_waves":[]})
     for w, l_itv in waves.items():
         for itv in l_itv:
             ax.axvspan(itv[0], itv[1], color=palette[w], alpha=plot_alpha)
     if label:
-        ax.legend(loc='upper left')
+        ax.legend(loc="upper left")
     ax.set_xlim(t[0], t[-1])
     ax.set_ylim(-y_range, y_range)
-    ax.set_xlabel('Time [s]')
-    ax.set_ylabel('Voltage [μV]')
+    ax.set_xlabel("Time [s]")
+    ax.set_ylabel("Voltage [μV]")
 
 
-def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:int=0) -> logging.Logger:
+def init_logger(log_dir:str, log_file:Optional[str]=None, log_name:Optional[str]=None, mode:str="a", verbose:int=0) -> logging.Logger:
     """ finished, checked,
 
     Parameters:
@@ -479,8 +479,10 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:
         directory of the log file
     log_file: str, optional,
         name of the log file
-    mode: str, default 'a',
-        mode of writing the log file, can be one of 'a', 'w'
+    log_name: str, optional,
+        name of the logger
+    mode: str, default "a",
+        mode of writing the log file, can be one of "a", "w"
     verbose: int, default 0,
         log verbosity
 
@@ -488,16 +490,14 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:
     --------
     logger: Logger
     """
-    if log_dir is None:
-        log_dir = '~/temp/log/'
     if log_file is None:
-        log_file = f'log_{get_date_str()}.txt'
+        log_file = f"log_{get_date_str()}.txt"
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
     log_file = os.path.join(log_dir, log_file)
-    print(f'log file path: {log_file}')
+    print(f"log file path: {log_file}")
 
-    logger = logging.getLogger('ECG-CRNN')
+    logger = logging.getLogger(log_name or "ECG")  # "ECG" to prevent from using the root logger
 
     c_handler = logging.StreamHandler(sys.stdout)
     f_handler = logging.FileHandler(log_file)
@@ -518,8 +518,8 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:
         f_handler.setLevel(logging.WARNING)
         logger.setLevel(logging.WARNING)
 
-    c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-    f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+    f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     c_handler.setFormatter(c_format)
     f_handler.setFormatter(f_format)
 
@@ -543,7 +543,7 @@ def get_date_str(fmt:Optional[str]=None):
         current time in the `str` format
     """
     now = datetime.datetime.now()
-    date_str = now.strftime(fmt or '%m-%d_%H-%M')
+    date_str = now.strftime(fmt or "%m-%d_%H-%M")
     return date_str
 
 
@@ -562,12 +562,12 @@ def rdheader(header_data:List[str]) -> Union[Record, MultiRecord]:
     for line in header_data:
         striped_line = line.strip()
         # Comment line
-        if striped_line.startswith('#'):
+        if striped_line.startswith("#"):
             comment_lines.append(striped_line)
         # Non-empty non-comment line = header line.
         elif striped_line:
             # Look for a comment in the line
-            ci = striped_line.find('#')
+            ci = striped_line.find("#")
             if ci > 0:
                 header_lines.append(striped_line[:ci])
                 # comment on same line as header line
@@ -579,7 +579,7 @@ def rdheader(header_data:List[str]) -> Union[Record, MultiRecord]:
     record_fields = _header._parse_record_line(header_lines[0])
 
     # Single segment header - Process signal specification lines
-    if record_fields['n_seg'] is None:
+    if record_fields["n_seg"] is None:
         # Create a single-segment WFDB record object
         record = Record()
 
@@ -593,7 +593,7 @@ def rdheader(header_data:List[str]) -> Union[Record, MultiRecord]:
 
         # Set the object's record line fields
         for field in record_fields:
-            if field == 'n_seg':
+            if field == "n_seg":
                 continue
             setattr(record, field, record_fields[field])
     # Multi segment header - Process segment specification lines
@@ -611,12 +611,12 @@ def rdheader(header_data:List[str]) -> Union[Record, MultiRecord]:
 
         # Determine whether the record is fixed or variable
         if record.seg_len[0] == 0:
-            record.layout = 'variable'
+            record.layout = "variable"
         else:
-            record.layout = 'fixed'
+            record.layout = "fixed"
 
     # Set the comments field
-    record.comments = [line.strip(' \t#') for line in comment_lines]
+    record.comments = [line.strip(" \t#") for line in comment_lines]
 
     return record
 
@@ -677,7 +677,7 @@ def ensure_siglen(values:Sequence[Real], siglen:int, fmt:str="lead_first") -> np
     out_values: ndarray,
         ECG signal in the format of `fmt` and of fixed length `siglen`
     """
-    if fmt.lower() in ['channel_last', 'lead_last']:
+    if fmt.lower() in ["channel_last", "lead_last"]:
         _values = np.array(values).T
     else:
         _values = np.array(values).copy()
@@ -693,15 +693,15 @@ def ensure_siglen(values:Sequence[Real], siglen:int, fmt:str="lead_first") -> np
         pad_right = siglen - pad_left
         out_values = np.concatenate([np.zeros((n_leads, pad_left)), _values, np.zeros((n_leads, pad_right))], axis=1)
 
-    if fmt.lower() in ['channel_last', 'lead_last']:
+    if fmt.lower() in ["channel_last", "lead_last"]:
         out_values = out_values.T
     
     return out_values
 
 
 ECGWaveForm = namedtuple(
-    typename='ECGWaveForm',
-    field_names=['name', 'onset', 'offset', 'peak', 'duration'],
+    typename="ECGWaveForm",
+    field_names=["name", "onset", "offset", "peak", "duration"],
 )
 
 
@@ -721,14 +721,14 @@ def masks_to_waveforms(masks:np.ndarray,
         of shape (n_leads, seq_len), or (seq_len,)
     class_map: dict,
         class map, mapping names to waves to numbers from 0 to n_classes-1,
-        the keys should contain 'pwave', 'qrs', 'twave'
+        the keys should contain "pwave", "qrs", "twave"
     fs: real number,
         sampling frequency of the signal corresponding to the `masks`,
         used to compute the duration of each waveform
     mask_format: str, default "channel_first",
         format of the mask, used only when `masks.ndim = 2`
-        'channel_last' (alias 'lead_last'), or
-        'channel_first' (alias 'lead_first')
+        "channel_last" (alias "lead_last"), or
+        "channel_first" (alias "lead_first")
     leads: str or list of str, optional,
         the names of leads corresponding to the channels of the `masks`
 
@@ -737,12 +737,12 @@ def masks_to_waveforms(masks:np.ndarray,
     waves: dict,
         each item value is a list containing the `ECGWaveForm`s corr. to the lead;
         each item key is from `leads` if `leads` is set,
-        otherwise would be 'lead_1', 'lead_2', ..., 'lead_n'
+        otherwise would be "lead_1", "lead_2", ..., "lead_n"
     """
     if masks.ndim == 1:
         _masks = masks[np.newaxis,...]
     elif masks.ndim == 2:
-        if mask_format.lower() not in ['channel_first', 'lead_first',]:
+        if mask_format.lower() not in ["channel_first", "lead_first",]:
             _masks = masks.T
         else:
             _masks = masks.copy()
@@ -758,7 +758,7 @@ def masks_to_waveforms(masks:np.ndarray,
     for channel_idx, lead_name in enumerate(_leads):
         current_mask = _masks[channel_idx,...]
         for wave_name, wave_number in _class_map.items():
-            if wave_name.lower() not in ['pwave', 'qrs', 'twave',]:
+            if wave_name.lower() not in ["pwave", "qrs", "twave",]:
                 continue
             current_wave_inds = np.where(current_mask==wave_number)[0]
             if len(current_wave_inds) == 0:

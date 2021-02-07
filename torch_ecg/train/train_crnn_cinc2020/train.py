@@ -502,7 +502,7 @@ if __name__ == "__main__":
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     else:
         device = torch.device("cuda")
-    logger = init_logger(log_dir=config.log_dir)
+    logger = init_logger(log_dir=config.log_dir, verbose=2)
     logger.info(f"\n{'*'*20}   Start Training   {'*'*20}\n")
     logger.info(f"Using device {device}")
     logger.info(f"Using torch of version {torch.__version__}")

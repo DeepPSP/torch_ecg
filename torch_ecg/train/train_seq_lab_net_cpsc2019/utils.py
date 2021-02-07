@@ -96,12 +96,12 @@ def dict_to_str(d:Union[dict, list, tuple], current_depth:int=1, indent_spaces:i
 def str2bool(v:Union[str, bool]) -> bool:
     """ finished, checked,
 
-    converts a 'boolean' value possibly in the format of str to bool
+    converts a "boolean" value possibly in the format of str to bool
 
     Parameters:
     -----------
     v: str or bool,
-        the 'boolean' value
+        the "boolean" value
 
     Returns:
     --------
@@ -114,12 +114,12 @@ def str2bool(v:Union[str, bool]) -> bool:
     """
     if isinstance(v, bool):
        b = v
-    elif v.lower() in ('yes', 'true', 't', 'y', '1'):
+    elif v.lower() in ("yes", "true", "t", "y", "1"):
         b = True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    elif v.lower() in ("no", "false", "f", "n", "0"):
         b = False
     else:
-        raise ValueError('Boolean value expected.')
+        raise ValueError("Boolean value expected.")
     return b
 
 
@@ -127,7 +127,7 @@ def get_date_str(fmt:Optional[str]=None):
     """
     """
     now = datetime.datetime.now()
-    _fmt = fmt or '%Y-%m-%d-%H-%M-%S'
+    _fmt = fmt or "%Y-%m-%d-%H-%M-%S"
     ds = now.strftime(_fmt)
     return ds
 
@@ -287,9 +287,9 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
     """ finished, checked,
 
     get the list of records in `db_dir` recursively,
-    for example, there are two folders 'patient1', 'patient2' in `db_dir`,
-    and there are records 'A0001', 'A0002', ... in 'patient1'; 'B0001', 'B0002', ... in 'patient2',
-    then the output would be 'patient1{sep}A0001', ..., 'patient2{sep}B0001', ...,
+    for example, there are two folders "patient1", "patient2" in `db_dir`,
+    and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
+    then the output would be "patient1{sep}A0001", ..., "patient2{sep}B0001", ...,
     sep is determined by the system
 
     Parameters:
@@ -333,7 +333,7 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
     return res
 
 
-def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:int=0) -> logging.Logger:
+def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str="a", verbose:int=0) -> logging.Logger:
     """ finished, checked,
 
     Parameters:
@@ -342,8 +342,8 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:
         directory of the log file
     log_file: str, optional,
         name of the log file
-    mode: str, default 'a',
-        mode of writing the log file, can be one of 'a', 'w'
+    mode: str, default "a",
+        mode of writing the log file, can be one of "a", "w"
     verbose: int, default 0,
         log verbosity
 
@@ -351,16 +351,14 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:
     --------
     logger: Logger
     """
-    if log_dir is None:
-        log_dir = '~/temp/log/'
     if log_file is None:
-        log_file = f'log_{get_date_str()}.txt'
+        log_file = f"log_{get_date_str()}.txt"
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
     log_file = os.path.join(log_dir, log_file)
-    print(f'log file path: {log_file}')
+    print(f"log file path: {log_file}")
 
-    logger = logging.getLogger('ECG-CRNN')
+    logger = logging.getLogger("ECG-SEQ-LAB")
 
     c_handler = logging.StreamHandler(sys.stdout)
     f_handler = logging.FileHandler(log_file)
@@ -381,8 +379,8 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:
         f_handler.setLevel(logging.WARNING)
         logger.setLevel(logging.WARNING)
 
-    c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-    f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+    f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     c_handler.setFormatter(c_format)
     f_handler.setFormatter(f_format)
 

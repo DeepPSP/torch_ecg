@@ -142,12 +142,12 @@ def get_optimal_covering(total_interval:Interval, to_cover:list, min_len:Real, s
             that each interval in the covering covers
     """
     start_time = time.time()
-    verbose = kwargs.get('verbose', 0)
+    verbose = kwargs.get("verbose", 0)
     tmp = sorted(total_interval)
     tot_start, tot_end = tmp[0], tmp[-1]
 
     if verbose >= 1:
-        print(f'total_interval = {total_interval}, with_length = {tot_end-tot_start}')
+        print(f"total_interval = {total_interval}, with_length = {tot_end-tot_start}")
 
     if tot_end - tot_start < min_len:
         ret = [[tot_start, tot_end]]
@@ -165,7 +165,7 @@ def get_optimal_covering(total_interval:Interval, to_cover:list, min_len:Real, s
         replica_for_traceback = deepcopy(to_cover_intervals)
 
     if verbose >= 2:
-        print(f'to_cover_intervals after all converted to intervals = {to_cover_intervals}')
+        print(f"to_cover_intervals after all converted to intervals = {to_cover_intervals}")
 
         # elif isinstance(item, int):
         #     to_cover_intervals.append([item, item+1])
@@ -180,7 +180,7 @@ def get_optimal_covering(total_interval:Interval, to_cover:list, min_len:Real, s
     to_cover_intervals.sort(key=interval_sort_key)
 
     if verbose >= 2:
-        print(f'to_cover_intervals after sorted = {to_cover_intervals}')
+        print(f"to_cover_intervals after sorted = {to_cover_intervals}")
 
     # if to_cover_intervals[0][0] < tot_start or to_cover_intervals[-1][-1] > tot_end:
     #     raise IndexError("some item in to_cover list exceeds the range of total_interval")
@@ -196,7 +196,7 @@ def get_optimal_covering(total_interval:Interval, to_cover:list, min_len:Real, s
     to_cover_intervals[-1][0] = min(to_cover_intervals[-1][0], tot_end - min_len)
 
     if verbose >= 2:
-        print(f'`to_cover_intervals` after two tails adjusted to {to_cover_intervals}')
+        print(f"`to_cover_intervals` after two tails adjusted to {to_cover_intervals}")
 
     # merge intervals whose distances (might be negative) are less than `split_threshold`
     merge_flag = True
@@ -227,7 +227,7 @@ def get_optimal_covering(total_interval:Interval, to_cover:list, min_len:Real, s
                 to_cover_intervals = new_intervals
                 break
     if verbose >= 2:
-        print(f'`to_cover_intervals` after merging intervals whose gaps < split_threshold are {to_cover_intervals}')
+        print(f"`to_cover_intervals` after merging intervals whose gaps < split_threshold are {to_cover_intervals}")
 
     # currently, distance between any two intervals in `to_cover_intervals` are larger than `split_threshold`
     # but any interval except the head and tail might has length less than `min_len`
@@ -250,12 +250,12 @@ def get_optimal_covering(total_interval:Interval, to_cover:list, min_len:Real, s
     start = min(to_cover_intervals[0][0], to_cover_intervals[0][-1]-min_len)
 
     for idx, item in enumerate(to_cover_intervals[:-1]):
-        # print('item', item)
+        # print("item", item)
         this_start, this_end = item
         next_start, next_end = to_cover_intervals[idx + 1]
         potential_end = max(this_end, start + min_len)
-        # print(f'start = {start}')
-        # print('potential_end', potential_end)
+        # print(f"start = {start}")
+        # print("potential_end", potential_end)
         # if distance from `potential_end` to `next_start` is not enough
         # and has not reached the end of `to_cover_intervals`
         # continue to the next loop
@@ -271,7 +271,7 @@ def get_optimal_covering(total_interval:Interval, to_cover:list, min_len:Real, s
             start = next_start
             if idx == len(to_cover_intervals) - 2:
                 ret.append([next_start, max(next_start + min_len, next_end)])
-        # print(f'ret = {ret}')
+        # print(f"ret = {ret}")
     if traceback:
         for item in ret:
             record = []
@@ -283,7 +283,7 @@ def get_optimal_covering(total_interval:Interval, to_cover:list, min_len:Real, s
             ret_traceback.append(record)
     
     if verbose >= 1:
-        print(f'the final result of get_optimal_covering is ret = {ret}, ret_traceback = {ret_traceback}, the whole process used {time.time()-start_time} second(s)')
+        print(f"the final result of get_optimal_covering is ret = {ret}, ret_traceback = {ret_traceback}, the whole process used {time.time()-start_time} second(s)")
     
     return ret, ret_traceback
 
@@ -391,7 +391,7 @@ def plot_single_lead_ecg(s:np.ndarray, fs:Real, use_idx:bool=False, **kwargs) ->
 
     contributors: Jeethan, and WEN Hao
     """
-    if 'plt' not in dir():
+    if "plt" not in dir():
         import matplotlib.pyplot as plt
     default_fig_sz = 120
     line_len = fs * 25  # 25 seconds
@@ -409,31 +409,31 @@ def plot_single_lead_ecg(s:np.ndarray, fs:Real, use_idx:bool=False, **kwargs) ->
         mvs = np.array(c) * 0.001
         fig_sz = int(round(default_fig_sz * (idx_end-idx_start)/line_len))
         fig, ax = plt.subplots(figsize=(fig_sz, 6))
-        ax.plot(secs, mvs, c='black')
+        ax.plot(secs, mvs, c="black")
 
-        ax.axhline(y=0, linestyle='-', linewidth='1.0', color='red')
+        ax.axhline(y=0, linestyle="-", linewidth="1.0", color="red")
         ax.xaxis.set_major_locator(plt.MultipleLocator(0.2))
         ax.xaxis.set_minor_locator(plt.MultipleLocator(0.04))
         ax.yaxis.set_major_locator(plt.MultipleLocator(0.5))
         ax.yaxis.set_minor_locator(plt.MultipleLocator(0.1))
-        ax.grid(which='major', linestyle='-', linewidth='0.5', color='red')
-        ax.grid(which='minor', linestyle=':', linewidth='0.5', color='black')
+        ax.grid(which="major", linestyle="-", linewidth="0.5", color="red")
+        ax.grid(which="minor", linestyle=":", linewidth="0.5", color="black")
         if waves:
             for w, w_indices in waves.items():
                 epoch_w = [wi-idx_start for wi in w_indices if idx_start <= wi < idx_end]
                 for wi in epoch_w:
-                    ax.axvline(wi, linestyle='dashed', linewidth=0.7, color='magenta')
+                    ax.axvline(wi, linestyle="dashed", linewidth=0.7, color="magenta")
         ax.set_xlim(secs[0], secs[-1])
         ax.set_ylim(-1.5, 1.5)
         if use_idx:
-            plt.xlabel('Samples')
+            plt.xlabel("Samples")
         else:
-            plt.xlabel('Time [s]')
-        plt.ylabel('Voltage [mV]')
+            plt.xlabel("Time [s]")
+        plt.ylabel("Voltage [mV]")
         plt.show()
 
 
-def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[float],np.ndarray,dict]='balanced') -> np.ndarray:
+def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[float],np.ndarray,dict]="balanced") -> np.ndarray:
     """ finished, checked,
 
     transform class weight to sample weight
@@ -442,9 +442,9 @@ def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[floa
     -----------
     y: ndarray,
         the label (class) of each sample
-    class_weight: str, or list, or ndarray, or dict, default 'balanced',
+    class_weight: str, or list, or ndarray, or dict, default "balanced",
         the weight for each sample class,
-        if is 'balanced', the class weight will automatically be given by 
+        if is "balanced", the class weight will automatically be given by 
         if `y` is of string type, then `class_weight` should be a dict,
         if `y` is of numeric type, and `class_weight` is array_like,
         then the labels (`y`) should be continuous and start from 0
@@ -457,12 +457,12 @@ def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[floa
         sample_weight = y.copy().astype(int)
     except:
         sample_weight = y.copy()
-        assert isinstance(class_weight, dict) or class_weight.lower()=='balanced', \
-            "if `y` are of type str, then class_weight should be 'balanced' or a dict"
+        assert isinstance(class_weight, dict) or class_weight.lower()=="balanced", \
+            "if `y` are of type str, then class_weight should be \042balanced\042 or a dict"
     
-    if isinstance(class_weight, str) and class_weight.lower() == 'balanced':
+    if isinstance(class_weight, str) and class_weight.lower() == "balanced":
         classes = np.unique(y).tolist()
-        cw = compute_class_weight('balanced', classes=classes, y=y)
+        cw = compute_class_weight("balanced", classes=classes, y=y)
         trans_func = lambda s: cw[classes.index(s)]
     else:
         trans_func = lambda s: class_weight[s]
@@ -576,12 +576,12 @@ def dict_to_str(d:Union[dict, list, tuple], current_depth:int=1, indent_spaces:i
 def str2bool(v:Union[str, bool]) -> bool:
     """ finished, checked,
 
-    converts a 'boolean' value possibly in the format of str to bool
+    converts a "boolean" value possibly in the format of str to bool
 
     Parameters:
     -----------
     v: str or bool,
-        the 'boolean' value
+        the "boolean" value
 
     Returns:
     --------
@@ -594,12 +594,12 @@ def str2bool(v:Union[str, bool]) -> bool:
     """
     if isinstance(v, bool):
        b = v
-    elif v.lower() in ('yes', 'true', 't', 'y', '1'):
+    elif v.lower() in ("yes", "true", "t", "y", "1"):
         b = True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    elif v.lower() in ("no", "false", "f", "n", "0"):
         b = False
     else:
-        raise ValueError('Boolean value expected.')
+        raise ValueError("Boolean value expected.")
     return b
 
 
@@ -607,7 +607,7 @@ def get_date_str(fmt:Optional[str]=None):
     """
     """
     now = datetime.datetime.now()
-    _fmt = fmt or '%Y-%m-%d-%H-%M-%S'
+    _fmt = fmt or "%Y-%m-%d-%H-%M-%S"
     ds = now.strftime(_fmt)
     return ds
 
@@ -802,9 +802,9 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
     """ finished, checked,
 
     get the list of records in `db_dir` recursively,
-    for example, there are two folders 'patient1', 'patient2' in `db_dir`,
-    and there are records 'A0001', 'A0002', ... in 'patient1'; 'B0001', 'B0002', ... in 'patient2',
-    then the output would be 'patient1{sep}A0001', ..., 'patient2{sep}B0001', ...,
+    for example, there are two folders "patient1", "patient2" in `db_dir`,
+    and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
+    then the output would be "patient1{sep}A0001", ..., "patient2{sep}B0001", ...,
     sep is determined by the system
 
     Parameters:
@@ -848,7 +848,7 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
     return res
 
 
-def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:int=0) -> logging.Logger:
+def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str="a", verbose:int=0) -> logging.Logger:
     """ finished, checked,
 
     Parameters:
@@ -857,8 +857,8 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:
         directory of the log file
     log_file: str, optional,
         name of the log file
-    mode: str, default 'a',
-        mode of writing the log file, can be one of 'a', 'w'
+    mode: str, default "a",
+        mode of writing the log file, can be one of "a", "w"
     verbose: int, default 0,
         log verbosity
 
@@ -866,16 +866,14 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:
     --------
     logger: Logger
     """
-    if log_dir is None:
-        log_dir = '~/temp/log/'
     if log_file is None:
-        log_file = f'log_{get_date_str()}.txt'
+        log_file = f"log_{get_date_str()}.txt"
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
     log_file = os.path.join(log_dir, log_file)
-    print(f'log file path: {log_file}')
+    print(f"log file path: {log_file}")
 
-    logger = logging.getLogger('ECG-CRNN')
+    logger = logging.getLogger("ECG-CRNN")
 
     c_handler = logging.StreamHandler(sys.stdout)
     f_handler = logging.FileHandler(log_file)
@@ -896,8 +894,8 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str='a', verbose:
         f_handler.setLevel(logging.WARNING)
         logger.setLevel(logging.WARNING)
 
-    c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-    f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
+    f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     c_handler.setFormatter(c_format)
     f_handler.setFormatter(f_format)
 
