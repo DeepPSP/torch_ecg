@@ -63,10 +63,11 @@ np.set_printoptions(precision=5, suppress=True)
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
 from easydict import EasyDict as ED
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
+# try:
+#     from tqdm.auto import tqdm
+# except ModuleNotFoundError:
+#     from tqdm import tqdm
+from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler

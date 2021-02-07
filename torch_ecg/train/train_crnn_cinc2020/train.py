@@ -45,10 +45,11 @@ from numbers import Real, Number
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
+# try:
+#     from tqdm.auto import tqdm
+# except ModuleNotFoundError:
+#     from tqdm import tqdm
+from tqdm import tqdm
 import torch
 from torch import nn
 from torch import optim

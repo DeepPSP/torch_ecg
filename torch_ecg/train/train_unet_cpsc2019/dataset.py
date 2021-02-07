@@ -11,10 +11,11 @@ from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
+# try:
+#     from tqdm.auto import tqdm
+# except ModuleNotFoundError:
+#     from tqdm import tqdm
+from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
