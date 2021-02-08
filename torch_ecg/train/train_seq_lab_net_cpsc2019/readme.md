@@ -31,3 +31,7 @@ more detailed results can be found [here](https://github.com/wenh06/torch_ecg_mo
 <img src="results/comparison_rpeaks_detect.png" width="800" height="400">
 
 The upper part (with red vertical lines indicating the detected R peaks) is the plot of the result produced by a sophisticated combination of R peak detection algorithms implemented in [BioSPPy](https://github.com/PIA-Group/BioSPPy) and [wfdb](https://github.com/MIT-LCP/wfdb-python), the lower part (with green vertical lines indicating the detected R peaks) is the plot of the result produced by the original keras models (actually [this function](https://github.com/wenh06/torch_ecg/blob/master/torch_ecg/train/train_crnn_cpsc2020/signal_processing/ecg_rpeaks_dl.py#L30)). It is clear that the latter outperforms the former.
+
+## References:
+
+[1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
