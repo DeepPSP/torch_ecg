@@ -120,6 +120,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
         Parameters: ref. `self.inference`
         """
         batch_size, prob_arr_len = pred.shape
+        input_len = prob_arr_len
         model_spacing = 1000 / self.config.fs  # units in ms
         _duration_thr = duration_thr / model_spacing
         _dist_thr = [dist_thr] if isinstance(dist_thr, int) else dist_thr
@@ -152,7 +153,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
                         check = True
                         break
             if len(_dist_thr) == 1:
-                b_rpeaks = b_rpeaks[np.where((b_rpeaks>=self.config.skip_dist) & (b_rpeaks<self.input_len-self.config.skip_dist))[0]]
+                b_rpeaks = b_rpeaks[np.where((b_rpeaks>=self.config.skip_dist) & (b_rpeaks<input_len-self.config.skip_dist))[0]]
                 rpeaks.append(b_rpeaks)
                 continue
             check = True
@@ -184,7 +185,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
                         b_rpeaks = np.insert(b_rpeaks, r+1, 4*(new_itv[0]+new_itv[1]))
                         check = True
                         break
-            b_rpeaks = b_rpeaks[np.where((b_rpeaks>=self.config.skip_dist) & (b_rpeaks<self.input_len-self.config.skip_dist))[0]]
+            b_rpeaks = b_rpeaks[np.where((b_rpeaks>=self.config.skip_dist) & (b_rpeaks<input_len-self.config.skip_dist))[0]]
             rpeaks.append(b_rpeaks)
         return rpeaks
 
