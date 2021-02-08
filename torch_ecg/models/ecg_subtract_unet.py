@@ -57,7 +57,7 @@ class TripleConv(MultiConv):
                  dropouts:Union[Sequence[float],float]=0.0,
                  out_activation:bool=True,
                  **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -118,7 +118,7 @@ class DownTripleConv(nn.Sequential):
                  dropouts:Union[Sequence[float],float]=0.0,
                  mode:str="max",
                  **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -174,7 +174,17 @@ class DownTripleConv(nn.Sequential):
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, channels, seq_len)
+
+        Returns:
+        --------
+        out: Tensor,
+            of shape (batch_size, channels, seq_len)
         """
         out = super().forward(input)
         return out
@@ -219,7 +229,7 @@ class DownBranchedDoubleConv(nn.Module):
                  dropouts:Union[Sequence[float],float]=0.0,
                  mode:str="max",
                  **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
@@ -270,9 +280,17 @@ class DownBranchedDoubleConv(nn.Module):
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """
-        input: of shape (batch_size, channels, seq_len)
-        out: of shape (batch_size, channels, seq_len)
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, channels, seq_len)
+
+        Returns:
+        --------
+        out: Tensor,
+            of shape (batch_size, channels, seq_len)
         """
         out = self.down_sample(input)
         out = self.branched_conv(out)
@@ -444,7 +462,7 @@ class UpTripleConv(nn.Module):
 
 
 class ECG_SUBTRACT_UNET(nn.Module):
-    """ finished, NOT checked,
+    """ finished, checked,
 
     entry 0433 of CPSC2019
     """
@@ -633,7 +651,7 @@ class ECG_SUBTRACT_UNET(nn.Module):
         NotImplementedError("implement a task specific inference method")
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters:
         -----------
