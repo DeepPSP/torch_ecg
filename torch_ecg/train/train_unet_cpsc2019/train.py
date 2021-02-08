@@ -124,8 +124,8 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
     writer = SummaryWriter(
         log_dir=config.log_dir,
-        filename_suffix=f"OPT_{model.__name__}_{config.cnn_name}_{config.rnn_name}_{config.attn_name}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
-        comment=f"OPT_{model.__name__}_{config.cnn_name}_{config.rnn_name}_{config.attn_name}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
+        filename_suffix=f"OPT_{model.__name__}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
+        comment=f"OPT_{model.__name__}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
     )
 
     msg = textwrap.dedent( f"""
@@ -183,7 +183,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
     # scheduler = ReduceLROnPlateau(optimizer, mode="max", verbose=True, patience=6, min_lr=1e-7)
     # scheduler = CosineAnnealingWarmRestarts(optimizer, 0.001, 1e-6, 20)
 
-    save_prefix = f"{model.__name__}_{config.cnn_name}_{config.rnn_name}_epoch"
+    save_prefix = f"{model.__name__}_epoch"
 
     saved_models = deque()
     model.train()
@@ -379,24 +379,9 @@ def get_args(**kwargs):
         dest="batch_size")
     parser.add_argument(
         "-m", "--model-name",
-        type=str, default="crnn",
-        help="name of the model to train, `cnn` or `crnn`",
+        type=str, default="unet",
+        help="name of the model to train, `unet` or `subtract_unet`",
         dest="model_name")
-    parser.add_argument(
-        "-c", "--cnn-name",
-        type=str, default="multi_scopic",
-        help="choice of cnn feature extractor",
-        dest="cnn_name")
-    parser.add_argument(
-        "-r", "--rnn-name",
-        type=str, default="lstm",
-        help="choice of rnn structures",
-        dest="rnn_name")
-    parser.add_argument(
-        "-a", "--attn-name",
-        type=str, default="se",
-        help="choice of attention block",
-        dest="attn_name")
     parser.add_argument(
         "--keep-checkpoint-max", type=int, default=50,
         help="maximum number of checkpoints to keep. If set 0, all checkpoints will be kept",
@@ -441,9 +426,6 @@ if __name__ == "__main__":
 
     model_name = config.model_name.lower()
     model_config = deepcopy(ModelCfg[model_name])
-    # model_config.cnn.name = config.cnn_name
-    # model_config.rnn.name = config.rnn_name
-    # model_config.attn.name = config.attn_name
 
     if model_name == "subtract_unet":
         model = ECG_SUBTRACT_UNET_CPSC2019(
