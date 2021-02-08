@@ -132,7 +132,9 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
             b_prob = pred[b_idx,...]
             b_mask = (b_prob >= bin_pred_thr).astype(int)
             b_qrs_intervals = mask_to_intervals(b_mask, 1)
-            b_rpeaks = np.array([itv[0]+itv[1] for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr])
+            b_rpeaks = np.array([
+                (itv[0]+itv[1])//2 for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr
+            ])
             # print(f"before post-process, b_qrs_intervals = {b_qrs_intervals}")
             # print(f"before post-process, b_rpeaks = {b_rpeaks}")
 
@@ -305,7 +307,9 @@ class ECG_UNET_CPSC2019(ECG_UNET):
             b_prob = pred[b_idx,...]
             b_mask = (b_prob >= bin_pred_thr).astype(int)
             b_qrs_intervals = mask_to_intervals(b_mask, 1)
-            b_rpeaks = np.array([itv[0]+itv[1] for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr])
+            b_rpeaks = np.array([
+                (itv[0]+itv[1])//2 for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr
+            ])
             # print(f"before post-process, b_qrs_intervals = {b_qrs_intervals}")
             # print(f"before post-process, b_rpeaks = {b_rpeaks}")
 

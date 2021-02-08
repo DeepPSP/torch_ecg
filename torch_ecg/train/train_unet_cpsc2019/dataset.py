@@ -80,7 +80,6 @@ class CPSC2019(Dataset):
         """ finished, checked,
         """
         rec_name = self.records[index]
-        ann_name = rec_name.replace("data", "R")
         values = self.reader.load_data(rec_name, units='mV', keep_dim=False)
         rpeaks = self.reader.load_ann(rec_name, keep_dim=False)
         labels = np.zeros((self.siglen,))
