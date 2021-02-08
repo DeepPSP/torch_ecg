@@ -15,29 +15,57 @@ __all__ = [
     "TrainCfg",
 ]
 
+
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+BaseCfg = ED()
+BaseCfg.fs = 500  # Hz, CPSC2019 data fs
+BaseCfg.classes = .classes = [
+    "p",  # pwave
+    "N",  # qrs complex
+    "t",  # twave
+    "i",  # isoelectric
+]
+BaseCfg.class_map = ED(p=1, N=2, t=3, i=0)
+# BaseCfg.training_data = os.path.join(_BASE_DIR, "training_data")
+BaseCfg.db_dir = "/home/wenhao71/data/data/PhysioNet/ludb/1.0.1/"
+BaseCfg.bias_thr = int(0.075 * BaseCfg.fs)  # keep the same with `THR` in `cpsc2019_score.py`
+BaseCfg.torch_dtype = MainCfg.torch_dtype
+
+
+
+ModelCfg = ED()
+ModelCfg.torch_dtype = BaseCfg.torch_dtype
+ModelCfg.fs = BaseCfg.fs
+ModelCfg.spacing = 1000 / ModelCfg.fs
+# NOTE(update): "background" now do not count as a class
+ModelCfg.classes = deepcopy(BaseCfg.classes)
+# ModelCfg.classes = ["i", "N"]  # N for qrs, i for other parts
+# ModelCfg.class_map = {c:i for i,c in enumerate(ModelCfg.classes)}
+ModelCfg.n_leads = 1  # or 12
+
+ModelCfg.model_name = "unet"
+
+# TODO: add detailed ModelCfg
+
 
 TrainCfg = ED()
 
 # configs of files
-TrainCfg.db_dir = "/media/cfs/wenhao71/data/PhysioNet/ludb/1.0.0/"
-TrainCfg.log_dir = os.path.join(_BASE_DIR, 'log')
+TrainCfg.db_dir = BaseCfg.db_dir
+TrainCfg.log_dir = os.path.join(_BASE_DIR, "log")
 TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
 TrainCfg.keep_checkpoint_max = 20
 TrainCfg.torch_dtype = MainCfg.torch_dtype
 
 TrainCfg.fs = 500
 TrainCfg.train_ratio = 0.8
-TrainCfg.classes = [
-    'p',  # pwave
-    'N',  # qrs complex
-    't',  # twave
-    'i',  # isoelectric
-]
-TrainCfg.class_map = ED(p=1, N=2, t=3, i=0)
+TrainCfg.classes = BaseCfg.classes
+TrainCfg.class_map = deepcopy(BaseCfg.class_map)
 
-TrainCfg.leads_ordering = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6',]
-TrainCfg.lead = 'II'  # the lead to tain model, None --> all leads
+TrainCfg.leads_ordering = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6",]
+TrainCfg.lead = "II"  # the lead to tain model, None --> all leads
 TrainCfg.use_single_lead = True  # use single lead as input or use all 12 leads. used only when `TrainCfg.lead` = None
 
 # as for `start_from` and `end_at`, see ref. [1] section 3.1
@@ -61,5 +89,5 @@ TrainCfg.lr_step_size = 50
 TrainCfg.lr_gamma = 0.1
 
 # configs of loss function
-TrainCfg.loss = 'CrossEntropyLoss'
+TrainCfg.loss = "CrossEntropyLoss"
 TrainCfg.eval_every = 20

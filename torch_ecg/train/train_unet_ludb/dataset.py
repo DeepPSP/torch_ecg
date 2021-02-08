@@ -43,7 +43,7 @@ class LUDB(Dataset):
         config: dict,
             configurations for the Dataset,
             ref. `cfg.TrainCfg`
-            can be one of "A", "B", "AB", "E", "F", or None (or '', defaults to "ABEF")
+            can be one of "A", "B", "AB", "E", "F", or None (or "", defaults to "ABEF")
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         """
@@ -82,12 +82,12 @@ class LUDB(Dataset):
             rec_idx, lead_idx = index, None
         rec = self.records[rec_idx]
         values = self.reader.load_data(
-            rec, data_format='channel_first', units='mV',
+            rec, data_format="channel_first", units="mV",
         )
         if self.config.normalize_data:
             values = (values - np.mean(values)) / np.std(values)
         masks = self.reader.load_masks(
-            rec, leads=self.leads, mask_format='channel_first',
+            rec, leads=self.leads, mask_format="channel_first",
             class_map=self.config.class_map,
         )
         sampfrom = randint(

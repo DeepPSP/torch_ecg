@@ -128,7 +128,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-.vscode/
+.vs
+.vscode
+.idea
+.DS_Store
+
 
 test/CPSC0223/
 test/CPSC0236/
