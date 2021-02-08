@@ -23,7 +23,7 @@ test qrs score             |  train qrs score          | train epoch loss
 :-------------------------:|:-------------------------:|:-------------------------:
 ![test_qrs_score](results/test_qrs_score_new.png)  |  ![train_qrs_score](results/train_qrs_score_new.png) | ![train_epoch_loss](results/train_loss_new.png)
 
-more detailed results can be found [here](https://github.com/wenh06/torch_ecg_models/tree/master/rpeaks_seq_lab)
+more detailed results can be found [here](https://github.com/wenh06/torch_ecg_models/tree/master/rpeaks_seq_lab), and the folder `results` inside of it.
 
 
 # Example on real data (sampling frequency 250 Hz)
