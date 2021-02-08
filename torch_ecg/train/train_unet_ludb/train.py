@@ -310,6 +310,48 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
     return eval_res
 
 
+def get_args(**kwargs):
+    """
+    """
+    cfg = deepcopy(kwargs)
+    parser = argparse.ArgumentParser(
+        description="Train the Model on LUDB",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    # parser.add_argument(
+    #     "-l", "--learning-rate",
+    #     metavar="LR", type=float, nargs="?", default=0.001,
+    #     help="Learning rate",
+    #     dest="learning_rate")
+    parser.add_argument(
+        "-b", "--batch-size",
+        type=int, default=128,
+        help="the batch size for training",
+        dest="batch_size")
+    parser.add_argument(
+        "-m", "--model-name",
+        type=str, default="unet",
+        help="name of the model to train, `unet` or `subtract_unet`",
+        dest="model_name")
+    parser.add_argument(
+        "--keep-checkpoint-max", type=int, default=50,
+        help="maximum number of checkpoints to keep. If set 0, all checkpoints will be kept",
+        dest="keep_checkpoint_max")
+    parser.add_argument(
+        "--optimizer", type=str, default="adam",
+        help="training optimizer",
+        dest="train_optimizer")
+    parser.add_argument(
+        "--debug", type=str2bool, default=False,
+        help="train with more debugging information",
+        dest="debug")
+    
+    args = vars(parser.parse_args())
+
+    cfg.update(args)
+    
+    return ED(cfg)
+
+
 DAS = True
 
 if __name__ == "__main__":

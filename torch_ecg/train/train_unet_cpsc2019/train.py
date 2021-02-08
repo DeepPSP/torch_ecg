@@ -170,7 +170,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
     elif config.lr_scheduler.lower() == "step":
         scheduler = optim.lr_scheduler.StepLR(optimizer, config.lr_step_size, config.lr_gamma)
     else:
-        raise NotImplementedError("lr scheduler `{config.lr_scheduler.lower()}` not implemented for training")
+        raise NotImplementedError(f"lr scheduler `{config.lr_scheduler.lower()}` not implemented for training")
 
     if config.loss == "BCEWithLogitsLoss":
         criterion = nn.BCEWithLogitsLoss()
@@ -327,10 +327,6 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
         signals = signals.to(device=device, dtype=_DTYPE)
         labels = labels.numpy()
         labels = [mask_to_intervals(item, 1) for item in labels]
-        labels = [
-            (TrainCfg.seq_lab_reduction//2) * np.array([itv[0]+itv[1] for itv in item]) \
-                for item in labels
-        ]
         labels = [
             item[np.where((item>=config.skip_dist) & (item<config.input_len-config.skip_dist))[0]] \
                 for item in labels

@@ -21,9 +21,9 @@ def compute_metrics(rpeaks_truths:Sequence[Union[np.ndarray,Sequence[int]]], rpe
     Parameters:
     -----------
     rpeaks_truths: sequence,
-        sequence of ground truths of rpeaks locations from multiple records
+        sequence of ground truths of rpeaks locations (indices) from multiple records
     rpeaks_preds: sequence,
-        predictions of ground truths of rpeaks locations for multiple records
+        predictions of ground truths of rpeaks locations (indices) for multiple records
     fs: real number,
         sampling frequency of ECG signal
     thr: float, default 0.075,

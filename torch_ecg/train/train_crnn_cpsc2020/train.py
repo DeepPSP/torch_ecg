@@ -176,7 +176,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
     elif config.lr_scheduler.lower() == "step":
         scheduler = optim.lr_scheduler.StepLR(optimizer, config.lr_step_size, config.lr_gamma)
     else:
-        raise NotImplementedError("lr scheduler `{config.lr_scheduler.lower()}` not implemented for training")
+        raise NotImplementedError(f"lr scheduler `{config.lr_scheduler.lower()}` not implemented for training")
 
     if config.loss == "BCEWithLogitsLoss":
         criterion = nn.BCEWithLogitsLoss()
