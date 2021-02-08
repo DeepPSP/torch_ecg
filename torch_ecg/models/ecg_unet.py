@@ -576,7 +576,7 @@ class ECG_UNET(nn.Module):
         output_shape: sequence,
             the output shape of this `ECG_UNET` layer, given `seq_len` and `batch_size`
         """
-        output_shape = (batch_size, self.n_classes, seq_len)
+        output_shape = (batch_size, seq_len, self.n_classes)
         return output_shape
 
     @property
