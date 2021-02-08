@@ -326,8 +326,8 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
     for signals, labels in data_loader:
         signals = signals.to(device=device, dtype=_DTYPE)
         labels = labels.numpy()
-        labels = [mask_to_intervals(item, 1) for item in labels]
-        labels = [ # to indices in the original signal sequence
+        labels = [mask_to_intervals(item, 1) for item in labels]  # intervals of qrs complexes
+        labels = [ # to indices of rpeaks in the original signal sequence
             (TrainCfg.seq_lab_reduction//2) * np.array([itv[0]+itv[1] for itv in item]) \
                 for item in labels
         ]
