@@ -45,7 +45,7 @@ class TripleConv(MultiConv):
 
     CBA --> (Dropout) --> CBA --> (Dropout) --> CBA --> (Dropout)
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "TripleConv"
 
     def __init__(self,
@@ -105,7 +105,7 @@ class TripleConv(MultiConv):
 class DownTripleConv(nn.Sequential):
     """
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "DownTripleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
     
@@ -215,7 +215,7 @@ class DownBranchedDoubleConv(nn.Module):
     """
     the bottom block of the `subtract_unet`
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "DownBranchedDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
@@ -336,7 +336,7 @@ class UpTripleConv(nn.Module):
 
     channels are shrinked after up sampling
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "UpTripleConv"
     __MODES__ = ['nearest', 'linear', 'area', 'deconv',]
 
@@ -618,15 +618,15 @@ class ECG_SUBTRACT_UNET(nn.Module):
 
         # down
         to_concat = [self.init_conv(x)]
-        if self.__DEBUG__:
-            print(f"shape of the init conv block output = {to_concat[-1].shape}")
+        # if self.__DEBUG__:
+        #     print(f"shape of the init conv block output = {to_concat[-1].shape}")
         for idx in range(self.config.down_up_block_num-1):
             to_concat.append(self.down_blocks[f"down_{idx}"](to_concat[-1]))
-            if self.__DEBUG__:
-                print(f"shape of the {idx}-th down block output = {to_concat[-1].shape}")
+            # if self.__DEBUG__:
+            #     print(f"shape of the {idx}-th down block output = {to_concat[-1].shape}")
         to_concat.append(self.bottom_block(to_concat[-1]))
-        if self.__DEBUG__:
-            print(f"shape of the bottom block output = {to_concat[-1].shape}")
+        # if self.__DEBUG__:
+        #     print(f"shape of the bottom block output = {to_concat[-1].shape}")
         
         # up
         up_input = to_concat[-1]
@@ -634,13 +634,13 @@ class ECG_SUBTRACT_UNET(nn.Module):
         for idx in range(self.config.down_up_block_num):
             up_output = self.up_blocks[f"up_{idx}"](up_input, to_concat[idx])
             up_input = up_output
-            if self.__DEBUG__:
-                print(f"shape of the {idx}-th up block output = {up_output.shape}")
+            # if self.__DEBUG__:
+            #     print(f"shape of the {idx}-th up block output = {up_output.shape}")
         
         # output
         output = self.out_conv(up_output)
-        if self.__DEBUG__:
-            print(f"shape of out_conv layer output = {output.shape}")
+        # if self.__DEBUG__:
+        #     print(f"shape of out_conv layer output = {output.shape}")
 
         return output
 
