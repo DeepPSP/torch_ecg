@@ -61,7 +61,7 @@ class ECG_UNET_LUDB(ECG_UNET):
         pred = self.softmax(pred)
         pred = pred.cpu().detach().numpy().squeeze(-1)
 
-        raise NotADirectoryError
+        raise NotImplementedError
 
     def inference_LUDB(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200, correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
         """
