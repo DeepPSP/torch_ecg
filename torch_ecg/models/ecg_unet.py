@@ -547,6 +547,12 @@ class ECG_UNET(nn.Module):
         # if self.__DEBUG__:
         #     print(f"shape of out_conv layer output = {output.shape}")
 
+        # to keep in accordance with other models
+        # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
+        output = output.permute(0,2,1)
+
+        # TODO: consider adding CRF at the tail to make final prediction
+
         return output
 
     @torch.no_grad()
