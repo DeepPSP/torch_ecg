@@ -231,8 +231,8 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
             try:
                 os.makedirs(config.checkpoints, exist_ok=True)
-                if logger:
-                    logger.info("Created checkpoint directory")
+                # if logger:
+                #     logger.info("Created checkpoint directory")
             except OSError:
                 pass
             save_suffix = f"epochloss_{epoch_loss:.5f}"
