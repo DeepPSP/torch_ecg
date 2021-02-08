@@ -2,11 +2,11 @@
 # [CPSC2019](http://2019.icbeb.org/Challenge.html)
 
 re-production of SOTA model of [CPSC2019](http://2019.icbeb.org/Challenge.html)
------------
+
 original code can be downloaded [here](https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/CPSC2019-opensource.zip)
 
 
-evaluation result of the sequence labeling CNN model
+## evaluation result of the sequence labeling CNN model
 -----------
 
 test qrs score             |  train epoch loss
@@ -15,8 +15,15 @@ test qrs score             |  train epoch loss
 
 images can be re-produced via ``downloading`` the data csv file from the ``tfevents`` file in the ``results`` folder, and use ``MovingAverage`` in [this file](https://github.com/wenh06/utils/blob/master/utils_signal/utils_signal.py#L1458) to simulate the ``smooth`` functionality in the Tensorboard Scalar panel.
 
+## more evaluation result (updated on 2021-02-08)
 
-the sequence labeling CRNN model NOT tested yet.
+NOTE: the ticks of the following plots are unable to be seen in the dark theme!
+
+test qrs score             |  train qrs score          | train epoch loss
+:-------------------------:|:-------------------------:|:-------------------------:
+![test_qrs_score](results/test_qrs_score_new.png)  |  ![train_qrs_score](results/train_qrs_score_new.png) | ![train_epoch_loss](results/train_loss_new.png)
+
+more detailed results can be found [here](https://github.com/wenh06/torch_ecg_models/tree/master/rpeaks_seq_lab)
 
 
 # Example on real data (sampling frequency 250 Hz)
