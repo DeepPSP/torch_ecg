@@ -37,7 +37,8 @@ ECG_CRNN_CONFIG = ED()
 
 # cnn part
 ECG_CRNN_CONFIG.cnn = ED()
-ECG_CRNN_CONFIG.cnn.name = "resnet_leadwise"
+# ECG_CRNN_CONFIG.cnn.name = "resnet_leadwise"
+ECG_CRNN_CONFIG.cnn.name = "multi_scopic_leadwise"
 
 
 ECG_CRNN_CONFIG.cnn.vgg16 = deepcopy(vgg16)
@@ -65,6 +66,10 @@ ECG_CRNN_CONFIG.cnn.multi_scopic = deepcopy(multi_scopic)
 ECG_CRNN_CONFIG.cnn.multi_scopic.block = deepcopy(multi_scopic_block)
 ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise = deepcopy(multi_scopic_leadwise)
 ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise.block = deepcopy(multi_scopic_block)
+
+ECG_CRNN_CONFIG.cnn.xception_leadwise = deepcopy(xception_leadwise)
+
+ECG_CRNN_CONFIG.cnn.dense_net_leadwise = deepcopy(dense_net_leadwise)
 
 
 

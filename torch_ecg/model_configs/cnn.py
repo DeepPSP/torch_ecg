@@ -405,7 +405,7 @@ multi_scopic.filter_lengths = [
 ]
 # subsample_lengths for each branch
 multi_scopic.subsample_lengths = list(repeat(2, len(multi_scopic.scopes)))
-_base_num_filters = 36
+_base_num_filters = 12 * 2
 multi_scopic.num_filters = [
     [
         _base_num_filters*4,
@@ -436,7 +436,7 @@ multi_scopic.kw_activation = {"inplace": True}
 
 multi_scopic_leadwise = deepcopy(multi_scopic)
 multi_scopic_leadwise.groups = 12
-_base_num_filters = 96
+_base_num_filters = 12 * 4
 multi_scopic_leadwise.num_filters = [
     [
         _base_num_filters*4,
@@ -503,27 +503,51 @@ dense_net_leadwise.transition = ED()
 
 
 xception_vanilla = ED()
-
+xception_vanilla.groups = 1
+_base_num_filters = 8
 xception_vanilla.entry_flow = ED(
-    init_num_filters=[32,64],
+    init_num_filters=[_base_num_filters*4, _base_num_filters*8],
     init_filter_lengths=3,
     init_subsample_lengths=[2,1],
-    num_filters=[128,256,728],
+    num_filters=[_base_num_filters*16, _base_num_filters*32, _base_num_filters*91],
     filter_lengths=3,
     subsample_lengths=2,
     subsample_kernels=3,
 )
 xception_vanilla.middle_flow = ED(
-    num_filters=list(repeat(728, 8)),
+    num_filters=list(repeat(_base_num_filters*91, 8)),
     filter_lengths=3,
 )
 xception_vanilla.exit_flow = ED(
-    final_num_filters=[1536,2048],
+    final_num_filters=[_base_num_filters*182, _base_num_filters*256],
     final_filter_lengths=3,
-    num_filters=[[728,1024]],
+    num_filters=[[_base_num_filters*91, _base_num_filters*128]],
     filter_lengths=3,
     subsample_lengths=2,
     subsample_kernels=3,
 )
 
 xception_leadwise = ED()
+xception_leadwise.groups = 12
+_base_num_filters = 12 * 2
+xception_vanilla.entry_flow = ED(
+    init_num_filters=[_base_num_filters*4, _base_num_filters*8],
+    init_filter_lengths=3,
+    init_subsample_lengths=[2,1],
+    num_filters=[_base_num_filters*16, _base_num_filters*32, _base_num_filters*91],
+    filter_lengths=3,
+    subsample_lengths=2,
+    subsample_kernels=3,
+)
+xception_vanilla.middle_flow = ED(
+    num_filters=list(repeat(_base_num_filters*91, 8)),
+    filter_lengths=3,
+)
+xception_vanilla.exit_flow = ED(
+    final_num_filters=[_base_num_filters*182, _base_num_filters*256],
+    final_filter_lengths=3,
+    num_filters=[[_base_num_filters*91, _base_num_filters*128]],
+    filter_lengths=3,
+    subsample_lengths=2,
+    subsample_kernels=3,
+)
