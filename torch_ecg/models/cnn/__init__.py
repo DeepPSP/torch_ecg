@@ -1,11 +1,17 @@
 """
 named CNNs, which are frequently used by more complicated models, including
-1. vgg
-2. resnet
-3. variants of resnet (with se, gc, etc.)
-4. multi_scopic
-5. densenet
-6. to add more
+
+## Implemented
+1. VGG
+2. ResNet
+3. MultiScopicNet
+4. DenseNet
+5. Xception
+  
+## Ongoing
+1. MobileNet
+2. DarkNet
+3. EfficientNet
 """
 
 from .densenet import (

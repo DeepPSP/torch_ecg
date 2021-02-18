@@ -98,8 +98,12 @@ __all__ = [
     "multi_scopic", "multi_scopic_leadwise",
     # vanilla dense_net
     "dense_net_vanilla",
+    # custom dense_net
+    "dense_net_leadwise",
     # vanilla xception
     "xception_vanilla",
+    # custom xception
+    "xception_leadwise",
 
     # rnn and attn
     # -------------

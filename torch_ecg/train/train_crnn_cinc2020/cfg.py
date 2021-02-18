@@ -31,14 +31,14 @@ _ONE_MINUTE_IN_MS = 60 * 1000
 
 
 # names of the 12 leads
-Standard12Leads = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6',]
-InferiorLeads = ['II', 'III', 'aVF',]
-LateralLeads = ['I', 'aVL',] + [f'V{i}' for i in range(5,7)]
-SeptalLeads = ['aVR', 'V1',]
-AnteriorLeads = [f'V{i}' for i in range(2,5)]
-ChestLeads = [f'V{i}' for i in range(1, 7)]
+Standard12Leads = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6",]
+InferiorLeads = ["II", "III", "aVF",]
+LateralLeads = ["I", "aVL",] + [f"V{i}" for i in range(5,7)]
+SeptalLeads = ["aVR", "V1",]
+AnteriorLeads = [f"V{i}" for i in range(2,5)]
+ChestLeads = [f"V{i}" for i in range(1, 7)]
 PrecordialLeads = ChestLeads
-LimbLeads = ['I', 'II', 'III', 'aVR', 'aVL', 'aVF',]
+LimbLeads = ["I", "II", "III", "aVR", "aVL", "aVF",]
 
 
 # ecg signal preprocessing configurations
@@ -63,7 +63,7 @@ FeatureCfg.pr_spike_prominence_wlen = 120  # ms
 FeatureCfg.pr_spike_inv_density_threshold = 2500  # inverse density (1/density), one spike per 2000 ms
 FeatureCfg.pr_spike_leads_threshold = 7
 FeatureCfg.axis_qrs_mask_radius = 70  # ms
-FeatureCfg.axis_method = '2-lead'  # can also be '3-lead'
+FeatureCfg.axis_method = "2-lead"  # can also be "3-lead"
 FeatureCfg.brady_threshold = _ONE_MINUTE_IN_MS / 60  # ms, corr. to 60 bpm
 FeatureCfg.tachy_threshold = _ONE_MINUTE_IN_MS / 100  # ms, corr. to 100 bpm
 FeatureCfg.lqrsv_qrs_mask_radius = 60  # ms
@@ -106,10 +106,10 @@ ModelCfg.tranche_model = ED({
     "AB": os.path.join(_BASE_DIR, "saved_models", "ECG_CRNN_resnet_leadwise_none_tranche_AB.pth"),
     "E": os.path.join(_BASE_DIR, "saved_models", "ECG_CRNN_resnet_leadwise_none_tranche_E.pth"),
     "F": os.path.join(_BASE_DIR, "saved_models", "ECG_CRNN_resnet_leadwise_none_tranche_F.pth"),
-    # 'all' refers to tranches A, B, E, F
+    # "all" refers to tranches A, B, E, F
     "all": os.path.join(_BASE_DIR, "saved_models", "ECG_CRNN_resnet_leadwise_none_tranche_all.pth"),
 })
-ModelCfg.special_classes = ['Brady', 'LAD', 'RAD', 'PR', 'LQRSV']
+ModelCfg.special_classes = ["Brady", "LAD", "RAD", "PR", "LQRSV"]
 
 
 # training configurations for machine learning and deep learning
@@ -117,7 +117,7 @@ TrainCfg = ED()
 
 # configs of files
 TrainCfg.db_dir = "/media/cfs/wenhao71/data/cinc2020_data/"
-TrainCfg.log_dir = os.path.join(_BASE_DIR, 'log')
+TrainCfg.log_dir = os.path.join(_BASE_DIR, "log")
 TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
 TrainCfg.keep_checkpoint_max = 20
 
@@ -129,7 +129,7 @@ TrainCfg.special_classes = ModelCfg.special_classes.copy()
 TrainCfg.normalize_data = True
 TrainCfg.train_ratio = 0.8
 TrainCfg.min_class_weight = 0.5
-TrainCfg.tranches_for_training = ''  # one of '', 'AB', 'E', 'F'
+TrainCfg.tranches_for_training = ""  # one of "", "AB", "E", "F"
 # TrainCfg.tranche_class_counts = ED({
 #     # classes with too few recordings are ignored
 #     # classes dealt with special detectors are ignored
@@ -137,19 +137,19 @@ TrainCfg.tranches_for_training = ''  # one of '', 'AB', 'E', 'F'
 #         t, exclude_classes=TrainCfg.special_classes, scored_only=True, threshold=20
 #     ) for t in ["A", "B", "AB", "E", "F"]
 #     # "A": {
-#     #     'IAVB': 722, 'AF': 1221, 'LBBB': 236, 'PAC': 616, 'RBBB': 1857, 'NSR': 918,
+#     #     "IAVB": 722, "AF": 1221, "LBBB": 236, "PAC": 616, "RBBB": 1857, "NSR": 918,
 #     # },
 #     # "B": {
-#     #     'IAVB': 106, 'AF': 153, 'AFL': 54, 'IRBBB': 86, 'LBBB': 38, 'PAC': 126, 'PVC': 196, 'RBBB': 114, 'SB': 45, 'STach': 303, 'TAb': 22,
+#     #     "IAVB": 106, "AF": 153, "AFL": 54, "IRBBB": 86, "LBBB": 38, "PAC": 126, "PVC": 196, "RBBB": 114, "SB": 45, "STach": 303, "TAb": 22,
 #     # },
 #     # "AB": {
-#     #     'IAVB': 828, 'AF': 1374, 'AFL': 54, 'IRBBB': 86, 'LBBB': 274, 'PAC': 742, 'PVC': 196, 'RBBB': 1971, 'SB': 45, 'NSR': 922, 'STach': 303, 'TAb': 22,
+#     #     "IAVB": 828, "AF": 1374, "AFL": 54, "IRBBB": 86, "LBBB": 274, "PAC": 742, "PVC": 196, "RBBB": 1971, "SB": 45, "NSR": 922, "STach": 303, "TAb": 22,
 #     # },
 #     # "E": {
-#     #     'IAVB': 797, 'AF': 1514, 'AFL': 73, 'RBBB': 542, 'IRBBB': 1118, 'LAnFB': 1626, 'LBBB': 536, 'NSIVCB': 789, 'PAC': 555, 'LPR': 340, 'LQT': 118, 'QAb': 548, 'SA': 772, 'SB': 637, 'NSR': 18092, 'STach': 826, 'TAb': 2345, 'TInv': 294,
+#     #     "IAVB": 797, "AF": 1514, "AFL": 73, "RBBB": 542, "IRBBB": 1118, "LAnFB": 1626, "LBBB": 536, "NSIVCB": 789, "PAC": 555, "LPR": 340, "LQT": 118, "QAb": 548, "SA": 772, "SB": 637, "NSR": 18092, "STach": 826, "TAb": 2345, "TInv": 294,
 #     # },
 #     # "F": {
-#     #     'IAVB': 769, 'AF': 570, 'AFL': 186, 'RBBB': 570, 'IRBBB': 407, 'LAnFB': 180, 'LBBB': 231, 'NSIVCB': 203, 'PAC': 640, 'LQT': 1391, 'QAb': 464, 'SA': 455, 'SB': 1677, 'NSR': 1752, 'STach': 1261, 'TAb': 2306, 'TInv': 812, 'PVC': 357,
+#     #     "IAVB": 769, "AF": 570, "AFL": 186, "RBBB": 570, "IRBBB": 407, "LAnFB": 180, "LBBB": 231, "NSIVCB": 203, "PAC": 640, "LQT": 1391, "QAb": 464, "SA": 455, "SB": 1677, "NSR": 1752, "STach": 1261, "TAb": 2306, "TInv": 812, "PVC": 357,
 #     # },
 # })
 # TrainCfg.tranche_class_weights = ED({
@@ -174,7 +174,7 @@ TrainCfg.tranche_classes = ED({
         for t, t_cw in TrainCfg.tranche_class_weights.items()
 })
 # TrainCfg.class_counts = ED({
-#     'IAVB': 2394, 'AF': 3473, 'AFL': 314, 'RBBB': 3083, 'IRBBB': 1611, 'LAnFB': 1806, 'LBBB': 1041, 'NSIVCB': 996, 'PAC': 1937, 'PVC': 553, 'LPR': 340, 'LQT': 1513, 'QAb': 1013, 'SA': 1238, 'SB': 2359, 'NSR': 20846, 'STach': 2391, 'TAb': 4673, 'TInv': 1111,
+#     "IAVB": 2394, "AF": 3473, "AFL": 314, "RBBB": 3083, "IRBBB": 1611, "LAnFB": 1806, "LBBB": 1041, "NSIVCB": 996, "PAC": 1937, "PVC": 553, "LPR": 340, "LQT": 1513, "QAb": 1013, "SA": 1238, "SB": 2359, "NSR": 20846, "STach": 2391, "TAb": 4673, "TInv": 1111,
 # })  # count
 # TrainCfg.class_weights = ED({
 #     k: sum(TrainCfg.class_counts.values()) / v \
@@ -218,7 +218,7 @@ TrainCfg.lr = TrainCfg.learning_rate
 TrainCfg.lr_step_size = 50
 TrainCfg.lr_gamma = 0.1
 
-TrainCfg.lr_scheduler = None  # 'plateau', 'burn_in', 'step', None
+TrainCfg.lr_scheduler = None  # "plateau", "burn_in", "step", None
 
 TrainCfg.burn_in = 400
 TrainCfg.steps = [5000, 10000]
@@ -227,13 +227,13 @@ TrainCfg.momentum = 0.949
 TrainCfg.decay = 0.0005
 
 # configs of loss function
-# TrainCfg.loss = 'BCEWithLogitsLoss'
-TrainCfg.loss = 'BCEWithLogitsWithClassWeightLoss'
+# TrainCfg.loss = "BCEWithLogitsLoss"
+TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
 TrainCfg.eval_every = 20
 
 # configs of model selection
-TrainCfg.cnn_name = "resnet_leadwise"  # 'vgg16', 'resnet', 'vgg16_leadwise', 'cpsc', 'cpsc_leadwise'
-TrainCfg.rnn_name = 'none'  # 'none', 'lstm', 'attention'
+TrainCfg.cnn_name = "resnet_leadwise"  # "vgg16", "resnet", "vgg16_leadwise", "cpsc", "cpsc_leadwise"
+TrainCfg.rnn_name = "none"  # "none", "lstm", "attention"
 
 # configs of inputs and outputs
 TrainCfg.input_len = int(500 * 8.0)  # almost all records has duration >= 8s

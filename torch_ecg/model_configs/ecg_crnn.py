@@ -13,6 +13,8 @@ from .cnn import (
     resnet, resnet_leadwise,
     multi_scopic_block,
     multi_scopic, multi_scopic_leadwise,
+    dense_net_leadwise,
+    xception_leadwise,
 )
 from .rnn import (
     lstm,
@@ -95,7 +97,8 @@ ECG_CRNN_CONFIG.global_pool = "max"  # "avg", "attn"
 
 ECG_CRNN_CONFIG.clf = ED()
 ECG_CRNN_CONFIG.clf.out_channels = [
-  # not including the last linear layer, with out channels equals n_classes
+    # 12 * 32,
+  # not including the last linear layer, whose out channels equals n_classes
 ]
 ECG_CRNN_CONFIG.clf.bias = True
 ECG_CRNN_CONFIG.clf.dropouts = 0.0
