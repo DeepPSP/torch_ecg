@@ -483,22 +483,9 @@ dense_net_vanilla.groups = 1
 dense_net_vanilla.block = ED(building_block="basic")
 dense_net_vanilla.transition = ED()
 
-dense_net_leadwise = ED()
-dense_net_leadwise.num_layers = [6, 6, 6, 6]
+dense_net_leadwise = deepcopy(dense_net_vanilla)
 dense_net_leadwise.init_num_filters = 12 * 8
-dense_net_leadwise.init_filter_length = 7
-dense_net_leadwise.init_pool_stride = 2
-dense_net_leadwise.init_pool_size = 3
-dense_net_leadwise.init_subsample_mode = "avg"
-dense_net_leadwise.growth_rates = 16
-dense_net_leadwise.filter_lengths = 3
-dense_net_leadwise.subsample_lengths = 2
-dense_net_leadwise.bn_size = 4
-dense_net_leadwise.dropout = 0
-dense_net_leadwise.compression = 0.5
 dense_net_leadwise.groups = 12
-dense_net_leadwise.block = ED(building_block="basic")
-dense_net_leadwise.transition = ED()
 
 
 
