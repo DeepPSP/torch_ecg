@@ -547,19 +547,28 @@ def get_date_str(fmt:Optional[str]=None):
     return date_str
 
 
-def rdheader(header_data:List[str]) -> Union[Record, MultiRecord]:
+def rdheader(header_data:Union[str, Sequence[str]]) -> Union[Record, MultiRecord]:
     """ finished, checked,
     
     modified from `wfdb.rdheader`
 
     Parameters
     ----------
-    head_data: list of str,
-        lines of the .hea header file
+    head_data: str, or sequence of str,
+        path of the .hea header file, or lines of the .hea header file
     """
+    if isinstance(header_data, str):
+        if not header_data.endswith(".hea"):
+            _header_data = header_data + ".hea"
+        else:
+            _header_data = header_data
+        if not os.path.isfile(_header_data):
+            raise FileNotFoundError
+        with open(_header_data, "r") as f:
+            _header_data = f.read().splitlines()
     # Read the header file. Separate comment and non-comment lines
     header_lines, comment_lines = [], []
-    for line in header_data:
+    for line in _header_data:
         striped_line = line.strip()
         # Comment line
         if striped_line.startswith("#"):
