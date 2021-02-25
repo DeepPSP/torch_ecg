@@ -13,8 +13,8 @@ from .cnn import (
     resnet, resnet_leadwise,
     multi_scopic_block,
     multi_scopic, multi_scopic_leadwise,
-    dense_net_leadwise,
-    xception_leadwise,
+    dense_net_vanilla, dense_net_leadwise,
+    xception_vanilla, xception_leadwise,
 )
 from .rnn import (
     lstm,
@@ -67,8 +67,10 @@ ECG_CRNN_CONFIG.cnn.multi_scopic.block = deepcopy(multi_scopic_block)
 ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise = deepcopy(multi_scopic_leadwise)
 ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise.block = deepcopy(multi_scopic_block)
 
+ECG_CRNN_CONFIG.cnn.xception_vanilla = deepcopy(xception_vanilla)
 ECG_CRNN_CONFIG.cnn.xception_leadwise = deepcopy(xception_leadwise)
 
+ECG_CRNN_CONFIG.cnn.dense_net_vanilla = deepcopy(dense_net_vanilla)
 ECG_CRNN_CONFIG.cnn.dense_net_leadwise = deepcopy(dense_net_leadwise)
 
 
