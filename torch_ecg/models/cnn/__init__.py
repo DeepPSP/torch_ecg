@@ -12,6 +12,11 @@ named CNNs, which are frequently used by more complicated models, including
 1. MobileNet
 2. DarkNet
 3. EfficientNet
+
+## TODO
+1. MobileNeXt
+2. GhostNet
+3. etc.
 """
 
 from .densenet import (
