@@ -218,7 +218,7 @@ class ResNetStanfordBlock(nn.Module):
         output = output +sc
         return output
 
-    def _make_shortcut_layer(self) -> Union[nn.Module, type(None)]:
+    def _make_shortcut_layer(self) -> Union[nn.Module, None]:
         """
         """
         if self.__down_scale > 1 or self.__increase_channels:
@@ -245,7 +245,7 @@ class ResNetStanfordBlock(nn.Module):
             shortcut = None
         return shortcut
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:
@@ -361,7 +361,7 @@ class ResNetStanford(nn.Sequential):
         num_filters = 2**int(index / self.config.increase_channels_at) * num_start_filters
         return num_filters
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:

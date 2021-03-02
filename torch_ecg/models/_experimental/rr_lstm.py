@@ -34,6 +34,9 @@ from torch_ecg.models.nets import (
     SeqLin,
     CRF, ExtendedCRF,
 )
+from torch_ecg.models.nets import (
+    NonLocalBlock, SEBlock, GlobalContextBlock,
+)
 
 if Cfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -122,7 +125,7 @@ class RR_LSTM(nn.Module):
         elif self.config.attn.name.lower() == "sa":  # self_attention
             # NOTE: this branch NOT tested
             self.attn = SelfAttention(
-                in_features=attn_in_channels,
+                in_features=attn_input_size,
                 head_num=self.config.attn.sa.head_num,
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,
@@ -206,7 +209,7 @@ class RR_LSTM(nn.Module):
         raise NotImplementedError("implement a task specific inference method")
 
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:

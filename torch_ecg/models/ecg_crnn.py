@@ -17,10 +17,10 @@ from torch import Tensor
 import torch.nn.functional as F
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
-from torch_ecg.model_configs import ECG_CRNN_CONFIG
-from torch_ecg.utils.utils_nn import compute_conv_output_shape, compute_module_size
-from torch_ecg.utils.misc import dict_to_str
+from ..cfg import Cfg
+from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
+from ..utils.utils_nn import compute_conv_output_shape, compute_module_size
+from ..utils.misc import dict_to_str
 from .nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
@@ -33,9 +33,14 @@ from .nets import (
     NonLocalBlock, SEBlock, GlobalContextBlock,
     SeqLin,
 )
-from .cnn import (
-    VGG16, ResNet, MultiScopicCNN, DenseNet, Xception,
-)
+from .cnn.vgg import VGG16
+from .cnn.resnet import ResNet
+from .cnn.multi_scopic import MultiScopicCNN
+from .cnn.densenet import DenseNet
+from .cnn.xception import Xception
+# from .cnn import (
+#     VGG16, ResNet, MultiScopicCNN, DenseNet, Xception,
+# )
 
 
 if Cfg.torch_dtype.lower() == "double":
@@ -176,7 +181,7 @@ class ECG_CRNN(nn.Module):
         elif self.config.attn.name.lower() == "sa":  # self_attention
             # NOTE: this branch NOT tested
             self.attn = SelfAttention(
-                in_features=attn_in_channels,
+                in_features=attn_input_size,
                 head_num=self.config.attn.sa.head_num,
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,

@@ -304,7 +304,7 @@ def detect_peaks(x:Sequence,
                  mph:Optional[Real]=None, mpd:int=1,
                  threshold:Real=0, left_threshold:Real=0, right_threshold:Real=0,
                  prominence:Optional[Real]=None, prominence_wlen:Optional[int]=None,
-                 edge:Union[str,type(None)]='rising', kpsh:bool=False, valley:bool=False,
+                 edge:Union[str,None]='rising', kpsh:bool=False, valley:bool=False,
                  show:bool=False, ax=None,
                  verbose:int=0) -> np.ndarray:
     """

@@ -35,9 +35,14 @@ from torch_ecg.models.nets import (
     NonLocalBlock, SEBlock, GlobalContextBlock,
     SeqLin,
 )
-from torch_ecg.models.cnn import (
-    VGG16, ResNet, MultiScopicCNN, DenseNet, Xception,
-)
+# from torch_ecg.models.cnn import (
+#     VGG16, ResNet, MultiScopicCNN, DenseNet, Xception,
+# )
+from torch_ecg.models.cnn.vgg import VGG16
+from torch_ecg.models.cnn.resnet import ResNet
+from torch_ecg.models.cnn.multi_scopic import MultiScopicCNN
+from torch_ecg.models.cnn.densenet import DenseNet
+from torch_ecg.models.cnn.xception import Xception
 
 
 if Cfg.torch_dtype.lower() == "double":
@@ -178,7 +183,7 @@ class ECG_CRNN(nn.Module):
         elif self.config.attn.name.lower() == "sa":  # self_attention
             # NOTE: this branch NOT tested
             self.attn = SelfAttention(
-                in_features=attn_in_channels,
+                in_features=attn_input_size,
                 head_num=self.config.attn.sa.head_num,
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,

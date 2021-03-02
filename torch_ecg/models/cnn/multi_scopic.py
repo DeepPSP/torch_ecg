@@ -14,10 +14,10 @@ from torch import nn
 from torch import Tensor
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
-from torch_ecg.utils.utils_nn import compute_module_size
-from torch_ecg.utils.misc import dict_to_str
-from torch_ecg.models.nets import (
+from ...cfg import Cfg
+from ...utils.utils_nn import compute_module_size
+from ...utils.misc import dict_to_str
+from ...models.nets import (
     Conv_Bn_Activation,
     DownSample,
     NonLocalBlock, SEBlock, GlobalContextBlock,
@@ -146,7 +146,7 @@ class MultiScopicBasicBlock(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:
@@ -231,13 +231,13 @@ class MultiScopicBranch(nn.Sequential):
             f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `num_filters` indicates {len(self.__num_filters)}"
         self.__filter_lengths = filter_lengths
         assert len(self.__filter_lengths) == self.__num_blocks, \
-            f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `filter_lengths` indicates {llen(self.__filter_lengths)}"
+            f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `filter_lengths` indicates {len(self.__filter_lengths)}"
         if isinstance(subsample_lengths, int):
             self.__subsample_lengths = list(repeat(subsample_lengths, self.__num_blocks))
         else:
             self.__subsample_lengths = filter_lengths
             assert len(self.__subsample_lengths) == self.__num_blocks, \
-            f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `subsample_lengths` indicates {llen(self.__subsample_lengths)}"
+            f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
         self.__groups = groups
         self.config = ED(deepcopy(config))
 
@@ -274,7 +274,7 @@ class MultiScopicBranch(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:
@@ -389,7 +389,7 @@ class MultiScopicCNN(nn.Module):
         )
         return output
     
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:

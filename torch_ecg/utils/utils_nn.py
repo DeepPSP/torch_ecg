@@ -11,7 +11,7 @@ import torch
 from torch import Tensor
 from torch import nn
 
-from torch_ecg.cfg import Cfg
+from ..cfg import Cfg
 
 
 if Cfg.torch_dtype.lower() == "double":
@@ -76,14 +76,14 @@ def extend_predictions(preds:Sequence, classes:List[str], extended_classes:List[
 
 # utils for computing output shape
 def compute_output_shape(layer_type:str,
-                         input_shape:Sequence[Union[int, type(None)]],
+                         input_shape:Sequence[Union[int, None]],
                          num_filters:Optional[int]=None,
                          kernel_size:Union[Sequence[int], int]=1,
                          stride:Union[Sequence[int], int]=1,
                          padding:Union[Sequence[int], int]=0,
                          output_padding:Union[Sequence[int], int]=0,
                          dilation:Union[Sequence[int], int]=1,
-                         channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
+                         channel_last:bool=False) -> Tuple[Union[int, None]]:
     """ finished, checked,
 
     compute the output shape of a (transpose) convolution/maxpool/avgpool layer
@@ -227,13 +227,13 @@ def compute_output_shape(layer_type:str,
     return output_shape
 
 
-def compute_conv_output_shape(input_shape:Sequence[Union[int, type(None)]],
+def compute_conv_output_shape(input_shape:Sequence[Union[int, None]],
                               num_filters:Optional[int]=None,
                               kernel_size:Union[Sequence[int], int]=1,
                               stride:Union[Sequence[int], int]=1,
                               padding:Union[Sequence[int], int]=0,
                               dilation:Union[Sequence[int], int]=1,
-                              channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
+                              channel_last:bool=False) -> Tuple[Union[int, None]]:
     """ finished, cheched,
 
     compute the output shape of a convolution/maxpool/avgpool layer
@@ -268,12 +268,12 @@ def compute_conv_output_shape(input_shape:Sequence[Union[int, type(None)]],
     return output_shape
 
 
-def compute_maxpool_output_shape(input_shape:Sequence[Union[int, type(None)]],
+def compute_maxpool_output_shape(input_shape:Sequence[Union[int, None]],
                                  kernel_size:Union[Sequence[int], int]=1,
                                  stride:Union[Sequence[int], int]=1,
                                  padding:Union[Sequence[int], int]=0,
                                  dilation:Union[Sequence[int], int]=1,
-                                 channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
+                                 channel_last:bool=False) -> Tuple[Union[int, None]]:
     """ finished, cheched,
 
     compute the output shape of a maxpool layer
@@ -306,11 +306,11 @@ def compute_maxpool_output_shape(input_shape:Sequence[Union[int, type(None)]],
     return output_shape
 
 
-def compute_avgpool_output_shape(input_shape:Sequence[Union[int, type(None)]],
+def compute_avgpool_output_shape(input_shape:Sequence[Union[int, None]],
                                  kernel_size:Union[Sequence[int], int]=1,
                                  stride:Union[Sequence[int], int]=1,
                                  padding:Union[Sequence[int], int]=0,
-                                 channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
+                                 channel_last:bool=False) -> Tuple[Union[int, None]]:
     """ finished, cheched,
 
     compute the output shape of a avgpool layer
@@ -341,14 +341,14 @@ def compute_avgpool_output_shape(input_shape:Sequence[Union[int, type(None)]],
     return output_shape
 
 
-def compute_deconv_output_shape(input_shape:Sequence[Union[int, type(None)]],
+def compute_deconv_output_shape(input_shape:Sequence[Union[int, None]],
                                 num_filters:Optional[int]=None,
                                 kernel_size:Union[Sequence[int], int]=1,
                                 stride:Union[Sequence[int], int]=1,
                                 padding:Union[Sequence[int], int]=0,
                                 output_padding:Union[Sequence[int], int]=0,
                                 dilation:Union[Sequence[int], int]=1,
-                                channel_last:bool=False) -> Tuple[Union[int, type(None)]]:
+                                channel_last:bool=False) -> Tuple[Union[int, None]]:
     """ finished, checked,
 
     compute the output shape of a transpose convolution layer
@@ -464,7 +464,7 @@ def compute_receptive_field(kernel_sizes:Union[Sequence[int], int]=1,
     of the 3 branches of the multi-scopic net, using its original hyper-parameters,
     (note the 3 max pooling layers)
     """
-    _kernel_sizes = [kernel_size] if isinstance(kernel_sizes, int) else list(kernel_sizes)
+    _kernel_sizes = [kernel_sizes] if isinstance(kernel_sizes, int) else list(kernel_sizes)
     num_layers = len(_kernel_sizes)
     _strides = list(repeat(strides, num_layers)) if isinstance(strides, int) else list(strides)
     _dilations = list(repeat(dilations, num_layers)) if isinstance(dilations, int) else list(dilations)

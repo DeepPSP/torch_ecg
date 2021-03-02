@@ -18,10 +18,10 @@ from torch import nn
 from torch import Tensor
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
-from torch_ecg.utils.utils_nn import compute_module_size
-from torch_ecg.utils.misc import dict_to_str
-from torch_ecg.models.nets import (
+from ...cfg import Cfg
+from ...utils.utils_nn import compute_module_size
+from ...utils.misc import dict_to_str
+from ...models.nets import (
     Conv_Bn_Activation,
     DownSample,
     NonLocalBlock, SEBlock, GlobalContextBlock,

@@ -13,13 +13,13 @@ from torch import nn
 from torch import Tensor
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
-from torch_ecg.utils.utils_nn import (
+from ...cfg import Cfg
+from ...utils.utils_nn import (
     compute_maxpool_output_shape,
     compute_module_size,
 )
-from torch_ecg.utils.misc import dict_to_str
-from torch_ecg.models.nets import (
+from ...utils.misc import dict_to_str
+from ...models.nets import (
     Conv_Bn_Activation,
     NonLocalBlock, SEBlock, GlobalContextBlock,
 )
@@ -120,7 +120,7 @@ class VGGBlock(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:
@@ -225,7 +225,7 @@ class VGG16(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:

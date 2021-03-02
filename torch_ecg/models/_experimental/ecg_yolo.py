@@ -20,6 +20,7 @@ from torch_ecg.cfg import Cfg
 from torch_ecg.utils.utils_nn import compute_deconv_output_shape, compute_module_size
 from torch_ecg.utils.misc import dict_to_str
 from torch_ecg.models.nets import (
+    Activations,
     Conv_Bn_Activation, MultiConv,
     DownSample, ZeroPadding,
     GlobalContextBlock,
@@ -145,7 +146,7 @@ class ResNetGCBlock(nn.Module):
         else:
             self.out_dropout = None
     
-    def _make_shortcut_layer(self) -> Union[nn.Module, type(None)]:
+    def _make_shortcut_layer(self) -> Union[nn.Module, None]:
         """ finished, NOT checked,
         """
         if self.__DEBUG__:
@@ -202,9 +203,9 @@ class ResNetGCBlock(nn.Module):
         if self.out_dropout:
             output = self.out_dropout(output)
 
-        return out
+        return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, NOT checked,
 
         Parameters:

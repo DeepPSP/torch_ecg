@@ -21,12 +21,13 @@ from torch import Tensor
 import torch.nn.functional as F
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
-from torch_ecg.model_configs import RR_LSTM_CONFIG
-from torch_ecg.utils.misc import dict_to_str
-from torch_ecg.utils.utils_nn import compute_module_size
-from torch_ecg.models.nets import (
+from ..cfg import Cfg
+from ..model_configs.rr_lstm import RR_LSTM_CONFIG
+from ..utils.misc import dict_to_str
+from ..utils.utils_nn import compute_module_size
+from ..models.nets import (
     Mish, Swish, Activations,
+    NonLocalBlock, SEBlock, GlobalContextBlock,
     StackedLSTM,
     AttentionWithContext,
     SelfAttention, MultiHeadAttention,
@@ -122,7 +123,7 @@ class RR_LSTM(nn.Module):
         elif self.config.attn.name.lower() == "sa":  # self_attention
             # NOTE: this branch NOT tested
             self.attn = SelfAttention(
-                in_features=attn_in_channels,
+                in_features=attn_input_size,
                 head_num=self.config.attn.sa.head_num,
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,
@@ -206,7 +207,7 @@ class RR_LSTM(nn.Module):
         raise NotImplementedError("implement a task specific inference method")
 
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:

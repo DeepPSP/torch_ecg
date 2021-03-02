@@ -38,7 +38,7 @@ from torch_ecg.models.nets import (
     AttentivePooling,
     SeqLin,
 )
-from torch_ecg.models.cnn import MultiScopicCNN
+from torch_ecg.models.cnn.multi_scopic import MultiScopicCNN
 
 if Cfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -194,7 +194,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
         """
         raise NotImplementedError("implement a task specific inference method")
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:

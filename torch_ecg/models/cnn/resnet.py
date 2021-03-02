@@ -13,10 +13,10 @@ from torch import nn
 from torch import Tensor
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
-from torch_ecg.utils.utils_nn import compute_module_size
-from torch_ecg.utils.misc import dict_to_str
-from torch_ecg.models.nets import (
+from ...cfg import Cfg
+from ...utils.utils_nn import compute_module_size
+from ...utils.misc import dict_to_str
+from ...models.nets import (
     Activations,
     Conv_Bn_Activation,
     DownSample,
@@ -125,7 +125,7 @@ class ResNetBasicBlock(nn.Module):
             self.out_activation = \
                 self.config.activation(**self.config.kw_activation)
     
-    def _make_shortcut_layer(self) -> Union[nn.Module, type(None)]:
+    def _make_shortcut_layer(self) -> Union[nn.Module, None]:
         """ finished, checked,
         """
         if self.__DEBUG__:
@@ -181,7 +181,7 @@ class ResNetBasicBlock(nn.Module):
 
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:
@@ -337,7 +337,7 @@ class ResNetBottleNeck(nn.Module):
             self.out_activation = \
                 self.config.activation(**self.config.kw_activation)
         
-    def _make_shortcut_layer(self) -> Union[nn.Module, type(None)]:
+    def _make_shortcut_layer(self) -> Union[nn.Module, None]:
         """ finished, checked,
         """
         if self.__DEBUG__:
@@ -393,7 +393,7 @@ class ResNetBottleNeck(nn.Module):
 
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:
@@ -624,7 +624,7 @@ class ResNet(nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:

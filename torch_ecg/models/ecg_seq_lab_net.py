@@ -26,10 +26,10 @@ from torch import Tensor
 import torch.nn.functional as F
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
-from torch_ecg.utils.utils_nn import compute_conv_output_shape, compute_module_size
-from torch_ecg.utils.misc import dict_to_str
-from torch_ecg.model_configs import ECG_SEQ_LAB_NET_CONFIG
+from ..cfg import Cfg
+from ..utils.utils_nn import compute_conv_output_shape, compute_module_size
+from ..utils.misc import dict_to_str
+from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
 from .nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
@@ -38,7 +38,7 @@ from .nets import (
     AttentivePooling,
     SeqLin,
 )
-from .cnn import MultiScopicCNN
+from .cnn.multi_scopic import MultiScopicCNN
 
 
 if Cfg.torch_dtype.lower() == "double":
@@ -200,7 +200,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
         """
         raise NotImplementedError("implement a task specific inference method")
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:

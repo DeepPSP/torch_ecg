@@ -23,10 +23,10 @@ from torch import Tensor
 import torch.nn.functional as F
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
-from torch_ecg.utils.utils_nn import compute_deconv_output_shape, compute_module_size
-from torch_ecg.utils.misc import dict_to_str
-from torch_ecg.models.nets import (
+from ..cfg import Cfg
+from ..utils.utils_nn import compute_deconv_output_shape, compute_module_size
+from ..utils.misc import dict_to_str
+from ..models.nets import (
     Conv_Bn_Activation, MultiConv, BranchedConv,
     DownSample, ZeroPadding,
 )
@@ -189,7 +189,7 @@ class DownTripleConv(nn.Sequential):
         out = super().forward(input)
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:
@@ -301,7 +301,7 @@ class DownBranchedDoubleConv(nn.Module):
         out = torch.cat(out, dim=1)  # concate along the channel axis
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:
@@ -430,7 +430,7 @@ class UpTripleConv(nn.Module):
 
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:
@@ -656,7 +656,7 @@ class ECG_SUBTRACT_UNET(nn.Module):
         """
         NotImplementedError("implement a task specific inference method")
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, type(None)]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters:
