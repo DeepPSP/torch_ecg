@@ -144,6 +144,9 @@ temp
 checkpoints
 log
 
+# test notebooks
+fast_test.ipynb
+
 # dl models
 *.h5
 *.pth

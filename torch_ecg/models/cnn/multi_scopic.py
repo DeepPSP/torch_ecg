@@ -362,6 +362,7 @@ class MultiScopicCNN(nn.Module):
                     num_filters=self.config.num_filters[idx],
                     filter_lengths=self.config.filter_lengths[idx],
                     subsample_lengths=self.config.subsample_lengths[idx],
+                    groups=self.config.groups,
                     dropouts=self.config.dropouts[idx],
                     block=self.config.block,  # a dict
                 )
