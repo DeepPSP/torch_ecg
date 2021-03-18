@@ -699,8 +699,9 @@ def ensure_siglen(values:Sequence[Real], siglen:int, fmt:str="lead_first") -> np
         end = start + siglen
         out_values = _values[..., start:end]
     else:
-        pad_left = (siglen - original_siglen)//2
-        pad_right = siglen - pad_left
+        pad_len = siglen - original_siglen
+        pad_left = pad_len // 2
+        pad_right = pad_len - pad_left
         out_values = np.concatenate([np.zeros((n_leads, pad_left)), _values, np.zeros((n_leads, pad_right))], axis=1)
 
     if fmt.lower() in ["channel_last", "lead_last"]:
