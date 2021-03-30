@@ -17,9 +17,13 @@ purely used as feature extractors
 ## TODO
 1. MobileNeXt
 2. GhostNet
-3. etc.
+3. ReXNet
+4. etc.
 
 ## Issues
 1. Ordering of (batch) normalization and activation after convolution, should it be
    - cba (conv -> bn -> act), or
    - cab (conv -> act -> bn)
+
+## References:
+1. to add....
