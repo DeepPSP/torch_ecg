@@ -262,7 +262,7 @@ class Conv_Bn_Activation(nn.Sequential):
                  padding:Optional[int]=None,
                  dilation:int=1,
                  groups:int=1,
-                 batch_norm:Union[bool,nn.Module]=True,
+                 batch_norm:Union[bool,str,nn.Module]=True,
                  activation:Optional[Union[str,nn.Module]]=None,
                  kernel_initializer:Optional[Union[str,callable]]=None,
                  bias:bool=True,
@@ -286,9 +286,9 @@ class Conv_Bn_Activation(nn.Sequential):
             spacing between the kernel points
         groups: int, default 1,
             connection pattern (of channels) of the inputs and outputs
-        batch_norm: bool or Module, default True,
-            batch normalization,
-            the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
+        batch_norm: bool or str or Module, default True,
+            (batch) normalization, or other normalizations, e.g. group normalization
+            (the name of) the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
         activation: str or Module, optional,
             name or Module of the activation,
             if is str, can be one of
@@ -303,7 +303,7 @@ class Conv_Bn_Activation(nn.Sequential):
             ordering of the layers, case insensitive
         kwargs: dict, optional,
             other key word arguments, including
-            conv_type, kw_activation, kw_initializer, etc.
+            conv_type, kw_activation, kw_initializer, kw_bn, etc.
 
         NOTE that if `padding` is not specified (default None),
         then the actual padding used for the convolutional layer is automatically computed
@@ -330,6 +330,7 @@ class Conv_Bn_Activation(nn.Sequential):
         #     f"`activation` is {activation}, while `ordering` = \042{self.__ordering}\042 contains {'' if 'a' in self.__ordering else 'no '}\042a\042"
         kw_activation = kwargs.get("kw_activation", {})
         kw_initializer = kwargs.get("kw_initializer", {})
+        kw_bn = kwargs.get("kw_bn", {})
         self.__conv_type = kwargs.get("conv_type", None)
         if isinstance(self.__conv_type, str):
             self.__conv_type = self.__conv_type.lower()
@@ -368,7 +369,19 @@ class Conv_Bn_Activation(nn.Sequential):
         else:
             bn_in_channels = in_channels
         if batch_norm:
-            bn_layer = nn.BatchNorm1d(bn_in_channels) if isinstance(batch_norm, bool) else batch_norm(bn_in_channels)
+            if isinstance(batch_norm, bool):
+                bn_layer = nn.BatchNorm1d(bn_in_channels, **kw_bn)
+            elif isinstance(batch_norm, str):
+                if batch_norm.lower() in ["instance_norm", "instance_normalization",]:
+                    bn_layer = nn.InstanceNorm1d(bn_in_channels, **kw_bn)
+                elif batch_norm.lower() in ["group_norm", "group_normalization",]:
+                    bn_layer = nn.GroupNorm(self.__groups, bn_in_channels, **kw_bn)
+                elif batch_norm.lower() in ["layer_norm", "layer_normalization",]:
+                    bn_layer = nn.LayerNorm(**kw_bn)
+                else:
+                    raise ValueError(f"normalization method {batch_norm} not supported yet!")
+            else:
+                bn_layer = batch_norm
         else:
             bn_layer = None
 

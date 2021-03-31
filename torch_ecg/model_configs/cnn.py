@@ -433,9 +433,12 @@ multi_scopic.kernel_initializer = "he_normal"
 multi_scopic.kw_initializer = {}
 multi_scopic.activation = "relu"
 multi_scopic.kw_activation = {"inplace": True}
+multi_scopic.batch_norm = False
+multi_scopic.kw_bn = {}
 
 multi_scopic_leadwise = deepcopy(multi_scopic)
 multi_scopic_leadwise.groups = 12
+multi_scopic_leadwise.batch_norm = False  # consider using "group_norm"
 _base_num_filters = 12 * 4
 multi_scopic_leadwise.num_filters = [
     [
