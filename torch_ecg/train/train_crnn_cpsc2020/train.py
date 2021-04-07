@@ -650,10 +650,7 @@ if __name__ == "__main__":
     from utils import init_logger
     train_config = get_args(**TrainCfg)
     # os.environ["CUDA_VISIBLE_DEVICES"] = train_config.gpu
-    if not DAS:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    else:
-        device = torch.device("cuda")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # classes = train_config.classes
     model_name = train_config.model_name.lower()

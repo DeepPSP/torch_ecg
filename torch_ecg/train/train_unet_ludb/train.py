@@ -356,10 +356,7 @@ def get_args(**kwargs):
 if __name__ == "__main__":
     config = get_args(**TrainCfg)
     # os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
-    if not DAS:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    else:
-        device = torch.device("cuda")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger = init_logger(log_dir=config.log_dir, verbose=2)
     logger.info(f"\n{'*'*20}   Start Training   {'*'*20}\n")
     logger.info(f"Using device {device}")
