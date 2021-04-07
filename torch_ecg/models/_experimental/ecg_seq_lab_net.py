@@ -50,7 +50,12 @@ class ECG_SEQ_LAB_NET(nn.Module):
     SOTA model from CPSC2019 challenge (entry 0416)
 
     pipeline:
+    ---------
     multi-scopic cnn --> (bidi-lstm -->) "attention" --> seq linear
+
+    TODO:
+    -----
+    try adding a CRF layer following linear layers to make final prediction
 
     References:
     -----------
@@ -158,13 +163,20 @@ class ECG_SEQ_LAB_NET(nn.Module):
         self.softmax = nn.Softmax(-1)
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, input:Tensor) -> Tensor:
+    def extract_features(self, input:Tensor) -> Tensor:
         """ finished, checked,
+
+        extract feature map before the dense (linear) classifying layer(s)
 
         Parameters:
         -----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
+        
+        Returns:
+        --------
+        features: Tensor,
+            of shape (batch_size, seq_len, channels)
         """
         # cnn
         cnn_output = self.cnn(input)  # (batch_size, channels, seq_len)
@@ -178,13 +190,29 @@ class ECG_SEQ_LAB_NET(nn.Module):
             rnn_output = cnn_output
 
         # attention
-        x = self.attn(rnn_output)  # (batch_size, channels, seq_len)
-        x = x.permute(0,2,1)  # (batch_size, seq_len, channels)
+        features = self.attn(rnn_output)  # (batch_size, channels, seq_len)
+        features = features.permute(0,2,1)  # (batch_size, seq_len, channels)
+        return features
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, channels, seq_len)
+        
+        Returns:
+        --------
+        pred: Tensor,
+            of shape (batch_size, seq_len)
+        """
+        features = self.extract_features(input)
 
         # classify
-        output = self.clf(x)
+        pred = self.clf(features)
 
-        return output
+        return pred
 
     # inference will not be included in the model itself
     # as it is strongly related to the usage scenario

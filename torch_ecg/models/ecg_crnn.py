@@ -219,6 +219,54 @@ class ECG_CRNN(nn.Module):
         # sigmoid for inference
         self.sigmoid = nn.Sigmoid()  # for making inference
 
+    def extract_features(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        extract feature map before the dense (linear) classifying layer(s)
+
+        Parameters:
+        -----------
+        input: Tensor,
+            of shape (batch_size, channels, seq_len)
+        
+        Returns:
+        --------
+        features: Tensor,
+            of shape (batch_size, channels, seq_len) or (batch_size, channels)
+        """
+        # CNN
+        features = self.cnn(input)  # batch_size, channels, seq_len
+        # print(f"cnn out shape = {features.shape}")
+
+        # RNN (optional)
+        if self.config.rnn.name.lower() in ["lstm"]:
+            # (batch_size, channels, seq_len) --> (seq_len, batch_size, channels)
+            features = features.permute(2,0,1)
+            features = self.rnn(features)  # (seq_len, batch_size, channels) or (batch_size, channels)
+        elif self.config.rnn.name.lower() in ["linear"]:
+            # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
+            features = features.permute(0,2,1)
+            features = self.rnn(features)  # (batch_size, seq_len, channels)
+            # (batch_size, seq_len, channels) --> (seq_len, batch_size, channels)
+            features = features.permute(1,0,2)
+        else:
+            # (batch_size, channels, seq_len) --> (seq_len, batch_size, channels)
+            features = features.permute(2,0,1)
+
+        # Attention (optional)
+        if self.attn is None and x.ndim == 3:
+            # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
+            features = features.permute(1,2,0)
+        elif self.config.attn.name.lower() in ["nl", "se", "gc"]:
+            # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
+            features = features.permute(1,2,0)
+            features = self.attn(features)  # (batch_size, channels, seq_len)
+        elif self.config.attn.name.lower() in ["sa"]:
+            features = self.attn(features)  # (seq_len, batch_size, channels)
+            # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
+            features = features.permute(1,2,0)
+        return features
+
     def forward(self, input:Tensor) -> Tensor:
         """ finished, partly checked (rnn part might have bugs),
 
@@ -229,50 +277,20 @@ class ECG_CRNN(nn.Module):
         
         Returns:
         --------
-        output: Tensor,
+        pred: Tensor,
             of shape (batch_size, n_classes)
         """
-        # CNN
-        x = self.cnn(input)  # batch_size, channels, seq_len
-        # print(f"cnn out shape = {x.shape}")
-
-        # RNN (optional)
-        if self.config.rnn.name.lower() in ["lstm"]:
-            # (batch_size, channels, seq_len) --> (seq_len, batch_size, channels)
-            x = x.permute(2,0,1)
-            x = self.rnn(x)  # (seq_len, batch_size, channels) or (batch_size, channels)
-        elif self.config.rnn.name.lower() in ["linear"]:
-            # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
-            x = x.permute(0,2,1)
-            x = self.rnn(x)  # (batch_size, seq_len, channels)
-            # (batch_size, seq_len, channels) --> (seq_len, batch_size, channels)
-            x = x.permute(1,0,2)
-        else:
-            # (batch_size, channels, seq_len) --> (seq_len, batch_size, channels)
-            x = x.permute(2,0,1)
-
-        # Attention (optional)
-        if self.attn is None and x.ndim == 3:
-            # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
-            x = x.permute(1,2,0)
-        elif self.config.attn.name.lower() in ["nl", "se", "gc"]:
-            # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
-            x = x.permute(1,2,0)
-            x = self.attn(x)  # (batch_size, channels, seq_len)
-        elif self.config.attn.name.lower() in ["sa"]:
-            x = self.attn(x)  # (seq_len, batch_size, channels)
-            # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
-            x = x.permute(1,2,0)
+        features = self.extract_features(input)
 
         if self.pool:
-            x = self.pool(x)  # (batch_size, channels, 1)
-            x = x.squeeze(dim=-1)
+            features = self.pool(features)  # (batch_size, channels, 1)
+            features = features.squeeze(dim=-1)
         else:
-            # x of shape (batch_size, channels)
+            # features of shape (batch_size, channels)
             pass
 
         # print(f"clf in shape = {x.shape}")
-        pred = self.clf(x)  # batch_size, n_classes
+        pred = self.clf(features)  # batch_size, n_classes
 
         return pred
 
