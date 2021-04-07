@@ -352,7 +352,6 @@ def get_args(**kwargs):
     return ED(cfg)
 
 
-DAS = True
 
 if __name__ == "__main__":
     config = get_args(**TrainCfg)
@@ -375,7 +374,7 @@ if __name__ == "__main__":
 
     model = ECG_UNET(classes=config.classes, config=model_config)
 
-    if not DAS and torch.cuda.device_count() > 1:
+    if torch.cuda.device_count() > 1:
         model = torch.nn.DataParallel(model)
     # if not DAS:
     #     model.to(device=device)

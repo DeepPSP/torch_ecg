@@ -515,8 +515,6 @@ def get_args(**kwargs):
 
 
 
-DAS = False  # JD DAS platform
-
 if __name__ == "__main__":
     config = get_args(**TrainCfg)
     # os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
@@ -551,7 +549,7 @@ if __name__ == "__main__":
         config=model_config,
     )
 
-    if not DAS and torch.cuda.device_count() > 1:
+    if torch.cuda.device_count() > 1:
         model = torch.nn.DataParallel(model)
     # if not DAS:
     #     model.to(device=device)

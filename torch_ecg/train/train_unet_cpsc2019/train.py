@@ -402,8 +402,6 @@ def get_args(**kwargs):
 
 
 
-DAS = False  # JD DAS platform
-
 if __name__ == "__main__":
     sys.path.append(os.path.dirname(__file__))
     
@@ -437,7 +435,7 @@ if __name__ == "__main__":
             config=model_config,
         )
 
-    if not DAS and torch.cuda.device_count() > 1:
+    if torch.cuda.device_count() > 1:
         model = torch.nn.DataParallel(model)
 
     model.to(device=device)

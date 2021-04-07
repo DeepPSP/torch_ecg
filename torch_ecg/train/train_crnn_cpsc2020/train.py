@@ -646,8 +646,6 @@ def get_args(**kwargs):
 
 
 
-DAS = False  # JD DAS platform
-
 if __name__ == "__main__":
     from utils import init_logger
     train_config = get_args(**TrainCfg)
@@ -690,7 +688,7 @@ if __name__ == "__main__":
     else:
         raise NotImplementedError(f"Model {model_name} not supported yet!")
 
-    if not DAS and torch.cuda.device_count() > 1:
+    if torch.cuda.device_count() > 1:
         model = torch.nn.DataParallel(model)
     model.to(device=device)
     model.__DEBUG__ = False
