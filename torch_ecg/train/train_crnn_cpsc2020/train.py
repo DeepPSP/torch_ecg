@@ -689,7 +689,9 @@ if __name__ == "__main__":
         raise NotImplementedError(f"Model {model_name} not supported yet!")
 
     if torch.cuda.device_count() > 1:
-        model = torch.nn.DataParallel(model)
+        # model = torch.nn.DataParallel(model)
+        model = torch.nn.parallel.DistributedDataParallel(model)
+
     model.to(device=device)
     model.__DEBUG__ = False
 

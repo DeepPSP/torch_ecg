@@ -375,12 +375,11 @@ if __name__ == "__main__":
     model = ECG_UNET(classes=config.classes, config=model_config)
 
     if torch.cuda.device_count() > 1:
-        model = torch.nn.DataParallel(model)
-    # if not DAS:
-    #     model.to(device=device)
-    # else:
-    #     model.cuda()
+        # model = torch.nn.DataParallel(model)
+        model = torch.nn.parallel.DistributedDataParallel(model)
+
     model.to(device=device)
+    model.__DEBUG__ = False
 
     try:
         train(

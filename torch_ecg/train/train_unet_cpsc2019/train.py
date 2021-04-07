@@ -436,7 +436,8 @@ if __name__ == "__main__":
         )
 
     if torch.cuda.device_count() > 1:
-        model = torch.nn.DataParallel(model)
+        # model = torch.nn.DataParallel(model)
+        model = torch.nn.parallel.DistributedDataParallel(model)
 
     model.to(device=device)
     model.__DEBUG__ = False
