@@ -299,6 +299,8 @@ TrainCfg.class_map = deepcopy(ModelCfg[TrainCfg.model_name].class_map)
 # configs of loss function
 TrainCfg.loss = 'BCEWithLogitsLoss'
 # TrainCfg.loss = 'BCEWithLogitsWithClassWeightLoss'
+
+TrainCfg.log_step = 20
 TrainCfg.eval_every = 20
 
 
