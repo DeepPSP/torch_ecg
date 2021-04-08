@@ -42,7 +42,7 @@ __all__ = [
     "MultiHeadAttention", "SelfAttention",
     "AttentivePooling",
     "ZeroPadding",
-    "SeqLin",
+    "SeqLin", "MLP",
     "NonLocalBlock", "SEBlock", "GlobalContextBlock",
     "CRF", "ExtendedCRF",
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
@@ -2053,6 +2053,42 @@ class SeqLin(nn.Sequential):
         """
         """
         return compute_module_size(self)
+
+
+class MLP(SeqLin):
+    """
+    multi-layer perceptron,
+    alias for sequential linear block
+    """
+    __DEBUG__ = False
+    __name__ = "MLP"
+
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:Sequence[int],
+                 activation:str="relu",
+                 kernel_initializer:Optional[str]=None,
+                 bias:bool=True,
+                 dropouts:Union[float,Sequence[float]]=0.0,
+                 **kwargs) -> NoReturn:
+        """ finished, checked,
+
+        Parameters:
+        -----------
+        in_channels: int,
+            number of channels in the input
+        out_channels: sequence of int,
+            number of ouput channels for each linear layer
+        activation: str, default "relu",
+            name of activation after each linear layer
+        kernel_initializer: str, optional,
+            name of kernel initializer for `weight` of each linear layer
+        bias: bool, default True,
+            if True, each linear layer will have a learnable bias vector
+        dropouts: float or sequence of float, default 0,
+            dropout ratio(s) (if > 0) after each (activation after each) linear layer
+        """
+        super().__init__(in_channels, out_channels, activation, kernel_initializer, bias, dropouts, **kwargs)
 
 
 class NonLocalBlock(nn.Module):
