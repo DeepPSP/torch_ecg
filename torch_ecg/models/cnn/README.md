@@ -19,7 +19,9 @@ purely used as feature extractors
 2. GhostNet
 3. ReXNet
 4. CSPNet
-5. etc.
+5. DLA
+6. HarDNet
+7. etc.
 
 ## Issues
 1. Ordering of (batch) normalization and activation after convolution, should it be

@@ -1,6 +1,6 @@
 # [PhysioNet/CinC Challenge 2020](https://physionetchallenges.github.io/2020/)
 
-# Digest of Top Models ([CinC2020 papers](https://www.cinc.org/archives/2020/) search `Challenge` on this page)
+## Digest of Top Models ([CinC2020 papers](https://www.cinc.org/archives/2020/) search `Challenge` on this page)
 - [BUTTeam](http://www.cinc.org/archives/2020/pdf/CinC2020-189.pdf):  CNN (modified resnet) With Global Skip Connections and Custom Loss Function
 - [DSAIL_SNU](http://www.cinc.org/archives/2020/pdf/CinC2020-328.pdf):  Bag of Tricks (data augmentation?) for Electrocardiogram Classification with DNN
 - [HeartBeats](http://www.cinc.org/archives/2020/pdf/CinC2020-281.pdf):  SE-ResNet
