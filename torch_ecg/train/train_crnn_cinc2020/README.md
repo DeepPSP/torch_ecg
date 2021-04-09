@@ -1,6 +1,6 @@
 # [PhysioNet/CinC Challenge 2020](https://physionetchallenges.github.io/2020/)
 
-## Digest of Top Models ([CinC2020 papers](https://www.cinc.org/archives/2020/) search `Challenge` on this page)
+## Digest of Top Models ([CinC2020 papers](https://www.cinc.org/archives/2020/) searching `Challenge` on this page)
 - [prna](http://www.cinc.org/archives/2020/pdf/CinC2020-107.pdf):  Transformer
 - [Between a ROC and a heart place](http://www.cinc.org/archives/2020/pdf/CinC2020-112.pdf):  Adaptive lead weighted ResNet
 - [HeartBeats](http://www.cinc.org/archives/2020/pdf/CinC2020-281.pdf):  SE-ResNet
@@ -16,6 +16,6 @@
 - [ISIBrno](http://www.cinc.org/archives/2020/pdf/CinC2020-032.pdf):  Residual CNN-GRU with Attention Mechanism
 - other teams:  Modified EfficientNet; Class Activation Map; Graph Convolutional Network (GCN)
 
-Final rank can be found [here](https://github.com/physionetchallenges/evaluation-2020/blob/master/Results/physionet_2020_official_scores.csv)
+Final rankings can be found [here](https://github.com/physionetchallenges/evaluation-2020/blob/master/Results/physionet_2020_official_scores.csv)
 
 # [original repository](https://github.com/wenh06/cinc2020)
