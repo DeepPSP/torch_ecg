@@ -97,7 +97,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
         __debug_seq_len = self.input_len or 4000
         
         # currently, the CNN part only uses `MultiScopicCNN`
-        # can be 'multi_scopic' or 'multi_scopic_leadwise'
+        # can be "multi_scopic" or "multi_scopic_leadwise"
         cnn_choice = self.config.cnn.name.lower()
         self.cnn = MultiScopicCNN(self.n_leads, **(self.config.cnn[cnn_choice]))
         rnn_input_size = self.cnn.compute_output_shape(self.input_len, batch_size=None)[1]
@@ -107,10 +107,10 @@ class ECG_SEQ_LAB_NET(nn.Module):
             print(f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}, given input seq_len = {__debug_seq_len}")
             __debug_seq_len = cnn_output_shape[-1]
 
-        if self.config.rnn.name.lower() == 'none':
+        if self.config.rnn.name.lower() == "none":
             self.rnn = None
             attn_input_size = rnn_input_size
-        elif self.config.rnn.name.lower() == 'lstm':
+        elif self.config.rnn.name.lower() == "lstm":
             self.rnn = StackedLSTM(
                 input_size=rnn_input_size,
                 hidden_sizes=self.config.rnn.lstm.hidden_sizes,

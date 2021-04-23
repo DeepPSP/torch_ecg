@@ -338,7 +338,7 @@ class UpTripleConv(nn.Module):
     """
     __DEBUG__ = False
     __name__ = "UpTripleConv"
-    __MODES__ = ['nearest', 'linear', 'area', 'deconv',]
+    __MODES__ = ["nearest", "linear", "area", "deconv",]
 
     def __init__(self,
                  up_scale:int,
@@ -363,13 +363,13 @@ class UpTripleConv(nn.Module):
         filter_lengths: int or sequence of int,
             length(s) of the filters (kernel size) of the convolutional layers
         deconv_filter_length: int,
-            only used when `mode` == 'deconv'
+            only used when `mode` == "deconv"
             length(s) of the filters (kernel size) of the deconvolutional upsampling layer
         groups: int, default 1, not used currently,
             connection pattern (of channels) of the inputs and outputs
         dropouts: float or sequence of float, default 0.0,
             dropout ratio after each `Conv_Bn_Activation`
-        mode: str, default 'deconv', case insensitive,
+        mode: str, default "deconv", case insensitive,
             mode of up sampling
         config: dict,
             other parameters, including
@@ -389,7 +389,7 @@ class UpTripleConv(nn.Module):
 
         # the following has to be checked
         # if bilinear, use the normal convolutions to reduce the number of channels
-        if self.__mode == 'deconv':
+        if self.__mode == "deconv":
             self.__deconv_padding = max(0, (self.__deconv_filter_length - self.__up_scale)//2)
             self.up = nn.ConvTranspose1d(
                 in_channels=self.__in_channels,
@@ -446,7 +446,7 @@ class UpTripleConv(nn.Module):
             the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
         """
         _sep_len = seq_len
-        if self.__mode == 'deconv':
+        if self.__mode == "deconv":
             output_shape = compute_deconv_output_shape(
                 input_shape=[batch_size, self.__in_channels, _sep_len],
                 num_filters=self.__in_channels,
@@ -521,7 +521,7 @@ class ECG_SUBTRACT_UNET(nn.Module):
         self.down_blocks = nn.ModuleDict()
         in_channels = self.config.init_num_filters
         for idx in range(self.config.down_up_block_num-1):
-            self.down_blocks[f'down_{idx}'] = \
+            self.down_blocks[f"down_{idx}"] = \
                 DownTripleConv(
                     down_scale=self.config.down_scales[idx],
                     in_channels=in_channels,
@@ -534,7 +534,7 @@ class ECG_SUBTRACT_UNET(nn.Module):
                 )
             in_channels = self.config.down_num_filters[idx][-1]
             if self.__DEBUG__:
-                __debug_output_shape = self.down_blocks[f'down_{idx}'].compute_output_shape(__debug_seq_len)
+                __debug_output_shape = self.down_blocks[f"down_{idx}"].compute_output_shape(__debug_seq_len)
                 print(f"given seq_len = {__debug_seq_len}, down_{idx} output shape = {__debug_output_shape}")
                 _, _, __debug_seq_len = __debug_output_shape
 
@@ -558,7 +558,7 @@ class ECG_SUBTRACT_UNET(nn.Module):
         # in_channels = sum([branch[-1] for branch in self.config.bottom_num_filters])
         in_channels = self.bottom_block.compute_output_shape(None,None)[1]
         for idx in range(self.config.down_up_block_num):
-            self.up_blocks[f'up_{idx}'] = \
+            self.up_blocks[f"up_{idx}"] = \
                 UpTripleConv(
                     up_scale=self.config.up_scales[idx],
                     in_channels=in_channels,
@@ -572,7 +572,7 @@ class ECG_SUBTRACT_UNET(nn.Module):
                 )
             in_channels = self.config.up_num_filters[idx][-1]
             if self.__DEBUG__:
-                __debug_output_shape = self.up_blocks[f'up_{idx}'].compute_output_shape(__debug_seq_len)
+                __debug_output_shape = self.up_blocks[f"up_{idx}"].compute_output_shape(__debug_seq_len)
                 print(f"given seq_len = {__debug_seq_len}, up_{idx} output shape = {__debug_output_shape}")
                 _, _, __debug_seq_len = __debug_output_shape
 

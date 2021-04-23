@@ -148,7 +148,7 @@ class DownDoubleConv(nn.Sequential):
         mid_channels: int, optional,
             number of channels produced by the first convolutional layer,
             defaults to `out_channels`
-        mode: str, default 'max',
+        mode: str, default "max",
             mode for down sampling,
             can be one of `DownSample.__MODES__`
         config: dict,
@@ -246,7 +246,7 @@ class UpDoubleConv(nn.Module):
     """
     __DEBUG__ = False
     __name__ = "UpDoubleConv"
-    __MODES__ = ['nearest', 'linear', 'area', 'deconv',]
+    __MODES__ = ["nearest", "linear", "area", "deconv",]
 
     def __init__(self,
                  up_scale:int,
@@ -380,7 +380,7 @@ class UpDoubleConv(nn.Module):
             the output shape of this `UpDoubleConv` layer, given `seq_len` and `batch_size`
         """
         _sep_len = seq_len
-        if self.__mode == 'deconv':
+        if self.__mode == "deconv":
             output_shape = compute_deconv_output_shape(
                 input_shape=[batch_size, self.__in_channels, _sep_len],
                 num_filters=self.__in_channels,
@@ -459,7 +459,7 @@ class ECG_UNET(nn.Module):
         self.down_blocks = nn.ModuleDict()
         in_channels = self.config.init_num_filters
         for idx in range(self.config.down_up_block_num):
-            self.down_blocks[f'down_{idx}'] = \
+            self.down_blocks[f"down_{idx}"] = \
                 DownDoubleConv(
                     down_scale=self.config.down_scales[idx],
                     in_channels=in_channels,
@@ -471,14 +471,14 @@ class ECG_UNET(nn.Module):
                 )
             in_channels = self.config.down_num_filters[idx]
             if self.__DEBUG__:
-                __debug_output_shape = self.down_blocks[f'down_{idx}'].compute_output_shape(__debug_seq_len)
+                __debug_output_shape = self.down_blocks[f"down_{idx}"].compute_output_shape(__debug_seq_len)
                 print(f"given seq_len = {__debug_seq_len}, down_{idx} output shape = {__debug_output_shape}")
                 _, _, __debug_seq_len = __debug_output_shape
 
         self.up_blocks = nn.ModuleDict()
         in_channels = self.config.down_num_filters[-1]
         for idx in range(self.config.down_up_block_num):
-            self.up_blocks[f'up_{idx}'] = \
+            self.up_blocks[f"up_{idx}"] = \
                 UpDoubleConv(
                     up_scale=self.config.up_scales[idx],
                     in_channels=in_channels,
@@ -491,7 +491,7 @@ class ECG_UNET(nn.Module):
                 )
             in_channels = self.config.up_num_filters[idx]
             if self.__DEBUG__:
-                __debug_output_shape = self.up_blocks[f'up_{idx}'].compute_output_shape(__debug_seq_len)
+                __debug_output_shape = self.up_blocks[f"up_{idx}"].compute_output_shape(__debug_seq_len)
                 print(f"given seq_len = {__debug_seq_len}, up_{idx} output shape = {__debug_output_shape}")
                 _, _, __debug_seq_len = __debug_output_shape
 
