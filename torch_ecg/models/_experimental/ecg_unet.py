@@ -52,7 +52,16 @@ class DoubleConv(MultiConv):
     __DEBUG__ = False
     __name__ = "DoubleConv"
 
-    def __init__(self, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], subsample_lengths:Union[Sequence[int],int]=1, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, out_activation:bool=True, mid_channels:Optional[int]=None, **config) -> NoReturn:
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:int,
+                 filter_lengths:Union[Sequence[int],int],
+                 subsample_lengths:Union[Sequence[int],int]=1,
+                 groups:int=1,
+                 dropouts:Union[Sequence[float],float]=0.0,
+                 out_activation:bool=True,
+                 mid_channels:Optional[int]=None,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -110,7 +119,16 @@ class DownDoubleConv(nn.Sequential):
     __name__ = "DownDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
-    def __init__(self, down_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], groups:int=1, dropouts:Union[Sequence[float], float]=0.0, mid_channels:Optional[int]=None, mode:str='max', **config) -> NoReturn:
+    def __init__(self,
+                 down_scale:int,
+                 in_channels:int,
+                 out_channels:int,
+                 filter_lengths:Union[Sequence[int],int],
+                 groups:int=1,
+                 dropouts:Union[Sequence[float],float]=0.0,
+                 mid_channels:Optional[int]=None,
+                 mode:str="max",
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -230,7 +248,18 @@ class UpDoubleConv(nn.Module):
     __name__ = "UpDoubleConv"
     __MODES__ = ['nearest', 'linear', 'area', 'deconv',]
 
-    def __init__(self, up_scale:int, in_channels:int, out_channels:int, filter_lengths:Union[Sequence[int],int], deconv_filter_length:Optional[int]=None, groups:int=1, dropouts:Union[Sequence[float], float]=0.0, mode:str='deconv', mid_channels:Optional[int]=None, **config) -> NoReturn:
+    def __init__(self,
+                 up_scale:int,
+                 in_channels:int,
+                 out_channels:int,
+                 filter_lengths:Union[Sequence[int],int],
+                 deconv_filter_length:Optional[int]=None,
+                 groups:int=1,
+                 deconv_groups:int=1,
+                 dropouts:Union[Sequence[float],float]=0.0,
+                 mode:str="deconv",
+                 mid_channels:Optional[int]=None,
+                 **config) -> NoReturn:
         """ finished, checked,
 
         Parameters:
@@ -244,13 +273,16 @@ class UpDoubleConv(nn.Module):
         filter_lengths: int or sequence of int,
             length(s) of the filters (kernel size) of the convolutional layers
         deconv_filter_length: int,
-            only used when `mode` == 'deconv'
+            only used when `mode` == "deconv"
             length(s) of the filters (kernel size) of the deconvolutional upsampling layer
         groups: int, default 1, not used currently,
             connection pattern (of channels) of the inputs and outputs
+        deconv_groups: int, default 1,
+            only used when `mode` == "deconv"
+            connection pattern (of channels) of the deconvolutional upsampling layer
         dropouts: float or sequence of float, default 0.0,
             dropout ratio after each `Conv_Bn_Activation`
-        mode: str, default 'deconv', case insensitive,
+        mode: str, default "deconv", case insensitive,
             mode of up sampling
         mid_channels: int, optional,
             number of channels produced by the first deconvolutional layer,
@@ -274,7 +306,7 @@ class UpDoubleConv(nn.Module):
 
         # the following has to be checked
         # if bilinear, use the normal convolutions to reduce the number of channels
-        if self.__mode == 'deconv':
+        if self.__mode == "deconv":
             self.__deconv_padding = max(0, (self.__deconv_filter_length - self.__up_scale)//2)
             self.up = nn.ConvTranspose1d(
                 in_channels=self.__in_channels,
@@ -282,6 +314,7 @@ class UpDoubleConv(nn.Module):
                 kernel_size=self.__deconv_filter_length,
                 stride=self.__up_scale,
                 padding=self.__deconv_padding,
+                groups=deconv_groups,
             )
         else:
             self.up = nn.Upsample(

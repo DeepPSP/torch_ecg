@@ -22,6 +22,8 @@ _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BaseCfg = ED()
 BaseCfg.fs = 500  # Hz, CPSC2019 data fs
 BaseCfg.classes = ["N",]
+BaseCfg.classes = ["N", "i"]   # N for qrs, i for other parts
+# BaseCfg.class_map = {c:i for i,c in enumerate(BaseCfg.classes)}
 # BaseCfg.training_data = os.path.join(_BASE_DIR, "training_data")
 BaseCfg.db_dir = "/media/cfs/wenhao71/data/CPSC2019/train/"
 BaseCfg.bias_thr = int(0.075 * BaseCfg.fs)  # keep the same with `THR` in `cpsc2019_score.py`
@@ -39,8 +41,8 @@ ModelCfg.fs = BaseCfg.fs
 ModelCfg.spacing = 1000 / ModelCfg.fs
 # NOTE(update): "background" now do not count as a class
 ModelCfg.classes = deepcopy(BaseCfg.classes)
+# ModelCfg.class_map = deepcopy(BaseCfg.class_map)
 # ModelCfg.classes = ["i", "N"]  # N for qrs, i for other parts
-# ModelCfg.class_map = {c:i for i,c in enumerate(ModelCfg.classes)}
 ModelCfg.n_leads = 1
 ModelCfg.skip_dist = BaseCfg.skip_dist
 

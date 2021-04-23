@@ -255,6 +255,7 @@ class UpDoubleConv(nn.Module):
                  filter_lengths:Union[Sequence[int],int],
                  deconv_filter_length:Optional[int]=None,
                  groups:int=1,
+                 deconv_groups:int=1,
                  dropouts:Union[Sequence[float],float]=0.0,
                  mode:str="deconv",
                  mid_channels:Optional[int]=None,
@@ -276,6 +277,9 @@ class UpDoubleConv(nn.Module):
             length(s) of the filters (kernel size) of the deconvolutional upsampling layer
         groups: int, default 1, not used currently,
             connection pattern (of channels) of the inputs and outputs
+        deconv_groups: int, default 1,
+            only used when `mode` == "deconv"
+            connection pattern (of channels) of the deconvolutional upsampling layer
         dropouts: float or sequence of float, default 0.0,
             dropout ratio after each `Conv_Bn_Activation`
         mode: str, default "deconv", case insensitive,
@@ -310,6 +314,7 @@ class UpDoubleConv(nn.Module):
                 kernel_size=self.__deconv_filter_length,
                 stride=self.__up_scale,
                 padding=self.__deconv_padding,
+                groups=deconv_groups,
             )
         else:
             self.up = nn.Upsample(
