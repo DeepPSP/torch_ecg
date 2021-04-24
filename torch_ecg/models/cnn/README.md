@@ -73,18 +73,18 @@ purely used as feature extractors
    1. Zhou, D., Hou, Q., Chen, Y., Feng, J., & Yan, S. (2020). Rethinking bottleneck structure for efficient mobile network design. ECCV, August, 2.
    2. https://github.com/yitu-opensource/MobileNeXt
 10. GhostNet
-   1. Han, K., Wang, Y., Tian, Q., Guo, J., Xu, C., & Xu, C. (2020). Ghostnet: More features from cheap operations. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 1580-1589).
-   2. https://github.com/huawei-noah/CV-Backbones
-   3. https://github.com/iamhankai/ghostnet.pytorch
+    1. Han, K., Wang, Y., Tian, Q., Guo, J., Xu, C., & Xu, C. (2020). Ghostnet: More features from cheap operations. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 1580-1589).
+    2. https://github.com/huawei-noah/CV-Backbones
+    3. https://github.com/iamhankai/ghostnet.pytorch
 11. ReXNet
-   1. to add
-   2. https://github.com/clovaai/rexnet
+    1. to add
+    2. https://github.com/clovaai/rexnet
 12. CSPNet
-   1. Wang, C. Y., Liao, H. Y. M., Wu, Y. H., Chen, P. Y., Hsieh, J. W., & Yeh, I. H. (2020). CSPNet: A new backbone that can enhance learning capability of CNN. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition workshops (pp. 390-391).
-   2. https://github.com/WongKinYiu/CrossStagePartialNetworks
+    1. Wang, C. Y., Liao, H. Y. M., Wu, Y. H., Chen, P. Y., Hsieh, J. W., & Yeh, I. H. (2020). CSPNet: A new backbone that can enhance learning capability of CNN. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition workshops (pp. 390-391).
+    2. https://github.com/WongKinYiu/CrossStagePartialNetworks
 13. HO-ResNet
-   1. Luo, Z., Sun, Z., Zhou, W., & Kamata, S. I. (2021). Rethinking ResNets: Improved Stacking Strategies With High Order Schemes. arXiv preprint arXiv:2103.15244.
-   2. to add
+    1. Luo, Z., Sun, Z., Zhou, W., & Kamata, S. I. (2021). Rethinking ResNets: Improved Stacking Strategies With High Order Schemes. arXiv preprint arXiv:2103.15244.
+    2. to add
 14. ResNet-RS
-   1. Bello, I., Fedus, W., Du, X., Cubuk, E. D., Srinivas, A., Lin, T. Y., ... & Zoph, B. (2021). Revisiting resnets: Improved training and scaling strategies. arXiv preprint arXiv:2103.07579.
-   2. to add
+    1. Bello, I., Fedus, W., Du, X., Cubuk, E. D., Srinivas, A., Lin, T. Y., ... & Zoph, B. (2021). Revisiting resnets: Improved training and scaling strategies. arXiv preprint arXiv:2103.07579.
+    2. to add
