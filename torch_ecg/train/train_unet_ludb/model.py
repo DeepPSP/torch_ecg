@@ -12,7 +12,7 @@ from easydict import EasyDict as ED
 import biosppy.signals.ecg as BSE
 
 # from torch_ecg.models.ecg_subtract_unet import ECG_SUBTRACT_UNET
-from torch_ecg.models.ecg_unet import ECG_UNET
+from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from .cfg import ModelCfg
 from .utils import mask_to_intervals, _remove_spikes_naive
 
