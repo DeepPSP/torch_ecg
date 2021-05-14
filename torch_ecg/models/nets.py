@@ -925,6 +925,53 @@ class SeparableConv(nn.Sequential):
         return compute_module_size(self)
 
 
+class DeformConv(nn.Module):
+    """
+    
+    Deformable Convolution
+
+    References:
+    -----------
+    [1] Dai, J., Qi, H., Xiong, Y., Li, Y., Zhang, G., Hu, H., & Wei, Y. (2017). Deformable convolutional networks. In Proceedings of the IEEE international conference on computer vision (pp. 764-773).
+    [2] Zhu, X., Hu, H., Lin, S., & Dai, J. (2019). Deformable convnets v2: More deformable, better results. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 9308-9316).
+    [3] https://github.com/open-mmlab/mmcv/blob/master/mmcv/ops/deform_conv.py
+    """
+    __name__ = "DeformConv"
+
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:int,
+                 kernel_size:Union[int, Tuple[int, ...]],
+                 stride:Union[int, Tuple[int, ...]] = 1,
+                 padding:Union[int, Tuple[int, ...]] = 0,
+                 dilation:Union[int, Tuple[int, ...]] = 1,
+                 groups:int=1,
+                 deform_groups:int = 1,
+                 bias:bool=False) -> NoReturn:
+        """
+        docstring, to write
+        """
+        raise NotImplementedError
+
+    def forward(self, input:Tensor, offset:Tensor) -> Tensor:
+        """
+        docstring, to write
+        """
+        raise NotImplementedError
+
+    def compute_output_shape(self,) -> Sequence[Union[int, None]]:
+        """
+        docstring, to write
+        """
+        raise NotImplementedError
+
+    @property
+    def module_size(self) -> int:
+        """
+        """
+        return compute_module_size(self)
+
+
 class DownSample(nn.Sequential):
     """
 
