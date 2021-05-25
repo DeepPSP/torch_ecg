@@ -18,4 +18,4 @@
 
 Final rankings can be found [here](https://github.com/physionetchallenges/evaluation-2020/blob/master/Results/physionet_2020_official_scores.csv)
 
-# [original repository](https://github.com/wenh06/cinc2020)
+# [original repository](https://github.com/DeepPSP/cinc2020)
