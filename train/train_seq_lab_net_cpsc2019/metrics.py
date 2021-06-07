@@ -18,8 +18,8 @@ __all__ = [
 def compute_metrics(rpeaks_truths:Sequence[Union[np.ndarray,Sequence[int]]], rpeaks_preds:Sequence[Union[np.ndarray,Sequence[int]]], fs:Real, thr:float=0.075, verbose:int=0) -> float:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     rpeaks_truths: sequence,
         sequence of ground truths of rpeaks locations (indices) from multiple records
     rpeaks_preds: sequence,
@@ -32,8 +32,8 @@ def compute_metrics(rpeaks_truths:Sequence[Union[np.ndarray,Sequence[int]]], rpe
     verbose: int, default 0,
         print verbosity
 
-    Returns:
-    --------
+    Returns
+    -------
     rec_acc: float,
         accuracy of predictions
     """

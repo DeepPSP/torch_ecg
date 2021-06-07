@@ -44,8 +44,8 @@ class CPSC(nn.Sequential):
     def __init__(self, classes:list, input_len:int, **config) -> NoReturn:
         """
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         classes: list,
             list of the classes for classification
         input_len: int,
@@ -137,8 +137,8 @@ class ResNetStanfordBlock(nn.Module):
         the main stream uses `subsample_length` as stride to perform down-sampling,
         the short cut uses `subsample_length` as pool size to perform down-sampling,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         block_index: int,
             index of the block in the whole sequence of `ResNetStanford`
         in_channels: int,
@@ -248,15 +248,15 @@ class ResNetStanfordBlock(nn.Module):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
@@ -278,8 +278,8 @@ class ResNetStanford(nn.Sequential):
     """
     the model proposed in ref. [1] and implemented in ref. [2]
 
-    References:
-    -----------
+    References
+    ----------
     [1] Hannun, Awni Y., et al. "Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network." Nature medicine 25.1 (2019): 65.
     [2] https://github.com/awni/ecg
     """
@@ -289,8 +289,8 @@ class ResNetStanford(nn.Sequential):
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """ NOT finished, NOT checked,
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         config: dict,
@@ -346,15 +346,15 @@ class ResNetStanford(nn.Sequential):
     def get_num_filters_at_index(self, index:int, num_start_filters:int) -> int:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         index: int,
             index of a `ResNetStanfordBlock` in the sequence of such blocks in the whole network
         num_start_filters: int,
             number of filters of the first convolutional layer of the whole network
 
-        Returns:
-        --------
+        Returns
+        -------
         num_filters: int,
             number of filters at the {index}-th `ResNetStanfordBlock`
         """
@@ -364,15 +364,15 @@ class ResNetStanford(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this Module, given `seq_len` and `batch_size`
         """

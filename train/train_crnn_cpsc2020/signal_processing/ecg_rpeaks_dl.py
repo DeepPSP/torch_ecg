@@ -35,8 +35,8 @@ def seq_lab_net_detect(sig:np.ndarray, fs:Real, correction:bool=False, **kwargs)
 
     NOTE: `sig` should have units in mV, NOT in μV!
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     sig: ndarray,
         the (raw) ECG signal of arbitrary length, with units in mV
     fs: real number,
@@ -51,19 +51,19 @@ def seq_lab_net_detect(sig:np.ndarray, fs:Real, correction:bool=False, **kwargs)
         - batch_size, int, default None,
             batch size for feeding into the model
 
-    NOTE:
-    -----
+    NOTE
+    ----
     `rpeaks` might not always be the local maxima, e.g. in aVR lead,
     hence after `correction` using `BSE.correct_rpeaks`,
     the "corrected" position might NOT be correct
 
-    Returns:
-    --------
+    Returns
+    -------
     rpeaks: ndarray,
         indices of rpeaks in `sig`
 
-    References:
-    -----------
+    References
+    ----------
     [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
     """
     verbose = kwargs.get("verbose", 0)
@@ -152,15 +152,15 @@ def seq_lab_net_detect(sig:np.ndarray, fs:Real, correction:bool=False, **kwargs)
 def _seq_lab_net_pre_process(sig:np.ndarray, verbose:int=0) -> np.ndarray:
     """ partly finished, partly checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     sig: ndarray,
         the ECG signal to be pre-processed
     verbose: int, default 0,
         print verbosity
 
-    Returns:
-    --------
+    Returns
+    -------
     sig_processed: ndarray,
         the processed ECG signal
     """
@@ -178,8 +178,8 @@ def _seq_lab_net_post_process(prob:np.ndarray, prob_thr:float=0.5, duration_thr:
 
     convert the array of probability predictions into the array of indices of rpeaks
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     prob: ndarray,
         the array of probabilities of qrs complex
     prob_thr: float, default 0.5,
@@ -195,8 +195,8 @@ def _seq_lab_net_post_process(prob:np.ndarray, prob_thr:float=0.5, duration_thr:
     verbose: int, default 0,
         print verbosity
 
-    Returns:
-    --------
+    Returns
+    -------
     rpeaks: ndarray,
         indices of rpeaks in converted from the array `prob`
     """
@@ -290,13 +290,13 @@ def _remove_spikes_naive(sig:np.ndarray) -> np.ndarray:
     `spikes` here refers to abrupt large bumps with (abs) value larger than 20 mV,
     do NOT confuse with `spikes` in paced rhythm
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     sig: ndarray,
         single-lead ECG signal with potential spikes
     
-    Returns:
-    --------
+    Returns
+    -------
     filtered_sig: ndarray,
         ECG signal with `spikes` removed
     """

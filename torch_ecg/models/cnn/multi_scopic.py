@@ -56,8 +56,8 @@ class MultiScopicBasicBlock(nn.Sequential):
                  **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         scopes: sequence of int,
@@ -134,13 +134,13 @@ class MultiScopicBasicBlock(nn.Sequential):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
+        Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -150,15 +150,15 @@ class MultiScopicBasicBlock(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
@@ -198,8 +198,8 @@ class MultiScopicBranch(nn.Sequential):
                  **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of features (channels) of the input
         scopes: sequence of sequences of int,
@@ -262,13 +262,13 @@ class MultiScopicBranch(nn.Sequential):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
+        Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -278,15 +278,15 @@ class MultiScopicBranch(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
@@ -314,8 +314,8 @@ class MultiScopicCNN(nn.Module):
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         config: dict,
@@ -371,13 +371,13 @@ class MultiScopicCNN(nn.Module):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
         
-        Parameters:
+        Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -394,15 +394,15 @@ class MultiScopicCNN(nn.Module):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """

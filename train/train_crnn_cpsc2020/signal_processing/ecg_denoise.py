@@ -33,8 +33,8 @@ def ecg_denoise(filtered_sig:np.ndarray, fs:Real, config:ED) -> List[List[int]]:
 
     a naive function removing non-ECG segments (flat and motion artefact)
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     filtered_sig: ndarray,
         1d filtered (typically bandpassed) ECG signal,
     fs: real number,
@@ -42,8 +42,8 @@ def ecg_denoise(filtered_sig:np.ndarray, fs:Real, config:ED) -> List[List[int]]:
     config: dict,
         configs of relavant parameters, like window, step, etc.
 
-    Returns:
-    --------
+    Returns
+    -------
     intervals: list of (length 2) list of int,
         list of intervals of non-noise segment of `filtered_sig`
     """

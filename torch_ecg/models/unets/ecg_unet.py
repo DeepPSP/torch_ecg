@@ -45,8 +45,8 @@ class DoubleConv(MultiConv):
 
     building blocks of UNet
     
-    References:
-    -----------
+    References
+    ----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
     """
     __DEBUG__ = False
@@ -64,8 +64,8 @@ class DoubleConv(MultiConv):
                  **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         out_channels: int,
@@ -111,8 +111,8 @@ class DownDoubleConv(nn.Sequential):
 
     channels are increased after down sampling
     
-    References:
-    -----------
+    References
+    ----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
     """
     __DEBUG__ = False
@@ -131,8 +131,8 @@ class DownDoubleConv(nn.Sequential):
                  **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         down_scale: int,
             down sampling scale
         in_channels: int,
@@ -198,8 +198,8 @@ class DownDoubleConv(nn.Sequential):
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -209,15 +209,15 @@ class DownDoubleConv(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
         """
@@ -262,8 +262,8 @@ class UpDoubleConv(nn.Module):
                  **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         up_scale: int,
             scale of up sampling
         in_channels: int,
@@ -339,8 +339,8 @@ class UpDoubleConv(nn.Module):
     def forward(self, input:Tensor, down_output:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             input tensor from the previous layer,
             of shape (batch_size, n_channels, seq_len)
@@ -348,8 +348,8 @@ class UpDoubleConv(nn.Module):
             input tensor of the last layer of corr. down block,
             of shape (batch_size, n_channels', seq_len')
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels'', seq_len')
         """
@@ -368,15 +368,15 @@ class UpDoubleConv(nn.Module):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `UpDoubleConv` layer, given `seq_len` and `batch_size`
         """
@@ -409,8 +409,8 @@ class ECG_UNET(nn.Module):
 
     UNet for (multi-lead) ECG wave delineation
 
-    References:
-    -----------
+    References
+    ----------
     [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
     [2] https://github.com/milesial/Pytorch-UNet/
     """
@@ -420,8 +420,8 @@ class ECG_UNET(nn.Module):
     def __init__(self, classes:Sequence[str], n_leads:int, config:dict) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         classes: sequence of int,
             name of the classes
         n_leads: int,
@@ -521,13 +521,13 @@ class ECG_UNET(nn.Module):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -569,15 +569,15 @@ class ECG_UNET(nn.Module):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `ECG_UNET` layer, given `seq_len` and `batch_size`
         """

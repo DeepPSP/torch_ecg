@@ -30,8 +30,8 @@ def dict_to_str(d:Union[dict, list, tuple], current_depth:int=1, indent_spaces:i
     convert a (possibly) nested dict into a `str` of json-like formatted form,
     this nested dict might also contain lists or tuples of dict (and of str, int, etc.)
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     d: dict, or list, or tuple,
         a (possibly) nested `dict`, or a list of `dict`
     current_depth: int, default 1,
@@ -39,8 +39,8 @@ def dict_to_str(d:Union[dict, list, tuple], current_depth:int=1, indent_spaces:i
     indent_spaces: int, default 4,
         the indent spaces of each depth
 
-    Returns:
-    --------
+    Returns
+    -------
     s: str,
         the formatted string
     """
@@ -98,18 +98,18 @@ def str2bool(v:Union[str, bool]) -> bool:
 
     converts a "boolean" value possibly in the format of str to bool
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     v: str or bool,
         the "boolean" value
 
-    Returns:
-    --------
+    Returns
+    -------
     b: bool,
         `v` in the format of bool
 
-    References:
-    -----------
+    References
+    ----------
     https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
     """
     if isinstance(v, bool):
@@ -135,15 +135,15 @@ def get_date_str(fmt:Optional[str]=None):
 def mask_to_intervals(mask:np.ndarray, vals:Optional[Union[int,Sequence[int]]]=None) -> Union[list, dict]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     mask: ndarray,
         1d mask
     vals: int or sequence of int, optional,
         values in `mask` to obtain intervals
 
-    Returns:
-    --------
+    Returns
+    -------
     intervals: dict or list,
         the intervals corr. to each value in `vals` if `vals` is `None` or `Sequence`;
         or the intervals corr. to `vals` if `vals` is int.
@@ -187,8 +187,8 @@ def gen_gaussian_noise(siglen:int, mean:Real=0, std:Real=0) -> np.ndarray:
 
     generate 1d Gaussian noise of given length, mean, and standard deviation
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     siglen: int,
         length of the noise signal
     mean: real number, default 0,
@@ -196,8 +196,8 @@ def gen_gaussian_noise(siglen:int, mean:Real=0, std:Real=0) -> np.ndarray:
     std: real number, default 0,
         standard deviation of the noise
 
-    Returns:
-    --------
+    Returns
+    -------
     gn: ndarray,
         the gaussian noise of given length, mean, and standard deviation
     """
@@ -210,8 +210,8 @@ def gen_sinusoidal_noise(siglen:int, start_phase:Real, end_phase:Real, amplitude
 
     generate 1d sinusoidal noise of given length, amplitude, start phase, and end phase
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     siglen: int,
         length of the (noise) signal
     start_phase: real number,
@@ -225,8 +225,8 @@ def gen_sinusoidal_noise(siglen:int, start_phase:Real, end_phase:Real, amplitude
     amplitude_std: real number, default 0,
         standard deviation of an extra Gaussian noise
 
-    Returns:
-    --------
+    Returns
+    -------
     sn: ndarray,
         the sinusoidal noise of given length, amplitude, start phase, and end phase
     """
@@ -241,8 +241,8 @@ def gen_baseline_wander(siglen:int, fs:Real, bw_fs:Union[Real,Sequence[Real]], a
 
     generate 1d baseline wander of given length, amplitude, and frequency
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     siglen: int,
         length of the (noise) signal
     fs: real number,
@@ -256,12 +256,12 @@ def gen_baseline_wander(siglen:int, fs:Real, bw_fs:Union[Real,Sequence[Real]], a
     amplitude_std: real number, default 0,
         standard deviation of an extra Gaussian noise
 
-    Returns:
-    --------
+    Returns
+    -------
     bw: ndarray,
         the baseline wander of given length, amplitude, frequency
 
-    Example:
+    Examples
     --------
     >>> gen_baseline_wander(4000, 400, [0.4,0.1,0.05], [0.1,0.2,0.4])
     """
@@ -292,16 +292,16 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
     then the output would be "patient1{sep}A0001", ..., "patient2{sep}B0001", ...,
     sep is determined by the system
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     db_dir: str,
         the parent (root) path of the whole database
     rec_patterns: str or dict,
         pattern of the record filenames, e.g. "A(?:\d+).mat",
         or patterns of several subsets, e.g. `{"A": "A(?:\d+).mat"}`
 
-    Returns:
-    --------
+    Returns
+    -------
     res: list of str,
         list of records, in lexicographical order
     """
@@ -336,8 +336,8 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
 def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str="a", verbose:int=0) -> logging.Logger:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     log_dir: str,
         directory of the log file
     log_file: str, optional,
@@ -347,8 +347,8 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str="a", verbose:
     verbose: int, default 0,
         log verbosity
 
-    Returns:
-    --------
+    Returns
+    -------
     logger: Logger
     """
     if log_file is None:
@@ -398,13 +398,13 @@ def _remove_spikes_naive(sig:np.ndarray) -> np.ndarray:
     `spikes` here refers to abrupt large bumps with (abs) value larger than 20 mV,
     do NOT confuse with `spikes` in paced rhythm
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     sig: ndarray,
         single-lead ECG signal with potential spikes
     
-    Returns:
-    --------
+    Returns
+    -------
     filtered_sig: ndarray,
         ECG signal with `spikes` removed
     """

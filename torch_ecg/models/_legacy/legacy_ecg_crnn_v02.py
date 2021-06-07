@@ -54,8 +54,8 @@ class VGGBlock(nn.Sequential):
     def __init__(self, num_convs:int, in_channels:int, out_channels:int, groups:int=1, **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         num_convs: int,
             number of convolutional layers of this block
         in_channels: int,
@@ -116,15 +116,15 @@ class VGGBlock(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
@@ -161,8 +161,8 @@ class VGG16(nn.Sequential):
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """ finished, checked,
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         config: dict,
@@ -203,15 +203,15 @@ class VGG16(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
@@ -239,8 +239,8 @@ class ResNetBasicBlock(nn.Module):
     def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of features (channels) of the input
         num_filters: int,
@@ -358,15 +358,15 @@ class ResNetBasicBlock(nn.Module):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
@@ -386,13 +386,13 @@ class ResNetBasicBlock(nn.Module):
 class ResNet(nn.Sequential):
     """
 
-    References:
-    -----------
+    References
+    ----------
     [1] https://github.com/awni/ecg
     [2] https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
 
-    TODO:
-    -----
+    TODO
+    ----
     1. check performances of activations other than "nn.ReLU", especially mish and swish
     2. to add
     """
@@ -403,8 +403,8 @@ class ResNet(nn.Sequential):
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """ finished, checked,
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         config: dict,
@@ -504,15 +504,15 @@ class ResNet(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
@@ -548,8 +548,8 @@ class CPSCBlock(nn.Sequential):
     def __init__(self, in_channels:int, num_filters:int, filter_lengths:Sequence[int], subsample_lengths:Sequence[int], dropout:Optional[float]=None, **config) -> NoReturn:
         """
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of features (channels) of the input
         num_filters:int,
@@ -614,15 +614,15 @@ class CPSCBlock(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
@@ -653,8 +653,8 @@ class CPSCCNN(nn.Sequential):
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """ finished, checked,
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         config: dict,
@@ -663,8 +663,8 @@ class CPSCCNN(nn.Sequential):
     def __init__(self, filter_lengths:Sequence[int], subsample_lengths:Sequence[int], dropouts:Optional[float]=None, **kwargs) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         filter_lengths: sequence of int,
             filter length (kernel size) of each convolutional layer in each `CPSCBlock`
         subsample_lengths: sequence of int,
@@ -708,15 +708,15 @@ class CPSCCNN(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
@@ -738,8 +738,8 @@ class ECG_CRNN(nn.Module):
 
     C(R)NN models modified from the following refs.
 
-    References:
-    -----------
+    References
+    ----------
     [1] Yao, Qihang, et al. "Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram." 2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing, 16th Intl Conf on Pervasive Intelligence and Computing, 4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.
     [2] Yao, Qihang, et al. "Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based Time-Incremental Convolutional Neural Network." Information Fusion 53 (2020): 174-182.
     [3] Hannun, Awni Y., et al. "Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network." Nature medicine 25.1 (2019): 65.
@@ -753,8 +753,8 @@ class ECG_CRNN(nn.Module):
     def __init__(self, classes:Sequence[str], input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         classes: list,
             list of the classes for classification
         input_len: int, optional,
@@ -885,8 +885,8 @@ class ECG_CRNN(nn.Module):
 
         auxiliary function to `forward`,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             input tensor, of shape (batch_size, channels, seq_len)
         class_names: bool, default False,
@@ -895,8 +895,8 @@ class ECG_CRNN(nn.Module):
         bin_pred_thr: float, default 0.5,
             the threshold for making binary predictions from scalar predictions
 
-        Returns:
-        --------
+        Returns
+        -------
         pred: ndarray or DataFrame,
             scalar predictions, (and binary predictions if `class_names` is True)
         bin_pred: ndarray,

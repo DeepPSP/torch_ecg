@@ -23,13 +23,13 @@ __all__ = [
 def load_model(which:str="both") -> Union[nn.Module, Tuple[nn.Module,...]]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     which: str,
         choice of the models
 
-    Returns:
-    --------
+    Returns
+    -------
     nn.Module, or sequence of nn.Module
     """
     if torch.cuda.is_available():

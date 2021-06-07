@@ -60,8 +60,8 @@ DL_QRS_DETECTORS = [
 def preprocess_signal(raw_sig:np.ndarray, fs:Real, config:Optional[ED]=None) -> Dict[str, np.ndarray]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     raw_sig: ndarray,
         the raw ecg signal
     fs: real number,
@@ -70,15 +70,15 @@ def preprocess_signal(raw_sig:np.ndarray, fs:Real, config:Optional[ED]=None) -> 
         extra process configuration,
         `PreprocCfg` will be updated by this `config`
 
-    Returns:
-    --------
+    Returns
+    -------
     retval: dict,
         with items
         - 'filtered_ecg': the array of the processed ecg signal
         - 'rpeaks': the array of indices of rpeaks; empty if 'rpeaks' in `config` is not set
 
-    NOTE:
-    -----
+    NOTE
+    ----
     output (`retval`) are resampled to have sampling frequency
     equal to `config.fs` (if `config` has item `fs`) or `PreprocCfg.fs`
     """
@@ -127,8 +127,8 @@ def preprocess_signal(raw_sig:np.ndarray, fs:Real, config:Optional[ED]=None) -> 
 def parallel_preprocess_signal(raw_sig:np.ndarray, fs:Real, config:Optional[ED]=None, save_dir:Optional[str]=None, save_fmt:str='npy', verbose:int=0) -> Dict[str, np.ndarray]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     raw_sig: ndarray,
         the raw ecg signal
     fs: real number,
@@ -141,15 +141,15 @@ def parallel_preprocess_signal(raw_sig:np.ndarray, fs:Real, config:Optional[ED]=
     save_fmt: str, default 'npy',
         format of the save files, 'npy' or 'mat'
 
-    Returns:
-    --------
+    Returns
+    -------
     retval: dict,
         with items
         - 'filtered_ecg': the array of the processed ecg signal
         - 'rpeaks': the array of indices of rpeaks; empty if 'rpeaks' in `config` is not set
 
-    NOTE:
-    -----
+    NOTE
+    ----
     output (`retval`) are resampled to have sampling frequency
     equal to `config.fs` (if `config` has item `fs`) or `PreprocCfg.fs`
     """

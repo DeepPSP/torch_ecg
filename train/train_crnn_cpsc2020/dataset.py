@@ -98,8 +98,8 @@ class CPSC2020(Dataset):
 
     data generator for deep learning models,
 
-    strategy:
-    ---------
+    strategy
+    --------
     1. slice each record into short segments of length `TrainCfg.input_len`,
     and of overlap length `TrainCfg.overlap_len` around premature beats
     2. do augmentations for premature segments
@@ -110,8 +110,8 @@ class CPSC2020(Dataset):
     def __init__(self, config:ED, training:bool=True) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         config: dict,
             configurations for the Dataset,
             ref. `cfg.TrainCfg`
@@ -270,15 +270,15 @@ class CPSC2020(Dataset):
 
         get amplitude of a segment
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg_data: ndarray,
             data of the segment
         window: int, default 80 (corr. to 200ms),
             window length of a window for computing amplitude, with units in number of sample points
 
-        Returns:
-        --------
+        Returns
+        -------
         ampl: float,
             amplitude of `seg_data`
         """
@@ -293,13 +293,13 @@ class CPSC2020(Dataset):
     def _get_seg_data_path(self, seg:str) -> str:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
 
-        Returns:
-        --------
+        Returns
+        -------
         fp: str,
             path of the data file of the segment
         """
@@ -311,13 +311,13 @@ class CPSC2020(Dataset):
     def _get_seg_ann_path(self, seg:str) -> str:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
 
-        Returns:
-        --------
+        Returns
+        -------
         fp: str,
             path of the annotation file of the segment
         """
@@ -329,13 +329,13 @@ class CPSC2020(Dataset):
     def _load_seg_data(self, seg:str) -> np.ndarray:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
 
-        Returns:
-        --------
+        Returns
+        -------
         seg_data: ndarray,
             data of the segment, of shape (self.seglen,)
         """
@@ -347,13 +347,13 @@ class CPSC2020(Dataset):
     def _load_seg_label(self, seg:str) -> np.ndarray:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
 
-        Returns:
-        --------
+        Returns
+        -------
         seg_label: ndarray,
             label of the segment, of shape (self.n_classes,)
         """
@@ -365,13 +365,13 @@ class CPSC2020(Dataset):
     def _load_seg_beat_ann(self, seg:str) -> Dict[str, np.ndarray]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
 
-        Returns:
-        --------
+        Returns
+        -------
         seg_beat_ann: dict,
             "SPB_indices", "PVC_indices", each of ndarray values
         """
@@ -386,16 +386,16 @@ class CPSC2020(Dataset):
     def _load_seg_seq_lab(self, seg:str, reduction:int=8) -> np.ndarray:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
         reduction: int, default 8,
             reduction (granularity) of length of the model output,
             compared to the original signal length
 
-        Returns:
-        --------
+        Returns
+        -------
         seq_lab: np.ndarray,
             label of the sequence,
             of shape (self.seglen//reduction, self.n_classes)
@@ -437,8 +437,8 @@ class CPSC2020(Dataset):
 
         make the dataset persistent w.r.t. the ratios in `self.config`
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         force_recompute: bool, default False,
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
@@ -463,8 +463,8 @@ class CPSC2020(Dataset):
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         preproc: list of str,
             type of preprocesses to perform,
             should be sublist of `self.allowed_preproc`
@@ -492,8 +492,8 @@ class CPSC2020(Dataset):
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         rec: int or str,
             number of the record, NOTE that rec_no starts from 1,
             or the record name
@@ -531,8 +531,8 @@ class CPSC2020(Dataset):
         to transform all preproc into lower case,
         and keep them in a specific ordering 
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         preproc: list of str,
             list of preprocesses types,
             should be sublist of `self.allowd_features`
@@ -540,8 +540,8 @@ class CPSC2020(Dataset):
             if True, when the passed `preproc` is empty,
             `self.allowed_preproc` will be returned
 
-        Returns:
-        --------
+        Returns
+        -------
         _p: list of str,
             'normalized' list of preprocess types
         """
@@ -556,14 +556,14 @@ class CPSC2020(Dataset):
     def _get_rec_suffix(self, operations:List[str]) -> str:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         operations: list of str,
             names of operations to perform (or has performed),
             should be sublist of `self.allowed_preproc`
 
-        Returns:
-        --------
+        Returns
+        -------
         suffix: str,
             suffix of the filename of the preprocessed ecg signal
         """
@@ -577,8 +577,8 @@ class CPSC2020(Dataset):
         slice all records into segments of length `self.config.input_len`, i.e. `self.seglen`,
         and perform data augmentations specified in `self.config`
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         force_recompute: bool, default False,
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
@@ -603,8 +603,8 @@ class CPSC2020(Dataset):
         slice one record into segments of length `self.config.input_len`, i.e. `self.seglen`,
         and perform data augmentations specified in `self.config`
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         rec: int or str,
             number of the record, NOTE that rec_no starts from 1,
             or the record name
@@ -750,8 +750,8 @@ class CPSC2020(Dataset):
     def plot_seg(self, seg:str, ticks_granularity:int=0, rpeak_inds:Optional[Union[Sequence[int],np.ndarray]]=None) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
         ticks_granularity: int, default 0,

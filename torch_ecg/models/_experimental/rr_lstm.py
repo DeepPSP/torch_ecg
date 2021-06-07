@@ -57,8 +57,8 @@ class RR_LSTM(nn.Module):
     def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         classes: list,
             list of the classes for classification
         n_leads: int,
@@ -170,13 +170,13 @@ class RR_LSTM(nn.Module):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (seq_len, batch_size, n_channels)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, seq_len, n_classes) or (batch_size, n_classes)
         """
@@ -212,16 +212,16 @@ class RR_LSTM(nn.Module):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int, optional,
             length of the 1d sequence,
             if is None, then the input is composed of single feature vectors for each batch
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this module, given `seq_len` and `batch_size`
         """

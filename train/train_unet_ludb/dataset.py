@@ -38,8 +38,8 @@ class LUDB(Dataset):
     def __init__(self, config:ED, leads:Optional[Union[Sequence[str], str]], training:bool=True) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         config: dict,
             configurations for the Dataset,
             ref. `cfg.TrainCfg`
@@ -126,16 +126,16 @@ class LUDB(Dataset):
     def _train_test_split(self, train_ratio:float=0.8, force_recompute:bool=False) -> List[str]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         train_ratio: float, default 0.8,
             ratio of the train set in the whole dataset (or the whole tranche(s))
         force_recompute: bool, default False,
             if True, force redo the train-test split,
             regardless of the existing ones stored in json files
 
-        Returns:
-        --------
+        Returns
+        -------
         records: list of str,
             list of the records split for training or validation
         """

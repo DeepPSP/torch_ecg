@@ -257,8 +257,8 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None) -> Tuple[float]:
     """ NOT finished, NOT checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     model: Module,
         the model to evaluate
     data_loader: DataLoader,
@@ -273,8 +273,8 @@ def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.
         logger to record detailed evaluation output,
         if is None, detailed evaluation output will be printed
 
-    Returns:
-    --------
+    Returns
+    -------
     eval_res: tuple of float,
         evaluation results, including
         sensitivity, precision, f1_score, mean_error, standard_deviation, etc.

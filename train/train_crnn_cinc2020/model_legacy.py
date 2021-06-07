@@ -27,8 +27,8 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
     def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         classes: list,
             list of the classes for classification
         n_leads: int,
@@ -51,8 +51,8 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
 
         auxiliary function to `forward`, for CINC2020,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: ndarray or Tensor,
             input tensor, of shape (batch_size, channels, seq_len)
         class_names: bool, default False,
@@ -61,8 +61,8 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         bin_pred_thr: float, default 0.5,
             the threshold for making binary predictions from scalar predictions
 
-        Returns:
-        --------
+        Returns
+        -------
         pred: ndarray or DataFrame,
             scalar predictions, (and binary predictions if `class_names` is True)
         bin_pred: ndarray,

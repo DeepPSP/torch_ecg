@@ -33,8 +33,8 @@ class FeatureExtractor(object):
     def __init__(self, model:nn.Module, target_layers:Sequence[str]) -> NoReturn:
         """
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         model: Module,
         target_layers: sequence of str,
         """
@@ -105,8 +105,8 @@ class GradCam(object):
     def __init__(self, model:nn.Module, feature_module:nn.Module, target_layer_names:Sequence[str], target_channel_last:bool=False, device:str='cpu') -> NoReturn:
         """
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         to write
         """
         self.model = model
@@ -127,8 +127,8 @@ class GradCam(object):
     def __call__(self, input:Tensor, index:Optional[int]=None):
         """ NOT finished,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             input tensor of shape (batch_size (=1), channels, seq_len)
         index: int, optional,

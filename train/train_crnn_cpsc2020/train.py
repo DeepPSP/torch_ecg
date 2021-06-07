@@ -61,8 +61,8 @@ def train(model:nn.Module,
           debug:bool=False) -> NoReturn:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     model: Module,
         the model to train
     model_config: dict,
@@ -403,8 +403,8 @@ def train(model:nn.Module,
 def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None)) -> Tuple[float]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     model: Module,
         the model to evaluate
     data_loader: DataLoader,
@@ -419,8 +419,8 @@ def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:t
         logger to record detailed evaluation output,
         if is None, detailed evaluation output will be printed
 
-    Returns:
-    --------
+    Returns
+    -------
     eval_res: tuple of float,
         evaluation results, including
         auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure
@@ -493,8 +493,8 @@ def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:t
 def evaluate_seq_lab(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None) -> Dict[str, int]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     model: Module,
         the model to evaluate
     data_loader: DataLoader,
@@ -509,13 +509,13 @@ def evaluate_seq_lab(model:nn.Module, data_loader:DataLoader, config:dict, devic
         logger to record detailed evaluation output,
         if is None, detailed evaluation output will be printed
 
-    Returns:
-    --------
+    Returns
+    -------
     eval_res: tuple of float,
         evaluation results, including
 
-    CAUTION:
-    --------
+    CAUTION
+    -------
     without rpeaks detection, consecutive SPBs or consecutive PVCs might be falsely missed,
     hence resulting higher than normal false negatives.
     for a more suitable eval pipeline, ref. CPSC2020_challenge.py

@@ -31,8 +31,8 @@ class ECG_UNET_LUDB(ECG_UNET):
     def __init__(self, n_leads:int, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         n_leads: int,
             number of leads (number of input channels)
         config: dict, optional,

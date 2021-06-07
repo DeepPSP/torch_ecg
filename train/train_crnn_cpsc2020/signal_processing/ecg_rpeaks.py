@@ -39,8 +39,8 @@ __all__ = [
 def pantompkins_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
     """ to keep in accordance of parameters with `xqrs` and `gqrs`
     
-    References:
-    -----------
+    References
+    ----------
     [1] Pan, Jiapu, and Willis J. Tompkins. "A real-time QRS detection algorithm." IEEE transactions on biomedical engineering 3 (1985): 230-236.
     """
     rpeaks = _pantompkins(sig, fs)
@@ -100,8 +100,8 @@ def gqrs_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
 def hamilton_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
     """
 
-    References:
-    -----------
+    References
+    ----------
     [1] Hamilton, Pat. "Open source ECG analysis." Computers in cardiology. IEEE, 2002.
     """
     # segment
@@ -123,8 +123,8 @@ def ssf_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
 
     might be too simple
 
-    References:
-    -----------
+    References
+    ----------
     [1] Zong, W., et al. "An open-source algorithm to detect onset of arterial blood pressure pulses." Computers in Cardiology, 2003. IEEE, 2003.
     """
     rpeaks, = BSE.ssf_segmenter(
@@ -145,8 +145,8 @@ def ssf_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
 def christov_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
     """
 
-    References:
-    -----------
+    References
+    ----------
     [1] Ivaylo I. Christov, "Real time electrocardiogram QRS detection using combined adaptive threshold", BioMedical Engineering OnLine 2004, vol. 3:28, 2004
     """
     rpeaks, = BSE.christov_segmenter(signal=sig, sampling_rate=fs)
@@ -162,8 +162,8 @@ def christov_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
 def engzee_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
     """
 
-    References:
-    -----------
+    References
+    ----------
     [1] W. Engelse and C. Zeelenberg, "A single scan algorithm for QRS detection and feature extraction", IEEE Comp. in Cardiology, vol. 6, pp. 37-42, 1979
     [2] A. Lourenco, H. Silva, P. Leite, R. Lourenco and A. Fred, "Real Time Electrocardiogram Segmentation for Finger Based ECG Biometrics", BIOSIGNALS 2012, pp. 49-54, 2012
     """
@@ -183,8 +183,8 @@ def engzee_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
 def gamboa_detect(sig:np.ndarray, fs:Real, **kwargs) -> np.ndarray:
     """
 
-    References:
-    -----------
+    References
+    ----------
     [1] Gamboa, Hugo. "Multi-modal behavioral biometrics based on HCI and electrophysiology." PhD ThesisUniversidade (2008).
     """
     rpeaks, = BSE.gamboa_segmenter(

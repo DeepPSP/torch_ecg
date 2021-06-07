@@ -20,8 +20,8 @@ class GCModule(nn.Module):
 
     the difference with ref. [1,2] lies in the treatment of mid-channels of `channel_att`
 
-    References:
-    -----------
+    References
+    ----------
     [1] Cao, Yue, et al. "Gcnet: Non-local networks meet squeeze-excitation networks and beyond." Proceedings of the IEEE International Conference on Computer Vision Workshops. 2019.
     [2] https://github.com/xvjiarui/GCNet/blob/master/mmdet/ops/gcb/context_block.py
     """

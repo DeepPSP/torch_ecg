@@ -20,8 +20,8 @@ __all__ = [
 def CPSC2020_loss(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray, dtype:type=str, verbose:int=0) -> int:
     """ finished, updated with the latest (updated on 2020.8.31) official function
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     y_true: ndarray,
         array of ground truth of beat types
     y_true: ndarray,
@@ -31,8 +31,8 @@ def CPSC2020_loss(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray, dt
     dtype: type, default str,
         dtype of `y_true` and `y_pred`
 
-    Returns:
-    --------
+    Returns
+    -------
     total_loss: int,
         the total loss of all ectopic beat types (SPB, PVC)
     """
@@ -85,13 +85,13 @@ def CPSC2020_score(spb_true:List[np.ndarray], pvc_true:List[np.ndarray], spb_pre
 
     Score Function for all (test) records
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     spb_true, pvc_true, spb_pred, pvc_pred: list of ndarray,
     verbose: int
 
-    Returns:
-    --------
+    Returns
+    -------
     retval: tuple or dict,
         tuple of (negative) scores for each ectopic beat type (SPB, PVC), or
         dict of more scoring details, including
@@ -179,8 +179,8 @@ def eval_score(classes:List[str], truth:Sequence, binary_pred:Sequence, scalar_p
     
     for classification of segments of ECGs
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     classes: list of str,
         list of all the classes, in the format of abbrevations
     truth: sequence,
@@ -190,8 +190,8 @@ def eval_score(classes:List[str], truth:Sequence, binary_pred:Sequence, scalar_p
     scalar_pred: sequence,
         probability predictions, of shape (n_records, n_classes), with values within [0,1]
 
-    Returns:
-    --------
+    Returns
+    -------
     auroc: float,
     auprc: float,
     accuracy: float,

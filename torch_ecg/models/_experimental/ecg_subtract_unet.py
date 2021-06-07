@@ -59,8 +59,8 @@ class TripleConv(MultiConv):
                  **config) -> NoReturn:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         out_channels: int, or sequence of int,
@@ -120,8 +120,8 @@ class DownTripleConv(nn.Sequential):
                  **config) -> NoReturn:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         down_scale: int,
             down sampling scale
         in_channels: int,
@@ -182,15 +182,15 @@ class DownTripleConv(nn.Sequential):
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
         """
@@ -221,8 +221,8 @@ class DownBranchedDoubleConv(nn.Module):
                  **config) -> NoReturn:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         down_scale: int,
             down sampling scale
         in_channels: int,
@@ -286,15 +286,15 @@ class DownBranchedDoubleConv(nn.Module):
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
         """
@@ -334,8 +334,8 @@ class UpTripleConv(nn.Module):
                  **config) -> NoReturn:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         up_scale: int,
             scale of up sampling
         in_channels: int,
@@ -399,8 +399,8 @@ class UpTripleConv(nn.Module):
     def forward(self, input:Tensor, down_output:Tensor) -> Tensor:
         """ finished, not checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             input tensor from the previous layer
         down_output:Tensor: Tensor,
@@ -415,15 +415,15 @@ class UpTripleConv(nn.Module):
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
         """
@@ -454,8 +454,8 @@ class ECG_SUBTRACT_UNET(nn.Module):
     def __init__(self, classes:Sequence[str], n_leads:int, config:dict) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         classes: sequence of int,
             name of the classes
         n_leads: int,
@@ -583,13 +583,13 @@ class ECG_SUBTRACT_UNET(nn.Module):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -635,15 +635,15 @@ class ECG_SUBTRACT_UNET(nn.Module):
     def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `ECG_UNET` layer, given `seq_len` and `batch_size`
         """

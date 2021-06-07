@@ -48,15 +48,15 @@ def intervals_union(interval_list:GeneralizedInterval, join_book_endeds:bool=Tru
     find the union (ordered and non-intersecting) of all the intervals in `interval_list`,
     which is a list of intervals in the form [a,b], where a,b need not be ordered
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     interval_list: GeneralizedInterval,
         the list of intervals to calculate their union
     join_book_endeds: bool, default True,
         join the book-ended intervals into one (e.g. [[1,2],[2,3]] into [1,3]) or not
     
-    Returns:
-    --------
+    Returns
+    -------
     processed: GeneralizedInterval,
         the union of the intervals in `interval_list`
     """
@@ -113,8 +113,8 @@ def get_optimal_covering(total_interval:Interval, to_cover:list, min_len:Real, s
     each interval in the covering is of length at least `min_len`,
     and any two intervals in the covering have distance at least `split_threshold`
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     total_interval: Interval,
         the total interval that the covering is picked from
     to_cover: list,
@@ -127,13 +127,13 @@ def get_optimal_covering(total_interval:Interval, to_cover:list, min_len:Real, s
         if True, a list containing the list of indices of the intervals in the original `to_cover`,
         that each interval in the covering covers
 
-    Raises:
-    -------
+    Raises
+    ------
     if any of the intervals in `to_cover` exceeds the range of `total_interval`,
     ValueError will be raised
 
-    Returns:
-    --------
+    Returns
+    -------
     (ret, ret_traceback)
         ret: GeneralizedInterval,
             the covering that satisfies the given conditions
@@ -293,15 +293,15 @@ def intervals_intersection(interval_list:GeneralizedInterval, drop_degenerate:bo
 
     calculate the intersection of all intervals in interval_list
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     interval_list: GeneralizedInterval,
         the list of intervals to yield intersection
     drop_degenerate: bool, default True,
         whether or not drop the degenerate intervals, i.e. intervals with length 0
     
-    Returns:
-    --------
+    Returns
+    -------
     its: Interval,
         the intersection of all intervals in `interval_list`
     """
@@ -323,15 +323,15 @@ def in_interval(val:Real, interval:Interval, left_closed:bool=True, right_closed
 
     check whether val is inside interval or not
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     val: real number,
     interval: Interval,
     left_closed: bool, default True,
     right_closed: bool, default False,
 
-    Returns:
-    --------
+    Returns
+    -------
     is_in: bool,
     """
     itv = sorted(interval)
@@ -351,15 +351,15 @@ def in_generalized_interval(val:Real, generalized_interval:GeneralizedInterval, 
 
     check whether val is inside generalized_interval or not
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     val: real number,
     generalized_interval: union of `Interval`s,
     left_closed: bool, default True,
     right_closed: bool, default False,
 
-    Returns:
-    --------
+    Returns
+    -------
     is_in: bool,
     """
     is_in = False
@@ -375,8 +375,8 @@ def plot_single_lead_ecg(s:np.ndarray, fs:Real, use_idx:bool=False, **kwargs) ->
 
     single lead ECG plot,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     s: array_like,
         the single lead ECG signal
     fs: real,
@@ -438,8 +438,8 @@ def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[floa
 
     transform class weight to sample weight
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     y: ndarray,
         the label (class) of each sample
     class_weight: str, or list, or ndarray, or dict, default "balanced",
@@ -474,8 +474,8 @@ def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[floa
 def pred_to_indices(y_pred:np.ndarray, rpeaks:np.ndarray, class_map:dict) -> Tuple[np.ndarray, np.ndarray]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     y_pred: ndarray,
         array of model prediction
     rpeaks: ndarray,
@@ -484,8 +484,8 @@ def pred_to_indices(y_pred:np.ndarray, rpeaks:np.ndarray, class_map:dict) -> Tup
         mapping from classes of string type to int,
         if elements of `y_pred` is of string type, then this mapping will not be used
 
-    Returns:
-    --------
+    Returns
+    -------
     S_pos, V_pos: ndarray,
         indices of SPB, PVC respectively
     """
@@ -510,8 +510,8 @@ def dict_to_str(d:Union[dict, list, tuple], current_depth:int=1, indent_spaces:i
     convert a (possibly) nested dict into a `str` of json-like formatted form,
     this nested dict might also contain lists or tuples of dict (and of str, int, etc.)
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     d: dict, or list, or tuple,
         a (possibly) nested `dict`, or a list of `dict`
     current_depth: int, default 1,
@@ -519,8 +519,8 @@ def dict_to_str(d:Union[dict, list, tuple], current_depth:int=1, indent_spaces:i
     indent_spaces: int, default 4,
         the indent spaces of each depth
 
-    Returns:
-    --------
+    Returns
+    -------
     s: str,
         the formatted string
     """
@@ -578,18 +578,18 @@ def str2bool(v:Union[str, bool]) -> bool:
 
     converts a "boolean" value possibly in the format of str to bool
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     v: str or bool,
         the "boolean" value
 
-    Returns:
-    --------
+    Returns
+    -------
     b: bool,
         `v` in the format of bool
 
-    References:
-    -----------
+    References
+    ----------
     https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
     """
     if isinstance(v, bool):
@@ -615,15 +615,15 @@ def get_date_str(fmt:Optional[str]=None):
 def mask_to_intervals(mask:np.ndarray, vals:Optional[Union[int,Sequence[int]]]=None) -> Union[list, dict]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     mask: ndarray,
         1d mask
     vals: int or sequence of int, optional,
         values in `mask` to obtain intervals
 
-    Returns:
-    --------
+    Returns
+    -------
     intervals: dict or list,
         the intervals corr. to each value in `vals` if `vals` is `None` or `Sequence`;
         or the intervals corr. to `vals` if `vals` is int.
@@ -665,15 +665,15 @@ def list_sum(l:Sequence[list]) -> list:
 def compute_local_average(arr:Union[Sequence,np.ndarray], radius:int) -> np.ndarray:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     arr: sequence,
         1d array
     radius: int,
         radius for computing average
     
-    Returns:
-    --------
+    Returns
+    -------
     res: ndarray,
     """
     _arr = np.array(arr)
@@ -702,8 +702,8 @@ def gen_gaussian_noise(siglen:int, mean:Real=0, std:Real=0) -> np.ndarray:
 
     generate 1d Gaussian noise of given length, mean, and standard deviation
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     siglen: int,
         length of the noise signal
     mean: real number, default 0,
@@ -711,8 +711,8 @@ def gen_gaussian_noise(siglen:int, mean:Real=0, std:Real=0) -> np.ndarray:
     std: real number, default 0,
         standard deviation of the noise
 
-    Returns:
-    --------
+    Returns
+    -------
     gn: ndarray,
         the gaussian noise of given length, mean, and standard deviation
     """
@@ -725,8 +725,8 @@ def gen_sinusoidal_noise(siglen:int, start_phase:Real, end_phase:Real, amplitude
 
     generate 1d sinusoidal noise of given length, amplitude, start phase, and end phase
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     siglen: int,
         length of the (noise) signal
     start_phase: real number,
@@ -740,8 +740,8 @@ def gen_sinusoidal_noise(siglen:int, start_phase:Real, end_phase:Real, amplitude
     amplitude_std: real number, default 0,
         standard deviation of an extra Gaussian noise
 
-    Returns:
-    --------
+    Returns
+    -------
     sn: ndarray,
         the sinusoidal noise of given length, amplitude, start phase, and end phase
     """
@@ -756,8 +756,8 @@ def gen_baseline_wander(siglen:int, fs:Real, bw_fs:Union[Real,Sequence[Real]], a
 
     generate 1d baseline wander of given length, amplitude, and frequency
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     siglen: int,
         length of the (noise) signal
     fs: real number,
@@ -771,12 +771,12 @@ def gen_baseline_wander(siglen:int, fs:Real, bw_fs:Union[Real,Sequence[Real]], a
     amplitude_std: real number, default 0,
         standard deviation of an extra Gaussian noise
 
-    Returns:
-    --------
+    Returns
+    -------
     bw: ndarray,
         the baseline wander of given length, amplitude, frequency
 
-    Example:
+    Examples
     --------
     >>> gen_baseline_wander(4000, 400, [0.4,0.1,0.05], [0.1,0.2,0.4])
     """
@@ -807,16 +807,16 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
     then the output would be "patient1{sep}A0001", ..., "patient2{sep}B0001", ...,
     sep is determined by the system
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     db_dir: str,
         the parent (root) path of the whole database
     rec_patterns: str or dict,
         pattern of the record filenames, e.g. "A(?:\d+).mat",
         or patterns of several subsets, e.g. `{"A": "A(?:\d+).mat"}`
 
-    Returns:
-    --------
+    Returns
+    -------
     res: list of str,
         list of records, in lexicographical order
     """
@@ -851,8 +851,8 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
 def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str="a", verbose:int=0) -> logging.Logger:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     log_dir: str,
         directory of the log file
     log_file: str, optional,
@@ -862,8 +862,8 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, mode:str="a", verbose:
     verbose: int, default 0,
         log verbosity
 
-    Returns:
-    --------
+    Returns
+    -------
     logger: Logger
     """
     if log_file is None:

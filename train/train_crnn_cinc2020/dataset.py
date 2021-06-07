@@ -42,8 +42,8 @@ class CINC2020(Dataset):
     def __init__(self, config:ED, training:bool=True) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         config: dict,
             configurations for the Dataset,
             ref. `cfg.TrainCfg`
@@ -148,16 +148,16 @@ class CINC2020(Dataset):
         do train test split,
         it is ensured that both the train and the test set contain all classes
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         train_ratio: float, default 0.8,
             ratio of the train set in the whole dataset (or the whole tranche(s))
         force_recompute: bool, default False,
             if True, force redo the train-test split,
             regardless of the existing ones stored in json files
 
-        Returns:
-        --------
+        Returns
+        -------
         records: list of str,
             list of the records split for training or validation
         """
@@ -223,8 +223,8 @@ class CINC2020(Dataset):
         the train-test split is valid iff
         records in both `train_set` and `test` contain all classes in `all_classes`
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         train_set: list of str,
             list of the records in the train set
         test_set: list of str,
@@ -232,8 +232,8 @@ class CINC2020(Dataset):
         all_classes: set of str,
             the set of all classes for training
 
-        Returns:
-        --------
+        Returns
+        -------
         is_valid: bool,
             the split is valid or not
         """

@@ -42,8 +42,8 @@ def compute_metrics(truth_masks:Sequence[np.ndarray], pred_masks:Sequence[np.nda
     (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
     for multiple evaluations
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     truth_masks: sequence of ndarray,
         a sequence of ground truth masks,
         each of which can also hold multiple masks from different samples (differ by record or by lead)
@@ -61,8 +61,8 @@ def compute_metrics(truth_masks:Sequence[np.ndarray], pred_masks:Sequence[np.nda
         'channel_last' (alias 'lead_last'), or
         'channel_first' (alias 'lead_first')
 
-    Returns:
-    --------
+    Returns
+    -------
     scorings: dict,
         with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
         each scoring is a dict consisting of the following metrics:
@@ -94,8 +94,8 @@ def compute_metrics_waveform(truth_waveforms:Sequence[Sequence[ECGWaveForm]], pr
     compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
     of evaluations on a multiple samples (differ by records, or leads)
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     truth_waveforms: sequence of sequence of `ECGWaveForm`s,
         the ground truth,
         each element is a sequence of `ECGWaveForm`s from the same sample
@@ -107,8 +107,8 @@ def compute_metrics_waveform(truth_waveforms:Sequence[Sequence[ECGWaveForm]], pr
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors
 
-    Returns:
-    --------
+    Returns
+    -------
     scorings: dict,
         with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
         each scoring is a dict consisting of the following metrics:
@@ -168,8 +168,8 @@ def _compute_metrics_waveform(truths:Sequence[ECGWaveForm], preds:Sequence[ECGWa
     compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
     of evaluations on a single sample (the same record, the same lead)
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     truths: sequence of `ECGWaveForm`s,
         the ground truth
     preds: sequence of `ECGWaveForm`s,
@@ -179,8 +179,8 @@ def _compute_metrics_waveform(truths:Sequence[ECGWaveForm], preds:Sequence[ECGWa
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors
 
-    Returns:
-    --------
+    Returns
+    -------
     scorings: dict,
         with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
         each scoring is a dict consisting of the following metrics:
@@ -226,8 +226,8 @@ def _compute_metrics_waveform(truths:Sequence[ECGWaveForm], preds:Sequence[ECGWa
 def _compute_metrics_base(truths:Sequence[Real], preds:Sequence[Real], fs:Real) -> Tuple[float, ...]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     truths: sequence of real numbers,
         ground truth of indices of corresponding significant points
     preds: sequence of real numbers,
@@ -237,8 +237,8 @@ def _compute_metrics_base(truths:Sequence[Real], preds:Sequence[Real], fs:Real) 
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors
 
-    Returns:
-    --------
+    Returns
+    -------
     tuple of metrics:
         truth_positive, false_negative, false_positive, errors,
         sensitivity, precision, f1_score, mean_error, standard_deviation

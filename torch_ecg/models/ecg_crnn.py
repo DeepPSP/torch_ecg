@@ -57,8 +57,8 @@ class ECG_CRNN(nn.Module):
 
     C(R)NN models modified from the following refs.
 
-    References:
-    -----------
+    References
+    ----------
     [1] Yao, Qihang, et al. "Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram." 2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing, 16th Intl Conf on Pervasive Intelligence and Computing, 4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.
     [2] Yao, Qihang, et al. "Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based Time-Incremental Convolutional Neural Network." Information Fusion 53 (2020): 174-182.
     [3] Hannun, Awni Y., et al. "Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network." Nature medicine 25.1 (2019): 65.
@@ -73,8 +73,8 @@ class ECG_CRNN(nn.Module):
     def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         classes: list,
             list of the classes for classification
         n_leads: int,
@@ -224,13 +224,13 @@ class ECG_CRNN(nn.Module):
 
         extract feature map before the dense (linear) classifying layer(s)
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
         
-        Returns:
-        --------
+        Returns
+        -------
         features: Tensor,
             of shape (batch_size, channels, seq_len) or (batch_size, channels)
         """
@@ -270,13 +270,13 @@ class ECG_CRNN(nn.Module):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, partly checked (rnn part might have bugs),
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
         
-        Returns:
-        --------
+        Returns
+        -------
         pred: Tensor,
             of shape (batch_size, n_classes)
         """
@@ -298,8 +298,8 @@ class ECG_CRNN(nn.Module):
     def inference(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: ndarray or Tensor,
             input tensor, of shape (batch_size, channels, seq_len)
         class_names: bool, default False,
@@ -308,8 +308,8 @@ class ECG_CRNN(nn.Module):
         bin_pred_thr: float, default 0.5,
             the threshold for making binary predictions from scalar predictions
 
-        Returns:
-        --------
+        Returns
+        -------
         pred: ndarray or DataFrame,
             scalar predictions, (and binary predictions if `class_names` is True)
         bin_pred: ndarray,

@@ -36,8 +36,8 @@ __all__ = [
 def compute_ecg_features(sig:np.ndarray, rpeaks:np.ndarray, config:Optional[ED]=None, save_dir:Optional[str]=None, save_fmt:str="npy") -> np.ndarray:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     sig: ndarray,
         the filtered ecg signal
     rpeaks: ndarray,
@@ -46,8 +46,8 @@ def compute_ecg_features(sig:np.ndarray, rpeaks:np.ndarray, config:Optional[ED]=
         extra process configurations,
         `FeatureCfg` will `update` this `config`
 
-    Returns:
-    --------
+    Returns
+    -------
     features: ndarray,
         the computed features, of shape (m,n), where
             m = the number of beats (the number of `rpeaks`)
@@ -92,20 +92,20 @@ def compute_ecg_features(sig:np.ndarray, rpeaks:np.ndarray, config:Optional[ED]=
 def compute_wavelet_descriptor(beat:np.ndarray, config:ED) -> np.ndarray:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     beat: ndarray,
         a window properly covers the qrs complex, perhaps even the q, t waves
     config: dict,
         process configurations,
     
-    Returns:
-    --------
+    Returns
+    -------
     coeffs: ndarray,
         the `level`-th level decomposition coefficients
 
-    References:
-    -----------
+    References
+    ----------
     [1] https://pywavelets.readthedocs.io/en/latest/ref/dwt-discrete-wavelet-transform.html?highlight=wavedec#multilevel-decomposition-using-wavedec
     [2] https://en.wikipedia.org/wiki/Wavelet
     """
@@ -117,16 +117,16 @@ def compute_wavelet_descriptor(beat:np.ndarray, config:ED) -> np.ndarray:
 def compute_rr_descriptor(rpeaks:np.ndarray, config:Optional[ED]=None) -> np.ndarray:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     rpeaks: ndarray,
         indices of r peaks
     config: dict, optional,
         extra process configurations,
         `FeatureCfg` will `update` this `config`
 
-    Returns:
-    --------
+    Returns
+    -------
     features_rr: ndarray,
         rr features, including (in the following ordering)
         pre_rr: rr intervals to the previous r peak
@@ -162,13 +162,13 @@ def compute_rr_descriptor(rpeaks:np.ndarray, config:Optional[ED]=None) -> np.nda
 def _compute_pre_rr(rr_intervals:np.ndarray) -> np.ndarray:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     rr_intervals: ndarray,
         array of rr intervals (to the next r peak)
 
-    Returns:
-    --------
+    Returns
+    -------
     pre_rr: ndarray,
         array of rr intervals to the previous r peak
     """
@@ -181,13 +181,13 @@ def _compute_pre_rr(rr_intervals:np.ndarray) -> np.ndarray:
 def _compute_post_rr(rr_intervals:np.ndarray) -> np.ndarray:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     rr_intervals: ndarray,
         array of rr intervals (to the next r peak)
 
-    Returns:
-    --------
+    Returns
+    -------
     post_rr: ndarray,
         array of rr intervals to the next r peak,
         with the last element of `rr_intervals` duplicated
@@ -201,15 +201,15 @@ def _compute_post_rr(rr_intervals:np.ndarray) -> np.ndarray:
 def _compute_local_rr(prev_rr:np.ndarray, config:ED) -> np.ndarray:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     rr_intervals: ndarray,
         array of rr intervals (to the next r peak)
     config: dict,
         configurations (local range) for computing local rr intervals
 
-    Returns:
-    --------
+    Returns
+    -------
     local_rr: ndarray,
         array of the local mean rr intervals
     """
@@ -225,8 +225,8 @@ def _compute_local_rr(prev_rr:np.ndarray, config:ED) -> np.ndarray:
 def _compute_global_rr_epoch(rpeaks:np.ndarray, prev_rr:np.ndarray, epoch_start:int, epoch_end:int, global_range:int) -> np.ndarray:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     rpeaks: ndarray,
         indices of r peaks
     prev_rr: ndarray,
@@ -238,8 +238,8 @@ def _compute_global_rr_epoch(rpeaks:np.ndarray, prev_rr:np.ndarray, epoch_start:
     global_range: int,
         range in number of samples for computing the 'global' mean rr intervals
 
-    Returns:
-    --------
+    Returns
+    -------
     global_rr: ndarray,
         array of the global mean rr intervals
     """
@@ -252,8 +252,8 @@ def _compute_global_rr_epoch(rpeaks:np.ndarray, prev_rr:np.ndarray, epoch_start:
 def _compute_global_rr(rpeaks:np.ndarray, prev_rr:np.ndarray, config:ED) -> np.ndarray:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     rpeaks: ndarray,
         indices of r peaks
     prev_rr: ndarray,
@@ -261,8 +261,8 @@ def _compute_global_rr(rpeaks:np.ndarray, prev_rr:np.ndarray, config:ED) -> np.n
     config: dict,
         configurations (global range) for computing global rr intervals
 
-    Returns:
-    --------
+    Returns
+    -------
     global_rr: ndarray,
         array of the global mean rr intervals
     """
@@ -297,15 +297,15 @@ def _compute_global_rr(rpeaks:np.ndarray, prev_rr:np.ndarray, config:ED) -> np.n
 def compute_morph_descriptor(beat:np.ndarray, config:ED) -> np.ndarray:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     beat: ndarray,
         a window properly covers the qrs complex, perhaps even the q, t waves
     config: dict,
         process configurations,
 
-    Returns:
-    --------
+    Returns
+    -------
     morph: ndarray
     """
     R_pos = int((config.beat_winL + config.beat_winR) / 2)

@@ -32,8 +32,8 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
     def __init__(self, n_leads:int, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         n_leads: int,
             number of leads (number of input channels)
         config: dict, optional,
@@ -53,8 +53,8 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
         and normalized to a suitable mean and std
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: ndarray or Tensor,
             input tensor, of shape (batch_size, channels, seq_len)
         bin_pred_thr: float, default 0.5,
@@ -71,8 +71,8 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
             if True, correct rpeaks to local maximum in a small nbh
             of rpeaks detected by DL model using `BSE.correct_rpeaks`
 
-        Returns:
-        --------
+        Returns
+        -------
         pred: ndarray,
             the array of scalar predictions
         rpeaks: list of ndarray,
@@ -207,8 +207,8 @@ class ECG_UNET_CPSC2019(ECG_UNET):
     def __init__(self, n_leads:int, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         n_leads: int,
             number of leads (number of input channels)
         config: dict, optional,
@@ -228,8 +228,8 @@ class ECG_UNET_CPSC2019(ECG_UNET):
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
         and normalized to a suitable mean and std
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: ndarray or Tensor,
             input tensor, of shape (batch_size, channels, seq_len)
         bin_pred_thr: float, default 0.5,
@@ -246,8 +246,8 @@ class ECG_UNET_CPSC2019(ECG_UNET):
             if True, correct rpeaks to local maximum in a small nbh
             of rpeaks detected by DL model using `BSE.correct_rpeaks`
 
-        Returns:
-        --------
+        Returns
+        -------
         pred: ndarray,
             the array of scalar predictions
         rpeaks: list of ndarray,

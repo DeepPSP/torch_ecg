@@ -243,16 +243,16 @@ def load_weights(classes:Sequence[Union[int,str]]=None, return_fmt:str='np') -> 
 
     load the weight matrix of the `classes`
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     classes: sequence of str or int, optional,
         the classes (abbr. or SNOMED CT Code) to load their weights,
         if not given, weights of all classes in `dx_mapping_scored` will be loaded
     return_fmt: str, default 'np',
         'np' or 'pd', the values in the form of a 2d array or a DataFrame
 
-    Returns:
-    --------
+    Returns
+    -------
     mat: 2d array or DataFrame,
         the weight matrix of the `classes`
     """
@@ -281,16 +281,16 @@ def normalize_class(c:Union[str,int], ensure_scored:bool=False) -> str:
     normalize the class name to its abbr.,
     facilitating the computation of the `load_weights` function
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     c: str or int,
         abbr. or SNOMED CT Code of the class
     ensure_scored: bool, default False,
         ensure that the class is a scored class,
         if True, `ValueError` would be raised if `c` is not scored
 
-    Returns:
-    --------
+    Returns
+    -------
     nc: str,
         the abbr. of the class
     """
@@ -306,13 +306,13 @@ def get_class(snomed_ct_code:Union[str,int]) -> Dict[str,str]:
     look up the abbreviation and the full name of an ECG arrhythmia,
     given its SNOMED CT Code
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     snomed_ct_code: str or int,
         the SNOMED CT Code of the arrhythmia
     
-    Returns:
-    --------
+    Returns
+    -------
     arrhythmia_class: dict,
         containing `abbr` the abbreviation and `fullname` the full name of the arrhythmia
     """
@@ -326,8 +326,8 @@ def get_class(snomed_ct_code:Union[str,int]) -> Dict[str,str]:
 def get_class_count(tranches:Union[str, Sequence[str]], exclude_classes:Optional[Sequence[str]]=None, scored_only:bool=False, normalize:bool=True, threshold:Optional[Real]=0, fmt:str='a') ->Dict[str, int]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     tranches: str or sequence of str,
         tranches to count classes, can be combinations of "A", "B", "C", "D", "E", "F"
     exclude_classes: sequence of str, optional,
@@ -346,8 +346,8 @@ def get_class_count(tranches:Union[str, Sequence[str]], exclude_classes:Optional
         - 'f', full names
         - 's', SNOMED CT Code
 
-    Returns:
-    --------
+    Returns
+    -------
     class_count: dict,
         key: class in the format of `fmt`
         value: count of a class in `tranches`
@@ -404,8 +404,8 @@ def get_class_count(tranches:Union[str, Sequence[str]], exclude_classes:Optional
 def get_class_weight(tranches:Union[str, Sequence[str]], exclude_classes:Optional[Sequence[str]]=None, scored_only:bool=False, normalize:bool=True, threshold:Optional[Real]=0, fmt:str='a', min_weight:Real=0.5) ->Dict[str, int]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     tranches: str or sequence of str,
         tranches to count classes, can be combinations of "A", "B", "C", "D", "E", "F"
     exclude_classes: sequence of str, optional,
@@ -427,8 +427,8 @@ def get_class_weight(tranches:Union[str, Sequence[str]], exclude_classes:Optiona
         minimum value of the weight of all classes,
         or equivalently the weight of the largest class
 
-    Returns:
-    --------
+    Returns
+    -------
     class_weight: dict,
         key: class in the format of `fmt`
         value: weight of a class in `tranches`
@@ -569,16 +569,16 @@ dx_cooccurrence_scored = dx_cooccurrence_all.loc[dx_mapping_scored.Abbreviation,
 def get_cooccurrence(c1:Union[str,int], c2:Union[str,int], ensure_scored:bool=False) -> int:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     c1, c2: str or int,
         the 2 classes
     ensure_scored: bool, default False,
         ensure that the class is a scored class,
         if True, `ValueError` would be raised if `c` is not scored
 
-    Returns:
-    --------
+    Returns
+    -------
     cooccurrence: int,
         cooccurrence of class `c1` and `c2`, if they are not the same class;
         otherwise the occurrence of the class `c1` (also `c2`)

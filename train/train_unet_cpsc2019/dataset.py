@@ -45,8 +45,8 @@ class CPSC2019(Dataset):
     def __init__(self, config:ED, training:bool=True) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         config: dict,
             configurations for the Dataset,
             ref. `cfg.TrainCfg`
@@ -162,15 +162,15 @@ class CPSC2019(Dataset):
 
         get amplitude of a segment
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         values: ndarray,
             data of the segment
         window: int, default 100 (corr. to 200ms),
             window length of a window for computing amplitude, with units in number of sample points
 
-        Returns:
-        --------
+        Returns
+        -------
         ampl: float,
             amplitude of `values`
         """
@@ -188,16 +188,16 @@ class CPSC2019(Dataset):
         do train test split,
         it is ensured that both the train and the test set contain all classes
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         train_ratio: float, default 0.8,
             ratio of the train set in the whole dataset (or the whole tranche(s))
         force_recompute: bool, default False,
             if True, force redo the train-test split,
             regardless of the existing ones stored in json files
 
-        Returns:
-        --------
+        Returns
+        -------
         records: list of str,
             list of the records split for training or validation
         """

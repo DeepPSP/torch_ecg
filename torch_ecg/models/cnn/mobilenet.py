@@ -80,8 +80,8 @@ class MobileNetV1(nn.Sequential):
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
         config: dict,
         """
@@ -136,13 +136,13 @@ class MobileNetV1(nn.Sequential):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -152,15 +152,15 @@ class MobileNetV1(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
         """
@@ -180,8 +180,8 @@ class MobileNetV1(nn.Sequential):
 class MobileNetV2(nn.Module):
     """
 
-    References:
-    -----------
+    References
+    ----------
     [1] https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv2.py
     """
     __DEBUG__ = True
@@ -207,8 +207,8 @@ class MobileNetV2(nn.Module):
 class MobileNetV3(nn.Module):
     """
 
-    References:
-    -----------
+    References
+    ----------
     [1] https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv3.py
     """
     __DEBUG__ = True

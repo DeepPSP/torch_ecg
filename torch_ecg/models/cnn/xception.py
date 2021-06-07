@@ -71,8 +71,8 @@ class XceptionMultiConv(nn.Module):
                  **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         num_filters: sequence of int,
@@ -160,13 +160,13 @@ class XceptionMultiConv(nn.Module):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -182,15 +182,15 @@ class XceptionMultiConv(nn.Module):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
         """
@@ -232,8 +232,8 @@ class XceptionEntryFlow(nn.Sequential):
                  **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         init_num_filters: sequence of int,
@@ -360,13 +360,13 @@ class XceptionEntryFlow(nn.Sequential):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -376,15 +376,15 @@ class XceptionEntryFlow(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
         """
@@ -423,8 +423,8 @@ class XceptionMiddleFlow(nn.Sequential):
                  **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         num_filters: sequence of int or sequence of sequences of int,
@@ -506,13 +506,13 @@ class XceptionMiddleFlow(nn.Sequential):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -522,15 +522,15 @@ class XceptionMiddleFlow(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
         """
@@ -574,8 +574,8 @@ class XceptionExitFlow(nn.Sequential):
                  **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         final_num_filters: sequence of int,
@@ -695,13 +695,13 @@ class XceptionExitFlow(nn.Sequential):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -711,15 +711,15 @@ class XceptionExitFlow(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
         """
@@ -741,8 +741,8 @@ class XceptionExitFlow(nn.Sequential):
 class Xception(nn.Sequential):
     """
 
-    References:
-    -----------
+    References
+    ----------
     [1] Chollet, François. "Xception: Deep learning with depthwise separable convolutions." Proceedings of the IEEE conference on computer vision and pattern recognition. 2017.
     [2] https://github.com/keras-team/keras-applications/blob/master/keras_applications/xception.py
     [3] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
@@ -753,8 +753,8 @@ class Xception(nn.Sequential):
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         config: dict,
@@ -802,13 +802,13 @@ class Xception(nn.Sequential):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -818,15 +818,15 @@ class Xception(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
         """

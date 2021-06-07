@@ -31,13 +31,13 @@ __all__ = [
 def load_model(name:str, **kwargs) -> Union[Model, Tuple[Model,...], nn.Module, Tuple[nn.Module,...]]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     name: str,
         name of the model
 
-    Returns:
-    --------
+    Returns
+    -------
     model, or sequence of models, either keras or pytorch
     """
     if name.lower() == "keras_ecg_seq_lab_net":
@@ -54,14 +54,14 @@ def _load_keras_ecg_seq_lab_net(which:str="both", **kwargs) -> Union[Tuple[Model
 
     load the CNN model and CRNN model from the entry 0416 of CPSC2019
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     which: str, default "both",
         choice of model(s) to load,
         can be one of "both", "cnn", "crnn", case insensitive
 
-    Returns:
-    --------
+    Returns
+    -------
     cnn_model, crnn_model (both or one): Model
     """
     _which = which.lower()

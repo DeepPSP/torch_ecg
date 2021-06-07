@@ -19,8 +19,8 @@ __all__ = [
 def CPSC2020_loss_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray, dtype:type=str) -> int:
     """
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     y_true: ndarray,
         array of ground truth of beat types
     y_true: ndarray,
@@ -30,8 +30,8 @@ def CPSC2020_loss_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarra
     dtype: type, default str,
         dtype of `y_true` and `y_pred`
 
-    Returns:
-    --------
+    Returns
+    -------
     retval: dict, including the following items
         - total_loss: sum of loss of each ectopic beat type (PVC and SPB)
         - true_positive: number of true positives of each ectopic beat type
@@ -98,8 +98,8 @@ def CPSC2020_loss_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarra
 def CPSC2020_score_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray, dtype:type=str) -> int:
     """
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     y_true: ndarray,
         array of ground truth of beat types
     y_true: ndarray,
@@ -109,8 +109,8 @@ def CPSC2020_score_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarr
     dtype: type, default str,
         dtype of `y_true` and `y_pred`
 
-    Returns:
-    --------
+    Returns
+    -------
     retval: dict, including the following items
         - total_loss: sum of loss of each ectopic beat type (PVC and SPB)
         - true_positive: number of true positives of each ectopic beat type
@@ -142,8 +142,8 @@ def CPSC2020_score_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarr
 def CPSC2020_loss_v0(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray, dtype:type=str) -> int:
     """ finished, too slow!
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     y_true: ndarray,
         array of ground truth of beat types
     y_true: ndarray,
@@ -153,8 +153,8 @@ def CPSC2020_loss_v0(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray,
     dtype: type, default str,
         dtype of `y_true` and `y_pred`
 
-    Returns:
-    --------
+    Returns
+    -------
     retval: dict, including the following items
         - total_loss: sum of loss of each ectopic beat type (PVC and SPB)
         - class_loss: loss of each ectopic beat type

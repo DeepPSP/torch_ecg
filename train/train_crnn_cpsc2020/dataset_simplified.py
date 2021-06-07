@@ -53,8 +53,8 @@ class CPSC2020(Dataset):
 
     data generator for deep learning models,
 
-    strategy:
-    ---------
+    strategy
+    --------
     1. slice each record into short segments of length `TrainCfg.input_len`,
     and of overlap length `TrainCfg.overlap_len` around premature beats
     2. do augmentations for premature segments
@@ -65,8 +65,8 @@ class CPSC2020(Dataset):
     def __init__(self, config:ED, training:bool=True) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         config: dict,
             configurations for the Dataset,
             ref. `cfg.TrainCfg`
@@ -219,15 +219,15 @@ class CPSC2020(Dataset):
 
         get amplitude of a segment
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg_data: ndarray,
             data of the segment
         window: int, default 80 (corr. to 200ms),
             window length of a window for computing amplitude, with units in number of sample points
 
-        Returns:
-        --------
+        Returns
+        -------
         ampl: float,
             amplitude of `seg_data`
         """
@@ -242,13 +242,13 @@ class CPSC2020(Dataset):
     def _get_seg_data_path(self, seg:str) -> str:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
 
-        Returns:
-        --------
+        Returns
+        -------
         fp: str,
             path of the data file of the segment
         """
@@ -260,13 +260,13 @@ class CPSC2020(Dataset):
     def _get_seg_ann_path(self, seg:str) -> str:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
 
-        Returns:
-        --------
+        Returns
+        -------
         fp: str,
             path of the annotation file of the segment
         """
@@ -278,13 +278,13 @@ class CPSC2020(Dataset):
     def _load_seg_data(self, seg:str) -> np.ndarray:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
 
-        Returns:
-        --------
+        Returns
+        -------
         seg_data: ndarray,
             data of the segment, of shape (self.seglen,)
         """
@@ -296,13 +296,13 @@ class CPSC2020(Dataset):
     def _load_seg_label(self, seg:str) -> np.ndarray:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
 
-        Returns:
-        --------
+        Returns
+        -------
         seg_label: ndarray,
             label of the segment, of shape (self.n_classes,)
         """
@@ -314,13 +314,13 @@ class CPSC2020(Dataset):
     def _load_seg_beat_ann(self, seg:str) -> Dict[str, np.ndarray]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
 
-        Returns:
-        --------
+        Returns
+        -------
         seg_beat_ann: dict,
             "SPB_indices", "PVC_indices", each of ndarray values
         """
@@ -335,16 +335,16 @@ class CPSC2020(Dataset):
     def _load_seg_seq_lab(self, seg:str, reduction:int=8) -> np.ndarray:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seg: str,
             name of the segment, of pattern like "S01_0000193"
         reduction: int, default 8,
             reduction (granularity) of length of the model output,
             compared to the original signal length
 
-        Returns:
-        --------
+        Returns
+        -------
         seq_lab: np.ndarray,
             label of the sequence,
             of shape (self.seglen//reduction, self.n_classes)

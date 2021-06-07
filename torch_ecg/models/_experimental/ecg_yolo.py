@@ -40,8 +40,8 @@ class ResNetGCBlock(nn.Module):
 
     ResNet (basic, not bottleneck) block with global context
 
-    References:
-    -----------
+    References
+    ----------
     [1] entry 0436 of CPSC2019
     [2] https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
     """
@@ -51,8 +51,8 @@ class ResNetGCBlock(nn.Module):
     def __init__(self, in_channels:int, num_filters:int, filter_length:int, subsample_length:int, groups:int=1, dilation:int=1, dropouts:Union[float, Sequence[float]]=0, **config) -> NoReturn:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of features (channels) of the input
         num_filters: int,
@@ -180,13 +180,13 @@ class ResNetGCBlock(nn.Module):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -208,15 +208,15 @@ class ResNetGCBlock(nn.Module):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, NOT checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """

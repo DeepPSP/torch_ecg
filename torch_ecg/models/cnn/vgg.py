@@ -45,8 +45,8 @@ class VGGBlock(nn.Sequential):
     def __init__(self, num_convs:int, in_channels:int, out_channels:int, groups:int=1, **config) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         num_convs: int,
             number of convolutional layers of this block
         in_channels: int,
@@ -107,13 +107,13 @@ class VGGBlock(nn.Sequential):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
+        Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -123,15 +123,15 @@ class VGGBlock(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
@@ -168,8 +168,8 @@ class VGG16(nn.Sequential):
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """ finished, checked,
         
-        Parameters:
-        -----------
+        Parameters
+        ----------
         in_channels: int,
             number of channels in the input
         config: dict,
@@ -212,13 +212,13 @@ class VGG16(nn.Sequential):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
+        Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
-        Returns:
-        --------
+        Returns
+        -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
@@ -228,15 +228,15 @@ class VGG16(nn.Sequential):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """
