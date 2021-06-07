@@ -39,8 +39,8 @@ def extend_predictions(preds:Sequence, classes:List[str], extended_classes:List[
 
     extend the prediction arrays to prediction arrays in larger range of classes
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     preds: sequence,
         sequence of predictions (scalar or binary),
         of shape (n_records, n_classes), or (n_classes,),
@@ -50,8 +50,8 @@ def extend_predictions(preds:Sequence, classes:List[str], extended_classes:List[
     extended_classes: list of str,
         a superset of `classes`
 
-    Returns:
-    --------
+    Returns
+    -------
     extended_preds: ndarray,
         the extended array of predictions, with indices in `extended_classes`,
         of shape (n_records, n_classes), or (n_classes,)
@@ -88,8 +88,8 @@ def compute_output_shape(layer_type:str,
 
     compute the output shape of a (transpose) convolution/maxpool/avgpool layer
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     layer_type: str,
         type (conv, maxpool, avgpool, etc.) of the layer
     input_shape: sequence of int or None,
@@ -112,13 +112,13 @@ def compute_output_shape(layer_type:str,
         channel dimension is the last dimension,
         or the second dimension (the first is the batch dimension by convention)
 
-    Returns:
-    --------
+    Returns
+    -------
     output_shape: tuple,
         shape of the output Tensor
 
-    References:
-    -----------
+    References
+    ----------
     [1] https://discuss.pytorch.org/t/utility-function-for-calculating-the-shape-of-a-conv-output/11173/5
     """
     __TYPES__ = [
@@ -255,8 +255,8 @@ def compute_conv_output_shape(input_shape:Sequence[Union[int, None]],
         channel dimension is the last dimension,
         or the second dimension (the first is the batch dimension by convention)
 
-    Returns:
-    --------
+    Returns
+    -------
     output_shape: tuple,
         shape of the output Tensor
     """
@@ -293,8 +293,8 @@ def compute_maxpool_output_shape(input_shape:Sequence[Union[int, None]],
         channel dimension is the last dimension,
         or the second dimension (the first is the batch dimension by convention)
 
-    Returns:
-    --------
+    Returns
+    -------
     output_shape: tuple,
         shape of the output Tensor
     """
@@ -328,8 +328,8 @@ def compute_avgpool_output_shape(input_shape:Sequence[Union[int, None]],
         channel dimension is the last dimension,
         or the second dimension (the first is the batch dimension by convention)
 
-    Returns:
-    --------
+    Returns
+    -------
     output_shape: tuple,
         shape of the output Tensor
     """
@@ -353,8 +353,8 @@ def compute_deconv_output_shape(input_shape:Sequence[Union[int, None]],
 
     compute the output shape of a transpose convolution layer
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     input_shape: sequence of int or None,
         shape of an input Tensor,
         the first dimension is the batch dimension, which is allowed to be `None`
@@ -375,8 +375,8 @@ def compute_deconv_output_shape(input_shape:Sequence[Union[int, None]],
         channel dimension is the last dimension,
         or the second dimension (the first is the batch dimension by convention)
 
-    Returns:
-    --------
+    Returns
+    -------
     output_shape: tuple,
         shape of the output Tensor
     """
@@ -393,13 +393,13 @@ def compute_module_size(module:nn.Module) -> int:
 
     compute the size (number of parameters) of a module
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     module: Module,
         a torch Module
     
-    Returns:
-    --------
+    Returns
+    -------
     n_params: int,
         size (number of parameters) of this torch module
     """
@@ -436,8 +436,8 @@ def compute_receptive_field(kernel_sizes:Union[Sequence[int], int]=1,
         \end{eqnarray}
         with empty products equaling 1 by convention.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     kernel_sizes: int or sequence of int,
         the sequence of kernel size for all the layers in the flow
     strides: int or sequence of int, default 1,
@@ -447,12 +447,12 @@ def compute_receptive_field(kernel_sizes:Union[Sequence[int], int]=1,
     input_len: int, optional,
         length of the first feature map in the flow
 
-    Returns:
-    --------
+    Returns
+    -------
     receptive_field: int,
         (length) of the receptive field
 
-    Example:
+    Examples
     --------
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2])
     ... 90
@@ -485,14 +485,14 @@ def default_collate_fn(batch:Sequence[Tuple[np.ndarray, np.ndarray]]) -> Tuple[T
 
     the data generator (`Dataset`) should generate (`__getitem__`) 2-tuples `signals, labels`
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     batch: sequence,
         sequence of 2-tuples,
         in which the first element is the signal, the second is the label
     
-    Returns:
-    --------
+    Returns
+    -------
     values: Tensor,
         the concatenated values as input for training
     labels: Tensor,
@@ -513,8 +513,8 @@ def intervals_iou(itv_a:Tensor, itv_b:Tensor, iou_type="iou") -> Tensor:
     1d analogue of the 2d bounding boxes IoU,
     for 1d "object detection" models
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     itv_a, itv_b: Tensor,
         of shape (N, 2), (K, 2) resp.
     iou_type: str, default "iou", case insensitive

@@ -49,16 +49,16 @@ class ECG_SEQ_LAB_NET(nn.Module):
 
     SOTA model from CPSC2019 challenge (entry 0416)
 
-    pipeline:
-    ---------
+    pipeline
+    --------
     multi-scopic cnn --> (bidi-lstm -->) "attention" --> seq linear
 
-    TODO:
-    -----
+    TODO
+    ----
     try adding a CRF layer following linear layers to make final prediction
 
-    References:
-    -----------
+    References
+    ----------
     [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
     """
     __DEBUG__ = True
@@ -67,8 +67,8 @@ class ECG_SEQ_LAB_NET(nn.Module):
     def __init__(self, classes:Sequence[str], n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         classes: list,
             list of the classes for sequence labeling
         n_leads: int,
@@ -168,13 +168,13 @@ class ECG_SEQ_LAB_NET(nn.Module):
 
         extract feature map before the dense (linear) classifying layer(s)
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
         
-        Returns:
-        --------
+        Returns
+        -------
         features: Tensor,
             of shape (batch_size, seq_len, channels)
         """
@@ -197,13 +197,13 @@ class ECG_SEQ_LAB_NET(nn.Module):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
         
-        Returns:
-        --------
+        Returns
+        -------
         pred: Tensor,
             of shape (batch_size, seq_len)
         """
@@ -225,15 +225,15 @@ class ECG_SEQ_LAB_NET(nn.Module):
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         seq_len: int,
             length of the 1d sequence
         batch_size: int, optional,
             the batch size, can be None
 
-        Returns:
-        --------
+        Returns
+        -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
         """

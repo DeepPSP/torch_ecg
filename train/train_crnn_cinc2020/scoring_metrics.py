@@ -22,8 +22,8 @@ __all__ = [
 def evaluate_12ECG_score(classes:List[str], truth:Sequence, binary_pred:Sequence, scalar_pred:Sequence) -> Tuple[float]:
     """ finished, checked,
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     classes: list of str,
         list of all the classes, in the format of abbrevations
     truth: sequence,
@@ -33,8 +33,8 @@ def evaluate_12ECG_score(classes:List[str], truth:Sequence, binary_pred:Sequence
     scalar_pred: sequence,
         probability predictions, of shape (n_records, n_classes), with values within [0,1]
 
-    Returns:
-    --------
+    Returns
+    -------
     auroc: float,
     auprc: float,
     accuracy: float,

@@ -34,8 +34,8 @@ class LUDBReader(object):
 
     Lobachevsky University Electrocardiography Database
 
-    ABOUT ludb:
-    -----------
+    ABOUT ludb
+    ----------
     1. consist of 200 10-second conventional 12-lead (i, ii, iii, avr, avl, avf, v1, v2, v3, v4, v5, v6) ECG signal records, with sampling frequency 500 Hz
     2. boundaries of P, T waves and QRS complexes were manually annotated by cardiologists, and with the corresponding diagnosis
     3. annotated are 16797 P waves, 21966 QRS complexes, 19666 T waves (in total, 58429 annotated waves)
@@ -138,27 +138,27 @@ class LUDBReader(object):
         there might well be records with multiple conditions.
     
 
-    NOTE:
-    -----
+    NOTE
+    ----
 
-    ISSUES:
-    -------
+    ISSUES
+    ------
     1. (version 1.0.0, fixed in version 1.0.1) ADC gain might be wrong, either `units` should be μV, or `adc_gain` should be 1000 times larger
 
-    Usage:
-    ------
+    Usage
+    -----
     1. ECG wave delineation
     2. ECG arrhythmia classification
 
-    References:
-    -----------
+    References
+    ----------
     [1] https://physionet.org/content/ludb/1.0.1/
     [2] Kalyakulina, A., Yusipov, I., Moskalenko, V., Nikolskiy, A., Kozlov, A., Kosonogov, K., Zolotykh, N., & Ivanchenko, M. (2020). Lobachevsky University Electrocardiography Database (version 1.0.0).
     """
     def __init__(self, db_dir:str, working_dir:Optional[str]=None, verbose:int=2, **kwargs):
         """
-        Parameters:
-        -----------
+        Parameters
+        ----------
         db_dir: str,
             storage path of the database
         working_dir: str, optional,
@@ -248,8 +248,8 @@ class LUDBReader(object):
         config the logger,
         currently not used,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         prefix: str, optional,
             prefix (for each line) of the logger, and its file name
         """
@@ -292,8 +292,8 @@ class LUDBReader(object):
         load physical (converted from digital) ecg data,
         which is more understandable for humans
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         rec: str,
             name of the record
         leads: str or list of str, optional,
@@ -307,8 +307,8 @@ class LUDBReader(object):
         fs: real number, optional,
             if not None, the loaded data will be resampled to this frequency
         
-        Returns:
-        --------
+        Returns
+        -------
         data: ndarray,
             the ecg data
         """
@@ -339,8 +339,8 @@ class LUDBReader(object):
 
         load the wave delineation, along with metadata if specified
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         rec: str,
             name of the record
         leads: str or list of str, optional,
@@ -348,8 +348,8 @@ class LUDBReader(object):
         metadata: bool, default False,
             if True, load metadata from corresponding head file
 
-        Returns:
-        --------
+        Returns
+        -------
         ann_dict: dict,
         """
         ann_dict = ED()
@@ -422,13 +422,13 @@ class LUDBReader(object):
 
         load diagnoses of the `rec`
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         rec: str,
             name of the record
 
-        Returns:
-        --------
+        Returns
+        -------
         diagnoses: list of str,
         """
         diagnoses = self._load_header(rec)["diagnoses"]
@@ -440,8 +440,8 @@ class LUDBReader(object):
 
         load the wave delineation in the form of masks
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         rec: str,
             name of the record
         leads: str or list of str, optional,
@@ -454,8 +454,8 @@ class LUDBReader(object):
             custom class map,
             if not set, `self.class_map` will be used
 
-        Returns:
-        --------
+        Returns
+        -------
         masks: ndarray,
             the masks corresponding to the wave delineation annotations of `rec`
         """
@@ -477,8 +477,8 @@ class LUDBReader(object):
 
         convert masks into lists of waveforms
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         masks: ndarray,
             wave delineation in the form of masks,
             of shape (n_leads, seq_len), or (seq_len,)
@@ -496,8 +496,8 @@ class LUDBReader(object):
             used to compute the duration of each waveform
             if is None, `self.fs` will be used, to compute `duration` of the ecg waveforms
 
-        Returns:
-        --------
+        Returns
+        -------
         waves: dict,
             each item value is a list containing the `ECGWaveForm`s corr. to the lead;
             each item key is from `leads` if `leads` is set,
@@ -529,13 +529,13 @@ class LUDBReader(object):
 
         load header data into a dict
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         rec: str,
             name of the record
 
-        Returns:
-        --------
+        Returns
+        -------
         header_dict: dict,
         """
         header_dict = ED({})
@@ -561,8 +561,8 @@ class LUDBReader(object):
     def _normalize_leads(self, leads:Optional[Sequence[str]]=None, standard_ordering:bool=True, lower_cases:bool=False) -> List[str]:
         """ finished, checked,
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         leads: str or list of str, optional,
             the (names of) leads to normalize
         starndard_ordering: bool, default True,
@@ -594,8 +594,8 @@ class LUDBReader(object):
         with metadata (fs, labels, tranche, etc.),
         possibly also along with wave delineations
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         rec: str,
             name of the record
         data: ndarray, optional,
@@ -718,13 +718,13 @@ class LUDBReader(object):
         automatically infer the units of `data`,
         under the assumption that `data` not raw data, with baseline removed
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         data: ndarray,
             the data to infer its units
 
-        Returns:
-        --------
+        Returns
+        -------
         units: str,
             units of `data`, "μV" or "mV"
         """
