@@ -193,7 +193,7 @@ class DownDoubleConv(nn.Sequential):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
         
-        Paramters:
+        Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)

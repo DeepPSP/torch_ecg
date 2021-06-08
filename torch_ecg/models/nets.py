@@ -2160,7 +2160,7 @@ class NonLocalBlock(nn.Module):
                  **config) -> NoReturn:
         """ finished, checked,
 
-        Paramters:
+        Parameters
         ----------
         in_channels: int,
             number of channels in the input
@@ -2492,7 +2492,7 @@ class GlobalContextBlock(nn.Module):
     def spatial_pool(self, x:Tensor) -> Tensor:
         """ finished, checked,
 
-        Paramters:
+        Parameters
         ----------
         x: Tensor,
             of shape (batch_size, n_channels, seq_len)
@@ -2517,7 +2517,7 @@ class GlobalContextBlock(nn.Module):
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
         
-        Paramters:
+        Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
