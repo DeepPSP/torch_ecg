@@ -64,6 +64,7 @@ def run(action:str) -> NoReturn:
             time.sleep(1)
         ret_code = os.system(cmd)
         n_iter += 1
+    print("Execution success")
 	
 
 if __name__ == "__main__":
