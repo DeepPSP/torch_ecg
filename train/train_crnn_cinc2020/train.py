@@ -657,13 +657,18 @@ if __name__ == "__main__":
     try:
         train(
             model=model,
+            model_config=model_config,
             config=config,
             device=device,
             logger=logger,
             debug=config.debug,
         )
     except KeyboardInterrupt:
-        torch.save(model.state_dict(), os.path.join(config.checkpoints, "INTERRUPTED.pth"))
+        torch.save({
+            "model_state_dict": model.state_dict(),
+            "model_config": model_config,
+            "train_config": config,
+        }, os.path.join(config.checkpoints, "INTERRUPTED.pth.tar"))
         logger.info("Saved interrupt")
         try:
             sys.exit(0)
