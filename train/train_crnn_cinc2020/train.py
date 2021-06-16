@@ -39,7 +39,7 @@ import logging
 import argparse
 import textwrap
 from copy import deepcopy
-from collections import deque
+from collections import deque, OrderedDict
 from typing import Union, Optional, Tuple, Sequence, NoReturn
 from numbers import Real, Number
 
@@ -85,7 +85,12 @@ __all__ = [
 ]
 
 
-def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, logger:Optional[logging.Logger]=None, debug:bool=False) -> NoReturn:
+def train(model:nn.Module,
+          model_config:dict,
+          device:torch.device,
+          config:dict,
+          logger:Optional[logging.Logger]=None,
+          debug:bool=False) -> OrderedDict:
     """ finished, checked,
 
     Parameters
@@ -102,6 +107,11 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
     debug: bool, default False,
         if True, the training set itself would be evaluated 
         to check if the model really learns from the training set
+
+    Returns
+    -------
+    best_state_dict: OrderedDict,
+        state dict of the best model
     """
     msg = f"training configurations are as follows:\n{dict_to_str(config)}"
     if logger:
@@ -123,11 +133,14 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
     batch_size = config.batch_size
     lr = config.learning_rate
 
+    # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+    num_workers = 4
+
     train_loader = DataLoader(
         dataset=train_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=8,
+        num_workers=num_workers,
         pin_memory=True,
         drop_last=False,
         collate_fn=collate_fn,
@@ -138,7 +151,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
             dataset=val_train_dataset,
             batch_size=batch_size,
             shuffle=True,
-            num_workers=8,
+            num_workers=num_workers,
             pin_memory=True,
             drop_last=False,
             collate_fn=collate_fn,
@@ -147,7 +160,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         dataset=val_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=8,
+        num_workers=num_workers,
         pin_memory=True,
         drop_last=False,
         collate_fn=collate_fn,
@@ -199,8 +212,17 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         optimizer = optim.Adam(
             params=model.parameters(),
             lr=lr,
-            betas=(0.9, 0.999),  # default
+            betas=config.betas,
             eps=1e-08,  # default
+        )
+    elif config.train_optimizer.lower() in ["adamw", "adamw_amsgrad"]:
+        optimizer = optim.AdamW(
+            params=model.parameters(),
+            lr=lr,
+            betas=config.betas,
+            weight_decay=config.decay,
+            eps=1e-08,  # default
+            amsgrad=config.train_optimizer.lower().endswith("amsgrad"),
         )
     elif config.train_optimizer.lower() == "sgd":
         optimizer = optim.SGD(
@@ -219,6 +241,13 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", patience=2)
     elif config.lr_scheduler.lower() == "step":
         scheduler = optim.lr_scheduler.StepLR(optimizer, config.lr_step_size, config.lr_gamma)
+    elif config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
+        scheduler = optim.lr_scheduler.OneCycleLR(
+            optimizer=optimizer,
+            max_lr=config.max_lr,
+            epochs=n_epochs,
+            steps_per_epoch=len(train_loader),
+        )
     else:
         raise NotImplementedError(f"lr scheduler `{config.lr_scheduler.lower()}` not implemented for training")
 
@@ -235,6 +264,17 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
     save_prefix = f"{model.__name__}_{config.cnn_name}_{config.rnn_name}_tranche_{config.tranches_for_training or 'all'}_epoch"
 
+    os.makedirs(config.checkpoints, exist_ok=True)
+    os.makedirs(config.model_dir, exist_ok=True)
+
+    # monitor for training: challenge metric
+    # TODO: add early_stopping using this monitor
+    best_state_dict = OrderedDict()
+    best_challenge_metric = -np.inf
+    best_eval_res = tuple()
+    best_epoch = -1
+    pseudo_best_epoch = -1
+
     saved_models = deque()
     model.train()
     global_step = 0
@@ -250,10 +290,15 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
                 preds = model(signals)
                 loss = criterion(preds, labels)
-                epoch_loss += loss.item()
-                
-                optimizer.zero_grad()
-                loss.backward()
+                if config.flooding_level > 0:
+                    flood = (loss - config.flooding_level).abs() + config.flooding_level
+                    epoch_loss += loss.item()
+                    optimizer.zero_grad()
+                    flood.backward()
+                else:
+                    epoch_loss += loss.item()
+                    optimizer.zero_grad()
+                    loss.backward()
                 optimizer.step()
 
                 if global_step % log_step == 0:
@@ -271,6 +316,9 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                         })
                         msg = f"Train step_{global_step}: loss : {loss.item()}"
                     # print(msg)  # in case no logger
+                    if config.flooding_level > 0:
+                        writer.add_scalar("train/flood", flood.item(), global_step)
+                        msg = f"{msg}\nflood : {flood.item()}"
                     if logger:
                         logger.info(msg)
                     else:
@@ -306,6 +354,8 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 scheduler.step(metrics=eval_res[6])
             elif config.lr_scheduler.lower() == "step":
                 scheduler.step()
+            elif config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
+                scheduler.step()
 
             if debug:
                 eval_train_msg = textwrap.dedent(f"""
@@ -337,6 +387,32 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 logger.info(msg)
             else:
                 print(msg)
+            
+            if eval_res[6] > best_challenge_metric:
+                best_challenge_metric = eval_res[6]
+                best_state_dict = model.state_dict()
+                best_eval_res = deepcopy(eval_res)
+                best_epoch = epoch + 1
+                pseudo_best_epoch = epoch + 1
+            elif config.early_stopping:
+                if eval_res[6] >= best_challenge_metric - config.early_stopping.min_delta:
+                    pseudo_best_epoch = epoch + 1
+                elif epoch - pseudo_best_epoch > config.early_stopping.patience:
+                    msg = f"early stopping is triggered at epoch {epoch + 1}"
+                    if logger:
+                        logger.info(msg)
+                    else:
+                        print(msg)
+                    break
+
+            msg = textwrap.dedent(f"""
+                best challenge metric = {best_challenge_metric},
+                obtained at epoch {best_epoch}
+            """)
+            if logger:
+                logger.info(msg)
+            else:
+                print(msg)
 
             try:
                 os.makedirs(config.checkpoints, exist_ok=True)
@@ -345,9 +421,15 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
             except OSError:
                 pass
             save_suffix = f"epochloss_{epoch_loss:.5f}_fb_{eval_res[4]:.2f}_gb_{eval_res[5]:.2f}_cm_{eval_res[6]:.2f}"
-            save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth"
+            save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth.tar"
             save_path = os.path.join(config.checkpoints, save_filename)
-            torch.save(model.state_dict(), save_path)
+            torch.save({
+                "model_state_dict": model.state_dict(),
+                "optimizer_state_dict": optimizer.state_dict(),
+                "model_config": model_config,
+                "train_config": config,
+                "epoch": epoch+1,
+            }, save_path)
             if logger:
                 logger.info(f"Checkpoint {epoch + 1} saved!")
             saved_models.append(save_path)
@@ -359,7 +441,26 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                 except:
                     logger.info(f"failed to remove {model_to_remove}")
 
+    # save the best model
+    if best_challenge_metric > -np.inf:
+        if config.final_model_name:
+            save_filename = config.final_model_name
+        else:
+            save_suffix = f"BestModel_fb_{best_eval_res[4]:.2f}_gb_{best_eval_res[5]:.2f}_cm_{best_eval_res[6]:.2f}"
+            save_filename = f"{save_prefix}_{get_date_str()}_{save_suffix}.pth.tar"
+        save_path = os.path.join(config.model_dir, save_filename)
+        torch.save({
+            "model_state_dict": best_state_dict,
+            "model_config": model_config,
+            "train_config": config,
+            "epoch": best_epoch,
+        }, save_path)
+        if logger:
+            logger.info(f"Best model saved to {save_path}!")
+
     writer.close()
+
+    return best_state_dict
 
 
 # def train_one_epoch(model:nn.Module, criterion:nn.Module, optimizer:optim.Optimizer, data_loader:DataLoader, device:torch.device, epoch:int) -> NoReturn:
