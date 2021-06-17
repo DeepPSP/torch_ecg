@@ -15,7 +15,11 @@ __all__ = [
 ]
 
 
-def compute_metrics(rpeaks_truths:Sequence[Union[np.ndarray,Sequence[int]]], rpeaks_preds:Sequence[Union[np.ndarray,Sequence[int]]], fs:Real, thr:float=0.075, verbose:int=0) -> float:
+def compute_metrics(rpeaks_truths:Sequence[Union[np.ndarray,Sequence[int]]],
+                    rpeaks_preds:Sequence[Union[np.ndarray,Sequence[int]]],
+                    fs:Real,
+                    thr:float=0.075,
+                    verbose:int=0) -> float:
     """ finished, checked,
 
     Parameters
