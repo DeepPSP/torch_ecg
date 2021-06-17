@@ -13,3 +13,5 @@ torchsummary
 tensorboardX
 tqdm
 deprecated
+pyEDFlib
+PyWavelets
