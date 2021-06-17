@@ -160,8 +160,17 @@ def train(model:nn.Module,
         optimizer = optim.Adam(
             params=model.parameters(),
             lr=lr,
-            betas=(0.9, 0.999),  # default
+            betas=config.betas,
             eps=1e-08,  # default
+        )
+    elif config.train_optimizer.lower() in ["adamw", "adamw_amsgrad"]:
+        optimizer = optim.AdamW(
+            params=model.parameters(),
+            lr=lr,
+            betas=config.betas,
+            weight_decay=config.decay,
+            eps=1e-08,  # default
+            amsgrad=config.train_optimizer.lower().endswith("amsgrad"),
         )
     elif config.train_optimizer.lower() == "sgd":
         optimizer = optim.SGD(
@@ -180,6 +189,13 @@ def train(model:nn.Module,
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", patience=2)
     elif config.lr_scheduler.lower() == "step":
         scheduler = optim.lr_scheduler.StepLR(optimizer, config.lr_step_size, config.lr_gamma)
+    elif config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
+        scheduler = optim.lr_scheduler.OneCycleLR(
+            optimizer=optimizer,
+            max_lr=config.max_lr,
+            epochs=n_epochs,
+            steps_per_epoch=len(train_loader),
+        )
     else:
         raise NotImplementedError(f"lr scheduler `{config.lr_scheduler.lower()}` not implemented for training")
 
@@ -196,6 +212,15 @@ def train(model:nn.Module,
 
     save_prefix = f"{model.__name__}_{config.cnn_name}_{config.rnn_name}_epoch"
 
+    os.makedirs(config.checkpoints, exist_ok=True)
+    os.makedirs(config.model_dir, exist_ok=True)
+
+    best_state_dict = OrderedDict()
+    best_challenge_metric = -np.inf
+    best_eval_res = tuple()
+    best_epoch = -1
+    pseudo_best_epoch = -1
+
     saved_models = deque()
     model.train()
     global_step = 0
@@ -211,10 +236,15 @@ def train(model:nn.Module,
 
                 preds = model(signals)
                 loss = criterion(preds, labels)
-                epoch_loss += loss.item()
-                
-                optimizer.zero_grad()
-                loss.backward()
+                if config.flooding_level > 0:
+                    flood = (loss - config.flooding_level).abs() + config.flooding_level
+                    epoch_loss += loss.item()
+                    optimizer.zero_grad()
+                    flood.backward()
+                else:
+                    epoch_loss += loss.item()
+                    optimizer.zero_grad()
+                    loss.backward()
                 optimizer.step()
 
                 if global_step % config.log_step == 0:
@@ -232,6 +262,9 @@ def train(model:nn.Module,
                         })
                         msg = f"Train step_{global_step}: loss : {loss.item()}"
                     # print(msg)  # in case no logger
+                    if config.flooding_level > 0:
+                        writer.add_scalar("train/flood", flood.item(), global_step)
+                        msg = f"{msg}\nflood : {flood.item()}"
                     if logger:
                         logger.info(msg)
                     else:
@@ -281,8 +314,10 @@ def train(model:nn.Module,
                 if config.lr_scheduler is None:
                     pass
                 elif config.lr_scheduler.lower() == "plateau":
-                    scheduler.step(metrics=eval_res[6])
+                    scheduler.step(metrics=eval_res[4])
                 elif config.lr_scheduler.lower() == "step":
+                    scheduler.step()
+                elif config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
                     scheduler.step()
 
                 if debug:
@@ -329,6 +364,8 @@ def train(model:nn.Module,
                     scheduler.step(metrics=eval_res.total_loss)
                 elif config.lr_scheduler.lower() == "step":
                     scheduler.step()
+                elif config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
+                    scheduler.step()
 
                 if debug:
                     eval_train_msg = textwrap.dedent(f"""
@@ -365,6 +402,33 @@ def train(model:nn.Module,
                 logger.info(msg)
             else:
                 print(msg)
+            
+            monitor = eval_res[4] if config.model_name == "crnn" else eval_res.total_loss
+            if monitor > best_challenge_metric:
+                best_challenge_metric = monitor
+                best_state_dict = model.state_dict()
+                best_eval_res = deepcopy(eval_res)
+                best_epoch = epoch + 1
+                pseudo_best_epoch = epoch + 1
+            elif config.early_stopping:
+                if monitor >= best_challenge_metric - config.early_stopping.min_delta:
+                    pseudo_best_epoch = epoch + 1
+                elif epoch - pseudo_best_epoch > config.early_stopping.patience:
+                    msg = f"early stopping is triggered at epoch {epoch + 1}"
+                    if logger:
+                        logger.info(msg)
+                    else:
+                        print(msg)
+                    break
+
+            msg = textwrap.dedent(f"""
+                best challenge metric = {best_challenge_metric},
+                obtained at epoch {best_epoch}
+            """)
+            if logger:
+                logger.info(msg)
+            else:
+                print(msg)
 
             try:
                 os.makedirs(config.checkpoints, exist_ok=True)
@@ -395,12 +459,39 @@ def train(model:nn.Module,
                     os.remove(model_to_remove)
                 except:
                     logger.info(f"failed to remove {model_to_remove}")
+    
+    # save the best model
+    if best_challenge_metric > -np.inf:
+        if config.final_model_name:
+            save_filename = config.final_model_name
+        else:
+            if config.model_name == "crnn":
+                save_suffix = f"BestModel_fb_{best_eval_res[4]:.2f}_gb_{best_eval_res[5]:.2f}"
+            elif config.model_name == "seq_lab":
+                save_suffix = f"BestModel_challenge_loss_{best_eval_res.total_loss}"
+            save_filename = f"{save_prefix}_{get_date_str()}_{save_suffix}.pth.tar"
+        save_path = os.path.join(config.model_dir, save_filename)
+        torch.save({
+            "model_state_dict": best_state_dict,
+            "model_config": model_config,
+            "train_config": config,
+            "epoch": best_epoch,
+        }, save_path)
+        if logger:
+            logger.info(f"Best model saved to {save_path}!")
 
     writer.close()
 
+    return best_state_dict
+
 
 @torch.no_grad()
-def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None)) -> Tuple[float]:
+def evaluate_crnn(model:nn.Module,
+                  data_loader:DataLoader,
+                  config:dict,
+                  device:torch.device,
+                  debug:bool=True,
+                  logger:Optional[logging.Logger]=None) -> Tuple[float]:
     """ finished, checked,
 
     Parameters
@@ -490,7 +581,12 @@ def evaluate_crnn(model:nn.Module, data_loader:DataLoader, config:dict, device:t
 
 
 @torch.no_grad()
-def evaluate_seq_lab(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None) -> Dict[str, int]:
+def evaluate_seq_lab(model:nn.Module,
+                    data_loader:DataLoader,
+                    config:dict,
+                    device:torch.device,
+                    debug:bool=True,
+                    logger:Optional[logging.Logger]=None) -> Dict[str, int]:
     """ finished, checked,
 
     Parameters

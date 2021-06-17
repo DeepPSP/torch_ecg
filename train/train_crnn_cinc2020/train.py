@@ -469,7 +469,12 @@ def train(model:nn.Module,
 
 
 @torch.no_grad()
-def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None) -> Tuple[float]:
+def evaluate(model:nn.Module,
+             data_loader:DataLoader,
+             config:dict,
+             device:torch.device,
+             debug:bool=True,
+             logger:Optional[logging.Logger]=None) -> Tuple[float]:
     """ finished, checked,
 
     Parameters

@@ -42,8 +42,8 @@ BaseCfg.torch_dtype = Cfg.torch_dtype
 
 PreprocCfg = ED()
 PreprocCfg.fs = BaseCfg.fs
-# sequential, keep correct ordering, to add 'motion_artefact'
-PreprocCfg.preproc = ['bandpass',]  # 'baseline',
+# sequential, keep correct ordering, to add "motion_artefact"
+PreprocCfg.preproc = ["bandpass",]  # "baseline",
 # for 200 ms and 600 ms, ref. (`ecg_classification` in `reference`)
 PreprocCfg.baseline_window1 = int(0.2*PreprocCfg.fs)  # 200 ms window
 PreprocCfg.baseline_window2 = int(0.6*PreprocCfg.fs)  # 600 ms window
@@ -51,9 +51,9 @@ PreprocCfg.filter_band = [0.5, 45]
 PreprocCfg.parallel_epoch_len = 600  # second
 PreprocCfg.parallel_epoch_overlap = 10  # second
 PreprocCfg.parallel_keep_tail = True
-PreprocCfg.rpeaks = 'seq_lab'  # 'xqrs'
-# or 'gqrs', or 'pantompkins', 'hamilton', 'ssf', 'christov', 'engzee', 'gamboa'
-# or empty string '' if not detecting rpeaks
+PreprocCfg.rpeaks = "seq_lab"  # "xqrs"
+# or "gqrs", or "pantompkins", "hamilton", "ssf", "christov", "engzee", "gamboa"
+# or empty string "" if not detecting rpeaks
 """
 for qrs detectors:
     `xqrs` sometimes detects s peak (valley) as r peak,
@@ -66,9 +66,9 @@ PreprocCfg.rpeaks_skip_dist = int(0.5 * PreprocCfg.fs)  # 0.5s
 # FeatureCfg only for ML models, deprecated
 FeatureCfg = ED()
 FeatureCfg.fs = BaseCfg.fs
-FeatureCfg.features = ['wavelet', 'rr', 'morph',]
+FeatureCfg.features = ["wavelet", "rr", "morph",]
 
-FeatureCfg.wt_family = 'db1'
+FeatureCfg.wt_family = "db1"
 FeatureCfg.wt_level = 3
 FeatureCfg.beat_winL = BaseCfg.beat_winL
 FeatureCfg.beat_winR = BaseCfg.beat_winR
@@ -99,7 +99,7 @@ ModelCfg.crnn.classes = deepcopy(BaseCfg.classes)
 ModelCfg.crnn.class_map = deepcopy(BaseCfg.class_map)
 
 ModelCfg.crnn.cnn = ED()
-ModelCfg.crnn.cnn.name = 'multi_scopic'  # resnet, resnet_gc, vgg, cpsc2018, etc.
+ModelCfg.crnn.cnn.name = "multi_scopic"  # resnet, resnet_gc, vgg, cpsc2018, etc.
 ModelCfg.crnn.cnn.multi_scopic = ED()
 ModelCfg.crnn.cnn.multi_scopic.groups = 1
 ModelCfg.crnn.cnn.multi_scopic.scopes = [
@@ -159,7 +159,7 @@ ModelCfg.crnn.cnn.multi_scopic.kw_initializer = {}
 ModelCfg.crnn.cnn.multi_scopic.activation = "relu"
 ModelCfg.crnn.cnn.multi_scopic.kw_activation = {"inplace": True}
 ModelCfg.crnn.cnn.multi_scopic.block = ED()
-ModelCfg.crnn.cnn.multi_scopic.block.subsample_mode = 'max'  # or 'conv', 'avg', 'nearest', 'linear', 'bilinear'
+ModelCfg.crnn.cnn.multi_scopic.block.subsample_mode = "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
 ModelCfg.crnn.cnn.multi_scopic.block.bias = \
     ModelCfg.crnn.cnn.multi_scopic.bias
 ModelCfg.crnn.cnn.multi_scopic.block.kernel_initializer = \
@@ -174,14 +174,14 @@ ModelCfg.crnn.cnn.multi_scopic.block.kw_activation = \
 # rnn part
 # abuse of notation
 ModelCfg.crnn.rnn = ED()
-ModelCfg.crnn.rnn.name = 'linear'  # 'none', 'lstm', 'attention'
+ModelCfg.crnn.rnn.name = "linear"  # "none", "lstm", "attention"
 ModelCfg.crnn.rnn.linear = ED()
 ModelCfg.crnn.rnn.linear.out_channels = [
     256, 64,
 ]
 ModelCfg.crnn.rnn.linear.bias = True
 ModelCfg.crnn.rnn.linear.dropouts = 0.2
-ModelCfg.crnn.rnn.linear.activation = 'mish'
+ModelCfg.crnn.rnn.linear.activation = "mish"
 
 # ModelCfg.crnn.rnn.lstm = deepcopy(lstm)
 # ModelCfg.crnn.rnn.attention = deepcopy(attention)
@@ -189,7 +189,7 @@ ModelCfg.crnn.rnn.linear.activation = 'mish'
 
 # global pooling
 # currently is fixed using `AdaptiveMaxPool1d`
-ModelCfg.crnn.global_pool = 'max'  # 'avg', 'attentive'
+ModelCfg.crnn.global_pool = "max"  # "avg", "attentive"
 
 
 ModelCfg.seq_lab = ED()
@@ -202,27 +202,27 @@ ModelCfg.seq_lab.class_map = {c:v for c,v in BaseCfg.class_map.items() if c != "
 ModelCfg.seq_lab.cnn = ModelCfg.crnn.cnn.copy()
 
 ModelCfg.seq_lab.rnn = ED()
-# ModelCfg.seq_lab.rnn.name = 'lstm'  # 'none'
-ModelCfg.seq_lab.rnn.name = 'none'  # 'lstm'
+# ModelCfg.seq_lab.rnn.name = "lstm"  # "none"
+ModelCfg.seq_lab.rnn.name = "none"  # "lstm"
 # ModelCfg.seq_lab.rnn.lstm = ED()
 # ModelCfg.seq_lab.rnn.lstm.hidden_sizes = [256, 256]
 # ModelCfg.seq_lab.rnn.lstm.bias = True
 # ModelCfg.seq_lab.rnn.lstm.dropout = 0
 # ModelCfg.seq_lab.rnn.lstm.bidirectional = True
 ModelCfg.seq_lab.attn = ED()
-ModelCfg.seq_lab.attn.name = 'se'  # 'gc'
+ModelCfg.seq_lab.attn.name = "se"  # "gc"
 ModelCfg.seq_lab.attn.se = ED()
 ModelCfg.seq_lab.attn.se.reduction = 8  # not including the last linear layer
 ModelCfg.seq_lab.attn.se.activation = "relu"
 ModelCfg.seq_lab.attn.se.kw_activation = ED(inplace=True)
 ModelCfg.seq_lab.attn.se.bias = True
-ModelCfg.seq_lab.attn.se.kernel_initializer = 'he_normal'
+ModelCfg.seq_lab.attn.se.kernel_initializer = "he_normal"
 
 ModelCfg.seq_lab.clf = ED()
 ModelCfg.seq_lab.clf.out_channels = [256, 64]  # not including the last linear layer
 ModelCfg.seq_lab.clf.activation = "mish"
 ModelCfg.seq_lab.clf.bias = True
-ModelCfg.seq_lab.clf.kernel_initializer = 'he_normal'
+ModelCfg.seq_lab.clf.kernel_initializer = "he_normal"
 ModelCfg.seq_lab.clf.dropouts = [0.2, 0.2, 0.0]
 
 
@@ -231,7 +231,7 @@ TrainCfg = ED()
 TrainCfg.fs = ModelCfg.fs
 TrainCfg.n_leads = 1
 TrainCfg.db_dir = BaseCfg.db_dir
-TrainCfg.log_dir = os.path.join(_BASE_DIR, 'log')
+TrainCfg.log_dir = os.path.join(_BASE_DIR, "log")
 TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
 TrainCfg.keep_checkpoint_max = 50
 TrainCfg.input_len = int(10 * TrainCfg.fs)  # 10 s
@@ -289,7 +289,7 @@ TrainCfg.lr = TrainCfg.learning_rate
 TrainCfg.lr_step_size = 50
 TrainCfg.lr_gamma = 0.1
 
-TrainCfg.lr_scheduler = None  # 'plateau', 'burn_in', 'step', None
+TrainCfg.lr_scheduler = None  # "plateau", "burn_in", "step", None
 
 # model selection
 TrainCfg.model_name = "crnn"  # "seq_lab", "unet"
@@ -297,8 +297,8 @@ TrainCfg.classes = deepcopy(ModelCfg[TrainCfg.model_name].classes)
 TrainCfg.class_map = deepcopy(ModelCfg[TrainCfg.model_name].class_map)
 
 # configs of loss function
-TrainCfg.loss = 'BCEWithLogitsLoss'
-# TrainCfg.loss = 'BCEWithLogitsWithClassWeightLoss'
+TrainCfg.loss = "BCEWithLogitsLoss"
+# TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
 
 TrainCfg.log_step = 20
 TrainCfg.eval_every = 20
