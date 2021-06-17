@@ -233,6 +233,10 @@ TrainCfg.n_leads = 1
 TrainCfg.db_dir = BaseCfg.db_dir
 TrainCfg.log_dir = os.path.join(_BASE_DIR, "log")
 TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
+TrainCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
+os.makedirs(TrainCfg.log_dir, exist_ok=True)
+os.makedirs(TrainCfg.checkpoints, exist_ok=True)
+os.makedirs(TrainCfg.model_dir, exist_ok=True)
 TrainCfg.keep_checkpoint_max = 50
 TrainCfg.input_len = int(10 * TrainCfg.fs)  # 10 s
 TrainCfg.overlap_len = int(6 * TrainCfg.fs)  # 6 s
@@ -282,14 +286,25 @@ TrainCfg.batch_size = 128
 # TrainCfg.max_batches = 500500
 
 # configs of optimizers and lr_schedulers
-TrainCfg.train_optimizer = "adam"  # "sgd"
+TrainCfg.train_optimizer = "adamw_amsgrad"  # "sgd", "adam", "adamw"
+TrainCfg.momentum = 0.949  # default values for corresponding PyTorch optimizers
+TrainCfg.betas = (0.9, 0.999)  # default values for corresponding PyTorch optimizers
+TrainCfg.decay = 1e-2  # default values for corresponding PyTorch optimizers
 
-TrainCfg.learning_rate = 0.0001
+TrainCfg.learning_rate = 1e-3  # 1e-4
 TrainCfg.lr = TrainCfg.learning_rate
+
+TrainCfg.lr_scheduler = None  # "one_cycle", "plateau", "burn_in", "step", None
 TrainCfg.lr_step_size = 50
 TrainCfg.lr_gamma = 0.1
+TrainCfg.max_lr = 1e-2  # for "one_cycle" scheduler, to adjust via expriments
 
-TrainCfg.lr_scheduler = None  # "plateau", "burn_in", "step", None
+TrainCfg.burn_in = 400
+TrainCfg.steps = [5000, 10000]
+
+TrainCfg.early_stopping = ED()  # early stopping according to challenge metric
+TrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
+TrainCfg.early_stopping.patience = 6
 
 # model selection
 TrainCfg.model_name = "crnn"  # "seq_lab", "unet"
