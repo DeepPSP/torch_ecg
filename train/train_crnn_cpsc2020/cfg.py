@@ -237,6 +237,7 @@ TrainCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
 os.makedirs(TrainCfg.log_dir, exist_ok=True)
 os.makedirs(TrainCfg.checkpoints, exist_ok=True)
 os.makedirs(TrainCfg.model_dir, exist_ok=True)
+TrainCfg.final_model_name = None
 TrainCfg.keep_checkpoint_max = 50
 TrainCfg.input_len = int(10 * TrainCfg.fs)  # 10 s
 TrainCfg.overlap_len = int(6 * TrainCfg.fs)  # 6 s

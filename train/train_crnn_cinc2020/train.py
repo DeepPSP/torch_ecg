@@ -56,6 +56,7 @@ from torch import optim
 from torch import Tensor
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
+from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 
@@ -97,13 +98,14 @@ def train(model:nn.Module,
     ----------
     model: Module,
         the model to train
+    model_config: dict,
+        config of the model, to store into the checkpoints
     device: torch.device,
         device on which the model trains
     config: dict,
         configurations of training, ref. `ModelCfg`, `TrainCfg`, etc.
-    log_step: int, default 20,
-        number of training steps between loggings
     logger: Logger, optional,
+        logger
     debug: bool, default False,
         if True, the training set itself would be evaluated 
         to check if the model really learns from the training set
@@ -134,7 +136,7 @@ def train(model:nn.Module,
     lr = config.learning_rate
 
     # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
-    num_workers = 4
+    num_workers = 4 * (torch.cuda.device_count() or 1)
 
     train_loader = DataLoader(
         dataset=train_dataset,
@@ -388,14 +390,15 @@ def train(model:nn.Module,
             else:
                 print(msg)
             
-            if eval_res[6] > best_challenge_metric:
-                best_challenge_metric = eval_res[6]
+            monitor = eval_res[6]
+            if monitor > best_challenge_metric:
+                best_challenge_metric = monitor
                 best_state_dict = model.state_dict()
                 best_eval_res = deepcopy(eval_res)
                 best_epoch = epoch + 1
                 pseudo_best_epoch = epoch + 1
             elif config.early_stopping:
-                if eval_res[6] >= best_challenge_metric - config.early_stopping.min_delta:
+                if monitor >= best_challenge_metric - config.early_stopping.min_delta:
                     pseudo_best_epoch = epoch + 1
                 elif epoch - pseudo_best_epoch > config.early_stopping.patience:
                     msg = f"early stopping is triggered at epoch {epoch + 1}"
@@ -653,8 +656,8 @@ if __name__ == "__main__":
     )
 
     if torch.cuda.device_count() > 1:
-        # model = torch.nn.DataParallel(model)
-        model = torch.nn.parallel.DistributedDataParallel(model)
+        model = DP(model)
+        # model = DDP(model)
 
     model.to(device=device)
     model.__DEBUG__ = False

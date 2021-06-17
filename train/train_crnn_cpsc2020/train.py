@@ -7,7 +7,7 @@ import logging
 import argparse
 import textwrap
 from copy import deepcopy
-from collections import deque
+from collections import deque, OrderedDict
 from typing import Union, Optional, Tuple, Dict, Sequence, NoReturn
 from numbers import Real, Number
 
@@ -24,6 +24,7 @@ from torch import optim
 from torch import Tensor
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
+from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 
@@ -58,7 +59,7 @@ def train(model:nn.Module,
           device:torch.device,
           config:dict,
           logger:Optional[logging.Logger]=None,
-          debug:bool=False) -> NoReturn:
+          debug:bool=False) -> OrderedDict:
     """ finished, checked,
 
     Parameters
@@ -72,9 +73,15 @@ def train(model:nn.Module,
     config: dict,
         configurations of training, ref. `ModelCfg`, `TrainCfg`, etc.
     logger: Logger, optional,
+        logger
     debug: bool, default False,
         if True, the training set itself would be evaluated 
         to check if the model really learns from the training set
+
+    Returns
+    -------
+    best_state_dict: OrderedDict,
+        state dict of the best model
     """
     msg = f"training configurations are as follows:\n{dict_to_str(config)}"
     if logger:
@@ -100,11 +107,14 @@ def train(model:nn.Module,
     batch_size = config.batch_size
     lr = config.learning_rate
 
+    # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+    num_workers = 4 * (torch.cuda.device_count() or 1)
+
     train_loader = DataLoader(
         dataset=train_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=8,
+        num_workers=num_workers,
         pin_memory=True,
         drop_last=False,
         collate_fn=collate_fn,
@@ -115,7 +125,7 @@ def train(model:nn.Module,
             dataset=val_train_dataset,
             batch_size=batch_size,
             shuffle=True,
-            num_workers=8,
+            num_workers=num_workers,
             pin_memory=True,
             drop_last=False,
             collate_fn=collate_fn,
@@ -124,7 +134,7 @@ def train(model:nn.Module,
         dataset=val_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=8,
+        num_workers=num_workers,
         pin_memory=True,
         drop_last=False,
         collate_fn=collate_fn,
@@ -361,7 +371,7 @@ def train(model:nn.Module,
                 if config.lr_scheduler is None:
                     pass
                 elif config.lr_scheduler.lower() == "plateau":
-                    scheduler.step(metrics=eval_res.total_loss)
+                    scheduler.step(metrics=-eval_res.total_loss)
                 elif config.lr_scheduler.lower() == "step":
                     scheduler.step()
                 elif config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
@@ -403,7 +413,7 @@ def train(model:nn.Module,
             else:
                 print(msg)
             
-            monitor = eval_res[4] if config.model_name == "crnn" else eval_res.total_loss
+            monitor = eval_res[4] if config.model_name == "crnn" else -eval_res.total_loss
             if monitor > best_challenge_metric:
                 best_challenge_metric = monitor
                 best_state_dict = model.state_dict()
@@ -782,8 +792,8 @@ if __name__ == "__main__":
         raise NotImplementedError(f"Model {model_name} not supported yet!")
 
     if torch.cuda.device_count() > 1:
-        # model = torch.nn.DataParallel(model)
-        model = torch.nn.parallel.DistributedDataParallel(model)
+        model = DP(model)
+        # model = DDP(model)
 
     model.to(device=device)
     model.__DEBUG__ = False

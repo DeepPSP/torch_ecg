@@ -123,6 +123,7 @@ TrainCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
 os.makedirs(TrainCfg.log_dir, exist_ok=True)
 os.makedirs(TrainCfg.checkpoints, exist_ok=True)
 os.makedirs(TrainCfg.model_dir, exist_ok=True)
+TrainCfg.final_model_name = None
 TrainCfg.keep_checkpoint_max = 20
 
 # configs of training data
