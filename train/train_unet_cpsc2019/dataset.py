@@ -22,7 +22,7 @@ from sklearn.preprocessing import StandardScaler
 from easydict import EasyDict as ED
 
 # from torch_ecg.utils.misc import ensure_siglen, dict_to_str
-from torch_ecg.train.database_reader.database_reader.other_databases import CPSC2019 as CR
+from train.database_reader.database_reader.other_databases import CPSC2019 as CR
 from .cfg import TrainCfg, ModelCfg
 from .utils import gen_baseline_wander
 

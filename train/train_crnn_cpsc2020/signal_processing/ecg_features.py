@@ -21,8 +21,8 @@ import numpy as np
 from scipy.io import savemat
 from easydict import EasyDict as ED
 
-from torch_ecg.train.train_crnn_cpsc2020.cfg import FeatureCfg
-from torch_ecg.train.train_crnn_cpsc2020.utils import list_sum, compute_local_average
+from train.train_crnn_cpsc2020.cfg import FeatureCfg
+from train.train_crnn_cpsc2020.utils import list_sum, compute_local_average
 
 
 __all__ = [

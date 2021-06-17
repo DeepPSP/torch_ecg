@@ -8,7 +8,7 @@ packaging
 easydict
 wfdb
 biosppy
-torch==1.3.1
+torch
 torchsummary
 tensorboardX
 tqdm

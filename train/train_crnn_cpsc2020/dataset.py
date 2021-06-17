@@ -72,8 +72,8 @@ import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 
-from torch_ecg.train.database_reader.database_reader.other_databases import CPSC2020 as CR
-from torch_ecg.train.train_crnn_cpsc2020 import signal_processing as SP
+from train.database_reader.database_reader.other_databases import CPSC2020 as CR
+from train.train_crnn_cpsc2020 import signal_processing as SP
 from .cfg import TrainCfg, ModelCfg, PreprocCfg
 from .utils import (
     mask_to_intervals, list_sum,

@@ -28,7 +28,7 @@ from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
 
-from torch_ecg.train.database_reader.database_reader.other_databases import CPSC2020 as CR
+from train.database_reader.database_reader.other_databases import CPSC2020 as CR
 from .cfg import TrainCfg, ModelCfg, PreprocCfg
 from .utils import (
     mask_to_intervals, list_sum,
