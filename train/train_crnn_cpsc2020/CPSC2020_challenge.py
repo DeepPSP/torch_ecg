@@ -154,7 +154,7 @@ def CPSC2020_challenge(ECG, fs):
 
 
 if __name__ == "__main__":
-    from train.database_reader.database_reader.other_databases import CPSC2020 as CR
+    from train.database_reader.database_reader.cpsc_databases import CPSC2020 as CR
     from .cfg import TrainCfg
 
     dr = CR(TrainCfg.db_dir)
