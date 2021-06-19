@@ -1,3 +1,5 @@
 [submodule "torch_ecg/train/database_reader"]
 	path = train/database_reader
 	url = https://github.com/DeepPSP/database_reader.git
+	# https://stackoverflow.com/questions/60009274/git-error-after-changing-submodules-url-fatal-needed-a-single-revision
+	branch = master
