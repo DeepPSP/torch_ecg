@@ -144,12 +144,14 @@ temp
 checkpoints
 log
 
-# test notebooks
-fast_test.ipynb
+# notebooks are ignored by default
+# notebooks that are not ignored should be specified
+*.ipynb
 
 # dl models
 *.h5
 *.pth
+*.pth.tar
 
 
 # models used
