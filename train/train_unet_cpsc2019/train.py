@@ -53,25 +53,29 @@ __all__ = [
 
 
 def train(model:nn.Module,
+          model_config:dict,
           device:torch.device,
           config:dict,
           logger:Optional[logging.Logger]=None,
-          debug:bool=False) -> NoReturn:
+          debug:bool=False) -> OrderedDict:
     """ finished, checked,
 
     Parameters
     ----------
     model: Module,
         the model to train
+    model_config: dict,
+        config of the model, to store into the checkpoints
     device: torch.device,
         device on which the model trains
     config: dict,
         configurations of training, ref. `ModelCfg`, `TrainCfg`, etc.
     logger: Logger, optional,
+        logger
     debug: bool, default False,
         if True, the training set itself would be evaluated 
         to check if the model really learns from the training set
-    
+
     Returns
     -------
     best_state_dict: OrderedDict,
@@ -529,13 +533,13 @@ if __name__ == "__main__":
             n_leads=config.n_leads,
             config=model_config,
         )
+    model.__DEBUG__ = False
 
     if torch.cuda.device_count() > 1:
         model = DP(model)
         # model = DDP(model)
 
     model.to(device=device)
-    model.__DEBUG__ = False
 
     try:
         train(
