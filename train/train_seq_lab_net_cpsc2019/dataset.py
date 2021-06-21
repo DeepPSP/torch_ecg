@@ -122,7 +122,7 @@ class CPSC2019(Dataset):
                 )
                 values = (values-np.mean(values)+rn_mean) / np.std(values) * rn_std
             if self.config.label_smoothing > 0:
-                label = (1 - self.config.label_smoothing) * label \
+                labels = (1 - self.config.label_smoothing) * labels \
                     + self.config.label_smoothing / self.n_classes
 
         if self.__DEBUG__:
