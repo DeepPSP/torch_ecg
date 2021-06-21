@@ -13,8 +13,8 @@ import biosppy.signals.ecg as BSE
 
 # from torch_ecg.models.ecg_subtract_unet import ECG_SUBTRACT_UNET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
-from .cfg import ModelCfg
-from .utils import mask_to_intervals, _remove_spikes_naive
+from train.train_unet_ludb.cfg import ModelCfg
+from train.train_unet_ludb.utils import mask_to_intervals, _remove_spikes_naive
 
 
 __all__ = [

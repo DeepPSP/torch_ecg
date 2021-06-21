@@ -29,8 +29,8 @@ import torch
 from torch.utils.data.dataset import Dataset
 
 from train.database_reader.database_reader.cpsc_databases import CPSC2020 as CR
-from .cfg import TrainCfg, ModelCfg, PreprocCfg
-from .utils import (
+from train.train_crnn_cpsc2020.cfg import TrainCfg, ModelCfg, PreprocCfg
+from train.train_crnn_cpsc2020.utils import (
     mask_to_intervals, list_sum,
     gen_baseline_wander,
     get_record_list_recursive3,

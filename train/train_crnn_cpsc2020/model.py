@@ -13,8 +13,8 @@ from easydict import EasyDict as ED
 from torch_ecg.models import (
     ECG_CRNN, ECG_SEQ_LAB_NET
 )
-from .cfg import ModelCfg
-from .utils import mask_to_intervals
+from train.train_crnn_cpsc2020.cfg import ModelCfg
+from train.train_crnn_cpsc2020.utils import mask_to_intervals
 
 
 __all__ = [

@@ -23,8 +23,8 @@ from easydict import EasyDict as ED
 
 # from torch_ecg.utils.misc import ensure_siglen, dict_to_str
 from train.database_reader.database_reader.cpsc_databases import CPSC2019 as CR
-from .cfg import TrainCfg, ModelCfg
-from .utils import gen_baseline_wander
+from train.train_seq_lab_net_cpsc2019.cfg import TrainCfg, ModelCfg
+from train.train_seq_lab_net_cpsc2019.utils import gen_baseline_wander
 
 
 if ModelCfg.torch_dtype.lower() == "double":

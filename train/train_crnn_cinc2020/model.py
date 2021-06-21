@@ -10,7 +10,7 @@ from torch import Tensor
 from easydict import EasyDict as ED
 
 from torch_ecg.models.ecg_crnn import ECG_CRNN
-from .cfg import ModelCfg
+from train.train_crnn_cinc2020.cfg import ModelCfg
 
 
 __all__ = [

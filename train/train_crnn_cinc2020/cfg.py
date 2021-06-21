@@ -9,7 +9,7 @@ import numpy as np
 from easydict import EasyDict as ED
 
 from torch_ecg.cfg import Cfg as BaseCfg
-from .scoring_aux_data import (
+from train.train_crnn_cinc2020.scoring_aux_data import (
     equiv_class_dict,
     get_class_weight,
 )

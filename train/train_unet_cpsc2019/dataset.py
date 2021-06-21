@@ -23,8 +23,8 @@ from easydict import EasyDict as ED
 
 # from torch_ecg.utils.misc import ensure_siglen, dict_to_str
 from train.database_reader.database_reader.cpsc_databases import CPSC2019 as CR
-from .cfg import TrainCfg, ModelCfg
-from .utils import gen_baseline_wander
+from train.train_unet_cpsc2019.cfg import TrainCfg, ModelCfg
+from train.train_unet_cpsc2019.utils import gen_baseline_wander
 
 
 if ModelCfg.torch_dtype.lower() == "double":
@@ -122,7 +122,7 @@ class CPSC2019(Dataset):
                 )
                 values = (values-np.mean(values)+rn_mean) / np.std(values) * rn_std
             if self.config.label_smoothing > 0:
-                label = (1 - self.config.label_smoothing) * label \
+                labels = (1 - self.config.label_smoothing) * labels \
                     + self.config.label_smoothing / self.n_classes
 
         if self.__DEBUG__:

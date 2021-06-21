@@ -8,10 +8,10 @@ from typing import Tuple
 import numpy as np
 from scipy.signal import resample_poly
 
-from .signal_processing import parallel_preprocess_signal
-from .signal_processing import ecg_denoise
-from .saved_models import load_model
-from .cfg import ModelCfg
+from train.train_crnn_cpsc2020.signal_processing import parallel_preprocess_signal
+from train.train_crnn_cpsc2020.signal_processing import ecg_denoise
+from train.train_crnn_cpsc2020.saved_models import load_model
+from train.train_crnn_cpsc2020.cfg import ModelCfg
 
 
 CRNN_MODEL, SEQ_LAB_MODEL = load_model(which="both")
@@ -155,7 +155,7 @@ def CPSC2020_challenge(ECG, fs):
 
 if __name__ == "__main__":
     from train.database_reader.database_reader.cpsc_databases import CPSC2020 as CR
-    from .cfg import TrainCfg
+    from train.train_crnn_cpsc2020.cfg import TrainCfg
 
     dr = CR(TrainCfg.db_dir)
     for rec in dr.all_records:

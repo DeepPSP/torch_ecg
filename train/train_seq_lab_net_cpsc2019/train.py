@@ -31,14 +31,14 @@ import biosppy.signals.ecg as BSE
 
 from torch_ecg.models.nets import BCEWithLogitsWithClassWeightLoss
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from .model import ECG_SEQ_LAB_NET_CPSC2019
-from .utils import (
+from train.train_seq_lab_net_cpsc2019.model import ECG_SEQ_LAB_NET_CPSC2019
+from train.train_seq_lab_net_cpsc2019.utils import (
     init_logger, get_date_str, dict_to_str, str2bool,
     mask_to_intervals,
 )
-from .cfg import ModelCfg, TrainCfg
-from .dataset import CPSC2019
-from .metrics import compute_metrics
+from train.train_seq_lab_net_cpsc2019.cfg import ModelCfg, TrainCfg
+from train.train_seq_lab_net_cpsc2019.dataset import CPSC2019
+from train.train_seq_lab_net_cpsc2019.metrics import compute_metrics
 
 if ModelCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)

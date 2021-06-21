@@ -6,7 +6,7 @@ from numbers import Number, Real
 
 import numpy as np
 
-from .scoring_aux_data import load_weights
+from train.train_crnn_cinc2020.scoring_aux_data import load_weights
 
 
 __all__ = [

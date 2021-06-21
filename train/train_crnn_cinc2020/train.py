@@ -60,9 +60,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 
-# from torch_ecg.models.ecg_crnn import ECG_CRNN
-# from .model import ECG_CRNN_CINC2020
-from .model_legacy import ECG_CRNN_CINC2020
+from train.train_crnn_cinc2020.model_legacy import ECG_CRNN_CINC2020
 # from torch_ecg.model_configs import ECG_CRNN_CONFIG
 from torch_ecg.model_configs._legacy.legacy_ecg_crnn_v03 import ECG_CRNN_CONFIG
 from torch_ecg.models.nets import BCEWithLogitsWithClassWeightLoss
@@ -70,9 +68,9 @@ from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.misc import (
     init_logger, get_date_str, dict_to_str, str2bool,
 )
-from .scoring_metrics import evaluate_12ECG_score
-from .cfg import ModelCfg, TrainCfg
-from .dataset import CINC2020
+from train.train_crnn_cinc2020.scoring_metrics import evaluate_12ECG_score
+from train.train_crnn_cinc2020.cfg import ModelCfg, TrainCfg
+from train.train_crnn_cinc2020.dataset import CINC2020
 
 if ModelCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)

@@ -74,8 +74,8 @@ from sklearn.preprocessing import StandardScaler
 
 from train.database_reader.database_reader.cpsc_databases import CPSC2020 as CR
 from train.train_crnn_cpsc2020 import signal_processing as SP
-from .cfg import TrainCfg, ModelCfg, PreprocCfg
-from .utils import (
+from train.train_crnn_cpsc2020.cfg import TrainCfg, ModelCfg, PreprocCfg
+from train.train_crnn_cpsc2020.utils import (
     mask_to_intervals, list_sum,
     gen_baseline_wander,
     get_record_list_recursive3,

@@ -22,9 +22,8 @@ from sklearn.preprocessing import StandardScaler
 
 from torch_ecg.utils.utils_signal import butter_bandpass_filter
 from torch_ecg.utils.misc import ensure_siglen, dict_to_str
-# from .data_reader import CINC2020Reader as CR
 from train.database_reader.database_reader.physionet_databases import CINC2020 as CR
-from .cfg import TrainCfg, ModelCfg
+from train.train_crnn_cinc2020.cfg import TrainCfg, ModelCfg
 
 
 if ModelCfg.torch_dtype.lower() == "double":

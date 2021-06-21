@@ -28,13 +28,13 @@ from torch_ecg.utils.misc import (
     ensure_siglen,
 )
 from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
-from .scoring_aux_data import (
+from train.train_crnn_cinc2020.scoring_aux_data import (
     dx_mapping_all, dx_mapping_scored, dx_mapping_unscored,
     normalize_class, abbr_to_snomed_ct_code,
     df_weights_abbr,
     equiv_class_dict,
 )
-from .cfg import PlotCfg, Standard12Leads
+from train.train_crnn_cinc2020.cfg import PlotCfg, Standard12Leads
 
 
 __all__ = [

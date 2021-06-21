@@ -30,17 +30,15 @@ from easydict import EasyDict as ED
 
 from torch_ecg.models.nets import BCEWithLogitsWithClassWeightLoss
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-# from torch_ecg.torch_ecg.models.ecg_crnn import ECG_CRNN
-# from .model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
-from .model_legacy import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
-from .utils import (
+from train.train_crnn_cpsc2020.model_legacy import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
+from train.train_crnn_cpsc2020.utils import (
     get_date_str, dict_to_str, str2bool,
     mask_to_intervals, list_sum,
 )
-from .cfg import ModelCfg, TrainCfg
+from train.train_crnn_cpsc2020.cfg import ModelCfg, TrainCfg
 # from dataset import CPSC2020
-from .dataset_simplified import CPSC2020 as CPSC2020_SIMPLIFIED
-from .metrics import eval_score, CPSC2020_loss, CPSC2020_score
+from train.train_crnn_cpsc2020.dataset_simplified import CPSC2020 as CPSC2020_SIMPLIFIED
+from train.train_crnn_cpsc2020.metrics import eval_score, CPSC2020_loss, CPSC2020_score
 
 if ModelCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
