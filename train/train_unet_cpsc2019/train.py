@@ -348,7 +348,7 @@ def train(model:nn.Module,
             except OSError:
                 pass
             save_suffix = f"epochloss_{epoch_loss:.5f}_challenge_score(qrs_score)_{eval_res}"
-            save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth"
+            save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth.tar"
             save_path = os.path.join(config.checkpoints, save_filename)
             torch.save({
                 "model_state_dict": _model.state_dict(),
