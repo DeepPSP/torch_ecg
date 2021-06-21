@@ -323,6 +323,7 @@ TrainCfg.class_map = deepcopy(ModelCfg[TrainCfg.model_name].class_map)
 # configs of loss function
 TrainCfg.loss = 'BCEWithLogitsLoss'
 # TrainCfg.loss = 'BCEWithLogitsWithClassWeightLoss'
+TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
 
 TrainCfg.log_step = 20
 TrainCfg.eval_every = 20

@@ -87,6 +87,11 @@ def train(model:nn.Module,
     else:
         print(msg)
 
+    if type(model).__name__ in ["DataParallel",]:  # TODO: further consider "DistributedDataParallel"
+        _model = model.module
+    else:
+        _model = model
+
     ds = CPSC2020_SIMPLIFIED
     train_dataset = ds(config=config, training=True)
     train_dataset.__DEBUG__ = False
@@ -218,7 +223,7 @@ def train(model:nn.Module,
     # scheduler = ReduceLROnPlateau(optimizer, mode="max", verbose=True, patience=6, min_lr=1e-7)
     # scheduler = CosineAnnealingWarmRestarts(optimizer, 0.001, 1e-6, 20)
 
-    save_prefix = f"{model.__name__}_{config.cnn_name}_{config.rnn_name}_epoch"
+    save_prefix = f"{_model.__name__}_{config.cnn_name}_{config.rnn_name}_epoch"
 
     os.makedirs(config.checkpoints, exist_ok=True)
     os.makedirs(config.model_dir, exist_ok=True)
@@ -414,7 +419,7 @@ def train(model:nn.Module,
             monitor = eval_res[4] if config.model_name == "crnn" else -eval_res.total_loss
             if monitor > best_challenge_metric:
                 best_challenge_metric = monitor
-                best_state_dict = model.state_dict()
+                best_state_dict = _model.state_dict()
                 best_eval_res = deepcopy(eval_res)
                 best_epoch = epoch + 1
                 pseudo_best_epoch = epoch + 1
@@ -451,7 +456,7 @@ def train(model:nn.Module,
             save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth.tar"
             save_path = os.path.join(config.checkpoints, save_filename)
             torch.save({
-                "model_state_dict": model.state_dict(),
+                "model_state_dict": _model.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
                 "model_config": model_config,
                 "train_config": config,
@@ -527,6 +532,11 @@ def evaluate_crnn(model:nn.Module,
     model.eval()
     # data_loader.dataset.disable_data_augmentation()
 
+    if type(model).__name__ in ["DataParallel",]:  # TODO: further consider "DistributedDataParallel"
+        _model = model.module
+    else:
+        _model = model
+
     all_scalar_preds = []
     all_bin_preds = []
     all_labels = []
@@ -538,7 +548,7 @@ def evaluate_crnn(model:nn.Module,
 
         if torch.cuda.is_available():
             torch.cuda.synchronize()
-        preds, bin_preds = model.inference(signals)
+        preds, bin_preds = _model.inference(signals)
         all_scalar_preds.append(preds)
         all_bin_preds.append(bin_preds)
     
@@ -627,6 +637,11 @@ def evaluate_seq_lab(model:nn.Module,
     model.eval()
     # data_loader.dataset.disable_data_augmentation()
 
+    if type(model).__name__ in ["DataParallel",]:  # TODO: further consider "DistributedDataParallel"
+        _model = model.module
+    else:
+        _model = model
+
     all_scalar_preds = []
     all_spb_preds = []
     all_pvc_preds = []
@@ -641,7 +656,7 @@ def evaluate_seq_lab(model:nn.Module,
         ]
         # print(spb_intervals)
         spb_labels = [
-            [model.reduction * (itv[0]+itv[1])//2 for itv in l_itv]  if len(l_itv) > 0 else [] \
+            [_model.reduction * (itv[0]+itv[1])//2 for itv in l_itv]  if len(l_itv) > 0 else [] \
                 for l_itv in spb_intervals
         ]
         # print(spb_labels)
@@ -650,14 +665,14 @@ def evaluate_seq_lab(model:nn.Module,
             mask_to_intervals(seq, 1) for seq in labels[..., config.classes.index("V")]
         ]
         pvc_labels = [
-            [model.reduction * (itv[0]+itv[1])//2 for itv in l_itv]  if len(l_itv) > 0 else [] \
+            [_model.reduction * (itv[0]+itv[1])//2 for itv in l_itv]  if len(l_itv) > 0 else [] \
                 for l_itv in pvc_intervals
         ]
         all_pvc_labels.append(pvc_labels)
 
         if torch.cuda.is_available():
             torch.cuda.synchronize()
-        preds, spb_preds, pvc_preds = model.inference(signals)
+        preds, spb_preds, pvc_preds = _model.inference(signals)
         all_scalar_preds.append(preds)
         all_spb_preds.append(spb_preds)
         all_pvc_preds.append(pvc_preds)

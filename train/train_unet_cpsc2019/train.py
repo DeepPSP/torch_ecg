@@ -258,7 +258,7 @@ def train(model:nn.Module,
                     loss.backward()
                 optimizer.step()
 
-                if global_step % log_step == 0:
+                if global_step % config.log_step == 0:
                     writer.add_scalar("train/loss", loss.item(), global_step)
                     if scheduler:
                         writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
@@ -425,6 +425,11 @@ def evaluate(model:nn.Module,
     all_rpeak_preds = []
     all_rpeak_labels = []
 
+    if type(model).__name__ in ["DataParallel",]:  # TODO: further consider "DistributedDataParallel"
+        _model = model.module
+    else:
+        _model = model
+
     for signals, labels in data_loader:
         signals = signals.to(device=device, dtype=_DTYPE)
         labels = labels.numpy()
@@ -440,7 +445,7 @@ def evaluate(model:nn.Module,
 
         if torch.cuda.is_available():
             torch.cuda.synchronize()
-        prob, rpeak_preds = model.inference(
+        prob, rpeak_preds = _model.inference(
             signals,
             bin_pred_thr=0.5,
             duration_thr=4*16,

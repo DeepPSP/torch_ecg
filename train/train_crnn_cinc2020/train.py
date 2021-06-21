@@ -119,6 +119,11 @@ def train(model:nn.Module,
     else:
         print(msg)
 
+    if type(model).__name__ in ["DataParallel",]:  # TODO: further consider "DistributedDataParallel"
+        _model = model.module
+    else:
+        _model = model
+
     train_dataset = CINC2020(config=config, training=True)
 
     if debug:
@@ -168,8 +173,8 @@ def train(model:nn.Module,
 
     writer = SummaryWriter(
         log_dir=config.log_dir,
-        filename_suffix=f"OPT_{model.__name__}_{config.cnn_name}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}_tranche_{config.tranches_for_training or 'all'}",
-        comment=f"OPT_{model.__name__}_{config.cnn_name}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}_tranche_{config.tranches_for_training or 'all'}",
+        filename_suffix=f"OPT_{_model.__name__}_{config.cnn_name}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}_tranche_{config.tranches_for_training or 'all'}",
+        comment=f"OPT_{_model.__name__}_{config.cnn_name}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}_tranche_{config.tranches_for_training or 'all'}",
     )
     
     # max_itr = n_epochs * n_train
@@ -262,7 +267,7 @@ def train(model:nn.Module,
     # scheduler = ReduceLROnPlateau(optimizer, mode="max", verbose=True, patience=6, min_lr=1e-7)
     # scheduler = CosineAnnealingWarmRestarts(optimizer, 0.001, 1e-6, 20)
 
-    save_prefix = f"{model.__name__}_{config.cnn_name}_{config.rnn_name}_tranche_{config.tranches_for_training or 'all'}_epoch"
+    save_prefix = f"{_model.__name__}_{config.cnn_name}_{config.rnn_name}_tranche_{config.tranches_for_training or 'all'}_epoch"
 
     os.makedirs(config.checkpoints, exist_ok=True)
     os.makedirs(config.model_dir, exist_ok=True)
@@ -301,7 +306,7 @@ def train(model:nn.Module,
                     loss.backward()
                 optimizer.step()
 
-                if global_step % log_step == 0:
+                if global_step % config.log_step == 0:
                     writer.add_scalar("train/loss", loss.item(), global_step)
                     if scheduler:
                         writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
@@ -391,7 +396,7 @@ def train(model:nn.Module,
             monitor = eval_res[6]
             if monitor > best_challenge_metric:
                 best_challenge_metric = monitor
-                best_state_dict = model.state_dict()
+                best_state_dict = _model.state_dict()
                 best_eval_res = deepcopy(eval_res)
                 best_epoch = epoch + 1
                 pseudo_best_epoch = epoch + 1
@@ -425,7 +430,7 @@ def train(model:nn.Module,
             save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth.tar"
             save_path = os.path.join(config.checkpoints, save_filename)
             torch.save({
-                "model_state_dict": model.state_dict(),
+                "model_state_dict": _model.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
                 "model_config": model_config,
                 "train_config": config,
@@ -503,6 +508,11 @@ def evaluate(model:nn.Module,
     model.eval()
     data_loader.dataset.disable_data_augmentation()
 
+    if type(model).__name__ in ["DataParallel",]:  # TODO: further consider "DistributedDataParallel"
+        _model = model.module
+    else:
+        _model = model
+
     all_scalar_preds = []
     all_bin_preds = []
     all_labels = []
@@ -514,7 +524,7 @@ def evaluate(model:nn.Module,
 
         if torch.cuda.is_available():
             torch.cuda.synchronize()
-        preds, bin_preds = model.inference(signals)
+        preds, bin_preds = _model.inference(signals)
         all_scalar_preds.append(preds)
         all_bin_preds.append(bin_preds)
     
