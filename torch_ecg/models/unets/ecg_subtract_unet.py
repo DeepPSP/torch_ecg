@@ -5,8 +5,6 @@ the main differences to a normal Unet are that
 1. at the bottom, subtraction (and concatenation) is used
 2. uses triple convolutions at each block, instead of double convolutions
 3. dropout is used between certain convolutional layers ("cba" layers indeed)
-
-currently NOT tested on any dataset
 """
 
 import sys
@@ -415,7 +413,7 @@ class UpTripleConv(nn.Module):
         )
 
     def forward(self, input:Tensor, down_output:Tensor) -> Tensor:
-        """ finished, not checked,
+        """ finished, checked,
 
         Parameters
         ----------
