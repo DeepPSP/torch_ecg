@@ -124,9 +124,6 @@ ModelCfg.subtract_unet.up_dropouts = [
     [0.15, 0.15, 0.0],
 ]
 
-# out conv
-ModelCfg.subtract_unet.out_filter_length = 1
-
 ModelCfg.subtract_unet.down_block = ED()
 ModelCfg.subtract_unet.down_block.batch_norm = ModelCfg.subtract_unet.batch_norm
 ModelCfg.subtract_unet.down_block.kernel_initializer = ModelCfg.subtract_unet.kernel_initializer 
@@ -140,6 +137,10 @@ ModelCfg.subtract_unet.up_block.kernel_initializer = ModelCfg.subtract_unet.kern
 ModelCfg.subtract_unet.up_block.kw_initializer = deepcopy(ModelCfg.subtract_unet.kw_initializer)
 ModelCfg.subtract_unet.up_block.activation = ModelCfg.subtract_unet.activation
 ModelCfg.subtract_unet.up_block.kw_activation = deepcopy(ModelCfg.subtract_unet.kw_activation)
+
+# out conv
+ModelCfg.subtract_unet.out_filter_length = 1
+ModelCfg.subtract_unet.out_batch_norm = True  # False
 
 
 # vanilla unet
@@ -155,7 +156,6 @@ ModelCfg.unet.groups = 1
 # ModelCfg.unet.init_num_filters = len(ModelCfg.unet.classes)  # keep the same with n_classes
 ModelCfg.unet.init_num_filters = 16
 ModelCfg.unet.init_filter_length = 9
-ModelCfg.unet.out_filter_length = 9
 ModelCfg.unet.batch_norm = True
 ModelCfg.unet.kernel_initializer = "he_normal"
 ModelCfg.unet.kw_initializer = {}
@@ -197,6 +197,10 @@ ModelCfg.unet.up_block.kernel_initializer = ModelCfg.unet.kernel_initializer
 ModelCfg.unet.up_block.kw_initializer = deepcopy(ModelCfg.unet.kw_initializer)
 ModelCfg.unet.up_block.activation = ModelCfg.unet.activation
 ModelCfg.unet.up_block.kw_activation = deepcopy(ModelCfg.unet.kw_activation)
+
+# out conv
+ModelCfg.unet.out_filter_length = 9
+ModelCfg.unet.out_batch_norm = True  # False
 
 
 
