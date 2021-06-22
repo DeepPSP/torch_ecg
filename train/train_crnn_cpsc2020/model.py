@@ -47,7 +47,10 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         super().__init__(classes, n_leads, input_len, model_config)
 
     @torch.no_grad()
-    def inference(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+    def inference(self,
+                  input:Union[np.ndarray,Tensor],
+                  class_names:bool=False,
+                  bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """ finished, checked,
 
         auxiliary function to `forward`, for CPSC2020,
@@ -96,7 +99,10 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
                     np.array(self.classes)[np.where(bin_pred==1)[0]].tolist()
         return pred, bin_pred
 
-    def inference_CPSC2020(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+    def inference_CPSC2020(self,
+                           input:Union[np.ndarray,Tensor],
+                           class_names:bool=False,
+                           bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """
         alias for `self.inference`
         """
@@ -136,7 +142,10 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         )
 
     @torch.no_grad()
-    def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5, rpeak_inds:Optional[List[np.ndarray]]=None) -> Tuple[np.ndarray, List[np.ndarray], List[np.ndarray]]:
+    def inference(self,
+                  input:Union[np.ndarray,Tensor],
+                  bin_pred_thr:float=0.5,
+                  rpeak_inds:Optional[List[np.ndarray]]=None) -> Tuple[np.ndarray, List[np.ndarray], List[np.ndarray]]:
         """ finished, checked,
 
         auxiliary function to `forward`, for CPSC2020,
@@ -210,7 +219,9 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         ]
         return pred, SPB_indices, PVC_indices
 
-    def inference_CPSC2020(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5) -> Tuple[np.ndarray, List[np.ndarray], List[np.ndarray]]:
+    def inference_CPSC2020(self,
+                           input:Union[np.ndarray,Tensor],
+                           bin_pred_thr:float=0.5) -> Tuple[np.ndarray, List[np.ndarray], List[np.ndarray]]:
         """
         alias for `self.inference`
         """

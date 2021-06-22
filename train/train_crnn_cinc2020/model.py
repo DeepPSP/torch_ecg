@@ -43,7 +43,10 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
 
 
     @torch.no_grad()
-    def inference(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+    def inference(self,
+                  input:Union[np.ndarray,Tensor],
+                  class_names:bool=False,
+                  bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """ finished, checked,
 
         auxiliary function to `forward`, for CINC2020,
@@ -106,7 +109,10 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         return pred, bin_pred
 
 
-    def inference_CINC2020(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+    def inference_CINC2020(self,
+                           input:Union[np.ndarray,Tensor],
+                           class_names:bool=False,
+                           bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """
         alias for `self.inference`
         """

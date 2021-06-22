@@ -45,7 +45,12 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
         super().__init__(model_config.classes, n_leads, model_config)
 
     @torch.no_grad()
-    def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200, correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
+    def inference(self,
+                  input:Union[np.ndarray,Tensor],
+                  bin_pred_thr:float=0.5,
+                  duration_thr:int=4*16,
+                  dist_thr:Union[int,Sequence[int]]=200,
+                  correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
         """ finished, NOT checked,
 
         auxiliary function to `forward`, for CPSC2019,
@@ -112,7 +117,11 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
 
         return pred, rpeaks
 
-    def _inference_post_process(self, pred:np.ndarray, bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200) -> List[np.ndarray]:
+    def _inference_post_process(self,
+                                pred:np.ndarray,
+                                bin_pred_thr:float=0.5,
+                                duration_thr:int=4*16,
+                                dist_thr:Union[int,Sequence[int]]=200) -> List[np.ndarray]:
         """ finished, checked,
 
         prob --> qrs mask --> qrs intervals --> rpeaks
@@ -126,11 +135,11 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
         _dist_thr = [dist_thr] if isinstance(dist_thr, int) else dist_thr
         assert len(_dist_thr) <= 2
 
-        # mask = (pred >= bin_pred_thr).astype(int)
+        # mask = (pred > bin_pred_thr).astype(int)
         rpeaks = []
         for b_idx in range(batch_size):
             b_prob = pred[b_idx,...]
-            b_mask = (b_prob >= bin_pred_thr).astype(int)
+            b_mask = (b_prob > bin_pred_thr).astype(int)
             b_qrs_intervals = mask_to_intervals(b_mask, 1)
             b_rpeaks = np.array([
                 (itv[0]+itv[1])//2 for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr
@@ -191,7 +200,12 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
             rpeaks.append(b_rpeaks)
         return rpeaks
 
-    def inference_CPSC2019(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200, correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
+    def inference_CPSC2019(self,
+                           input:Union[np.ndarray,Tensor],
+                           bin_pred_thr:float=0.5,
+                           duration_thr:int=4*16,
+                           dist_thr:Union[int,Sequence[int]]=200,
+                           correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
         """
         alias of `self.inference`
         """
@@ -220,7 +234,12 @@ class ECG_UNET_CPSC2019(ECG_UNET):
         super().__init__(model_config.classes, n_leads, model_config)
 
     @torch.no_grad()
-    def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200, correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
+    def inference(self,
+                  input:Union[np.ndarray,Tensor],
+                  bin_pred_thr:float=0.5,
+                  duration_thr:int=4*16,
+                  dist_thr:Union[int,Sequence[int]]=200,
+                  correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
         """ finished, NOT checked,
 
         auxiliary function to `forward`, for CPSC2019,
@@ -287,7 +306,11 @@ class ECG_UNET_CPSC2019(ECG_UNET):
 
         return pred, rpeaks
 
-    def _inference_post_process(self, pred:np.ndarray, bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200) -> List[np.ndarray]:
+    def _inference_post_process(self,
+                                pred:np.ndarray,
+                                bin_pred_thr:float=0.5,
+                                duration_thr:int=4*16,
+                                dist_thr:Union[int,Sequence[int]]=200) -> List[np.ndarray]:
         """ finished, checked,
 
         prob --> qrs mask --> qrs intervals --> rpeaks
@@ -301,11 +324,11 @@ class ECG_UNET_CPSC2019(ECG_UNET):
         _dist_thr = [dist_thr] if isinstance(dist_thr, int) else dist_thr
         assert len(_dist_thr) <= 2
 
-        # mask = (pred >= bin_pred_thr).astype(int)
+        # mask = (pred > bin_pred_thr).astype(int)
         rpeaks = []
         for b_idx in range(batch_size):
             b_prob = pred[b_idx,...]
-            b_mask = (b_prob >= bin_pred_thr).astype(int)
+            b_mask = (b_prob > bin_pred_thr).astype(int)
             b_qrs_intervals = mask_to_intervals(b_mask, 1)
             b_rpeaks = np.array([
                 (itv[0]+itv[1])//2 for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr
@@ -366,7 +389,12 @@ class ECG_UNET_CPSC2019(ECG_UNET):
             rpeaks.append(b_rpeaks)
         return rpeaks
 
-    def inference_CPSC2019(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200, correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
+    def inference_CPSC2019(self,
+                           input:Union[np.ndarray,Tensor],
+                           bin_pred_thr:float=0.5,
+                           duration_thr:int=4*16,
+                           dist_thr:Union[int,Sequence[int]]=200,
+                           correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
         """
         alias of `self.inference`
         """
