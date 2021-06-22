@@ -582,9 +582,8 @@ class ECG_SUBTRACT_UNET(nn.Module):
             kernel_size=self.config.out_filter_length,
             stride=1,
             groups=self.config.groups,
-            batch_norm=self.config.batch_norm,
-            activation=self.config.activation,
-            kw_activation=self.config.kw_activation,
+            batch_norm=self.config.out_batch_norm,
+            activation=None,
             kernel_initializer=self.config.kernel_initializer,
             kw_initializer=self.config.kw_initializer,
         )

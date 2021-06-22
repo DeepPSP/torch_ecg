@@ -18,7 +18,6 @@ ECG_UNET_VANILLA_CONFIG.groups = 1
 
 ECG_UNET_VANILLA_CONFIG.init_num_filters = 4  # keep the same with n_classes
 ECG_UNET_VANILLA_CONFIG.init_filter_length = 9
-ECG_UNET_VANILLA_CONFIG.out_filter_length = 9
 ECG_UNET_VANILLA_CONFIG.batch_norm = True
 ECG_UNET_VANILLA_CONFIG.kernel_initializer = "he_normal"
 ECG_UNET_VANILLA_CONFIG.kw_initializer = {}
@@ -66,3 +65,8 @@ unet_up_block.kw_activation = deepcopy(ECG_UNET_VANILLA_CONFIG.kw_activation)
 
 ECG_UNET_VANILLA_CONFIG.down_block = deepcopy(unet_down_block)
 ECG_UNET_VANILLA_CONFIG.up_block = deepcopy(unet_up_block)
+
+
+# out conv
+ECG_UNET_VANILLA_CONFIG.out_filter_length = 9
+ECG_UNET_VANILLA_CONFIG.out_batch_norm = True  # False

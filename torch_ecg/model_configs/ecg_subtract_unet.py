@@ -90,10 +90,6 @@ ECG_SUBTRACT_UNET_CONFIG.up_dropouts = [
 ]
 
 
-# out conv
-ECG_SUBTRACT_UNET_CONFIG.out_filter_length = 1
-
-
 unet_down_block = ED()
 unet_down_block.batch_norm = ECG_SUBTRACT_UNET_CONFIG.batch_norm
 unet_down_block.kernel_initializer = ECG_SUBTRACT_UNET_CONFIG.kernel_initializer 
@@ -112,3 +108,8 @@ unet_up_block.kw_activation = deepcopy(ECG_SUBTRACT_UNET_CONFIG.kw_activation)
 
 ECG_SUBTRACT_UNET_CONFIG.down_block = deepcopy(unet_down_block)
 ECG_SUBTRACT_UNET_CONFIG.up_block = deepcopy(unet_up_block)
+
+
+# out conv
+ECG_SUBTRACT_UNET_CONFIG.out_filter_length = 1
+ECG_UNET_VANILLA_CONFIG.out_batch_norm = True  # False
