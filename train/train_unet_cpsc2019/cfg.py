@@ -272,7 +272,7 @@ TrainCfg.steps = [5000, 10000]
 
 TrainCfg.early_stopping = ED()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
-TrainCfg.early_stopping.patience = 6
+TrainCfg.early_stopping.patience = 15
 
 # configs of loss function
 TrainCfg.loss = "BCEWithLogitsLoss"
