@@ -120,6 +120,8 @@ ModelCfg.seq_lab_crnn.cnn.multi_scopic.block.activation = \
     ModelCfg.seq_lab_crnn.cnn.multi_scopic.activation
 ModelCfg.seq_lab_crnn.cnn.multi_scopic.block.kw_activation = \
     deepcopy(ModelCfg.seq_lab_crnn.cnn.multi_scopic.kw_activation)
+ModelCfg.seq_lab_crnn.cnn.multi_scopic.block.batch_norm = True  # consider using "group_norm"
+ModelCfg.seq_lab_crnn.cnn.multi_scopic.block.kw_bn = {}
 
 # rnn part
 # abuse of notation
