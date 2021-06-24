@@ -30,7 +30,7 @@ from ..utils.misc import dict_to_str
 
 
 __all__ = [
-    "Mish", "Swish",
+    "Mish", "Swish", "Hardswish",
     "Initializers", "Activations",
     "Bn_Activation", "Conv_Bn_Activation", "CBA",
     "MultiConv", "BranchedConv",
@@ -95,6 +95,34 @@ except:
             return input * F.sigmoid(input)
 
 
+try:
+    Hardswish = nn.Hardswish  # pytorch added in version 1.6
+    Swish.__name__ = "Hardswish"
+except:
+    class Hardswish(nn.Module):
+        r"""Applies the hardswish function, element-wise, as described in the paper:
+        `Searching for MobileNetV3`_.
+        .. math::
+            \text{Hardswish}(x) = \begin{cases}
+                0 & \text{if~} x \le -3, \\
+                x & \text{if~} x \ge +3, \\
+                x \cdot (x + 3) /6 & \text{otherwise}
+            \end{cases}
+        .. _`Searching for MobileNetV3`:
+            https://arxiv.org/abs/1905.02244
+        """
+        __name__ = "Hardswish"
+        def __init__(self):
+            """
+            """
+            super().__init__()
+
+        def forward(self, input:Tensor) -> Tensor:
+            """
+            """
+            return torch.clamp(input * (3 + input) / 6, min=0, max=input)
+
+
 # ---------------------------------------------
 # initializers
 Initializers = ED()
@@ -119,6 +147,7 @@ Initializers.constant = nn.init.constant_
 Activations = ED()
 Activations.mish = Mish
 Activations.swish = Swish
+Activations.hardswish = Hardswish
 Activations.relu = nn.ReLU
 Activations.leaky = nn.LeakyReLU
 Activations.leaky_relu = Activations.leaky
