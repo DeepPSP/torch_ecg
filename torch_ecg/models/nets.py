@@ -59,32 +59,40 @@ else:
 
 # ---------------------------------------------
 # activations
-class Mish(nn.Module):
-    """ The Mish activation """
-    __name__ = "Mish"
-    def __init__(self):
-        """
-        """
-        super().__init__()
+try:
+    Mish = nn.Mish  # pytorch added in version 1.9
+    Mish.__name__ = "Mish"
+except:
+    class Mish(nn.Module):
+        """ The Mish activation """
+        __name__ = "Mish"
+        def __init__(self):
+            """
+            """
+            super().__init__()
 
-    def forward(self, input:Tensor) -> Tensor:
-        """
-        """
-        return input * (torch.tanh(F.softplus(input)))
+        def forward(self, input:Tensor) -> Tensor:
+            """
+            """
+            return input * (torch.tanh(F.softplus(input)))
 
 
-class Swish(nn.Module):
-    """ The Swish activation """
-    __name__ = "Swish"
-    def __init__(self):
-        """
-        """
-        super().__init__()
+try:
+    Swish = nn.SiLU  # pytorch added in version 1.7
+    Swish.__name__ = "Swish"
+except:
+    class Swish(nn.Module):
+        """ The Swish activation """
+        __name__ = "Swish"
+        def __init__(self):
+            """
+            """
+            super().__init__()
 
-    def forward(self, input:Tensor) -> Tensor:
-        """
-        """
-        return input * F.sigmoid(input)
+        def forward(self, input:Tensor) -> Tensor:
+            """
+            """
+            return input * F.sigmoid(input)
 
 
 # ---------------------------------------------
