@@ -386,6 +386,7 @@ def train(model:nn.Module,
             logger.info(f"Best model saved to {save_path}!")
 
     writer.close()
+    logging.shutdown()
 
     return best_state_dict
 

@@ -251,6 +251,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
                     logger.info(f"failed to remove {model_to_remove}")
 
     writer.close()
+    logging.shutdown()
 
 
 @torch.no_grad()

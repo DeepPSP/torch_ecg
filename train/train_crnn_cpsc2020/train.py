@@ -594,6 +594,7 @@ def evaluate_crnn(model:nn.Module,
     eval_res = auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure
 
     model.train()
+    logging.shutdown()
 
     return eval_res
 
