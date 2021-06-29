@@ -10,7 +10,7 @@ import logging
 import argparse
 import textwrap
 from copy import deepcopy
-from collections import deque
+from collections import deque, OrderedDict
 from typing import Union, Optional, Tuple, Sequence, NoReturn
 from numbers import Real, Number
 
@@ -28,6 +28,7 @@ from torch import Tensor
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
 from torch.nn import CrossEntropyLoss
+from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 
@@ -49,14 +50,46 @@ __all__ = [
 ]
 
 
-def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, logger:Optional[logging.Logger]=None, debug:bool=False):
+def train(model:nn.Module,
+          model_config:dict,
+          device:torch.device,
+          config:dict,
+          logger:Optional[logging.Logger]=None,
+          debug:bool=False) -> OrderedDict:
+    """ NOT finished, NOT checked,
+
+    Parameters
+    ----------
+    model: Module,
+        the model to train
+    model_config: dict,
+        config of the model, to store into the checkpoints
+    device: torch.device,
+        device on which the model trains
+    config: dict,
+        configurations of training, ref. `ModelCfg`, `TrainCfg`, etc.
+    logger: Logger, optional,
+        logger
+    debug: bool, default False,
+        if True, the training set itself would be evaluated 
+        to check if the model really learns from the training set
+
+    Returns
+    -------
+    best_state_dict: OrderedDict,
+        state dict of the best model
     """
-    """
+    raise NotImplementedError("Implementation NOT finished yet!")
     msg = f"training configurations are as follows:\n{dict_to_str(config)}"
     if logger:
         logger.info(msg)
     else:
         print(msg)
+    
+    if type(model).__name__ in ["DataParallel",]:  # TODO: further consider "DistributedDataParallel"
+        _model = model.module
+    else:
+        _model = model
 
     train_dataset = LUDB(config=config, training=True)
 
@@ -72,11 +105,14 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
     batch_size = config.batch_size
     lr = config.learning_rate
 
+    # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+    num_workers = 4 * (torch.cuda.device_count() or 1)
+
     train_loader = DataLoader(
         dataset=train_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=8,
+        num_workers=num_workers,
         pin_memory=True,
         drop_last=True,  # setting False would result in error
         collate_fn=collate_fn,
@@ -87,7 +123,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
             dataset=val_train_dataset,
             batch_size=batch_size,
             shuffle=True,
-            num_workers=8,
+            num_workers=num_workers,
             pin_memory=True,
             drop_last=True,  # setting False would result in error
             collate_fn=collate_fn,
@@ -96,7 +132,7 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         dataset=val_dataset,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=8,
+        num_workers=num_workers,
         pin_memory=True,
         drop_last=True,  # setting False would result in error
         collate_fn=collate_fn,
@@ -104,8 +140,8 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
 
     writer = SummaryWriter(
         log_dir=config.log_dir,
-        filename_suffix=f"OPT_{model.__name__}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
-        comment=f"OPT_{model.__name__}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
+        filename_suffix=f"OPT_{_model.__name__}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
+        comment=f"OPT_{_model.__name__}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
     )
     
     # max_itr = n_epochs * n_train
@@ -164,6 +200,12 @@ def train(model:nn.Module, device:torch.device, config:dict, log_step:int=20, lo
         raise NotImplementedError(f"loss `{config.loss}` not implemented!")
 
     save_prefix = f"{model.__name__}_epoch"
+
+    best_state_dict = OrderedDict()
+    best_challenge_metric = -np.inf
+    best_eval_res = tuple()
+    best_epoch = -1
+    pseudo_best_epoch = -1
 
     saved_models = deque()
     model.train()
