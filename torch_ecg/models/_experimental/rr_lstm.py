@@ -25,7 +25,7 @@ from torch_ecg.cfg import Cfg
 from torch_ecg.model_configs import RR_LSTM_CONFIG
 from torch_ecg.utils.misc import dict_to_str
 from torch_ecg.utils.utils_nn import compute_module_size
-from torch_ecg.models.nets import (
+from torch_ecg.models._nets import (
     Mish, Swish, Activations,
     StackedLSTM,
     AttentionWithContext,
@@ -34,7 +34,7 @@ from torch_ecg.models.nets import (
     SeqLin,
     CRF, ExtendedCRF,
 )
-from torch_ecg.models.nets import (
+from torch_ecg.models._nets import (
     NonLocalBlock, SEBlock, GlobalContextBlock,
 )
 

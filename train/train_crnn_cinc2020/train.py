@@ -63,7 +63,7 @@ from easydict import EasyDict as ED
 from train.train_crnn_cinc2020.model_legacy import ECG_CRNN_CINC2020
 # from torch_ecg.model_configs import ECG_CRNN_CONFIG
 from torch_ecg.model_configs._legacy.legacy_ecg_crnn_v03 import ECG_CRNN_CONFIG
-from torch_ecg.models.nets import BCEWithLogitsWithClassWeightLoss
+from torch_ecg.models._nets import BCEWithLogitsWithClassWeightLoss
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.misc import (
     init_logger, get_date_str, dict_to_str, str2bool,

@@ -30,7 +30,7 @@ from ..cfg import Cfg
 from ..utils.utils_nn import compute_conv_output_shape, compute_module_size
 from ..utils.misc import dict_to_str
 from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
-from .nets import (
+from ._nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
     SEBlock,

@@ -25,7 +25,7 @@ from ..cfg import Cfg
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
 from ..utils.misc import dict_to_str
 from ..utils.utils_nn import compute_module_size
-from ..models.nets import (
+from ..models._nets import (
     Mish, Swish, Activations,
     NonLocalBlock, SEBlock, GlobalContextBlock,
     StackedLSTM,

@@ -24,7 +24,7 @@ from easydict import EasyDict as ED
 from ...cfg import Cfg
 from ...utils.utils_nn import compute_deconv_output_shape, compute_module_size
 from ...utils.misc import dict_to_str
-from ...models.nets import (
+from ...models._nets import (
     Conv_Bn_Activation, MultiConv,
     DownSample, ZeroPadding,
 )

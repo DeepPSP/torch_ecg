@@ -21,7 +21,7 @@ from ..cfg import Cfg
 from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
 from ..utils.utils_nn import compute_conv_output_shape, compute_module_size
 from ..utils.misc import dict_to_str
-from .nets import (
+from ._nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
     DownSample,

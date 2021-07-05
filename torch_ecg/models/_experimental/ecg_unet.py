@@ -26,7 +26,7 @@ from easydict import EasyDict as ED
 from torch_ecg.cfg import Cfg
 from torch_ecg.utils.utils_nn import compute_deconv_output_shape, compute_module_size
 from torch_ecg.utils.misc import dict_to_str
-from torch_ecg.models.nets import (
+from torch_ecg.models._nets import (
     Conv_Bn_Activation, MultiConv,
     DownSample, ZeroPadding,
 )

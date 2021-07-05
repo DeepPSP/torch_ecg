@@ -15,7 +15,7 @@ from easydict import EasyDict as ED
 from torch_ecg.cfg import Cfg
 from torch_ecg.model_configs.ati_cnn import ATI_CNN_CONFIG
 from torch_ecg.model_configs.cpsc import CPSC_CONFIG
-from .nets import (
+from ._nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
     DownSample,

@@ -34,7 +34,7 @@ from easydict import EasyDict as ED
 
 from torch_ecg.models import ECG_UNET
 # from models.utils.torch_utils import BCEWithLogitsWithClassWeightLoss
-from torch_ecg.models.nets import default_collate_fn as collate_fn
+from torch_ecg.models._nets import default_collate_fn as collate_fn
 from torch_ecg.model_configs import ECG_UNET_VANILLA_CONFIG
 from torch_ecg.utils.misc import init_logger, get_date_str, dict_to_str, str2bool
 from train.train_unet_ludb.cfg import TrainCfg

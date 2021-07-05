@@ -20,7 +20,7 @@ from easydict import EasyDict as ED
 from ...cfg import Cfg
 from ...utils.utils_nn import compute_module_size
 from ...utils.misc import dict_to_str, list_sum
-from ...models.nets import (
+from ...models._nets import (
     Conv_Bn_Activation, SeparableConv, MultiConv,
     DownSample,
     NonLocalBlock, SEBlock, GlobalContextBlock,

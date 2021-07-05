@@ -19,7 +19,7 @@ from ...utils.utils_nn import (
     compute_module_size,
 )
 from ...utils.misc import dict_to_str
-from ...models.nets import (
+from ...models._nets import (
     Conv_Bn_Activation,
     NonLocalBlock, SEBlock, GlobalContextBlock,
 )
