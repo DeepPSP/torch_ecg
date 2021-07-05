@@ -57,7 +57,7 @@ class TripleConv(MultiConv):
                  dropouts:Union[Sequence[float],float]=0.0,
                  out_activation:bool=True,
                  **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -118,7 +118,7 @@ class DownTripleConv(nn.Sequential):
                  dropouts:Union[Sequence[float],float]=0.0,
                  mode:str="max",
                  **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -174,12 +174,22 @@ class DownTripleConv(nn.Sequential):
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """
+        """ finished, checked,
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, channels, seq_len)
+
+        Returns
+        -------
+        out: Tensor,
+            of shape (batch_size, channels, seq_len)
         """
         out = super().forward(input)
         return out
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters
@@ -219,7 +229,7 @@ class DownBranchedDoubleConv(nn.Module):
                  dropouts:Union[Sequence[float],float]=0.0,
                  mode:str="max",
                  **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -270,9 +280,17 @@ class DownBranchedDoubleConv(nn.Module):
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """
-        input: of shape (batch_size, channels, seq_len)
-        out: of shape (batch_size, channels, seq_len)
+        """ finished, checked,
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, channels, seq_len)
+
+        Returns
+        -------
+        out: Tensor,
+            of shape (batch_size, channels, seq_len)
         """
         out = self.down_sample(input)
         out = self.branched_conv(out)
@@ -283,7 +301,7 @@ class DownBranchedDoubleConv(nn.Module):
         out = torch.cat(out, dim=1)  # concate along the channel axis
         return out
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters
@@ -397,7 +415,7 @@ class UpTripleConv(nn.Module):
         )
 
     def forward(self, input:Tensor, down_output:Tensor) -> Tensor:
-        """ finished, not checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -412,7 +430,7 @@ class UpTripleConv(nn.Module):
 
         return output
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
 
         Parameters
@@ -444,7 +462,7 @@ class UpTripleConv(nn.Module):
 
 
 class ECG_SUBTRACT_UNET(nn.Module):
-    """ finished, NOT checked,
+    """ finished, checked,
 
     entry 0433 of CPSC2019
     """
@@ -564,9 +582,8 @@ class ECG_SUBTRACT_UNET(nn.Module):
             kernel_size=self.config.out_filter_length,
             stride=1,
             groups=self.config.groups,
-            batch_norm=self.config.batch_norm,
-            activation=self.config.activation,
-            kw_activation=self.config.kw_activation,
+            batch_norm=self.config.out_batch_norm,
+            activation=None,
             kernel_initializer=self.config.kernel_initializer,
             kw_initializer=self.config.kw_initializer,
         )
@@ -600,15 +617,15 @@ class ECG_SUBTRACT_UNET(nn.Module):
 
         # down
         to_concat = [self.init_conv(x)]
-        if self.__DEBUG__:
-            print(f"shape of the init conv block output = {to_concat[-1].shape}")
+        # if self.__DEBUG__:
+        #     print(f"shape of the init conv block output = {to_concat[-1].shape}")
         for idx in range(self.config.down_up_block_num-1):
             to_concat.append(self.down_blocks[f"down_{idx}"](to_concat[-1]))
-            if self.__DEBUG__:
-                print(f"shape of the {idx}-th down block output = {to_concat[-1].shape}")
+            # if self.__DEBUG__:
+            #     print(f"shape of the {idx}-th down block output = {to_concat[-1].shape}")
         to_concat.append(self.bottom_block(to_concat[-1]))
-        if self.__DEBUG__:
-            print(f"shape of the bottom block output = {to_concat[-1].shape}")
+        # if self.__DEBUG__:
+        #     print(f"shape of the bottom block output = {to_concat[-1].shape}")
         
         # up
         up_input = to_concat[-1]
@@ -616,13 +633,19 @@ class ECG_SUBTRACT_UNET(nn.Module):
         for idx in range(self.config.down_up_block_num):
             up_output = self.up_blocks[f"up_{idx}"](up_input, to_concat[idx])
             up_input = up_output
-            if self.__DEBUG__:
-                print(f"shape of the {idx}-th up block output = {up_output.shape}")
+            # if self.__DEBUG__:
+            #     print(f"shape of the {idx}-th up block output = {up_output.shape}")
         
         # output
         output = self.out_conv(up_output)
-        if self.__DEBUG__:
-            print(f"shape of out_conv layer output = {output.shape}")
+        # if self.__DEBUG__:
+        #     print(f"shape of out_conv layer output = {output.shape}")
+
+        # to keep in accordance with other models
+        # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
+        output = output.permute(0,2,1)
+
+        # TODO: consider adding CRF at the tail to make final prediction
 
         return output
 
@@ -632,8 +655,8 @@ class ECG_SUBTRACT_UNET(nn.Module):
         """
         NotImplementedError("implement a task specific inference method")
 
-    def compute_output_shape(self, seq_len:int, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, NOT checked,
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+        """ finished, checked,
 
         Parameters
         ----------
@@ -647,7 +670,7 @@ class ECG_SUBTRACT_UNET(nn.Module):
         output_shape: sequence,
             the output shape of this `ECG_UNET` layer, given `seq_len` and `batch_size`
         """
-        output_shape = (batch_size, self.n_classes, seq_len)
+        output_shape = (batch_size, seq_len, self.n_classes)
         return output_shape
 
     @property

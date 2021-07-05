@@ -49,7 +49,7 @@ class DoubleConv(MultiConv):
     ----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
     """
-    __DEBUG__ = False
+    __DEBUG__ = True
     __name__ = "DoubleConv"
 
     def __init__(self,
@@ -115,7 +115,7 @@ class DownDoubleConv(nn.Sequential):
     ----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
     """
-    __DEBUG__ = False
+    __DEBUG__ = True
     __name__ = "DownDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
@@ -244,7 +244,7 @@ class UpDoubleConv(nn.Module):
 
     channels are shrinked after up sampling
     """
-    __DEBUG__ = False
+    __DEBUG__ = True
     __name__ = "UpDoubleConv"
     __MODES__ = ["nearest", "linear", "area", "deconv",]
 
@@ -359,6 +359,7 @@ class UpDoubleConv(nn.Module):
         diff_sig_len = down_output.shape[-1] - output.shape[-1]
 
         output = F.pad(output, [diff_sig_len // 2, diff_sig_len - diff_sig_len // 2])
+        # TODO: consider the case `groups` > 1 when concatenating
         output = torch.cat([down_output, output], dim=1)  # concate along the channel axis
         output = self.conv(output)
 
@@ -501,9 +502,8 @@ class ECG_UNET(nn.Module):
             kernel_size=self.config.out_filter_length,
             stride=1,
             groups=self.config.groups,
-            batch_norm=self.config.batch_norm,
-            activation=self.config.activation,
-            kw_activation=self.config.kw_activation,
+            batch_norm=self.config.out_batch_norm,
+            activation=None,
             kernel_initializer=self.config.kernel_initializer,
             kw_initializer=self.config.kw_initializer,
         )
@@ -531,25 +531,31 @@ class ECG_UNET(nn.Module):
             of shape (batch_size, n_channels, seq_len)
         """
         to_concat = [self.init_conv(input)]
-        if self.__DEBUG__:
-            print(f"shape of init conv block output = {to_concat[-1].shape}")
+        # if self.__DEBUG__:
+        #     print(f"shape of init conv block output = {to_concat[-1].shape}")
         for idx in range(self.config.down_up_block_num):
             to_concat.append(self.down_blocks[f"down_{idx}"](to_concat[-1]))
-            if self.__DEBUG__:
-                print(f"shape of {idx}-th down block output = {to_concat[-1].shape}")
+            # if self.__DEBUG__:
+            #     print(f"shape of {idx}-th down block output = {to_concat[-1].shape}")
         up_input = to_concat[-1]
         to_concat = to_concat[-2::-1]
         for idx in range(self.config.down_up_block_num):
-            if self.__DEBUG__:
-                print(f"shape of {idx}-th up block 1st input = {up_input.shape}")
-                print(f"shape of {idx}-th up block 2nd input (from down) = {to_concat[idx].shape}")
+            # if self.__DEBUG__:
+            #     print(f"shape of {idx}-th up block 1st input = {up_input.shape}")
+            #     print(f"shape of {idx}-th up block 2nd input (from down) = {to_concat[idx].shape}")
             up_output = self.up_blocks[f"up_{idx}"](up_input, to_concat[idx])
             up_input = up_output
-            if self.__DEBUG__:
-                print(f"shape of {idx}-th up block output = {up_output.shape}")
+            # if self.__DEBUG__:
+            #     print(f"shape of {idx}-th up block output = {up_output.shape}")
         output = self.out_conv(up_output)
-        if self.__DEBUG__:
-            print(f"shape of out_conv layer output = {output.shape}")
+        # if self.__DEBUG__:
+        #     print(f"shape of out_conv layer output = {output.shape}")
+
+        # to keep in accordance with other models
+        # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
+        output = output.permute(0,2,1)
+
+        # TODO: consider adding CRF at the tail to make final prediction
 
         return output
 
@@ -574,7 +580,7 @@ class ECG_UNET(nn.Module):
         output_shape: sequence,
             the output shape of this `ECG_UNET` layer, given `seq_len` and `batch_size`
         """
-        output_shape = (batch_size, self.n_classes, seq_len)
+        output_shape = (batch_size, seq_len, self.n_classes)
         return output_shape
 
     @property
