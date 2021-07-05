@@ -2,8 +2,8 @@
 1d analog grad cam,
 in order to inspect attention area of the ECG deep models
 
-References:
------------
+References
+----------
 https://github.com/jacobgil/pytorch-grad-cam
 """
 from typing import Union, Optional, Sequence, Tuple, List, NoReturn

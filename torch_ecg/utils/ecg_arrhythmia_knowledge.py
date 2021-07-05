@@ -2,8 +2,8 @@
 """
 knowledge about ECG arrhythmia
 
-Standard 12Leads ECG:
----------------------
+Standard 12Leads ECG
+--------------------
     Inferior leads: II, III, aVF
     Lateral leads: I, aVL, V5-6
     Septal leads: aVR, V1
@@ -12,8 +12,8 @@ Standard 12Leads ECG:
     Chest (precordial) leads: V1-6
     Limb leads: I, II, III, aVR, aVL, aVF
 
-ECG rhythm (https://litfl.com/ecg-rhythm-evaluation/):
-------------------------------------------------------
+ECG rhythm (https://litfl.com/ecg-rhythm-evaluation/)
+-----------------------------------------------------
 1. On a 12 lead ECG, ECG rhythm is usually a 10 second recording from Lead II
 2. 7 steps to analyze:
     2.1. rate (brady < 60 bpm; 60 bpm <= normal <= 100 bpm; tachy > 100 bpm)
@@ -24,12 +24,12 @@ ECG rhythm (https://litfl.com/ecg-rhythm-evaluation/):
     2.6. onset and termination (abrupt or gradual)
     (2.7. response to vagal manoeuvres)
 
-ECG waves:
-----------
+ECG waves
+---------
 https://ecgwaves.com/topic/ecg-normal-p-wave-qrs-complex-st-segment-t-wave-j-point/
 
-References:
------------
+References
+----------
 [1] https://litfl.com/
 [2] https://ecgwaves.com/
 [3] https://ecglibrary.com/ecghome.php

@@ -1,8 +1,8 @@
 """
 (CRNN) models training
 
-Training strategy:
-------------------
+Training strategy
+-----------------
 1. the following pairs of classes will be treated the same:
     (RBBB, CRBBB), (PAC, SVPB), (PVC, VPB)
     normalization of labels (classes) will be

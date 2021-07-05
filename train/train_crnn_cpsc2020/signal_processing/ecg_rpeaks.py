@@ -3,12 +3,13 @@ algorithms detecting R peaks from (filtered) ECG signal
 
 Exists algorithms from wfdb and biosppy,
 
-TODO:
+TODO
+----
 1. algorithms compared in [1]
 2. deep learning models from CPSC2019
 
-References:
------------
+References
+----------
 [1] Liu, Feifei, et al. "Performance analysis of ten common QRS detectors on different ECG application cases." Journal of healthcare engineering 2018 (2018).
 """
 from numbers import Real

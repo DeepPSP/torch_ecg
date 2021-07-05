@@ -1,8 +1,8 @@
 """
 R peaks detection using deep learning models for single-lead ECG signal
 
-References:
------------
+References
+----------
 [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
 """
 import os

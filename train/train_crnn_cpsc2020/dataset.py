@@ -1,8 +1,8 @@
 """
 data generator for feeding data into pytorch models
 
-Augmentations:
---------------
+Augmentations
+-------------
     - label smoothing (label, on the fly)
     - flip (signal, on the fly)
     - (re-)normalize to random mean and std (signal, on the fly)
@@ -11,8 +11,8 @@ Augmentations:
     - Gaussian noise (signal, on the fly, done in baseline wander)
     - stretch and compress (signal, offline)
 
-Issues:
--------
+Issues
+------
 1. flat segments are found in the original CPSC dataset, e.g. 170*4000 to 185*4000,
 which could be checked for example via:
 >>> raw_data = ds.reader.load_data("A02",keep_dim=False)
@@ -45,8 +45,8 @@ UPDATE: using `ecg_denoise` as follows:
 >>>             invalid_segs.append(seg)
 >>>         print(f"{idx+1}/{len(l_seg)} @ {i+1}/{len(ds.all_segments)}", end="\r")
 
-References:
------------
+References
+----------
 [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
 [2] Tan, Jen Hong, et al. "Application of stacked convolutional and long short-term memory network for accurate identification of CAD ECG signals." Computers in biology and medicine 94 (2018): 19-26.
 [3] Yao, Qihang, et al. "Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based Time-Incremental Convolutional Neural Network." Information Fusion 53 (2020): 174-182.

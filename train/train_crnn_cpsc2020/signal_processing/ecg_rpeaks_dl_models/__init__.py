@@ -1,11 +1,11 @@
 """
-NOTE:
------
+NOTE
+----
 corresponding model (weight) files can be downloaded at
 https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/CPSC2019-opensource.zip
 
-References:
------------
+References
+----------
 [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
 [2] to add more
 """
@@ -92,8 +92,8 @@ def _load_pytorch_ecg_seq_lab_net():
 
 
 """
-Observations:
--------------
+Observations
+------------
 Weights of the CNN part of both the keras CNN model and the keras CRNN model
 are very similar (or close).
 These weights can serve as "pretrained backbone" as in the field of vision.

@@ -4,14 +4,14 @@ denoise, mainly concerning the motion artefacts
 some of the CPSC2020 records have segments of severe motion artefacts,
 such segments should be eliminated from feature computation
 
-Process:
---------
+Process
+-------
 1. detect segments of nearly constant values, and slice these segments out
 2. detect motion artefact (large variation of values in a short time), and further slice the record into segments without motion artefact
 3. more?
 
-References:
------------
+References
+----------
 to add
 """
 from typing import Union, Optional, List

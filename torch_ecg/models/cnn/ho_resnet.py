@@ -1,8 +1,8 @@
 """
 Higher Order ResNet
 
-References:
------------
+References
+----------
 [1] Luo, Z., Sun, Z., Zhou, W., & Kamata, S. I. (2021). Rethinking ResNets: Improved Stacking Strategies With High Order Schemes. arXiv preprint arXiv:2103.15244.
 """
 from copy import deepcopy

@@ -1,6 +1,6 @@
 """
-References:
------------
+References
+----------
 [1] http://2019.icbeb.org/Challenge.html
 """
 import math

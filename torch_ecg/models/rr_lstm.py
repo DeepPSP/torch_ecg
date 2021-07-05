@@ -2,8 +2,8 @@
 AF (and perhaps other arrhythmias like preamature beats) detection
 using rr time series as input and using lstm as model
 
-References:
------------
+References
+----------
 [1] https://github.com/al3xsh/rnn-based-af-detection
 """
 from copy import deepcopy

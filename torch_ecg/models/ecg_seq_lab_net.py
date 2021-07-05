@@ -7,8 +7,8 @@ divided by the length (counted by the number of basic blocks) of each branch
 pipeline:
 multi-scopic cnn --> (bidi-lstm -->) "attention" (se block) --> seq linear
 
-References:
------------
+References
+----------
 [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
 """
 from copy import deepcopy

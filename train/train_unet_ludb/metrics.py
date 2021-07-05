@@ -1,13 +1,13 @@
 """
 
-Reference:
-----------
+Reference
+---------
 [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
 
 Section 3.2 of ref. [1] describes the metrics
 
-KEY points:
------------
+KEY points
+----------
 1. an onset or an offset are detected correctly, if their deviation from the doctor annotations does not exceed in absolute value the tolerance of 150 ms
 2. if there is no corresponding significant point (onsets and offset of ECG waveforms P, QRS, T) in the test sample in the neighborhood of ±tolerance of the detected significant point, then the I type error is counted (false positive, FP)
 3. if the algorithm does not detect a significant point, then the II type error is counted (false negative, FN)

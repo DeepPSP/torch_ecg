@@ -2,13 +2,14 @@
 preprocess of (single lead) ecg signal:
     band pass --> remove baseline --> find rpeaks --> denoise (mainly deal with motion artefact)
 
-TODO:
-    1. motion artefact detection,
-       and slice the signal into continuous (no motion artefact within) segments
-    2. to add
+TODO
+----
+1. motion artefact detection,
+    and slice the signal into continuous (no motion artefact within) segments
+2. to add
 
-References:
------------
+References
+----------
 [1] https://github.com/PIA-Group/BioSPPy
 [2] to add
 """
