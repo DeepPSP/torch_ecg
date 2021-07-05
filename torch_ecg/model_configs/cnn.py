@@ -35,6 +35,8 @@ __all__ = [
     "xception_vanilla",
     # custom xception
     "xception_leadwise",
+    # vanilla mobilenets
+    "mobilenet_v1_vanilla",
 ]
 
 
@@ -543,3 +545,9 @@ xception_vanilla.exit_flow = ED(
     subsample_lengths=2,
     subsample_kernels=3,
 )
+
+
+mobilenet_v1_vanilla = ED()
+mobilenet_v1_vanilla.groups = 1
+mobilenet_v1_vanilla.depth_multiplier = 1  # multiplier of number of depthwise convolution output channels
+mobilenet_v1_vanilla.alpha = 1  # controls the width (number of filters) of the network

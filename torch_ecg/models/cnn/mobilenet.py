@@ -73,12 +73,17 @@ class MobileNetV1(nn.Sequential):
     --> entry flow (separable convs, down sample and double channels every other conv)
     --> middle flow (separable convs, no down sampling, stationary number of channels)
     --> exit flow (separable convs, down sample and double channels at each conv)
+
+    References
+    ----------
+    1. Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017). Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
+    2. https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/keras/applications/mobilenet.py
     """
     __DEBUG__ = True
     __name__ = "MobileNetV1"
 
     def __init__(self, in_channels:int, **config) -> NoReturn:
-        """ finished, NOT checked,
+        """ NOT finished, NOT checked,
 
         Parameters
         ----------
@@ -93,7 +98,7 @@ class MobileNetV1(nn.Sequential):
             "init_conv",
             Conv_Bn_Activation(
                 in_channels=self.__in_channels,
-                out_channels=self.config.init_num_filters,
+                out_channels=self.config.init_num_filters * self.config.alpha,
                 kernel_size=self.config.init_filter_length,
                 stride=self.config.init_subsample_length,
                 groups=self.config.groups,
@@ -104,9 +109,11 @@ class MobileNetV1(nn.Sequential):
         )
 
         _, entry_flow_in_channels, _ = self.init_conv.compute_output_shape()
+        # TODO: adjust configs according to `alpha` and `depth_multiplier`
+        entry_flow_cfg = deepcopy(self.config.entry_flow)
         entry_flow = MultiConv(
             in_channels=entry_flow_in_channels,
-            **(self.config.entry_flow)
+            **entry_flow_cfg
         )
         self.add_module(
             "entry_flow",
@@ -114,9 +121,11 @@ class MobileNetV1(nn.Sequential):
         )
 
         _, middle_flow_in_channels, _ = entry_flow.compute_output_shape()
+        # TODO: adjust configs according to `alpha` and `depth_multiplier`
+        middle_flow_cfg = deepcopy(self.config.middle_flow)
         middle_flow = MultiConv(
             in_channels=middle_flow_in_channels,
-            **(self.config.middle_flow)
+            **middle_flow_cfg
         )
         self.add_module(
             "middle_flow",
@@ -124,9 +133,11 @@ class MobileNetV1(nn.Sequential):
         )
 
         _, exit_flow_in_channels, _ = middle_flow.compute_output_shape()
+        # TODO: adjust configs according to `alpha` and `depth_multiplier`
+        exit_flow_cfg = deepcopy(self.config.exit_flow)
         exit_flow = MultiConv(
             in_channels=exit_flow_in_channels,
-            **(self.config.exit_flow)
+            **exit_flow_cfg
         )
         self.add_module(
             "exit_flow",
@@ -134,7 +145,7 @@ class MobileNetV1(nn.Sequential):
         )
 
     def forward(self, input:Tensor) -> Tensor:
-        """ finished, NOT checked,
+        """ NOT finished, NOT checked,
 
         Parameters
         ----------
@@ -150,7 +161,7 @@ class MobileNetV1(nn.Sequential):
         return output
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, NOT checked,
+        """ NOT finished, NOT checked,
 
         Parameters
         ----------
