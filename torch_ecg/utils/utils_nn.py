@@ -416,7 +416,8 @@ def compute_module_size(module:nn.Module, human:bool=False, dtype:str="float32")
         while n_params >= 1024:
             n_params /= 1024
             div_count += 1
-        cvt_dict = {0:"K", 1:"M", 2:"G", 3:"T", 4:"P"}
+        # cvt_dict = {0:"K", 1:"M", 2:"G", 3:"T", 4:"P"}
+        cvt_dict = {c:u for c,u in enumerate(list("KMGTP"))}
         n_params = f"""{n_params:.1f}{cvt_dict[div_count]}"""
     return n_params
 
