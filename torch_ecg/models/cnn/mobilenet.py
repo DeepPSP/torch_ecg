@@ -64,6 +64,29 @@ class InvertedResidual(nn.Module):
         raise NotImplementedError
 
 
+_DEFAULT_CONV_CONFIGS_MobileNetV1 = ED(
+    ordering="abc",
+    conv_type="separable",
+    batch_norm=True,
+    activation="relu6",
+    kw_activation={"inplace": True},
+    # kernel_initializer="he_normal",
+    # kw_initializer={},
+)
+
+
+class MobileNetSeparableConv(nn.Sequential):
+    """
+    """
+    __DEBUG__ = True
+    __name__ = "MobileNetSeparableConv"
+    
+    def __init__(self) -> NoReturn:
+        """
+        """
+        raise NotImplementedError
+
+
 class MobileNetV1(nn.Sequential):
     """
 
@@ -92,19 +115,36 @@ class MobileNetV1(nn.Sequential):
         """
         super().__init__()
         self.__in_channels = in_channels
+        # self.config = ED(deepcopy(_DEFAULT_CONV_CONFIGS))
+        # self.config.update(deepcopy(config))
         self.config = ED(deepcopy(config))
 
+        # self.add_module(
+        #     "init_conv",
+            # Conv_Bn_Activation(
+            #     in_channels=self.__in_channels,
+            #     out_channels=self.config.init_num_filters,
+            #     kernel_size=self.config.init_filter_length,
+            #     stride=self.config.init_subsample_length,
+            #     groups=self.config.groups,
+            #     batch_norm=self.config.batch_norm,
+            #     activation=self.config.activation,
+            #     bias=self.config.bias,
+            #     width_multiplier=self.config.width_multiplier,
+            # )
+        # )
         self.add_module(
-            "init_conv",
-            Conv_Bn_Activation(
+            "init_convs",
+            MultiConv(
                 in_channels=self.__in_channels,
-                out_channels=self.config.init_num_filters * self.config.alpha,
-                kernel_size=self.config.init_filter_length,
-                stride=self.config.init_subsample_length,
+                out_channels=self.config.init_num_filters,
+                filter_lengths=self.config.init_filter_lengths,
+                subsample_lengths=self.config.init_subsample_length,
                 groups=self.config.groups,
                 batch_norm=self.config.batch_norm,
                 activation=self.config.activation,
                 bias=self.config.bias,
+                width_multiplier=self.config.width_multiplier,
             )
         )
 
