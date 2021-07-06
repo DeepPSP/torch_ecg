@@ -1,8 +1,12 @@
 """
 test of the classes from models._nets.py
 """
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from ..models._nets import (
+import torch
+
+from torch_ecg.models._nets import (
     Mish, Swish, Hardswish,
     Initializers, Activations,
     Bn_Activation, Conv_Bn_Activation, CBA,
