@@ -454,6 +454,10 @@ class Conv_Bn_Activation(nn.Sequential):
                 self.add_module("batch_norm", bn_layer)
             if act_layer:
                 self.add_module(act_name, act_layer)
+        elif self.__ordering in ["cab"]:
+            self.add_module("conv1d", conv_layer)
+            self.add_module(act_name, act_layer)
+            self.add_module("batch_norm", bn_layer)
         elif self.__ordering in ["bac", "bc"]:
             if bn_layer:
                 self.add_module("batch_norm", bn_layer)
