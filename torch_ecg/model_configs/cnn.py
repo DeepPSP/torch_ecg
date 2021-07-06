@@ -549,5 +549,50 @@ xception_vanilla.exit_flow = ED(
 
 mobilenet_v1_vanilla = ED()
 mobilenet_v1_vanilla.groups = 1
+mobilenet_v1_vanilla.batch_norm = True
+mobilenet_v1_vanilla.activation = "relu6"
 mobilenet_v1_vanilla.depth_multiplier = 1  # multiplier of number of depthwise convolution output channels
-mobilenet_v1_vanilla.alpha = 1  # controls the width (number of filters) of the network
+mobilenet_v1_vanilla.width_multiplier = 1.0  # controls the width (number of filters) of the network
+mobilenet_v1_vanilla.bias = True
+mobilenet_v1_vanilla.ordering = "cba"
+
+_base_num_filters = 12 * 3
+mobilenet_v1_vanilla.init_num_filters = _base_num_filters
+mobilenet_v1_vanilla.init_filter_lengths = 3
+mobilenet_v1_vanilla.init_subsample_length = 2
+
+mobilenet_v1_vanilla.entry_flow = ED()
+mobilenet_v1_vanilla.entry_flow.out_channels = [
+    # 64, 128, 128, 256, 256
+    _base_num_filters * 2,
+    _base_num_filters * 4, _base_num_filters * 4,
+    _base_num_filters * 8, _base_num_filters * 8,
+    _base_num_filters * 16,
+]
+mobilenet_v1_vanilla.entry_flow.filter_lengths = 3
+mobilenet_v1_vanilla.entry_flow.subsample_lengths = [
+    1, 2, 1, 2, 1, 2,
+]
+mobilenet_v1_vanilla.entry_flow.groups = mobilenet_v1_vanilla.groups
+mobilenet_v1_vanilla.entry_flow.batch_norm = mobilenet_v1_vanilla.batch_norm
+mobilenet_v1_vanilla.entry_flow.activation = mobilenet_v1_vanilla.activation
+
+mobilenet_v1_vanilla.middle_flow = ED()
+mobilenet_v1_vanilla.middle_flow.out_channels = list(repeat(_base_num_filters * 16, 5))
+mobilenet_v1_vanilla.middle_flow.filter_lengths = 3
+mobilenet_v1_vanilla.middle_flow.subsample_lengths = 1
+mobilenet_v1_vanilla.middle_flow.groups = mobilenet_v1_vanilla.groups
+mobilenet_v1_vanilla.middle_flow.batch_norm = mobilenet_v1_vanilla.batch_norm
+mobilenet_v1_vanilla.middle_flow.activation = mobilenet_v1_vanilla.activation
+
+mobilenet_v1_vanilla.exit_flow = ED()
+mobilenet_v1_vanilla.exit_flow.out_channels = [
+    _base_num_filters * 32, _base_num_filters * 32,
+]
+mobilenet_v1_vanilla.exit_flow.filter_lengths = 3
+mobilenet_v1_vanilla.exit_flow.subsample_lengths = [
+    2, 1
+]
+mobilenet_v1_vanilla.exit_flow.groups = mobilenet_v1_vanilla.groups
+mobilenet_v1_vanilla.exit_flow.batch_norm = mobilenet_v1_vanilla.batch_norm
+mobilenet_v1_vanilla.exit_flow.activation = mobilenet_v1_vanilla.activation

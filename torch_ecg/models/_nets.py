@@ -192,7 +192,7 @@ _DEFAULT_CONV_CONFIGS = ED(
     kw_initializer={},
     ordering="cba",
     conv_type=None,
-    width_multiplier=1,
+    width_multiplier=1.0,
 )
 
 
@@ -332,7 +332,7 @@ class Conv_Bn_Activation(nn.Sequential):
         activation: str or Module, optional,
             name or Module of the activation,
             if is str, can be one of
-            "mish", "swish", "relu", "leaky", "leaky_relu", "linear",
+            "mish", "swish", "relu", "leaky", "leaky_relu", "linear", "hardswish", "relu6"
             "linear" is equivalent to `activation=None`
         kernel_initializer: str or callable (function), optional,
             a function to initialize kernel weights of the convolution,
@@ -375,7 +375,7 @@ class Conv_Bn_Activation(nn.Sequential):
         self.__conv_type = kwargs.get("conv_type", None)
         if isinstance(self.__conv_type, str):
             self.__conv_type = self.__conv_type.lower()
-        self.__width_multiplier = kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1
+        self.__width_multiplier = kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1.0
         self.__out_channels = int(self.__width_multiplier * self.__out_channels)
         assert self.__out_channels % self.__groups == 0, \
             f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` not divisible by `groups` (= {self.__groups})"
@@ -888,10 +888,10 @@ class SeparableConv(nn.Sequential):
         self.__groups = groups
         self.__bias = bias
         kw_initializer = kwargs.get("kw_initializer", {})
-        depth_multiplier = kwargs.get("depth_multiplier", 1)
-        dc_out_channels = int(self.__in_channels * depth_multiplier)
+        self.__depth_multiplier = kwargs.get("depth_multiplier", 1)
+        dc_out_channels = int(self.__in_channels * self.__depth_multiplier)
         assert dc_out_channels % self.__in_channels == 0, \
-            f"depth_multiplier (input is {depth_multiplier}) should be positive integers"
+            f"depth_multiplier (input is {self.__depth_multiplier}) should be positive integers"
         self.__width_multiplier = kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1
         self.__out_channels = int(self.__width_multiplier * self.__out_channels)
         assert self.__out_channels % self.__groups == 0, \

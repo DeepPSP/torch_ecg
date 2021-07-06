@@ -638,8 +638,6 @@ class DenseNet(nn.Sequential):
             number of channels in the input
         config: dict,
             other hyper-parameters of the Module, ref. corresponding config file
-            config: dict,
-            other hyper-parameters of the Module, ref. corresponding config file
             key word arguments that have to be set:
             num_layers: sequence of int,
                 number of building block layers of each dense (macro) block
