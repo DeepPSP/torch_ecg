@@ -5,7 +5,7 @@ import sys
 from copy import deepcopy
 from math import sqrt
 from itertools import repeat
-from typing import Union, Sequence, Tuple, List, Optional, NoReturn
+from typing import Union, Sequence, Tuple, List, Optional, NoReturn, Any
 from numbers import Real
 
 from packaging import version
@@ -154,6 +154,7 @@ Activations.leaky_relu = Activations.leaky
 Activations.tanh = nn.Tanh
 Activations.sigmoid = nn.Sigmoid
 Activations.softmax = nn.Softmax
+Activations.relu6 = nn.ReLU6
 # Activations.linear = None
 
 
@@ -191,6 +192,7 @@ _DEFAULT_CONV_CONFIGS = ED(
     kw_initializer={},
     ordering="cba",
     conv_type=None,
+    width_multiplier=1,
 )
 
 
@@ -287,6 +289,7 @@ class Conv_Bn_Activation(nn.Sequential):
     """ finished, checked,
 
     1d convolution --> batch normalization (optional) -- > activation (optional),
+    orderings can be adjusted,
     with "same" padding as default padding
     """
     __name__ = "Conv_Bn_Activation"
@@ -304,7 +307,7 @@ class Conv_Bn_Activation(nn.Sequential):
                  kernel_initializer:Optional[Union[str,callable]]=None,
                  bias:bool=True,
                  ordering:str="cba",
-                 **kwargs) -> NoReturn:
+                 **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -340,7 +343,8 @@ class Conv_Bn_Activation(nn.Sequential):
             ordering of the layers, case insensitive
         kwargs: dict, optional,
             other key word arguments, including
-            conv_type, kw_activation, kw_initializer, kw_bn, etc.
+            `conv_type`, `kw_activation`, `kw_initializer`, `kw_bn`,
+            `alpha` (alias `width_multiplier`), etc.
 
         NOTE that if `padding` is not specified (default None),
         then the actual padding used for the convolutional layer is automatically computed
@@ -371,6 +375,10 @@ class Conv_Bn_Activation(nn.Sequential):
         self.__conv_type = kwargs.get("conv_type", None)
         if isinstance(self.__conv_type, str):
             self.__conv_type = self.__conv_type.lower()
+        self.__width_multiplier = kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1
+        self.__out_channels = int(self.__width_multiplier * self.__out_channels)
+        assert self.__out_channels % self.__groups == 0, \
+            f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` not divisible by `groups` (= {self.__groups})"
 
         if self.__conv_type is None:
             conv_layer = nn.Conv1d(
@@ -388,7 +396,8 @@ class Conv_Bn_Activation(nn.Sequential):
         elif self.__conv_type == "separable":
             conv_layer = SeparableConv(
                 in_channels=self.__in_channels,
-                out_channels=self.__out_channels,
+                # out_channels=self.__out_channels,
+                out_channels=out_channels,  # note the existence of `width_multiplier` in `kwargs`
                 kernel_size=self.__kernel_size,
                 stride=self.__stride,
                 padding=self.__padding,
@@ -402,9 +411,9 @@ class Conv_Bn_Activation(nn.Sequential):
             raise NotImplementedError(f"convolution of type {self.__conv_type} not implemented yet!")
         
         if "b" in self.__ordering and self.__ordering.index("c") < self.__ordering.index("b"):
-            bn_in_channels = out_channels
+            bn_in_channels = self.__out_channels
         else:
-            bn_in_channels = in_channels
+            bn_in_channels = self.__in_channels
         if batch_norm:
             if isinstance(batch_norm, bool):
                 bn_layer = nn.BatchNorm1d(bn_in_channels, **kw_bn)
@@ -559,7 +568,7 @@ class MultiConv(nn.Sequential):
             then `out_activation` refers to the first activation
         config: dict,
             other parameters, including
-            type (separable or normal, etc.),
+            type (separable or normal, etc.), width multipliers,
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers
             and ordering of convolutions and batch normalizations, activations if applicable
@@ -628,9 +637,10 @@ class MultiConv(nn.Sequential):
                     kw_initializer=self.config.kw_initializer,
                     ordering=self.config.ordering,
                     conv_type=self.config.conv_type,
+                    width_multiplier=self.config.width_multiplier,
                 ),
             )
-            conv_in_channels = oc
+            conv_in_channels = int(oc * self.config.width_multiplier)
             if dp > 0:
                 self.add_module(
                     f"dropout_{idx}",
@@ -833,8 +843,8 @@ class SeparableConv(nn.Sequential):
                  groups:int=1,
                  kernel_initializer:Optional[Union[str,callable]]=None,
                  bias:bool=True,
-                 **kwargs) -> NoReturn:
-        """ finished, NOT checked,
+                 **kwargs:Any) -> NoReturn:
+        """ finished, checked,
 
         Parameters
         ----------
@@ -857,6 +867,8 @@ class SeparableConv(nn.Sequential):
             or name or the initialzer, can be one of the keys of `Initializers`
         bias: bool, default True,
             if True, adds a learnable bias to the output
+        kwargs: dict, optional,
+            extra parameters, including `depth_multiplier`, `width_multiplier` (alias `alpha`), etc.
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -872,12 +884,20 @@ class SeparableConv(nn.Sequential):
         self.__groups = groups
         self.__bias = bias
         kw_initializer = kwargs.get("kw_initializer", {})
+        depth_multiplier = kwargs.get("depth_multiplier", 1)
+        dc_out_channels = int(self.__in_channels * depth_multiplier)
+        assert dc_out_channels % self.__in_channels == 0, \
+            f"depth_multiplier (input is {depth_multiplier}) should be positive integers"
+        self.__width_multiplier = kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1
+        self.__out_channels = int(self.__width_multiplier * self.__out_channels)
+        assert self.__out_channels % self.__groups == 0, \
+            f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` not divisible by `groups` (= {self.__groups})"
 
         self.add_module(
             "depthwise_conv",
             nn.Conv1d(
                 in_channels=self.__in_channels,
-                out_channels=self.__in_channels,
+                out_channels=dc_out_channels,
                 kernel_size=self.__kernel_size,
                 stride=self.__stride,
                 padding=self.__padding,
@@ -889,7 +909,7 @@ class SeparableConv(nn.Sequential):
         self.add_module(
             "pointwise_conv",
             nn.Conv1d(
-                in_channels=self.__in_channels,
+                in_channels=dc_out_channels,
                 out_channels=self.__out_channels,
                 groups=self.__groups,
                 bias=self.__bias,
@@ -1204,7 +1224,7 @@ class BidirectionalLSTM(nn.Module):
                  bias:bool=True,
                  dropout:float=0.0,
                  return_sequences:bool=True,
-                 **kwargs) -> NoReturn:
+                 **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -1297,7 +1317,7 @@ class StackedLSTM(nn.Sequential):
                  dropouts:Union[float,Sequence[float]]=0.0,
                  bidirectional:bool=True,
                  return_sequences:bool=True,
-                 **kwargs) -> NoReturn:
+                 **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -1668,7 +1688,7 @@ class MultiHeadAttention(nn.Module):
                  head_num:int,
                  bias:bool=True,
                  activation:Optional[Union[str,nn.Module]]="relu",
-                 **kwargs):
+                 **kwargs:Any):
         """ finished, checked,
 
         Parameters
@@ -1790,7 +1810,7 @@ class SelfAttention(nn.Module):
                  dropout:float=0.0,
                  bias:bool=True,
                  activation:Optional[Union[str,nn.Module]]="relu",
-                 **kwargs):
+                 **kwargs:Any):
         """ finished, checked,
 
         Parameters
@@ -1863,7 +1883,7 @@ class AttentivePooling(nn.Module):
                  mid_channels:Optional[int]=None,
                  activation:Optional[Union[str,nn.Module]]="tanh",
                  dropout:float=0.2,
-                 **kwargs) -> NoReturn:
+                 **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -2023,7 +2043,7 @@ class SeqLin(nn.Sequential):
                  kernel_initializer:Optional[str]=None,
                  bias:bool=True,
                  dropouts:Union[float,Sequence[float]]=0.0,
-                 **kwargs) -> NoReturn:
+                 **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -2154,7 +2174,7 @@ class MLP(SeqLin):
                  kernel_initializer:Optional[str]=None,
                  bias:bool=True,
                  dropouts:Union[float,Sequence[float]]=0.0,
-                 **kwargs) -> NoReturn:
+                 **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
