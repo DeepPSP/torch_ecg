@@ -4,6 +4,7 @@ configs for the basic cnn layers and blocks
 from itertools import repeat
 from copy import deepcopy
 
+import numpy as np
 from easydict import EasyDict as ED
 
 
@@ -559,7 +560,7 @@ mobilenet_v1_vanilla.ordering = "cba"
 _base_num_filters = 12 * 3
 mobilenet_v1_vanilla.init_num_filters = _base_num_filters
 mobilenet_v1_vanilla.init_filter_lengths = 3
-mobilenet_v1_vanilla.init_subsample_length = 2
+mobilenet_v1_vanilla.init_subsample_lengths = 2
 
 mobilenet_v1_vanilla.entry_flow = ED()
 mobilenet_v1_vanilla.entry_flow.out_channels = [
@@ -596,3 +597,44 @@ mobilenet_v1_vanilla.exit_flow.subsample_lengths = [
 mobilenet_v1_vanilla.exit_flow.groups = mobilenet_v1_vanilla.groups
 mobilenet_v1_vanilla.exit_flow.batch_norm = mobilenet_v1_vanilla.batch_norm
 mobilenet_v1_vanilla.exit_flow.activation = mobilenet_v1_vanilla.activation
+
+
+mobilenet_v2_vanilla = ED()
+mobilenet_v2_vanilla.groups = 1
+mobilenet_v2_vanilla.batch_norm = True
+mobilenet_v2_vanilla.activation = "relu6"
+mobilenet_v2_vanilla.depth_multiplier = 1  # multiplier of number of depthwise convolution output channels
+mobilenet_v2_vanilla.width_multiplier = 1.0  # controls the width (number of filters) of the network
+mobilenet_v2_vanilla.bias = True
+mobilenet_v2_vanilla.ordering = "cba"
+
+_base_num_filters = 12
+mobilenet_v2_vanilla.init_num_filters = _base_num_filters * 4
+mobilenet_v2_vanilla.init_filter_lengths = 3
+mobilenet_v2_vanilla.init_subsample_lengths = 2
+
+_inverted_residual_setting = np.array([
+    # t, c, n, s, k
+    [1, _base_num_filters*2, 1, 1, 3],
+    [6, _base_num_filters*3, 2, 2, 3],
+    [6, _base_num_filters*4, 3, 2, 3],
+    [6, _base_num_filters*6, 4, 2, 3],
+    [6, _base_num_filters*8, 3, 1, 3],
+    [6, _base_num_filters*20, 3, 2, 3],
+    [6, _base_num_filters*40, 1, 1, 3],
+    # t: expansion
+    # c: output channels
+    # n: number of blocks
+    # s: stride
+    # k: kernel size
+])
+mobilenet_v2_vanilla.inv_res = ED()
+mobilenet_v2_vanilla.inv_res.expansions = _inverted_residual_setting[...,0]
+mobilenet_v2_vanilla.inv_res.out_channels = _inverted_residual_setting[...,1]
+mobilenet_v2_vanilla.inv_res.n_blocks = _inverted_residual_setting[...,2]
+mobilenet_v2_vanilla.inv_res.strides = _inverted_residual_setting[...,3]
+mobilenet_v2_vanilla.inv_res.filter_lengths = _inverted_residual_setting[...,4]
+
+mobilenet_v2_vanilla.final_num_filters = _base_num_filters * 128
+mobilenet_v2_vanilla.final_filter_lengths = 3
+mobilenet_v2_vanilla.final_subsample_lengths = 2

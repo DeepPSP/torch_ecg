@@ -274,7 +274,7 @@ class MobileNetV1(nn.Sequential):
                 in_channels=self.__in_channels,
                 out_channels=self.config.init_num_filters,
                 kernel_size=self.config.init_filter_lengths,
-                stride=self.config.init_subsample_length,
+                stride=self.config.init_subsample_lengths,
                 groups=self.config.groups,
                 batch_norm=self.config.batch_norm,
                 activation=self.config.activation,
@@ -286,7 +286,7 @@ class MobileNetV1(nn.Sequential):
                 in_channels=self.__in_channels,
                 out_channels=self.config.init_num_filters,
                 filter_lengths=self.config.init_filter_lengths,
-                subsample_lengths=self.config.init_subsample_length,
+                subsample_lengths=self.config.init_subsample_lengths,
                 groups=self.config.groups,
                 batch_norm=self.config.batch_norm,
                 activation=self.config.activation,
@@ -616,13 +616,14 @@ class InvertedResidual(nn.Module):
         return compute_module_size(self)
 
 
-class MobileNetV2(nn.Module):
+class MobileNetV2(nn.Sequential):
     """
 
     References
     ----------
     1. Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
     2. https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv2.py
+    3. https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet_v2.py
     """
     __DEBUG__ = True
     __name__ = "MobileNetV2"
@@ -639,21 +640,139 @@ class MobileNetV2(nn.Module):
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
-    def forward(self,):
+        # init conv(s)
+        if isinstance(self.config.init_num_filters, int):
+            init_convs = Conv_Bn_Activation(
+                in_channels=self.__in_channels,
+                out_channels=self.config.init_num_filters,
+                kernel_size=self.config.init_filter_lengths,
+                stride=self.config.init_subsample_lengths,
+                groups=self.config.groups,
+                batch_norm=self.config.batch_norm,
+                activation=self.config.activation,
+                bias=self.config.bias,
+                width_multiplier=self.config.width_multiplier,
+            )
+        else:
+            init_convs = MultiConv(
+                in_channels=self.__in_channels,
+                out_channels=self.config.init_num_filters,
+                filter_lengths=self.config.init_filter_lengths,
+                subsample_lengths=self.config.init_subsample_length,
+                groups=self.config.groups,
+                batch_norm=self.config.batch_norm,
+                activation=self.config.activation,
+                bias=self.config.bias,
+                width_multiplier=self.config.width_multiplier,
+            )
+        self.add_module(
+            "init_convs",
+            init_convs,
+        )
+
+        # inverted residual blocks
+        inv_res_cfg = zip(
+            self.config.inv_res.expansions,
+            self.config.inv_res.out_channels,
+            self.config.inv_res.n_blocks,
+            self.config.inv_res.strides,
+            self.config.inv_res.filter_lengths,
+        )
+        _, inv_res_in_channels, _ = init_convs.compute_output_shape()
+        idx = 0
+        for t, c, n, s, k in inv_res_cfg:
+            for i in range(n):
+                inv_res_blk = InvertedResidual(
+                    inv_res_in_channels,
+                    out_channels=c,
+                    expansion=t,
+                    filter_length=k,
+                    stride=s if i == 0 else 1,
+                    groups=self.config.groups,
+                    batch_norm=self.config.batch_norm,
+                    activation=self.config.activation,
+                    width_multiplier=self.config.width_multiplier,
+                )
+                self.add_module(
+                    f"inv_res_{idx}",
+                    inv_res_blk,
+                )
+                _, inv_res_in_channels, _ = inv_res_blk.compute_output_shape()
+                idx += 1
+
+        # final conv(s)
+        # no alpha applied to last conv as stated in the paper
+        if isinstance(self.config.final_num_filters, int):
+            init_convs = Conv_Bn_Activation(
+                in_channels=inv_res_in_channels,
+                out_channels=self.config.final_num_filters,
+                kernel_size=self.config.final_filter_lengths,
+                stride=self.config.final_subsample_lengths,
+                groups=self.config.groups,
+                batch_norm=self.config.batch_norm,
+                activation=self.config.activation,
+                bias=self.config.bias,
+                width_multiplier=max(1.0, self.config.width_multiplier),
+            )
+        else:
+            init_convs = MultiConv(
+                in_channels=self.__in_channels,
+                out_channels=self.config.final_num_filters,
+                filter_lengths=self.config.final_filter_lengths,
+                subsample_lengths=self.config.final_subsample_length,
+                groups=self.config.groups,
+                batch_norm=self.config.batch_norm,
+                activation=self.config.activation,
+                bias=self.config.bias,
+                width_multiplier=max(1.0, self.config.width_multiplier),
+            )
+        self.add_module(
+            "final_convs",
+            final_convs,
+        )
+
+    def forward(self, input:Tensor) -> Tensor:
         """ NOT finished, NOT checked,
 
         Parameters
         ----------
-        """
-        raise NotImplementedError
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
 
-    def compute_output_shape(self):
+        Returns
+        -------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+        """
+        output = super().forward(input)
+        return output
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ NOT finished, NOT checked,
 
         Parameters
         ----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns
+        -------
+        output_shape: sequence,
+            the output shape of this block, given `seq_len` and `batch_size`
         """
-        raise NotImplementedError
+        _seq_len = seq_len
+        for module in self:
+            output_shape = module.compute_output_shape(_seq_len, batch_size)
+            _, _, _seq_len = output_shape
+        return output_shape
+
+    @property
+    def module_size(self):
+        """
+        """
+        return compute_module_size(self)
 
 
 class MobileNetV3(nn.Module):
