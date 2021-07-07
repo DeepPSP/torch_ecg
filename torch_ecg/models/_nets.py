@@ -378,7 +378,7 @@ class Conv_Bn_Activation(nn.Sequential):
         self.__width_multiplier = kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1.0
         self.__out_channels = int(self.__width_multiplier * self.__out_channels)
         assert self.__out_channels % self.__groups == 0, \
-            f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` not divisible by `groups` (= {self.__groups})"
+            f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` (= {self.__out_channels}) not divisible by `groups` (= {self.__groups})"
 
         if self.__conv_type is None:
             conv_layer = nn.Conv1d(

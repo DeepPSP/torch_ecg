@@ -458,25 +458,162 @@ class MobileNetV1(nn.Sequential):
 
 class InvertedResidual(nn.Module):
     """
+
+    inverted residual block
+
+    expansion (via pointwise conv) --> depthwise conv --> pointwise conv (without activation) ---> output
+        |                                                                                      |
+        |----------------------- shortcut (only under certain condition) ----------------------|
     """
     __DEBUG__ = True
     __name__ = "InvertedResidual"
 
-    def __init__(self, in_channels:int, out_channels:int, expanded_channels:int, filter_length:int, stride:int, groups:int, activation:str, use_se:bool, width_mult:float) -> NoReturn:
-        """
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:int,
+                 expansion:float,
+                 filter_length:int,
+                 stride:int,
+                 groups:int,
+                 batch_norm:Union[bool,str,nn.Module]=True,
+                 activation:Optional[Union[str,nn.Module]]="relu6",
+                 width_multiplier:float=1.0,
+                 use_se:bool=True) -> NoReturn:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        in_channels: int,
+            number of channels in the input signal
+        out_channels: int,
+            number of channels produced by the convolution
+        expansion: float,
+            expansion of the first pointwise convolution
+        filter_length: int,
+            size (length) of the middle depthwise convolution kernel
+        stride: int,
+            stride (subsample length) of the middle depthwise convolution
+        groups: int, default 1,
+            connection pattern (of channels) of the inputs and outputs
+        batch_norm: bool or str or Module, default True,
+            (batch) normalization, or other normalizations, e.g. group normalization
+            (the name of) the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
+        activation: str or Module, default "relu6",
+            name or Module of the activation, except for the last pointwise convolution
         """
         super().__init__()
-        raise NotImplementedError
+        self.__in_channels = in_channels
+        self.__out_channels = out_channels
+        self.__expansion = expansion
+        self.__mid_channels = int(round(self.__expansion * self.__in_channels))
+        self.__filter_length = filter_length
+        self.__stride = stride
+        self.__groups = groups
+        assert self.__mid_channels % self.__groups == 0, \
+            f"expansion ratio (input is {self.__expansion}) makes mid-channels (= {self.__mid_channels}) not divisible by `groups` (={self.__groups})"
+        self.__width_multiplier = width_multiplier
 
-    def forward(self,):
-        """
-        """
-        raise NotImplementedError
+        self.main_stream = nn.Sequential()
+        conv_in_channels = self.__in_channels
+        if self.__expansion != 1:
+            # expand, pointwise
+            expansion = Conv_Bn_Activation(
+                conv_in_channels,
+                self.__mid_channels,
+                kernel_size=1,
+                stride=1,
+                groups=self.__groups,
+                batch_norm=batch_norm,
+                activation=activation,
+                # width_multiplier=width_multiplier,
+            )
+            self.main_stream.add_module(
+                "expansion",
+                expansion,
+            )
+            _, conv_in_channels, _ = expansion.compute_output_shape()
+        # depthwise convolution
+        dw = Conv_Bn_Activation(
+            conv_in_channels,
+            conv_in_channels,
+            kernel_size=self.__filter_length,
+            stride=self.__stride,
+            groups=conv_in_channels,
+            batch_norm=batch_norm,
+            activation=activation,
+            # width_multiplier=width_multiplier,
+        )
+        self.main_stream.add_module(
+            "depthwise_conv",
+            dw,
+        )
+        _, conv_in_channels, _ = dw.compute_output_shape()
+        # pointwise conv without non-linearity (activation)
+        pw_linear = Conv_Bn_Activation(
+            conv_in_channels,
+            self.__out_channels,
+            kernel_size=1,
+            stride=1,
+            groups=self.__groups,
+            bias=False,
+            batch_norm=batch_norm,
+            activation=None,
+            width_multiplier=width_multiplier,
+        )
+        self.main_stream.add_module(
+            "pointwise_conv",
+            pw_linear,
+        )
+        _, self.__out_channels, _ = pw_linear.compute_output_shape()
 
-    def compute_output_shape(self):
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns
+        -------
+        out: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+        """
+        out = self.main_stream(input)
+
+        if self.__stride == 1 and self.__in_channels == self.__out_channels:
+            # NOTE the condition that skip connections are done
+            # which is different from ResNet
+            out = out + input
+
+        return out
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns
+        -------
+        output_shape: sequence,
+            the output shape of this block, given `seq_len` and `batch_size`
+        """
+        _seq_len = seq_len
+        for module in self.main_stream:
+            output_shape = module.compute_output_shape(_seq_len, batch_size)
+            _, _, _seq_len = output_shape
+        return output_shape
+
+    @property
+    def module_size(self) -> int:
         """
         """
-        raise NotImplementedError
+        return compute_module_size(self)
 
 
 class MobileNetV2(nn.Module):
@@ -484,24 +621,37 @@ class MobileNetV2(nn.Module):
 
     References
     ----------
-    [1] https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv2.py
+    1. Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
+    2. https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv2.py
     """
     __DEBUG__ = True
     __name__ = "MobileNetV2"
 
     def __init__(self, in_channels:int, **config) -> NoReturn:
-        """
+        """ NOT finished, NOT checked,
+
+        Parameters
+        ----------
         """
         super().__init__()
-        raise NotImplementedError
+        self.__in_channels = in_channels
+        self.config = ED(deepcopy(config))
+        if self.__DEBUG__:
+            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
     def forward(self,):
-        """
+        """ NOT finished, NOT checked,
+
+        Parameters
+        ----------
         """
         raise NotImplementedError
 
     def compute_output_shape(self):
-        """
+        """ NOT finished, NOT checked,
+
+        Parameters
+        ----------
         """
         raise NotImplementedError
 
@@ -511,7 +661,8 @@ class MobileNetV3(nn.Module):
 
     References
     ----------
-    [1] https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv3.py
+    1. Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019). Searching for mobilenetv3. In Proceedings of the IEEE International Conference on Computer Vision (pp. 1314-1324).
+    2. https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv3.py
     """
     __DEBUG__ = True
     __name__ = "MobileNetV3"
