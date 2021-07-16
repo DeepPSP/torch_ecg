@@ -3177,6 +3177,14 @@ class WeightedBCELoss(nn.Module):
 
     def forward(self, input:Tensor, target:Tensor) -> Tensor:
         """
+
+        Parameters
+        ----------
+        to write
+
+        Returns
+        -------
+        to write
         """
         if self.PosWeightIsDynamic:
             positive_counts = target.sum(dim=0)
@@ -3208,7 +3216,91 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
 
     def forward(self, input:Tensor, target:Tensor) -> Tensor:
         """
+
+        Parameters
+        ----------
+        to write
+
+        Returns
+        -------
+        to write
         """
         loss = super().forward(input, target)
         loss = torch.mean(loss * self.class_weight)
         return loss
+
+
+class FocalLoss(nn.modules.loss._WeightedLoss):
+    r"""
+
+    the focal loss is computed as follows:
+    .. math::
+        \operatorname{FL}(p_t) = -\alpha_t (1 - p_t)^{\gamma} \, \log(p_t)
+    Where:
+       - :math:`p_t` is the model's estimated probability for each class.
+
+    References
+    ----------
+    1. Lin, Tsung-Yi, et al. "Focal loss for dense object detection." Proceedings of the IEEE international conference on computer vision. 2017.
+    2. https://github.com/kornia/kornia/blob/master/kornia/losses/focal.py
+    3. https://github.com/clcarwin/focal_loss_pytorch/blob/master/focalloss.py
+    4. https://discuss.pytorch.org/t/is-this-a-correct-implementation-for-focal-loss-in-pytorch/43327
+    """
+    __name__ = "FocalLoss"
+
+    def __init__(self,
+                 gamma:float=2.0,
+                 weight:Optional[Tensor]=None,
+                 class_weight:Optional[Tensor]=None,  # alpha
+                 size_average:Optional[bool]=None,
+                 reduce:Optional[bool]=None,
+                 reduction:str="mean",
+                 multi_label:bool=True,
+                 **kwargs:Any) -> NoReturn:
+        """ NOT finished, NOT checked,
+
+        Parameters
+        ----------
+        to write
+        """
+        w = weight if multi_label else class_weight or weight
+        super().__init__(weight=w, size_average=size_average, reduce=reduce, reduction=reduction)
+        # In practice `alpha` may be set by inverse class frequency or treated as a hyperparameter
+        # the `class_weight` are usually inverse class frequencies
+        # self.alpha = alpha
+        self.gamma = gamma
+        if multi_label:
+            self.entropy_func = F.binary_cross_entropy_with_logits
+            # for `binary_cross_entropy_with_logits`,
+            # its parameter `weight` is a manual rescaling weight given to the loss of each batch element
+            self.class_weight = class_weight
+        else:
+            self.entropy_func = F.cross_entropy
+            # for `cross_entropy`,
+            # its parameter `weight` is a manual rescaling weight given to each class
+            self.class_weight = None
+
+    @property
+    def alpha(self):
+        return self.class_weight
+
+    def forward(self, input:Tensor, target:Tensor) -> Tensor:
+        """ NOT finished, NOT checked,
+
+        Parameters
+        ----------
+        to write
+
+        Returns
+        -------
+        to write
+        """
+        entropy = self.entropy_func(
+            input, target,
+            weight=self.weight, size_average=self.size_average, reduce=self.reduce, reduction=self._reduction,
+        )
+        p_t = torch.exp(-entropy)
+        fl = -torch.pow(1 - p_t, self.gamma) * entropy
+        if self.class_weight:
+            fl = fl * self.class_weight
+        return fl
