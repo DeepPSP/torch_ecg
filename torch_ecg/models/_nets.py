@@ -2625,6 +2625,93 @@ class GlobalContextBlock(nn.Module):
         return compute_module_size(self)
 
 
+class BAMBlock(nn.Module):
+    """
+
+    Bottleneck Attention Module (BMVC2018)
+
+    References
+    ----------
+    1. Park, Jongchan, et al. "Bam: Bottleneck attention module." arXiv preprint arXiv:1807.06514 (2018).
+    2. https://github.com/Jongchan/attention-module/blob/master/MODELS/bam.py
+    """
+    __DEBUG__ = True
+    __name__ = "BAMBlock"
+
+    def __init__(self,):
+        """
+        """
+        raise NotImplementedError
+
+
+class CBAMBlock(nn.Module):
+    """
+
+    Convolutional Block Attention Module (ECCV2018)
+
+    References
+    ----------
+    1. Woo, Sanghyun, et al. "Cbam: Convolutional block attention module." Proceedings of the European conference on computer vision (ECCV). 2018.
+    2. https://github.com/Jongchan/attention-module/blob/master/MODELS/cbam.py
+    """
+    __DEBUG__ = True
+    __name__ = "CBAMBlock"
+
+    def __init__(self,
+                 gate_channels:int,
+                 reduction:int=16,
+                 activation:Union[str,nn.Module]="relu",
+                 pool_types:List[str]=["avg", "max",],
+                 no_spatial:bool=False,
+                 **kwargs:Any) -> NoReturn:
+        """
+        """
+        super().__init__()
+        self.__gate_channels = gate_channels
+        self.__reduction = reduction
+        self.__pool_types = pool_types
+
+        # channel gate
+        self.channel_gate = MLP(
+            in_channels=self.__gate_channels,
+            out_channels=[self.__gate_channels//reduction, self.__gate_channels,],
+            activation=activation,
+            skip_last_activation=True,
+        )
+
+        # spatial gate
+
+
+    def _fwd_channel_gate(self, input:Tensor) -> Tensor:
+        """
+        """
+        raise NotImplementedError
+
+    def _fwd_spatial_gate(self,):
+        """
+        """
+        raise NotImplementedError
+
+    def forward(self, input:Tensor) -> Tensor:
+        """
+        """
+        raise NotImplementedError
+
+
+class CoordAttention(nn.Module):
+    """
+
+    References
+    ----------
+    1. Hou, Qibin, Daquan Zhou, and Jiashi Feng. "Coordinate attention for efficient mobile network design." Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021.
+    2. https://github.com/Andrew-Qibin/CoordAttention
+    """
+    def __init__(self,):
+        """
+        """
+        raise NotImplementedError
+
+
 class CRF(nn.Module):
     """Conditional random field, modified from [1]
 
