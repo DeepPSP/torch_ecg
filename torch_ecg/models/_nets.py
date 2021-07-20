@@ -1252,8 +1252,8 @@ class BidirectionalLSTM(nn.Module):
         return_sequences: bool, default True,
             if True, returns the the full output sequence,
             otherwise the last output in the output sequence
-        kwargs: dict,
-            other parameters,
+        kwargs: dict, optional,
+            extra parameters
         """
         super().__init__()
         self.__output_size = 2 * hidden_size
@@ -1346,8 +1346,8 @@ class StackedLSTM(nn.Sequential):
         return_sequences: bool, default True,
             if True, returns the the full output sequence,
             otherwise the last output in the output sequence
-        kwargs: dict,
-            other parameters,
+        kwargs: dict, optional,
+            extra parameters
         """
         super().__init__()
         self.__hidden_sizes = hidden_sizes
@@ -1708,8 +1708,10 @@ class MultiHeadAttention(nn.Module):
             Number of heads.
         bias: bool, default True,
             Whether to use the bias term.
-        activation: str or Module,
+        activation: str or Module, default "relu",
             The activation after each linear transformation.
+        kwargs: dict, optional,
+            extra parameters
         """
         super().__init__()
         if in_features % head_num != 0:
@@ -1831,7 +1833,11 @@ class SelfAttention(nn.Module):
         dropout: float, default 0,
             dropout factor for out projection weight of MHA
         bias: bool, default True,
-            whether to use the bias term.
+            whether to use the bias term
+        activation: str or Module, default "relu",
+            The activation after each linear transformation.
+        kwargs: dict, optional,
+            extra parameters
         """
         super().__init__()
         if in_features % head_num != 0:
@@ -1905,6 +1911,8 @@ class AttentivePooling(nn.Module):
             name of the activation or an activation `Module`
         dropout: float, default 0.2,
             dropout ratio before computing attention scores
+        kwargs: dict, optional,
+            extra parameters
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -2069,6 +2077,8 @@ class SeqLin(nn.Sequential):
             if True, each linear layer will have a learnable bias vector
         dropouts: float or sequence of float, default 0,
             dropout ratio(s) (if > 0) after each (activation after each) linear layer
+        kwargs: dict, optional,
+            extra parameters
 
         TODO
         ----
@@ -2204,6 +2214,8 @@ class MLP(SeqLin):
             if True, each linear layer will have a learnable bias vector
         dropouts: float or sequence of float, default 0,
             dropout ratio(s) (if > 0) after each (activation after each) linear layer
+        kwargs: dict, optional,
+            extra parameters
         """
         super().__init__(in_channels, out_channels, activation, kernel_initializer, bias, dropouts, **kwargs)
 
@@ -2672,10 +2684,33 @@ class CBAMBlock(nn.Module):
                  reduction:int=16,
                  groups:int=1,
                  activation:Union[str,nn.Module]="relu",
-                 pool_types:List[str]=["avg", "max",],
+                 pool_types:Sequence[str]=["avg", "max",],
                  no_spatial:bool=False,
                  **kwargs:Any) -> NoReturn:
-        """
+        """ finished, checked,
+
+        Parameters
+        ----------
+        gate_channels: int,
+            number of input channels of the gates
+        reduction: int, default 16,
+            reduction ratio of the channel gate
+        groups: int, default 1,
+            not used currently, might be used later, for some possible ``grouped channel gate``
+        activation: str or Module, default "relu",
+            activation of the channel gate
+        pool_types: sequence of str, default ["avg", "max",],
+            pooling types of the channel gate
+        no_spatial: bool, default False,
+            if True, spatial gate would be skipped
+        kwargs: dict, optional,
+            extra parameters, including
+            lp_norm_type: float, default 2.0,
+                norm type for the possible lp norm pooling in the channel gate
+            spatial_conv_kernel_size: int, default 7,
+                kernel size of the convolution in the spatial gate
+            spatial_conv_bn: bool or str or Module, default "batch_norm",
+                normalization of the convolution in the spatial gate
         """
         super().__init__()
         self.__gate_channels = gate_channels
@@ -2715,7 +2750,19 @@ class CBAMBlock(nn.Module):
             )
 
     def _fwd_channel_gate(self, input:Tensor) -> Tensor:
-        """
+        """ finished, checked,
+
+        forward function of the channel gate
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns
+        -------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         channel_att_sum = None
         for pool_type in self.__pool_types:
@@ -2730,7 +2777,19 @@ class CBAMBlock(nn.Module):
         return output
 
     def _fwd_spatial_gate(self, input:Tensor) -> Tensor:
-        """
+        """ finished, checked,
+
+        forward function of the spatial gate
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns
+        -------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         if self.spatial_gate_conv is None:
             return input
@@ -2740,21 +2799,82 @@ class CBAMBlock(nn.Module):
         output = scale * input
         return output
 
-    def _lse_pool(self, input:Tensor) -> Tensor:
-        """
-        """
-        return torch.logsumexp(input, dim=-1)
-
     def _lp_pool(self, input:Tensor) -> Tensor:
-        """
+        """ finished, checked,
+
+        global power-average pooling over `input`
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns
+        -------
+        Tensor,
+            of shape (batch_size, n_channels, 1)
         """
         return F.lp_pool1d(input, norm_type=self.__lp_norm_type, kernel_size=x.shape[-1])
 
-    def forward(self, input:Tensor) -> Tensor:
+    def _lse_pool(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        global logsumexp pooling over `input`
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns
+        -------
+        Tensor,
+            of shape (batch_size, n_channels, 1)
         """
+        return torch.logsumexp(input, dim=-1)
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        forward function of the `CBAMBlock`,
+        first channel gate, then (optional) spatial gate
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns
+        -------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
         """
         output = self._fwd_spatial_gate(self._fwd_channel_gate(input))
         return output
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        seq_len: int, optional,
+            length of the 1d sequence,
+            if is None, then the input is composed of single feature vectors for each batch
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns
+        -------
+        output_shape: sequence,
+            the output shape of this layer, given `seq_len` and `batch_size`
+        """
+        return (batch_size, seq_len, self.__gate_channels)
+
+    @property
+    def module_size(self) -> int:
+        """
+        """
+        return compute_module_size(self)
 
 
 class CoordAttention(nn.Module):
