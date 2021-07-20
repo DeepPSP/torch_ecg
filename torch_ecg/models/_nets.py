@@ -2868,7 +2868,7 @@ class CBAMBlock(nn.Module):
         output_shape: sequence,
             the output shape of this layer, given `seq_len` and `batch_size`
         """
-        return (batch_size, seq_len, self.__gate_channels)
+        return (batch_size, self.__gate_channels, seq_len)
 
     @property
     def module_size(self) -> int:
