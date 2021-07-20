@@ -35,6 +35,7 @@ __all__ = [
     "Bn_Activation", "Conv_Bn_Activation", "CBA",
     "MultiConv", "BranchedConv",
     "SeparableConv",
+    "DeformConv",
     "DownSample",
     "BidirectionalLSTM", "StackedLSTM",
     # "AML_Attention", "AML_GatedAttention",
@@ -44,8 +45,10 @@ __all__ = [
     "ZeroPadding",
     "SeqLin", "MLP",
     "NonLocalBlock", "SEBlock", "GlobalContextBlock",
+    "CBAMBlock", "BAMBlock", "CoordAttention",
     "CRF", "ExtendedCRF",
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
+    "FocalLoss",
 ]
 
 
@@ -418,7 +421,9 @@ class Conv_Bn_Activation(nn.Sequential):
             if isinstance(batch_norm, bool):
                 bn_layer = nn.BatchNorm1d(bn_in_channels, **kw_bn)
             elif isinstance(batch_norm, str):
-                if batch_norm.lower() in ["instance_norm", "instance_normalization",]:
+                if batch_norm.lower() in ["batch_norm", "batch_normalization",]:
+                    bn_layer = nn.BatchNorm1d(bn_in_channels, **kw_bn)
+                elif batch_norm.lower() in ["instance_norm", "instance_normalization",]:
                     bn_layer = nn.InstanceNorm1d(bn_in_channels, **kw_bn)
                 elif batch_norm.lower() in ["group_norm", "group_normalization",]:
                     bn_layer = nn.GroupNorm(self.__groups, bn_in_channels, **kw_bn)
@@ -1042,7 +1047,7 @@ class DownSample(nn.Sequential):
     the "conv" mode is not simply down "sampling" if `group` != `in_channels`
     """
     __name__ = "DownSample"
-    __MODES__ = ["max", "avg", "conv", "nearest", "area", "linear",]
+    __MODES__ = ["max", "avg", "lp", "lse", "conv", "nearest", "area", "linear",]
 
     def __init__(self,
                  down_scale:int,
@@ -2064,6 +2069,10 @@ class SeqLin(nn.Sequential):
             if True, each linear layer will have a learnable bias vector
         dropouts: float or sequence of float, default 0,
             dropout ratio(s) (if > 0) after each (activation after each) linear layer
+
+        TODO
+        ----
+        Can one have grouped linear layers?
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -2656,10 +2665,12 @@ class CBAMBlock(nn.Module):
     """
     __DEBUG__ = True
     __name__ = "CBAMBlock"
+    __POOL_TYPES__ = ["avg", "max", "lp", "lse",]
 
     def __init__(self,
                  gate_channels:int,
                  reduction:int=16,
+                 groups:int=1,
                  activation:Union[str,nn.Module]="relu",
                  pool_types:List[str]=["avg", "max",],
                  no_spatial:bool=False,
@@ -2669,10 +2680,20 @@ class CBAMBlock(nn.Module):
         super().__init__()
         self.__gate_channels = gate_channels
         self.__reduction = reduction
+        self.__groups = groups
         self.__pool_types = pool_types
+        self.__pool_funcs = {
+            "avg": nn.AdaptiveAvgPool1d(1),
+            "max": nn.AdaptiveMaxPool1d(1),
+            "lp": self._lp_pool,
+            "lse": self._lse_pool,
+        }
+        self.__lp_norm_type = kwargs.get("lp_norm_type", 2.0)
+        self.__spatial_conv_kernel_size = kwargs.get("spatial_conv_kernel_size", 7)
+        self.__spatial_conv_bn = kwargs.get("spatial_conv_bn", "batch_norm")
 
         # channel gate
-        self.channel_gate = MLP(
+        self.channel_gate_mlp = MLP(
             in_channels=self.__gate_channels,
             out_channels=[self.__gate_channels//reduction, self.__gate_channels,],
             activation=activation,
@@ -2680,26 +2701,66 @@ class CBAMBlock(nn.Module):
         )
 
         # spatial gate
-
+        if no_spatial:
+            self.spatial_gate_conv = None
+        else:
+            self.spatial_gate_conv = Conv_Bn_Activation(
+                in_channels=2,
+                out_channels=1,
+                kernel_size=self.__spatial_conv_kernel_size,
+                stride=1,
+                # groups=self.__groups,
+                batch_norm=self.__spatial_conv_bn,
+                activation="sigmoid",
+            )
 
     def _fwd_channel_gate(self, input:Tensor) -> Tensor:
         """
         """
-        raise NotImplementedError
+        channel_att_sum = None
+        for pool_type in self.__pool_types:
+            pool_func = self.__pool_funcs[pool_type]
+            channel_att_raw = self.channel_gate_mlp(pool_func(input).flatten(1, -1))
+            if channel_att_sum is None:
+                channel_att_sum = channel_att_raw
+            else:
+                channel_att_sum = channel_att_sum + channel_att_raw
+        scale = torch.sigmoid(channel_att_sum)
+        output = scale.unsqueeze(-1) * input
+        return output
 
-    def _fwd_spatial_gate(self,):
+    def _fwd_spatial_gate(self, input:Tensor) -> Tensor:
         """
         """
-        raise NotImplementedError
+        if self.spatial_gate_conv is None:
+            return input
+        # channel pool, `scale` has n_channels = 2
+        scale = torch.cat( (input.max(dim=1,keepdim=True)[0], input.mean(dim=1,keepdim=True) ), dim=1)
+        scale = self.spatial_gate_conv(scale)
+        output = scale * input
+        return output
+
+    def _lse_pool(self, input:Tensor) -> Tensor:
+        """
+        """
+        return torch.logsumexp(input, dim=-1)
+
+    def _lp_pool(self, input:Tensor) -> Tensor:
+        """
+        """
+        return F.lp_pool1d(input, norm_type=self.__lp_norm_type, kernel_size=x.shape[-1])
 
     def forward(self, input:Tensor) -> Tensor:
         """
         """
-        raise NotImplementedError
+        output = self._fwd_spatial_gate(self._fwd_channel_gate(input))
+        return output
 
 
 class CoordAttention(nn.Module):
     """
+
+    Coordinate attention
 
     References
     ----------
