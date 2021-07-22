@@ -186,6 +186,27 @@ Normalizations.local_response_normalization = Normalizations.local_response_norm
 # and ref. Zhou, Xiao-Yun, et al. "Batch Group Normalization." arXiv preprint arXiv:2012.02782 (2020).
 # problem: parameters of different normalizations are different
 
+def _get_normalization(normalization:str, in_channels:Optional[int]=None, **kwargs:Any) -> nn.Module:
+    """ NOT finished, NOT checked,
+    """
+    # if normalization.lower() in Normalizations:
+    #     norm_layer = Normalizations.get(normalization.lower())
+    if normalization.lower() in ["batch_norm", "batch_normalization",]:
+        norm_layer = nn.BatchNorm1d(in_channels, **kwargs)
+    elif normalization.lower() in ["instance_norm", "instance_normalization",]:
+        norm_layer = nn.InstanceNorm1d(in_channels, **kwargs)
+    elif normalization.lower() in ["group_norm", "group_normalization",]:
+        if "groups" not in kwargs:
+            raise ValueError(f"One has to specify `groups` (number of groups) to use `GroupNorm`!")
+        norm_layer = nn.GroupNorm(num_channels=in_channels, **kwargs)
+    elif normalization.lower() in ["layer_norm", "layer_normalization",]:
+        norm_layer = nn.LayerNorm(**kwargs)
+    else:
+        raise ValueError(f"normalization method {normalization} not supported yet!")
+    return norm_layer
+
+
+# ---------------------------------------------
 
 _DEFAULT_CONV_CONFIGS = ED(
     batch_norm=True,
@@ -210,6 +231,7 @@ class Bn_Activation(nn.Sequential):
 
     def __init__(self, 
                  num_features:int,
+                 batch_norm:Union[bool,str,nn.Module],
                  activation:Union[str,nn.Module],
                  kw_activation:Optional[dict]=None, 
                  dropout:float=0.0) -> NoReturn:
@@ -219,6 +241,9 @@ class Bn_Activation(nn.Sequential):
         ----------
         num_features: int,
             number of features (channels) of the input (and output)
+        batch_norm: bool or str or Module, default True,
+            (batch) normalization, or other normalizations, e.g. group normalization
+            (the name of) the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
         activation: str or Module,
             name of the activation or an activation `Module`
         kw_activation: dict, optional,
@@ -237,7 +262,7 @@ class Bn_Activation(nn.Sequential):
             act_layer = Activations[activation.lower()](**self.__kw_activation)
             act_name = f"activation_{activation.lower()}"
 
-        self.add_module(
+        self.add_module(  # TODO: add other normalizations
             "batch_norm",
             nn.BatchNorm1d(num_features),
         )
@@ -2461,6 +2486,7 @@ class GEBlock(nn.Module):
     [1] Hu, J., Shen, L., Albanie, S., Sun, G., & Vedaldi, A. (2018). Gather-excite: Exploiting feature context in convolutional neural networks. Advances in neural information processing systems, 31, 9401-9411.
     [2] https://github.com/hujie-frank/GENet
     [3] https://github.com/BayesWatch/pytorch-GENet
+    [4] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/gather_excite.py
     """
     __DEBUG__ = True
     __name__ = "GEBlock"
@@ -2675,7 +2701,7 @@ class CBAMBlock(nn.Module):
     1. Woo, Sanghyun, et al. "Cbam: Convolutional block attention module." Proceedings of the European conference on computer vision (ECCV). 2018.
     2. https://github.com/Jongchan/attention-module/blob/master/MODELS/cbam.py
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "CBAMBlock"
     __POOL_TYPES__ = ["avg", "max", "lp", "lse",]
 
@@ -2684,6 +2710,7 @@ class CBAMBlock(nn.Module):
                  reduction:int=16,
                  groups:int=1,
                  activation:Union[str,nn.Module]="relu",
+                 gate:Union[str,nn.Module]="sigmoid",
                  pool_types:Sequence[str]=["avg", "max",],
                  no_spatial:bool=False,
                  **kwargs:Any) -> NoReturn:
@@ -2698,7 +2725,9 @@ class CBAMBlock(nn.Module):
         groups: int, default 1,
             not used currently, might be used later, for some possible ``grouped channel gate``
         activation: str or Module, default "relu",
-            activation of the channel gate
+            activation after the convolutions in the channel gate
+        gate: str or Module, default "sigmoid",
+            activation gate of the channel gate
         pool_types: sequence of str, default ["avg", "max",],
             pooling types of the channel gate
         no_spatial: bool, default False,
@@ -2734,6 +2763,13 @@ class CBAMBlock(nn.Module):
             activation=activation,
             skip_last_activation=True,
         )
+        # self.channel_gate_act = nn.Sigmoid()
+        if isinstance(gate, str):
+            self.channel_gate_act = Activations[gate.lower()]()
+        elif isinstance(gate, nn.Module):
+            self.channel_gate_act = gate
+        else:
+            raise ValueError(f"Unsupported gate activation {gate}!")
 
         # spatial gate
         if no_spatial:
@@ -2772,7 +2808,8 @@ class CBAMBlock(nn.Module):
                 channel_att_sum = channel_att_raw
             else:
                 channel_att_sum = channel_att_sum + channel_att_raw
-        scale = torch.sigmoid(channel_att_sum)
+        # scale = torch.sigmoid(channel_att_sum)
+        scale = self.channel_gate_act(channel_att_sum)
         output = scale.unsqueeze(-1) * input
         return output
 
@@ -2887,6 +2924,9 @@ class CoordAttention(nn.Module):
     1. Hou, Qibin, Daquan Zhou, and Jiashi Feng. "Coordinate attention for efficient mobile network design." Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021.
     2. https://github.com/Andrew-Qibin/CoordAttention
     """
+    __DEBUG__ = True
+    __name__ = "CoordAttention"
+
     def __init__(self,):
         """
         """
