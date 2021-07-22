@@ -1255,6 +1255,11 @@ class DownSample(nn.Sequential):
 
 class BlurPool(nn.Module):
     """
+
+    References
+    ----------
+    1. to add paper
+    2. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py
     """
     __DEBUG__ = True
     __name__ = "BlurPool"
@@ -1264,7 +1269,7 @@ class BlurPool(nn.Module):
                  in_channels:int,
                  filt_size:int=3,
                  out_channels:Optional[int]=None,) -> NoReturn:
-        """
+        """ NOT finished, NOT checked,
         """
         raise NotImplementedError
 
