@@ -1072,7 +1072,7 @@ class DownSample(nn.Sequential):
     the "conv" mode is not simply down "sampling" if `group` != `in_channels`
     """
     __name__ = "DownSample"
-    __MODES__ = ["max", "avg", "lp", "lse", "conv", "nearest", "area", "linear",]
+    __MODES__ = ["max", "avg", "lp", "lse", "conv", "nearest", "area", "linear", "blur",]
 
     def __init__(self,
                  down_scale:int,
@@ -1165,6 +1165,14 @@ class DownSample(nn.Sequential):
                 bias=False,
                 stride=self.__down_scale,
             )
+        elif self.__mode = "nearest":
+            raise NotImplementedError
+        elif self.__mode = "area":
+            raise NotImplementedError
+        elif self.__mode = "linear":
+            raise NotImplementedError
+        elif self.__mode = "blur":
+            raise NotImplementedError
         else:
             down_layer = None
         if down_layer:
@@ -1243,6 +1251,22 @@ class DownSample(nn.Sequential):
         """
         """
         return compute_module_size(self)
+
+
+class BlurPool(nn.Module):
+    """
+    """
+    __DEBUG__ = True
+    __name__ = "BlurPool"
+
+    def __init__(self,
+                 down_scale:int,
+                 in_channels:int,
+                 filt_size:int=3,
+                 out_channels:Optional[int]=None,) -> NoReturn:
+        """
+        """
+        raise NotImplementedError
 
 
 class BidirectionalLSTM(nn.Module):
