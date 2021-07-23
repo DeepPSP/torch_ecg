@@ -1258,8 +1258,9 @@ class BlurPool(nn.Module):
 
     References
     ----------
-    1. to add paper
+    1. Zhang, Richard. "Making convolutional networks shift-invariant again." International conference on machine learning. PMLR, 2019.
     2. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py
+    3. https://github.com/kornia/kornia/blob/master/kornia/filters/blur_pool.py
     """
     __DEBUG__ = True
     __name__ = "BlurPool"
@@ -1267,10 +1268,13 @@ class BlurPool(nn.Module):
     def __init__(self,
                  down_scale:int,
                  in_channels:int,
-                 filt_size:int=3,
-                 out_channels:Optional[int]=None,) -> NoReturn:
+                 filt_size:int=3,) -> NoReturn:
         """ NOT finished, NOT checked,
         """
+        super().__init__()
+        self.__down_scale = down_scale
+        self.__in_channels = in_channels
+        self.__filt_size = filt_size
         raise NotImplementedError
 
 
