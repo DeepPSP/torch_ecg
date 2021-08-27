@@ -293,6 +293,12 @@ def train(model:nn.Module,
                     logger.info(f"failed to remove {model_to_remove}")
 
     writer.close()
+    
+    if logger:
+        for h in logger.handlers:
+            h.close()
+            logger.removeHandler(h)
+        del logger
     logging.shutdown()
 
 
