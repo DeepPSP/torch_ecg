@@ -465,6 +465,12 @@ def train(model:nn.Module,
             logger.info(f"Best model saved to {save_path}!")
 
     writer.close()
+    
+    if logger:
+        for h in logger.handlers:
+            h.close()
+            logger.removeHandler(h)
+        del logger
     logging.shutdown()
 
     return best_state_dict

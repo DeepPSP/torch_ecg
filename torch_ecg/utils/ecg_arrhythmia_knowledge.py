@@ -37,20 +37,26 @@ References
 
 NOTE that wikipedia is NOT listed in the References
 """
+from io import StringIO
+
+import pandas as pd
 from easydict import EasyDict as ED
 
 
 __all__ = [
     "AF", "AFL",  # atrial
-    "IAVB", "LBBB", "RBBB", "CRBBB", "IRBBB", "LAnFB", "NSIVCB",  # conduction block
+    "IAVB", "LBBB", "CLBBB", "RBBB", "CRBBB", "IRBBB", "LAnFB", "NSIVCB", "BBB",  # conduction block
     "PAC", "PJC", "PVC", "SPB",  # premature: qrs, morphology
     "LPR", "LQT", "QAb", "TAb", "TInv",  # wave morphology
     "LAD", "RAD",  # axis
-    "Brady", "LQRSV",  # qrs (RR interval, amplitude)
+    "Brady", "LQRSV", "PRWP",  # qrs (RR interval, amplitude)
     "SA", "SB", "NSR", "STach",  # sinus
     "PR",  # pacer
     "STD", "STE",  # ST segments
 ]
+
+
+_snomedbrowser_url = "https://snomedbrowser.com/Codes/Details/"
 
 
 AF = ED({  # rr, morphology
@@ -97,7 +103,14 @@ Brady = ED({  # rr
     ],
 })
 
-IAVB = {  # morphology
+BBB = ED({  # morphology
+    "fullname": "bundle branch block",
+    "url": [
+    ],
+    "knowledge": [],
+})
+
+IAVB = ED({  # morphology
     "fullname": "1st degree av block",
     "url": [
         "https://litfl.com/first-degree-heart-block-ecg-library/",
@@ -109,7 +122,7 @@ IAVB = {  # morphology
         "P waves might be buried in the preceding T wave",
         "there are no dropped, or skipped, beats",
     ],
-}
+})
 
 LBBB = ED({  # morphology
     "fullname": "left bundle branch block",
@@ -125,6 +138,14 @@ LBBB = ED({  # morphology
         "chest (precordial) leads: poor R wave progression",
         "left precordial leads (V5-6): prolonged R wave peak time > 60ms",
         "ST segments and T waves always go in the opposite direction to the main vector of the QRS complex",
+    ],
+})
+
+CLBBB = ED({  # morphology
+    "fullname": "complete left bundle branch block",
+    "url": [
+    ],
+    "knowledge": [
     ],
 })
 
@@ -185,9 +206,21 @@ LQRSV = ED({  # voltage
     "fullname": "low qrs voltages",
     "url": [
         "https://litfl.com/low-qrs-voltage-ecg-library/",
+        "https://www.healio.com/cardiology/learn-the-heart/ecg-review/ecg-topic-reviews-and-criteria/low-voltage-review",
     ],
     "knowledge": [
-        "amplitudes of all the QRS complexes in the limb leads are < 5mm (0.5mV); or  amplitudes of all the QRS complexes in the precordial leads are < 10mm (1mV)",
+        "peak-to-peak (VERY IMPORTANT) amplitudes of all the QRS complexes in the limb leads are < 5mm (0.5mV); or amplitudes of all the QRS complexes in the precordial leads are < 10mm (1mV)",
+    ],
+})
+
+PRWP = ED({  # voltage
+    "fullname": "poor R wave progression",
+    "url": [
+        "https://litfl.com/poor-r-wave-progression-prwp-ecg-library/",
+        "https://www.healio.com/cardiology/learn-the-heart/ecg-review/ecg-topic-reviews-and-criteria/poor-r-wave-progression",
+    ],
+    "knowledge": [
+        "absence of the normal increase in size of the R wave in the precordial leads when advancing from lead V1 to V6",
     ],
 })
 
@@ -442,3 +475,147 @@ STE = ED({
         "",
     ],
 })
+
+
+_dx_mapping = pd.read_csv(StringIO("""Dx,SNOMEDCTCode,Abbreviation
+atrial fibrillation,164889003,AF
+atrial flutter,164890007,AFL
+bundle branch block,6374002,BBB
+bradycardia,426627000,Brady
+complete left bundle branch block,733534002,CLBBB
+complete right bundle branch block,713427006,CRBBB
+1st degree av block,270492004,IAVB
+incomplete right bundle branch block,713426002,IRBBB
+left axis deviation,39732003,LAD
+left anterior fascicular block,445118002,LAnFB
+left bundle branch block,164909002,LBBB
+low qrs voltages,251146004,LQRSV
+nonspecific intraventricular conduction disorder,698252002,NSIVCB
+sinus rhythm,426783006,NSR
+premature atrial contraction,284470004,PAC
+pacing rhythm,10370003,PR
+poor R wave Progression,365413008,PRWP
+premature ventricular contractions,427172004,PVC
+prolonged pr interval,164947007,LPR
+prolonged qt interval,111975006,LQT
+qwave abnormal,164917005,QAb
+right axis deviation,47665007,RAD
+right bundle branch block,59118001,RBBB
+sinus arrhythmia,427393009,SA
+sinus bradycardia,426177001,SB
+sinus tachycardia,427084000,STach
+supraventricular premature beats,63593006,SVPB
+t wave abnormal,164934002,TAb
+t wave inversion,59931005,TInv
+ventricular premature beats,17338001,VPB
+accelerated atrial escape rhythm,233892002,AAR
+abnormal QRS,164951009,abQRS
+atrial escape beat,251187003,AED
+accelerated idioventricular rhythm,61277005,AIVR
+accelerated junctional rhythm,426664006,AJR
+suspect arm ecg leads reversed,251139008,ALR
+acute myocardial infarction,57054005,AMI
+acute myocardial ischemia,413444003,AMIs
+anterior ischemia,426434006,AnMIs
+anterior myocardial infarction,54329005,AnMI
+atrial bigeminy,251173003,AB
+atrial fibrillation and flutter,195080001,AFAFL
+atrial hypertrophy,195126007,AH
+atrial pacing pattern,251268003,AP
+atrial rhythm,106068003,ARH
+atrial tachycardia,713422000,ATach
+av block,233917008,AVB
+atrioventricular dissociation,50799005,AVD
+atrioventricular junctional rhythm,29320008,AVJR
+atrioventricular  node reentrant tachycardia,251166008,AVNRT
+atrioventricular reentrant tachycardia,233897008,AVRT
+blocked premature atrial contraction,251170000,BPAC
+brugada,418818005,BRU
+brady tachy syndrome,74615001,BTS
+chronic atrial fibrillation,426749004,CAF
+countercolockwise rotation,251199005,CCR
+clockwise or counterclockwise vectorcardiographic loop,61721007,CVCL/CCVCL
+cardiac dysrhythmia,698247007,CD
+complete heart block,27885002,CHB
+congenital incomplete atrioventricular heart block,204384007,CIAHB
+coronary heart disease,53741008,CHD
+chronic myocardial ischemia,413844008,CMI
+clockwise rotation,251198002,CR
+diffuse intraventricular block,82226007,DIB
+early repolarization,428417006,ERe
+fusion beats,13640000,FB
+fqrs wave,164942001,FQRS
+heart failure,84114007,HF
+heart valve disorder,368009,HVD
+high t-voltage,251259000,HTV
+indeterminate cardiac axis,251200008,ICA
+2nd degree av block,195042002,IIAVB
+mobitz type II atrioventricular block,426183003,IIAVBII
+inferior ischaemia,425419005,IIs
+incomplete left bundle branch block,251120003,ILBBB
+inferior ST segment depression,704997005,ISTD
+idioventricular rhythm,49260003,IR
+junctional escape,426995002,JE
+junctional premature complex,251164006,JPC
+junctional tachycardia,426648003,JTach
+left atrial abnormality,253352002,LAA
+left atrial enlargement,67741000119109,LAE
+left atrial hypertrophy,446813000,LAH
+lateral ischaemia,425623009,LIs
+left posterior fascicular block,445211001,LPFB
+left ventricular hypertrophy,164873001,LVH
+left ventricular high voltage,55827005,LVHV
+left ventricular strain,370365005,LVS
+myocardial infarction,164865005,MI
+myocardial ischemia,164861001,MIs
+mobitz type i wenckebach atrioventricular block,54016002,MoI
+nonspecific st t abnormality,428750005,NSSTTA
+old myocardial infarction,164867002,OldMI
+paroxysmal atrial fibrillation,282825002,PAF
+prolonged P wave,251205003,PPW
+paroxysmal supraventricular tachycardia,67198005,PSVT
+paroxysmal ventricular tachycardia,425856008,PVT
+p wave change,164912004,PWC
+right atrial abnormality,253339007,RAAb
+r wave abnormal,164921003,RAb
+right atrial hypertrophy,446358003,RAH
+right atrial  high voltage,67751000119106,RAHV
+rapid atrial fibrillation,314208002,RAF
+right ventricular hypertrophy,89792004,RVH
+sinus atrium to atrial wandering rhythm,17366009,SAAWR
+sinoatrial block,65778007,SAB
+sinus arrest,5609005,SARR
+sinus node dysfunction,60423000,SND
+shortened pr interval,49578007,SPRI
+decreased qt interval,77867006,SQT
+s t changes,55930002,STC
+st depression,429622005,STD
+st elevation,164931005,STE
+st interval abnormal,164930006,STIAb
+supraventricular bigeminy,251168009,SVB
+supraventricular tachycardia,426761007,SVT
+transient ischemic attack,266257000,TIA
+tall p wave,251223006,TPW
+u wave abnormal,164937009,UAb
+ventricular bigeminy,11157007,VBig
+ventricular ectopics,164884008,VEB
+ventricular escape beat,75532003,VEsB
+ventricular escape rhythm,81898007,VEsR
+ventricular fibrillation,164896001,VF
+ventricular flutter,111288001,VFL
+ventricular hypertrophy,266249003,VH
+ventricular pre excitation,195060002,VPEx
+ventricular pacing pattern,251266004,VPP
+paired ventricular premature complexes,251182009,VPVC
+ventricular tachycardia,164895002,VTach
+ventricular trigeminy,251180001,VTrig
+wandering atrial pacemaker,195101003,WAP
+wolff parkinson white pattern,74390002,WPW"""))
+
+
+for ea_str in __all__:
+    ea = eval(ea_str)
+    try:
+        ea["url"].insert(0, f"{_snomedbrowser_url}{_dx_mapping[_dx_mapping.Abbreviation==ea_str]['SNOMEDCTCode'].values[0]}")
+    except:
+        pass
