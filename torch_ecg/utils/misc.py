@@ -8,11 +8,12 @@ from functools import reduce
 from collections import namedtuple
 from glob import glob
 from copy import deepcopy
-from typing import Union, Optional, List, Dict, Tuple, Sequence, NoReturn, Any
+from typing import Union, Optional, List, Dict, Tuple, Sequence, Iterable, NoReturn, Any
 from numbers import Real, Number
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
+import pandas as pd
 from scipy import interpolate
 from sklearn.utils import compute_class_weight
 from wfdb.io import _header
@@ -39,6 +40,7 @@ __all__ = [
     "ensure_lead_fmt", "ensure_siglen",
     "ECGWaveForm", "masks_to_waveforms",
     "list_sum",
+    "read_log_txt", "read_event_scalars",
 ]
 
 
@@ -809,3 +811,91 @@ def list_sum(l:Sequence[list]) -> list:
     """
     l_sum = reduce(lambda a,b: a+b, l, [])
     return l_sum
+
+
+def read_log_txt(fp:str,
+                 epoch_startswith:str="Train epoch_",
+                 scalar_startswith:Union[str,Iterable[str]]="train/|test/") -> pd.DataFrame:
+    """ finished, checked,
+
+    read from log txt file, in case tensorboard not working
+
+    Parameters
+    ----------
+    fp: str,
+        path to the log txt file
+    epoch_startswith: str,
+        indicator of the start of the start of an epoch
+    scalar_startswith: str or iterable of str,
+        indicators of the scalar recordings,
+        if is str, should be indicators separated by "|"
+    
+
+    Returns
+    -------
+    summary: DataFrame,
+        scalars summary, in the format of a pandas DataFrame
+    """
+    with open(fp, "r") as f:
+        content = f.read().splitlines()
+    if isinstance(scalar_startswith, str):
+        field_pattern = f"^({scalar_startswith})"
+    else:
+        field_pattern = f"""^({"|".join(scalar_startswith)})"""
+    summary = []
+    new_line = None
+    for l in content:
+        if l.startswith(epoch_startswith):
+            if new_line:
+                summary.append(new_line)
+            epoch = re.findall("[\d]+", l)[0]
+            new_line = {"epoch": epoch}
+        if re.findall(field_pattern, l):
+            field, val = l.split(":")
+            field = field.strip()
+            val = float(val.strip())
+            new_line[field] = val
+    summary.append(new_line)
+    summary = pd.DataFrame(summary)
+    return summary
+
+
+def read_event_scalars(fp:str, keys:Optional[Union[str,Iterable[str]]]=None) -> Union[pd.DataFrame,Dict[str,pd.DataFrame]]:
+    """ finished, checked,
+
+    read scalars from event file, in case tensorboard not working
+
+    Parameters
+    ----------
+    fp: str,
+        path to the event file
+    keys: str or iterable of str, optional,
+        field names of the scalars to read,
+        if is None, scalars of all fields will be read
+
+    Returns
+    -------
+    summary: DataFrame or dict of DataFrame
+        the wall_time, step, value of the scalars
+    """
+    try:
+        from tensorflow.python.summary.event_accumulator import EventAccumulator
+    except:
+        from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+    event_acc = EventAccumulator(fp)
+    event_acc.Reload()
+    if keys:
+        if isinstance(keys, str):
+            _keys = [keys]
+        else:
+            _keys = keys
+    else:
+        _keys = event_acc.scalars.Keys()
+    summary = {}
+    for k in _keys:
+        df = pd.DataFrame([[item.wall_time, item.step, item.value] for item in event_acc.scalars.Items(k)])
+        df.columns = ["wall_time", "step", "value"]
+        summary[k] = df
+    if isinstance(keys, str):
+        summary = summary[k]
+    return summary
