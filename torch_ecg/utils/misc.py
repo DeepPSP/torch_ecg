@@ -922,6 +922,13 @@ def dicts_equal(d1:dict, d2:dict) -> bool:
     ```python
     ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
     ```
+
+    Example
+    -------
+    >>> d1 = {"a": pd.DataFrame([{"hehe":1,"haha":2}])[["haha","hehe"]]}
+    >>> d2 = {"a": pd.DataFrame([{"hehe":1,"haha":2}])[["hehe","haha"]]}
+    >>> dicts_equal(d1, d2)
+    ... True
     """
     import torch
     if len(d1) != len(d2):
@@ -931,18 +938,21 @@ def dicts_equal(d1:dict, d2:dict) -> bool:
             return False
         if isinstance(v, dict) and not dicts_equal(v, d2[k]):
             return False
-        elif isinstance(v, np.ndarray) and not (v==d2[k]).all():
+        elif isinstance(v, np.ndarray) and (v.shape != d2[k].shape or not (v==d2[k]).all()):
             return False
-        elif isinstance(v, torch.Tensor) and not (v==d2[k]).item().all():
+        elif isinstance(v, torch.Tensor) and (v.shape != d2[k].shape or not (v==d2[k]).all().item()):
             return False
         elif isinstance(v, pd.DataFrame):
-            if set(v.columns) != set(d2[k].columns):
+            if v.shape != d2[k].shape or set(v.columns) != set(d2[k].columns):
+                # consider: should one check index be equal?
                 return False
-            for c in v.columns:
-                if not (v[c] == d2[k][c]).all():
-                    return False
+            # for c in v.columns:
+            #     if not (v[c] == d2[k][c]).all():
+            #         return False
+            if not (v.values == d2[k][v.columns].values).all():
+                return False
         elif isinstance(v, pd.Series):
-            if v.name != d2[k].name:
+            if v.shape != d2[k].shape or v.name != d2[k].name:
                 return False
             if not (v==d2[k]).all():
                 return False
