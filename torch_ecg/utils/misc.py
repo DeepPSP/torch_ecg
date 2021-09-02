@@ -936,12 +936,15 @@ def dicts_equal(d1:dict, d2:dict) -> bool:
     for k,v in d1.items():
         if k not in d2 or not isinstance(d2[k], type(v)):
             return False
-        if isinstance(v, dict) and not dicts_equal(v, d2[k]):
-            return False
-        elif isinstance(v, np.ndarray) and (v.shape != d2[k].shape or not (v==d2[k]).all()):
-            return False
-        elif isinstance(v, torch.Tensor) and (v.shape != d2[k].shape or not (v==d2[k]).all().item()):
-            return False
+        if isinstance(v, dict):
+            if not dicts_equal(v, d2[k]):
+                return False
+        elif isinstance(v, np.ndarray):
+            if v.shape != d2[k].shape or not (v==d2[k]).all():
+                return False
+        elif isinstance(v, torch.Tensor):
+            if v.shape != d2[k].shape or not (v==d2[k]).all().item():
+                return False
         elif isinstance(v, pd.DataFrame):
             if v.shape != d2[k].shape or set(v.columns) != set(d2[k].columns):
                 # consider: should one check index be equal?
@@ -955,5 +958,9 @@ def dicts_equal(d1:dict, d2:dict) -> bool:
             if v.shape != d2[k].shape or v.name != d2[k].name:
                 return False
             if not (v==d2[k]).all():
+                return False
+        # TODO: consider whether there are any other dtypes that should be treated similarly
+        else:  # other dtypes whose equality can be directly checked
+            if v != d2[k]:
                 return False
     return True
