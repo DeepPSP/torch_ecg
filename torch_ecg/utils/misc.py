@@ -41,6 +41,7 @@ __all__ = [
     "ECGWaveForm", "masks_to_waveforms",
     "list_sum",
     "read_log_txt", "read_event_scalars",
+    "dicts_equal",
 ]
 
 
@@ -899,3 +900,50 @@ def read_event_scalars(fp:str, keys:Optional[Union[str,Iterable[str]]]=None) -> 
     if isinstance(keys, str):
         summary = summary[k]
     return summary
+
+
+def dicts_equal(d1:dict, d2:dict) -> bool:
+    """ finished, checked,
+
+    Parameters
+    ----------
+    d1, d2: dict,
+        the two dicts to compare equality
+
+    Returns
+    -------
+    bool, True if `d1` equals `d2`
+
+    NOTE
+    ----
+    the existence of numpy array, torch Tensor, pandas DataFrame and Series would probably
+    cause errors when directly use the default `__eq__` method of dict,
+    for example `{"a": np.array([1,2])} == {"a": np.array([1,2])}` would raise the following
+    ```python
+    ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+    ```
+    """
+    import torch
+    if len(d1) != len(d2):
+        return False
+    for k,v in d1.items():
+        if k not in d2 or not isinstance(d2[k], type(v)):
+            return False
+        if isinstance(v, dict) and not dicts_equal(v, d2[k]):
+            return False
+        elif isinstance(v, np.ndarray) and not (v==d2[k]).all():
+            return False
+        elif isinstance(v, torch.Tensor) and not (v==d2[k]).item().all():
+            return False
+        elif isinstance(v, pd.DataFrame):
+            if set(v.columns) != set(d2[k].columns):
+                return False
+            for c in v.columns:
+                if not (v[c] == d2[k][c]).all():
+                    return False
+        elif isinstance(v, pd.Series):
+            if v.name != d2[k].name:
+                return False
+            if not (v==d2[k]).all():
+                return False
+    return True
