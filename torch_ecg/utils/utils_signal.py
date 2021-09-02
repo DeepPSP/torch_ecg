@@ -21,6 +21,7 @@ __all__ = [
     "detect_peaks",
     "remove_spikes_naive",
     "butter_bandpass_filter",
+    "get_ampl",
 ]
 
 
@@ -661,3 +662,73 @@ def butter_bandpass_filter(data:np.ndarray, lowcut:Real, highcut:Real, fs:Real, 
     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     y = filtfilt(b, a, data)
     return y
+
+
+def get_ampl(sig:np.ndarray,
+             fs:Real,
+             fmt:str="lead_first",
+             window:Real=0.2,
+             critical_points:Optional[Sequence]=None) -> Union[float, np.ndarray]:
+    """ finished, checked,
+
+    get amplitude of a signal (near critical points if given)
+
+    Parameters
+    ----------
+    sig: ndarray,
+        (ecg) signal
+    fs: real number,
+        sampling frequency of the signal
+    fmt: str, default "lead_first",
+        format of the signal,
+        "channel_last" (alias "lead_last"), or
+        "channel_first" (alias "lead_first"),
+        ignored if sig is 1d array (single-lead)
+    window: int, default 0.2s,
+        window length of a window for computing amplitude, with units in seconds
+    critical_points: ndarray, optional,
+        positions of critical points near which to compute amplitude,
+        e.g. can be rpeaks, t peaks, etc.
+
+    Returns
+    -------
+    ampl: float, or ndarray,
+        amplitude of the signal
+    """
+    if fmt.lower() in ["channel_last", "lead_last"]:
+        _sig = sig.T
+    else:
+        _sig = sig.copy()
+    _window = int(round(window * fs))
+    half_window = _window // 2
+    _window = half_window * 2
+    if _sig.ndim == 1:
+        ampl = 0
+    else:
+        ampl = np.zeros((_sig.shape[0],))
+    if critical_points is not None:
+        s = np.stack(
+            [
+                ensure_siglen(
+                    _sig[...,max(0,p-half_window):min(_sig.shape[-1],p+half_window)],
+                    siglen=_window,
+                    fmt="lead_first") \
+                for p in critical_points
+            ],
+            axis=-1
+        )
+        # the following is much slower
+        # for p in critical_points:
+        #     s = _sig[...,max(0,p-half_window):min(_sig.shape[-1],p+half_window)]
+        #     ampl = np.max(np.array([ampl, np.max(s,axis=-1) - np.min(s,axis=-1)]), axis=0)
+    else:
+        s = np.stack(
+            [_sig[..., idx*half_window: idx*half_window+_window] for idx in range(_sig.shape[-1]//half_window-1)],
+            axis=-1
+        )
+        # the following is much slower
+        # for idx in range(_sig.shape[-1]//half_window-1):
+        #     s = _sig[..., idx*half_window: idx*half_window+_window]
+        #     ampl = np.max(np.array([ampl, np.max(s,axis=-1) - np.min(s,axis=-1)]), axis=0)
+    ampl = np.max(np.max(s,axis=-2) - np.min(s,axis=-2), axis=-1)
+    return ampl
