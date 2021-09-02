@@ -19,6 +19,7 @@ __all__ = [
     "MovingAverage",
     "resample_irregular_timeseries",
     "detect_peaks",
+    "remove_spikes_naive",
     "butter_bandpass_filter",
 ]
 
@@ -540,6 +541,33 @@ def _plot(x, mph, mpd, threshold, edge, valley, ax, ind):
                     % (mode, str(mph), mpd, str(threshold), edge))
     # plt.grid()
     plt.show()
+
+
+def remove_spikes_naive(sig:np.ndarray, threshold:Real=20) -> np.ndarray:
+    """ finished, checked,
+
+    remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
+
+    `spikes` here refers to abrupt large bumps with (abs) value larger than the given threshold,
+    do NOT confuse with `spikes` in paced rhythm
+
+    Parameters
+    ----------
+    sig: ndarray,
+        1d signal with potential spikes
+    threshold: real number,
+        values of `sig` that are larger than `threshold` will be removed
+    
+    Returns
+    -------
+    filtered_sig: ndarray,
+        signal with `spikes` removed
+    """
+    b = list(filter(lambda k: k > 0, np.argwhere(np.abs(sig)>threshold).squeeze(-1)))
+    filtered_sig = sig.copy()
+    for k in b:
+        filtered_sig[k] = filtered_sig[k-1]
+    return filtered_sig
 
 
 def butter_bandpass(lowcut:Real, highcut:Real, fs:Real, order:int, verbose:int=0) -> Tuple[np.ndarray, np.ndarray]:
