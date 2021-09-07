@@ -260,6 +260,19 @@ class ECG_SEQ_LAB_NET(nn.Module):
     @staticmethod
     def from_checkpoint(path:str, device:Optional[torch.device]=None) -> nn.Module:
         """
+
+        Parameters
+        ----------
+        path: str,
+            path of the checkpoint
+        device: torch.device, optional,
+            map location of the model parameters,
+            defaults "cuda" if available, otherwise "cpu"
+
+        Returns
+        -------
+        model: Module,
+            the model loaded from a checkpoint
         """
         _device = device or (torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"))
         ckpt = torch.load(path, map_location=_device)
