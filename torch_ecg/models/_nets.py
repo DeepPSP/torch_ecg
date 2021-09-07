@@ -1165,13 +1165,13 @@ class DownSample(nn.Sequential):
                 bias=False,
                 stride=self.__down_scale,
             )
-        elif self.__mode = "nearest":
+        elif self.__mode == "nearest":
             raise NotImplementedError
-        elif self.__mode = "area":
+        elif self.__mode == "area":
             raise NotImplementedError
-        elif self.__mode = "linear":
+        elif self.__mode == "linear":
             raise NotImplementedError
-        elif self.__mode = "blur":
+        elif self.__mode == "blur":
             raise NotImplementedError
         else:
             down_layer = None
