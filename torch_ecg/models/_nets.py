@@ -3622,7 +3622,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
             self.class_weight = None
 
     @property
-    def alpha(self):
+    def alpha(self) -> Tensor:
         return self.class_weight
 
     def forward(self, input:Tensor, target:Tensor) -> Tensor:

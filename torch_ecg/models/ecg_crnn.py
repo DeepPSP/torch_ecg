@@ -318,7 +318,24 @@ class ECG_CRNN(nn.Module):
         raise NotImplementedError(f"implement a task specific inference method")
 
     @property
-    def module_size(self):
+    def module_size(self) -> int:
         """
         """
         return compute_module_size(self)
+
+
+    @staticmethod
+    def from_checkpoint(path:str, device:Optional[torch.device]=None) -> nn.Module:
+        """
+        """
+        _device = device or (torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"))
+        ckpt = torch.load(path, map_location=_device)
+        aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
+        assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
+        model = ECG_CRNN(
+            classes=aux_config["classes"],
+            n_leads=aux_config["n_leads"],
+            config=ckpt["model_config"],
+        )
+        model.load_state_dict(ckpt["model_state_dict"])
+        return model
