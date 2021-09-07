@@ -278,7 +278,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
         ckpt = torch.load(path, map_location=_device)
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
         assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
-        model = ECG_CRNN(
+        model = ECG_SEQ_LAB_NET(
             classes=aux_config["classes"],
             n_leads=aux_config["n_leads"],
             config=ckpt["model_config"],
