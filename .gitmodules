@@ -1,4 +1,4 @@
-[submodule "torch_ecg/benchmarks/database_reader"]
+[submodule "benchmarks/database_reader"]
 	path = benchmarks/database_reader
 	url = https://github.com/DeepPSP/database_reader.git
 	# https://stackoverflow.com/questions/60009274/git-error-after-changing-submodules-url-fatal-needed-a-single-revision
