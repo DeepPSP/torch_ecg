@@ -22,6 +22,7 @@ __all__ = [
     "remove_spikes_naive",
     "butter_bandpass_filter",
     "get_ampl",
+    "normalize",
 ]
 
 
@@ -732,3 +733,46 @@ def get_ampl(sig:np.ndarray,
         #     ampl = np.max(np.array([ampl, np.max(s,axis=-1) - np.min(s,axis=-1)]), axis=0)
     ampl = np.max(np.max(s,axis=-2) - np.min(s,axis=-2), axis=-1)
     return ampl
+
+
+def normalize(sig:np.ndarray, mean:float=0.0, std:float=1.0, sig_fmt:str="channel_first", per_channel:bool=False,) -> np.ndarray:
+    """ finished, checked,
+    
+    perform normalization on `sig`, to make it has fixed mean and standard deviation
+
+    Parameters
+    ----------
+    sig: ndarray,
+        signal to be normalized
+    mean: float, default 0.0,
+        mean value of the normalized signal
+    std: float, default 1.0,
+        standard deviation of the normalized signal
+    sig_fmt: str, default "channel_first",
+        format of the signal, can be of one of
+        "channel_last" (alias "lead_last"), or
+        "channel_first" (alias "lead_first")
+    per_channel: bool, default False,
+        if True, normalization will be done per channel
+        
+    Returns
+    -------
+    nm_sig: ndarray,
+        the normalized signal
+        
+    NOTE
+    ----
+    in cases where normalization is infeasible (std = 0),
+    only the mean value will be shifted
+    """
+    assert std > 0, "standard deviation should be positive"
+    eps = 1e-7  # to avoid dividing by zero
+    if not per_channel:
+        options = dict(axis=None)
+    elif sig_fmt.lower() in ["channel_first", "lead_first",]:
+        options = dict(axis=1, keepdims=True)
+    else:
+        options = dict(axis=0, keepdims=True)
+
+    nm_sig = ( (sig - np.mean(sig, **options)) / (np.std(sig, **options) + eps) ) * std + mean
+    return nm_sig
