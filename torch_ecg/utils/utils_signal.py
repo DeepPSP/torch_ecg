@@ -735,7 +735,11 @@ def get_ampl(sig:np.ndarray,
     return ampl
 
 
-def normalize(sig:np.ndarray, mean:float=0.0, std:float=1.0, sig_fmt:str="channel_first", per_channel:bool=False,) -> np.ndarray:
+def normalize(sig:np.ndarray,
+              mean:Union[Real,np.ndarray]=0.0,
+              std:Union[Real,np.ndarray]=1.0,
+              sig_fmt:str="channel_first",
+              per_channel:bool=False,) -> np.ndarray:
     """ finished, checked,
     
     perform normalization on `sig`, to make it has fixed mean and standard deviation
@@ -744,10 +748,12 @@ def normalize(sig:np.ndarray, mean:float=0.0, std:float=1.0, sig_fmt:str="channe
     ----------
     sig: ndarray,
         signal to be normalized
-    mean: float, default 0.0,
-        mean value of the normalized signal
-    std: float, default 1.0,
-        standard deviation of the normalized signal
+    mean: real number of ndarray, default 0.0,
+        mean value of the normalized signal,
+        or mean values for each lead of the normalized signal
+    std: real number of ndarray, default 1.0,
+        standard deviation of the normalized signal,
+        or standard deviations for each lead of the normalized signal
     sig_fmt: str, default "channel_first",
         format of the signal, can be of one of
         "channel_last" (alias "lead_last"), or
@@ -765,14 +771,45 @@ def normalize(sig:np.ndarray, mean:float=0.0, std:float=1.0, sig_fmt:str="channe
     in cases where normalization is infeasible (std = 0),
     only the mean value will be shifted
     """
-    assert std > 0, "standard deviation should be positive"
-    eps = 1e-7  # to avoid dividing by zero
-    if not per_channel:
-        options = dict(axis=None)
-    elif sig_fmt.lower() in ["channel_first", "lead_first",]:
-        options = dict(axis=1, keepdims=True)
+    if isinstance(std, Real):
+        assert std > 0, "standard deviation should be positive"
     else:
-        options = dict(axis=0, keepdims=True)
+        assert (std > 0).all(), "standard deviations should all be positive"
+    if not per_channel:
+        assert isinstance(mean, Real) and isinstance(std, Real), \
+            f"mean and std should be real numbers in the non per-channel setting"
+    assert sig_fmt.lower() in ["channel_first", "lead_first", "channel_last", "lead_last",], \
+        f"format {sig_fmt} of the signal not supported!"
+    eps = 1e-7  # to avoid dividing by zero
+    if sig.ndim == 3:  # the first dimension is the batch dimension
+        if not per_channel:
+            options = dict(axis=(1,2), keepdims=True)
+        elif sig_fmt.lower() in ["channel_first", "lead_first",]:
+            options = dict(axis=2, keepdims=True)
+        else:
+            options = dict(axis=1, keepdims=True)
+    else:
+        if not per_channel:
+            options = dict(axis=None)
+        elif sig_fmt.lower() in ["channel_first", "lead_first",]:
+            options = dict(axis=1, keepdims=True)
+        else:
+            options = dict(axis=0, keepdims=True)
 
-    nm_sig = ( (sig - np.mean(sig, **options)) / (np.std(sig, **options) + eps) ) * std + mean
+    if isinstance(mean, np.ndarray):
+        if sig_fmt.lower() in ["channel_first", "lead_first",]:
+            _mean = mean[..., np.newaxis]
+        else:
+            _mean = mean[np.newaxis, ...]
+    else:
+        _mean = mean
+    if isinstance(std, np.ndarray):
+        if sig_fmt.lower() in ["channel_first", "lead_first",]:
+            _std = std[..., np.newaxis]
+        else:
+            _std = std[np.newaxis, ...]
+    else:
+        _std = std    
+
+    nm_sig = ( (sig - np.mean(sig, **options)) / (np.std(sig, **options) + eps) ) * _std + _mean
     return nm_sig
