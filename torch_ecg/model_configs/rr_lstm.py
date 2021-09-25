@@ -84,5 +84,6 @@ RR_LSTM_CONFIG.clf = ED()
 RR_LSTM_CONFIG.clf.name = "crf"  # "linear"
 
 RR_LSTM_CONFIG.clf.crf = ED()
+RR_LSTM_CONFIG.clf.crf.proj_bias = True
 
-RR_LSTM_CONFIG.clf.linear = ED()
+# RR_LSTM_CONFIG.clf.linear = ED()

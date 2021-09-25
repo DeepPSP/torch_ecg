@@ -91,6 +91,11 @@ vgg_block_swish.activation = "swish"
 del vgg_block_swish.kw_activation
 
 
+# set default building block
+vgg16.block = deepcopy(vgg_block_basic)
+vgg16_leadwise.block = deepcopy(vgg_block_basic)
+
+
 
 # ResNet
 
@@ -290,9 +295,17 @@ resnet_bottle_neck.kw_activation = deepcopy(resnet.kw_activation)
 resnet_bottle_neck.bias = False
 
 
+# set default building block
+resnet.block_name = "basic"
+resnet.block = deepcopy(resnet_block_basic)
+resnet_leadwise.block_name = "basic"
+resnet_leadwise.block = deepcopy(resnet_block_basic)
+
+
 
 # ResNet Stanford
 resnet_stanford = ED()
+resnet_stanford.groups = 1
 resnet_stanford.subsample_lengths = [
     1, 2, 1, 2,
     1, 2, 1, 2,
@@ -301,11 +314,16 @@ resnet_stanford.subsample_lengths = [
 ]
 resnet_stanford.filter_lengths = 17
 _base_num_filters = 36
-resnet_stanford.num_filters_start = _base_num_filters*2
+resnet_stanford.init_num_filters = _base_num_filters*2
+resnet_stanford.init_filter_length = 17
+resnet_stanford.init_conv_stride = 2
+resnet_stanford.init_pool_size = 3
+resnet_stanford.init_pool_stride = 2
 resnet_stanford.kernel_initializer = "he_normal"
 resnet_stanford.kw_initializer = {}
 resnet_stanford.activation = "relu"
 resnet_stanford.kw_activation = {"inplace": True}
+resnet_stanford.bias = False
 
 
 resnet_block_stanford = ED()
@@ -473,6 +491,11 @@ multi_scopic_block.batch_norm = False  # consider using "group_norm"
 multi_scopic_block.kw_bn = {}
 
 
+# set default building block
+multi_scopic.block = deepcopy(multi_scopic_block)
+multi_scopic_leadwise.block = deepcopy(multi_scopic_block)
+
+
 
 dense_net_vanilla = ED()
 dense_net_vanilla.num_layers = [6, 6, 6, 6]
@@ -525,7 +548,7 @@ xception_vanilla.exit_flow = ED(
 xception_leadwise = ED()
 xception_leadwise.groups = 12
 _base_num_filters = 12 * 2
-xception_vanilla.entry_flow = ED(
+xception_leadwise.entry_flow = ED(
     init_num_filters=[_base_num_filters*4, _base_num_filters*8],
     init_filter_lengths=3,
     init_subsample_lengths=[2,1],
@@ -534,11 +557,11 @@ xception_vanilla.entry_flow = ED(
     subsample_lengths=2,
     subsample_kernels=3,
 )
-xception_vanilla.middle_flow = ED(
+xception_leadwise.middle_flow = ED(
     num_filters=list(repeat(_base_num_filters*91, 8)),
     filter_lengths=3,
 )
-xception_vanilla.exit_flow = ED(
+xception_leadwise.exit_flow = ED(
     final_num_filters=[_base_num_filters*182, _base_num_filters*256],
     final_filter_lengths=3,
     num_filters=[[_base_num_filters*91, _base_num_filters*128]],
