@@ -36,6 +36,7 @@ class DarkNet(nn.Sequential):
     """
     __DEBUG__ = True
     __name__ = "DarkNet"
+
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """
         """

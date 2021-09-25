@@ -3116,7 +3116,7 @@ class CRF(nn.Module):
         if mask is None:
             mask = emissions.new_ones(emissions.shape[:2], dtype=torch.uint8, device=self.__device)
         if self.batch_first:
-            emmissions = emmissions.transpose(0, 1)
+            emissions = emissions.transpose(0, 1)
             mask = mask.transpose(0, 1)
         best_tags = Tensor(self._viterbi_decode(emissions, mask)).to(torch.int64)
         output = F.one_hot(best_tags.to(self.__device), num_classes=self.num_tags).permute(1,0,2)
@@ -3408,7 +3408,12 @@ class ExtendedCRF(nn.Sequential):
         output: Tensor,
             of shape (batch_size, seq_len, n_channels)
         """
-        output = super().forward(input)
+        if self.__in_channels != self.__num_tags:
+            output = self.proj(input)
+        else:
+            output = input
+        output = output.permute(1,0,2)  # (batch_size, seq_len, n_channels) --> (seq_len, batch_size, n_channels)
+        output = self.crf(output)
         return output
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:

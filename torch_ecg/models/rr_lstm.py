@@ -52,15 +52,13 @@ class RR_LSTM(nn.Module):
     __DEBUG__ = True
     __name__ = "RR_LSTM"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, classes:Sequence[str], config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters
         ----------
         classes: list,
             list of the classes for classification
-        n_leads: int,
-            number of leads (number of input channels)
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
@@ -68,7 +66,6 @@ class RR_LSTM(nn.Module):
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)
-        self.n_leads = n_leads
         self.config = deepcopy(RR_LSTM_CONFIG)
         self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
@@ -76,7 +73,7 @@ class RR_LSTM(nn.Module):
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
         
         self.lstm = StackedLSTM(
-            input_size=self.n_leads,
+            input_size=1,
             hidden_sizes=self.config.lstm.hidden_sizes,
             bias=self.config.lstm.bias,
             dropouts=self.config.lstm.dropouts,
@@ -172,29 +169,36 @@ class RR_LSTM(nn.Module):
         ----------
         input: Tensor,
             of shape (seq_len, batch_size, n_channels)
+            of shape (batch_size, n_channels, seq_len)
 
         Returns
         -------
         output: Tensor,
             of shape (batch_size, seq_len, n_classes) or (batch_size, n_classes)
         """
+        # (batch_size, n_channels, seq_len) --> (seq_len, batch_size, n_channels)
+        # x = input.permute(1,2,0)
         x = self.lstm(input)  # (seq_len, batch_size, n_channels) or (batch_size, n_channels)
         if self.attn:
             # (seq_len, batch_size, n_channels) --> (batch_size, n_channels, seq_len)
             x = x.permute(1,2,0)
             x = self.attn(x)  # (batch_size, n_channels, seq_len)
+        elif x.ndim == 3:
+            # (seq_len, batch_size, n_channels) --> (batch_size, n_channels, seq_len)
+            x = x.permute(1,2,0)
         if self.pool:
             x = self.pool(x)  # (batch_size, n_channels, 1)
             x = x.squeeze(dim=-1)  # (batch_size, n_channels)
         elif x.ndim == 3:
-            # (batch_size, n_channels, seq_len) --> (batch_size, seq_len, n_channels)
-            x = x.permute(0,2,1)
+            x = x.permute(0,2,1)  # (batch_size, n_channels, seq_len) --> (batch_size, seq_len, n_channels)
         else:
             # x of shape (batch_size, n_channels), 
             # in the case where config.lstm.retseq = False
             pass
-        if self.clf:
+        if self.config.clf.name.lower() == "linear":
             x = self.clf(x)  # (batch_size, seq_len, n_classes) or (batch_size, n_classes)
+        elif self.config.clf.name.lower() == "crf":
+            x = self.clf(x)  # (batch_size, seq_len, n_classes)
         output = x
 
         return output
