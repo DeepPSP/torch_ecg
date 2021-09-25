@@ -112,4 +112,4 @@ ECG_SUBTRACT_UNET_CONFIG.up_block = deepcopy(unet_up_block)
 
 # out conv
 ECG_SUBTRACT_UNET_CONFIG.out_filter_length = 1
-ECG_UNET_VANILLA_CONFIG.out_batch_norm = True  # False
+ECG_SUBTRACT_UNET_CONFIG.out_batch_norm = True  # False

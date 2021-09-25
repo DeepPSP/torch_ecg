@@ -1,6 +1,6 @@
 """
 the modules that follows CNN feature extractor,
-mainly RNN, but can also be attention, and linears with non-linear activations
+mainly RNN, but can also be attention
 """
 from copy import deepcopy
 
@@ -28,16 +28,3 @@ attention.bias = True
 attention.dropouts = 0.2
 attention.bidirectional = True
 attention.hidden_sizes = [12*24, 12*6]
-
-
-# previously, if rnn is set "none",
-# then cnn is followed by only ONE linear layer to make predictions
-# split this linear layer into several and adding non-linear activation function
-# might be able to let the model learn better classifying hyper-surfaces
-linear = ED()
-linear.out_channels = [
-    256, 64,
-]
-linear.bias = True
-linear.dropouts = 0.2
-linear.activation = "mish"

@@ -19,8 +19,8 @@ from .cnn import (
 from .rnn import (
     lstm,
     attention,
-    linear,
 )
+from .mlp import linear
 from .attn import (
     non_local,
     squeeze_excitation,
