@@ -11,6 +11,8 @@ __all__ = ["Normalize", "normalize",]
 
 class Normalize(torch.nn.Module):
     """
+    perform normalization on `sig`, to make it has fixed mean and standard deviation,
+    or normalize `sig` using `mean` and `std` via (sig - mean) / std
     """
 
     def __init__(self,
