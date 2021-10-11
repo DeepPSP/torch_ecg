@@ -4,7 +4,7 @@ including spatial, temporal, spatio-temporal domains
 """
 import os
 from copy import deepcopy
-from typing import Union, Optional, List, Tuple, Sequence, NoReturn
+from typing import Union, Optional, List, Tuple, Sequence, Iterable, NoReturn
 from numbers import Real
 
 import numpy as np
@@ -736,8 +736,8 @@ def get_ampl(sig:np.ndarray,
 
 
 def normalize(sig:np.ndarray,
-              mean:Union[Real,np.ndarray]=0.0,
-              std:Union[Real,np.ndarray]=1.0,
+              mean:Union[Real,Sequence[Real],np.ndarray]=0.0,
+              std:Union[Real,Sequence[Real],np.ndarray]=1.0,
               sig_fmt:str="channel_first",
               per_channel:bool=False,
               fixed:bool=True,) -> np.ndarray:
@@ -750,10 +750,10 @@ def normalize(sig:np.ndarray,
     ----------
     sig: ndarray,
         signal to be normalized
-    mean: real number of ndarray, default 0.0,
+    mean: real number or array_like, default 0.0,
         mean value of the normalized signal,
         or mean values for each lead of the normalized signal
-    std: real number of ndarray, default 1.0,
+    std: real number or array_like, default 1.0,
         standard deviation of the normalized signal,
         or standard deviations for each lead of the normalized signal
     sig_fmt: str, default "channel_first",
@@ -780,25 +780,25 @@ def normalize(sig:np.ndarray,
     if isinstance(std, Real):
         assert std > 0, "standard deviation should be positive"
     else:
-        assert (std > 0).all(), "standard deviations should all be positive"
+        assert (np.array(std) > 0).all(), "standard deviations should all be positive"
     if not per_channel:
         assert isinstance(mean, Real) and isinstance(std, Real), \
             f"mean and std should be real numbers in the non per-channel setting"
     assert sig_fmt.lower() in ["channel_first", "lead_first", "channel_last", "lead_last",], \
         f"format {sig_fmt} of the signal not supported!"
 
-    if isinstance(mean, np.ndarray):
+    if isinstance(mean, Iterable):
         if sig_fmt.lower() in ["channel_first", "lead_first",]:
-            _mean = mean[..., np.newaxis]
+            _mean = np.array(mean)[..., np.newaxis]
         else:
-            _mean = mean[np.newaxis, ...]
+            _mean = np.array(mean)[np.newaxis, ...]
     else:
         _mean = mean
-    if isinstance(std, np.ndarray):
+    if isinstance(std, Iterable):
         if sig_fmt.lower() in ["channel_first", "lead_first",]:
-            _std = std[..., np.newaxis]
+            _std = np.array(std)[..., np.newaxis]
         else:
-            _std = std[np.newaxis, ...]
+            _std = np.array(std)[np.newaxis, ...]
     else:
         _std = std 
 
