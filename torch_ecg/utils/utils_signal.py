@@ -739,10 +739,12 @@ def normalize(sig:np.ndarray,
               mean:Union[Real,np.ndarray]=0.0,
               std:Union[Real,np.ndarray]=1.0,
               sig_fmt:str="channel_first",
-              per_channel:bool=False,) -> np.ndarray:
+              per_channel:bool=False,
+              fixed:bool=True,) -> np.ndarray:
     """ finished, checked,
     
-    perform normalization on `sig`, to make it has fixed mean and standard deviation
+    perform normalization on `sig`, to make it has fixed mean and standard deviation,
+    or normalize `sig` using `mean` and `std` via (sig - mean) / std
 
     Parameters
     ----------
@@ -760,6 +762,10 @@ def normalize(sig:np.ndarray,
         "channel_first" (alias "lead_first")
     per_channel: bool, default False,
         if True, normalization will be done per channel
+    fixed: bool, default True,
+        if True, the normalized signal will have fixed mean (equals to `mean`)
+        and fixed standard deviation (equals to `std`),
+        otherwise, the signal will be normalized as (sig - mean) / std
         
     Returns
     -------
@@ -780,21 +786,6 @@ def normalize(sig:np.ndarray,
             f"mean and std should be real numbers in the non per-channel setting"
     assert sig_fmt.lower() in ["channel_first", "lead_first", "channel_last", "lead_last",], \
         f"format {sig_fmt} of the signal not supported!"
-    eps = 1e-7  # to avoid dividing by zero
-    if sig.ndim == 3:  # the first dimension is the batch dimension
-        if not per_channel:
-            options = dict(axis=(1,2), keepdims=True)
-        elif sig_fmt.lower() in ["channel_first", "lead_first",]:
-            options = dict(axis=2, keepdims=True)
-        else:
-            options = dict(axis=1, keepdims=True)
-    else:
-        if not per_channel:
-            options = dict(axis=None)
-        elif sig_fmt.lower() in ["channel_first", "lead_first",]:
-            options = dict(axis=1, keepdims=True)
-        else:
-            options = dict(axis=0, keepdims=True)
 
     if isinstance(mean, np.ndarray):
         if sig_fmt.lower() in ["channel_first", "lead_first",]:
@@ -809,7 +800,27 @@ def normalize(sig:np.ndarray,
         else:
             _std = std[np.newaxis, ...]
     else:
-        _std = std    
+        _std = std 
 
-    nm_sig = ( (sig - np.mean(sig, **options)) / (np.std(sig, **options) + eps) ) * _std + _mean
+    eps = 1e-7  # to avoid dividing by zero
+
+    if fixed:
+        if sig.ndim == 3:  # the first dimension is the batch dimension
+            if not per_channel:
+                options = dict(axis=(1,2), keepdims=True)
+            elif sig_fmt.lower() in ["channel_first", "lead_first",]:
+                options = dict(axis=2, keepdims=True)
+            else:
+                options = dict(axis=1, keepdims=True)
+        else:
+            if not per_channel:
+                options = dict(axis=None)
+            elif sig_fmt.lower() in ["channel_first", "lead_first",]:
+                options = dict(axis=1, keepdims=True)
+            else:
+                options = dict(axis=0, keepdims=True)   
+
+        nm_sig = ( (sig - np.mean(sig, **options)) / (np.std(sig, **options) + eps) ) * _std + _mean
+    else:
+        nm_sig = (sig - _mean) / _std
     return nm_sig
