@@ -169,7 +169,6 @@ class RR_LSTM(nn.Module):
         ----------
         input: Tensor,
             of shape (seq_len, batch_size, n_channels)
-            of shape (batch_size, n_channels, seq_len)
 
         Returns
         -------

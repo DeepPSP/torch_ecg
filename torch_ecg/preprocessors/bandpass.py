@@ -1,7 +1,7 @@
 """
 """
 
-from typing import NoReturn, Optional
+from typing import NoReturn, Optional, Any
 from numbers import Real
 import warnings
 
@@ -22,7 +22,7 @@ class BandPass(PreProcessor):
     """
     __name__ = "BandPass"
 
-    def __init__(self, lowcut:Optional[Real]=None, highcut:Optional[Real]=None, **kwargs) -> NoReturn:
+    def __init__(self, lowcut:Optional[Real]=None, highcut:Optional[Real]=None, **kwargs:Any) -> NoReturn:
         """ finished, NOT checked,
 
         Parameters
@@ -61,6 +61,7 @@ class BandPass(PreProcessor):
         filtered_sig: ndarray,
             the bandpass filtered ECG signal
         """
+        self.__check_sig(sig)
         if sig.ndim == 1:
             filtered_sig = preprocess_single_lead_signal(
                 raw_sig=sig,
@@ -81,11 +82,4 @@ class BandPass(PreProcessor):
                     fs=fs,
                     band_fs=[self.lowcut, self.highcut],
                 )
-        else:
-            raise ValueError(
-                "Invalid input ECG signal. Should be"
-                "1d array, which is a single-lead ECG;"
-                "or 2d array, which is a multi-lead ECG of `lead_first` format;"
-                "or 3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)."
-            )
         return filtered_sig

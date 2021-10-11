@@ -3,7 +3,7 @@
 
 from abc import ABC, abstractmethod
 from numbers import Real
-from typing import Optional, List
+from typing import Optional, List, NoReturn
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
@@ -51,6 +51,26 @@ class PreProcessor(ABC):
         alias of `self.apply`
         """
         return self.apply(sig)
+
+    def __check_sig(self, sig:np.ndarray) -> NoReturn:
+        """
+        check validity of the signal
+
+        Parameters
+        ----------
+        sig: ndarray,
+            the ECG signal, can be
+            1d array, which is a single-lead ECG
+            2d array, which is a multi-lead ECG of "lead_first" format
+            3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)
+        """
+        if sig.ndim not in [1,2,3]:
+            raise ValueError(
+                "Invalid input ECG signal. Should be"
+                "1d array, which is a single-lead ECG;"
+                "or 2d array, which is a multi-lead ECG of `lead_first` format;"
+                "or 3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)."
+            )
 
 
 def preprocess_multi_lead_signal(raw_sig:np.ndarray,
