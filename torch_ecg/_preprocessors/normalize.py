@@ -16,6 +16,8 @@ __all__ = ["Normalize",]
 
 class Normalize(PreProcessor):
     """
+    perform normalization on the signal, to make it has fixed mean and standard deviation,
+    or normalize signal using mean and std via (signal - mean) / std
     """
     __name__ = "Normalize"
 
@@ -23,6 +25,7 @@ class Normalize(PreProcessor):
                  mean:Union[Real,np.ndarray]=0.0,
                  std:Union[Real,np.ndarray]=1.0,
                  per_channel:bool=True,
+                 fixed:bool=True,
                  **kwargs:Any) -> NoReturn:
         """ finished, NOT checked,
 
@@ -40,10 +43,15 @@ class Normalize(PreProcessor):
             "channel_first" (alias "lead_first")
         per_channel: bool, default False,
             if True, normalization will be done per channel
+        fixed: bool, default True,
+            if True, the normalized signal will have fixed mean (equals to `mean`)
+            and fixed standard deviation (equals to `std`),
+            otherwise, the signal will be normalized as (sig - mean) / std
         """
         self.mean = mean
         self.std = std
         self.per_channel = per_channel
+        self.fixed = fixed
         if isinstance(std, Real):
             assert std > 0, "standard deviation should be positive"
         else:
@@ -79,5 +87,6 @@ class Normalize(PreProcessor):
             std=self.std,
             sig_fmt="channel_first",
             per_channel=self.per_channel,
+            fixed=self.fixed,
         )
         return normalized_sig
