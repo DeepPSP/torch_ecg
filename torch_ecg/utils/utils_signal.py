@@ -736,8 +736,8 @@ def get_ampl(sig:np.ndarray,
 
 
 def normalize(sig:np.ndarray,
-              mean:Union[Real,Sequence[Real],np.ndarray]=0.0,
-              std:Union[Real,Sequence[Real],np.ndarray]=1.0,
+              mean:Union[Real,Iterable[Real]]=0.0,
+              std:Union[Real,Iterable[Real]]=1.0,
               sig_fmt:str="channel_first",
               per_channel:bool=False,
               fixed:bool=True,) -> np.ndarray:
