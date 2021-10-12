@@ -2057,7 +2057,7 @@ class ZeroPadding(nn.Module):
         assert self.__increase_channels >= 0
         self.__loc = loc.lower()
         assert self.__loc in self.__LOC__
-        self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def forward(self, input:Tensor) -> Tensor:
         """
@@ -2067,9 +2067,10 @@ class ZeroPadding(nn.Module):
             of shape (batch_size, n_channels, seq_len)
         """
         batch_size, _, seq_len = input.shape
+        _device = next(self.parameters()).device
         if self.__increase_channels > 0:
             output = torch.zeros((batch_size, self.__increase_channels, seq_len))
-            output = output.to(device=self.__device)
+            output = output.to(device=_device)
             if self.__loc == "head":
                 output = torch.cat((output, input), dim=1)
             elif self.__loc == "tail":
@@ -3021,7 +3022,7 @@ class CRF(nn.Module):
         self.end_transitions = nn.Parameter(torch.empty(num_tags))
         self.transitions = nn.Parameter(torch.empty(num_tags, num_tags))
         self.reset_parameters()
-        self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def reset_parameters(self) -> NoReturn:
         """
@@ -3066,11 +3067,12 @@ class CRF(nn.Module):
             otherwise ``()``.
         """
         self._validate(emissions, tags=tags, mask=mask)
+        _device = next(self.parameters()).device
         _reduction = reduction.lower()
         if _reduction not in ("none", "sum", "mean", "token_mean"):
             raise ValueError(f"invalid reduction: {_reduction}")
         if mask is None:
-            mask = torch.ones_like(tags, dtype=torch.uint8, device=self.__device)
+            mask = torch.ones_like(tags, dtype=torch.uint8, device=_device)
 
         if self.batch_first:
             emissions = emissions.transpose(0, 1)
@@ -3113,13 +3115,14 @@ class CRF(nn.Module):
             one hot encoding Tensor of the most likely tag sequence
         """
         self._validate(emissions, mask=mask)
+        _device = next(self.parameters()).device
         if mask is None:
-            mask = emissions.new_ones(emissions.shape[:2], dtype=torch.uint8, device=self.__device)
+            mask = emissions.new_ones(emissions.shape[:2], dtype=torch.uint8, device=_device)
         if self.batch_first:
             emissions = emissions.transpose(0, 1)
             mask = mask.transpose(0, 1)
         best_tags = Tensor(self._viterbi_decode(emissions, mask)).to(torch.int64)
-        output = F.one_hot(best_tags.to(self.__device), num_classes=self.num_tags).permute(1,0,2)
+        output = F.one_hot(best_tags.to(_device), num_classes=self.num_tags).permute(1,0,2)
         return output
 
     def _validate(self, emissions:Tensor, tags:Optional[torch.LongTensor]=None, mask:Optional[torch.ByteTensor]=None) -> NoReturn:
