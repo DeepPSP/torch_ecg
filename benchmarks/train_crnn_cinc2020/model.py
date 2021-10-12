@@ -74,15 +74,11 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
             nsr_cid = self.classes.index("426783006")
         else:
             nsr_cid = None
-        if torch.cuda.is_available():
-            device = torch.device("cuda")
-        else:
-            device = torch.device("cpu")
-        self.to(device)
+        _device = next(self.parameters()).device
         if isinstance(input, np.ndarray):
-            _input = torch.from_numpy(input).to(device)
+            _input = torch.from_numpy(input).to(_device)
         else:
-            _input = input.to(device)
+            _input = input.to(_device)
         pred = self.forward(_input)
         pred = self.sigmoid(pred)
         bin_pred = (pred>=bin_pred_thr).int()

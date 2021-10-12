@@ -83,16 +83,12 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
         rpeaks: list of ndarray,
             list of rpeak indices for each batch element
         """
-        if torch.cuda.is_available():
-            device = torch.device("cuda")
-        else:
-            device = torch.device("cpu")
-        self.to(device)
+        _device = next(self.parameters()).device
         batch_size, channels, seq_len = input.shape
         if isinstance(input, np.ndarray):
-            _input = torch.from_numpy(input).to(device)
+            _input = torch.from_numpy(input).to(_device)
         else:
-            _input = input.to(device)
+            _input = input.to(_device)
         pred = self.forward(_input)
         pred = self.sigmoid(pred)
         pred = pred.cpu().detach().numpy().squeeze(-1)
@@ -272,16 +268,12 @@ class ECG_UNET_CPSC2019(ECG_UNET):
         rpeaks: list of ndarray,
             list of rpeak indices for each batch element
         """
-        if torch.cuda.is_available():
-            device = torch.device("cuda")
-        else:
-            device = torch.device("cpu")
-        self.to(device)
+        _device = next(self.parameters()).device
         batch_size, channels, seq_len = input.shape
         if isinstance(input, np.ndarray):
-            _input = torch.from_numpy(input).to(device)
+            _input = torch.from_numpy(input).to(_device)
         else:
-            _input = input.to(device)
+            _input = input.to(_device)
         pred = self.forward(_input)
         pred = self.sigmoid(pred)
         pred = pred.cpu().detach().numpy().squeeze(-1)
