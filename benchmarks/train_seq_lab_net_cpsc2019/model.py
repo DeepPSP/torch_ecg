@@ -27,16 +27,13 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2019"
     
-    def __init__(self, n_leads:int, input_len:Optional[int]=None, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, n_leads:int, config:Optional[ED]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters
         ----------
         n_leads: int,
             number of leads (number of input channels)
-        input_len: int, optional,
-            sequence length (last dim.) of the input,
-            will not be used in the inference mode
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
@@ -44,7 +41,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         model_config = deepcopy(ModelCfg.seq_lab_crnn)
         model_config.update(deepcopy(config) or {})
         print(f"model_config = {model_config}")
-        super().__init__(model_config.classes, n_leads, input_len, model_config)
+        super().__init__(model_config.classes, n_leads, model_config)
 
     @torch.no_grad()
     def inference(self,
