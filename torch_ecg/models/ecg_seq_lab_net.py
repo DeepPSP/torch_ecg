@@ -253,8 +253,8 @@ class ECG_SEQ_LAB_NET(nn.Module):
         return compute_module_size(self)
 
 
-    @classmethod
-    def from_checkpoint(cls, path:str, device:Optional[torch.device]=None) -> nn.Module:
+    @staticmethod
+    def from_checkpoint(path:str, device:Optional[torch.device]=None) -> nn.Module:
         """
 
         Parameters
@@ -274,7 +274,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
         ckpt = torch.load(path, map_location=_device)
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
         assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
-        model = eval(cls.__name__)(
+        model = ECG_SEQ_LAB_NET(
             classes=aux_config["classes"],
             n_leads=aux_config["n_leads"],
             config=ckpt["model_config"],
