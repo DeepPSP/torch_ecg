@@ -138,14 +138,16 @@ class RR_LSTM(nn.Module):
         elif self.config.clf.name.lower() == "linear":
             if self.config.global_pool.lower() == "max":
                 self.pool = nn.AdaptiveMaxPool1d((1,))
-                self.clf = SeqLin(
-                    in_channels=clf_input_size,
-                    out_channels=self.config.clf.linear.out_channels + [self.n_classes],
-                    activation=self.config.clf.linear.activation,
-                    bias=self.config.clf.linear.bias,
-                    dropouts=self.config.clf.linear.dropouts,
-                    skip_last_activation=True,
-                )
+            elif self.config.global_pool.lower() == "none":
+                self.pool = None
+            self.clf = SeqLin(
+                in_channels=clf_input_size,
+                out_channels=self.config.clf.linear.out_channels + [self.n_classes],
+                activation=self.config.clf.linear.activation,
+                bias=self.config.clf.linear.bias,
+                dropouts=self.config.clf.linear.dropouts,
+                skip_last_activation=True,
+            )
         elif self.config.clf.name.lower() == "crf":
             self.pool = None
             self.clf = ExtendedCRF(
