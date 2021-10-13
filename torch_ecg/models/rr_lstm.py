@@ -241,7 +241,7 @@ class RR_LSTM(nn.Module):
         return compute_module_size(self)
 
 
-    @classmethod(f)
+    @classmethod
     def from_checkpoint(cls, path:str, device:Optional[torch.device]=None) -> nn.Module:
         """
 
