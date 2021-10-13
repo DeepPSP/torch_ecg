@@ -42,7 +42,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
         """
         model_config = deepcopy(ModelCfg.subtract_unet)
         model_config.update(deepcopy(config) or {})
-        super().__init__(model_config.classes, n_leads, model_config)
+        super().__init__(model_config.classes, n_leads, model_config, **kwargs)
 
     @torch.no_grad()
     def inference(self,

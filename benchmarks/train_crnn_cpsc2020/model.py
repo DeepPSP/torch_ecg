@@ -44,7 +44,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         """
         model_config = deepcopy(ModelCfg.crnn)
         model_config.update(deepcopy(config) or {})
-        super().__init__(classes, n_leads, input_len, model_config)
+        super().__init__(classes, n_leads, input_len, model_config, **kwargs)
 
     @torch.no_grad()
     def inference(self,
@@ -128,7 +128,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         """
         model_config = deepcopy(ModelCfg.seq_lab)
         model_config.update(deepcopy(config) or {})
-        super().__init__(classes, n_leads, model_config)
+        super().__init__(classes, n_leads, model_config, **kwargs)
         self.reduction = reduce(
             lambda a,b: a*b,
             self.config.cnn.multi_scopic.subsample_lengths,

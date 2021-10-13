@@ -41,7 +41,7 @@ class ECG_UNET_LUDB(ECG_UNET):
         """
         model_config = deepcopy(ModelCfg.unet)
         model_config.update(deepcopy(config) or {})
-        super().__init__(model_config.classes, n_leads, model_config)
+        super().__init__(model_config.classes, n_leads, model_config, **kwargs)
 
     @torch.no_grad()
     def inference(self, input:Union[Sequence[float],np.ndarray,Tensor]) -> Tuple[np.ndarray, List[np.ndarray]]:

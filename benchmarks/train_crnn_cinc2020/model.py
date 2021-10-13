@@ -39,7 +39,7 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         """
         model_config = deepcopy(ModelCfg)
         model_config.update(deepcopy(config) or {})
-        super().__init__(classes, n_leads, input_len, model_config)
+        super().__init__(classes, n_leads, input_len, model_config, **kwargs)
 
 
     @torch.no_grad()
