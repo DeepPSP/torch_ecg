@@ -14,7 +14,7 @@ References
 from copy import deepcopy
 from itertools import repeat
 from collections import OrderedDict
-from typing import Union, Optional, Tuple, List, Sequence, NoReturn
+from typing import Union, Optional, Tuple, List, Sequence, NoReturn, Any
 from numbers import Real, Number
 
 import numpy as np
@@ -66,7 +66,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
     __DEBUG__ = False
     __name__ = "ECG_SEQ_LAB_NET"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None, **kwargs) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -274,7 +274,7 @@ class ECG_SEQ_LAB_NET(nn.Module):
         ckpt = torch.load(path, map_location=_device)
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
         assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
-        model = ECG_SEQ_LAB_NET(
+        model = eval(self.__class.__name__)(
             classes=aux_config["classes"],
             n_leads=aux_config["n_leads"],
             config=ckpt["model_config"],
