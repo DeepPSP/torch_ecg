@@ -241,8 +241,8 @@ class RR_LSTM(nn.Module):
         return compute_module_size(self)
 
 
-    @staticmethod
-    def from_checkpoint(path:str, device:Optional[torch.device]=None) -> nn.Module:
+    @classmethod(f)
+    def from_checkpoint(cls, path:str, device:Optional[torch.device]=None) -> nn.Module:
         """
 
         Parameters
@@ -262,7 +262,7 @@ class RR_LSTM(nn.Module):
         ckpt = torch.load(path, map_location=_device)
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
         assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
-        model = eval(self.__class.__name__)(
+        model = eval(cls.__class.__name__)(
             classes=aux_config["classes"],
             n_leads=aux_config["n_leads"],
             config=ckpt["model_config"],
