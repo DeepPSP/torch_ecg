@@ -262,7 +262,7 @@ class RR_LSTM(nn.Module):
         ckpt = torch.load(path, map_location=_device)
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
         assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
-        model = eval(cls.__class.__name__)(
+        model = eval(cls.__name__)(
             classes=aux_config["classes"],
             n_leads=aux_config["n_leads"],
             config=ckpt["model_config"],
