@@ -2,7 +2,7 @@
 """
 from copy import deepcopy
 from functools import reduce
-from typing import Union, Optional, Sequence, Tuple, List, NoReturn
+from typing import Union, Optional, Sequence, Tuple, List, NoReturn, Any
 
 import numpy as np
 import pandas as pd
@@ -27,7 +27,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2019"
     
-    def __init__(self, n_leads:int, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -45,7 +45,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
 
     @torch.no_grad()
     def inference(self,
-                  input:Union[np.ndarray,Tensor],
+                  input:Union[Sequence[float],np.ndarray,Tensor],
                   bin_pred_thr:float=0.5,
                   duration_thr:int=4*16,
                   dist_thr:Union[int,Sequence[int]]=200,
@@ -59,8 +59,8 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
 
         Parameters
         ----------
-        input: ndarray or Tensor,
-            input tensor, of shape (batch_size, channels, seq_len)
+        input: array_like,
+            input tensor, of shape (..., channels, seq_len)
         bin_pred_thr: float, default 0.5,
             the threshold for making binary predictions from scalar predictions
         duration_thr: int, default 4*16,
@@ -82,12 +82,13 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         rpeaks: list of ndarray,
             list of rpeak indices for each batch element
         """
+        self.eval()
         _device = next(self.parameters()).device
-        batch_size, channels, seq_len = input.shape
-        if isinstance(input, np.ndarray):
-            _input = torch.from_numpy(input).to(_device)
-        else:
-            _input = input.to(_device)
+        _dtype = next(self.parameters()).dtype
+        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        if _input.ndim == 2:
+            _input = _input.unsqueeze(0)  # add a batch dimension
+        batch_size, channels, seq_len = _input.shape
         pred = self.forward(_input)
         pred = self.sigmoid(pred)
         pred = pred.cpu().detach().numpy().squeeze(-1)

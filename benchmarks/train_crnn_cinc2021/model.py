@@ -1,7 +1,7 @@
 """
 """
 from copy import deepcopy
-from typing import Union, Optional, Sequence, Tuple, NoReturn
+from typing import Union, Optional, Sequence, Tuple, NoReturn, Any
 
 import numpy as np
 import pandas as pd
@@ -24,7 +24,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
     __DEBUG__ = True
     __name__ = "ECG_CRNN_CINC2021"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -44,7 +44,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
 
     @torch.no_grad()
     def inference(self,
-                  input:Union[np.ndarray,Tensor],
+                  input:Union[Sequence[float],np.ndarray,Tensor],
                   class_names:bool=False,
                   bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray,pd.DataFrame],np.ndarray]:
         """ finished, checked,
@@ -53,8 +53,8 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
 
         Parameters
         ----------
-        input: ndarray or Tensor,
-            input tensor, of shape (batch_size, channels, seq_len)
+        input: array_like,
+            input tensor, of shape (..., channels, seq_len)
         class_names: bool, default False,
             if True, the returned scalar predictions will be a `DataFrame`,
             with class names for each scalar prediction
@@ -77,12 +77,12 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
             nsr_cid = self.classes.index("426783006")
         else:
             nsr_cid = None
-        _device = next(self.parameters()).device
         self.eval()
-        if isinstance(input, np.ndarray):
-            _input = torch.from_numpy(input).to(_device)
-        else:
-            _input = input.to(_device)
+        _device = next(self.parameters()).device
+        _dtype = next(self.parameters()).dtype
+        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        if _input.ndim == 2:
+            _input = _input.unsqueeze(0)  # add a batch dimension
         pred = self.forward(_input)
         pred = self.sigmoid(pred)
         bin_pred = (pred>=bin_pred_thr).int()
