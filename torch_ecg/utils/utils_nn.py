@@ -492,33 +492,35 @@ def compute_receptive_field(kernel_sizes:Union[Sequence[int], int]=1,
     return receptive_field
 
 
-def default_collate_fn(batch:Sequence[Tuple[np.ndarray, np.ndarray]]) -> Tuple[Tensor, Tensor]:
+def default_collate_fn(batch:Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, ...]:
     """ finished, checked,
 
     collate functions for model training
 
-    the data generator (`Dataset`) should generate (`__getitem__`) 2-tuples `signals, labels`
+    the data generator (`Dataset`) should generate (`__getitem__`) n-tuples `signals, labels, ...`
 
     Parameters
     ----------
     batch: sequence,
-        sequence of 2-tuples,
-        in which the first element is the signal, the second is the label
+        sequence of n-tuples,
+        in which the first element is the signal, the second is the label, ...
     
     Returns
     -------
-    values: Tensor,
-        the concatenated values as input for training
-    labels: Tensor,
-        the concatenated labels as ground truth for training
+    tuple of Tensor,
+        the concatenated values to feed into neural networks
     """
-    values = [[item[0]] for item in batch]
-    labels = [[item[1]] for item in batch]
-    values = np.concatenate(values, axis=0).astype(_DTYPE)
-    values = torch.from_numpy(values)
-    labels = np.concatenate(labels, axis=0).astype(_DTYPE)
-    labels = torch.from_numpy(labels)
-    return values, labels
+    try:
+        n_fields = len(batch[0])
+    except:
+        raise ValueError("No data")
+    ret = []
+    for i in range(n_fields):
+        values = [[item[i]] for item in batch]
+        values = np.concatenate(values, axis=0).astype(_DTYPE)
+        values = torch.from_numpy(values)
+        ret.append(values)
+    return tuple(ret)
 
 
 def intervals_iou(itv_a:Tensor, itv_b:Tensor, iou_type="iou") -> Tensor:
