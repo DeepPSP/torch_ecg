@@ -48,6 +48,7 @@ __all__ = [
     "CBAMBlock", "BAMBlock", "CoordAttention",
     "CRF", "ExtendedCRF",
     "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
+    "MaskedBCEWithLogitsLoss",
     "FocalLoss",
 ]
 
@@ -3529,11 +3530,15 @@ class WeightedBCELoss(nn.Module):
 
         Parameters
         ----------
-        to write
+        input: Tensor,
+            the prediction tensor, of shape (batch_size, ...)
+        target: Tensor,
+            the target tensor, of shape (batch_size, ...)
 
         Returns
         -------
-        to write
+        loss: Tensor,
+            the loss (scalar tensor) w.r.t. `input` and `target`
         """
         if self.PosWeightIsDynamic:
             positive_counts = target.sum(dim=0)
@@ -3568,14 +3573,54 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
 
         Parameters
         ----------
-        to write
+        input: Tensor,
+            the prediction tensor, of shape (batch_size, ...)
+        target: Tensor,
+            the target tensor, of shape (batch_size, ...)
 
         Returns
         -------
-        to write
+        loss: Tensor,
+            the loss (scalar tensor) w.r.t. `input` and `target`
         """
         loss = super().forward(input, target)
         loss = torch.mean(loss * self.class_weight)
+        return loss
+
+
+class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
+    """ finished, checked,
+    """
+    __name__ = "MaskedBCEWithLogitsLoss"
+
+    def __init__(self) -> NoReturn:
+        """ finished, checked,
+        """
+        super().__init__(reduction="none")
+
+    def forward(self, input:Tensor, target:Tensor, weight_mask:Tensor) -> Tensor:
+        """
+
+        Parameters
+        ----------
+        input: Tensor,
+            the prediction tensor, of shape (batch_size, ...)
+        target: Tensor,
+            the target tensor, of shape (batch_size, ...)
+        weight_mask: Tensor,
+            the weight mask tensor, of shape (batch_size, ...)
+
+        Returns
+        -------
+        loss: Tensor,
+            the loss (scalar tensor) w.r.t. `input` and `target`
+
+        NOTE
+        ----
+        `input`, `target`, and `weight_mask` should be 3-D tensors of the same shape
+        """
+        loss = super().forward(input, target)
+        loss = torch.mean(loss * weight_mask)
         return loss
 
 
