@@ -244,7 +244,7 @@ class RR_LSTM(nn.Module):
 
 
     @staticmethod
-    def from_checkpoint(path:str, device:Optional[torch.device]=None) -> nn.Module:
+    def from_checkpoint(path:str, device:Optional[torch.device]=None) -> Tuple[nn.Module, dict]:
         """
 
         Parameters
@@ -259,6 +259,8 @@ class RR_LSTM(nn.Module):
         -------
         model: Module,
             the model loaded from a checkpoint
+        aux_config: dict,
+            auxiliary configs that are needed for data preprocessing, etc.
         """
         _device = device or (torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"))
         ckpt = torch.load(path, map_location=_device)
@@ -270,4 +272,4 @@ class RR_LSTM(nn.Module):
             config=ckpt["model_config"],
         )
         model.load_state_dict(ckpt["model_state_dict"])
-        return model
+        return model, aux_config
