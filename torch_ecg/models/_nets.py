@@ -2068,7 +2068,7 @@ class ZeroPadding(nn.Module):
             of shape (batch_size, n_channels, seq_len)
         """
         batch_size, _, seq_len = input.shape
-        _device = next(self.parameters()).device
+        _device = input.device
         if self.__increase_channels > 0:
             output = torch.zeros((batch_size, self.__increase_channels, seq_len))
             output = output.to(device=_device)
