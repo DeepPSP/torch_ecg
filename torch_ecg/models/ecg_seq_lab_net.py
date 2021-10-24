@@ -57,7 +57,11 @@ class ECG_SEQ_LAB_NET(nn.Module):
 
     pipeline
     --------
-    multi-scopic cnn --> (bidi-lstm -->) "attention" --> seq linear
+    (multi-scopic, etc.) cnn --> head ((bidi-lstm -->) "attention" --> seq linear) -> output
+
+    TODO
+    ----
+    add optional upsampling (e.g. `F.interpolate`) to make output size the same as input size
 
     References
     ----------
