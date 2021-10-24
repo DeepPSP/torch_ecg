@@ -28,7 +28,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 
-from torch_ecg.models._nets import BCEWithLogitsWithClassWeightLoss
+from torch_ecg.models.loss import BCEWithLogitsWithClassWeightLoss
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from train.train_crnn_cpsc2020.model_legacy import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
 from train.train_crnn_cpsc2020.utils import (
