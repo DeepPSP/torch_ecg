@@ -16,7 +16,6 @@ class Augmentor(ABC):
     """
     __name__ = "Augmentor"
 
-
     @abstractmethod
     def generate(self, sig:Tensor, fs:int, label:Optional[Tensor]=None) -> Tensor:
         """

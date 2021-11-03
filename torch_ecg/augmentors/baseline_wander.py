@@ -7,6 +7,8 @@ import multiprocessing as mp
 from typing import Any, NoReturn, Sequence, Union
 from numbers import Real
 
+from torch import Tensor
+
 from .base import Augmentor
 from ..utils.utils_signal import get_ampl
 
@@ -23,8 +25,9 @@ class BaselineWanderAugmentor(Augmentor):
                  fs:Optional[np.ndarray]=None,
                  ampl_ratio:Optional[np.ndarray]=None,
                  gaussian:Optional[np.ndarray]=None,
+                 prob:float=0.5,
                  inplace:bool=False,) -> NoReturn:
-        """ finished, NOT checked
+        """ finished, checked
 
         Parameters
         ----------
@@ -37,11 +40,15 @@ class BaselineWanderAugmentor(Augmentor):
         gaussian: ndarray, optional,
             candidate mean and std of the Gaussian noises,
             of shape (k, 2)
+        prob: float, default 0.5,
+            probability of performing the augmentation
         inplace: bool, default False,
             currently not used
         """
         self.fs = fs if fs is not None else np.array([0.33, 0.1, 0.05, 0.01])
-        self.ampl_ratio = ampl_ratio if ampl_ratio is not None else np.array([
+        self.prob = prob
+        self.ampl_ratio = ampl_ratio if ampl_ratio is not None \
+            else np.array([  # default ampl_ratio
             [0.01, 0.01, 0.02, 0.03],  # low
             [0.01, 0.02, 0.04, 0.05],  # low
             [0.1, 0.06, 0.04, 0.02],  # low
@@ -50,7 +57,8 @@ class BaselineWanderAugmentor(Augmentor):
             [0.1, 0.15, 0.25, 0.3],  # high
             [0.25, 0.25, 0.3, 0.35],  # extremely high
         ])
-        self.gaussian = gaussian if gaussian is not None else np.array([  # mean and std, ratio
+        self.gaussian = gaussian if gaussian is not None \
+            else np.array([  # default gaussian, mean and std, in terms of ratio
             [0.0, 0.0],
             [0.0, 0.0],
             [0.0, 0.0],  # ensure at least one with no gaussian noise
@@ -64,7 +72,7 @@ class BaselineWanderAugmentor(Augmentor):
         self._n_gn_choices = len(self.gaussian)
 
     def generate(self, sig:Tensor, label:Tensor, fs:int) -> Tensor:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -74,14 +82,14 @@ class BaselineWanderAugmentor(Augmentor):
         -------
         to write
         """
-        batch, lead, siglen = sig.shape
+        batch, n_leads, siglen = sig.shape
         _sig = sig.cpu().numpy()
         with mp.Pool(processes=max(1, mp.cpu_count()-2)) as pool:
             bw_sig = pool.starmap(
                 self._generate_single,
-                iterable=[(_sig[i][j], fs) for i in range(batch) for j in range(lead)],
+                iterable=[(_sig[i][j], fs) for i in range(batch) for j in range(n_leads)],
             )
-        bw_sig = np.array(bw_sig, dtype=_sig.dtype).reshape((batch, lead, siglen))
+        bw_sig = np.array(bw_sig, dtype=_sig.dtype).reshape((batch, n_leads, siglen))
         bw_sig = torch.from_numpy(bw_sig).to(sig.device)
         # if self.inplace:
         return bw_sig
