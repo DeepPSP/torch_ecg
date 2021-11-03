@@ -20,7 +20,7 @@ class Resample(PreProcessor):
     __name__ = "Resample"
 
     def __init__(self, fs:Optional[int]=None, siglen:Optional[int]=None, **kwargs:Any) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -37,7 +37,7 @@ class Resample(PreProcessor):
             "one and only one of `fs` and `siglen` should be set"
 
     def apply(self, sig:np.ndarray, fs:Real) -> np.ndarray:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         apply the preprocessor to `sig`
 

@@ -2,7 +2,7 @@
 normalization of the signals
 """
 
-from typing import NoReturn, Any
+from typing import NoReturn, Any, Union
 from numbers import Real
 
 import numpy as np
@@ -21,13 +21,23 @@ __all__ = [
 
 class Normalize(PreProcessor):
     """
-    perform normalization on the signal, to make it has fixed mean and standard deviation,
-    or normalize signal using mean and std via (signal - mean) / std
+    perform z-score normalization on `sig`,
+    to make it has fixed mean and standard deviation,
+    or perform min-max normalization on `sig`,
+    or normalize `sig` using `mean` and `std` via (sig - mean) / std.
+    More precisely,
+
+        .. math::
+            \begin{align*}
+            \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
+            \text{Naive normalization:} & \frac{sig - m}{s} \\
+            \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+            \end{align*}
     """
     __name__ = "Normalize"
 
     def __init__(self,
-                 method,
+                 method:str,
                  mean:Union[Real,np.ndarray]=0.0,
                  std:Union[Real,np.ndarray]=1.0,
                  per_channel:bool=True,
@@ -39,15 +49,15 @@ class Normalize(PreProcessor):
         method: str,
             normalization method, case insensitive, can be one of
             "naive", "min-max", "z-score",
-        mean: real number of ndarray, default 0.0,
+        mean: real number or ndarray, default 0.0,
             mean value of the normalized signal,
             or mean values for each lead of the normalized signal,
             useless if `method` is "min-max"
-        std: real number of ndarray, default 1.0,
+        std: real number or ndarray, default 1.0,
             standard deviation of the normalized signal,
             or standard deviations for each lead of the normalized signal,
             useless if `method` is "min-max"
-        per_channel: bool, default False,
+        per_channel: bool, default True,
             if True, normalization will be done per channel
         """
         self.method = method.lower()
@@ -76,7 +86,8 @@ class Normalize(PreProcessor):
             2d array, which is a multi-lead ECG of "lead_first" format
             3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)
         fs: real number,
-            sampling frequency of the ECG signal
+            sampling frequency of the ECG signal,
+            not used
 
         Returns
         -------
@@ -109,7 +120,7 @@ class MinMaxNormalize(Normalize):
 
         Parameters
         ----------
-        per_channel: bool, default False,
+        per_channel: bool, default True,
             if True, normalization will be done per channel
         """
         super().__init__(method="min-max", per_channel=per_channel)
@@ -133,11 +144,11 @@ class NaiveNormalize(Normalize):
 
         Parameters
         ----------
-        mean: real number of ndarray, default 0.0,
+        mean: real number or ndarray, default 0.0,
             value(s) to be subtracted
-        std: real number of ndarray, default 1.0,
+        std: real number or ndarray, default 1.0,
             value(s) to be divided
-        per_channel: bool, default False,
+        per_channel: bool, default True,
             if True, normalization will be done per channel
         """
         super().__init__(
@@ -166,13 +177,13 @@ class ZScoreNormalize(Normalize):
 
         Parameters
         ----------
-        mean: real number of ndarray, default 0.0,
+        mean: real number or ndarray, default 0.0,
             mean value of the normalized signal,
             or mean values for each lead of the normalized signal,
-        std: real number of ndarray, default 1.0,
+        std: real number or ndarray, default 1.0,
             standard deviation of the normalized signal,
             or standard deviations for each lead of the normalized signal,
-        per_channel: bool, default False,
+        per_channel: bool, default True,
             if True, normalization will be done per channel
         """
         super().__init__(

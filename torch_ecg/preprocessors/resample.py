@@ -1,7 +1,7 @@
 """
 """
 
-from typing import NoReturn, Optional
+from typing import NoReturn, Optional, Any
 
 import torch
 
@@ -99,12 +99,23 @@ def resample(sig:torch.Tensor,
         assert src_fs is not None, \
             "if `fs` is set, `src_fs` should also be set"
         scale_factor = fs / src_fs
-    if inplace:
+    if not inplace:
         sig = sig.clone()
-    sig = torch.nn.functional.interpolate(
-        sig,
-        size=siglen,
-        scale_factor=scale_factor,
-        mode="nearest",
-    )
+    if sig.ndim == 2:
+        sig = torch.nn.functional.interpolate(
+            sig.unsqueeze(0),
+            size=siglen,
+            scale_factor=scale_factor,
+            mode="linear",
+            align_corners=True,
+        ).squeeze(0)
+    else:
+        sig = torch.nn.functional.interpolate(
+            sig,
+            size=siglen,
+            scale_factor=scale_factor,
+            mode="linear",
+            align_corners=True,
+        )
+
     return sig
