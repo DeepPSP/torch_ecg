@@ -25,7 +25,7 @@ class BaselineRemove(PreProcessor):
     __name__ = "BaselineRemove"
 
     def __init__(self, window1:float=0.2, window2:float=0.6, **kwargs:Any) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -41,7 +41,7 @@ class BaselineRemove(PreProcessor):
             warnings.warn("values of window1 and window2 are switched")
 
     def apply(self, sig:np.ndarray, fs:Real) -> np.ndarray:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         apply the preprocessor to `sig`
 

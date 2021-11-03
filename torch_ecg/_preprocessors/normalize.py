@@ -11,7 +11,12 @@ from .base import PreProcessor
 from ..utils.utils_signal import normalize
 
 
-__all__ = ["Normalize",]
+__all__ = [
+    "Normalize",
+    "MinMaxNormalize",
+    "NaiveNormalize",
+    "ZScoreNormalize",
+]
 
 
 class Normalize(PreProcessor):
@@ -22,36 +27,34 @@ class Normalize(PreProcessor):
     __name__ = "Normalize"
 
     def __init__(self,
+                 method,
                  mean:Union[Real,np.ndarray]=0.0,
                  std:Union[Real,np.ndarray]=1.0,
                  per_channel:bool=True,
-                 fixed:bool=True,
                  **kwargs:Any) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
+        method: str,
+            normalization method, case insensitive, can be one of
+            "naive", "min-max", "z-score",
         mean: real number of ndarray, default 0.0,
             mean value of the normalized signal,
-            or mean values for each lead of the normalized signal
+            or mean values for each lead of the normalized signal,
+            useless if `method` is "min-max"
         std: real number of ndarray, default 1.0,
             standard deviation of the normalized signal,
-            or standard deviations for each lead of the normalized signal
-        sig_fmt: str, default "channel_first",
-            format of the signal, can be of one of
-            "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first")
+            or standard deviations for each lead of the normalized signal,
+            useless if `method` is "min-max"
         per_channel: bool, default False,
             if True, normalization will be done per channel
-        fixed: bool, default True,
-            if True, the normalized signal will have fixed mean (equals to `mean`)
-            and fixed standard deviation (equals to `std`),
-            otherwise, the signal will be normalized as (sig - mean) / std
         """
+        self.method = method.lower()
+        assert self.method in ["z-score", "naive", "min-max",]
         self.mean = mean
         self.std = std
         self.per_channel = per_channel
-        self.fixed = fixed
         if isinstance(std, Real):
             assert std > 0, "standard deviation should be positive"
         else:
@@ -61,7 +64,7 @@ class Normalize(PreProcessor):
                 f"mean and std should be real numbers in the non per-channel setting"
 
     def apply(self, sig:np.ndarray, fs:Real) -> np.ndarray:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         apply the preprocessor to `sig`
 
@@ -83,10 +86,98 @@ class Normalize(PreProcessor):
         self.__check_sig(sig)
         normalized_sig = normalize(
             sig=sig,
+            method=self.method,
             mean=self.mean,
             std=self.std,
             sig_fmt="channel_first",
             per_channel=self.per_channel,
-            fixed=self.fixed,
         )
         return normalized_sig
+
+
+class MinMaxNormalize(Normalize):
+    """
+    Min-Max normalization, defined as
+
+        .. math::
+            \frac{sig - \min(sig)}{\max(sig) - \min(sig)}
+    """
+    __name__ = "MinMaxNormalize"
+
+    def __init__(self, per_channel:bool=True,) -> NoReturn:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        per_channel: bool, default False,
+            if True, normalization will be done per channel
+        """
+        super().__init__(method="min-max", per_channel=per_channel)
+
+
+class NaiveNormalize(Normalize):
+    """
+    Naive normalization via
+
+        .. math::
+            \frac{sig - m}{s}
+    """
+    __name__ = "NaiveNormalize"
+
+    def __init__(self,
+                 mean:Union[Real,np.ndarray]=0.0,
+                 std:Union[Real,np.ndarray]=1.0,
+                 per_channel:bool=True,
+                 **kwargs:Any) -> NoReturn:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        mean: real number of ndarray, default 0.0,
+            value(s) to be subtracted
+        std: real number of ndarray, default 1.0,
+            value(s) to be divided
+        per_channel: bool, default False,
+            if True, normalization will be done per channel
+        """
+        super().__init__(
+            method="naive",
+            mean=mean,
+            std=std,
+            per_channel=per_channel,
+        )
+
+
+class ZScoreNormalize(Normalize):
+    """
+    Z-score normalization via
+
+        .. math::
+            \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+    """
+    __name__ = "ZScoreNormalize"
+
+    def __init__(self,
+                 mean:Union[Real,np.ndarray]=0.0,
+                 std:Union[Real,np.ndarray]=1.0,
+                 per_channel:bool=True,
+                 **kwargs:Any) -> NoReturn:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        mean: real number of ndarray, default 0.0,
+            mean value of the normalized signal,
+            or mean values for each lead of the normalized signal,
+        std: real number of ndarray, default 1.0,
+            standard deviation of the normalized signal,
+            or standard deviations for each lead of the normalized signal,
+        per_channel: bool, default False,
+            if True, normalization will be done per channel
+        """
+        super().__init__(
+            method="z-score",
+            mean=mean,
+            std=std,
+            per_channel=per_channel,
+        )

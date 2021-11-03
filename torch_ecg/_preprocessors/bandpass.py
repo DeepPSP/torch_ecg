@@ -23,7 +23,7 @@ class BandPass(PreProcessor):
     __name__ = "BandPass"
 
     def __init__(self, lowcut:Optional[Real]=None, highcut:Optional[Real]=None, **kwargs:Any) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -42,7 +42,7 @@ class BandPass(PreProcessor):
             self.highcut = float("inf")
 
     def apply(self, sig:np.ndarray, fs:Real) -> np.ndarray:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         apply the preprocessor to `sig`
 
