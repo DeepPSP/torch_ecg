@@ -59,10 +59,6 @@ class ECG_SEQ_LAB_NET(nn.Module):
     --------
     (multi-scopic, etc.) cnn --> head ((bidi-lstm -->) "attention" --> seq linear) -> output
 
-    TODO
-    ----
-    add optional upsampling (e.g. `F.interpolate`) to make output size the same as input size
-
     References
     ----------
     [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
