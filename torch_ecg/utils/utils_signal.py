@@ -746,7 +746,15 @@ def normalize(sig:np.ndarray,
     perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
     or perform min-max normalization on `sig`,
-    or normalize `sig` using `mean` and `std` via (sig - mean) / std
+    or normalize `sig` using `mean` and `std` via (sig - mean) / std.
+    More precisely,
+
+        .. math::
+            \begin{align*}
+            \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
+            \text{Naive normalization:} & \frac{sig - m}{s} \\
+            \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+            \end{align*}
 
     Parameters
     ----------
@@ -757,10 +765,12 @@ def normalize(sig:np.ndarray,
         "naive", "min-max", "z-score",
     mean: real number or array_like, default 0.0,
         mean value of the normalized signal,
-        or mean values for each lead of the normalized signal
+        or mean values for each lead of the normalized signal,
+        useless if `method` is "min-max"
     std: real number or array_like, default 1.0,
         standard deviation of the normalized signal,
-        or standard deviations for each lead of the normalized signal
+        or standard deviations for each lead of the normalized signal,
+        useless if `method` is "min-max"
     sig_fmt: str, default "channel_first",
         format of the signal, can be of one of
         "channel_last" (alias "lead_last"), or
