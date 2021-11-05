@@ -324,8 +324,8 @@ class AsymmetricLoss(nn.Module):
     __name__ = "AsymmetricLoss"
 
     def __init__(self,
-                 gamma_neg:Real=4,
-                 gamma_pos:Real=1,
+                 gamma_neg:Union[Real,torch.Tensor]=4,
+                 gamma_pos:Union[Real,torch.Tensor]=1,
                  prob_margin:float=0.05, 
                  disable_torch_grad_focal_loss:bool=False,
                  reduction:str="mean",
@@ -334,12 +334,30 @@ class AsymmetricLoss(nn.Module):
 
         Parameters
         ----------
-        gamma_neg: real number, default 4,
-        gamma_pos: real number, default 1,
+        gamma_neg: real number or Tensor, default 4,
+            exponent of the multiplier to the negative loss
+        gamma_pos: real number or Tensor, default 1,
+            exponent of the multiplier to the positive loss
         prob_margin: float, default 0.05,
+            the probability margin
         disable_torch_grad_focal_loss: bool, default False,
+            if True, disable torch.grad for asymmetric focal loss computing
         reduction: str, default "mean",
+            the reduction to apply to the output, can be one of
+            "none", "mean", "sum"
         implementation: str, default "alibaba-miil",
+            can also be "deep-psp", case insensitive,
+            implementation by Alibaba-MIIL, or by `DeepPSP`
+
+        NOTE
+        ----
+        Since `AsymmetricLoss` aims at emphasizing the contribution of positive samples,
+        `gamma_neg` usually > `gamma_pos`.
+
+        TODO
+        ----
+        1. evaluate `gamma_neg`, `gamma_pos` be set as tensors, of shape (1, n_classes),
+        one ratio of positive to negative for each class
         """
         super().__init__()
         self.implementation = implementation.lower()
