@@ -315,17 +315,19 @@ class AsymmetricLoss(nn.Module):
     def __init__(self,
                  gamma_neg:Real=4,
                  gamma_pos:Real=1,
-                 prob_shift:float=0.05, 
+                 prob_margin:float=0.05, 
                  disable_torch_grad_focal_loss:bool=False,
                  reduction:str="mean") -> NoReturn:
         """ finished, checked,
+
+
         """
         super().__init__()
         self.gamma_neg = gamma_neg
         self.gamma_pos = gamma_pos
-        self.prob_shift = prob_shift
-        if self.prob_shift < 0:
-            raise ValueError("`prob_shift` must be non-negative")
+        self.prob_margin = prob_margin
+        if self.prob_margin < 0:
+            raise ValueError("`prob_margin` must be non-negative")
         self.disable_torch_grad_focal_loss = disable_torch_grad_focal_loss
         self.eps = 1e-8
         self.reduction = reduction.lower()
@@ -355,8 +357,8 @@ class AsymmetricLoss(nn.Module):
         self.xs_neg = 1.0 - self.xs_pos
 
         # Asymmetric Clipping
-        if self.prob_shift > 0:
-            self.xs_neg.add_(self.prob_shift).clamp_(max=1)
+        if self.prob_margin > 0:
+            self.xs_neg.add_(self.prob_margin).clamp_(max=1)
 
         # Basic CE calculation
         self.loss = self.targets * torch.log(self.xs_pos.clamp(min=self.eps))
