@@ -2,7 +2,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Tuple, Union
 
 from torch import Tensor
 
@@ -17,7 +17,7 @@ class Augmentor(ABC):
     __name__ = "Augmentor"
 
     @abstractmethod
-    def generate(self, sig:Tensor, fs:Optional[int]=None, label:Optional[Tensor]=None) -> Tensor:
+    def generate(self, sig:Tensor, fs:Optional[int]=None, label:Optional[Tensor]=None) -> Union[Tensor,Tuple[Tensor]]:
         """
         Parameters
         ----------
@@ -30,11 +30,11 @@ class Augmentor(ABC):
 
         Returns
         -------
-        Tensor, the augmented ECGs
+        Tensor(s), the augmented ECGs
         """
         raise NotImplementedError
 
-    def __call__(self, sig:Tensor, fs:Optional[int]=None, label:Optional[Tensor]=None) -> Tensor:
+    def __call__(self, sig:Tensor, fs:Optional[int]=None, label:Optional[Tensor]=None) -> Union[Tensor,Tuple[Tensor]]:
         """
         alias of `self.generate`
         """
