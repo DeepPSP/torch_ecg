@@ -29,6 +29,7 @@ class Mixup(Augmenter):
     __name__ = "Mixup"
 
     def __init__(self,
+                 fs:Optional[int]=None,
                  alpha:Real=0.5,
                  beta:Optional[Real]=None,
                  prob:float=0.5,
@@ -37,6 +38,8 @@ class Mixup(Augmenter):
         """
         Parameters
         ----------
+        fs: int, optional,
+            sampling frequency of the ECGs to be augmented
         alpha: real number, default 0.5,
             alpha parameter of the Beta distribution used in Mixup.
         beta: real number, optional,
@@ -49,6 +52,7 @@ class Mixup(Augmenter):
         kwargs: Keyword arguments.
         """
         super().__init__(**kwargs)
+        self.fs = fs
         self.alpha = alpha
         self.beta = beta or self.alpha
         self.prob = prob
@@ -63,7 +67,7 @@ class Mixup(Augmenter):
         sig: Tensor,
             the ECGs to be augmented, of shape (batch, lead, siglen)
         label: Tensor, optional,
-            labels of the ECGs
+            label tensor of the ECGs
 
         Returns
         -------

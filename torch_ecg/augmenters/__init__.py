@@ -6,6 +6,7 @@ from .baseline_wander import BaselineWanderAugmenter
 from .random_flip import RandomFlip
 from .mixup import Mixup
 from .label_smooth import LabelSmooth
+from .random_masking import RandomMasking
 
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "RandomFlip",
     "Mixup",
     "LabelSmooth",
+    "RandomMasking",
 ]

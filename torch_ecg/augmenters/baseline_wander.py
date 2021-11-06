@@ -24,6 +24,7 @@ class BaselineWanderAugmenter(Augmenter):
     __name__ = "BaselineWanderAugmenter"
 
     def __init__(self,
+                 fs:int,
                  bw_fs:Optional[np.ndarray]=None,
                  ampl_ratio:Optional[np.ndarray]=None,
                  gaussian:Optional[np.ndarray]=None,
@@ -34,6 +35,8 @@ class BaselineWanderAugmenter(Augmenter):
 
         Parameters
         ----------
+        fs: int,
+            sampling frequency of the ECGs to be augmented
         bw_fs: ndarray, optional,
             frequencies of the sinusoidal noises,
             of shape (n,)
@@ -50,6 +53,7 @@ class BaselineWanderAugmenter(Augmenter):
         kwargs: Keyword arguments.
         """
         super().__init__(**kwargs)
+        self.fs = fs
         self.bw_fs = bw_fs if bw_fs is not None else np.array([0.33, 0.1, 0.05, 0.01])
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
@@ -85,17 +89,15 @@ class BaselineWanderAugmenter(Augmenter):
         self._n_bw_choices = len(self.ampl_ratio)
         self._n_gn_choices = len(self.gaussian)
 
-    def generate(self, sig:Tensor, fs:int, label:Optional[Tensor]=None) -> Tensor:
+    def generate(self, sig:Tensor, label:Optional[Tensor]=None) -> Tensor:
         """ finished, checked,
 
         Parameters
         ----------
         sig: Tensor,
             the ECGs to be augmented, of shape (batch, lead, siglen)
-        fs: int,
-            sampling frequency of the ECGs
         label: Tensor, optional,
-            labels of the ECGs, not used
+            label tensor of the ECGs, not used
 
         Returns
         -------
@@ -105,7 +107,7 @@ class BaselineWanderAugmenter(Augmenter):
         if not self.inplace:
             sig = sig.clone()
         if self.prob > 0:
-            sig.add_(gen_baseline_wander(sig, fs, self.bw_fs, self.ampl_ratio, self.gaussian))
+            sig.add_(gen_baseline_wander(sig, self.fs, self.bw_fs, self.ampl_ratio, self.gaussian))
         return sig
 
 

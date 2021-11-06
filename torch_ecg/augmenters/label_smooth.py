@@ -20,11 +20,13 @@ class LabelSmooth(Augmenter):
     """
     __name__ = "LabelSmooth"
 
-    def __init__(self, smoothing:float=0.1, prob:float=0.5, inplace:bool=True, **kwargs: Any) -> None:
+    def __init__(self, fs:Optional[int]=None, smoothing:float=0.1, prob:float=0.5, inplace:bool=True, **kwargs: Any) -> None:
         """ finished, checked,
 
         Parameters
         ----------
+        fs: int, optional,
+            sampling frequency of the ECGs to be augmented
         smoothing: float, default 0.1,
             the smoothing factor
         prob: float, default 0.5,
@@ -34,6 +36,7 @@ class LabelSmooth(Augmenter):
         kwargs: keyword arguments
         """
         super().__init__(**kwargs)
+        self.fs = fs
         self.smoothing = smoothing
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
