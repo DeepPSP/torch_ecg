@@ -1,7 +1,7 @@
 """
 """
 
-from random import choices, shuffle
+from random import shuffle
 from copy import deepcopy
 from typing import Any, NoReturn, Sequence, Union, Tuple, Optional
 from numbers import Real
@@ -52,6 +52,7 @@ class Mixup(Augmenter):
         self.alpha = alpha
         self.beta = beta or self.alpha
         self.prob = prob
+        assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.inplace = inplace
 
     def generate(self, sig:Tensor, label:Tensor) -> Tuple[Tensor,Tensor]:
@@ -74,12 +75,12 @@ class Mixup(Augmenter):
         batch, lead, siglen = sig.shape
         lam = np.random.beta(self.alpha, self.beta)
         indices = np.arange(batch, dtype=int)
-        ori = choices(range(batch), k=int(round(self.prob*batch)))
+        ori = self.get_indices(prob=self.prob, pop_size=batch)
+        # print(f"ori = {ori}, len(ori) = {len(ori)}")
         perm = deepcopy(ori)
         shuffle(perm)
         indices[ori] = perm
         indices = torch.from_numpy(indices).long()
-        print(indices)
 
         if not self.inplace:
             sig = sig.clone()

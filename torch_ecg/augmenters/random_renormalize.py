@@ -1,7 +1,6 @@
 """
 """
 
-from random import choices
 from typing import Any, NoReturn, Sequence, Union, Optional
 from numbers import Real
 

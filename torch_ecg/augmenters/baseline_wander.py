@@ -52,7 +52,7 @@ class BaselineWanderAugmenter(Augmenter):
         super().__init__(**kwargs)
         self.bw_fs = bw_fs if bw_fs is not None else np.array([0.33, 0.1, 0.05, 0.01])
         self.prob = prob
-        assert self.prob >= 0 and self.prob <= 1, "Probability must be between 0 and 1"
+        assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.ampl_ratio = ampl_ratio if ampl_ratio is not None \
             else np.array([  # default ampl_ratio
             [0.01, 0.01, 0.02, 0.03],  # low

@@ -1,7 +1,6 @@
 """
 """
 
-from random import choices
 from typing import Any, NoReturn, Sequence, Union, Optional
 from numbers import Real
 
@@ -69,15 +68,12 @@ class RandomFlip(Augmenter):
         if not self.inplace:
             sig = sig.clone()
         if self.per_channel:
-            # flip = torch.ones((batch*lead,), dtype=sig.dtype, device=sig.device)
-            # flip[choices(list(range(batch*lead)), k=int(self.prob*batch*lead))] = -1
             flip = torch.ones((batch,lead,1), dtype=sig.dtype, device=sig.device)
-            for i in choices(list(range(batch)), k=int(self.prob[0]*batch)):
-                k = int(round(np.random.normal(self.prob[1]*lead)))
-                flip[i, choices(list(range(lead)), k=k), ...] = -1
+            for i in self.get_indices(prob=self.prob[0], pop_size=batch):
+                flip[i, self.get_indices(prob=self.prob[1], pop_size=lead), ...] = -1
             sig = sig.mul_(flip)
         else:
             flip = torch.ones((batch,1,1), dtype=sig.dtype, device=sig.device)
-            flip[choices(list(range(batch)), k=int(self.prob*batch)),...] = -1
+            flip[self.get_indices(prob=self.prob[0], pop_size=batch), ...] = -1
             sig = sig.mul_(flip)
         return sig
