@@ -34,7 +34,7 @@ class Augmentor(ABC):
         """
         raise NotImplementedError
 
-    def __call__(self, sig:Tensor, fs:int, label:Optional[Tensor]=None) -> Tensor:
+    def __call__(self, sig:Tensor, fs:Optional[int]=None, label:Optional[Tensor]=None) -> Tensor:
         """
         alias of `self.generate`
         """
