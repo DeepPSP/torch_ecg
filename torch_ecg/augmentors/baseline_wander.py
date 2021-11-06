@@ -59,14 +59,20 @@ class BaselineWanderAugmentor(Augmentor):
             [0.1, 0.15, 0.25, 0.3],  # high
             [0.25, 0.25, 0.3, 0.35],  # extremely high
         ])
+        self.ampl_ratio = np.concatenate((
+            np.zeros((int((1-self.prob)*self.ampl_ratio.shape[0]/self.prob), self.ampl_ratio.shape[1])),
+            self.ampl_ratio
+        ))
         self.gaussian = gaussian if gaussian is not None \
             else np.array([  # default gaussian, mean and std, in terms of ratio
-            [0.0, 0.0],
-            [0.0, 0.0],
-            [0.0, 0.0],  # ensure at least one with no gaussian noise
+            [0.0, 0.001],
             [0.0, 0.003],
             [0.0, 0.01],
         ])
+        self.gaussian = np.concatenate((
+            np.zeros((int((1-self.prob)*self.gaussian.shape[0]/self.prob), self.gaussian.shape[1])),
+            self.gaussian
+        ))
         assert self.bw_fs.ndim == 1 and self.ampl_ratio.ndim == 2 and self.bw_fs.shape[0] == self.ampl_ratio.shape[1]
         self.inplace = inplace
 
