@@ -7,10 +7,10 @@ from typing import Optional, Tuple, Union
 from torch import Tensor
 
 
-__all__ = ["",]
+__all__ = ["Augmenter",]
 
 
-class Augmentor(ABC):
+class Augmenter(ABC):
     """
     An Augmentor do data augmentation for ECGs and labels
     """

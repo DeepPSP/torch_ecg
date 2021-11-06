@@ -9,13 +9,13 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from .base import Augmentor
+from .base import Augmenter
 
 
 __all__ = ["RandomFlip",]
 
 
-class RandomFlip(Augmentor):
+class RandomFlip(Augmenter):
     """
     """
     __name__ = "RandomFlip"

@@ -11,17 +11,17 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from .base import Augmentor
+from .base import Augmenter
 from ..utils.utils_signal import get_ampl
 
 
-__all__ = ["BaselineWanderAugmentor",]
+__all__ = ["BaselineWanderAugmenter",]
 
 
-class BaselineWanderAugmentor(Augmentor):
+class BaselineWanderAugmenter(Augmenter):
     """
     """
-    __name__ = "BaselineWanderAugmentor"
+    __name__ = "BaselineWanderAugmenter"
 
     def __init__(self,
                  bw_fs:Optional[np.ndarray]=None,
