@@ -4,9 +4,11 @@ add baseline wander composed of sinusoidal and Gaussian noise to the ECGs
 
 from random import randint, uniform
 import multiprocessing as mp
-from typing import Any, NoReturn, Sequence, Union
+from typing import Any, NoReturn, Sequence, Union, Optional
 from numbers import Real
 
+import numpy as np
+import torch
 from torch import Tensor
 
 from .base import Augmentor
@@ -22,7 +24,7 @@ class BaselineWanderAugmentor(Augmentor):
     __name__ = "BaselineWanderAugmentor"
 
     def __init__(self,
-                 fs:Optional[np.ndarray]=None,
+                 bw_fs:Optional[np.ndarray]=None,
                  ampl_ratio:Optional[np.ndarray]=None,
                  gaussian:Optional[np.ndarray]=None,
                  prob:float=0.5,
@@ -31,7 +33,7 @@ class BaselineWanderAugmentor(Augmentor):
 
         Parameters
         ----------
-        fs: ndarray, optional,
+        bw_fs: ndarray, optional,
             frequencies of the sinusoidal noises,
             of shape (n,)
         ampl_ratio: ndarray, optional,
@@ -45,7 +47,7 @@ class BaselineWanderAugmentor(Augmentor):
         inplace: bool, default False,
             currently not used
         """
-        self.fs = fs if fs is not None else np.array([0.33, 0.1, 0.05, 0.01])
+        self.bw_fs = bw_fs if bw_fs is not None else np.array([0.33, 0.1, 0.05, 0.01])
         self.prob = prob
         self.ampl_ratio = ampl_ratio if ampl_ratio is not None \
             else np.array([  # default ampl_ratio
@@ -65,64 +67,60 @@ class BaselineWanderAugmentor(Augmentor):
             [0.0, 0.003],
             [0.0, 0.01],
         ])
-        assert self.fs.ndim == 1 and self.ampl_ratio.ndim == 2 and self.fs.shape[0] == self.ampl_ratio.shape[1]
+        assert self.bw_fs.ndim == 1 and self.ampl_ratio.ndim == 2 and self.bw_fs.shape[0] == self.ampl_ratio.shape[1]
         self.inplace = inplace
 
         self._n_bw_choices = len(self.ampl_ratio)
         self._n_gn_choices = len(self.gaussian)
 
-    def generate(self, sig:Tensor, label:Tensor, fs:int) -> Tensor:
+    def generate(self, sig:Tensor, fs:int, label:Optional[Tensor]=None) -> Tensor:
         """ finished, checked,
 
         Parameters
         ----------
-        to write
+        sig: Tensor,
+            the ECGs to be augmented, of shape (batch, lead, siglen)
+        fs: int, optional,
+            sampling frequency of the ECGs
+        label: Tensor, optional,
+            labels of the ECGs
 
         Returns
         -------
-        to write
+        sig: Tensor,
+            the augmented ECGs
         """
-        batch, n_leads, siglen = sig.shape
-        _sig = sig.cpu().numpy()
-        with mp.Pool(processes=max(1, mp.cpu_count()-2)) as pool:
-            bw_sig = pool.starmap(
-                self._generate_single,
-                iterable=[(_sig[i][j], fs) for i in range(batch) for j in range(n_leads)],
-            )
-        bw_sig = np.array(bw_sig, dtype=_sig.dtype).reshape((batch, n_leads, siglen))
-        bw_sig = torch.from_numpy(bw_sig).to(sig.device)
-        # if self.inplace:
-        return bw_sig
+        if not self.inplace:
+            sig = sig.clone()
+        sig.add_(gen_baseline_wander(sig, fs, self.bw_fs, self.ampl_ratio, self.gaussian))
+        return sig
 
-    def _generate_single(self, sig:np.ndarray, fs:int, siglen:int) -> ndarray:
-        """ finished, NOT checked
 
-        Parameters
-        ----------
-        to write
+def _get_ampl(sig:Tensor, fs:int) -> Tensor:
+    """ finished, NOT checked
 
-        Returns
-        -------
-        to write
-        """
-        sig_ampl = get_ampl(sig, fs)
-        ar = self.ampl_ratio[randint(0, self._n_bw_choices-1)]
-        gm, gs = self.aussian[randint(0, self._n_gn_choices-1)]
-        bw_ampl = ar * seg_ampl
-        g_ampl = gm * seg_ampl
-        bw = gen_baseline_wander(
-            siglen=siglen,
-            fs=fs,
-            bw_fs=self.fs,
-            amplitude=bw_ampl,
-            amplitude_mean=gm,
-            amplitude_std=gs,
+    Parameters
+    ----------
+    sig: Tensor,
+        the ECG signal tensor, of shape (batch, lead, siglen)
+    fs: int,
+        sampling frequency of the ECGs
+
+    Returns
+    -------
+    ampl: Tensor,
+        amplitude of each lead, of shape (batch, lead, 1)
+    """
+    with mp.Pool(processes=max(1, mp.cpu_count()-2)) as pool:
+        ampl = pool.starmap(
+            get_ampl,
+            iterable=[(sig[i].cpu().numpy(), fs) for i in range(sig.shape[0])],
         )
-        bw_sig = sig + bw
-        return bw_sig
+    ampl = torch.as_tensor(ampl, dtype=sig.dtype, device=sig.device).unsqueeze(-1)
+    return ampl
 
 
-def gen_gaussian_noise(siglen:int, mean:Real=0, std:Real=0) -> np.ndarray:
+def _gen_gaussian_noise(siglen:int, mean:Real=0, std:Real=0) -> np.ndarray:
     """ finished, checked,
 
     generate 1d Gaussian noise of given length, mean, and standard deviation
@@ -145,12 +143,12 @@ def gen_gaussian_noise(siglen:int, mean:Real=0, std:Real=0) -> np.ndarray:
     return gn
 
 
-def gen_sinusoidal_noise(siglen:int,
-                         start_phase:Real,
-                         end_phase:Real,
-                         amplitude:Real,
-                         amplitude_mean:Real=0,
-                         amplitude_std:Real=0) -> np.ndarray:
+def _gen_sinusoidal_noise(siglen:int,
+                          start_phase:Real,
+                          end_phase:Real,
+                          amplitude:Real,
+                          amplitude_mean:Real=0,
+                          amplitude_std:Real=0) -> np.ndarray:
     """ finished, checked,
 
     generate 1d sinusoidal noise of given length, amplitude, start phase, and end phase
@@ -177,16 +175,15 @@ def gen_sinusoidal_noise(siglen:int,
     """
     sn = np.linspace(start_phase, end_phase, siglen)
     sn = amplitude * np.sin(np.pi * sn / 180)
-    sn += gen_gaussian_noise(siglen, amplitude_mean, amplitude_std)
+    sn += _gen_gaussian_noise(siglen, amplitude_mean, amplitude_std)
     return sn
 
 
-def gen_baseline_wander(siglen:int,
-                        fs:Real,
-                        bw_fs:Union[Real,Sequence[Real]],
-                        amplitude:Union[Real,Sequence[Real]],
-                        amplitude_mean:Real=0,
-                        amplitude_std:Real=0) -> np.ndarray:
+def _gen_baseline_wander(siglen:int,
+                         fs:Real,
+                         bw_fs:Union[Real,Sequence[Real]],
+                         amplitude:Union[Real,Sequence[Real]],
+                         amplitude_gaussian:Sequence[Real]=[0,0],) -> np.ndarray:
     """ finished, checked,
 
     generate 1d baseline wander of given length, amplitude, and frequency
@@ -201,10 +198,8 @@ def gen_baseline_wander(siglen:int,
         frequency (frequencies) of the baseline wander
     amplitude: real number, or list of real numbers,
         amplitude of the baseline wander (corr. to each frequency band)
-    amplitude_mean: real number, default 0,
-        mean amplitude of an extra Gaussian noise
-    amplitude_std: real number, default 0,
-        standard deviation of an extra Gaussian noise
+    amplitude_gaussian: 2-tuple of real number, default [0,0],
+        mean and std of amplitude of an extra Gaussian noise
 
     Returns
     -------
@@ -213,9 +208,9 @@ def gen_baseline_wander(siglen:int,
 
     Example
     -------
-    >>> gen_baseline_wander(4000, 400, [0.4,0.1,0.05], [0.1,0.2,0.4])
+    >>> _gen_baseline_wander(4000, 400, [0.4,0.1,0.05], [0.1,0.2,0.4])
     """
-    bw = gen_gaussian_noise(siglen, amplitude_mean, amplitude_std)
+    bw = _gen_gaussian_noise(siglen, amplitude_gaussian[0], amplitude_gaussian[1])
     if isinstance(bw_fs, Real):
         _bw_fs = [bw_fs]
     else:
@@ -229,5 +224,58 @@ def gen_baseline_wander(siglen:int,
     for bf, a in zip(_bw_fs, _amplitude):
         start_phase = np.random.randint(0,360)
         end_phase = duration * bf * 360 + start_phase
-        bw += gen_sinusoidal_noise(siglen, start_phase, end_phase, a, 0, 0)
+        bw += _gen_sinusoidal_noise(siglen, start_phase, end_phase, a, 0, 0)
+    return bw
+
+
+def gen_baseline_wander(sig:Tensor,
+                        fs:Real,
+                        bw_fs:Union[Real,Sequence[Real]],
+                        ampl_ratio:np.ndarray,
+                        gaussian:np.ndarray,) -> np.ndarray:
+    """ finished, checked,
+
+    generate 1d baseline wander of given length, amplitude, and frequency
+
+    Parameters
+    ----------
+    sig: Tensor,
+        the ECGs to be augmented, of shape (batch, lead, siglen)
+    fs: real number,
+        sampling frequency of the original signal
+    bw_fs: real number, or list of real numbers,
+        frequency (frequencies) of the baseline wander
+    ampl_ratio: ndarray, optional,
+        candidate ratios of noise amplitdes compared to the original ECGs for each `fs`,
+        of shape (m,n)
+    gaussian: ndarray, optional,
+        candidate mean and std of the Gaussian noises,
+        of shape (k, 2)
+
+    Returns
+    -------
+    bw: ndarray,
+        the baseline wander of given length, amplitude, frequency,
+        of shape (batch, lead, siglen)
+    """
+    batch, lead, siglen = sig.shape
+    sig_ampl = _get_ampl(sig, fs)
+    _n_bw_choices = len(ampl_ratio)
+    _n_gn_choices = len(gaussian)
+    
+    with mp.Pool(processes=max(1, mp.cpu_count()-2)) as pool:
+        bw = pool.starmap(
+            _gen_baseline_wander,
+            iterable=[
+                (
+                    siglen,
+                    fs,
+                    bw_fs,
+                    ampl_ratio[randint(0, _n_bw_choices-1)],
+                    gaussian[randint(0, _n_gn_choices-1)],
+                )
+                for i in range(sig.shape[0]) for j in range(sig.shape[1])
+            ]
+        )
+    bw = torch.as_tensor(bw, dtype=sig.dtype, device=sig.device).reshape(batch, lead, siglen)
     return bw

@@ -17,13 +17,13 @@ class Augmentor(ABC):
     __name__ = "Augmentor"
 
     @abstractmethod
-    def generate(self, sig:Tensor, fs:int, label:Optional[Tensor]=None) -> Tensor:
+    def generate(self, sig:Tensor, fs:Optional[int]=None, label:Optional[Tensor]=None) -> Tensor:
         """
         Parameters
         ----------
         sig: Tensor,
             the ECGs to be augmented, of shape (batch, lead, siglen)
-        fs: int,
+        fs: int, optional,
             sampling frequency of the ECGs
         label: Tensor, optional,
             labels of the ECGs
