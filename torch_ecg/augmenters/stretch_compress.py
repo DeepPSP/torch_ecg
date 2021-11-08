@@ -30,6 +30,7 @@ class StretchCompress(Augmenter):
         ----------
         ratio: real number, default 6,
             mean ratio of the stretch or compress,
+            if is in [1, 100], will be transformed to [0, 1]
             the ratio of one batch element is sampled from a normal distribution
         prob: float, default 0.5,
             probability of the augmenter to be applied
@@ -181,31 +182,50 @@ class StretchCompressOffline(object):
     """
     __name__ = "StretchCompressOffline"
 
-    def __init__(self, ratio:Real=6, prob:float=0.5, inplace:bool=True, **kwargs: Any) -> NoReturn:
+    def __init__(self,
+                 ratio:Real=6,
+                 prob:float=0.5,
+                 overlap:float=0.5,
+                 critical_overlap:float=0.85) -> NoReturn:
         """ finished, checked,
 
         Parameters
         ----------
         ratio: real number, default 6,
             mean ratio of the stretch or compress,
+            if is in [1, 100], will be transformed to [0, 1]
             the ratio of one batch element is sampled from a normal distribution
         prob: float, default 0.5,
             probability of the augmenter to be applied
-        inplace: bool, default True,
-            if True, the input ECGs will be modified inplace,
-        kwargs: keyword arguments
+        overlap: float, default 0.5,
+            the overlap of offline generated data
+        critical_overlap: float, default 0.85,
+            the overlap of the critical region of the ECG
         """
         super().__init__(**kwargs)
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
-        self.inplace = inplace
         self.ratio = ratio
         if self.ratio > 1:
             self.ratio = self.ratio / 100
         assert 0<= self.ratio <= 1, "Ratio must be between 0 and 1, or between 0 and 100"
+        self.overlap = overlap
+        assert 0<= self.overlap < 1, "Overlap ratio must be between 0 and 1 (1 not included)"
+        self.critical_overlap = critical_overlap
+        assert 0<= self.critical_overlap < 1, "Critical overlap ratio must be between 0 and 1 (1 not included)"
 
-    def generate(self, sig:np.ndarray) -> List[np.ndarray]:
-        """
+    def generate(self, sig:np.ndarray, seg_len:int, critical_points:Optional[Sequence[int]]=None) -> List[np.ndarray]:
+        """ NOT finished, NOT checked,
+
+        Parameters
+        ----------
+        sig: ndarray,
+            the ECGs to generate stretched or compressed segments, of shape (lead, siglen)
+        seg_len: int,
+            the length of the ECG segments to be generated
+        critical_points: sequence of int, optional,
+            indices of the critical points of the ECG,
+            usually have larger overlap by `self.critical_overlap`
         """
         raise NotImplementedError
 
