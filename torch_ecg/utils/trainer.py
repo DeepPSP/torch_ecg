@@ -17,7 +17,9 @@ from torch.utils.data.dataset import Dataset
 import torch_optimizer as extra_optim
 
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.utils.misc import dicts_equal
+from torch_ecg.utils.misc import (
+    dicts_equal, init_logger, get_date_str, dict_to_str, str2bool,
+)
 
 
 __all__ = ["BaseTrainer",]
@@ -29,6 +31,7 @@ class BaseTrainer(ABC):
     __name__ = "BaseTrainer"
     __DEFATULT_CONFIGS__ = {
         "debug": True,
+        "final_model_name": None,
     }
 
     def __init__(self,
@@ -38,7 +41,7 @@ class BaseTrainer(ABC):
                  train_config:dict,
                  device:Optional[torch.device]=None,
                  logger:Optional[logging.Logger]=None,) -> NoReturn:
-        """
+        """ NOT finished, NOT checked,
         """
         self.model = model
         if type(self.model).__name__ in ["DataParallel",]:
@@ -59,7 +62,7 @@ class BaseTrainer(ABC):
          # monitor for training: challenge metric
         self.best_state_dict = OrderedDict()
         self.best_metric = -np.inf
-        self.best_eval_res = tuple()
+        self.best_eval_res = dict()
         self.best_epoch = -1
         self.pseudo_best_epoch = -1
 
@@ -67,12 +70,41 @@ class BaseTrainer(ABC):
         self.model.train()
         self.global_step = 0
         self.epoch = 0
+        self.epoch_loss = 0
 
-    @abstractmethod
-    def train(self) -> NoReturn:
+    def train(self) -> OrderedDict:
+        """ NOT finished, NOT checked,
         """
-        """
-        raise NotImplementedError
+        start_epoch = self.epoch
+        for _ in range(start_epoch, self.n_epochs):
+            self.epoch += 1
+            # train one epoch
+            self.model.train()
+            self.epoch_loss = 0
+            self.train_one_epoch()
+
+        # save the best model
+        if self.best_metric > -np.inf:
+            if self.train_config.final_model_name:
+                save_filename = self.train_config.final_model_name
+            else:
+                save_suffix = f"metric_{self.best_eval_res[self.train_config.monitor]:.2f}"
+                save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"
+            save_path = os.path.join(self.train_config.model_dir, save_filename)
+            self.save_checkpoint(path=save_path)
+        else:
+            raise ValueError("No best model found!")
+
+        self.writer.close()
+
+        if self.logger:
+            for h in self.logger.handlers:
+                h.close()
+                self.logger.removeHandler(h)
+            del self.logger
+        logging.shutdown()
+
+        return sel.best_state_dict
 
     @abstractmethod
     def train_one_epoch(self) -> NoReturn:
@@ -143,7 +175,7 @@ class BaseTrainer(ABC):
 
         self._setup_criterion()
 
-        save_prefix = f"{self._model.__name__}_epoch"
+        self.save_prefix = f"{self._model.__name__}_epoch"
 
         os.makedirs(self.train_config.checkpoints, exist_ok=True)
         os.makedirs(self.train_config.model_dir, exist_ok=True)
