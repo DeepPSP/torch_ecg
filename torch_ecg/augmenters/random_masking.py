@@ -27,7 +27,7 @@ class RandomMasking(Augmenter):
                  mask_value:Real=0.0,
                  mask_width:Sequence[Real]=[0.08,0.18],
                  inplace:bool=True,
-                 **kwargs: Any) -> None:
+                 **kwargs: Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -72,6 +72,9 @@ class RandomMasking(Augmenter):
             the ECGs to be augmented, of shape (batch, lead, siglen)
         label: Tensor,
             label tensor of the ECGs, not used
+        critical_points: sequence of sequences of integers,
+            if given, random masking will be performed in windows centered at these points,
+            this is useful for example when one wants to randomly mask QRS complexes
 
         Returns
         -------

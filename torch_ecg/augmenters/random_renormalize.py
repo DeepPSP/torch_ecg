@@ -20,7 +20,7 @@ class RandomRenormalize(Augmenter):
     """
     __name__ = "RandomRenormalize"
 
-    def __init__(self,) -> NoReturn:
+    def __init__(self, prob:float=0.5, inplace:bool=True, **kwargs: Any) -> NoReturn:
         """
         """
         raise NotImplementedError
