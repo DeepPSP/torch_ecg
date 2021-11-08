@@ -2,7 +2,7 @@
 """
 
 from random import choice
-from typing import Any, NoReturn, Sequence, List, Union, Optional
+from typing import Any, NoReturn, Sequence, List, Tuple, Union, Optional
 from numbers import Real
 
 import numpy as np
@@ -20,6 +20,16 @@ __all__ = ["StretchCompress", "StretchCompressOffline",]
 class StretchCompress(Augmenter):
     """
     stretch-or-compress augmenter on ECG tensors
+
+    Example
+    -------
+    ```python
+    sc = StretchCompress()
+    sig = torch.ones((32, 12, 5000))
+    lb = torch.ones((32, 5000, 3))
+    mask = torch.ones((32, 5000, 1))
+    sig, lb, mask = sc(sig, lb, mask)
+    ```
     """
     __name__ = "StretchCompress"
 
@@ -47,30 +57,45 @@ class StretchCompress(Augmenter):
             self.ratio = self.ratio / 100
         assert 0<= self.ratio <= 1, "Ratio must be between 0 and 1, or between 0 and 100"
 
-    def generate(self, sig:Tensor, label:Optional[Tensor]=None) -> Tensor:
+    def generate(self, sig:Tensor, *labels:Optional[Sequence[Tensor]]) -> Union[Tuple[Tensor,...],Tensor]:
         """ finished, checked,
 
         Parameters
         ----------
         sig: Tensor,
             the ECGs to be stretched or compressed, of shape (batch, lead, siglen)
-        label: Tensor, optional,
-            label tensor of the ECGs, not used
+        labels: sequence of Tensors, optional,
+            label tensors of the ECGs,
+            if set, each should be of ndim 3, of shape (batch, label_len, channels),
+            siglen should be divisible by label_len
 
         Returns
         -------
         sig: Tensor,
-            the stretched or compressed ECGs
+            the stretched or compressed ECG tensors
+        labels: sequence of Tensors, optional,
+            the stretched or compressed label tensors
         """
         batch, lead, siglen = sig.shape
         if not self.inplace:
             sig = sig.clone()
+        labels = [label.clone() for label in labels]
         if self.prob == 0:
+            if label is not None:
+                return (sig,) + tuple(labels)
             return sig
+        label_len = []
+        n_labels = len(labels)
+        for idx in range(n_labels):
+            labels[idx] = labels[idx].permute(0, 2, 1)  # (batch, label_len, n_classes) -> (batch, n_classes, label_len)
+            ll = labels[idx].shape[-1]
+            if ll != siglen:
+                labels[idx] = F.interpolate(labels[idx], size=(siglen,), mode="linear", align_corners=True)
+            label_len.append(ll)
         for batch_idx in self.get_indices(prob=self.prob, pop_size=batch):
             sign = choice([-1,1])
             ratio = np.clip(np.random.normal(self.ratio, 0.382*self.ratio), 0, 2*self.ratio)
-            print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")
+            # print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")
             new_len = int(round((1+sign*ratio) * siglen))
             diff_len = abs(new_len - siglen)
             half_diff_len = diff_len // 2
@@ -81,6 +106,13 @@ class StretchCompress(Augmenter):
                     mode="linear",
                     align_corners=True,
                 )[..., half_diff_len: siglen+half_diff_len].squeeze(0)
+                for idx in range(n_labels):
+                    labels[idx][batch_idx, ...] = F.interpolate(
+                        labels[idx][batch_idx, ...].unsqueeze(0),
+                        size=new_len,
+                        mode="linear",
+                        align_corners=True,
+                    )[..., half_diff_len: siglen+half_diff_len].squeeze(0)
             else:  # compress and pad
                 sig[batch_idx, ...] = F.pad(
                     F.interpolate(
@@ -93,10 +125,28 @@ class StretchCompress(Augmenter):
                     mode="constant",
                     value=0.0,
                 ).squeeze(0)
+                for idx in range(n_labels):
+                    labels[idx][batch_idx, ...] = F.pad(
+                        F.interpolate(
+                            labels[idx][batch_idx, ...].unsqueeze(0),
+                            size=new_len,
+                            mode="linear",
+                            align_corners=True,
+                        ),
+                        pad=(half_diff_len, diff_len-half_diff_len),
+                        mode="constant",
+                        value=0.0,
+                    ).squeeze(0)
+        for idx, (label, ll) in enumerate(zip(labels, label_len)):
+            if ll != siglen:
+                labels[idx] = F.interpolate(label, size=(ll,), mode="linear", align_corners=True)
+            labels[idx] = labels[idx].permute(0, 2, 1)  # (batch, n_classes, label_len) -> (batch, label_len, n_classes)
+        if len(labels) > 0:
+            return (sig,) + tuple(labels)
         return sig
 
-    def _generate(self, sig:Tensor, label:Optional[Tensor]=None) -> Tensor:
-        """ finished, NOT checked,
+    def _generate(self, sig:Tensor, *labels:Optional[Sequence[Tensor]]) -> Union[Tuple[Tensor,...],Tensor]:
+        """ NOT finished, NOT checked,
 
         parallel version of `self.generate`, NOT tested yet!
 
@@ -104,13 +154,17 @@ class StretchCompress(Augmenter):
         ----------
         sig: Tensor,
             the ECGs to be stretched or compressed, of shape (batch, lead, siglen)
-        label: Tensor, optional,
-            label tensor of the ECGs, not used
+        labels: sequence of Tensors, optional,
+            label tensors of the ECGs,
+            if set, should be of ndim 3, of shapes (batch, label_len, n_classes),
+            siglen should be divisible by label_len
 
         Returns
         -------
         sig: Tensor,
-            the stretched or compressed ECGs
+            the stretched or compressed ECG tensors
+        labels: sequence of Tensors, optional,
+            the stretched or compressed label tensors
         """
         batch, lead, siglen = sig.shape
         if not self.inplace:
@@ -123,7 +177,7 @@ class StretchCompress(Augmenter):
                 pool.starmap(
                     func=_stretch_compress_one_batch_element,
                     iterable=[
-                        (sig[batch_idx, ...].unsqueeze(0), self.ratio,) \
+                        (self.ratio, sig[batch_idx, ...].unsqueeze(0),) \
                             for batch_idx in indices
                     ],
                 ),
@@ -132,22 +186,43 @@ class StretchCompress(Augmenter):
             )
         return sig
 
+    def __call__(self, sig:Tensor, *labels:Optional[Sequence[Tensor]]) -> Union[Tuple[Tensor,...],Tensor]:
+        """
+        alias of `self.generate`
+        """
+        return self.generate(sig, *labels)
 
-def _stretch_compress_one_batch_element(sig:Tensor, ratio:Real) -> Tensor:
-    """ finished, checked,
+
+def _stretch_compress_one_batch_element(ratio:Real, sig:Tensor, *labels:Sequence[Tensor]) -> Tensor:
+    """ finished, NOT checked,
 
     Parameters
     ----------
-    sig: Tensor,
-        the ECG to be stretched or compressed, of shape (1, lead, siglen)
     ratio: Real,
         ratio of the stretch/compress
+    sig: Tensor,
+        the ECGs to be stretched or compressed, of shape (1, lead, siglen)
+    labels: sequence of Tensors, optional,
+        label tensors of the ECGs,
+        if set, each should be of ndim 3, of shape (1, label_len, channels),
+        siglen should be divisible by label_len
 
     Returns
     -------
-    Tensor, of shape (lead, siglen)
-        the stretched or compressed ECG
+    sig: Tensor, of shape (lead, siglen)
+        the stretched or compressed ECG tensor
+    labels: Tensors, optional, of shapes (label_len, channels)
+        the stretched or compressed label tensors
     """
+    labels = list(labels)
+    label_len = []
+    n_labels = len(labels)
+    for idx in range(n_labels):
+        labels[idx] = labels[idx].permute(0, 2, 1)  # (1, label_len, n_classes) -> (1, n_classes, label_len)
+        ll = labels[idx].shape[-1]
+        if ll != siglen:
+            labels[idx] = F.interpolate(labels[idx], size=(siglen,), mode="linear", align_corners=True)
+        label_len.append(ll)
     sign = choice([-1,1])
     ratio = np.clip(np.random.normal(ratio, 0.382*ratio), 0, 2*ratio)
     # print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")
@@ -155,14 +230,21 @@ def _stretch_compress_one_batch_element(sig:Tensor, ratio:Real) -> Tensor:
     diff_len = abs(new_len - siglen)
     half_diff_len = diff_len // 2
     if sign > 0:  # stretch and cut
-        return F.interpolate(
+        sig = F.interpolate(
             sig,
             size=new_len,
             mode="linear",
             align_corners=True,
         )[..., half_diff_len: siglen+half_diff_len].squeeze(0)
+        for idx in range(n_labels):
+            labels[idx] = F.interpolate(
+                labels[idx],
+                size=new_len,
+                mode="linear",
+                align_corners=True,
+            )[..., half_diff_len: siglen+half_diff_len].squeeze(0)
     else:  # compress and pad
-        return F.pad(
+        sig = F.pad(
             F.interpolate(
                 sig,
                 size=new_len,
@@ -173,6 +255,25 @@ def _stretch_compress_one_batch_element(sig:Tensor, ratio:Real) -> Tensor:
             mode="constant",
             value=0.0,
         ).squeeze(0)
+        for idx in range(n_labels):
+            labels[idx] = F.pad(
+                F.interpolate(
+                    labels[idx],
+                    size=new_len,
+                    mode="linear",
+                    align_corners=True,
+                ),
+                pad=(half_diff_len, diff_len-half_diff_len),
+                mode="constant",
+                value=0.0,
+            ).squeeze(0)
+    for idx, (label, ll) in enumerate(zip(labels, label_len)):
+        if ll != siglen:
+            labels[idx] = F.interpolate(label, size=(ll,), mode="linear", align_corners=True)
+        labels[idx] = labels[idx].permute(1, 0)  # (n_classes, label_len) -> (label_len, n_classes)
+    if len(labels) > 0:
+        return (sig,) + tuple(labels)
+    return sig
 
 
 class StretchCompressOffline(object):
@@ -214,15 +315,24 @@ class StretchCompressOffline(object):
         self.critical_overlap = critical_overlap
         assert 0<= self.critical_overlap < 1, "Critical overlap ratio must be between 0 and 1 (1 not included)"
 
-    def generate(self, sig:np.ndarray, seg_len:int, critical_points:Optional[Sequence[int]]=None) -> List[np.ndarray]:
+    def generate(self,
+                 seg_len:int,
+                 sig:np.ndarray,
+                 label:Optional[np.ndarray]=None,
+                 critical_points:Optional[Sequence[int]]=None) -> List[np.ndarray]:
         """ NOT finished, NOT checked,
 
         Parameters
         ----------
-        sig: ndarray,
-            the ECGs to generate stretched or compressed segments, of shape (lead, siglen)
         seg_len: int,
             the length of the ECG segments to be generated
+        sig: ndarray,
+            the ECGs to generate stretched or compressed segments, of shape (lead, siglen)
+        label: ndarray, optional,
+            the labels of the ECGs, of shape (label_len, channels),
+            for example when doing segmentation,
+            label_len should be divisible by siglen,
+            channels should be the same as the number of classes
         critical_points: sequence of int, optional,
             indices of the critical points of the ECG,
             usually have larger overlap by `self.critical_overlap`
