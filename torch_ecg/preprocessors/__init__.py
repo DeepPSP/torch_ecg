@@ -7,9 +7,8 @@ from .normalize import (
     MinMaxNormalize,
     NaiveNormalize,
     ZScoreNormalize,
-    normalize,
 )
-from .resample import Resample, resample
+from .resample import Resample
 
 
 __all__ = [
@@ -18,7 +17,4 @@ __all__ = [
     "NaiveNormalize",
     "ZScoreNormalize",
     "Resample",
-    
-    "normalize",
-    "resample",
 ]
