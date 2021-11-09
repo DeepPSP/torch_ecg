@@ -299,8 +299,8 @@ class StretchCompressOffline(object):
     sco = StretchCompressOffline()
     seglen = 600
     sig = torch.rand((12, 60000)).numpy()
-    labels = torch.rand((60000, 3)).numpy()
-    masks = torch.rand((60000, 1)).numpy()
+    labels = torch.ones((60000, 3)).numpy().astype(int)
+    masks = torch.ones((60000, 1)).numpy().astype(int)
     segments = sco(600, sig, labels, masks, critical_points=[10000,30000])
     ```
     """
@@ -368,7 +368,7 @@ class StretchCompressOffline(object):
         forward_len = int(round(seglen - seglen * self.overlap))
         critical_forward_len = int(round(seglen - seglen * self.critical_overlap))
         critical_forward_len = [critical_forward_len//4, critical_forward_len]
-        print(forward_len, critical_forward_len)
+        # print(forward_len, critical_forward_len)
 
         # skip those records that are too short
         if siglen < seglen:
@@ -455,7 +455,7 @@ class StretchCompressOffline(object):
                 dtype = lb.dtype
                 aug_labels.append(
                     F.interpolate(
-                        torch.from_numpy(lb[start_idx:end_idx, ...].T).unsqueeze(0),
+                        torch.from_numpy(lb[start_idx:end_idx, ...].T.astype(np.float32)).unsqueeze(0),
                         size=seglen,
                         mode="nearest",
                     ).squeeze(0).numpy().T.astype(dtype)
