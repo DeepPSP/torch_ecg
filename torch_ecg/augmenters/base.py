@@ -8,6 +8,8 @@ from typing import Optional, Tuple, Union, List, Any
 import numpy as np
 from torch import Tensor
 
+from ..utils.misc import default_class_repr
+
 
 __all__ = ["Augmenter",]
 
@@ -69,3 +71,14 @@ class Augmenter(ABC):
         k = int(round(np.clip(k, 0, pop_size)))
         indices = sample(list(range(pop_size)), k=k)
         return indices
+
+    def __repr__(self) -> str:
+        return default_class_repr(self)
+
+    def __str__(self) -> str:
+        return repr(self)
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        """
+        return []

@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Any, NoReturn, Sequence, Union, Optional
+from typing import Any, NoReturn, Sequence, Union, Optional, List
 from numbers import Real
 
 import numpy as np
@@ -75,3 +75,8 @@ class LabelSmooth(Augmenter):
         alias of `self.generate`
         """
         return self.generate(label=label)
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        """
+        return ["smoothing", "prob", "inplace",] + super().extra_repr_keys()

@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Any, NoReturn, Sequence, Union, Optional
+from typing import Any, NoReturn, Sequence, Union, Optional, List
 from numbers import Real
 
 import numpy as np
@@ -83,3 +83,8 @@ class RandomFlip(Augmenter):
             flip[self.get_indices(prob=self.prob[0], pop_size=batch), ...] = -1
             sig = sig.mul_(flip)
         return sig
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        """
+        return ["per_channel", "prob", "inplace",] + super().extra_repr_keys()

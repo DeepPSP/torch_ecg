@@ -3,7 +3,7 @@
 
 from random import shuffle
 from copy import deepcopy
-from typing import Any, NoReturn, Sequence, Union, Tuple, Optional
+from typing import Any, NoReturn, Sequence, Union, Tuple, Optional, List
 from numbers import Real
 
 import numpy as np
@@ -95,8 +95,7 @@ class Mixup(Augmenter):
 
         return sig, label
 
-    def __call__(self, sig:Tensor, label:Tensor) -> Tuple[Tensor,Tensor]:
+    def extra_repr_keys(self) -> List[str]:
         """
-        alias of `self.generate`
         """
-        return self.generate(sig=sig, label=label)
+        return ["alpha", "beta", "prob", "inplace",] + super().extra_repr_keys()

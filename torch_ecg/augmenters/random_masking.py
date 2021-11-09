@@ -2,7 +2,7 @@
 """
 
 from random import randint
-from typing import Any, NoReturn, Sequence, Union, Optional
+from typing import Any, NoReturn, Sequence, Union, Optional, List
 from numbers import Real
 
 import numpy as np
@@ -23,9 +23,9 @@ class RandomMasking(Augmenter):
 
     def __init__(self,
                  fs:int,
-                 prob:Union[Sequence[Real],Real]=[0.3,0.15],
                  mask_value:Real=0.0,
                  mask_width:Sequence[Real]=[0.08,0.18],
+                 prob:Union[Sequence[Real],Real]=[0.3,0.15],
                  inplace:bool=True,
                  **kwargs: Any) -> NoReturn:
         """ finished, checked,
@@ -34,15 +34,15 @@ class RandomMasking(Augmenter):
         ----------
         fs: int,
             sampling frequency of the ECGs to be augmented
+        mask_value: real number, default 0.0,
+            value to mask with.
+        mask_width: sequence of real numbers, default [0.08,0.18],
+            width range of the masking window, with units in seconds
         prob: sequence of real numbers or real number, default [0.3,0.15],
             probabilities of masking ECG signals,
             the first probality is for the batch dimension,
             the second probability is for the lead dimension.
             note that 0.15 is approximately the proportion of QRS complexes in ECGs.
-        mask_value: real number, default 0.0,
-            value to mask with.
-        mask_width: sequence of real numbers, default [0.08,0.18],
-            width range of the masking window, with units in seconds
         inplace: bool, default True,
             whether to mask inplace or not
         kwargs: Keyword arguments.
@@ -115,3 +115,8 @@ class RandomMasking(Augmenter):
         alias of `self.generate`
         """
         return self.generate(sig, label, critical_points)
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        """
+        return ["fs", "mask_value", "mask_width", "prob", "inplace",] + super().extra_repr_keys()

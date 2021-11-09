@@ -192,6 +192,11 @@ class StretchCompress(Augmenter):
         """
         return self.generate(sig, *labels)
 
+    def extra_repr_keys(self) -> List[str]:
+        """
+        """
+        return ["ratio", "prob", "inplace",] + super().extra_repr_keys()
+
 
 def _stretch_compress_one_batch_element(ratio:Real, sig:Tensor, *labels:Sequence[Tensor]) -> Tensor:
     """ finished, NOT checked,

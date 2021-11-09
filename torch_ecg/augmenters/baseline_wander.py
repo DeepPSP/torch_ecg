@@ -4,7 +4,7 @@ add baseline wander composed of sinusoidal and Gaussian noise to the ECGs
 
 from random import randint, uniform
 import multiprocessing as mp
-from typing import Any, NoReturn, Sequence, Union, Optional
+from typing import Any, NoReturn, Sequence, Union, Optional, List
 from numbers import Real
 
 import numpy as np
@@ -110,9 +110,14 @@ class BaselineWanderAugmenter(Augmenter):
             sig.add_(gen_baseline_wander(sig, self.fs, self.bw_fs, self.ampl_ratio, self.gaussian))
         return sig
 
+    def extra_repr_keys(self) -> List[str]:
+        """
+        """
+        return ["fs", "bw_fs", "prob", "inplace",] + super().extra_repr_keys()
+
 
 def _get_ampl(sig:Tensor, fs:int) -> Tensor:
-    """ finished, NOT checked
+    """ finished, checked
 
     Parameters
     ----------
