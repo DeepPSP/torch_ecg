@@ -36,8 +36,8 @@ class Normalize(torch.nn.Module):
                  method:str,
                  mean:Union[Real,Iterable[Real]]=0.0,
                  std:Union[Real,Iterable[Real]]=1.0,
-                 per_channel:bool=True,
-                 inplace:bool=False,
+                 per_channel:bool=False,
+                 inplace:bool=True,
                  **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
@@ -54,9 +54,9 @@ class Normalize(torch.nn.Module):
             standard deviation of the normalized signal,
             or standard deviations for each lead of the normalized signal,
             useless if `method` is "min-max"
-        per_channel: bool, default True,
+        per_channel: bool, default False,
             if True, normalization will be done per channel
-        inplace: bool, default False,
+        inplace: bool, default True,
             if True, normalization will be done inplace (on the signal)
         """
         super().__init__()
@@ -99,12 +99,12 @@ class MinMaxNormalize(Normalize):
     """
     __name__ = "MinMaxNormalize"
 
-    def __init__(self, per_channel:bool=True,) -> NoReturn:
+    def __init__(self, per_channel:bool=False,) -> NoReturn:
         """ finished, checked,
 
         Parameters
         ----------
-        per_channel: bool, default True,
+        per_channel: bool, default False,
             if True, normalization will be done per channel
         """
         super().__init__(method="min-max", per_channel=per_channel)
@@ -122,7 +122,7 @@ class NaiveNormalize(Normalize):
     def __init__(self,
                  mean:Union[Real,Iterable[Real]]=0.0,
                  std:Union[Real,Iterable[Real]]=1.0,
-                 per_channel:bool=True,
+                 per_channel:bool=False,
                  **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
@@ -132,7 +132,7 @@ class NaiveNormalize(Normalize):
             value(s) to be subtracted
         std: real number or array_like, default 1.0,
             value(s) to be divided
-        per_channel: bool, default True,
+        per_channel: bool, default False,
             if True, normalization will be done per channel
         """
         super().__init__(
@@ -155,7 +155,7 @@ class ZScoreNormalize(Normalize):
     def __init__(self,
                  mean:Union[Real,Iterable[Real]]=0.0,
                  std:Union[Real,Iterable[Real]]=1.0,
-                 per_channel:bool=True,
+                 per_channel:bool=False,
                  **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
@@ -167,7 +167,7 @@ class ZScoreNormalize(Normalize):
         std: real number or array_like, default 1.0,
             standard deviation of the normalized signal,
             or standard deviations for each lead of the normalized signal,
-        per_channel: bool, default True,
+        per_channel: bool, default False,
             if True, normalization will be done per channel
         """
         super().__init__(
@@ -182,8 +182,8 @@ def normalize(sig:torch.Tensor,
               method:str,
               mean:Union[Real,Iterable[Real]]=0.0,
               std:Union[Real,Iterable[Real]]=1.0,
-              per_channel:bool=True,
-              inplace:bool=False,) -> torch.Tensor:
+              per_channel:bool=False,
+              inplace:bool=True,) -> torch.Tensor:
     """ finished, checked,
     
     perform z-score normalization on `sig`,
@@ -211,7 +211,7 @@ def normalize(sig:torch.Tensor,
         or standard deviations for each lead of the normalized signal
     per_channel: bool, default False,
         if True, normalization will be done per channel
-    inplace: bool, default False,
+    inplace: bool, default True,
         if True, normalization will be done inplace (on `sig`)
         
     Returns
