@@ -1,7 +1,7 @@
 """
 """
 
-from random import choice
+from random import choice, randint
 from typing import Any, NoReturn, Sequence, List, Tuple, Union, Optional
 from numbers import Real
 
@@ -10,8 +10,10 @@ import torch
 from torch import Tensor
 import torch.nn.functional as F
 import torch.multiprocessing as tmp
+from scipy.signal import resample, resample_poly
 
 from .base import Augmenter
+from ..utils.misc import default_class_repr
 
 
 __all__ = ["StretchCompress", "StretchCompressOffline",]
@@ -94,7 +96,7 @@ class StretchCompress(Augmenter):
             label_len.append(ll)
         for batch_idx in self.get_indices(prob=self.prob, pop_size=batch):
             sign = choice([-1,1])
-            ratio = np.clip(np.random.normal(self.ratio, 0.382*self.ratio), 0, 2*self.ratio)
+            ratio = self._sample_ratio()
             # print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")
             new_len = int(round((1+sign*ratio) * siglen))
             diff_len = abs(new_len - siglen)
@@ -144,6 +146,11 @@ class StretchCompress(Augmenter):
         if len(labels) > 0:
             return (sig,) + tuple(labels)
         return sig
+
+    def _sample_ratio(self) -> float:
+        """
+        """
+        return np.clip(np.random.normal(self.ratio, 0.382*self.ratio), 0, 2*self.ratio)
 
     def _generate(self, sig:Tensor, *labels:Optional[Sequence[Tensor]]) -> Union[Tuple[Tensor,...],Tensor]:
         """ NOT finished, NOT checked,
@@ -285,6 +292,17 @@ class StretchCompressOffline(object):
     """
     stretch-or-compress augmenter on orginal length-varying ECG signals (in the form of numpy arrays),
     for the purpose of offline data generation
+
+    Example
+    -------
+    ```python
+    sco = StretchCompressOffline()
+    seglen = 600
+    sig = torch.rand((12, 60000)).numpy()
+    labels = torch.rand((60000, 3)).numpy()
+    masks = torch.rand((60000, 1)).numpy()
+    segments = sco(600, sig, labels, masks, critical_points=[10000,30000])
+    ```
     """
     __name__ = "StretchCompressOffline"
 
@@ -308,7 +326,6 @@ class StretchCompressOffline(object):
         critical_overlap: float, default 0.85,
             the overlap of the critical region of the ECG
         """
-        super().__init__(**kwargs)
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.ratio = ratio
@@ -321,19 +338,19 @@ class StretchCompressOffline(object):
         assert 0<= self.critical_overlap < 1, "Critical overlap ratio must be between 0 and 1 (1 not included)"
 
     def generate(self,
-                 seg_len:int,
+                 seglen:int,
                  sig:np.ndarray,
-                 label:Optional[np.ndarray]=None,
-                 critical_points:Optional[Sequence[int]]=None) -> List[np.ndarray]:
-        """ NOT finished, NOT checked,
+                 *labels:Sequence[np.ndarray],
+                 critical_points:Optional[Sequence[int]]=None) -> List[Tuple[Union[np.ndarray,int],...]]:
+        """ finished, checked,
 
         Parameters
         ----------
-        seg_len: int,
+        seglen: int,
             the length of the ECG segments to be generated
         sig: ndarray,
             the ECGs to generate stretched or compressed segments, of shape (lead, siglen)
-        label: ndarray, optional,
+        labels: ndarray, optional,
             the labels of the ECGs, of shape (label_len, channels),
             for example when doing segmentation,
             label_len should be divisible by siglen,
@@ -341,11 +358,149 @@ class StretchCompressOffline(object):
         critical_points: sequence of int, optional,
             indices of the critical points of the ECG,
             usually have larger overlap by `self.critical_overlap`
-        """
-        raise NotImplementedError
 
-    def __call__(self, sig:np.ndarray) -> List[np.ndarray]:
+        Returns
+        -------
+        list of generated segments,
+        with segments consists of (seg, label1, label2, ..., start_idx, end_idx)
+        """
+        siglen = sig.shape[1]
+        forward_len = int(round(seglen - seglen * self.overlap))
+        critical_forward_len = int(round(seglen - seglen * self.critical_overlap))
+        critical_forward_len = [critical_forward_len//4, critical_forward_len]
+        print(forward_len, critical_forward_len)
+
+        # skip those records that are too short
+        if siglen < seglen:
+            return []
+
+        segments = []
+
+        # ordinary segments with constant forward_len
+        for idx in range((siglen-seglen)//forward_len + 1):
+            start_idx = idx * forward_len
+            new_seg = self.__generate_segment(
+                seglen, sig, *labels, start_idx=start_idx,
+            )
+            segments.append(new_seg)
+        # the tail segment
+        if (siglen-seglen)%forward_len != 0:
+            new_seg = self.__generate_segment(
+                seglen, sig, *labels, end_idx=siglen,
+            )
+            segments.append(new_seg)
+
+        # special segments around critical_points with random forward_len in critical_forward_len
+        for cp in critical_points or []:
+            start_idx = max(0, cp - seglen + randint(critical_forward_len[0], critical_forward_len[1]))
+            while start_idx <= min(cp - critical_forward_len[1], siglen - seglen):
+                new_seg = self.__generate_segment(
+                    seglen, sig, *labels, start_idx=start_idx,
+                )
+                segments.append(new_seg)
+                start_idx += randint(critical_forward_len[0], critical_forward_len[1])
+        return segments
+
+    def __generate_segment(self,
+                           seglen:int,
+                           sig:np.ndarray,
+                           *labels:Sequence[np.ndarray],
+                           start_idx:Optional[int]=None,
+                           end_idx:Optional[int]=None,) -> Tuple[Union[np.ndarray,int], ...]:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        seglen: int,
+            the length of the ECG segments to be generated
+        sig: ndarray,
+            the ECGs to generate stretched or compressed segments, of shape (lead, siglen)
+        labels: ndarray, optional,
+            the labels of the ECGs, of shape (label_len, channels),
+            for example when doing segmentation,
+            label_len should be divisible by siglen,
+            channels should be the same as the number of classes
+        start_idx: int, optional,
+            the start index of the segment in `sig`
+        end_idx: int, optional,
+            the end index of the segment in `sig`,
+            if `start_idx` is set, `end_idx` is ignored,
+            at least one of `start_idx` and `end_idx` should be set
+
+        Returns
+        -------
+        tuple of generated segment,
+        consists of (seg, label1, label2, ..., start_idx, end_idx)
+        """
+        assert not all([start_idx is None, end_idx is None]), \
+            "at least one of `start_idx` and `end_idx` should be set"
+
+        siglen = sig.shape[1]
+        ratio = self._sample_ratio()
+        aug_labels = []
+        if ratio != 0:
+            sign = choice([-1,1])
+            new_len = int(round((1+sign*ratio) * seglen))
+            if start_idx is not None:
+                end_idx = start_idx + new_len
+            else:
+                start_idx = end_idx - new_len
+            if end_idx > siglen:
+                end_idx = siglen
+                start_idx = max(0, end_idx - new_len)
+                ratio = (end_idx - start_idx) / seglen - 1
+            aug_seg = sig[..., start_idx:end_idx]
+            aug_seg = resample(x=aug_seg, num=seglen, axis=1)
+            for lb in labels:
+                dtype = lb.dtype
+                aug_labels.append(
+                    F.interpolate(
+                        torch.from_numpy(lb[start_idx:end_idx, ...].T).unsqueeze(0),
+                        size=seglen,
+                        mode="nearest",
+                    ).squeeze(0).numpy().T.astype(dtype)
+                )
+        else:
+            if start_idx is not None:
+                end_idx = start_idx + seglen
+                if end_idx > siglen:
+                    end_idx = siglen
+                    start_idx = end_idx - seglen
+            else:
+                start_idx = end_idx - seglen
+                if start_idx < 0:
+                    start_idx = 0
+                    end_idx = seglen
+            aug_seg = sig[..., start_idx:end_idx]
+            for lb in labels:
+                aug_labels.append(lb[start_idx:end_idx, ...])
+        return (aug_seg,) + tuple(aug_labels) + (start_idx, end_idx)
+
+    def _sample_ratio(self) -> float:
+        """ finished, checked,
+        """
+        if np.random.uniform() >= self.prob:
+            return 0
+        else:
+            return np.clip(np.random.normal(self.ratio, 0.382*self.ratio), 0.01*self.ratio, 2*self.ratio)
+
+    def __call__(self,
+                 seglen:int,
+                 sig:np.ndarray,
+                 *labels:Sequence[np.ndarray],
+                 critical_points:Optional[Sequence[int]]=None) -> List[Tuple[np.ndarray,...]]:
         """
         alias of `self.generate`
         """
-        return self.generate(sig)
+        return self.generate(seglen, sig, *labels, critical_points=critical_points)
+
+    def __repr__(self) -> str:
+        return default_class_repr(self)
+
+    def __str__(self) -> str:
+        return repr(self)
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        """
+        return ["ratio", "prob", "overlap", "critical_overlap",]
