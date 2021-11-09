@@ -1027,6 +1027,11 @@ def default_class_repr(c:object, align:str="center") -> str:
         the object to be represented
     align: str, default "center",
         the alignment of the class arguments
+
+    Returns
+    -------
+    str,
+        the representation of the class
     """
     if hasattr(c, "extra_repr_keys") and len(c.extra_repr_keys()) > 0:
         max_len = max([len(k) for k in c.extra_repr_keys()])
