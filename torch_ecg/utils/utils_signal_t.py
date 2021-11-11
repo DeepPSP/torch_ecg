@@ -126,7 +126,7 @@ def normalize(sig:torch.Tensor,
             f"if `per_channel` is False, `std` and `mean` should be scalars, " \
                 "or of shape (batch, 1), or (batch, 1, 1), or (1,)"
 
-    print(f"sig.shape = {sig.shape}, _mean.shape = {_mean.shape}, _std.shape = {_std.shape}")
+    # print(f"sig.shape = {sig.shape}, _mean.shape = {_mean.shape}, _std.shape = {_std.shape}")
 
     if _method == "naive":
         sig = sig.sub_(_mean).div_(_std)

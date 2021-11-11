@@ -1,6 +1,7 @@
 """
 """
 
+import multiprocessing as mp
 from abc import ABC, abstractmethod
 from numbers import Real
 from typing import Optional, List, NoReturn
@@ -103,8 +104,6 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
         a typical pair is [0.5, 45],
         be careful when detecting paced rhythm,
         if is None or empty, bandpass filtering will not be performed
-    verbose: int, default 0,
-        print verbosity
 
     Returns
     -------
@@ -121,7 +120,7 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
     with mp.Pool(processes=cpu_num) as pool:
         results = pool.starmap(
             func=preprocess_single_lead_signal,
-            iterable=[(filtered_ecg[lead,...], fs, bl_win, band_fs, verbose) for lead in range(filtered_ecg.shape[0])]
+            iterable=[(filtered_ecg[lead,...], fs, bl_win, band_fs) for lead in range(filtered_ecg.shape[0])]
         )
     for lead in range(filtered_ecg.shape[0]):
         filtered_ecg[lead,...] = results[lead]
@@ -134,8 +133,7 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
 def preprocess_single_lead_signal(raw_sig:np.ndarray,
                                   fs:Real,
                                   bl_win:Optional[List[Real]]=None,
-                                  band_fs:Optional[List[Real]]=None,
-                                  verbose:int=0,) -> np.ndarray:
+                                  band_fs:Optional[List[Real]]=None,) -> np.ndarray:
     """ finished, checked,
 
     perform preprocessing for single lead ecg signal (with units in mV),
@@ -157,8 +155,6 @@ def preprocess_single_lead_signal(raw_sig:np.ndarray,
         a typical pair is [0.5, 45],
         be careful when detecting paced rhythm,
         if is None or empty, bandpass filtering will not be performed
-    verbose: int, default 0,
-        print verbosity
 
     Returns
     -------
