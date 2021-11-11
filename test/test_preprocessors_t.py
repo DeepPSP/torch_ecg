@@ -3,12 +3,11 @@
 
 from pytest import approx
 
-from torch_ecg._preprocessors import (
+from torch_ecg.preprocessors import (
     BandPass,
     BaselineRemove,
-    Normalize,
-    MinMaxNormalize,
     NaiveNormalize,
+    MinMaxNormalize,
     ZScoreNormalize,
     Resample,
 )
