@@ -13,11 +13,12 @@ __all__ = [
 
 
 ECG_UNET_VANILLA_CONFIG = ED()
+ECG_UNET_VANILLA_CONFIG.fs = 500
 
 ECG_UNET_VANILLA_CONFIG.groups = 1
 
 ECG_UNET_VANILLA_CONFIG.init_num_filters = 4  # keep the same with n_classes
-ECG_UNET_VANILLA_CONFIG.init_filter_length = 9
+ECG_UNET_VANILLA_CONFIG.init_filter_length = 25
 ECG_UNET_VANILLA_CONFIG.batch_norm = True
 ECG_UNET_VANILLA_CONFIG.kernel_initializer = "he_normal"
 ECG_UNET_VANILLA_CONFIG.kw_initializer = {}
@@ -26,6 +27,8 @@ ECG_UNET_VANILLA_CONFIG.kw_activation = {"inplace": True}
 
 ECG_UNET_VANILLA_CONFIG.down_up_block_num = 4
 
+_base_filter_length = 15
+
 ECG_UNET_VANILLA_CONFIG.down_mode = "max"
 ECG_UNET_VANILLA_CONFIG.down_scales = list(repeat(2, ECG_UNET_VANILLA_CONFIG.down_up_block_num))
 ECG_UNET_VANILLA_CONFIG.down_num_filters = [
@@ -33,7 +36,7 @@ ECG_UNET_VANILLA_CONFIG.down_num_filters = [
         for idx in range(1, ECG_UNET_VANILLA_CONFIG.down_up_block_num+1)
 ]
 ECG_UNET_VANILLA_CONFIG.down_filter_lengths = \
-    list(repeat(ECG_UNET_VANILLA_CONFIG.init_filter_length, ECG_UNET_VANILLA_CONFIG.down_up_block_num))
+    list(repeat(_base_filter_length, ECG_UNET_VANILLA_CONFIG.down_up_block_num))
 
 ECG_UNET_VANILLA_CONFIG.up_mode = "nearest"
 ECG_UNET_VANILLA_CONFIG.up_scales = list(repeat(2, ECG_UNET_VANILLA_CONFIG.down_up_block_num))
@@ -42,9 +45,9 @@ ECG_UNET_VANILLA_CONFIG.up_num_filters = [
         for idx in range(ECG_UNET_VANILLA_CONFIG.down_up_block_num-1,-1,-1)
 ]
 ECG_UNET_VANILLA_CONFIG.up_deconv_filter_lengths = \
-    list(repeat(9, ECG_UNET_VANILLA_CONFIG.down_up_block_num))
+    list(repeat(_base_filter_length, ECG_UNET_VANILLA_CONFIG.down_up_block_num))
 ECG_UNET_VANILLA_CONFIG.up_conv_filter_lengths = \
-    list(repeat(ECG_UNET_VANILLA_CONFIG.init_filter_length, ECG_UNET_VANILLA_CONFIG.down_up_block_num))
+    list(repeat(_base_filter_length, ECG_UNET_VANILLA_CONFIG.down_up_block_num))
 
 
 unet_down_block = ED()

@@ -15,6 +15,7 @@ from .cnn import (
     resnet_block_basic, resnet_bottle_neck,
     resnet, resnet_leadwise,
 )
+from ..utils.utils_nn import adjust_cnn_filter_lengths
 
 
 __all__ = [
@@ -23,6 +24,8 @@ __all__ = [
 
 
 ATI_CNN_CONFIG = ED()
+ATI_CNN_CONFIG.fs = 500
+
 
 # cnn part
 ATI_CNN_CONFIG.cnn = ED()
@@ -30,25 +33,25 @@ ATI_CNN_CONFIG.cnn.name = "vgg16"
 
 
 if ATI_CNN_CONFIG.cnn.name == "vgg16":
-    ATI_CNN_CONFIG.cnn.vgg16 = deepcopy(vgg16)
+    ATI_CNN_CONFIG.cnn.vgg16 = adjust_cnn_filter_lengths(vgg16, ATI_CNN_CONFIG.fs)
     ATI_CNN_CONFIG.cnn.vgg16.block = deepcopy(vgg_block_basic)
 elif ATI_CNN_CONFIG.cnn.name == "vgg16_mish":
-    ATI_CNN_CONFIG.cnn.vgg16 = deepcopy(vgg16)
+    ATI_CNN_CONFIG.cnn.vgg16 = adjust_cnn_filter_lengths(vgg16, ATI_CNN_CONFIG.fs)
     ATI_CNN_CONFIG.cnn.vgg16.block = deepcopy(vgg_block_mish)
 elif ATI_CNN_CONFIG.cnn.name == "vgg16_swish":
-    ATI_CNN_CONFIG.cnn.vgg16 = deepcopy(vgg16)
+    ATI_CNN_CONFIG.cnn.vgg16 = adjust_cnn_filter_lengths(vgg16, ATI_CNN_CONFIG.fs)
     ATI_CNN_CONFIG.cnn.vgg16.block = deepcopy(vgg_block_swish)
 elif ATI_CNN_CONFIG.cnn.name == "vgg16_dilation":  # not finished
-    ATI_CNN_CONFIG.cnn.vgg16 = deepcopy(vgg16)
+    ATI_CNN_CONFIG.cnn.vgg16 = adjust_cnn_filter_lengths(vgg16, ATI_CNN_CONFIG.fs)
     ATI_CNN_CONFIG.cnn.vgg16.block = deepcopy(vgg_block_basic)
 elif ATI_CNN_CONFIG.cnn.name == "resnet":
-    ATI_CNN_CONFIG.cnn.resnet = deepcopy(resnet)
+    ATI_CNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(resnet, ATI_CNN_CONFIG.fs)
     ATI_CNN_CONFIG.cnn.resnet.block = deepcopy(resnet_block_basic)
 elif ATI_CNN_CONFIG.cnn.name == "resnet_bottleneck":
-    ATI_CNN_CONFIG.cnn.resnet = deepcopy(resnet)
+    ATI_CNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(resnet, ATI_CNN_CONFIG.fs)
     ATI_CNN_CONFIG.cnn.resnet.block = deepcopy(resnet_bottle_neck)
 elif ATI_CNN_CONFIG.cnn.name == "resnet_stanford":
-    ATI_CNN_CONFIG.cnn.resnet = deepcopy(resnet_stanford)
+    ATI_CNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(resnet_stanford, ATI_CNN_CONFIG.fs)
     ATI_CNN_CONFIG.cnn.resnet.block = deepcopy(resnet_block_stanford)
 else:
     pass
