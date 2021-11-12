@@ -14,6 +14,7 @@ from .attn import (
     squeeze_excitation,
     global_context,
 )
+from ..utils.utils_nn import adjust_cnn_filter_lengths
 
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
 
 # vanilla config, for delineation using single-lead ECG in corresponding papers
 ECG_SEQ_LAB_NET_CONFIG = ED()
+ECG_SEQ_LAB_NET_CONFIG.fs = 500
 
 
 ECG_SEQ_LAB_NET_CONFIG.cnn = ED()
@@ -49,6 +51,8 @@ ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic.num_filters = [
 ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic.block = deepcopy(multi_scopic_block)
 # ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic_leadwise = deepcopy(multi_scopic_leadwise)
 # ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic_leadwise.block = deepcopy(multi_scopic_block)
+
+ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic = adjust_cnn_filter_lengths(ECG_SEQ_LAB_NET_CONFIG.cnn.multi_scopic, ECG_SEQ_LAB_NET_CONFIG.fs)
 
 
 ECG_SEQ_LAB_NET_CONFIG.rnn = ED()

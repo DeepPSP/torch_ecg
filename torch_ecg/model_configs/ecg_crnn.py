@@ -26,6 +26,7 @@ from .attn import (
     squeeze_excitation,
     global_context,
 )
+from ..utils.utils_nn import adjust_cnn_filter_lengths
 
 
 __all__ = [
@@ -34,6 +35,7 @@ __all__ = [
 
 
 ECG_CRNN_CONFIG = ED()
+ECG_CRNN_CONFIG.fs = 500
 
 # cnn part
 ECG_CRNN_CONFIG.cnn = ED()
@@ -43,35 +45,47 @@ ECG_CRNN_CONFIG.cnn.name = "multi_scopic_leadwise"
 
 ECG_CRNN_CONFIG.cnn.vgg16 = deepcopy(vgg16)
 ECG_CRNN_CONFIG.cnn.vgg16.block = deepcopy(vgg_block_basic)
+ECG_CRNN_CONFIG.cnn.vgg16 = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.vgg16, ECG_CRNN_CONFIG.fs)
 ECG_CRNN_CONFIG.cnn.vgg16_mish = deepcopy(vgg16)
 ECG_CRNN_CONFIG.cnn.vgg16_mish.block = deepcopy(vgg_block_mish)
+ECG_CRNN_CONFIG.cnn.vgg16_mish = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.vgg16_mish, ECG_CRNN_CONFIG.fs)
 ECG_CRNN_CONFIG.cnn.vgg16_swish = deepcopy(vgg16)
 ECG_CRNN_CONFIG.cnn.vgg16_swish.block = deepcopy(vgg_block_swish)
+ECG_CRNN_CONFIG.cnn.vgg16_swish = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.vgg16_swish, ECG_CRNN_CONFIG.fs)
 ECG_CRNN_CONFIG.cnn.vgg16_leadwise = deepcopy(vgg16_leadwise)
 ECG_CRNN_CONFIG.cnn.vgg16_leadwise.block = deepcopy(vgg_block_swish)
+ECG_CRNN_CONFIG.cnn.vgg16_leadwise = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.vgg16_leadwise, ECG_CRNN_CONFIG.fs)
 # ECG_CRNN_CONFIG.cnn.vgg16_dilation = deepcopy(vgg16)
 # ECG_CRNN_CONFIG.cnn.vgg16_dilation.block = deepcopy(vgg_block_basic)
 
 ECG_CRNN_CONFIG.cnn.resnet = deepcopy(resnet)
 ECG_CRNN_CONFIG.cnn.resnet.block = deepcopy(resnet_block_basic)
+ECG_CRNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet, ECG_CRNN_CONFIG.fs)
 ECG_CRNN_CONFIG.cnn.resnet_bottleneck = deepcopy(resnet)
 ECG_CRNN_CONFIG.cnn.resnet_bottleneck.block = deepcopy(resnet_bottle_neck)
+ECG_CRNN_CONFIG.cnn.resnet_bottleneck = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_bottleneck, ECG_CRNN_CONFIG.fs)
 ECG_CRNN_CONFIG.cnn.resnet_leadwise = deepcopy(resnet_leadwise)
 ECG_CRNN_CONFIG.cnn.resnet_leadwise.block = deepcopy(resnet_block_basic)
+ECG_CRNN_CONFIG.cnn.resnet_leadwise = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_leadwise, ECG_CRNN_CONFIG.fs)
 
 ECG_CRNN_CONFIG.cnn.resnet_stanford = deepcopy(resnet_stanford)
 ECG_CRNN_CONFIG.cnn.resnet_stanford.block = deepcopy(resnet_block_stanford)
+ECG_CRNN_CONFIG.cnn.resnet_stanford = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_stanford, ECG_CRNN_CONFIG.fs)
 
 ECG_CRNN_CONFIG.cnn.multi_scopic = deepcopy(multi_scopic)
 ECG_CRNN_CONFIG.cnn.multi_scopic.block = deepcopy(multi_scopic_block)
+ECG_CRNN_CONFIG.cnn.multi_scopic = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.multi_scopic, ECG_CRNN_CONFIG.fs)
 ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise = deepcopy(multi_scopic_leadwise)
 ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise.block = deepcopy(multi_scopic_block)
+ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise, ECG_CRNN_CONFIG.fs)
 
 ECG_CRNN_CONFIG.cnn.xception_vanilla = deepcopy(xception_vanilla)
 ECG_CRNN_CONFIG.cnn.xception_leadwise = deepcopy(xception_leadwise)
+ECG_CRNN_CONFIG.cnn.xception_leadwise = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.xception_leadwise, ECG_CRNN_CONFIG.fs)
 
 ECG_CRNN_CONFIG.cnn.dense_net_vanilla = deepcopy(dense_net_vanilla)
 ECG_CRNN_CONFIG.cnn.dense_net_leadwise = deepcopy(dense_net_leadwise)
+ECG_CRNN_CONFIG.cnn.dense_net_leadwise = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.dense_net_leadwise, ECG_CRNN_CONFIG.fs)
 
 
 
