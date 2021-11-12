@@ -43,6 +43,7 @@ __all__ = [
 
 # VGG
 vgg16 = ED()
+vgg16.fs = 500
 vgg16.num_convs = [2, 2, 3, 3, 3]
 _base_num_filters = 12
 vgg16.num_filters = [
@@ -71,7 +72,7 @@ vgg16_leadwise.num_filters = [
 
 
 vgg_block_basic = ED()
-vgg_block_basic.filter_length = 3
+vgg_block_basic.filter_length = 15
 vgg_block_basic.subsample_length = 1
 vgg_block_basic.dilation = 1
 vgg_block_basic.batch_norm = True
@@ -101,14 +102,15 @@ vgg16_leadwise.block = deepcopy(vgg_block_basic)
 
 # vanilla ResNets
 resnet_vanilla_common = ED()
+resnet_vanilla_common.fs = 500
 resnet_vanilla_common.subsample_lengths = [
     1, 2, 2, 2,
 ]
-resnet_vanilla_common.filter_lengths = 3
+resnet_vanilla_common.filter_lengths = 15
 resnet_vanilla_common.groups = 1
 resnet_vanilla_common.increase_channels_method = "conv"
 resnet_vanilla_common.init_num_filters = 64
-resnet_vanilla_common.init_filter_length = 7
+resnet_vanilla_common.init_filter_length = 29
 resnet_vanilla_common.init_conv_stride = 2
 resnet_vanilla_common.init_pool_size = 3
 resnet_vanilla_common.init_pool_stride = 2
@@ -228,6 +230,7 @@ resnet_vanilla_wide_101_2.block.expansion = 4
 
 # custom ResNets
 resnet = ED()
+resnet.fs = 500
 resnet.block_name = "basic"  # "bottleneck"
 resnet.expansion = 1
 resnet.subsample_lengths = [
@@ -305,6 +308,7 @@ resnet_leadwise.block = deepcopy(resnet_block_basic)
 
 # ResNet Stanford
 resnet_stanford = ED()
+resnet_stanford.fs = 500
 resnet_stanford.groups = 1
 resnet_stanford.subsample_lengths = [
     1, 2, 1, 2,
@@ -341,6 +345,7 @@ resnet_block_stanford.dropout = 0.2
 
 # CPSC
 cpsc_2018 = ED()
+cpsc_2018.fs = 500
 # cpsc_2018.num_filters = [  # original
 #     [12, 12, 12],
 #     [12, 12, 12],
@@ -401,6 +406,7 @@ del cpsc_block_swish.kw_activation
 
 # configs of multi_scopic cnn net are set by path, not by level
 multi_scopic = ED()
+multi_scopic.fs = 500
 multi_scopic.groups = 1
 multi_scopic.scopes = [
     [
@@ -498,14 +504,15 @@ multi_scopic_leadwise.block = deepcopy(multi_scopic_block)
 
 
 dense_net_vanilla = ED()
+dense_net_vanilla.fs = 500
 dense_net_vanilla.num_layers = [6, 6, 6, 6]
 dense_net_vanilla.init_num_filters = 64
-dense_net_vanilla.init_filter_length = 7
+dense_net_vanilla.init_filter_length = 25
 dense_net_vanilla.init_pool_stride = 2
 dense_net_vanilla.init_pool_size = 3
 dense_net_vanilla.init_subsample_mode = "avg"
 dense_net_vanilla.growth_rates = 16
-dense_net_vanilla.filter_lengths = 3
+dense_net_vanilla.filter_lengths = 15
 dense_net_vanilla.subsample_lengths = 2
 dense_net_vanilla.bn_size = 4
 dense_net_vanilla.dropout = 0
@@ -521,49 +528,51 @@ dense_net_leadwise.groups = 12
 
 
 xception_vanilla = ED()
+xception_vanilla.fs = 500
 xception_vanilla.groups = 1
 _base_num_filters = 8
 xception_vanilla.entry_flow = ED(
     init_num_filters=[_base_num_filters*4, _base_num_filters*8],
-    init_filter_lengths=3,
+    init_filter_lengths=31,
     init_subsample_lengths=[2,1],
     num_filters=[_base_num_filters*16, _base_num_filters*32, _base_num_filters*91],
-    filter_lengths=3,
+    filter_lengths=15,
     subsample_lengths=2,
     subsample_kernels=3,
 )
 xception_vanilla.middle_flow = ED(
     num_filters=list(repeat(_base_num_filters*91, 8)),
-    filter_lengths=3,
+    filter_lengths=13,
 )
 xception_vanilla.exit_flow = ED(
     final_num_filters=[_base_num_filters*182, _base_num_filters*256],
     final_filter_lengths=3,
     num_filters=[[_base_num_filters*91, _base_num_filters*128]],
-    filter_lengths=3,
+    filter_lengths=17,
     subsample_lengths=2,
     subsample_kernels=3,
 )
 
 xception_leadwise = ED()
+xception_leadwise.fs = 500
 xception_leadwise.groups = 12
 _base_num_filters = 12 * 2
 xception_leadwise.entry_flow = ED(
     init_num_filters=[_base_num_filters*4, _base_num_filters*8],
-    init_filter_lengths=3,
+    init_filter_lengths=31,
     init_subsample_lengths=[2,1],
     num_filters=[_base_num_filters*16, _base_num_filters*32, _base_num_filters*91],
-    filter_lengths=3,
+    filter_lengths=15,
     subsample_lengths=2,
     subsample_kernels=3,
 )
 xception_leadwise.middle_flow = ED(
     num_filters=list(repeat(_base_num_filters*91, 8)),
-    filter_lengths=3,
+    filter_lengths=13,
 )
 xception_leadwise.exit_flow = ED(
     final_num_filters=[_base_num_filters*182, _base_num_filters*256],
-    final_filter_lengths=3,
+    final_filter_lengths=17,
     num_filters=[[_base_num_filters*91, _base_num_filters*128]],
     filter_lengths=3,
     subsample_lengths=2,
@@ -572,6 +581,7 @@ xception_leadwise.exit_flow = ED(
 
 
 mobilenet_v1_vanilla = ED()
+mobilenet_v1_vanilla.fs = 500
 mobilenet_v1_vanilla.groups = 1
 mobilenet_v1_vanilla.batch_norm = True
 mobilenet_v1_vanilla.activation = "relu6"
@@ -582,7 +592,7 @@ mobilenet_v1_vanilla.ordering = "cba"
 
 _base_num_filters = 12 * 3
 mobilenet_v1_vanilla.init_num_filters = _base_num_filters
-mobilenet_v1_vanilla.init_filter_lengths = 3
+mobilenet_v1_vanilla.init_filter_lengths = 27
 mobilenet_v1_vanilla.init_subsample_lengths = 2
 
 mobilenet_v1_vanilla.entry_flow = ED()
@@ -593,7 +603,7 @@ mobilenet_v1_vanilla.entry_flow.out_channels = [
     _base_num_filters * 8, _base_num_filters * 8,
     _base_num_filters * 16,
 ]
-mobilenet_v1_vanilla.entry_flow.filter_lengths = 3
+mobilenet_v1_vanilla.entry_flow.filter_lengths = 15
 mobilenet_v1_vanilla.entry_flow.subsample_lengths = [
     1, 2, 1, 2, 1, 2,
 ]
@@ -603,7 +613,7 @@ mobilenet_v1_vanilla.entry_flow.activation = mobilenet_v1_vanilla.activation
 
 mobilenet_v1_vanilla.middle_flow = ED()
 mobilenet_v1_vanilla.middle_flow.out_channels = list(repeat(_base_num_filters * 16, 5))
-mobilenet_v1_vanilla.middle_flow.filter_lengths = 3
+mobilenet_v1_vanilla.middle_flow.filter_lengths = 13
 mobilenet_v1_vanilla.middle_flow.subsample_lengths = 1
 mobilenet_v1_vanilla.middle_flow.groups = mobilenet_v1_vanilla.groups
 mobilenet_v1_vanilla.middle_flow.batch_norm = mobilenet_v1_vanilla.batch_norm
@@ -613,7 +623,7 @@ mobilenet_v1_vanilla.exit_flow = ED()
 mobilenet_v1_vanilla.exit_flow.out_channels = [
     _base_num_filters * 32, _base_num_filters * 32,
 ]
-mobilenet_v1_vanilla.exit_flow.filter_lengths = 3
+mobilenet_v1_vanilla.exit_flow.filter_lengths = 17
 mobilenet_v1_vanilla.exit_flow.subsample_lengths = [
     2, 1
 ]
@@ -623,6 +633,7 @@ mobilenet_v1_vanilla.exit_flow.activation = mobilenet_v1_vanilla.activation
 
 
 mobilenet_v2_vanilla = ED()
+mobilenet_v2_vanilla.fs = 500
 mobilenet_v2_vanilla.groups = 1
 mobilenet_v2_vanilla.batch_norm = True
 mobilenet_v2_vanilla.activation = "relu6"
@@ -633,18 +644,18 @@ mobilenet_v2_vanilla.ordering = "cba"
 
 _base_num_filters = 12
 mobilenet_v2_vanilla.init_num_filters = _base_num_filters * 4
-mobilenet_v2_vanilla.init_filter_lengths = 3
+mobilenet_v2_vanilla.init_filter_lengths = 27
 mobilenet_v2_vanilla.init_subsample_lengths = 2
 
 _inverted_residual_setting = np.array([
     # t, c, n, s, k
-    [1, _base_num_filters*2, 1, 1, 3],
-    [6, _base_num_filters*3, 2, 2, 3],
-    [6, _base_num_filters*4, 3, 2, 3],
-    [6, _base_num_filters*6, 4, 2, 3],
-    [6, _base_num_filters*8, 3, 1, 3],
-    [6, _base_num_filters*20, 3, 2, 3],
-    [6, _base_num_filters*40, 1, 1, 3],
+    [1, _base_num_filters*2, 1, 1, 15],
+    [6, _base_num_filters*3, 2, 2, 15],
+    [6, _base_num_filters*4, 3, 2, 15],
+    [6, _base_num_filters*6, 4, 2, 15],
+    [6, _base_num_filters*8, 3, 1, 15],
+    [6, _base_num_filters*20, 3, 2, 15],
+    [6, _base_num_filters*40, 1, 1, 15],
     # t: expansion
     # c: output channels
     # n: number of blocks
@@ -659,5 +670,5 @@ mobilenet_v2_vanilla.inv_res.strides = _inverted_residual_setting[...,3]
 mobilenet_v2_vanilla.inv_res.filter_lengths = _inverted_residual_setting[...,4]
 
 mobilenet_v2_vanilla.final_num_filters = _base_num_filters * 128
-mobilenet_v2_vanilla.final_filter_lengths = 3
+mobilenet_v2_vanilla.final_filter_lengths = 19
 mobilenet_v2_vanilla.final_subsample_lengths = 2
