@@ -21,7 +21,7 @@ from torch import nn
 from torch import Tensor
 from easydict import EasyDict as ED
 
-from ...cfg import Cfg
+from ...cfg import DEFAULTS
 from ...utils.utils_nn import compute_module_size
 from ...utils.misc import dict_to_str, list_sum
 from ...models._nets import (
