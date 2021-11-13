@@ -107,7 +107,7 @@ def normalize(sig:torch.Tensor,
             # of shape (n_leads, 1) or (n_leads,) or (1, n_leads) or (1, n_leads, 1)
             _std = _std.view((-1, sig.shape[1], 1))
         else:
-            raise ValueError("shape of `sig` and `std` mismatch")
+            raise ValueError(f"shape of `sig` = {sig.shape} and `std` = {_std.shape} mismatch")
     if isinstance(mean, Real):
         _mean = torch.full((sig.shape[0], 1, 1), mean, dtype=dtype, device=device)
     else:
