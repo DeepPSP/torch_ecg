@@ -25,7 +25,34 @@ __all__ = ["AugmenterManager",]
 
 class AugmenterManager(torch.nn.Module):
     """
+
+    The `Module` to manage the augmenters
+
+    Examples
+    --------
+    ```python
+    import torch
+    from easydict import EasyDict as ED
+    from torch_ecg.augmenters import AugmenterManager
+
+    config = ED(
+        random=False,
+        fs=500,
+        baseline_wander={},
+        label_smooth={},
+        mixup={},
+        random_flip={},
+        random_masking={},
+        random_renormalize={},
+        stretch_compress={},
+    )
+    am = AugmenterManager.from_config(config)
+    sig, label, mask = torch.rand(2,12,5000), torch.rand(2,26), torch.rand(2,5000,1)
+    sig, label, mask = am(sig, label, mask)
+    ```
     """
+    __name__ = "AugmenterManager"
+
     def __init__(self, random:bool=False) -> NoReturn:
         """ finished, checked,
 

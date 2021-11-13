@@ -35,7 +35,8 @@ class Mixup(Augmenter):
                  prob:float=0.5,
                  inplace:bool=True,
                  **kwargs:Any) -> NoReturn:
-        """
+        """ finished, checked,
+
         Parameters
         ----------
         fs: int, optional,
@@ -51,7 +52,7 @@ class Mixup(Augmenter):
             if True, ECG signal tensors will be modified inplace
         kwargs: Keyword arguments.
         """
-        super().__init__(**kwargs)
+        # super().__init__(**kwargs)
         self.fs = fs
         self.alpha = alpha
         self.beta = beta or self.alpha
@@ -59,15 +60,19 @@ class Mixup(Augmenter):
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.inplace = inplace
 
-    def generate(self, sig:Tensor, label:Tensor) -> Tuple[Tensor,Tensor]:
-        """
+    def generate(self, sig:Tensor, label:Tensor, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
+        """ finished, checked,
 
         Parameters
         ----------
         sig: Tensor,
             the ECGs to be augmented, of shape (batch, lead, siglen)
-        label: Tensor, optional,
+        label: Tensor,
             label tensor of the ECGs
+        extra_tensors: sequence of Tensors, optional,
+            not used, but kept for consistency with other augmenters
+        kwargs: keyword arguments,
+            not used, but kept for consistency with other augmenters
 
         Returns
         -------
@@ -75,6 +80,8 @@ class Mixup(Augmenter):
             the augmented ECGs
         label: Tensor,
             the augmented label
+        extra_tensors: sequence of Tensors, optional,
+            if set in the input arguments, unchanged
         """
         batch, lead, siglen = sig.shape
         lam = np.random.beta(self.alpha, self.beta)
@@ -93,7 +100,7 @@ class Mixup(Augmenter):
         sig = lam * sig + (1 - lam) * sig[indices]
         label = lam * label + (1 - lam) * label[indices]
 
-        return sig, label
+        return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
         """

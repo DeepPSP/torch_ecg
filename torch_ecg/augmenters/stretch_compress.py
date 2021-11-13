@@ -50,7 +50,7 @@ class StretchCompress(Augmenter):
             if True, the input ECGs will be modified inplace,
         kwargs: keyword arguments
         """
-        super().__init__(**kwargs)
+        # super().__init__(**kwargs)
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.inplace = inplace
@@ -59,7 +59,7 @@ class StretchCompress(Augmenter):
             self.ratio = self.ratio / 100
         assert 0<= self.ratio <= 1, "Ratio must be between 0 and 1, or between 0 and 100"
 
-    def generate(self, sig:Tensor, *labels:Optional[Sequence[Tensor]]) -> Union[Tuple[Tensor,...],Tensor]:
+    def generate(self, sig:Tensor, *labels:Optional[Sequence[Tensor]], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters
@@ -68,8 +68,10 @@ class StretchCompress(Augmenter):
             the ECGs to be stretched or compressed, of shape (batch, lead, siglen)
         labels: sequence of Tensors, optional,
             label tensors of the ECGs,
-            if set, each should be of ndim 3, of shape (batch, label_len, channels),
+            if set, labels of ndim = 3, of shape (batch, label_len, channels) will be stretched or compressed,
             siglen should be divisible by label_len
+        kwargs: keyword arguments,
+            not used, but kept for consistency with other augmenters
 
         Returns
         -------
@@ -83,12 +85,13 @@ class StretchCompress(Augmenter):
             sig = sig.clone()
         labels = [label.clone() for label in labels]
         if self.prob == 0:
-            if label is not None:
-                return (sig,) + tuple(labels)
-            return sig
+            return (sig, *labels)
         label_len = []
         n_labels = len(labels)
         for idx in range(n_labels):
+            if labels[idx].ndim < 3:
+                label_len.append(None)
+                continue
             labels[idx] = labels[idx].permute(0, 2, 1)  # (batch, label_len, n_classes) -> (batch, n_classes, label_len)
             ll = labels[idx].shape[-1]
             if ll != siglen:
@@ -109,6 +112,8 @@ class StretchCompress(Augmenter):
                     align_corners=True,
                 )[..., half_diff_len: siglen+half_diff_len].squeeze(0)
                 for idx in range(n_labels):
+                    if labels[idx].ndim < 3:
+                        continue
                     labels[idx][batch_idx, ...] = F.interpolate(
                         labels[idx][batch_idx, ...].unsqueeze(0),
                         size=new_len,
@@ -128,6 +133,8 @@ class StretchCompress(Augmenter):
                     value=0.0,
                 ).squeeze(0)
                 for idx in range(n_labels):
+                    if labels[idx].ndim < 3:
+                        continue
                     labels[idx][batch_idx, ...] = F.pad(
                         F.interpolate(
                             labels[idx][batch_idx, ...].unsqueeze(0),
@@ -140,12 +147,12 @@ class StretchCompress(Augmenter):
                         value=0.0,
                     ).squeeze(0)
         for idx, (label, ll) in enumerate(zip(labels, label_len)):
+            if labels[idx].ndim < 3:
+                continue
             if ll != siglen:
                 labels[idx] = F.interpolate(label, size=(ll,), mode="linear", align_corners=True)
             labels[idx] = labels[idx].permute(0, 2, 1)  # (batch, n_classes, label_len) -> (batch, label_len, n_classes)
-        if len(labels) > 0:
-            return (sig,) + tuple(labels)
-        return sig
+        return (sig, *labels)
 
     def _sample_ratio(self) -> float:
         """
@@ -192,12 +199,6 @@ class StretchCompress(Augmenter):
                 device=sig.device,
             )
         return sig
-
-    def __call__(self, sig:Tensor, *labels:Optional[Sequence[Tensor]]) -> Union[Tuple[Tensor,...],Tensor]:
-        """
-        alias of `self.generate`
-        """
-        return self.generate(sig, *labels)
 
     def extra_repr_keys(self) -> List[str]:
         """

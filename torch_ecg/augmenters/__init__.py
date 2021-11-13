@@ -9,6 +9,7 @@ from .random_flip import RandomFlip
 from .random_masking import RandomMasking
 from .random_renormalize import RandomRenormalize
 from .stretch_compress import StretchCompress, StretchCompressOffline
+from .augmenter_manager import AugmenterManager
 
 
 __all__ = [
@@ -21,4 +22,5 @@ __all__ = [
     "RandomRenormalize",
     "StretchCompress",
     "StretchCompressOffline",
+    "AugmenterManager",
 ]

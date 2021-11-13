@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Any, NoReturn, Sequence, Union, Optional, List
+from typing import Any, NoReturn, Sequence, Union, Optional, List, Tuple
 from numbers import Real
 
 import numpy as np
@@ -41,7 +41,7 @@ class RandomFlip(Augmenter):
             if True, ECG signal tensors will be modified inplace
         kwargs: Keyword arguments.
         """
-        super().__init__(**kwargs)
+        # super().__init__(**kwargs)
         self.fs = fs
         self.per_channel = per_channel
         self.inplace = inplace
@@ -53,7 +53,7 @@ class RandomFlip(Augmenter):
         assert (self.prob >= 0).all() and (self.prob <= 1).all(), \
             "Probability must be between 0 and 1"
 
-    def generate(self, sig:Tensor, label:Optional[Tensor]=None) -> Tensor:
+    def generate(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters
@@ -61,18 +61,27 @@ class RandomFlip(Augmenter):
         sig: Tensor,
             the ECGs to be augmented, of shape (batch, lead, siglen)
         label: Tensor, optional,
-            label tensor of the ECGs, not used
+            label tensor of the ECGs,
+            not used, but kept for consistency with other augmenters
+        extra_tensors: sequence of Tensors, optional,
+            not used, but kept for consistency with other augmenters
+        kwargs: keyword arguments,
+            not used, but kept for consistency with other augmenters
 
         Returns
         -------
         sig: Tensor,
             the augmented ECGs
+        label: Tensor,
+            the label tensor of the augmented ECGs, unchanged
+        extra_tensors: sequence of Tensors, optional,
+            if set in the input arguments, unchanged
         """
         batch, lead, siglen = sig.shape
         if not self.inplace:
             sig = sig.clone()
         if self.prob[0] == 0:
-            return sig
+            return (sig, label, *extra_tensors)
         if self.per_channel:
             flip = torch.ones((batch,lead,1), dtype=sig.dtype, device=sig.device)
             for i in self.get_indices(prob=self.prob[0], pop_size=batch):
@@ -82,7 +91,7 @@ class RandomFlip(Augmenter):
             flip = torch.ones((batch,1,1), dtype=sig.dtype, device=sig.device)
             flip[self.get_indices(prob=self.prob[0], pop_size=batch), ...] = -1
             sig = sig.mul_(flip)
-        return sig
+        return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
         """

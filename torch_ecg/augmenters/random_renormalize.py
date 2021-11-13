@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Any, NoReturn, Sequence, Union, Optional, Iterable, List
+from typing import Any, NoReturn, Sequence, Union, Optional, Iterable, List, Tuple
 from numbers import Real
 
 import numpy as np
@@ -48,7 +48,7 @@ class RandomRenormalize(Augmenter):
             Whether to apply the random re-normalization augmenter in-place.
         kwargs: keyword arguments
         """
-        super().__init__(**kwargs)
+        # super().__init__(**kwargs)
         self.mean = np.array(mean)
         self.mean_mean = self.mean.mean(axis=-1, keepdims=True)
         self.mean_scale = (self.mean[...,-1] - self.mean_mean) * 0.3
@@ -61,20 +61,29 @@ class RandomRenormalize(Augmenter):
         self.prob = prob
         self.inplace = inplace
 
-    def generate(self, sig:Tensor, label:Optional[Tensor]=None) -> Tensor:
+    def generate(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters
         ----------
         sig: Tensor,
-            The input ECG tensor, of shape (batch, lead, siglen).
+            the input ECG tensor, of shape (batch, lead, siglen)
         label: Tensor, optional,
-            The input ECG label tensor, not used.
+            the input ECG label tensor,
+            not used, but kept for compatibility with other augmenters
+        extra_tensors: sequence of Tensors, optional,
+            not used, but kept for consistency with other augmenters
+        kwargs: keyword arguments,
+            not used, but kept for consistency with other augmenters
 
         Returns
         -------
         sig: Tensor,
-            The randomly re-normalized ECG tensor.
+            the randomly re-normalized ECG tensor.
+        label: Tensor,
+            the label tensor of the augmented ECGs, unchanged
+        extra_tensors: sequence of Tensors, optional,
+            if set in the input arguments, unchanged
         """
         batch, lead, siglen = sig.shape
         if self.mean.ndim == 2:
@@ -90,15 +99,15 @@ class RandomRenormalize(Augmenter):
         else:
             mean = np.random.normal(self.mean_mean, self.mean_scale, size=(len(indices), 1, 1))
             std = np.random.normal(self.std_mean, self.std_scale, size=(len(indices), 1, 1))
-        sig = normalize_t(
-            sig,
+        sig[indices,...] = normalize_t(
+            sig[indices,...],
             method="z-score",
             mean=mean,
             std=std,
             per_channel=self.per_channel,
             inplace=True,
         )
-        return sig
+        return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
         """

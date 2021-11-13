@@ -3,7 +3,7 @@
 
 from random import sample
 from abc import ABC, abstractmethod
-from typing import Optional, Tuple, Union, List, Any
+from typing import Optional, Tuple, Union, List, Any, Sequence
 
 import numpy as np
 from torch import Tensor
@@ -21,27 +21,30 @@ class Augmenter(ABC):
     __name__ = "Augmentor"
 
     @abstractmethod
-    def generate(self, sig:Tensor, label:Optional[Tensor]=None, **kwargs:Any) -> Union[Tensor,Tuple[Tensor]]:
-        """
+    def generate(self, sig:Tensor, label:Optional[Tensor]=None, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
+        """ generates a new signal and label using corresponding augmentation method,
+
         Parameters
         ----------
         sig: Tensor,
             the ECGs to be augmented, of shape (batch, lead, siglen)
         label: Tensor, optional,
             labels of the ECGs
+        extra_tensors: Tensor(s), optional,
+            extra tensors to be augmented, e.g. masks for custom loss functions, etc.
         kwargs: keyword arguments
 
         Returns
         -------
-        Tensor(s), the augmented ECGs
+        Tensor(s), the augmented ECGs, labels, and optional extra tensors
         """
         raise NotImplementedError
 
-    def __call__(self, sig:Tensor, label:Optional[Tensor]=None, **kwargs:Any) -> Union[Tensor,Tuple[Tensor]]:
+    def __call__(self, sig:Tensor, label:Optional[Tensor]=None, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
         """
         alias of `self.generate`
         """
-        return self.generate(sig=sig, label=label, **kwargs)
+        return self.generate(sig, label, *extra_tensors, **kwargs)
 
     def get_indices(self, prob:float, pop_size:int, scale_ratio:float=0.1) -> List[int]:
         """ finished, checked

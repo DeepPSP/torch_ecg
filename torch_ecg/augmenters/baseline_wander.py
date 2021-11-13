@@ -4,7 +4,7 @@ add baseline wander composed of sinusoidal and Gaussian noise to the ECGs
 
 from random import randint, uniform
 import multiprocessing as mp
-from typing import Any, NoReturn, Sequence, Union, Optional, List
+from typing import Any, NoReturn, Sequence, Union, Optional, List, Tuple
 from numbers import Real
 
 import numpy as np
@@ -52,7 +52,7 @@ class BaselineWanderAugmenter(Augmenter):
             if True, ECG signal tensors will be modified inplace
         kwargs: Keyword arguments.
         """
-        super().__init__(**kwargs)
+        # super().__init__(**kwargs)
         self.fs = fs
         self.bw_fs = bw_fs if bw_fs is not None else np.array([0.33, 0.1, 0.05, 0.01])
         self.prob = prob
@@ -89,7 +89,7 @@ class BaselineWanderAugmenter(Augmenter):
         self._n_bw_choices = len(self.ampl_ratio)
         self._n_gn_choices = len(self.gaussian)
 
-    def generate(self, sig:Tensor, label:Optional[Tensor]=None) -> Tensor:
+    def generate(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters
@@ -97,18 +97,27 @@ class BaselineWanderAugmenter(Augmenter):
         sig: Tensor,
             the ECGs to be augmented, of shape (batch, lead, siglen)
         label: Tensor, optional,
-            label tensor of the ECGs, not used
+            label tensor of the ECGs,
+            not used, but kept for consistency with other augmenters
+        extra_tensors: sequence of Tensors, optional,
+            not used, but kept for consistency with other augmenters
+        kwargs: keyword arguments,
+            not used, but kept for consistency with other augmenters
 
         Returns
         -------
         sig: Tensor,
             the augmented ECGs
+        label: Tensor,
+            label tensor of the augmented ECGs, unchanged
+        extra_tensors: sequence of Tensors, optional,
+            if set in the input arguments, unchanged
         """
         if not self.inplace:
             sig = sig.clone()
         if self.prob > 0:
             sig.add_(gen_baseline_wander(sig, self.fs, self.bw_fs, self.ampl_ratio, self.gaussian))
-        return sig
+        return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
         """
