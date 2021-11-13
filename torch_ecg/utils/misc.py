@@ -20,6 +20,7 @@ from wfdb.io import _header
 from wfdb import Record, MultiRecord
 from easydict import EasyDict as ED
 
+from ..cfg import DEFAULTS
 
 
 __all__ = [
@@ -503,7 +504,7 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, log_name:Optional[str]
     log_file = os.path.join(log_dir, log_file)
     print(f"log file path: {log_file}")
 
-    logger = logging.getLogger(log_name or "torch_ecg")  # "ECG" to prevent from using the root logger
+    logger = logging.getLogger(log_name or DEFAULTS.prefix)  # "ECG" to prevent from using the root logger
 
     c_handler = logging.StreamHandler(sys.stdout)
     f_handler = logging.FileHandler(log_file)
@@ -519,10 +520,10 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, log_name:Optional[str]
         f_handler.setLevel(logging.DEBUG)
         logger.setLevel(logging.DEBUG)
     else:
-        print("levels of c_handler and f_handler are set WARNING")
+        print("level of c_handler is set WARNING, level of f_handler is set INFO")
         c_handler.setLevel(logging.WARNING)
-        f_handler.setLevel(logging.WARNING)
-        logger.setLevel(logging.WARNING)
+        f_handler.setLevel(logging.INFO)
+        logger.setLevel(logging.INFO)
 
     c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
     f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
