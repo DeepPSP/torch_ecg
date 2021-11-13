@@ -92,6 +92,28 @@ class BaseLogger(ABC):
         """
         raise NotImplementedError
 
+    def epoch_start(self, epoch:int) -> NoReturn:
+        """
+        actions to be performed at the start of each epoch
+
+        Parameters
+        ----------
+        epoch: int,
+            the number of the epoch
+        """
+        pass
+
+    def epoch_end(self, epoch:int) -> NoReturn:
+        """
+        actions to be performed at the end of each epoch
+
+        Parameters
+        ----------
+        epoch: int,
+            the number of the epoch
+        """
+        pass
+
     @property
     def log_dir(self) -> str:
         """
@@ -168,8 +190,11 @@ class TxtLogger(BaseLogger):
         if epoch is not None:
             prefix = f"Epoch {epoch} / {prefix}"
         _metrics = {k: v.item() if isinstance(v, torch.Tensor) else v for k,v in metrics.items()}
-        for k, v in _metrics.items():
-            self.logger.info(f"{prefix}{part}/{k} : {v:.4f}")
+        spaces = max(_metrics.keys(), key=len)
+        msg = f"{part.capitalize()} Metrics:\n{self.short_sep}" \
+            + "\n".join([f"{prefix}{part}/{k} : {' '*(spaces-len(k))}{v:.4f}" for k,v in _metrics.items()]) \
+            + f"\n{self.short_sep}"
+        self.log_message(msg)
 
     def log_message(self, msg:str, level:int=logging.INFO) -> NoReturn:
         """
@@ -184,6 +209,40 @@ class TxtLogger(BaseLogger):
             can be logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
         """
         self.logger.log(level, msg)
+
+    @property
+    def long_sep(self) -> str:
+        """
+        """
+        return "-"*110
+
+    @property
+    def short_sep(self) -> str:
+        """
+        """
+        return "-"*50
+
+    def epoch_start(self, epoch:int) -> NoReturn:
+        """
+        message logged at the start of each epoch
+
+        Parameters
+        ----------
+        epoch: int,
+            the number of the epoch
+        """
+        self.logger.info(f"Train epoch_{epoch}:\n{self.long_sep}")
+
+    def epoch_end(self, epoch:int) -> NoReturn:
+        """
+        message logged at the end of each epoch
+
+        Parameters
+        ----------
+        epoch: int,
+            the number of the epoch
+        """
+        self.logger.info(f"{self.long_sep}\n")
 
     def flush(self) -> NoReturn:
         """
@@ -495,6 +554,30 @@ class LoggerManager(object):
         """
         for l in self.loggers:
             l.log_message(msg, level)
+
+    def epoch_start(self, epoch:int) -> NoReturn:
+        """
+        action at the start of an epoch
+
+        Parameters
+        ----------
+        epoch: int,
+            the epoch number
+        """
+        for l in self.loggers:
+            l.epoch_start(epoch)
+
+    def epoch_end(self, epoch:int) -> NoReturn:
+        """
+        action at the end of an epoch
+
+        Parameters
+        ----------
+        epoch: int,
+            the epoch number
+        """
+        for l in self.loggers:
+            l.epoch_end(epoch)
 
     def flush(self) -> NoReturn:
         """
