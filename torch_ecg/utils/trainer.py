@@ -198,7 +198,7 @@ class BaseTrainer(ABC):
         return self.best_state_dict
 
     def train_one_epoch(self, pbar:tqdm) -> NoReturn:
-        """
+        """ finished, NOT checked,
 
         train one epoch, and update the progress bar
 
@@ -270,6 +270,7 @@ class BaseTrainer(ABC):
     @abstractmethod
     def run_one_step(self, *data:Tuple[torch.Tensor, ...]) -> Tuple[torch.Tensor, ...]:
         """
+        run one step of training on one batch of data,
 
         Parameters
         ----------
@@ -294,11 +295,29 @@ class BaseTrainer(ABC):
     @abstractmethod
     def evaluate(self, dl:DataLoader) -> dict:
         """
+        do evaluation on the given data loader
+
+        Parameters
+        ----------
+        dl: DataLoader,
+            the data loader to evaluate on
+
+        Returns
+        -------
+        dict,
+            the evaluation results (metrics)
         """
         raise NotImplementedError
 
     def _update_lr(self, eval_res:dict) -> NoReturn:
-        """
+        """ finished, NOT checked,
+
+        update learning rate using lr_scheduler, perhaps based on the eval_res
+
+        Parameters
+        ----------
+        eval_res: dict,
+            the evaluation results (metrics)
         """
         if self.train_config.lr_scheduler is None:
             pass
@@ -312,7 +331,6 @@ class BaseTrainer(ABC):
         elif self.train_config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
             self.scheduler.step()
 
-    @abstractmethod
     def _setup_from_config(self, train_config:dict) -> NoReturn:
         """ finished, NOT checked,
 
@@ -374,14 +392,14 @@ class BaseTrainer(ABC):
         return f"{self._model.__name__}_{self.train_config.optimizer}_LR_{self.lr}_BS_{self.batch_size}"
 
     def _setup_log_manager(self) -> NoReturn:
-        """
+        """ finished, NOT checked,
         """
         config = {"log_suffix": self.extra_log_suffix()}
         config.update(self.train_config)
         self.log_manager = LoggerManager.from_config(config=config)
 
     def _setup_augmenter_manager(self) -> NoReturn:
-        """
+        """ finished, NOT checked,
         """
         self.augmenter_manager = AugmenterManager.from_config(config=self.train_config)
 
@@ -537,6 +555,11 @@ class BaseTrainer(ABC):
 
     def save_checkpoint(self, path:str) -> NoReturn:
         """ finished, checked,
+
+        Parameters
+        ----------
+        path: str,
+            path to save the checkpoint
         """
         torch.save({
             "model_state_dict": self._model.state_dict(),
