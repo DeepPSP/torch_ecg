@@ -17,7 +17,7 @@ from torch import Tensor
 import torch.nn.functional as F
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
+from torch_ecg.cfg import DEFAULTS
 from torch_ecg.model_configs._legacy.legacy_ecg_crnn_v03 import ECG_CRNN_CONFIG
 from torch_ecg.utils.utils_nn import compute_conv_output_shape, compute_module_size
 from torch_ecg.utils.misc import dict_to_str
@@ -35,7 +35,7 @@ from torch_ecg.models._nets import (
 )
 
 
-if Cfg.torch_dtype.lower() == "double":
+if DEFAULTS.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

@@ -21,7 +21,7 @@ from torch import Tensor
 import torch.nn.functional as F
 from easydict import EasyDict as ED
 
-from ..cfg import Cfg
+from ..cfg import DEFAULTS
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
 from ..utils.misc import dict_to_str
 from ..utils.utils_nn import compute_module_size
@@ -36,7 +36,7 @@ from ..models._nets import (
     CRF, ExtendedCRF,
 )
 
-if Cfg.torch_dtype.lower() == "double":
+if DEFAULTS.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

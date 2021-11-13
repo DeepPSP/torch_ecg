@@ -15,10 +15,10 @@ import torch
 from torch import Tensor
 from torch import nn
 
-from ..cfg import Cfg
+from ..cfg import DEFAULTS
 
 
-if Cfg.torch_dtype.lower() == "double":
+if DEFAULTS.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
     _DTYPE = np.float64
 else:
