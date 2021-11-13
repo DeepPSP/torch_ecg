@@ -1019,7 +1019,7 @@ def dicts_equal(d1:dict, d2:dict) -> bool:
     return True
 
 
-def default_class_repr(c:object, align:str="center") -> str:
+def default_class_repr(c:object, align:str="center", depth:int=1) -> str:
     """ finished, checked,
 
     Parameters
@@ -1034,14 +1034,18 @@ def default_class_repr(c:object, align:str="center") -> str:
     str,
         the representation of the class
     """
-    if hasattr(c, "extra_repr_keys") and len(c.extra_repr_keys()) > 0:
+    indent = 4*depth*" "
+    closing_indent = 4*(depth-1)*" "
+    if not hasattr(c, "extra_repr_keys"):
+        return repr(c)
+    elif len(c.extra_repr_keys()) > 0:
         max_len = max([len(k) for k in c.extra_repr_keys()])
         extra_str = "(\n" + \
             ",\n".join([
-                f"""    {k.ljust(max_len, " ") if align.lower() in ["center", "c"] else k} = {v}""" \
-                    for k,v in c.__dict__.items() if k in c.extra_repr_keys()
+                f"""{indent}{k.ljust(max_len, " ") if align.lower() in ["center", "c"] else k} = {default_class_repr(eval(f"c.{k}"),align,depth+1)}""" \
+                    for k in c.__dir__() if k in c.extra_repr_keys()
                 ]) + \
-            "\n)"
+            f"{closing_indent}\n)"
     else:
         extra_str = ""
     return f"{c.__class__.__name__}{extra_str}"
