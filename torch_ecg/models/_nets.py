@@ -47,6 +47,7 @@ __all__ = [
     "NonLocalBlock", "SEBlock", "GlobalContextBlock",
     "CBAMBlock", "BAMBlock", "CoordAttention",
     "CRF", "ExtendedCRF",
+    "make_attention_layer",
 ]
 
 
@@ -2574,7 +2575,8 @@ class GlobalContextBlock(nn.Module):
                  ratio:int,
                  reduction:bool=False,
                  pooling_type:str="attn",
-                 fusion_types:Sequence[str]=["add",]) -> NoReturn:
+                 fusion_types:Sequence[str]=["add",],
+                 **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -3440,3 +3442,53 @@ class ExtendedCRF(nn.Sequential):
         """
         """
         return compute_module_size(self)
+
+
+def make_attention_layer(in_channels:int, **config:dict) -> nn.Module:
+    """ finished, checked,
+
+    make attention layer by config
+
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    config: dict,
+        config of the attention layer
+
+    Returns
+    -------
+    nn.Module,
+        the attention layer
+
+    Examples
+    --------
+    ```python
+    from torch_ecg.model_configs.attn import squeeze_excitation
+    from torch_ecg.models._nets import make_attention_layer
+    layer = make_attention_layer(in_channels=128, name="se", **squeeze_excitation)
+    ```
+    """
+    key = "name" if "name" in config else "type"
+    name = config[key].lower()
+    if name in ["se"]:
+        return SEBlock(in_channels, **config)
+    elif name in ["gc"]:
+        return GlobalContextBlock(in_channels, **config)
+    elif name in ["nl", "non-local", "nonlocal", "non_local"]:
+        return NonLocalBlock(in_channels, **config)
+    elif name in ["ca",]:
+        return CoordAttention(in_channels, **config)
+    elif name in ["sk",]:
+        return SKBlock(in_channels, **config)
+    elif name in ["ge",]:
+        return GEBlock(in_channels, **config)
+    elif name in ["cbam",]:
+        return CBAMBlock(in_channels, **config)
+    elif name in ["bam",]:
+        return BAMBlock(in_channels, **config)
+    else:
+        try:
+            return eval(f"""{config[key]}(in_channels, **config)""")
+        except:
+            raise ValueError(f"Unknown attention type: {config[key]}")
