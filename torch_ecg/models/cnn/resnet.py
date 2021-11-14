@@ -23,6 +23,7 @@ from ...models._nets import (
     DownSample,
     ZeroPadding,
     NonLocalBlock, SEBlock, GlobalContextBlock,
+    make_attention_layer,
 )
 
 
@@ -53,6 +54,7 @@ class ResNetBasicBlock(nn.Module):
                  subsample_length:int,
                  groups:int=1,
                  dilation:int=1,
+                 attn:Optional[dict]=None,
                  **config) -> NoReturn:
         """ finished, checked,
 
@@ -72,6 +74,13 @@ class ResNetBasicBlock(nn.Module):
             for more details, ref. `nn.Conv1d`
         dilation: int, default 1,
             not used
+        attn: dict, optional,
+            attention mechanism for the neck conv layer,
+            if None, no attention mechanism is used,
+            keys:
+                "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+                "pos": int, position of the attention mechanism,
+                other keys are specific to the attention mechanism
         config: dict,
             other hyper-parameters, including
             increase channel method, subsample method,
@@ -94,6 +103,10 @@ class ResNetBasicBlock(nn.Module):
         if self.config.increase_channels_method.lower() == "zero_padding" and self.__groups != 1:
             raise ValueError("zero padding for increasing channels can not be used with groups != 1")
         
+        self.__attn = attn
+        if self.__attn:
+            self.__attn = ED(self.__attn)
+        
         self.__increase_channels = (self.__out_channels > self.__in_channels)
         self.shortcut = self._make_shortcut_layer()
 
@@ -101,6 +114,11 @@ class ResNetBasicBlock(nn.Module):
         conv_in_channels = self.__in_channels
         for i in range(self.__num_convs):
             conv_activation = (self.config.activation if i < self.__num_convs-1 else None)
+            if self.__attn and self.__attn["pos"] == i:
+                self.main_stream.add_module(
+                    self.__attn["name"],
+                    make_attention_layer(conv_in_channels, **self.__attn)
+                )
             self.main_stream.add_module(
                 f"cba_{i}",
                 Conv_Bn_Activation(
@@ -118,6 +136,11 @@ class ResNetBasicBlock(nn.Module):
                 )
             )
             conv_in_channels = self.__out_channels
+        if self.__attn and self.__attn["pos"] == -1:
+            self.main_stream.add_module(
+                self.__attn["name"],
+                make_attention_layer(conv_in_channels, **self.__attn)
+            )
 
         if isinstance(self.config.activation, str):
             self.out_activation = \
@@ -237,6 +260,7 @@ class ResNetBottleNeck(nn.Module):
                  base_width:int=12*4,
                  base_groups:int=1,
                  base_filter_length:int=1,
+                 attn:Optional[dict]=None,
                  **config) -> NoReturn:
         """ finished, checked,
 
@@ -265,6 +289,13 @@ class ResNetBottleNeck(nn.Module):
             should divide `groups`
         base_filter_length: int, default 1,
             lengths (sizes) of the filter kernels for conv layers at the two ends
+        attn: dict, optional,
+            attention mechanism for the neck conv layer,
+            if None, no attention mechanism is used,
+            keys:
+                "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+                "pos": int, position of the attention mechanism,
+                other keys are specific to the attention mechanism
         config: dict,
             other hyper-parameters, including
             increase channel method, subsample method,
@@ -306,6 +337,9 @@ class ResNetBottleNeck(nn.Module):
             groups,
             base_groups,
         ]
+        self.__attn = attn
+        if self.__attn:
+            self.__attn = ED(self.__attn)
 
         if self.config.increase_channels_method.lower() == "zero_padding" and self.__groups != 1:
             raise ValueError("zero padding for increasing channels can not be used with groups != 1")
@@ -317,6 +351,11 @@ class ResNetBottleNeck(nn.Module):
         conv_names = {0:"cba_head", 1:"cba_neck", 2:"cba_tail",}
         conv_in_channels = self.__in_channels
         for i in range(self.__num_convs):
+            if self.__attn and self.__attn["pos"] == i:
+                self.main_stream.add_module(
+                    self.__attn["name"],
+                    make_attention_layer(conv_in_channels, **self.__attn)
+                )
             conv_activation = (self.config.activation if i < self.__num_convs-1 else None)
             conv_out_channels = self.__out_channels[i]
             self.main_stream.add_module(
@@ -336,6 +375,11 @@ class ResNetBottleNeck(nn.Module):
                 )
             )
             conv_in_channels = conv_out_channels
+        if self.__attn and self.__attn["pos"] == -1:
+            self.main_stream.add_module(
+                self.__attn["name"],
+                make_attention_layer(conv_in_channels, **self.__attn)
+            )
 
         if isinstance(self.config.activation, str):
             self.out_activation = \
