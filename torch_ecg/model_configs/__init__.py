@@ -12,7 +12,7 @@ from .cnn import (
     resnet_vanilla_wide_50_2, resnet_vanilla_wide_101_2,
     # custom resnet
     resnet_block_basic, resnet_bottle_neck,
-    resnet, resnet_leadwise,
+    resnet_cpsc2018, resnet_cpsc2018_leadwise,
     # stanford resnet
     resnet_block_stanford, resnet_stanford,
     # cpsc2018 SOTA
@@ -59,7 +59,7 @@ __all__ = [
     "resnet_vanilla_wide_50_2", "resnet_vanilla_wide_101_2",
     # custom resnet
     "resnet_block_basic", "resnet_bottle_neck",
-    "resnet", "resnet_leadwise",
+    "resnet_cpsc2018", "resnet_cpsc2018_leadwise",
     # stanford resnet
     "resnet_block_stanford", "resnet_stanford",
     # cpsc2018 SOTA

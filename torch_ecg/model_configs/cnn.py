@@ -19,7 +19,7 @@ __all__ = [
     "resnet_vanilla_wide_50_2", "resnet_vanilla_wide_101_2",
     # custom resnet
     "resnet_block_basic", "resnet_bottle_neck",
-    "resnet", "resnet_leadwise",
+    "resnet_cpsc2018", "resnet_cpsc2018_leadwise",
     # stanford resnet
     "resnet_block_stanford", "resnet_stanford",
     # cpsc2018 SOTA
@@ -229,61 +229,61 @@ resnet_vanilla_wide_101_2.block.expansion = 4
 
 
 # custom ResNets
-resnet = ED()
-resnet.fs = 500
-resnet.block_name = "basic"  # "bottleneck"
-resnet.expansion = 1
-resnet.subsample_lengths = [
+resnet_cpsc2018 = ED()
+resnet_cpsc2018.fs = 500
+resnet_cpsc2018.block_name = "basic"  # "bottleneck"
+resnet_cpsc2018.expansion = 1
+resnet_cpsc2018.subsample_lengths = [
     1, 2, 2, 2,
 ]
-# resnet.num_blocks = [
+# resnet_cpsc2018.num_blocks = [
 #     2, 2, 2, 2, 2,
 # ]
-# resnet.filter_lengths = 3
-# resnet.num_blocks = [
+# resnet_cpsc2018.filter_lengths = 3
+# resnet_cpsc2018.num_blocks = [
 #     3, 4, 6, 3,
 # ]
-# resnet.filter_lengths = [
+# resnet_cpsc2018.filter_lengths = [
 #     [5, 5, 13],
 #     [5, 5, 5, 13],
 #     [5, 5, 5, 5, 5, 13],
 #     [5, 5, 25],
 # ]
-resnet.num_blocks = [
+resnet_cpsc2018.num_blocks = [
     3, 4, 6, 3,
 ]
-resnet.filter_lengths = [
+resnet_cpsc2018.filter_lengths = [
     [5, 5, 25],
     [5, 5, 5, 25],
     [5, 5, 5, 5, 5, 25],
     [5, 5, 49],
 ]
-resnet.groups = 1
+resnet_cpsc2018.groups = 1
 _base_num_filters = 12 * 4
-resnet.init_num_filters = _base_num_filters
-resnet.init_filter_length = 15  # corr. to 30 ms
-resnet.init_conv_stride = 2
-resnet.init_pool_size = 3
-resnet.init_pool_stride = 2
-resnet.kernel_initializer = "he_normal"
-resnet.kw_initializer = {}
-resnet.activation = "relu"  # "mish", "swish"
-resnet.kw_activation = {"inplace": True}
-resnet.bias = False
+resnet_cpsc2018.init_num_filters = _base_num_filters
+resnet_cpsc2018.init_filter_length = 15  # corr. to 30 ms
+resnet_cpsc2018.init_conv_stride = 2
+resnet_cpsc2018.init_pool_size = 3
+resnet_cpsc2018.init_pool_stride = 2
+resnet_cpsc2018.kernel_initializer = "he_normal"
+resnet_cpsc2018.kw_initializer = {}
+resnet_cpsc2018.activation = "relu"  # "mish", "swish"
+resnet_cpsc2018.kw_activation = {"inplace": True}
+resnet_cpsc2018.bias = False
 
 
-resnet_leadwise = deepcopy(resnet)
-resnet_leadwise.groups = 12
-resnet_leadwise.init_num_filters = 12 * 8
+resnet_cpsc2018_leadwise = deepcopy(resnet_cpsc2018)
+resnet_cpsc2018_leadwise.groups = 12
+resnet_cpsc2018_leadwise.init_num_filters = 12 * 8
 
 
 resnet_block_basic = ED()
 resnet_block_basic.increase_channels_method = "conv"  # or "zero_padding"
 resnet_block_basic.subsample_mode = "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
-resnet_block_basic.kernel_initializer = resnet.kernel_initializer
-resnet_block_basic.kw_initializer = deepcopy(resnet.kw_initializer)
-resnet_block_basic.activation = resnet.activation
-resnet_block_basic.kw_activation = deepcopy(resnet.kw_activation)
+resnet_block_basic.kernel_initializer = resnet_cpsc2018.kernel_initializer
+resnet_block_basic.kw_initializer = deepcopy(resnet_cpsc2018.kw_initializer)
+resnet_block_basic.activation = resnet_cpsc2018.activation
+resnet_block_basic.kw_activation = deepcopy(resnet_cpsc2018.kw_activation)
 resnet_block_basic.bias = False
 
 resnet_bottle_neck = ED()
@@ -291,18 +291,18 @@ resnet_bottle_neck.expansion = 4
 resnet_bottle_neck.increase_channels_method = "conv"  # or "zero_padding"
 resnet_bottle_neck.subsample_mode = "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
 resnet_bottle_neck.subsample_at = 1  # or 0
-resnet_bottle_neck.kernel_initializer = resnet.kernel_initializer
-resnet_bottle_neck.kw_initializer = deepcopy(resnet.kw_initializer)
-resnet_bottle_neck.activation = resnet.activation
-resnet_bottle_neck.kw_activation = deepcopy(resnet.kw_activation)
+resnet_bottle_neck.kernel_initializer = resnet_cpsc2018.kernel_initializer
+resnet_bottle_neck.kw_initializer = deepcopy(resnet_cpsc2018.kw_initializer)
+resnet_bottle_neck.activation = resnet_cpsc2018.activation
+resnet_bottle_neck.kw_activation = deepcopy(resnet_cpsc2018.kw_activation)
 resnet_bottle_neck.bias = False
 
 
 # set default building block
-resnet.block_name = "basic"
-resnet.block = deepcopy(resnet_block_basic)
-resnet_leadwise.block_name = "basic"
-resnet_leadwise.block = deepcopy(resnet_block_basic)
+resnet_cpsc2018.block_name = "basic"
+resnet_cpsc2018.block = deepcopy(resnet_block_basic)
+resnet_cpsc2018_leadwise.block_name = "basic"
+resnet_cpsc2018_leadwise.block = deepcopy(resnet_block_basic)
 
 
 

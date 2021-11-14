@@ -24,7 +24,7 @@ from torch_ecg.model_configs import (
     resnext_vanilla_50_32x4d, resnext_vanilla_101_32x8d,
     resnet_vanilla_wide_50_2, resnet_vanilla_wide_101_2,
     # custom resnet
-    resnet, resnet_leadwise,
+    resnet_cpsc2018, resnet_cpsc2018_leadwise,
     # stanford resnet
     resnet_block_stanford, resnet_stanford,
     # cpsc2018 SOTA, legacy
