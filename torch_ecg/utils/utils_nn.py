@@ -573,7 +573,7 @@ def intervals_iou(itv_a:Tensor, itv_b:Tensor, iou_type="iou") -> Tensor:
         raise NotImplementedError
 
 
-def _adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True) -> dict:
+def _adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True, pattern:str="filter_length|filt_size") -> dict:
     """ finished, checked,
 
     adjust the filter lengths (kernel sizes) in the config for convolutional neural networks,
@@ -587,6 +587,8 @@ def _adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True) -> dic
         the new sampling frequency
     ensure_odd: bool, default True,
         if True, the new filter lengths are ensured to be odd
+    pattern: str, default "filter_length|filt_size",
+        the pattern to search for in the config items related to filter lengths
 
     Returns
     -------
@@ -599,26 +601,30 @@ def _adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True) -> dic
         if isinstance(v, dict):
             tmp_config = v
             tmp_config.update({"fs": config["fs"]})
-            config[k] = _adjust_cnn_filter_lengths(tmp_config, fs)
+            config[k] = _adjust_cnn_filter_lengths(tmp_config, fs, ensure_odd, pattern)
             config[k].pop("fs", None)
-        elif re.findall("filter_length", k):
+        elif re.findall(pattern, k):
             if isinstance(v, (Sequence, np.ndarray)):  # DO NOT use `Iterable`
                 config[k] = [
                     _adjust_cnn_filter_lengths(
-                        {"filter_length": l, "fs": config["fs"]}, fs
+                        {"filter_length": l, "fs": config["fs"]}, fs, ensure_odd
                     )["filter_length"] for l in v
                 ]
             elif isinstance(v, Real):
                 # DO NOT use `int`, which might not work for numpy array elements
-                if v == 1:
-                    config[k] = 1
-                else:
+                if v > 1:
                     config[k] = int(round(v * fs / config["fs"]))
                     if ensure_odd:
                         config[k] = config[k] - config[k] % 2 + 1
+        elif isinstance(v, Sequence) and not isinstance(v, (str, bytes)):
+            tmp_configs = [
+                _adjust_cnn_filter_lengths({k:item, "fs":config["fs"]}, fs, ensure_odd, pattern) \
+                    for item in v
+            ]
+            config[k] = [item[k] for item in tmp_configs]
     return config
 
-def adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True) -> dict:
+def adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True, pattern:str="filter_length|filt_size") -> dict:
     """ finished, checked,
 
     adjust the filter lengths in the config for convolutional neural networks,
@@ -632,12 +638,14 @@ def adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True) -> dict
         the new sampling frequency
     ensure_odd: bool, default True,
         if True, the new filter lengths are ensured to be odd
+    pattern: str, default "filter_length|filt_size",
+        the pattern to search for in the config items related to filter lengths
 
     Returns
     -------
     config: dict,
         the adjusted config dictionary
     """
-    config = _adjust_cnn_filter_lengths(config, fs, ensure_odd)
+    config = _adjust_cnn_filter_lengths(config, fs, ensure_odd, pattern)
     config["fs"] = fs
     return config
