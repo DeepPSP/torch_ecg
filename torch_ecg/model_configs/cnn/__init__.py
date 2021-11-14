@@ -25,6 +25,8 @@ from .resnet import (
     # ResNet Nature Communications
     resnet_nature_comm,
     resnet_nature_comm_se, resnet_block_basic_nl, resnet_block_basic_gc,
+    # TResNet
+    tresnetM, tresnetL, tresnetXL,
 )
 from .cpsc import (
     # cpsc2018 SOTA
@@ -76,6 +78,8 @@ __all__ = [
     # ResNet Nature Communications
     "resnet_nature_comm",
     "resnet_nature_comm_se", "resnet_nature_comm_nl", "resnet_nature_comm_gc",
+    # TresNet
+    "tresnetM", "tresnetL", "tresnetXL",
     # cpsc2018 SOTA
     "cpsc_block_basic", "cpsc_block_mish", "cpsc_block_swish",
     "cpsc_2018", "cpsc_2018_leadwise",

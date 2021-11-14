@@ -42,6 +42,8 @@ __all__ = [
     # ResNet Nature Communications
     "resnet_nature_comm",
     "resnet_nature_comm_se", "resnet_nature_comm_nl", "resnet_nature_comm_gc",
+    # TresNet
+    "tresnetM", "tresnetL", "tresnetXL",
 ]
 
 
@@ -358,7 +360,7 @@ resnet_stanford.block = deepcopy(resnet_block_stanford)
 # ResNet Nature Communications
 # a modified version of resnet 34
 resnet_nature_comm = deepcopy(resnet_vanilla_34)
-resnet_nature_comm.init_filter_length = 17
+resnet_nature_comm.init_filter_length = 17  # originally 16, we make it odd
 resnet_nature_comm.filter_lengths = 17
 resnet_nature_comm.init_conv_stride = 1
 resnet_nature_comm.init_pool_stride = 1  # if < 2, init pool will not be added
