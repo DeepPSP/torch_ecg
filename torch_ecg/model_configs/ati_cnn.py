@@ -13,7 +13,7 @@ from .cnn import (
     vgg16, vgg16_leadwise,
     resnet_block_stanford, resnet_stanford,
     resnet_block_basic, resnet_bottle_neck,
-    resnet, resnet_leadwise,
+    resnet_cpsc2018, resnet_cpsc2018_leadwise,
 )
 from ..utils.utils_nn import adjust_cnn_filter_lengths
 
