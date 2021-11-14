@@ -174,6 +174,7 @@ class ResNetBasicBlock(nn.Module):
                     groups=self.__groups,
                     batch_norm=True,
                     mode=self.config.subsample_mode,
+                    filt_size=self.config.get("filt_size", 3),  # for blur pool
                 )
             elif self.config.increase_channels_method.lower() == "zero_padding":
                 batch_norm = False if self.config.subsample_mode.lower() != "conv" else True
@@ -184,6 +185,7 @@ class ResNetBasicBlock(nn.Module):
                         out_channels=self.__in_channels,
                         batch_norm=batch_norm,
                         mode=self.config.subsample_mode,
+                        filt_size=self.config.get("filt_size", 3),  # for blur pool
                     ),
                     ZeroPadding(self.__in_channels, self.__out_channels),
                 )
@@ -428,6 +430,7 @@ class ResNetBottleNeck(nn.Module):
                     groups=self.__base_groups,
                     batch_norm=True,
                     mode=self.config.subsample_mode,
+                    filt_size=self.config.get("filt_size", 3),  # for blur pool
                 )
             elif self.config.increase_channels_method.lower() == "zero_padding":
                 batch_norm = False if self.config.subsample_mode.lower() != "conv" else True
@@ -438,6 +441,7 @@ class ResNetBottleNeck(nn.Module):
                         out_channels=self.__in_channels,
                         batch_norm=batch_norm,
                         mode=self.config.subsample_mode,
+                        filt_size=self.config.get("filt_size", 3),  # for blur pool
                     ),
                     ZeroPadding(self.__in_channels, self.__out_channels[-1]),
                 )
@@ -661,15 +665,15 @@ class ResNet(nn.Sequential):
                 list(repeat(self.config.filter_lengths, len(self.config.num_blocks)))
         else:
             self.__filter_lengths = self.config.filter_lengths
-            assert len(self.__filter_lengths) == len(self.config.num_blocks), \
-                f"`config.filter_lengths` indicates {len(self.__filter_lengths)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        assert len(self.__filter_lengths) == len(self.config.num_blocks), \
+            f"`config.filter_lengths` indicates {len(self.__filter_lengths)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
         if isinstance(self.config.subsample_lengths, int):
             self.__subsample_lengths = \
                 list(repeat(self.config.subsample_lengths, len(self.config.num_blocks)))
         else:
             self.__subsample_lengths = self.config.subsample_lengths
-            assert len(self.__subsample_lengths) == len(self.config.num_blocks), \
-                f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        assert len(self.__subsample_lengths) == len(self.config.num_blocks), \
+            f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
         self.__num_filters = self.config.get(
             "num_filters",
             [(2**i) * self.config.init_num_filters for i in range(len(self.config.num_blocks))]
@@ -680,8 +684,8 @@ class ResNet(nn.Sequential):
             self.__dropouts = list(repeat(self.config.dropouts, len(self.config.num_blocks)))
         else:
             self.__dropouts = self.config.dropouts
-            assert len(self.__dropouts) == len(self.config.num_blocks), \
-                f"`config.dropouts` indicates {len(self.__dropouts)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        assert len(self.__dropouts) == len(self.config.num_blocks), \
+            f"`config.dropouts` indicates {len(self.__dropouts)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
 
         # grouped resnet (basic) blocks,
         # number of channels are doubled at the first block of each macro-block

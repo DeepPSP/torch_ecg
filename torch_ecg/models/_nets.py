@@ -1299,6 +1299,8 @@ class ZeroPad1d(nn.ConstantPad1d):
 class BlurPool(nn.Module):
     """
 
+    Blur Pooling, also named as AntiAliasDownsample
+
     References
     ----------
     1. Zhang, Richard. "Making convolutional networks shift-invariant again." International conference on machine learning. PMLR, 2019.

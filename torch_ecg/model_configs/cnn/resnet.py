@@ -426,6 +426,8 @@ for b in tresnet_common.block:
     b.activation = tresnet_common.activation
     b.kw_activation = tresnet_common.kw_activation
     b.bias = tresnet_common.bias
+    b.subsample_mode = "blur"
+    b.filt_size = 7  # for blur subsampling
 
 # TResNet-M
 tresnetM = deepcopy(tresnet_common)
