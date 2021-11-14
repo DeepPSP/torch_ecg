@@ -5,6 +5,7 @@ whose performance however seems exceeded by newer networks
 from copy import deepcopy
 from itertools import repeat
 from typing import Union, Optional, Sequence, NoReturn
+from numbers import Real
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
@@ -83,7 +84,7 @@ class ResNetBasicBlock(nn.Module):
                 other keys are specific to the attention mechanism
         config: dict,
             other hyper-parameters, including
-            increase channel method, subsample method,
+            increase channel method, subsample method, dropouts,
             activation choices, weight initializer, and short cut patterns, etc.
         """
         super().__init__()
@@ -135,6 +136,11 @@ class ResNetBasicBlock(nn.Module):
                     bias=self.config.bias,
                 )
             )
+            if self.config.get("dropout", 0) > 0 and i < self.__num_convs-1:
+                self.main_stream.add_module(
+                    f"dropout_{i}",
+                    nn.Dropout(self.config.dropout)
+                )
             conv_in_channels = self.__out_channels
         if self.__attn and self.__attn["pos"] == -1:
             self.main_stream.add_module(
@@ -148,6 +154,11 @@ class ResNetBasicBlock(nn.Module):
         else:
             self.out_activation = \
                 self.config.activation(**self.config.kw_activation)
+
+        if self.config.get("dropout", 0) > 0:
+            self.out_dropout = nn.Dropout(self.config.dropout)
+        else:
+            self.out_dropout = None
     
     def _make_shortcut_layer(self) -> Union[nn.Module, None]:
         """ finished, checked,
@@ -209,6 +220,9 @@ class ResNetBasicBlock(nn.Module):
         out += identity
         out = self.out_activation(out)
 
+        if self.out_dropout is not None:
+            out = self.out_dropout(out)
+
         return out
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
@@ -228,6 +242,8 @@ class ResNetBasicBlock(nn.Module):
         """
         _seq_len = seq_len
         for module in self.main_stream:
+            if isinstance(module, nn.Dropout):
+                continue
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
         return output_shape
@@ -298,7 +314,7 @@ class ResNetBottleNeck(nn.Module):
                 other keys are specific to the attention mechanism
         config: dict,
             other hyper-parameters, including
-            increase channel method, subsample method,
+            increase channel method, subsample method, dropout,
             activation choices, weight initializer, and short cut patterns, etc.
         """
         super().__init__()
@@ -374,6 +390,11 @@ class ResNetBottleNeck(nn.Module):
                     bias=self.config.bias,
                 )
             )
+            if self.config.get("dropout", 0) > 0 and i < self.__num_convs-1:
+                self.main_stream.add_module(
+                    f"dropout_{i}",
+                    nn.Dropout(self.config.dropout)
+                )
             conv_in_channels = conv_out_channels
         if self.__attn and self.__attn["pos"] == -1:
             self.main_stream.add_module(
@@ -387,6 +408,11 @@ class ResNetBottleNeck(nn.Module):
         else:
             self.out_activation = \
                 self.config.activation(**self.config.kw_activation)
+
+        if self.config.get("dropout", 0) > 0:
+            self.out_dropout = nn.Dropout(self.config.dropout)
+        else:
+            self.out_dropout = None
         
     def _make_shortcut_layer(self) -> Union[nn.Module, None]:
         """ finished, checked,
@@ -448,6 +474,9 @@ class ResNetBottleNeck(nn.Module):
         out += identity
         out = self.out_activation(out)
 
+        if self.out_dropout is not None:
+            out = self.out_dropout(out)
+
         return out
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
@@ -467,6 +496,8 @@ class ResNetBottleNeck(nn.Module):
         """
         _seq_len = seq_len
         for module in self.main_stream:
+            if isinstance(module, nn.Dropout):
+                continue
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
         return output_shape
@@ -521,6 +552,7 @@ class ResNet(nn.Sequential):
         activation="relu", kw_activation={"inplace": True},
         kernel_initializer="he_normal", kw_initializer={},
         init_subsample_mode="max",
+        dropouts=0,
     )
 
     def __init__(self, in_channels:int, **config) -> NoReturn:
@@ -644,6 +676,12 @@ class ResNet(nn.Sequential):
         )
         assert len(self.__num_filters) == len(self.config.num_blocks), \
             f"`config.num_filters` indicates {len(self.__num_filters)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        if isinstance(self.config.dropouts, Real):
+            self.__dropouts = list(repeat(self.config.dropouts, len(self.config.num_blocks)))
+        else:
+            self.__dropouts = self.config.dropouts
+            assert len(self.__dropouts) == len(self.config.num_blocks), \
+                f"`config.dropouts` indicates {len(self.__dropouts)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
 
         # grouped resnet (basic) blocks,
         # number of channels are doubled at the first block of each macro-block
@@ -687,6 +725,7 @@ class ResNet(nn.Sequential):
                         groups=self.config.groups,
                         dilation=1,
                         init_num_filters=self.config.init_num_filters,
+                        dropout=self.__dropouts[macro_idx],
                         **(bb_kw),
                         **(bb_config),
                     )

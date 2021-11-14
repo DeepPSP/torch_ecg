@@ -362,6 +362,7 @@ resnet_nature_comm.init_filter_length = 17
 resnet_nature_comm.filter_lengths = 17
 resnet_nature_comm.init_conv_stride = 1
 resnet_nature_comm.init_pool_stride = 1  # if < 2, init pool will not be added
+resnet_nature_comm.dropouts = 0.2
 resnet_nature_comm.subsample_lengths = [
     4, 4, 4, 4,
 ]
