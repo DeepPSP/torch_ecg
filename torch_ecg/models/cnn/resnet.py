@@ -19,7 +19,7 @@ from ...utils.utils_nn import compute_module_size
 from ...utils.misc import dict_to_str
 from ...models._nets import (
     Activations,
-    Conv_Bn_Activation,
+    Conv_Bn_Activation, MultiConv,
     DownSample,
     ZeroPadding,
     NonLocalBlock, SEBlock, GlobalContextBlock,
@@ -568,7 +568,22 @@ class ResNet(nn.Sequential):
         self.config.update(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
-        if self.config.get("building_block", "").lower() in ["bottleneck", "bottle_neck",]:
+        if not isinstance(self.config.get("building_block", None), str):
+            # for those architectures that have multiple type of building blocks
+            self.building_block = []
+            self.additional_kw = []
+            for b in self.config.building_block:
+                if b.lower() in ["bottleneck", "bottle_neck",]:
+                    self.building_block.append(ResNetBottleNeck)
+                    self.additional_kw.append(ED({
+                        k: self.config[k] for k in ["base_width", "base_groups", "base_filter_length",] \
+                            if k in self.config.keys()
+                    }))
+                else:
+                    self.building_block.append(ResNetBasicBlock)
+                    self.additional_kw.append(ED())
+            assert isinstance(self.config.block, Sequence) and len(self.config.block) == len(self.config.building_block) == len(self.config.num_blocks)
+        elif self.config.get("building_block", "").lower() in ["bottleneck", "bottle_neck",]:
             self.building_block = ResNetBottleNeck
             # additional parameters for bottleneck
             self.additional_kw = ED({
@@ -579,16 +594,16 @@ class ResNet(nn.Sequential):
             self.additional_kw = ED()
         if self.__DEBUG__:
             print(f"additional_kw = {self.additional_kw}")
-        
+
         self.add_module(
-            "init_cba",
+            "init_conv",
             Conv_Bn_Activation(
                 in_channels=self.__in_channels,
                 out_channels=self.config.init_num_filters,
                 kernel_size=self.config.init_filter_length,
                 stride=self.config.init_conv_stride,
                 # bottleneck use "base_groups"
-                groups=self.additional_kw.get("base_groups", self.config.groups),
+                groups=self.config.get("base_groups", self.config.groups),
                 activation=self.config.activation,
                 kw_activation=self.config.kw_activation,
                 kernel_initializer=self.config.kernel_initializer,
@@ -596,7 +611,7 @@ class ResNet(nn.Sequential):
                 bias=self.config.bias,
             )
         )
-        
+
         if self.config.init_pool_stride > 1:
             self.add_module(
                 "init_pool",
@@ -653,10 +668,18 @@ class ResNet(nn.Sequential):
                 block_subsample_lengths = macro_subsample_lengths
             assert len(block_subsample_lengths) == nb, \
                 f"at the {macro_idx}-th macro block, `macro_subsample_lengths` indicates {len(macro_subsample_lengths)} building blocks, while `config.num_blocks[{macro_idx}]` indicates {nb}"
+            if isinstance(self.building_block, Sequence):
+                bb = self.building_block[macro_idx]
+                bb_config = self.config.block[idx]
+                bb_kw = self.additional_kw[macro_idx]
+            else:
+                bb = self.building_block
+                bb_config = self.config.block
+                bb_kw = self.additional_kw
             for block_idx in range(nb):
                 self.add_module(
-                    f"{self.building_block.__name__}_{macro_idx}_{block_idx}",
-                    self.building_block(
+                    f"{bb.__name__}_{macro_idx}_{block_idx}",
+                    bb(
                         in_channels=block_in_channels,
                         num_filters=block_num_filters,
                         filter_length=block_filter_lengths[block_idx],
@@ -664,12 +687,12 @@ class ResNet(nn.Sequential):
                         groups=self.config.groups,
                         dilation=1,
                         init_num_filters=self.config.init_num_filters,
-                        **(self.additional_kw),
-                        **(self.config.block),
+                        **(bb_kw),
+                        **(bb_config),
                     )
                 )
-                block_in_channels = block_num_filters * self.building_block.expansion
-            macro_in_channels = macro_num_filters * self.building_block.expansion
+                block_in_channels = block_num_filters * bb.expansion
+            macro_in_channels = macro_num_filters * bb.expansion
 
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,

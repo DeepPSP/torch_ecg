@@ -7,6 +7,7 @@ Reference
 2. He, T., Zhang, Z., Zhang, H., Zhang, Z., Xie, J., & Li, M. (2019). Bag of tricks for image classification with convolutional neural networks. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 558-567).
 3. Hannun, A. Y., Rajpurkar, P., Haghpanahi, M., Tison, G. H., Bourn, C., Turakhia, M. P., & Ng, A. Y. (2019). Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network. Nature medicine, 25(1), 65-69.
 4. Ribeiro, A. H., Ribeiro, M. H., Paixão, G. M., Oliveira, D. M., Gomes, P. R., Canazart, J. A., ... & Ribeiro, A. L. P. (2020). Automatic diagnosis of the 12-lead ECG using a deep neural network. Nature communications, 11(1), 1-9.
+5. Ridnik, T., Lawen, H., Noy, A., Ben Baruch, E., Sharir, G., & Friedman, I. (2021). Tresnet: High performance gpu-dedicated architecture. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (pp. 1400-1409).
 """
 
 from itertools import repeat
@@ -78,7 +79,7 @@ resnet_block_basic_se.attn = deepcopy(squeeze_excitation)
 resnet_block_basic_se.attn.name = "se"
 resnet_block_basic_se.attn.pos = -1
 
-resnet_bottle_neck_se = deepcopy(resnet_bottle_neck)
+resnet_bottle_neck_se = deepcopy(resnet_bottle_neck_B)
 resnet_bottle_neck_se.attn = deepcopy(squeeze_excitation)
 resnet_bottle_neck_se.attn.name = "se"
 resnet_bottle_neck_se.attn.pos = -1
@@ -88,7 +89,7 @@ resnet_block_basic_nl.attn = deepcopy(non_local)
 resnet_block_basic_nl.attn.name = "nl"
 resnet_block_basic_nl.attn.pos = -1
 
-resnet_bottle_neck_nl = deepcopy(resnet_bottle_neck)
+resnet_bottle_neck_nl = deepcopy(resnet_bottle_neck_B)
 resnet_bottle_neck_nl.attn = deepcopy(non_local)
 resnet_bottle_neck_nl.attn.name = "nl"
 resnet_bottle_neck_nl.attn.pos = -1
@@ -98,7 +99,7 @@ resnet_block_basic_gc.attn = deepcopy(global_context)
 resnet_block_basic_gc.attn.name = "gc"
 resnet_block_basic_gc.attn.pos = -1
 
-resnet_bottle_neck_gc = deepcopy(resnet_bottle_neck)
+resnet_bottle_neck_gc = deepcopy(resnet_bottle_neck_B)
 resnet_bottle_neck_gc.attn = deepcopy(global_context)
 resnet_bottle_neck_gc.attn.name = "gc"
 resnet_bottle_neck_gc.attn.pos = -1
@@ -382,3 +383,82 @@ resnet_nature_comm_nl.block = deepcopy(resnet_block_basic_nl)
 
 resnet_nature_comm_gc = deepcopy(resnet_nature_comm)
 resnet_nature_comm_gc.block = deepcopy(resnet_block_basic_gc)
+
+
+
+# TResNet
+# NOTE: TResNet is not finished!
+tresnet_common = ED()
+tresnet_common.fs = 500
+tresnet_common.subsample_lengths = [
+    1, 2, 2, 2,
+]
+tresnet_common.filter_lengths = 15
+tresnet_common.groups = 1
+tresnet_common.increase_channels_method = "conv"
+tresnet_common.init_num_filters = [48, 64,]
+tresnet_common.init_filter_length = [19, 19]
+tresnet_common.init_conv_stride = 1
+tresnet_common.init_pool_size = 1
+tresnet_common.init_pool_stride = 1
+tresnet_common.kernel_initializer = "he_normal"
+tresnet_common.kw_initializer = {}
+tresnet_common.activation = "relu"  # "mish", "swish"
+tresnet_common.kw_activation = {"inplace": True}
+tresnet_common.bias = False
+
+tresnet_common.building_block = ["basic", "basic", "bottleneck", "bottleneck"]
+tresnet_common.block = [
+    deepcopy(resnet_block_basic_se),
+    deepcopy(resnet_block_basic_se),
+    deepcopy(resnet_bottle_neck_se),
+    deepcopy(resnet_bottle_neck_B),
+]
+tresnet_common.block[0].reduction = 4
+tresnet_common.block[1].reduction = 4
+tresnet_common.block[2].pos = 2
+for b in tresnet_common.block:
+    b.kernel_initializer = tresnet_common.kernel_initializer
+    b.kw_initializer = tresnet_common.kw_initializer
+    b.activation = tresnet_common.activation
+    b.kw_activation = tresnet_common.kw_activation
+    b.bias = tresnet_common.bias
+
+# TResNet-M
+tresnetM = deepcopy(tresnet_common)
+tresnetM.num_blocks = [
+    3, 4, 11, 3,
+]
+tresnetM.init_num_filters = [48, 64,]
+tresnetM.num_filters = [
+    tresnetM.init_num_filters[-1],
+    2 * tresnetM.init_num_filters[-1],
+    16 * tresnetM.init_num_filters[-1],
+    32 * tresnetM.init_num_filters[-1],
+]
+
+# TResNet-L
+tresnetL = deepcopy(tresnet_common)
+tresnetL.num_blocks = [
+    4, 5, 18, 3,
+]
+tresnetM.init_num_filters = [48, 76,]
+tresnetM.num_filters = [
+    tresnetM.init_num_filters[-1],
+    2 * tresnetM.init_num_filters[-1],
+    16 * tresnetM.init_num_filters[-1],
+    32 * tresnetM.init_num_filters[-1],
+]
+
+# TResNet-XL
+tresnetXL = deepcopy(tresnet_common)
+tresnetXL.num_blocks = [
+    4, 5, 24, 3,
+]
+tresnetM.init_num_filters = [48, 76,]
+tresnetM.num_filters = [
+    tresnetM.init_num_filters[-1],
+    2 * tresnetM.init_num_filters[-1],
+    16 * tresnetM.init_num_filters[-1],
+    32 * tresnetM.init_num_filters[-1],
+]
