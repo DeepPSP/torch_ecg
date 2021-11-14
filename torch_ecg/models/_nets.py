@@ -36,13 +36,13 @@ __all__ = [
     "MultiConv", "BranchedConv",
     "SeparableConv",
     "DeformConv",
-    "DownSample",
+    "DownSample", "BlurPool",
     "BidirectionalLSTM", "StackedLSTM",
     # "AML_Attention", "AML_GatedAttention",
     "AttentionWithContext",
     "MultiHeadAttention", "SelfAttention",
     "AttentivePooling",
-    "ZeroPadding",
+    "ZeroPadding", "ZeroPad1d",
     "SeqLin", "MLP",
     "NonLocalBlock", "SEBlock", "GlobalContextBlock",
     "CBAMBlock", "BAMBlock", "CoordAttention",
@@ -1081,7 +1081,8 @@ class DownSample(nn.Sequential):
                  groups:Optional[int]=None,
                  padding:int=0,
                  batch_norm:Union[bool,nn.Module]=False,
-                 mode:str="max") -> NoReturn:
+                 mode:str="max",
+                 **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -1171,7 +1172,26 @@ class DownSample(nn.Sequential):
         elif self.__mode == "linear":
             raise NotImplementedError
         elif self.__mode == "blur":
-            raise NotImplementedError
+            if self.__in_channels == self.__out_channels:
+                down_layer = BlurPool(
+                    down_scale=self.__down_scale,
+                    in_channels=self.__in_channels,
+                    **kwargs,
+                )
+            else:
+                down_layer = nn.Sequential(
+                    (
+                        BlurPool(
+                            down_scale=self.__down_scale,
+                            in_channels=self.__in_channels,
+                            **kwargs,
+                        ),
+                        nn.Conv1d(
+                            self.__in_channels,self.__out_channels,
+                            kernel_size=1, groups=self.__groups, bias=False,
+                        ),
+                    )
+                )
         else:
             down_layer = None
         if down_layer:
@@ -1197,7 +1217,7 @@ class DownSample(nn.Sequential):
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
-        if self.__mode in ["max", "avg", "conv",]:
+        if self.__mode in ["max", "avg", "conv", "blur",]:
             output = super().forward(input)
         else:
             # align_corners = False if mode in ["nearest", "area"] else True
@@ -1236,6 +1256,11 @@ class DownSample(nn.Sequential):
                 kernel_size=self.__kernel_size, stride=self.__down_scale,
                 padding=self.__padding,
             )[-1]
+        elif self.__mode == "blur":
+            if self.__in_channels == self.__out_channels:
+                out_seq_len = self.down_sample.compute_output_shape(seq_len, batch_size)[-1]
+            else:
+                out_seq_len = self.down_sample[0].compute_output_shape(seq_len, batch_size)[-1]
         elif self.__mode in ["avg", "nearest", "area", "linear",]:
             out_seq_len = compute_avgpool_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
@@ -1252,14 +1277,34 @@ class DownSample(nn.Sequential):
         return compute_module_size(self)
 
 
+class ZeroPad1d(nn.ConstantPad1d):
+    """Pads the input tensor boundaries with zero.
+    do NOT be confused with `ZeroPadding`, which pads along the channel dimension
+    """
+    __name__ = "ZeroPad1d"
+
+    def __init__(self, padding: Sequence[int]) -> NoReturn:
+        """
+
+        Parameters
+        ----------
+        padding: 2-sequence of int,
+            the padding to be applied to the input tensor
+        """
+        assert len(padding) == 2 and all([isinstance(i, int) for i in padding]), \
+            "padding must be a 2-sequence of int"
+        super().__init__(padding, 0.)
+
+
 class BlurPool(nn.Module):
     """
 
     References
     ----------
     1. Zhang, Richard. "Making convolutional networks shift-invariant again." International conference on machine learning. PMLR, 2019.
-    2. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py
-    3. https://github.com/kornia/kornia/blob/master/kornia/filters/blur_pool.py
+    2. https://github.com/adobe/antialiased-cnns/blob/master/antialiased_cnns/blurpool.py
+    3. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py
+    4. https://github.com/kornia/kornia/blob/master/kornia/filters/blur_pool.py
     """
     __DEBUG__ = True
     __name__ = "BlurPool"
@@ -1267,14 +1312,136 @@ class BlurPool(nn.Module):
     def __init__(self,
                  down_scale:int,
                  in_channels:int,
-                 filt_size:int=3,) -> NoReturn:
-        """ NOT finished, NOT checked,
+                 filt_size:int=3,
+                 pad_type:str="reflect",
+                 pad_off:int=0,
+                 **kwargs:Any) -> NoReturn:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        down_scale: int,
+            scale (in terms of stride) of down sampling
+        in_channels: int,
+            number of input channels
+        filt_size: int, default 3,
+            size (length) of the filter
+        pad_type: str, default "reflect",
+            type of padding, can be "reflect" or "replicate" or "zero"
+        pad_off: int, default 0,
+            padding offset
+        kwargs: keyword arguments,
         """
         super().__init__()
         self.__down_scale = down_scale
         self.__in_channels = in_channels
         self.__filt_size = filt_size
-        raise NotImplementedError
+        self.__pad_type = pad_type.lower()
+        self.__pad_off = pad_off
+        self.__pad_sizes = [int(1. * (filt_size - 1) / 2), int(np.ceil(1. * (filt_size - 1) / 2))]
+        self.__pad_sizes = [pad_size + pad_off for pad_size in self.__pad_sizes]
+        self.__off = int((self.__down_scale - 1) / 2.)
+        if(self.__filt_size == 1):
+            a = np.array([1., ])
+        elif(self.__filt_size == 2):
+            a = np.array([1., 1.])
+        elif(self.__filt_size == 3):
+            a = np.array([1., 2., 1.])
+        elif(self.__filt_size == 4):
+            a = np.array([1., 3., 3., 1.])
+        elif(self.__filt_size == 5):
+            a = np.array([1., 4., 6., 4., 1.])
+        elif(self.__filt_size == 6):
+            a = np.array([1., 5., 10., 10., 5., 1.])
+        elif(self.__filt_size == 7):
+            a = np.array([1., 6., 15., 20., 15., 6., 1.])
+
+        # saved and restored in the state_dict, but not trained by the optimizer
+        filt = Tensor(a)
+        filt = filt / torch.sum(filt)
+        self.register_buffer("filt", filt.unsqueeze(0).unsqueeze(0).repeat((self.__in_channels, 1, 1)))
+
+        self.pad = self._get_pad_layer()
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
+        Returns
+        -------
+        Tensor,
+            the blur-pooled output of the input tensor,
+            of shape (batch_size, n_channels, seq_len)
+        """
+        if self.__filt_size == 1:
+            if self.__pad_off == 0:
+                return input[..., ::self.__down_scale]
+            else:
+                return self.pad(input)[..., ::self.__down_scale]
+        else:
+            return F.conv1d(self.pad(input), self.filt, stride=self.__down_scale, groups=self.__in_channels)
+        
+    def _get_pad_layer(self) -> nn.Module:
+        """
+        get the padding layer by `self.__pad_type` and `self.__pad_sizes`
+        """
+        if(self.__pad_type in ["refl", "reflect",]):
+            PadLayer = nn.ReflectionPad1d
+        elif(pad_type in ["repl", "replicate",]):
+            PadLayer = nn.ReplicationPad1d
+        elif(pad_type == "zero"):
+            PadLayer = ZeroPad1d
+        else:
+            print(f"Pad type [{pad_type}] not recognized")
+        return PadLayer(self.__pad_sizes)
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns
+        -------
+        output_shape: sequence,
+            the output shape of this `DownSample` layer, given `seq_len` and `batch_size`
+        """
+        if self.__filt_size == 1:
+            if seq_len is None:
+                output_shape = (batch_size, self.__in_channels, None)
+            else:
+                output_shape = (
+                    batch_size,
+                    self.__in_channels,
+                    (np.sum(self.__pad_sizes) + seq_len - 1) // self.__down_scale + 1,
+                )
+            return output_shape
+        if seq_len is None:
+            padded_len = None
+        else:
+            padded_len = np.sum(self.__pad_sizes) + seq_len
+        kernel_size = self.filt.shape[-1]
+        output_shape = compute_conv_output_shape(
+            input_shape=(batch_size, self.__in_channels, padded_len),
+            num_filters=self.__in_channels,
+            kernel_size=kernel_size,
+            stride=self.__down_scale,
+        )
+        return output_shape
+
+    @property
+    def module_size(self) -> int:
+        """
+        """
+        return compute_module_size(self)
 
 
 class BidirectionalLSTM(nn.Module):
