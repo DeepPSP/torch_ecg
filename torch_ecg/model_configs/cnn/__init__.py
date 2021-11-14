@@ -10,6 +10,9 @@ from .resnet import (
     # building blocks
     resnet_block_basic, resnet_bottle_neck,
     resnet_bottle_neck_B, resnet_bottle_neck_D,
+    resnet_block_basic_se, resnet_bottle_neck_se,
+    resnet_block_basic_nl, resnet_bottle_neck_nl,
+    resnet_block_basic_gc, resnet_bottle_neck_gc,
     # vanilla resnet
     resnet_vanilla_18, resnet_vanilla_34, resnet_vanilla_50,
     resnet_vanilla_101, resnet_vanilla_152,
@@ -21,6 +24,7 @@ from .resnet import (
     resnet_block_stanford, resnet_stanford,
     # ResNet Nature Communications
     resnet_nature_comm,
+    resnet_nature_comm_se, resnet_block_basic_nl, resnet_block_basic_gc,
 )
 from .cpsc import (
     # cpsc2018 SOTA
@@ -57,6 +61,9 @@ __all__ = [
     # resnet building blocks
     "resnet_block_basic", "resnet_bottle_neck",
     "resnet_bottle_neck_B", "resnet_bottle_neck_D",
+    "resnet_block_basic_se", "resnet_bottle_neck_se",
+    "resnet_block_basic_nl", "resnet_bottle_neck_nl",
+    "resnet_block_basic_gc", "resnet_bottle_neck_gc",
     # vanilla resnet
     "resnet_vanilla_18", "resnet_vanilla_34",
     "resnet_vanilla_50", "resnet_vanilla_101", "resnet_vanilla_152",
@@ -68,6 +75,7 @@ __all__ = [
     "resnet_block_stanford", "resnet_stanford",
     # ResNet Nature Communications
     "resnet_nature_comm",
+    "resnet_nature_comm_se", "resnet_nature_comm_nl", "resnet_nature_comm_gc",
     # cpsc2018 SOTA
     "cpsc_block_basic", "cpsc_block_mish", "cpsc_block_swish",
     "cpsc_2018", "cpsc_2018_leadwise",

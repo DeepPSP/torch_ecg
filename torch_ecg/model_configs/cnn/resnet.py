@@ -1,4 +1,12 @@
 """
+vanilla resnet, and various variants
+
+Reference
+---------
+1. He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual learning for image recognition. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 770-778).
+2. He, T., Zhang, Z., Zhang, H., Zhang, Z., Xie, J., & Li, M. (2019). Bag of tricks for image classification with convolutional neural networks. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 558-567).
+3. Hannun, A. Y., Rajpurkar, P., Haghpanahi, M., Tison, G. H., Bourn, C., Turakhia, M. P., & Ng, A. Y. (2019). Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network. Nature medicine, 25(1), 65-69.
+4. Ribeiro, A. H., Ribeiro, M. H., Paixão, G. M., Oliveira, D. M., Gomes, P. R., Canazart, J. A., ... & Ribeiro, A. L. P. (2020). Automatic diagnosis of the 12-lead ECG using a deep neural network. Nature communications, 11(1), 1-9.
 """
 
 from itertools import repeat
@@ -7,11 +15,20 @@ from copy import deepcopy
 import numpy as np
 from easydict import EasyDict as ED
 
+from ..attn import (
+    squeeze_excitation,
+    non_local,
+    global_context,
+)
+
 
 __all__ = [
     # building blocks
     "resnet_block_basic", "resnet_bottle_neck",
     "resnet_bottle_neck_B", "resnet_bottle_neck_D",
+    "resnet_block_basic_se", "resnet_bottle_neck_se",
+    "resnet_block_basic_nl", "resnet_bottle_neck_nl",
+    "resnet_block_basic_gc", "resnet_bottle_neck_gc",
     # vanilla resnet
     "resnet_vanilla_18", "resnet_vanilla_34",
     "resnet_vanilla_50", "resnet_vanilla_101", "resnet_vanilla_152",
@@ -23,6 +40,7 @@ __all__ = [
     "resnet_block_stanford", "resnet_stanford",
     # ResNet Nature Communications
     "resnet_nature_comm",
+    "resnet_nature_comm_se", "resnet_nature_comm_nl", "resnet_nature_comm_gc",
 ]
 
 
@@ -53,6 +71,37 @@ resnet_bottle_neck_B.subsample_at = 1
 
 resnet_bottle_neck_D = deepcopy(resnet_bottle_neck_B)
 resnet_bottle_neck_D.subsample_mode = "avg"
+
+# one can add more variants by changing the attention modules
+resnet_block_basic_se = deepcopy(resnet_block_basic)
+resnet_block_basic_se.attn = deepcopy(squeeze_excitation)
+resnet_block_basic_se.attn.name = "se"
+resnet_block_basic_se.attn.pos = -1
+
+resnet_bottle_neck_se = deepcopy(resnet_bottle_neck)
+resnet_bottle_neck_se.attn = deepcopy(squeeze_excitation)
+resnet_bottle_neck_se.attn.name = "se"
+resnet_bottle_neck_se.attn.pos = -1
+
+resnet_block_basic_nl = deepcopy(resnet_block_basic)
+resnet_block_basic_nl.attn = deepcopy(non_local)
+resnet_block_basic_nl.attn.name = "nl"
+resnet_block_basic_nl.attn.pos = -1
+
+resnet_bottle_neck_nl = deepcopy(resnet_bottle_neck)
+resnet_bottle_neck_nl.attn = deepcopy(non_local)
+resnet_bottle_neck_nl.attn.name = "nl"
+resnet_bottle_neck_nl.attn.pos = -1
+
+resnet_block_basic_gc = deepcopy(resnet_block_basic)
+resnet_block_basic_gc.attn = deepcopy(global_context)
+resnet_block_basic_gc.attn.name = "gc"
+resnet_block_basic_gc.attn.pos = -1
+
+resnet_bottle_neck_gc = deepcopy(resnet_bottle_neck)
+resnet_bottle_neck_gc.attn = deepcopy(global_context)
+resnet_bottle_neck_gc.attn.name = "gc"
+resnet_bottle_neck_gc.attn.pos = -1
 
 
 # vanilla ResNets
@@ -322,3 +371,14 @@ resnet_nature_comm.num_filters = [
     5 * resnet_nature_comm.init_num_filters,
 ]
 resnet_nature_comm.block.subsample_mode = "max"
+
+
+# variant with attention of ResNet Nature Communications
+resnet_nature_comm_se = deepcopy(resnet_nature_comm)
+resnet_nature_comm_se.block = deepcopy(resnet_block_basic_se)
+
+resnet_nature_comm_nl = deepcopy(resnet_nature_comm)
+resnet_nature_comm_nl.block = deepcopy(resnet_block_basic_nl)
+
+resnet_nature_comm_gc = deepcopy(resnet_nature_comm)
+resnet_nature_comm_gc.block = deepcopy(resnet_block_basic_gc)
