@@ -1122,7 +1122,7 @@ class DownSample(nn.Sequential):
                     padding=self.__padding,
                 )
             else:
-                down_layer = nn.Sequential((
+                down_layer = nn.Sequential(
                     nn.MaxPool1d(
                         kernel_size=self.__kernel_size,
                         stride=self.__down_scale,
@@ -1132,7 +1132,7 @@ class DownSample(nn.Sequential):
                         self.__in_channels, self.__out_channels, 
                         kernel_size=1, groups=self.__groups, bias=False
                     ),
-                ))
+                )
         elif self.__mode == "avg":
             if self.__in_channels == self.__out_channels:
                 down_layer = nn.AvgPool1d(

@@ -45,10 +45,10 @@ elif ATI_CNN_CONFIG.cnn.name == "vgg16_dilation":  # not finished
     ATI_CNN_CONFIG.cnn.vgg16 = adjust_cnn_filter_lengths(vgg16, ATI_CNN_CONFIG.fs)
     ATI_CNN_CONFIG.cnn.vgg16.block = deepcopy(vgg_block_basic)
 elif ATI_CNN_CONFIG.cnn.name == "resnet":
-    ATI_CNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(resnet, ATI_CNN_CONFIG.fs)
+    ATI_CNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(resnet_cpsc2018, ATI_CNN_CONFIG.fs)
     ATI_CNN_CONFIG.cnn.resnet.block = deepcopy(resnet_block_basic)
 elif ATI_CNN_CONFIG.cnn.name == "resnet_bottleneck":
-    ATI_CNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(resnet, ATI_CNN_CONFIG.fs)
+    ATI_CNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(resnet_cpsc2018, ATI_CNN_CONFIG.fs)
     ATI_CNN_CONFIG.cnn.resnet.block = deepcopy(resnet_bottle_neck)
 elif ATI_CNN_CONFIG.cnn.name == "resnet_stanford":
     ATI_CNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(resnet_stanford, ATI_CNN_CONFIG.fs)

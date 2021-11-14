@@ -11,6 +11,7 @@ np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
+import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
@@ -176,6 +177,12 @@ class ResNetBasicBlock(nn.Module):
         if self.shortcut is not None:
             identity = self.shortcut(input)
 
+        if identity.shape[-1] < out.shape[-1]:
+            # downsampling using "avg" or "max" adopts no padding
+            # hence shape[-1] of identity might be smaller by 1 than shape[-1] of out
+            diff_sig_len = out.shape[-1] - identity.shape[-1]
+            identity = F.pad(identity, [diff_sig_len // 2, diff_sig_len - diff_sig_len // 2])
+
         out += identity
         out = self.out_activation(out)
 
@@ -210,7 +217,7 @@ class ResNetBasicBlock(nn.Module):
 
 
 class ResNetBottleNeck(nn.Module):
-    """ finished, NOT checked,
+    """ finished, checked,
 
     bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
     as for 1D ECG, should be of the "baby-giant-baby" pattern?
@@ -388,6 +395,12 @@ class ResNetBottleNeck(nn.Module):
         if self.shortcut is not None:
             identity = self.shortcut(input)
 
+        if identity.shape[-1] < out.shape[-1]:
+            # downsampling using "avg" or "max" adopts no padding
+            # hence shape[-1] of identity might be smaller by 1 than shape[-1] of out
+            diff_sig_len = out.shape[-1] - identity.shape[-1]
+            identity = F.pad(identity, [diff_sig_len // 2, diff_sig_len - diff_sig_len // 2])
+
         out += identity
         out = self.out_activation(out)
 
@@ -540,7 +553,7 @@ class ResNet(nn.Sequential):
             )
         )
         
-        if self.config.init_pool_stride > 0:
+        if self.config.init_pool_stride > 1:
             self.add_module(
                 "init_pool",
                 DownSample(
@@ -566,12 +579,18 @@ class ResNet(nn.Sequential):
             self.__subsample_lengths = self.config.subsample_lengths
             assert len(self.__subsample_lengths) == len(self.config.num_blocks), \
                 f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        self.__num_filters = self.config.get(
+            "num_filters",
+            [(2**i) * self.config.init_num_filters for i in range(len(self.config.num_blocks))]
+        )
+        assert len(self.__num_filters) == len(self.config.num_blocks), \
+            f"`config.num_filters` indicates {len(self.__num_filters)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
 
         # grouped resnet (basic) blocks,
         # number of channels are doubled at the first block of each macro-block
         macro_in_channels = self.config.init_num_filters
         for macro_idx, nb in enumerate(self.config.num_blocks):
-            macro_num_filters = (2**macro_idx) * self.config.init_num_filters
+            macro_num_filters = self.__num_filters[macro_idx]
             macro_filter_lengths = self.__filter_lengths[macro_idx]
             macro_subsample_lengths = self.__subsample_lengths[macro_idx]
             block_in_channels = macro_in_channels
@@ -621,7 +640,9 @@ class ResNet(nn.Sequential):
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
-        output = super().forward(input)
+        output = input
+        for module in self:
+            output = module(output)
         return output
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
