@@ -170,10 +170,14 @@ class DenseBasicBlock(nn.Module):
         return output_shape
 
     @property
-    def module_size(self):
-        """
-        """
+    def module_size(self) -> int:
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class DenseBottleNeck(nn.Module):
@@ -341,10 +345,14 @@ class DenseBottleNeck(nn.Module):
         return output_shape
 
     @property
-    def module_size(self):
-        """
-        """
+    def module_size(self) -> int:
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class DenseMacroBlock(nn.Sequential):
@@ -467,10 +475,14 @@ class DenseMacroBlock(nn.Sequential):
         return output_shape
 
     @property
-    def module_size(self):
-        """
-        """
+    def module_size(self) -> int:
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class DenseTransition(nn.Sequential):
@@ -591,10 +603,14 @@ class DenseTransition(nn.Sequential):
         return output_shape
 
     @property
-    def module_size(self):
-        """
-        """
+    def module_size(self) -> int:
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class DenseNet(nn.Sequential):
@@ -799,7 +815,11 @@ class DenseNet(nn.Sequential):
         return output_shape
 
     @property
-    def module_size(self):
-        """
-        """
+    def module_size(self) -> int:
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )

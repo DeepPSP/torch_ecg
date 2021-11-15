@@ -308,9 +308,13 @@ class Bn_Activation(nn.Sequential):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class Conv_Bn_Activation(nn.Sequential):
@@ -553,9 +557,13 @@ class Conv_Bn_Activation(nn.Sequential):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class MultiConv(nn.Sequential):
@@ -713,9 +721,13 @@ class MultiConv(nn.Sequential):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 # alias
 CBA = Conv_Bn_Activation
@@ -852,6 +864,18 @@ class BranchedConv(nn.Module):
                 filter(lambda p: p.requires_grad, self.branches[f"multi_conv_{idx}"].parameters())
             n_params += sum([np.prod(p.size()) for p in module_parameters])
         return n_params
+
+    @property
+    def module_size_(self) -> str:
+        n_params = self.module_size
+        n_params = n_params * {"float16":2, "float32":4, "float64":8}[dtype.lower()] / 1024
+        div_count = 0
+        while n_params >= 1024:
+            n_params /= 1024
+            div_count += 1
+        # cvt_dict = {0:"K", 1:"M", 2:"G", 3:"T", 4:"P"}
+        cvt_dict = {c:u for c,u in enumerate(list("KMGTP"))}
+        n_params = f"""{n_params:.1f}{cvt_dict[div_count]}"""
 
 
 class SeparableConv(nn.Sequential):
@@ -1011,9 +1035,13 @@ class SeparableConv(nn.Sequential):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class DeformConv(nn.Module):
@@ -1058,9 +1086,13 @@ class DeformConv(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class DownSample(nn.Sequential):
@@ -1181,17 +1213,15 @@ class DownSample(nn.Sequential):
                 )
             else:
                 down_layer = nn.Sequential(
-                    (
-                        BlurPool(
-                            down_scale=self.__down_scale,
-                            in_channels=self.__in_channels,
-                            **kwargs,
-                        ),
-                        nn.Conv1d(
-                            self.__in_channels,self.__out_channels,
-                            kernel_size=1, groups=self.__groups, bias=False,
-                        ),
-                    )
+                    BlurPool(
+                        down_scale=self.__down_scale,
+                        in_channels=self.__in_channels,
+                        **kwargs,
+                    ),
+                    nn.Conv1d(
+                        self.__in_channels,self.__out_channels,
+                        kernel_size=1, groups=self.__groups, bias=False,
+                    ),
                 )
         else:
             down_layer = None
@@ -1273,9 +1303,13 @@ class DownSample(nn.Sequential):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class ZeroPad1d(nn.ConstantPad1d):
@@ -1442,9 +1476,13 @@ class BlurPool(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class BidirectionalLSTM(nn.Module):
@@ -1528,9 +1566,13 @@ class BidirectionalLSTM(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class StackedLSTM(nn.Sequential):
@@ -1669,9 +1711,13 @@ class StackedLSTM(nn.Sequential):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 # ---------------------------------------------
@@ -1876,9 +1922,13 @@ class AttentionWithContext(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class _ScaledDotProductAttention(nn.Module):
@@ -2026,9 +2076,13 @@ class MultiHeadAttention(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
     def extra_repr(self):
         return "in_features={}, head_num={}, bias={}, activation={}".format(
@@ -2109,9 +2163,13 @@ class SelfAttention(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class AttentivePooling(nn.Module):
@@ -2194,9 +2252,13 @@ class AttentivePooling(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class ZeroPadding(nn.Module):
@@ -2268,9 +2330,13 @@ class ZeroPadding(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class SeqLin(nn.Sequential):
@@ -2405,9 +2471,13 @@ class SeqLin(nn.Sequential):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class MLP(SeqLin):
@@ -2575,9 +2645,13 @@ class NonLocalBlock(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class SEBlock(nn.Module):
@@ -2674,9 +2748,13 @@ class SEBlock(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class GEBlock(nn.Module):
@@ -2871,9 +2949,13 @@ class GlobalContextBlock(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class BAMBlock(nn.Module):
@@ -3113,9 +3195,13 @@ class CBAMBlock(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class CoordAttention(nn.Module):
@@ -3516,9 +3602,13 @@ class CRF(nn.Module):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class ExtendedCRF(nn.Sequential):
@@ -3609,9 +3699,13 @@ class ExtendedCRF(nn.Sequential):
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class SpaceToDepth(nn.Module):
@@ -3687,13 +3781,20 @@ class SpaceToDepth(nn.Module):
         tuple,
             the output shape of this layer, given `seq_len` and `batch_size`
         """
-        return (batch_size, self.__out_channels, seq_len // self.bs)
+        if seq_len is not None:
+            return (batch_size, self.__out_channels, seq_len // self.bs)
+        else:
+            return (batch_size, self.__out_channels, None)
 
     @property
     def module_size(self) -> int:
-        """
-        """
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 def make_attention_layer(in_channels:int, **config:dict) -> nn.Module:
