@@ -47,6 +47,7 @@ __all__ = [
     "NonLocalBlock", "SEBlock", "GlobalContextBlock",
     "CBAMBlock", "BAMBlock", "CoordAttention",
     "CRF", "ExtendedCRF",
+    "SpaceToDepth",
     "make_attention_layer",
 ]
 
@@ -3605,6 +3606,88 @@ class ExtendedCRF(nn.Sequential):
             the output shape of this layer, given `seq_len` and `batch_size`
         """
         return (batch_size, seq_len, self.__num_tags)
+
+    @property
+    def module_size(self) -> int:
+        """
+        """
+        return compute_module_size(self)
+
+
+class SpaceToDepth(nn.Module):
+    """
+
+    References
+    ----------
+    1. https://github.com/Alibaba-MIIL/TResNet/blob/master/src/models/tresnet_v2/layers/space_to_depth.py
+    """
+    __DEBUG__ = False
+    __name__ = "SpaceToDepth"
+
+    def __init__(self, in_channels:int, out_channels:int, block_size:int=4) -> NoReturn:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        in_channels: int,
+            number of channels in the input
+        out_channels: int,
+            number of channels in the output
+        block_size: int, default 4,
+            block size of converting from the space dim to depth dim
+        """
+        super().__init__()
+        self.__in_channels = in_channels
+        self.__out_channels = out_channels
+        self.bs = block_size
+        if self.__in_channels * self.bs != self.__out_channels:
+            self.out_conv = Conv_Bn_Activation(
+                in_channels=self.__in_channels * self.bs,
+                out_channels=self.__out_channels,
+                kernel_size=1,
+                stride=1,
+            )
+        else:
+            self.out_conv = None
+
+    def forward(self, x:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        x: Tensor,
+            of shape (batch, channel, seqlen)
+        
+        Returns
+        -------
+        Tensor,
+            of shape (batch, channel', seqlen//bs)
+        """
+        batch, channel, seqlen = x.shape
+        x = x.view(batch, channel, seqlen // self.bs, self.bs)
+        x = x.permute(0, 3, 1, 2).contiguous()
+        x = x.view(batch, channel * self.bs, seqlen // self.bs)
+        if self.out_conv is not None:
+            x = self.out_conv(x)
+        return x
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        seq_len: int, optional,
+            length of the 1d sequence,
+            if is None, then the input is composed of single feature vectors for each batch
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns
+        -------
+        tuple,
+            the output shape of this layer, given `seq_len` and `batch_size`
+        """
+        return (batch_size, self.__out_channels, seq_len // self.bs)
 
     @property
     def module_size(self) -> int:
