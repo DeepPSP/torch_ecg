@@ -24,6 +24,7 @@ from ...models._nets import (
     DownSample,
     ZeroPadding,
     NonLocalBlock, SEBlock, GlobalContextBlock,
+    SpaceToDepth,
     make_attention_layer,
 )
 
@@ -251,10 +252,14 @@ class ResNetBasicBlock(nn.Module):
         return output_shape
 
     @property
-    def module_size(self):
-        """
-        """
+    def module_size(self) -> int:
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class ResNetBottleNeck(nn.Module):
@@ -507,10 +512,14 @@ class ResNetBottleNeck(nn.Module):
         return output_shape
 
     @property
-    def module_size(self):
-        """
-        """
+    def module_size(self) -> int:
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
 
 
 class ResNetMacroBlock(nn.Sequential):
@@ -536,6 +545,99 @@ class ResNetMacroBlock(nn.Sequential):
         raise NotImplementedError
 
 
+class ResNetStem(nn.Sequential):
+    """
+    the input stem of ResNet
+    """
+    __name__ = "ResNetStem"
+
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:Union[int,Sequence[int]],
+                 filter_lengths:Union[int,Sequence[int]],
+                 conv_stride:int,
+                 pool_size:int,
+                 pool_stride:int,
+                 subsample_mode:str="max",
+                 groups:int=1,
+                 **config) -> NoReturn:
+        """
+        """
+        super().__init__()
+        self.__in_channels = in_channels
+        self.__out_channels = out_channels
+        self.__filter_lengths = filter_lengths
+        if subsample_mode.lower() in ["s2d", "space_to_depth", "SpaceToDepth"]:
+            self.add_module(
+                "s2d", SpaceToDepth(self.__in_channels, self.__out_channels, config.get("block_size", 4))
+            )
+            return
+        if isinstance(self.__filter_lengths, int):
+            self.__filter_lengths = [self.__filter_lengths]
+        if isinstance(self.__out_channels, int):
+            self.__out_channels = [self.__out_channels]
+        assert len(self.__filter_lengths) == len(self.__out_channels)
+
+        conv_in_channels = self.__in_channels
+        for idx, fl in enumerate(self.__filter_lengths):
+            self.add_module(
+                f"conv_{idx}",
+                Conv_Bn_Activation(
+                    conv_in_channels,
+                    self.__out_channels[idx],
+                    self.__filter_lengths[idx],
+                    stride=conv_stride if idx == 0 else 1,
+                    groups=groups,
+                    **config
+                )
+            )
+            conv_in_channels = self.__out_channels[idx]
+        if pool_stride > 1:
+            self.add_module(
+                "pool",
+                DownSample(
+                    pool_stride,
+                    conv_in_channels,
+                    kernel_size=pool_size,
+                    groups=groups,
+                    padding=(pool_stride-1)//2,
+                    mode=subsample_mode.lower(),
+                    **config,
+                )
+            )
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns
+        -------
+        output_shape: sequence,
+            the output shape of this block, given `seq_len` and `batch_size`
+        """
+        _seq_len = seq_len
+        for module in self:
+            output_shape = module.compute_output_shape(_seq_len, batch_size)
+            _, _, _seq_len = output_shape
+        return output_shape
+
+    @property
+    def module_size(self) -> int:
+        return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
+
+
 class ResNet(nn.Sequential):
     """ finished, checked,
 
@@ -555,7 +657,6 @@ class ResNet(nn.Sequential):
     __DEFAULT_CONFIG__ = ED(
         activation="relu", kw_activation={"inplace": True},
         kernel_initializer="he_normal", kw_initializer={},
-        init_subsample_mode="max",
         dropouts=0,
     )
 
@@ -569,16 +670,6 @@ class ResNet(nn.Sequential):
         config: dict,
             other hyper-parameters of the Module, ref. corresponding config file
             key word arguments that have to be set:
-            init_num_filters: sequence of int,
-                number of filters of the first convolutional layer
-            init_filter_length: sequence of int,
-                filter length (kernel size) of the first convolutional layer
-            init_conv_stride: int,
-                stride of the first convolutional layer
-            init_pool_size: int,
-                pooling kernel size of the first pooling layer
-            init_pool_stride: int,
-                pooling stride of the first pooling layer
             bias: bool,
                 if True, each convolution will have a bias term
             num_blocks: sequence of int,
@@ -594,6 +685,8 @@ class ResNet(nn.Sequential):
                 the former 2 subsample at the first building block
             groups: int,
                 connection pattern (of channels) of the inputs and outputs
+            stem: dict,
+                other parameters that can be set for the input stem
             block: dict,
                 other parameters that can be set for the building blocks
             for a full list of configurable parameters, ref. corr. config file
@@ -632,33 +725,45 @@ class ResNet(nn.Sequential):
             print(f"additional_kw = {self.additional_kw}")
 
         self.add_module(
-            "init_conv",
-            Conv_Bn_Activation(
+            "input_stem",
+            ResNetStem(
                 in_channels=self.__in_channels,
-                out_channels=self.config.init_num_filters,
-                kernel_size=self.config.init_filter_length,
-                stride=self.config.init_conv_stride,
+                out_channels=self.config.stem.num_filters,
                 # bottleneck use "base_groups"
                 groups=self.config.get("base_groups", self.config.groups),
                 activation=self.config.activation,
-                kw_activation=self.config.kw_activation,
-                kernel_initializer=self.config.kernel_initializer,
-                kw_initializer=self.config.kw_initializer,
-                bias=self.config.bias,
+                **self.config.stem,
             )
         )
 
-        if self.config.init_pool_stride > 1:
-            self.add_module(
-                "init_pool",
-                DownSample(
-                    down_scale=self.config.init_pool_stride,
-                    in_channels=self.config.init_num_filters,
-                    kernel_size=self.config.init_pool_size,
-                    padding=(self.config.init_pool_size-1)//2,
-                    mode=self.config.init_subsample_mode.lower(),
-                ),
-            )
+        # self.add_module(
+        #     "init_conv",
+        #     Conv_Bn_Activation(
+        #         in_channels=self.__in_channels,
+        #         out_channels=self.config.init_num_filters,
+        #         kernel_size=self.config.init_filter_lengths,
+        #         stride=self.config.init_conv_stride,
+        #         # bottleneck use "base_groups"
+        #         groups=self.config.get("base_groups", self.config.groups),
+        #         activation=self.config.activation,
+        #         kw_activation=self.config.kw_activation,
+        #         kernel_initializer=self.config.kernel_initializer,
+        #         kw_initializer=self.config.kw_initializer,
+        #         bias=self.config.bias,
+        #     )
+        # )
+
+        # if self.config.init_pool_stride > 1:
+        #     self.add_module(
+        #         "init_pool",
+        #         DownSample(
+        #             down_scale=self.config.init_pool_stride,
+        #             in_channels=self.config.init_num_filters,
+        #             kernel_size=self.config.init_pool_size,
+        #             padding=(self.config.init_pool_size-1)//2,
+        #             mode=self.config.init_subsample_mode.lower(),
+        #         ),
+        #     )
 
         if isinstance(self.config.filter_lengths, int):
             self.__filter_lengths = \
@@ -676,7 +781,7 @@ class ResNet(nn.Sequential):
             f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
         self.__num_filters = self.config.get(
             "num_filters",
-            [(2**i) * self.config.init_num_filters for i in range(len(self.config.num_blocks))]
+            [(2**i) * self.input_stem.compute_output_shape()[1] for i in range(len(self.config.num_blocks))]
         )
         assert len(self.__num_filters) == len(self.config.num_blocks), \
             f"`config.num_filters` indicates {len(self.__num_filters)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
@@ -689,7 +794,7 @@ class ResNet(nn.Sequential):
 
         # grouped resnet (basic) blocks,
         # number of channels are doubled at the first block of each macro-block
-        macro_in_channels = self.config.init_num_filters
+        macro_in_channels = self.__num_filters[0]
         for macro_idx, nb in enumerate(self.config.num_blocks):
             macro_num_filters = self.__num_filters[macro_idx]
             macro_filter_lengths = self.__filter_lengths[macro_idx]
@@ -712,7 +817,7 @@ class ResNet(nn.Sequential):
                 f"at the {macro_idx}-th macro block, `macro_subsample_lengths` indicates {len(macro_subsample_lengths)} building blocks, while `config.num_blocks[{macro_idx}]` indicates {nb}"
             if isinstance(self.building_block, Sequence):
                 bb = self.building_block[macro_idx]
-                bb_config = self.config.block[idx]
+                bb_config = self.config.block[macro_idx]
                 bb_kw = self.additional_kw[macro_idx]
             else:
                 bb = self.building_block
@@ -728,7 +833,6 @@ class ResNet(nn.Sequential):
                         subsample_length=block_subsample_lengths[block_idx],
                         groups=self.config.groups,
                         dilation=1,
-                        init_num_filters=self.config.init_num_filters,
                         dropout=self.__dropouts[macro_idx],
                         **(bb_kw),
                         **(bb_config),
@@ -777,7 +881,11 @@ class ResNet(nn.Sequential):
         return output_shape
 
     @property
-    def module_size(self):
-        """
-        """
+    def module_size(self) -> int:
         return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )

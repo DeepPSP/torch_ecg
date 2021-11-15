@@ -107,6 +107,18 @@ resnet_bottle_neck_gc.attn.name = "gc"
 resnet_bottle_neck_gc.attn.pos = -1
 
 
+resnet_stem = ED()
+resnet_stem.num_filters = 64
+resnet_stem.filter_lengths = 29
+resnet_stem.conv_stride = 2
+resnet_stem.pool_size = 3
+resnet_stem.pool_stride = 2
+
+resnet_stem_C = deepcopy(resnet_stem)
+resnet_stem_C.num_filters = [32, 32, 64,]
+resnet_stem_C.filter_lengths = [17, 17, 17,]
+
+
 # vanilla ResNets
 resnet_vanilla_common = ED()
 resnet_vanilla_common.fs = 500
@@ -116,16 +128,12 @@ resnet_vanilla_common.subsample_lengths = [
 resnet_vanilla_common.filter_lengths = 15
 resnet_vanilla_common.groups = 1
 resnet_vanilla_common.increase_channels_method = "conv"
-resnet_vanilla_common.init_num_filters = 64
-resnet_vanilla_common.init_filter_length = 29
-resnet_vanilla_common.init_conv_stride = 2
-resnet_vanilla_common.init_pool_size = 3
-resnet_vanilla_common.init_pool_stride = 2
 resnet_vanilla_common.kernel_initializer = "he_normal"
 resnet_vanilla_common.kw_initializer = {}
 resnet_vanilla_common.activation = "relu"  # "mish", "swish"
 resnet_vanilla_common.kw_activation = {"inplace": True}
 resnet_vanilla_common.bias = False
+resnet_vanilla_common.stem = deepcopy(resnet_stem)
 
 
 resnet_vanilla_18 = ED()
@@ -294,11 +302,9 @@ resnet_cpsc2018.filter_lengths = [
 ]
 resnet_cpsc2018.groups = 1
 _base_num_filters = 12 * 4
-resnet_cpsc2018.init_num_filters = _base_num_filters
-resnet_cpsc2018.init_filter_length = 15  # corr. to 30 ms
-resnet_cpsc2018.init_conv_stride = 2
-resnet_cpsc2018.init_pool_size = 3
-resnet_cpsc2018.init_pool_stride = 2
+resnet_cpsc2018.stem = deepcopy(resnet_stem)
+resnet_cpsc2018.stem.num_filters = _base_num_filters
+resnet_cpsc2018.stem.filter_lengths = 15  # corr. to 30 ms
 resnet_cpsc2018.kernel_initializer = "he_normal"
 resnet_cpsc2018.kw_initializer = {}
 resnet_cpsc2018.activation = "relu"  # "mish", "swish"
@@ -308,7 +314,7 @@ resnet_cpsc2018.bias = False
 
 resnet_cpsc2018_leadwise = deepcopy(resnet_cpsc2018)
 resnet_cpsc2018_leadwise.groups = 12
-resnet_cpsc2018_leadwise.init_num_filters = 12 * 8
+resnet_cpsc2018_leadwise.stem.num_filters = 12 * 8
 
 
 # set default building block
@@ -329,11 +335,9 @@ resnet_stanford.num_blocks = [
 resnet_stanford.subsample_lengths = 2
 resnet_stanford.filter_lengths = 17
 _base_num_filters = 36
-resnet_stanford.init_num_filters = _base_num_filters*2
-resnet_stanford.init_filter_length = 17
-resnet_stanford.init_conv_stride = 2
-resnet_stanford.init_pool_size = 3
-resnet_stanford.init_pool_stride = 2
+resnet_stanford.stem = deepcopy(resnet_stem)
+resnet_stanford.stem.num_filters = _base_num_filters*2
+resnet_stanford.stem.filter_lengths = 17
 resnet_stanford.kernel_initializer = "he_normal"
 resnet_stanford.kw_initializer = {}
 resnet_stanford.activation = "relu"
@@ -360,19 +364,19 @@ resnet_stanford.block = deepcopy(resnet_block_stanford)
 # ResNet Nature Communications
 # a modified version of resnet 34
 resnet_nature_comm = deepcopy(resnet_vanilla_34)
-resnet_nature_comm.init_filter_length = 17  # originally 16, we make it odd
+resnet_nature_comm.stem.filter_lengths = 17  # originally 16, we make it odd
 resnet_nature_comm.filter_lengths = 17
-resnet_nature_comm.init_conv_stride = 1
-resnet_nature_comm.init_pool_stride = 1  # if < 2, init pool will not be added
+resnet_nature_comm.stem.conv_stride = 1
+resnet_nature_comm.stem.pool_stride = 1  # if < 2, init pool will not be added
 resnet_nature_comm.dropouts = 0.2
 resnet_nature_comm.subsample_lengths = [
     4, 4, 4, 4,
 ]
 resnet_nature_comm.num_filters = [
-    2 * resnet_nature_comm.init_num_filters,
-    3 * resnet_nature_comm.init_num_filters,
-    4 * resnet_nature_comm.init_num_filters,
-    5 * resnet_nature_comm.init_num_filters,
+    2 * resnet_nature_comm.stem.num_filters,
+    3 * resnet_nature_comm.stem.num_filters,
+    4 * resnet_nature_comm.stem.num_filters,
+    5 * resnet_nature_comm.stem.num_filters,
 ]
 resnet_nature_comm.block.subsample_mode = "max"
 
@@ -390,23 +394,24 @@ resnet_nature_comm_gc.block = deepcopy(resnet_block_basic_gc)
 
 
 # TResNet
-# NOTE: TResNet is not finished!
 tresnet_common = ED()
 tresnet_common.fs = 500
 tresnet_common.subsample_lengths = [
     1, 2, 2, 2,
 ]
-tresnet_common.filter_lengths = 15
+tresnet_common.filter_lengths = 3
 tresnet_common.groups = 1
 tresnet_common.increase_channels_method = "conv"
-tresnet_common.init_num_filters = [48, 64,]
-tresnet_common.init_filter_length = [19, 19]
-tresnet_common.init_conv_stride = 1
-tresnet_common.init_pool_size = 1
-tresnet_common.init_pool_stride = 1
+tresnet_common.stem = ED()
+tresnet_common.stem.subsample_mode = "s2d"
+tresnet_common.stem.num_filters = 64
+tresnet_common.stem.filter_lengths = 1
+tresnet_common.stem.conv_stride = 1
+tresnet_common.stem.pool_size = 1
+tresnet_common.stem.pool_stride = 1
 tresnet_common.kernel_initializer = "he_normal"
 tresnet_common.kw_initializer = {}
-tresnet_common.activation = "relu"  # "mish", "swish"
+tresnet_common.activation = "leaky"  # "mish", "swish"
 tresnet_common.kw_activation = {"inplace": True}
 tresnet_common.bias = False
 
@@ -434,36 +439,18 @@ tresnetM = deepcopy(tresnet_common)
 tresnetM.num_blocks = [
     3, 4, 11, 3,
 ]
-tresnetM.init_num_filters = [48, 64,]
-tresnetM.num_filters = [
-    tresnetM.init_num_filters[-1],
-    2 * tresnetM.init_num_filters[-1],
-    16 * tresnetM.init_num_filters[-1],
-    32 * tresnetM.init_num_filters[-1],
-]
+tresnetM.stem.num_filters = 64
 
 # TResNet-L
 tresnetL = deepcopy(tresnet_common)
 tresnetL.num_blocks = [
     4, 5, 18, 3,
 ]
-tresnetM.init_num_filters = [48, 76,]
-tresnetM.num_filters = [
-    tresnetM.init_num_filters[-1],
-    2 * tresnetM.init_num_filters[-1],
-    16 * tresnetM.init_num_filters[-1],
-    32 * tresnetM.init_num_filters[-1],
-]
+tresnetL.stem.num_filters = 76
 
 # TResNet-XL
 tresnetXL = deepcopy(tresnet_common)
 tresnetXL.num_blocks = [
     4, 5, 24, 3,
 ]
-tresnetM.init_num_filters = [48, 76,]
-tresnetM.num_filters = [
-    tresnetM.init_num_filters[-1],
-    2 * tresnetM.init_num_filters[-1],
-    16 * tresnetM.init_num_filters[-1],
-    32 * tresnetM.init_num_filters[-1],
-]
+tresnetXL.stem.num_filters = 84
