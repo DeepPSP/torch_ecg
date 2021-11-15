@@ -1485,6 +1485,18 @@ class BlurPool(nn.Module):
         )
 
 
+class AntiAliasConv(nn.Sequential):
+    """
+    """
+    __name__ = "AntiAliasConv"
+
+    def __init__(self) -> NoReturn:
+        """
+        """
+        super().__init__()
+        raise NotImplementedError
+
+
 class BidirectionalLSTM(nn.Module):
     """
     from crnn_torch of references.ati_cnn
