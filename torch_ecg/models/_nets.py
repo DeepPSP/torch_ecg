@@ -36,6 +36,7 @@ __all__ = [
     "MultiConv", "BranchedConv",
     "SeparableConv",
     "DeformConv",
+    "AntiAliasConv",
     "DownSample", "BlurPool",
     "BidirectionalLSTM", "StackedLSTM",
     # "AML_Attention", "AML_GatedAttention",
@@ -438,6 +439,12 @@ class Conv_Bn_Activation(nn.Sequential):
                 kernel_initializer=kernel_initializer,
                 bias=self.__bias,
                 **kwargs
+            )
+        elif self.__conv_type in ["anti_alias", "aa",]:
+            conv_layer = AntiAliasConv(
+                self.__in_channels, self.__out_channels,
+                self.__kernel_size, self.__stride, self.__padding, self.__dilation, self.__groups,
+                bias=self.__bias, **kwargs
             )
         else:
             raise NotImplementedError(f"convolution of type {self.__conv_type} not implemented yet!")
@@ -1488,13 +1495,107 @@ class BlurPool(nn.Module):
 class AntiAliasConv(nn.Sequential):
     """
     """
+    __DEBUG__ = False
     __name__ = "AntiAliasConv"
 
-    def __init__(self) -> NoReturn:
-        """
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:int,
+                 kernel_size:int,
+                 stride:int,
+                 padding:Optional[int]=None,
+                 dilation:int=1,
+                 groups:int=1,
+                 bias:bool=True,
+                 **kwargs:Any) -> NoReturn:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        in_channels: int,
+            number of channels in the input signal
+        out_channels: int,
+            number of channels produced by the convolution
+        kernel_size: int,
+            size (length) of the convolution kernel
+        stride: int,
+            stride (subsample length) of the convolution
+        padding: int, optional,
+            zero-padding added to both sides of the input
+        dilation: int, default 1,
+            spacing between the kernel points
+        groups: int, default 1,
+            connection pattern (of channels) of the inputs and outputs
+        bias: bool, default True,
+            if True, adds a learnable bias to the output
+        kwargs: keyword arguments
         """
         super().__init__()
-        raise NotImplementedError
+        self.__in_channels = in_channels
+        self.__out_channels = out_channels
+        self.__kernel_size = kernel_size
+        self.__stride = stride
+        self.__padding = dilation * (kernel_size - 1) // 2 if padding is None else padding
+        self.__dilation = dilation
+        self.__groups = groups
+        self.add_module(
+            "conv", 
+            nn.Conv1d(
+                self.__in_channels, self.__out_channels, self.__kernel_size,
+                stride=1,
+                padding=self.__padding,
+                dilation=self.__dilation,
+                groups=self.__groups,
+                bias=bias,
+            )
+        )
+        if self.__stride > 1:
+            self.add_module(
+                "aa",
+                BlurPool(
+                    self.__stride, self.__out_channels,
+                    **kwargs,
+                )
+            )
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns
+        -------
+        output_shape: sequence,
+            the output shape of this `DownSample` layer, given `seq_len` and `batch_size`
+        """
+        output_shape = compute_conv_output_shape(
+            input_shape=(batch_size, self.__in_channels, seq_len),
+            num_filters=self.__out_channels,
+            kernel_size=self.__kernel_size,
+            stride=1,
+            dilation=self.__dilation,
+            padding=self.__padding,
+            channel_last=False,
+        )
+        if self.__stride > 1:
+            output_shape = self.aa.compute_output_shape(output_shape[-1], batch_size)
+        return output_shape
+
+    @property
+    def module_size(self) -> int:
+        return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
+
 
 
 class BidirectionalLSTM(nn.Module):
