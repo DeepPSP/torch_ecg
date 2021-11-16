@@ -135,6 +135,7 @@ class ResNetBasicBlock(nn.Module):
                     kernel_initializer=self.config.kernel_initializer,
                     kw_initializer=self.config.kw_initializer,
                     bias=self.config.bias,
+                    conv_type=self.config.get("conv_type", None),
                 )
             )
             if self.config.get("dropout", 0) > 0 and i < self.__num_convs-1:
@@ -381,6 +382,9 @@ class ResNetBottleNeck(nn.Module):
                 )
             conv_activation = (self.config.activation if i < self.__num_convs-1 else None)
             conv_out_channels = self.__out_channels[i]
+            conv_type = self.config.get("conv_type", None)
+            if self.__kernel_size[i] == 1 and conv_type == "separable":
+                conv_type = None
             self.main_stream.add_module(
                 conv_names[i],
                 Conv_Bn_Activation(
@@ -395,6 +399,7 @@ class ResNetBottleNeck(nn.Module):
                     kernel_initializer=self.config.kernel_initializer,
                     kw_initializer=self.config.kw_initializer,
                     bias=self.config.bias,
+                    conv_type=conv_type,
                 )
             )
             if self.config.get("dropout", 0) > 0 and i < self.__num_convs-1:
@@ -736,35 +741,6 @@ class ResNet(nn.Sequential):
             )
         )
 
-        # self.add_module(
-        #     "init_conv",
-        #     Conv_Bn_Activation(
-        #         in_channels=self.__in_channels,
-        #         out_channels=self.config.init_num_filters,
-        #         kernel_size=self.config.init_filter_lengths,
-        #         stride=self.config.init_conv_stride,
-        #         # bottleneck use "base_groups"
-        #         groups=self.config.get("base_groups", self.config.groups),
-        #         activation=self.config.activation,
-        #         kw_activation=self.config.kw_activation,
-        #         kernel_initializer=self.config.kernel_initializer,
-        #         kw_initializer=self.config.kw_initializer,
-        #         bias=self.config.bias,
-        #     )
-        # )
-
-        # if self.config.init_pool_stride > 1:
-        #     self.add_module(
-        #         "init_pool",
-        #         DownSample(
-        #             down_scale=self.config.init_pool_stride,
-        #             in_channels=self.config.init_num_filters,
-        #             kernel_size=self.config.init_pool_size,
-        #             padding=(self.config.init_pool_size-1)//2,
-        #             mode=self.config.init_subsample_mode.lower(),
-        #         ),
-        #     )
-
         if isinstance(self.config.filter_lengths, int):
             self.__filter_lengths = \
                 list(repeat(self.config.filter_lengths, len(self.config.num_blocks)))
@@ -794,7 +770,7 @@ class ResNet(nn.Sequential):
 
         # grouped resnet (basic) blocks,
         # number of channels are doubled at the first block of each macro-block
-        macro_in_channels = self.__num_filters[0]
+        macro_in_channels = self.input_stem.compute_output_shape()[1]
         for macro_idx, nb in enumerate(self.config.num_blocks):
             macro_num_filters = self.__num_filters[macro_idx]
             macro_filter_lengths = self.__filter_lengths[macro_idx]
