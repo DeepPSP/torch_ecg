@@ -2,7 +2,7 @@
 resample the signal into fixed sampling frequency or length
 """
 
-from typing import NoReturn, Optional, Any
+from typing import NoReturn, Optional, Any, Tuple
 from numbers import Real
 
 import numpy as np
@@ -36,7 +36,7 @@ class Resample(PreProcessor):
         assert sum([bool(self.fs), bool(self.siglen)]) == 1, \
             "one and only one of `fs` and `siglen` should be set"
 
-    def apply(self, sig:np.ndarray, fs:Real) -> np.ndarray:
+    def apply(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
         """ finished, checked,
 
         apply the preprocessor to `sig`
@@ -55,10 +55,14 @@ class Resample(PreProcessor):
         -------
         rsmp_sig: ndarray,
             the resampled ECG signal
+        new_fs: int,
+            the sampling frequency of the resampled ECG signal
         """
-        self.__check_sig(sig)
+        self._check_sig(sig)
         if self.fs is not None:
             rsmp_sig = SS.resample_poly(sig, up=self.fs, down=fs, axis=-1)
+            new_fs = self.fs
         else:  # self.siglen is not None
             rsmp_sig = SS.resample(sig, num=self.siglen, axis=-1)
-        return rsmp_sig
+            new_fs = int(round(self.siglen / sig.shape[-1] * fs))
+        return rsmp_sig, new_fs

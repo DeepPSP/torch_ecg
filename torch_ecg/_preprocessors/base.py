@@ -4,7 +4,7 @@
 import multiprocessing as mp
 from abc import ABC, abstractmethod
 from numbers import Real
-from typing import Optional, List, NoReturn
+from typing import Optional, List, NoReturn, Tuple
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
@@ -31,7 +31,7 @@ class PreProcessor(ABC):
     __name__ = "PreProcessor"
 
     @abstractmethod
-    def apply(self, sig:np.ndarray, fs:Real) -> np.ndarray:
+    def apply(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
         """
         apply the preprocessor to `sig`
 
@@ -47,13 +47,13 @@ class PreProcessor(ABC):
         """
         raise NotImplementedError
 
-    def __call__(self, sig:np.ndarray, fs:Real) -> np.ndarray:
+    def __call__(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
         """
         alias of `self.apply`
         """
-        return self.apply(sig)
+        return self.apply(sig, fs)
 
-    def __check_sig(self, sig:np.ndarray) -> NoReturn:
+    def _check_sig(self, sig:np.ndarray) -> NoReturn:
         """
         check validity of the signal
 

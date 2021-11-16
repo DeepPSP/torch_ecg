@@ -3,7 +3,7 @@ use median filter to remove baseline,
 note that highpass filters also have the effect of baseline removal
 """
 
-from typing import NoReturn, Any
+from typing import NoReturn, Any, Tuple
 from numbers import Real
 import warnings
 
@@ -40,7 +40,7 @@ class BaselineRemove(PreProcessor):
             self.window1, self.window2 = self.window2, self.window1
             warnings.warn("values of window1 and window2 are switched")
 
-    def apply(self, sig:np.ndarray, fs:Real) -> np.ndarray:
+    def apply(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
         """ finished, checked,
 
         apply the preprocessor to `sig`
@@ -59,8 +59,10 @@ class BaselineRemove(PreProcessor):
         -------
         filtered_sig: ndarray,
             the median filtered (hence baseline removed) ECG signal
+        fs: int,
+            the sampling frequency of the filtered ECG signal
         """
-        self.__check_sig(sig)
+        self._check_sig(sig)
         if sig.ndim == 1:
             filtered_sig = preprocess_single_lead_signal(
                 raw_sig=sig,
@@ -81,4 +83,4 @@ class BaselineRemove(PreProcessor):
                     fs=fs,
                     bl_win=[self.window1, self.window2],
                 )
-        return filtered_sig
+        return filtered_sig, fs

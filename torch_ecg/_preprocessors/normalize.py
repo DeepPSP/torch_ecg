@@ -2,7 +2,7 @@
 normalization of the signals
 """
 
-from typing import NoReturn, Any, Union
+from typing import NoReturn, Any, Union, Tuple
 from numbers import Real
 
 import numpy as np
@@ -37,7 +37,7 @@ class Normalize(PreProcessor):
     __name__ = "Normalize"
 
     def __init__(self,
-                 method:str,
+                 method:str="z-score",
                  mean:Union[Real,np.ndarray]=0.0,
                  std:Union[Real,np.ndarray]=1.0,
                  per_channel:bool=False,
@@ -73,7 +73,7 @@ class Normalize(PreProcessor):
             assert isinstance(mean, Real) and isinstance(std, Real), \
                 f"mean and std should be real numbers in the non per-channel setting"
 
-    def apply(self, sig:np.ndarray, fs:Real) -> np.ndarray:
+    def apply(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
         """ finished, checked,
 
         apply the preprocessor to `sig`
@@ -93,8 +93,10 @@ class Normalize(PreProcessor):
         -------
         normalized_sig: ndarray,
             the normalized ECG signal
+        fs: int,
+            the sampling frequency of the normalized ECG signal
         """
-        self.__check_sig(sig)
+        self._check_sig(sig)
         normalized_sig = normalize(
             sig=sig,
             method=self.method,
@@ -103,7 +105,7 @@ class Normalize(PreProcessor):
             sig_fmt="channel_first",
             per_channel=self.per_channel,
         )
-        return normalized_sig
+        return normalized_sig, fs
 
 
 class MinMaxNormalize(Normalize):
