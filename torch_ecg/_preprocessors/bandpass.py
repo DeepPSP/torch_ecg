@@ -1,7 +1,7 @@
 """
 """
 
-from typing import NoReturn, Optional, Any, Tuple
+from typing import NoReturn, Optional, Any, Tuple, List
 from numbers import Real
 import warnings
 
@@ -85,3 +85,9 @@ class BandPass(PreProcessor):
                     band_fs=[self.lowcut, self.highcut],
                 )
         return filtered_sig, fs
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        return the extra keys for `__repr__`
+        """
+        return ["lowcut", "highcut"] + super().extra_repr_keys()

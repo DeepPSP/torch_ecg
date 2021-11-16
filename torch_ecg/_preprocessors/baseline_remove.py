@@ -84,3 +84,9 @@ class BaselineRemove(PreProcessor):
                     bl_win=[self.window1, self.window2],
                 )
         return filtered_sig, fs
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        return the extra keys for `__repr__`
+        """
+        return ["window1", "window2"] + super().extra_repr_keys()

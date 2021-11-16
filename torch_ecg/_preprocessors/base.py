@@ -14,7 +14,7 @@ from scipy.signal.signaltools import resample
 # https://github.com/scipy/scipy/issues/9680
 from biosppy.signals.tools import filter_signal
 
-import numpy as np
+from ..utils.misc import default_class_repr
 
 
 __all__ = [
@@ -72,6 +72,17 @@ class PreProcessor(ABC):
                 "or 2d array, which is a multi-lead ECG of `lead_first` format;"
                 "or 3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)."
             )
+
+    def __repr__(self) -> str:
+        return default_class_repr(self)
+
+    __str__ = __repr__
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        return the extra keys for `__repr__`
+        """
+        return []
 
 
 def preprocess_multi_lead_signal(raw_sig:np.ndarray,

@@ -107,6 +107,12 @@ class Normalize(PreProcessor):
         )
         return normalized_sig, fs
 
+    def extra_repr_keys(self) -> List[str]:
+        """
+        return the extra keys for `__repr__`
+        """
+        return ["method", "mean", "str", "per_channel",] + super().extra_repr_keys()
+
 
 class MinMaxNormalize(Normalize):
     """
@@ -126,6 +132,12 @@ class MinMaxNormalize(Normalize):
             if True, normalization will be done per channel
         """
         super().__init__(method="min-max", per_channel=per_channel)
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        return the extra keys for `__repr__`
+        """
+        return ["per_channel",] + super(PreProcessor, self).extra_repr_keys()
 
 
 class NaiveNormalize(Normalize):
@@ -159,6 +171,12 @@ class NaiveNormalize(Normalize):
             std=std,
             per_channel=per_channel,
         )
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        return the extra keys for `__repr__`
+        """
+        return ["mean", "std", "per_channel",] + super(PreProcessor, self).extra_repr_keys()
 
 
 class ZScoreNormalize(Normalize):
@@ -194,3 +212,9 @@ class ZScoreNormalize(Normalize):
             std=std,
             per_channel=per_channel,
         )
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        return the extra keys for `__repr__`
+        """
+        return ["mean", "std", "per_channel",] + super(PreProcessor, self).extra_repr_keys()

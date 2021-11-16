@@ -66,3 +66,9 @@ class Resample(PreProcessor):
             rsmp_sig = SS.resample(sig, num=self.siglen, axis=-1)
             new_fs = int(round(self.siglen / sig.shape[-1] * fs))
         return rsmp_sig, new_fs
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        return the extra keys for `__repr__`
+        """
+        return ["fs", "siglen",] + super().extra_repr_keys()
