@@ -53,7 +53,7 @@ class AugmenterManager(torch.nn.Module):
     """
     __name__ = "AugmenterManager"
 
-    def __init__(self, random:bool=False) -> NoReturn:
+    def __init__(self, *augs:Optional[Tuple[Augmenter]], random:bool=False) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -63,27 +63,27 @@ class AugmenterManager(torch.nn.Module):
         """
         super().__init__()
         self.random = random
-        self._augmenters = []
+        self._augmenters = list(augs)
 
-    def _add_baseline_wander(self, **config:Any) -> NoReturn:
+    def _add_baseline_wander(self, **config:dict) -> NoReturn:
         self._augmenters.append(BaselineWanderAugmenter(**config))
 
-    def _add_label_smooth(self, **config:Any) -> NoReturn:
+    def _add_label_smooth(self, **config:dict) -> NoReturn:
         self._augmenters.append(LabelSmooth(**config))
 
-    def _add_mixup(self, **config:Any) -> NoReturn:
+    def _add_mixup(self, **config:dict) -> NoReturn:
         self._augmenters.append(Mixup(**config))
 
-    def _add_random_flip(self, **config:Any) -> NoReturn:
+    def _add_random_flip(self, **config:dict) -> NoReturn:
         self._augmenters.append(RandomFlip(**config))
 
-    def _add_random_masking(self, **config:Any) -> NoReturn:
+    def _add_random_masking(self, **config:dict) -> NoReturn:
         self._augmenters.append(RandomMasking(**config))
 
-    def _add_random_renormalize(self, **config:Any) -> NoReturn:
+    def _add_random_renormalize(self, **config:dict) -> NoReturn:
         self._augmenters.append(RandomRenormalize(**config))
 
-    def _add_stretch_compress(self, **config:Any) -> NoReturn:
+    def _add_stretch_compress(self, **config:dict) -> NoReturn:
         self._augmenters.append(StretchCompress(**config))
 
     def forward(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Union[Tensor,Tuple[Tensor]]:
@@ -126,22 +126,30 @@ class AugmenterManager(torch.nn.Module):
     @classmethod
     def from_config(cls, config:dict) -> "AugmenterManager":
         """
+
+        Parameters
+        ----------
+        config: dict,
+            the configuration of the augmenters,
+            better to be an `OrderedDict`
         """
         am = cls(random=config.get("random", False))
-        if "baseline_wander" in config:
-            am._add_baseline_wander(fs=config["fs"], **config["baseline_wander"])
-        if "label_smooth" in config:
-            am._add_label_smooth(fs=config["fs"], **config["label_smooth"])
-        if "mixup" in config:
-            am._add_mixup(fs=config["fs"], **config["mixup"])
-        if "random_flip" in config:
-            am._add_random_flip(fs=config["fs"], **config["random_flip"])
-        if "random_masking" in config:
-            am._add_random_masking(fs=config["fs"], **config["random_masking"])
-        if "random_renormalize" in config:
-            am._add_random_renormalize(fs=config["fs"], **config["random_renormalize"])
-        if "stretch_compress" in config:
-            am._add_stretch_compress(fs=config["fs"], **config["stretch_compress"])
+        _mapping = {
+            "baseline_wander": am._add_baseline_wander,
+            "label_smooth": am._add_label_smooth,
+            "mixup": am._add_mixup,
+            "random_flip": am._add_random_flip,
+            "random_masking": am._add_random_masking,
+            "random_renormalize": am._add_random_renormalize,
+            "stretch_compress": am._add_stretch_compress,
+        }
+        for aug_name, aug_config in config.items():
+            if aug_name in ["fs", "random",]:
+                continue
+            elif aug_name in _mapping:
+                _mapping[aug_name](fs=config["fs"], **aug_config)
+            else:
+                raise ValueError(f"Unknown augmenter name: {aug_name}")
         return am
 
     def rearrange(self, new_ordering:List[str]) -> NoReturn:
@@ -149,8 +157,10 @@ class AugmenterManager(torch.nn.Module):
         """
         _mapping = {
             "".join([w.capitalize() for w in k.split("_")]): k \
-                for k in "baseline_wander,label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress".split(",")
+                for k in "label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress".split(",")
         }
-        _mapping.update({k: k for k in _mapping.keys()})
-        _mapping.update({k: k for k in new_ordering})
+        _mapping.update({"BaselineWanderAugmenter": "baseline_wander"})
+        for k in new_ordering:
+            if k not in _mapping:
+                _mapping.update({k: k})
         self._augmenters.sort(key=lambda aug: new_ordering.index(_mapping[aug.__name__]))
