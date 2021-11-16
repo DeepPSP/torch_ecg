@@ -2,6 +2,7 @@
 preprocessors for signals of numpy array format
 """
 
+from .preproc_manager import PreprocManager
 from .base import (
     PreProcessor,
     preprocess_multi_lead_signal,
@@ -19,6 +20,7 @@ from .resample import Resample
 
 
 __all__ = [
+    "PreprocManager",
     "PreProcessor",
     "BandPass",
     "BaselineRemove",
