@@ -1491,6 +1491,11 @@ class BlurPool(nn.Module):
             self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
         )
 
+    def extra_repr(self):
+        return "down_scale={}, in_channels={}, filt_size={}, pad_type={}, pad_off={},".format(
+            self.__down_scale, self.__in_channels, self.__filt_size, self.__pad_type, self.__pad_off
+        )
+
 
 class AntiAliasConv(nn.Sequential):
     """
