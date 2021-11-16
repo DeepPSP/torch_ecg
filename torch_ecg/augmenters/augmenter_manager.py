@@ -143,3 +143,12 @@ class AugmenterManager(torch.nn.Module):
         if "stretch_compress" in config:
             am._add_stretch_compress(fs=config["fs"], **config["stretch_compress"])
         return am
+
+    def rearrange(self, new_ordering:List[str]) -> NoReturn:
+        """
+        """
+        _mapping = {
+            "".join([w.capitalize() for w in k.split("_")]): k \
+                for k in "baseline_wander,label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress".split(",")
+        }
+        self._augmenters.sort(key=lambda aug: new_ordering.index(_mapping[aug.__name__]))
