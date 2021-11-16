@@ -151,4 +151,6 @@ class AugmenterManager(torch.nn.Module):
             "".join([w.capitalize() for w in k.split("_")]): k \
                 for k in "baseline_wander,label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress".split(",")
         }
+        _mapping.update({k: k for k in _mapping.keys()})
+        _mapping.update({k: k for k in new_ordering})
         self._augmenters.sort(key=lambda aug: new_ordering.index(_mapping[aug.__name__]))

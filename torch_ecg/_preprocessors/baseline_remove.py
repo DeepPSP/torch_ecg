@@ -3,7 +3,7 @@ use median filter to remove baseline,
 note that highpass filters also have the effect of baseline removal
 """
 
-from typing import NoReturn, Any, Tuple
+from typing import NoReturn, Any, Tuple, List
 from numbers import Real
 import warnings
 

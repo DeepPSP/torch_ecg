@@ -52,7 +52,7 @@ class Mixup(Augmenter):
             if True, ECG signal tensors will be modified inplace
         kwargs: Keyword arguments.
         """
-        # super().__init__(**kwargs)
+        super().__init__()
         self.fs = fs
         self.alpha = alpha
         self.beta = beta or self.alpha
@@ -60,7 +60,7 @@ class Mixup(Augmenter):
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.inplace = inplace
 
-    def generate(self, sig:Tensor, label:Tensor, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
+    def forward(self, sig:Tensor, label:Tensor, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters

@@ -48,7 +48,7 @@ class RandomRenormalize(Augmenter):
             Whether to apply the random re-normalization augmenter in-place.
         kwargs: keyword arguments
         """
-        # super().__init__(**kwargs)
+        super().__init__()
         self.mean = np.array(mean)
         self.mean_mean = self.mean.mean(axis=-1, keepdims=True)
         self.mean_scale = (self.mean[...,-1] - self.mean_mean) * 0.3
@@ -61,7 +61,7 @@ class RandomRenormalize(Augmenter):
         self.prob = prob
         self.inplace = inplace
 
-    def generate(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
+    def forward(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters

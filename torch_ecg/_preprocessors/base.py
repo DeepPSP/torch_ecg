@@ -4,7 +4,7 @@
 import multiprocessing as mp
 from abc import ABC, abstractmethod
 from numbers import Real
-from typing import Optional, List, NoReturn, Tuple
+from typing import Optional, List, NoReturn, Tuple, List
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)

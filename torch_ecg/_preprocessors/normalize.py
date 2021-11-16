@@ -2,7 +2,7 @@
 normalization of the signals
 """
 
-from typing import NoReturn, Any, Union, Tuple
+from typing import NoReturn, Any, Union, Tuple, List
 from numbers import Real
 
 import numpy as np

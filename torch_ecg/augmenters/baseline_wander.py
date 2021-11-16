@@ -52,7 +52,7 @@ class BaselineWanderAugmenter(Augmenter):
             if True, ECG signal tensors will be modified inplace
         kwargs: Keyword arguments.
         """
-        # super().__init__(**kwargs)
+        super().__init__()
         self.fs = fs
         self.bw_fs = bw_fs if bw_fs is not None else np.array([0.33, 0.1, 0.05, 0.01])
         self.prob = prob
@@ -89,7 +89,7 @@ class BaselineWanderAugmenter(Augmenter):
         self._n_bw_choices = len(self.ampl_ratio)
         self._n_gn_choices = len(self.gaussian)
 
-    def generate(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
+    def forward(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters

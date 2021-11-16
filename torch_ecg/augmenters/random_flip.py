@@ -41,7 +41,7 @@ class RandomFlip(Augmenter):
             if True, ECG signal tensors will be modified inplace
         kwargs: Keyword arguments.
         """
-        # super().__init__(**kwargs)
+        super().__init__()
         self.fs = fs
         self.per_channel = per_channel
         self.inplace = inplace
@@ -53,7 +53,7 @@ class RandomFlip(Augmenter):
         assert (self.prob >= 0).all() and (self.prob <= 1).all(), \
             "Probability must be between 0 and 1"
 
-    def generate(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
+    def forward(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters

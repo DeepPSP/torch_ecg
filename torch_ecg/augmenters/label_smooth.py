@@ -40,14 +40,14 @@ class LabelSmooth(Augmenter):
             if True, the input tensor will be modified inplace
         kwargs: keyword arguments
         """
-        # super().__init__(**kwargs)
+        super().__init__()
         self.fs = fs
         self.smoothing = smoothing
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.inplace = inplace
 
-    def generate(self, sig:Optional[Tensor], label:Tensor, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
+    def forward(self, sig:Optional[Tensor], label:Tensor, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters

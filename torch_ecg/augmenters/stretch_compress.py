@@ -50,7 +50,7 @@ class StretchCompress(Augmenter):
             if True, the input ECGs will be modified inplace,
         kwargs: keyword arguments
         """
-        # super().__init__(**kwargs)
+        super().__init__()
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.inplace = inplace
@@ -59,7 +59,7 @@ class StretchCompress(Augmenter):
             self.ratio = self.ratio / 100
         assert 0<= self.ratio <= 1, "Ratio must be between 0 and 1, or between 0 and 100"
 
-    def generate(self, sig:Tensor, *labels:Optional[Sequence[Tensor]], **kwargs:Any) -> Tuple[Tensor, ...]:
+    def forward(self, sig:Tensor, *labels:Optional[Sequence[Tensor]], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters

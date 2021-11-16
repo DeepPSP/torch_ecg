@@ -7,6 +7,7 @@ from typing import Optional, Tuple, Union, List, Any, Sequence
 
 import numpy as np
 from torch import Tensor
+import torch.nn as nn
 
 from ..utils.misc import default_class_repr
 
@@ -14,14 +15,14 @@ from ..utils.misc import default_class_repr
 __all__ = ["Augmenter",]
 
 
-class Augmenter(ABC):
+class Augmenter(nn.Module, ABC):
     """
     An Augmentor do data augmentation for ECGs and labels
     """
     __name__ = "Augmentor"
 
     @abstractmethod
-    def generate(self, sig:Tensor, label:Optional[Tensor]=None, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
+    def forward(self, sig:Tensor, label:Optional[Tensor]=None, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
         """ generates a new signal and label using corresponding augmentation method,
 
         Parameters
@@ -40,11 +41,11 @@ class Augmenter(ABC):
         """
         raise NotImplementedError
 
-    def __call__(self, sig:Tensor, label:Optional[Tensor]=None, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
-        """
-        alias of `self.generate`
-        """
-        return self.generate(sig, label, *extra_tensors, **kwargs)
+    # def __call__(self, sig:Tensor, label:Optional[Tensor]=None, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
+    #     """
+    #     alias of `self.generate`
+    #     """
+    #     return self.generate(sig, label, *extra_tensors, **kwargs)
 
     def get_indices(self, prob:float, pop_size:int, scale_ratio:float=0.1) -> List[int]:
         """ finished, checked

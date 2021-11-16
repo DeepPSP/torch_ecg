@@ -47,7 +47,7 @@ class RandomMasking(Augmenter):
             whether to mask inplace or not
         kwargs: Keyword arguments.
         """
-        # super().__init__(**kwargs)
+        super().__init__()
         self.fs = fs
         self.prob = prob
         if isinstance(self.prob, Real):
@@ -60,11 +60,11 @@ class RandomMasking(Augmenter):
         self.mask_width = (np.array(mask_width) * self.fs).round().astype(int)
         self.inplace = inplace
 
-    def generate(self,
-                 sig:Tensor,
-                 label:Optional[Tensor],
-                 *extra_tensors:Sequence[Tensor],
-                 critical_points:Optional[Sequence[Sequence[int]]]=None, **kwargs:Any) -> Tuple[Tensor, ...]:
+    def forward(self,
+                sig:Tensor,
+                label:Optional[Tensor],
+                *extra_tensors:Sequence[Tensor],
+                critical_points:Optional[Sequence[Sequence[int]]]=None, **kwargs:Any) -> Tuple[Tensor, ...]:
         """ finished, checked,
 
         Parameters

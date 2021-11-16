@@ -2,7 +2,7 @@
 resample the signal into fixed sampling frequency or length
 """
 
-from typing import NoReturn, Optional, Any, Tuple
+from typing import NoReturn, Optional, Any, Tuple, List
 from numbers import Real
 
 import numpy as np
