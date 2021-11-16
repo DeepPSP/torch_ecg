@@ -3,9 +3,9 @@
 
 from typing import NoReturn, Optional, Any, Tuple, List
 
-import numpy as np
+import torch
+import torch.nn as nn
 
-from .base import PreProcessor
 from .bandpass import BandPass
 from .baseline_remove import BaselineRemove
 from .normalize import Normalize
@@ -16,7 +16,7 @@ from ..utils.misc import default_class_repr
 __all__ = ["PreprocManager",]
 
 
-class PreprocManager:
+class PreprocManager(nn.Module):
     """
 
     Examples
@@ -39,15 +39,17 @@ class PreprocManager:
     """
     __name__ = "PreprocManager"
 
-    def __init__(self, *pps:Optional[Tuple[PreProcessor,...]], random:bool=False) -> NoReturn:
+    def __init__(self, *pps:Optional[Tuple[nn.Module,...]], random:bool=False, inplace:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters
         ----------
-        pps: tuple of `PreProcessor`, optional,
+        pps: tuple of `nn.Module`, optional,
             the sequence of preprocessors to be added to the manager
         random: bool, default False,
             whether to apply the augmenters in random order
+        inplace: bool, default True,
+            whether to apply the preprocessors in-place
         """
         super().__init__()
         self.random = random
@@ -73,33 +75,27 @@ class PreprocManager:
         """
         self._preprocessors.append(Resample(**config))
 
-    def __call__(self, sig:np.ndarray, fs:int) -> Tuple[np.ndarray, int]:
+    def forward(self, sig:torch.Tensor) -> torch.Tensor:
         """ finished, checked,
 
         Parameters
         ----------
-        sig: np.ndarray,
-            the signal to be preprocessed
-        fs: int,
-            the sampling frequency of the signal
-
+        sig: Tensor,
+            the signal tensor to be preprocessed
+        
         Returns
         -------
-        pp_sig: np.ndarray,
-            the preprocessed signal
-        new_fs: int,
-            the sampling frequency of the preprocessed signal
+        sig: Tensor,
+            the preprocessed signal tensor
         """
         if len(self.preprocessors) == 0:
             raise ValueError("No preprocessors added to the manager.")
         ordering = list(range(len(self.preprocessors)))
         if self.random:
             ordering = sample(ordering, len(ordering))
-        pp_sig = sig.copy()
-        new_fs = fs
         for idx in ordering:
-            pp_sig, new_fs = self.preprocessors[idx](pp_sig, new_fs)
-        return pp_sig, new_fs
+            sig = self.preprocessors[idx](sig)
+        return sig
 
     @classmethod
     def from_config(cls, config:dict) -> "PreprocManager":
@@ -116,7 +112,7 @@ class PreprocManager:
         ppm: PreprocManager,
             a new instance of `PreprocManager`
         """
-        ppm = cls(random=config.get("random", False))
+        ppm = cls(random=config.get("random", False), inplace=config.get("inplace", True))
         _mapping = {
             "bandpass": ppm._add_bandpass,
             "baseline_remove": ppm._add_baseline_remove,
@@ -124,10 +120,10 @@ class PreprocManager:
             "resample": ppm._add_resample,
         }
         for pp_name, pp_config in config.items():
-            if pp_name in ["random", "fs",]:
+            if pp_name in ["random", "inplace", "fs",]:
                 continue
             if pp_name in _mapping:
-                _mapping[pp_name](**pp_config)
+                _mapping[pp_name](fs=config["fs"], **pp_config)
             else:
                 raise ValueError(f"Unknown preprocessor: {k}")
         return ppm
@@ -152,7 +148,7 @@ class PreprocManager:
         self._preprocessors.sort(key=lambda aug: new_ordering.index(_mapping[aug.__name__]))
 
     @property
-    def preprocessors(self) -> List[PreProcessor]:
+    def preprocessors(self) -> List[nn.Module]:
         return self._preprocessors
 
     def __repr__(self) -> str:

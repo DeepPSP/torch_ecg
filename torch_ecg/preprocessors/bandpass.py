@@ -22,8 +22,8 @@ class BandPass(torch.nn.Module):
 
     def __init__(self,
                  fs:Real,
-                 lowcut:Optional[Real]=None,
-                 highcut:Optional[Real]=None,
+                 lowcut:Optional[Real]=0.5,
+                 highcut:Optional[Real]=45,
                  inplace:bool=True,
                  **kwargs:Any) -> NoReturn:
         """ finished, checked,

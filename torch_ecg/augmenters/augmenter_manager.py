@@ -53,11 +53,13 @@ class AugmenterManager(torch.nn.Module):
     """
     __name__ = "AugmenterManager"
 
-    def __init__(self, *augs:Optional[Tuple[Augmenter]], random:bool=False) -> NoReturn:
+    def __init__(self, *augs:Optional[Tuple[Augmenter,...]], random:bool=False) -> NoReturn:
         """ finished, checked,
 
         Parameters
         ----------
+        aug: tuple of `Augmenter`, optional,
+            the augmenters to be added to the manager
         random: bool, default False,
             whether to apply the augmenters in random order
         """
@@ -125,13 +127,18 @@ class AugmenterManager(torch.nn.Module):
 
     @classmethod
     def from_config(cls, config:dict) -> "AugmenterManager":
-        """
+        """ finished, checked,
 
         Parameters
         ----------
         config: dict,
             the configuration of the augmenters,
             better to be an `OrderedDict`
+
+        Returns
+        -------
+        am: AugmenterManager,
+            a new instance of `AugmenterManager`
         """
         am = cls(random=config.get("random", False))
         _mapping = {
@@ -153,7 +160,12 @@ class AugmenterManager(torch.nn.Module):
         return am
 
     def rearrange(self, new_ordering:List[str]) -> NoReturn:
-        """
+        """ finished, checked,
+
+        Parameters
+        ----------
+        new_ordering: list of str,
+            the list of augmenter names in the new order
         """
         _mapping = {
             "".join([w.capitalize() for w in k.split("_")]): k \

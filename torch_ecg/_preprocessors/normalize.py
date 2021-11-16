@@ -46,7 +46,7 @@ class Normalize(PreProcessor):
 
         Parameters
         ----------
-        method: str,
+        method: str, default "z-score",
             normalization method, case insensitive, can be one of
             "naive", "min-max", "z-score",
         mean: real number or ndarray, default 0.0,

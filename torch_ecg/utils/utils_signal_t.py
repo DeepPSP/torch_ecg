@@ -148,8 +148,8 @@ def normalize(sig:torch.Tensor,
 
 
 def resample(sig:torch.Tensor,
-             src_fs:Optional[int]=None,
              fs:Optional[int]=None,
+             dst_fs:Optional[int]=None,
              siglen:Optional[int]=None,
              inplace:bool=False,) -> torch.Tensor:
     """ finished, checked,
@@ -160,22 +160,22 @@ def resample(sig:torch.Tensor,
     ----------
     sig: Tensor,
         signal to be normalized, assumed to have shape (..., n_leads, siglen)
-    src_fs: int, optional,
-        sampling frequency of the source signal to be resampled
     fs: int, optional,
+        sampling frequency of the source signal to be resampled
+    dst_fs: int, optional,
         sampling frequency of the resampled ECG
     siglen: int, optional,
         number of samples in the resampled ECG,
-        one of only one of `fs` (with `src_fs`) and `siglen` should be specified
+        one of only one of `dst_fs` (with `fs`) and `siglen` should be specified
     inplace: bool, default False,
         if True, normalization will be done inplace (on the signal)
     """
-    assert sum([bool(fs), bool(siglen)]) == 1, \
+    assert sum([bool(dst_fs), bool(siglen)]) == 1, \
         "one and only one of `fs` and `siglen` should be set"
-    if fs is not None:
-        assert src_fs is not None, \
-            "if `fs` is set, `src_fs` should also be set"
-        scale_factor = fs / src_fs
+    if dst_fs is not None:
+        assert fs is not None, \
+            "if `dst_fs` is set, `fs` should also be set"
+        scale_factor = dst_fs / fs
     if not inplace:
         sig = sig.clone()
     if sig.ndim == 2:

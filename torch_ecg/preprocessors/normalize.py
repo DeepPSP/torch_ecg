@@ -34,7 +34,7 @@ class Normalize(torch.nn.Module):
     """
 
     def __init__(self,
-                 method:str,
+                 method:str="z-score",
                  mean:Union[Real,Iterable[Real]]=0.0,
                  std:Union[Real,Iterable[Real]]=1.0,
                  per_channel:bool=False,
@@ -44,7 +44,7 @@ class Normalize(torch.nn.Module):
 
         Parameters
         ----------
-        method: str,
+        method: str, default "z-score",
             normalization method, case insensitive, can be one of
             "naive", "min-max", "z-score",
         mean: real number or array_like, default 0.0,
