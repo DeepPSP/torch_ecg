@@ -26,7 +26,7 @@ from .resnet import (
     resnet_block_stanford, resnet_stanford,
     # ResNet Nature Communications
     resnet_nature_comm,
-    resnet_nature_comm_se, resnet_block_basic_nl, resnet_block_basic_gc,
+    resnet_nature_comm_se, resnet_nature_comm_nl, resnet_nature_comm_gc,
     resnet_nature_comm_bottle_neck, resnet_nature_comm_bottle_neck_se,
     # TResNet
     tresnetF, tresnetP, tresnetN, tresnetS,
