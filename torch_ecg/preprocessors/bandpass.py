@@ -69,14 +69,13 @@ class BandPass(torch.nn.Module):
         """
         if not self.inplace:
             sig = sig.clone()
-        for b in range(sig.shape[0]):
-            sig[b, ...] = torch.as_tensor(
-                preprocess_multi_lead_signal(
-                    raw_sig=sig[b, ...].cpu().numpy(),
-                    fs=self.fs,
-                    band_fs=[self.lowcut, self.highcut],
-                ),
-                dtype=sig.dtype,
-                device=sig.device,
-            )
+        sig = torch.as_tensor(
+            preprocess_multi_lead_signal(
+                raw_sig=sig.cpu().numpy(),
+                fs=self.fs,
+                band_fs=[self.lowcut, self.highcut],
+            ).copy(),
+            dtype=sig.dtype,
+            device=sig.device,
+        )
         return sig

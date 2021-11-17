@@ -1,6 +1,7 @@
 """
 """
 
+from itertools import repeat
 import multiprocessing as mp
 from abc import ABC, abstractmethod
 from numbers import Real
@@ -94,6 +95,7 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
 
     perform preprocessing for multi-lead ecg signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
+    also works for single-lead ecg signal (sig_fmt="channel_first")
 
     Parameters
     ----------
@@ -127,14 +129,41 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
         filtered_ecg = raw_sig.T
     else:
         filtered_ecg = raw_sig.copy()
-    cpu_num = max(1, mp.cpu_count()-3)
-    with mp.Pool(processes=cpu_num) as pool:
-        results = pool.starmap(
-            func=preprocess_single_lead_signal,
-            iterable=[(filtered_ecg[lead,...], fs, bl_win, band_fs) for lead in range(filtered_ecg.shape[0])]
-        )
-    for lead in range(filtered_ecg.shape[0]):
-        filtered_ecg[lead,...] = results[lead]
+
+    # remove baseline
+    if bl_win:
+        window1, window2 = list(repeat(1, filtered_ecg.ndim)), list(repeat(1, filtered_ecg.ndim))
+        window1[-1] = 2 * (int(bl_win[0] * fs) // 2) + 1  # window size must be odd
+        window2[-1] = 2 * (int(bl_win[1] * fs) // 2) + 1
+        baseline = median_filter(filtered_ecg, size=window1, mode="nearest")
+        baseline = median_filter(baseline, size=window2, mode="nearest")
+        filtered_ecg = filtered_ecg - baseline
+    
+    # filter signal
+    if band_fs:
+        assert band_fs[0] < band_fs[1]
+        nyq = 0.5 * fs
+        if band_fs[0] <= 0 and band_fs[1] < nyq:
+            band = "lowpass"
+            frequency = band_fs[1]
+        elif band_fs[1] >= nyq and band_fs[0] > 0:
+            band = "highpass"
+            frequency = band_fs[0]
+        elif band_fs[0] > 0 and band_fs[1] < nyq:
+            band = "bandpass"
+            frequency = band_fs
+        else:
+            raise ValueError("Invalid frequency band")
+        filtered_ecg = filter_signal(
+            signal=filtered_ecg,
+            ftype="FIR",
+            # ftype="butter",
+            band=band,
+            order=int(0.3 * fs),
+            sampling_rate=fs,
+            frequency=frequency,
+        )["signal"]
+
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
         filtered_ecg = filtered_ecg.T
 

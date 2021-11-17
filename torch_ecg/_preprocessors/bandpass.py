@@ -10,7 +10,6 @@ import numpy as np
 from .base import (
     PreProcessor,
     preprocess_multi_lead_signal,
-    preprocess_single_lead_signal,
 )
 
 
@@ -64,26 +63,11 @@ class BandPass(PreProcessor):
             the sampling frequency of the filtered ECG signal
         """
         self._check_sig(sig)
-        if sig.ndim == 1:
-            filtered_sig = preprocess_single_lead_signal(
-                raw_sig=sig,
-                fs=fs,
-                band_fs=[self.lowcut, self.highcut],
-            )
-        elif sig.ndim == 2:
-            filtered_sig = preprocess_multi_lead_signal(
-                raw_sig=sig,
-                fs=fs,
-                band_fs=[self.lowcut, self.highcut],
-            )
-        elif sig.ndim == 3:
-            filtered_sig = np.zeros_like(sig)
-            for b in range(filtered_sig.shape[0]):
-                filtered_sig[b, ...] = preprocess_multi_lead_signal(
-                    raw_sig=sig[b, ...],
-                    fs=fs,
-                    band_fs=[self.lowcut, self.highcut],
-                )
+        filtered_sig = preprocess_multi_lead_signal(
+            raw_sig=sig,
+            fs=fs,
+            band_fs=[self.lowcut, self.highcut],
+        )
         return filtered_sig, fs
 
     def extra_repr_keys(self) -> List[str]:
