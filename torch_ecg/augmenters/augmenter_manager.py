@@ -153,7 +153,7 @@ class AugmenterManager(torch.nn.Module):
         for aug_name, aug_config in config.items():
             if aug_name in ["fs", "random",]:
                 continue
-            elif aug_name in _mapping:
+            elif aug_name in _mapping and isinstance(aug_config, dict):
                 _mapping[aug_name](fs=config["fs"], **aug_config)
             else:
                 raise ValueError(f"Unknown augmenter name: {aug_name}")
