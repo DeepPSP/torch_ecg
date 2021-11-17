@@ -37,7 +37,7 @@ __all__ = [
     "resnet_vanilla_50", "resnet_vanilla_101", "resnet_vanilla_152",
     "resnext_vanilla_50_32x4d", "resnext_vanilla_101_32x8d",
     "resnet_vanilla_wide_50_2", "resnet_vanilla_wide_101_2",
-    # custom resnet
+    # cpsc2018 resnet
     "resnet_cpsc2018", "resnet_cpsc2018_leadwise",
     # stanford resnet
     "resnet_block_stanford", "resnet_stanford",
