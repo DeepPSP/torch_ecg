@@ -346,8 +346,10 @@ class BaseTrainer(ABC):
         if self.train_config.get("model_dir", None):
             self._train_config.model_dir = self.train_config.checkpoints
 
-        self.n_train = len(train_dataset)
-        self.n_val = len(val_dataset)
+        self._setup_dataloaders()
+
+        self.n_train = len(self.train_loader.dataset)
+        self.n_val = len(self.val_loader.dataset)
 
         self.n_epochs = self.train_config.n_epochs
         self.batch_size = self.train_config.batch_size
@@ -368,13 +370,11 @@ class BaseTrainer(ABC):
             Validation size: {n_val}
             Device:          {device.type}
             Optimizer:       {self.train_config.optimizer}
-            Dataset classes: {train_dataset.all_classes}
-            Class weights:   {train_dataset.class_weights}
+            Dataset classes: {self.train_loader.dataset.all_classes}
+            Class weights:   {self.train_loader.dataset.class_weights}
             -----------------------------------------
             """)
         self.log_manager.log_message(msg)
-
-        self._setup_dataloaders()
 
         self._setup_augmenter_manager()
 
@@ -410,8 +410,9 @@ class BaseTrainer(ABC):
         train_dataset = self.dataset_cls(config=self.train_config, training=True)
 
         if self.train_config.debug:
-            val_train_dataset = self.dataset_cls(config=self.train_config, training=True)
-            val_train_dataset.disable_data_augmentation()
+            val_train_dataset = train_dataset
+        else:
+            val_train_dataset = None
         val_dataset = self.dataset_cls(config=self.train_config, training=False)
 
          # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
@@ -503,7 +504,7 @@ class BaseTrainer(ABC):
             self.criterion = nn.BCEWithLogitsLoss()
         elif self.train_config.loss == "BCEWithLogitsWithClassWeightLoss":
             self.criterion = BCEWithLogitsWithClassWeightLoss(
-                class_weight=train_dataset.class_weights.to(device=self.device, dtype=self.dtype)
+                class_weight=self.train_loader.dataset.class_weights.to(device=self.device, dtype=self.dtype)
             )
         elif config.loss == "BCELoss":
             self.criterion = nn.BCELoss()
