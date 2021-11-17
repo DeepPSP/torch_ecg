@@ -126,7 +126,7 @@ class PreprocManager:
         for pp_name, pp_config in config.items():
             if pp_name in ["random", "fs",]:
                 continue
-            if pp_name in _mapping:
+            if pp_name in _mapping and isinstance(pp_config, dict):
                 _mapping[pp_name](**pp_config)
             else:
                 raise ValueError(f"Unknown preprocessor: {k}")
