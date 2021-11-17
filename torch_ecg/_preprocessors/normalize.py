@@ -111,7 +111,7 @@ class Normalize(PreProcessor):
         """
         return the extra keys for `__repr__`
         """
-        return ["method", "mean", "str", "per_channel",] + super().extra_repr_keys()
+        return ["method", "mean", "std", "per_channel",] + super().extra_repr_keys()
 
 
 class MinMaxNormalize(Normalize):

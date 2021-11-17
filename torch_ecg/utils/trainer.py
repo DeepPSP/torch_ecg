@@ -8,7 +8,7 @@ import textwrap
 from copy import deepcopy
 from abc import ABC, abstractmethod
 from collections import deque, OrderedDict
-from typing import NoReturn, Optional, Union, Tuple
+from typing import NoReturn, Optional, Union, Tuple, Dict
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
@@ -25,11 +25,12 @@ from torch.utils.data import DataLoader
 import torch_optimizer as extra_optim
 from easydict import EasyDict as ED
 
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.utils.misc import (
+from .utils_nn import default_collate_fn as collate_fn
+from .misc import (
     dicts_equal, init_logger, get_date_str, dict_to_str, str2bool,
 )
-from torch_ecg.utils.loggers import LoggerManager
+from .loggers import LoggerManager
+from ..augmenters import AugmenterManager
 
 
 __all__ = ["BaseTrainer",]
@@ -293,13 +294,13 @@ class BaseTrainer(ABC):
 
     @torch.no_grad()
     @abstractmethod
-    def evaluate(self, dl:DataLoader) -> dict:
+    def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
         """
         do evaluation on the given data loader
 
         Parameters
         ----------
-        dl: DataLoader,
+        data_loader: DataLoader,
             the data loader to evaluate on
 
         Returns
