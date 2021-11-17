@@ -125,7 +125,9 @@ class PreprocManager(nn.Module):
             if pp_name in _mapping and isinstance(pp_config, dict):
                 _mapping[pp_name](fs=config["fs"], **pp_config)
             else:
-                raise ValueError(f"Unknown preprocessor: {k}")
+                # just ignore the other items
+                pass
+                # raise ValueError(f"Unknown preprocessor: {pp_name}")
         return ppm
 
     def rearrange(self, new_ordering:List[str]) -> NoReturn:

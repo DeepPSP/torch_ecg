@@ -156,7 +156,9 @@ class AugmenterManager(torch.nn.Module):
             elif aug_name in _mapping and isinstance(aug_config, dict):
                 _mapping[aug_name](fs=config["fs"], **aug_config)
             else:
-                raise ValueError(f"Unknown augmenter name: {aug_name}")
+                # just ignore the other items
+                pass
+                # raise ValueError(f"Unknown augmenter name: {aug_name}")
         return am
 
     def rearrange(self, new_ordering:List[str]) -> NoReturn:
