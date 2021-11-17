@@ -11,6 +11,13 @@ from .cnn import (
     resnet_block_stanford, resnet_stanford,
     resnet_block_basic, resnet_bottle_neck,
     resnet_cpsc2018, resnet_cpsc2018_leadwise,
+    resnet_vanilla_18, resnet_vanilla_34,
+    resnet_vanilla_50, resnext_vanilla_50_32x4d,
+    resnet_nature_comm,
+    resnet_nature_comm_se, resnet_nature_comm_gc, resnet_nature_comm_nl,
+    resnet_nature_comm_bottle_neck, resnet_nature_comm_bottle_neck_se,
+    resnetN, resnetNB, resnetNS, resnetNBS,
+    tresnetF, tresnetP, tresnetN, tresnetS, tresnetM,
     multi_scopic_block,
     multi_scopic, multi_scopic_leadwise,
     densenet_vanilla, densenet_leadwise,
@@ -58,14 +65,51 @@ ECG_CRNN_CONFIG.cnn.vgg16_leadwise = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.c
 # ECG_CRNN_CONFIG.cnn.vgg16_dilation = deepcopy(vgg16)
 # ECG_CRNN_CONFIG.cnn.vgg16_dilation.block = deepcopy(vgg_block_basic)
 
-ECG_CRNN_CONFIG.cnn.resnet = deepcopy(resnet_cpsc2018)
-ECG_CRNN_CONFIG.cnn.resnet.block = deepcopy(resnet_block_basic)
-ECG_CRNN_CONFIG.cnn.resnet = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet, ECG_CRNN_CONFIG.fs)
-ECG_CRNN_CONFIG.cnn.resnet_bottleneck = deepcopy(resnet_cpsc2018)
-ECG_CRNN_CONFIG.cnn.resnet_bottleneck.block = deepcopy(resnet_bottle_neck)
-ECG_CRNN_CONFIG.cnn.resnet_bottleneck = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_bottleneck, ECG_CRNN_CONFIG.fs)
+# ECG_CRNN_CONFIG.cnn.resnet_cpsc2018 = deepcopy(resnet_cpsc2018)
+# ECG_CRNN_CONFIG.cnn.resnet_cpsc2018 = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnet_18 = deepcopy(resnet_vanilla_18)
+ECG_CRNN_CONFIG.cnn.resnet_18 = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_18, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnet_34 = deepcopy(resnet_vanilla_34)
+ECG_CRNN_CONFIG.cnn.resnet_34 = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_34, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnet_50 = deepcopy(resnet_vanilla_50)
+ECG_CRNN_CONFIG.cnn.resnet_50 = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_50, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnext_50_32x4d = deepcopy(resnext_vanilla_50_32x4d)
+ECG_CRNN_CONFIG.cnn.resnext_50_32x4d = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnext_50_32x4d, ECG_CRNN_CONFIG.fs)
+
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm = deepcopy(resnet_nature_comm)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_nature_comm, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm_se = deepcopy(resnet_nature_comm_se)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm_se = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_nature_comm_se, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm_gc = deepcopy(resnet_nature_comm_gc)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm_gc = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_nature_comm_gc, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm_nl = deepcopy(resnet_nature_comm_nl)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm_nl = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_nature_comm_nl, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm_bottle_neck = deepcopy(resnet_nature_comm_bottle_neck)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm_bottle_neck = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_nature_comm_bottle_neck, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm_bottle_neck_se = deepcopy(resnet_nature_comm_bottle_neck_se)
+ECG_CRNN_CONFIG.cnn.resnet_nature_comm_bottle_neck_se = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_nature_comm_bottle_neck_se, ECG_CRNN_CONFIG.fs)
+
+ECG_CRNN_CONFIG.cnn.resnetN = deepcopy(resnetN)
+ECG_CRNN_CONFIG.cnn.resnetN = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnetN, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnetNB = deepcopy(resnetNB)
+ECG_CRNN_CONFIG.cnn.resnetNB = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnetNB, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnetNS = deepcopy(resnetNS)
+ECG_CRNN_CONFIG.cnn.resnetNS = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnetNS, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.resnetNBS = deepcopy(resnetNBS)
+ECG_CRNN_CONFIG.cnn.resnetNBS = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnetNBS, ECG_CRNN_CONFIG.fs)
+
+ECG_CRNN_CONFIG.cnn.tresnetF = deepcopy(tresnetF)
+ECG_CRNN_CONFIG.cnn.tresnetF = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.tresnetF, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.tresnetP = deepcopy(tresnetP)
+ECG_CRNN_CONFIG.cnn.tresnetP = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.tresnetP, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.tresnetN = deepcopy(tresnetN)
+ECG_CRNN_CONFIG.cnn.tresnetN = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.tresnetN, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.tresnetS = deepcopy(tresnetS)
+ECG_CRNN_CONFIG.cnn.tresnetS = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.tresnetS, ECG_CRNN_CONFIG.fs)
+ECG_CRNN_CONFIG.cnn.tresnetM = deepcopy(tresnetM)
+ECG_CRNN_CONFIG.cnn.tresnetM = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.tresnetM, ECG_CRNN_CONFIG.fs)
+
 ECG_CRNN_CONFIG.cnn.resnet_leadwise = deepcopy(resnet_cpsc2018_leadwise)
-ECG_CRNN_CONFIG.cnn.resnet_leadwise.block = deepcopy(resnet_block_basic)
 ECG_CRNN_CONFIG.cnn.resnet_leadwise = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG.cnn.resnet_leadwise, ECG_CRNN_CONFIG.fs)
 
 ECG_CRNN_CONFIG.cnn.resnet_stanford = deepcopy(resnet_stanford)
@@ -91,7 +135,7 @@ ECG_CRNN_CONFIG.cnn.densenet_leadwise = adjust_cnn_filter_lengths(ECG_CRNN_CONFI
 
 # rnn part
 ECG_CRNN_CONFIG.rnn = ED()
-ECG_CRNN_CONFIG.rnn.name = "linear"  # "none", "lstm", "linear"
+ECG_CRNN_CONFIG.rnn.name = "lstm"  # "none", "lstm", "linear"
 
 ECG_CRNN_CONFIG.rnn.lstm = deepcopy(lstm)
 ECG_CRNN_CONFIG.rnn.linear = deepcopy(linear)
