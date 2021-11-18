@@ -14,6 +14,9 @@ from easydict import EasyDict as ED
 from .trainer import BaseTrainer
 
 
+__all__ = ["NAS",]
+
+
 class NAS:
     """
     """
@@ -25,7 +28,11 @@ class NAS:
                  dataset_cls:Dataset,
                  train_config:dict,
                  model_configs:Sequence[dict],) -> NoReturn:
-        """
+        """ finished, NOT checked,
+
+        Parameters
+        ----------
+        to write
         """
         self.trainer_cls = trainer_cls
         self.model_cls = model_cls
@@ -33,8 +40,8 @@ class NAS:
         self.train_config = ED(train_config)
         self.model_configs = ED(model_configs)
 
-    def search() -> NoReturn:
-        """
+    def search(self) -> NoReturn:
+        """ finished, NOT checked,
         """
         model = self.model_cls(
             classes=self.train_config.classes,
