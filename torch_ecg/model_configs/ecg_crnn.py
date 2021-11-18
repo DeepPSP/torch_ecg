@@ -135,7 +135,7 @@ ECG_CRNN_CONFIG.cnn.densenet_leadwise = adjust_cnn_filter_lengths(ECG_CRNN_CONFI
 
 # rnn part
 ECG_CRNN_CONFIG.rnn = ED()
-ECG_CRNN_CONFIG.rnn.name = "lstm"  # "none", "lstm", "linear"
+ECG_CRNN_CONFIG.rnn.name = "none"  # "none", "lstm", "linear"
 
 ECG_CRNN_CONFIG.rnn.lstm = deepcopy(lstm)
 ECG_CRNN_CONFIG.rnn.linear = deepcopy(linear)
@@ -159,12 +159,12 @@ ECG_CRNN_CONFIG.attn.nl = deepcopy(non_local)
 ECG_CRNN_CONFIG.global_pool = "max"  # "avg", "attn"
 
 
-
 ECG_CRNN_CONFIG.clf = ED()
 ECG_CRNN_CONFIG.clf.out_channels = [
-    # 12 * 32,
-  # not including the last linear layer, whose out channels equals n_classes
+    512,
+    # not including the last linear layer, whose out channels equals n_classes
 ]
+ECG_CRNN_CONFIG.clf.activation = "mish"
 ECG_CRNN_CONFIG.clf.bias = True
-ECG_CRNN_CONFIG.clf.dropouts = 0.0
-ECG_CRNN_CONFIG.clf.activation = "mish"  # for a single layer `SeqLin`, activation is ignored
+ECG_CRNN_CONFIG.clf.kernel_initializer = "he_normal"
+ECG_CRNN_CONFIG.clf.dropouts = 0.2

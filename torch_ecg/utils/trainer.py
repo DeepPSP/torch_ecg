@@ -8,7 +8,7 @@ import textwrap
 from copy import deepcopy
 from abc import ABC, abstractmethod
 from collections import deque, OrderedDict
-from typing import NoReturn, Optional, Union, Tuple, Dict
+from typing import NoReturn, Optional, Union, Tuple, Dict, List
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
@@ -36,6 +36,7 @@ from ..models.loss import (
     MaskedBCEWithLogitsLoss,
     FocalLoss, AsymmetricLoss,
 )
+from ..cfg import DEFAULTS
 
 
 __all__ = ["BaseTrainer",]
@@ -52,6 +53,7 @@ class BaseTrainer(ABC):
         "flooding_level": 0,
         "early_stopping": {},
     }
+    __DEFATULT_CONFIGS__.update(deepcopy(DEFAULTS))
 
     def __init__(self,
                  model:nn.Module,
@@ -59,7 +61,7 @@ class BaseTrainer(ABC):
                  model_config:dict,
                  train_config:dict,
                  device:Optional[torch.device]=None,) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -123,7 +125,7 @@ class BaseTrainer(ABC):
         self.epoch_loss = 0
 
     def train(self) -> OrderedDict:
-        """ finished, NOT checked,
+        """ finished, checked,
         """
         start_epoch = self.epoch
         for _ in range(start_epoch, self.n_epochs):
@@ -264,6 +266,29 @@ class BaseTrainer(ABC):
         raise NotImplementedError
 
     @property
+    @abstractmethod
+    def extra_required_train_config_fields(self) -> List[str]:
+        """
+        """
+        raise NotImplementedError
+
+    @property
+    def required_train_config_fields(self) -> List[str]:
+        """
+        """
+        return [
+            "classes", "monitor", "n_epochs", "batch_size", "log_step",
+            "optimizer", "lr_scheduler", "learning_rate",
+        ] + self.extra_required_train_config_fields
+
+    def _validate_train_config(self) -> NoReturn:
+        """
+        """
+        for field in self.required_train_config_fields:
+            if field not in self.train_config:
+                raise ValueError(f"{field} is missing in train_config!")
+
+    @property
     def save_prefix(self) -> str:
         return f"{self._model.__name__}_epoch"
 
@@ -338,7 +363,7 @@ class BaseTrainer(ABC):
             self.scheduler.step()
 
     def _setup_from_config(self, train_config:dict) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -350,6 +375,7 @@ class BaseTrainer(ABC):
         self._train_config = ED(deepcopy(_default_config))
         if self.train_config.get("model_dir", None):
             self._train_config.model_dir = self.train_config.checkpoints
+        self._validate_train_config()
 
         self.n_epochs = self.train_config.n_epochs
         self.batch_size = self.train_config.batch_size
@@ -375,8 +401,7 @@ class BaseTrainer(ABC):
             Validation size: {self.n_val}
             Device:          {self.device.type}
             Optimizer:       {self.train_config.optimizer}
-            Dataset classes: {self.train_loader.dataset.all_classes}
-            Class weights:   {self.train_loader.dataset.class_weights}
+            Dataset classes: {self.train_config.classes}
             -----------------------------------------
             """)
         self.log_manager.log_message(msg)
@@ -398,19 +423,19 @@ class BaseTrainer(ABC):
         return f"{self._model.__name__}_{self.train_config.optimizer}_LR_{self.lr}_BS_{self.batch_size}"
 
     def _setup_log_manager(self) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
         """
         config = {"log_suffix": self.extra_log_suffix()}
         config.update(self.train_config)
         self.log_manager = LoggerManager.from_config(config=config)
 
     def _setup_augmenter_manager(self) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
         """
         self.augmenter_manager = AugmenterManager.from_config(config=self.train_config)
 
     def _setup_dataloaders(self) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
         """
         train_dataset = self.dataset_cls(config=self.train_config, training=True)
 
@@ -456,7 +481,7 @@ class BaseTrainer(ABC):
         )
 
     def _setup_optimizer(self) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
         """
         if self.train_config.optimizer.lower() == "adam":
             self.optimizer = optim.Adam(
@@ -482,7 +507,7 @@ class BaseTrainer(ABC):
             raise NotImplementedError(f"optimizer `{self.train_config.optimizer}` not implemented!")
 
     def _setup_scheduler(self) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
         """
         if self.train_config.lr_scheduler is None:
             self.scheduler = None
@@ -503,7 +528,7 @@ class BaseTrainer(ABC):
             raise NotImplementedError(f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training")
 
     def _setup_criterion(self) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
         """
         loss_kw = self.train_config.get("loss_kw", {})
         for k, v in loss_kw.items():
@@ -527,7 +552,7 @@ class BaseTrainer(ABC):
             raise NotImplementedError(f"loss `{self.train_config.loss}` not implemented!")
 
     def _check_model_config_compatability(self, model_config:dict) -> bool:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         Parameters
         ----------
@@ -542,7 +567,7 @@ class BaseTrainer(ABC):
         return dicts_equal(self.model_config, model_config)
 
     def resume_from_checkpoint(self, checkpoint:Union[str,dict]) -> NoReturn:
-        """ finished, NOT checked,
+        """ NOT finished, NOT checked,
 
         resume a training process from a checkpoint
 
