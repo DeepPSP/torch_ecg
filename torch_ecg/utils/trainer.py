@@ -31,6 +31,11 @@ from .misc import (
 )
 from .loggers import LoggerManager
 from ..augmenters import AugmenterManager
+from ..models.loss import (
+    BCEWithLogitsWithClassWeightLoss,
+    MaskedBCEWithLogitsLoss,
+    FocalLoss, AsymmetricLoss,
+)
 
 
 __all__ = ["BaseTrainer",]
@@ -125,7 +130,7 @@ class BaseTrainer(ABC):
             # train one epoch
             self.model.train()
             self.epoch_loss = 0
-            with tqdm(total=self.n_train, desc=f"Epoch {self.epoch}/{self.n_epochs}", ncols=100) as pbar:
+            with tqdm(total=self.n_train, desc=f"Epoch {self.epoch}/{self.n_epochs}", unit="signals") as pbar:
                 self.log_manager.epoch_start(self.epoch)
                 # train one epoch
                 self.train_one_epoch(pbar)
@@ -153,30 +158,30 @@ class BaseTrainer(ABC):
                     self.best_metric = eval_res[self.train_config.monitor]
                     self.best_state_dict = self._model.state_dict()
                     self.best_eval_res = deepcopy(eval_res)
-                    self.best_epoch = epoch
-                    self.pseudo_best_epoch = epoch
+                    self.best_epoch = self.epoch
+                    self.pseudo_best_epoch = self.epoch
                 elif self.train_config.early_stopping:
                     if eval_res[self.train_config.monitor] >= self.best_metric - self.train_config.early_stopping.min_delta:
-                        self.pseudo_best_epoch = epoch
+                        self.pseudo_best_epoch = self.epoch
                     elif self.epoch - self.pseudo_best_epoch >= self.train_config.early_stopping.patience:
-                        msg = f"early stopping is triggered at epoch {epoch}"
-                        self.log_manager.log_msg(msg)
+                        msg = f"early stopping is triggered at epoch {self.epoch}"
+                        self.log_manager.log_message(msg)
                         break
 
                 msg = textwrap.dedent(f"""
                     best metric = {self.best_metric},
                     obtained at epoch {self.best_epoch}
                 """)
-                self.log_manager.log_msg(msg)
+                self.log_manager.log_message(msg)
 
                 # save checkpoint
                 save_suffix = f"epochloss_{self.epoch_loss:.5f}_metric_{eval_res[self.train_config.monitor]:.2f}"
                 save_filename = f"{self.save_prefix}{self.epoch}_{get_date_str()}_{save_suffix}.pth.tar"
-                save_path = os.path.join(config.checkpoints, save_filename)
-                self.save_checkpoint()
+                save_path = os.path.join(self.train_config.checkpoints, save_filename)
+                self.save_checkpoint(save_path)
 
                 # update learning rate using lr_scheduler
-                self._update_lr()
+                self._update_lr(eval_res)
 
                 self.log_manager.epoch_end(self.epoch)
 
@@ -346,14 +351,14 @@ class BaseTrainer(ABC):
         if self.train_config.get("model_dir", None):
             self._train_config.model_dir = self.train_config.checkpoints
 
+        self.n_epochs = self.train_config.n_epochs
+        self.batch_size = self.train_config.batch_size
+        self.lr = self.train_config.learning_rate
+
         self._setup_dataloaders()
 
         self.n_train = len(self.train_loader.dataset)
         self.n_val = len(self.val_loader.dataset)
-
-        self.n_epochs = self.train_config.n_epochs
-        self.batch_size = self.train_config.batch_size
-        self.lr = self.train_config.learning_rate
 
         self._setup_log_manager()
 
@@ -363,12 +368,12 @@ class BaseTrainer(ABC):
         msg = textwrap.dedent(f"""
             Starting training:
             ------------------
-            Epochs:          {n_epochs}
-            Batch size:      {batch_size}
-            Learning rate:   {lr}
-            Training size:   {n_train}
-            Validation size: {n_val}
-            Device:          {device.type}
+            Epochs:          {self.n_epochs}
+            Batch size:      {self.batch_size}
+            Learning rate:   {self.lr}
+            Training size:   {self.n_train}
+            Validation size: {self.n_val}
+            Device:          {self.device.type}
             Optimizer:       {self.train_config.optimizer}
             Dataset classes: {self.train_loader.dataset.all_classes}
             Class weights:   {self.train_loader.dataset.class_weights}
@@ -500,16 +505,24 @@ class BaseTrainer(ABC):
     def _setup_criterion(self) -> NoReturn:
         """ finished, NOT checked,
         """
+        loss_kw = self.train_config.get("loss_kw", {})
+        for k, v in loss_kw.items():
+            if isinstance(v, torch.Tensor):
+                loss_kw[k] = v.to(device=self.device, dtype=self.dtype)
         if self.train_config.loss == "BCEWithLogitsLoss":
-            self.criterion = nn.BCEWithLogitsLoss()
+            self.criterion = nn.BCEWithLogitsLoss(**loss_kw)
         elif self.train_config.loss == "BCEWithLogitsWithClassWeightLoss":
-            self.criterion = BCEWithLogitsWithClassWeightLoss(
-                class_weight=self.train_loader.dataset.class_weights.to(device=self.device, dtype=self.dtype)
-            )
-        elif config.loss == "BCELoss":
-            self.criterion = nn.BCELoss()
-        elif config.loss == "MaskedBCEWithLogitsLoss":
-            self.criterion = MaskedBCEWithLogitsLoss()
+            self.criterion = BCEWithLogitsWithClassWeightLoss(**loss_kw)
+        elif self.train_config.loss == "BCELoss":
+            self.criterion = nn.BCELoss(**loss_kw)
+        elif self.train_config.loss == "MaskedBCEWithLogitsLoss":
+            self.criterion = MaskedBCEWithLogitsLoss(**loss_kw)
+        elif self.train_config.loss == "MaskedBCEWithLogitsLoss":
+            self.criterion = MaskedBCEWithLogitsLoss(**loss_kw)
+        elif self.train_config.loss == "FocalLoss":
+            self.criterion = FocalLoss(**loss_kw)
+        elif self.train_config.loss == "AsymmetricLoss":
+            self.criterion = AsymmetricLoss(**loss_kw)
         else:
             raise NotImplementedError(f"loss `{self.train_config.loss}` not implemented!")
 
@@ -567,6 +580,6 @@ class BaseTrainer(ABC):
             "model_state_dict": self._model.state_dict(),
             "optimizer_state_dict": self.optimizer.state_dict(),
             "model_config": self.model_config,
-            "train_config": self.config,
+            "train_config": self.train_config,
             "epoch": self.epoch,
         }, path)

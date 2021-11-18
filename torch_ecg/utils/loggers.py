@@ -190,7 +190,7 @@ class TxtLogger(BaseLogger):
         if epoch is not None:
             prefix = f"Epoch {epoch} / {prefix}"
         _metrics = {k: v.item() if isinstance(v, torch.Tensor) else v for k,v in metrics.items()}
-        spaces = max(_metrics.keys(), key=len)
+        spaces = len(max(_metrics.keys(), key=len))
         msg = f"{part.capitalize()} Metrics:\n{self.short_sep}" \
             + "\n".join([f"{prefix}{part}/{k} : {' '*(spaces-len(k))}{v:.4f}" for k,v in _metrics.items()]) \
             + f"\n{self.short_sep}"

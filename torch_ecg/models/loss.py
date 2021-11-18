@@ -361,7 +361,7 @@ class AsymmetricLoss(nn.Module):
         """
         super().__init__()
         self.implementation = implementation.lower()
-        assert self.implementation in ["alibaba-miil", "deep-psp"]
+        assert self.implementation in ["alibaba-miil", "deep-psp", "deeppsp",]
         self.gamma_neg = gamma_neg
         self.gamma_pos = gamma_pos
         self.prob_margin = prob_margin
@@ -373,7 +373,7 @@ class AsymmetricLoss(nn.Module):
 
         if self.implementation == "alibaba-miil":
             self.targets = self.anti_targets = self.xs_pos = self.xs_neg = self.asymmetric_w = self.loss = None
-        else:
+        elif self.implementation in ["deep-psp", "deeppsp",]:
             self.targets = self.anti_targets = self.xs_pos = self.xs_neg = self.loss = self.loss_pos = self.loss_neg = None
 
     def forward(self, input:Tensor, target:Tensor) -> Tensor:
