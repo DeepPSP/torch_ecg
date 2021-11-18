@@ -131,6 +131,12 @@ class BaseTrainer(ABC):
     def train(self) -> OrderedDict:
         """ finished, checked,
         """
+        self._setup_optimizer()
+
+        self._setup_scheduler()
+
+        self._setup_criterion()
+
         msg = textwrap.dedent(f"""
             Starting training:
             ------------------
@@ -202,7 +208,8 @@ class BaseTrainer(ABC):
                 self.save_checkpoint(save_path)
 
                 # update learning rate using lr_scheduler
-                self._update_lr(eval_res)
+                if self.train_config.lr_scheduler.lower() == "plateau":
+                    self._update_lr(eval_res)
 
                 self.log_manager.epoch_end(self.epoch)
 
@@ -253,14 +260,15 @@ class BaseTrainer(ABC):
                 self.optimizer.zero_grad()
                 loss.backward()
             self.optimizer.step()
+            self._update_lr()
 
             if self.global_step % self.train_config.log_step == 0:
                 train_step_metrics = {"loss": loss.item()}
                 if self.scheduler:
-                    train_step_metrics.update({"lr": self.scheduler.get_lr()[0]})
+                    train_step_metrics.update({"lr": self.scheduler.get_last_lr()[0]})
                     pbar.set_postfix(**{
                         "loss (batch)": loss.item(),
-                        "lr": self.scheduler.get_lr()[0],
+                        "lr": self.scheduler.get_last_lr()[0],
                     })
                 else:
                     pbar.set_postfix(**{
@@ -360,7 +368,7 @@ class BaseTrainer(ABC):
         """
         raise NotImplementedError
 
-    def _update_lr(self, eval_res:dict) -> NoReturn:
+    def _update_lr(self, eval_res:Optional[dict]=None) -> NoReturn:
         """ finished, NOT checked,
 
         update learning rate using lr_scheduler, perhaps based on the eval_res
@@ -373,14 +381,16 @@ class BaseTrainer(ABC):
         if self.train_config.lr_scheduler is None:
             pass
         elif self.train_config.lr_scheduler.lower() == "plateau":
+            if eval_res is None:
+                return
             metrics = eval_res[self.train_config.monitor]
             if isinstance(metrics, torch.Tensor):
                 metrics = metrics.item()
-            self.scheduler.step(metrics)
+            self.scheduler.step(metrics, epoch=self.epoch)
         elif self.train_config.lr_scheduler.lower() == "step":
-            self.scheduler.step()
+            self.scheduler.step(epoch=self.epoch)
         elif self.train_config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
-            self.scheduler.step()
+            self.scheduler.step(epoch=self.epoch)
 
     def _setup_from_config(self, train_config:dict) -> NoReturn:
         """ finished, checked,
@@ -397,9 +407,6 @@ class BaseTrainer(ABC):
             self._train_config.model_dir = self.train_config.checkpoints
         self._validate_train_config()
 
-        msg = f"training configurations are as follows:\n{dict_to_str(self.train_config)}"
-        self.log_manager.log_message(msg)
-
         self.n_epochs = self.train_config.n_epochs
         self.batch_size = self.train_config.batch_size
         self.lr = self.train_config.learning_rate
@@ -409,13 +416,10 @@ class BaseTrainer(ABC):
 
         self._setup_log_manager()
 
+        msg = f"training configurations are as follows:\n{dict_to_str(self.train_config)}"
+        self.log_manager.log_message(msg)
+
         self._setup_augmenter_manager()
-
-        self._setup_optimizer()
-
-        self._setup_scheduler()
-
-        self._setup_criterion()
 
         os.makedirs(self.train_config.checkpoints, exist_ok=True)
         os.makedirs(self.train_config.model_dir, exist_ok=True)
@@ -519,10 +523,14 @@ class BaseTrainer(ABC):
         if self.train_config.lr_scheduler is None:
             self.scheduler = None
         elif self.train_config.lr_scheduler.lower() == "plateau":
-            self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, "max", patience=2)
+            self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+                self.optimizer, "max", patience=2, verbose=self.train_config.debug,
+            )
         elif self.train_config.lr_scheduler.lower() == "step":
             self.scheduler = optim.lr_scheduler.StepLR(
-                self.optimizer, self.train_config.lr_step_size, self.train_config.lr_gamma
+                self.optimizer,
+                self.train_config.lr_step_size, self.train_config.lr_gamma,
+                verbose=self.train_config.debug,
             )
         elif self.train_config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
             self.scheduler = optim.lr_scheduler.OneCycleLR(
@@ -530,6 +538,7 @@ class BaseTrainer(ABC):
                 max_lr=self.train_config.max_lr,
                 epochs=self.n_epochs,
                 steps_per_epoch=len(self.train_loader),
+                verbose=self.train_config.debug,
             )
         else:
             raise NotImplementedError(f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training")

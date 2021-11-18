@@ -160,7 +160,7 @@ class TxtLogger(BaseLogger):
         else:
             log_suffix = f"_{log_suffix}"
         self.log_file = f"{DEFAULTS.prefix}_{get_date_str()}{log_suffix}.txt"
-        self.logger = init_logger(self.log_dir, self.log_file)
+        self.logger = init_logger(self.log_dir, self.log_file, verbose=1)
         self.step = -1
 
     def log_metrics(self,
