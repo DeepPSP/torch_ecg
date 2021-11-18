@@ -60,7 +60,8 @@ class BaseTrainer(ABC):
                  dataset_cls:Dataset,
                  model_config:dict,
                  train_config:dict,
-                 device:Optional[torch.device]=None,) -> NoReturn:
+                 device:Optional[torch.device]=None,
+                 lazy:bool=False,) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -92,7 +93,9 @@ class BaseTrainer(ABC):
                     "decay": float, optional, depending on the optimizer
                     "momentum": float, optional, depending on the optimizer
         device: torch.device, optional,
-            the device to be used for training,
+            the device to be used for training
+        lazy: bool, default False,
+            whether to initialize the data loader lazily
         """
         self.model = model
         if type(self.model).__name__ in ["DataParallel",]:
@@ -106,6 +109,7 @@ class BaseTrainer(ABC):
         self.device = device or next(self._model.parameters()).device
         self.dtype = next(self._model.parameters()).dtype
         self.model.to(self.device)
+        self.lazy = lazy
 
         self.log_manager = None
         self.augmenter_manager = None
@@ -127,6 +131,21 @@ class BaseTrainer(ABC):
     def train(self) -> OrderedDict:
         """ finished, checked,
         """
+        msg = textwrap.dedent(f"""
+            Starting training:
+            ------------------
+            Epochs:          {self.n_epochs}
+            Batch size:      {self.batch_size}
+            Learning rate:   {self.lr}
+            Training size:   {self.n_train}
+            Validation size: {self.n_val}
+            Device:          {self.device.type}
+            Optimizer:       {self.train_config.optimizer}
+            Dataset classes: {self.train_config.classes}
+            -----------------------------------------
+            """)
+        self.log_manager.log_message(msg)
+
         start_epoch = self.epoch
         for _ in range(start_epoch, self.n_epochs):
             # train one epoch
@@ -198,6 +217,7 @@ class BaseTrainer(ABC):
                 save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"
             save_path = os.path.join(self.train_config.model_dir, save_filename)
             self.save_checkpoint(path=save_path)
+            self.log_manager.log_message(f"best model is saved at {save_path}")
         else:
             raise ValueError("No best model found!")
 
@@ -377,34 +397,17 @@ class BaseTrainer(ABC):
             self._train_config.model_dir = self.train_config.checkpoints
         self._validate_train_config()
 
+        msg = f"training configurations are as follows:\n{dict_to_str(self.train_config)}"
+        self.log_manager.log_message(msg)
+
         self.n_epochs = self.train_config.n_epochs
         self.batch_size = self.train_config.batch_size
         self.lr = self.train_config.learning_rate
 
-        self._setup_dataloaders()
-
-        self.n_train = len(self.train_loader.dataset)
-        self.n_val = len(self.val_loader.dataset)
+        if not self.lazy:
+            self._setup_dataloaders()
 
         self._setup_log_manager()
-
-        msg = f"training configurations are as follows:\n{dict_to_str(self.train_config)}"
-        self.log_manager.log_message(msg)
-
-        msg = textwrap.dedent(f"""
-            Starting training:
-            ------------------
-            Epochs:          {self.n_epochs}
-            Batch size:      {self.batch_size}
-            Learning rate:   {self.lr}
-            Training size:   {self.n_train}
-            Validation size: {self.n_val}
-            Device:          {self.device.type}
-            Optimizer:       {self.train_config.optimizer}
-            Dataset classes: {self.train_config.classes}
-            -----------------------------------------
-            """)
-        self.log_manager.log_message(msg)
 
         self._setup_augmenter_manager()
 
@@ -434,16 +437,18 @@ class BaseTrainer(ABC):
         """
         self.augmenter_manager = AugmenterManager.from_config(config=self.train_config)
 
-    def _setup_dataloaders(self) -> NoReturn:
+    def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
         """ finished, checked,
         """
-        train_dataset = self.dataset_cls(config=self.train_config, training=True)
+        if train_dataset is None:
+            train_dataset = self.dataset_cls(config=self.train_config, training=True)
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
-        val_dataset = self.dataset_cls(config=self.train_config, training=False)
+        if val_dataset is None:
+            val_dataset = self.dataset_cls(config=self.train_config, training=False)
 
          # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         num_workers = 4
@@ -479,6 +484,8 @@ class BaseTrainer(ABC):
             drop_last=False,
             collate_fn=collate_fn,
         )
+        self.n_train = len(self.train_loader.dataset)
+        self.n_val = len(self.val_loader.dataset)
 
     def _setup_optimizer(self) -> NoReturn:
         """ finished, checked,

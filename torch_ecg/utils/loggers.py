@@ -191,7 +191,7 @@ class TxtLogger(BaseLogger):
             prefix = f"Epoch {epoch} / {prefix}"
         _metrics = {k: v.item() if isinstance(v, torch.Tensor) else v for k,v in metrics.items()}
         spaces = len(max(_metrics.keys(), key=len))
-        msg = f"{part.capitalize()} Metrics:\n{self.short_sep}" \
+        msg = f"{part.capitalize()} Metrics:\n{self.short_sep}\n" \
             + "\n".join([f"{prefix}{part}/{k} : {' '*(spaces-len(k))}{v:.4f}" for k,v in _metrics.items()]) \
             + f"\n{self.short_sep}"
         self.log_message(msg)
@@ -342,7 +342,6 @@ class CSVLogger(BaseLogger):
         """
         """
         self.flush()
-        super().close()
 
     def __del__(self):
         """
