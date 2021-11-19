@@ -113,6 +113,9 @@ class BaseTrainer(ABC):
 
         self.log_manager = None
         self.augmenter_manager = None
+        self.train_loader = None
+        self.val_train_loader = None
+        self.val_loader = None
         self._setup_from_config(self._train_config)
 
         # monitor for training: challenge metric
@@ -233,7 +236,7 @@ class BaseTrainer(ABC):
         return self.best_state_dict
 
     def train_one_epoch(self, pbar:tqdm) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
 
         train one epoch, and update the progress bar
 
@@ -386,11 +389,11 @@ class BaseTrainer(ABC):
             metrics = eval_res[self.train_config.monitor]
             if isinstance(metrics, torch.Tensor):
                 metrics = metrics.item()
-            self.scheduler.step(metrics, epoch=self.epoch)
+            self.scheduler.step(metrics)
         elif self.train_config.lr_scheduler.lower() == "step":
-            self.scheduler.step(epoch=self.epoch)
+            self.scheduler.step()
         elif self.train_config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
-            self.scheduler.step(epoch=self.epoch)
+            self.scheduler.step()
 
     def _setup_from_config(self, train_config:dict) -> NoReturn:
         """ finished, checked,
@@ -441,22 +444,27 @@ class BaseTrainer(ABC):
         """
         self.augmenter_manager = AugmenterManager.from_config(config=self.train_config)
 
+    @abstractmethod
     def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
         """ finished, checked,
-        """
+
+        setup the dataloaders for training and validation
+
+        Parameters
+        ----------
+        train_dataset: Dataset, optional,
+            the training dataset
+        val_dataset: Dataset, optional,
+            the validation dataset
+
+        Examples
+        --------
+        ```python
         if train_dataset is None:
-            train_dataset = self.dataset_cls(config=self.train_config, training=True)
-
-        if self.train_config.debug:
-            val_train_dataset = train_dataset
-        else:
-            val_train_dataset = None
+            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
         if val_dataset is None:
-            val_dataset = self.dataset_cls(config=self.train_config, training=False)
-
-         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
         num_workers = 4
-
         self.train_loader = DataLoader(
             dataset=train_dataset,
             batch_size=self.batch_size,
@@ -466,19 +474,6 @@ class BaseTrainer(ABC):
             drop_last=False,
             collate_fn=collate_fn,
         )
-
-        if self.train_config.debug:
-            self.val_train_loader = DataLoader(
-                dataset=val_train_dataset,
-                batch_size=self.batch_size,
-                shuffle=True,
-                num_workers=num_workers,
-                pin_memory=True,
-                drop_last=False,
-                collate_fn=collate_fn,
-            )
-        else:
-            self.val_train_loader = None
         self.val_loader = DataLoader(
             dataset=val_dataset,
             batch_size=self.batch_size,
@@ -488,8 +483,21 @@ class BaseTrainer(ABC):
             drop_last=False,
             collate_fn=collate_fn,
         )
-        self.n_train = len(self.train_loader.dataset)
-        self.n_val = len(self.val_loader.dataset)
+        ```
+        """
+        raise NotImplementedError
+
+    @property
+    def n_train(self) -> int:
+        if self.train_loader is not None:
+            return len(self.train_loader.dataset)
+        return 0
+
+    @property
+    def n_val(self) -> int:
+        if self.val_loader is not None:
+            return len(self.val_loader.dataset)
+        return 0
 
     def _setup_optimizer(self) -> NoReturn:
         """ finished, checked,
@@ -524,13 +532,13 @@ class BaseTrainer(ABC):
             self.scheduler = None
         elif self.train_config.lr_scheduler.lower() == "plateau":
             self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-                self.optimizer, "max", patience=2, verbose=self.train_config.debug,
+                self.optimizer, "max", patience=2, verbose=False,
             )
         elif self.train_config.lr_scheduler.lower() == "step":
             self.scheduler = optim.lr_scheduler.StepLR(
                 self.optimizer,
                 self.train_config.lr_step_size, self.train_config.lr_gamma,
-                verbose=self.train_config.debug,
+                verbose=False,
             )
         elif self.train_config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
             self.scheduler = optim.lr_scheduler.OneCycleLR(
@@ -538,7 +546,7 @@ class BaseTrainer(ABC):
                 max_lr=self.train_config.max_lr,
                 epochs=self.n_epochs,
                 steps_per_epoch=len(self.train_loader),
-                verbose=self.train_config.debug,
+                verbose=False,
             )
         else:
             raise NotImplementedError(f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training")

@@ -161,7 +161,7 @@ ECG_CRNN_CONFIG.global_pool = "max"  # "avg", "attn"
 
 ECG_CRNN_CONFIG.clf = ED()
 ECG_CRNN_CONFIG.clf.out_channels = [
-    512,
+    1024,
     # not including the last linear layer, whose out channels equals n_classes
 ]
 ECG_CRNN_CONFIG.clf.activation = "mish"
