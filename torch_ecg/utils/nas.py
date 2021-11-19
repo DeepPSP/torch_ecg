@@ -32,7 +32,16 @@ class NAS:
 
         Parameters
         ----------
-        to write
+        trainer_cls: BaseTrainer,
+            trainer class
+        model_cls: nn.Module,
+            model class
+        dataset_cls: Dataset,
+            dataset class
+        train_config: dict,
+            train configurations
+        model_configs: sequence of dict,
+            model configurations, each with a different network architecture
         """
         self.trainer_cls = trainer_cls
         self.model_cls = model_cls
