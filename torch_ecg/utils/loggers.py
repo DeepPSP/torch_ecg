@@ -256,6 +256,7 @@ class TxtLogger(BaseLogger):
         """
         for h in self.logger.handlers:
             h.close()
+            self.logger.removeHandler(h)
         logging.shutdown()
 
     @classmethod
