@@ -95,7 +95,7 @@ class PreprocManager:
         ordering = list(range(len(self.preprocessors)))
         if self.random:
             ordering = sample(ordering, len(ordering))
-        pp_sig = sig.copy()
+        pp_sig = sig
         new_fs = fs
         for idx in ordering:
             pp_sig, new_fs = self.preprocessors[idx](pp_sig, new_fs)

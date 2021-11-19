@@ -566,7 +566,7 @@ def remove_spikes_naive(sig:np.ndarray, threshold:Real=20) -> np.ndarray:
         signal with `spikes` removed
     """
     b = list(filter(lambda k: k > 0, np.argwhere(np.abs(sig)>threshold).squeeze(-1)))
-    filtered_sig = sig.copy()
+    filtered_sig = sig
     for k in b:
         filtered_sig[k] = filtered_sig[k-1]
     return filtered_sig
@@ -699,7 +699,7 @@ def get_ampl(sig:np.ndarray,
     if fmt.lower() in ["channel_last", "lead_last"]:
         _sig = sig.T
     else:
-        _sig = sig.copy()
+        _sig = sig
     _window = int(round(window * fs))
     half_window = _window // 2
     _window = half_window * 2

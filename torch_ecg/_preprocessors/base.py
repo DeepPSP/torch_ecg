@@ -128,7 +128,7 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
         filtered_ecg = raw_sig.T
     else:
-        filtered_ecg = raw_sig.copy()
+        filtered_ecg = raw_sig
 
     # remove baseline
     if bl_win:
@@ -206,7 +206,7 @@ def preprocess_single_lead_signal(raw_sig:np.ndarray,
     bandpass filter uses FIR filters, an alternative can be Butterworth filter,
     e.g. `butter_bandpass_filter` in `utils.utils_singal`
     """
-    filtered_ecg = raw_sig.copy()
+    filtered_ecg = raw_sig
 
     # remove baseline
     if bl_win:
