@@ -106,7 +106,8 @@ class AugmenterManager(torch.nn.Module):
         Tensor(s), the augmented ECGs, labels, and optional extra tensors
         """
         if len(self.augmenters) == 0:
-            raise ValueError("No augmenters added to the manager.")
+            # raise ValueError("No augmenters added to the manager.")
+            return (sig, label, *extra_tensors)
         ordering = list(range(len(self.augmenters)))
         if self.random:
             ordering = sample(ordering, len(ordering))

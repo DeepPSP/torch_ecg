@@ -91,7 +91,8 @@ class PreprocManager:
             the sampling frequency of the preprocessed signal
         """
         if len(self.preprocessors) == 0:
-            raise ValueError("No preprocessors added to the manager.")
+            # raise ValueError("No preprocessors added to the manager.")
+            return sig, fs
         ordering = list(range(len(self.preprocessors)))
         if self.random:
             ordering = sample(ordering, len(ordering))
