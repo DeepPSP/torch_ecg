@@ -84,6 +84,9 @@ class Mixup(Augmenter):
             if set in the input arguments, unchanged
         """
         batch, lead, siglen = sig.shape
+        # TODO: make `lam` different for each batch element, using
+        # lam = torch.from_numpy(np.random.beta(self.alpha, self.beta, batch), dtype=sig.dtype, device=sig.device)
+        # of shape (batch,)
         lam = np.random.beta(self.alpha, self.beta)
         indices = np.arange(batch, dtype=int)
         ori = self.get_indices(prob=self.prob, pop_size=batch)
@@ -99,6 +102,9 @@ class Mixup(Augmenter):
 
         sig = lam * sig + (1 - lam) * sig[indices]
         label = lam * label + (1 - lam) * label[indices]
+        # TODO: if `lam` is a Tensor of shape (batch,) instead of a scalar,
+        # sig = lam.view(batch, 1, 1) * sig + (1 - lam).view(batch, 1, 1) * sig[indices]
+        # label = lam.view(batch, 1) * label + (1 - lam).view(batch, 1) * label[indices]
 
         return (sig, label, *extra_tensors)
 
