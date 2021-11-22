@@ -254,7 +254,7 @@ class ECG_CRNN(nn.Module):
             features = features.permute(2,0,1)
 
         # Attention (optional)
-        if self.attn is None and x.ndim == 3:
+        if self.attn is None and features.ndim == 3:
             # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
             features = features.permute(1,2,0)
         elif self.config.attn.name.lower() in ["nl", "se", "gc"]:
