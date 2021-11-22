@@ -558,7 +558,7 @@ class Conv_Bn_Activation(nn.Sequential):
                 padding=self.__padding,
                 channel_last=False,
             )
-        elif self.__conv_type == "separable":
+        elif self.__conv_type in ["separable", "anti_alias", "aa",]:
             output_shape = self.conv1d.compute_output_shape(seq_len, batch_size)
         return output_shape
 
