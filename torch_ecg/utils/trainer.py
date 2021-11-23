@@ -381,7 +381,7 @@ class BaseTrainer(ABC):
         eval_res: dict,
             the evaluation results (metrics)
         """
-        if self.train_config.lr_scheduler is None:
+        if self.train_config.lr_scheduler.lower() == "none":
             pass
         elif self.train_config.lr_scheduler.lower() == "plateau":
             if eval_res is None:
@@ -528,7 +528,8 @@ class BaseTrainer(ABC):
     def _setup_scheduler(self) -> NoReturn:
         """ finished, checked,
         """
-        if self.train_config.lr_scheduler is None:
+        if self.train_config.lr_scheduler is None or self.train_config.lr_scheduler.lower() == "none":
+            self.train_config.lr_scheduler = "none"
             self.scheduler = None
         elif self.train_config.lr_scheduler.lower() == "plateau":
             self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
