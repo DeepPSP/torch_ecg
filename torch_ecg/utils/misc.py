@@ -45,6 +45,7 @@ __all__ = [
     "read_log_txt", "read_event_scalars",
     "dicts_equal",
     "default_class_repr",
+    "MovingAverage",
 ]
 
 
@@ -1049,3 +1050,134 @@ def default_class_repr(c:object, align:str="center", depth:int=1) -> str:
     else:
         extra_str = ""
     return f"{c.__class__.__name__}{extra_str}"
+
+
+class MovingAverage(object):
+    """ finished, checked, to be improved,
+
+    moving average
+
+    References
+    ----------
+    [1] https://en.wikipedia.org/wiki/Moving_average
+    """
+    def __init__(self, data:Optional[Sequence]=None, **kwargs:Any) -> NoReturn:
+        """
+        Parameters
+        ----------
+        data: array_like,
+            the series data to compute its moving average
+        kwargs: auxilliary key word arguments
+        """
+        if data is None:
+            self.data = np.array([])
+        else:
+            self.data = np.array(data)
+        self.verbose = kwargs.get("verbose", 0)
+
+    def __call__(self, data:Optional[Sequence]=None, method:str="ema", **kwargs:Any) -> np.ndarray:
+        """
+        Parameters
+        ----------
+        method: str,
+            method for computing moving average, can be one of
+            - "sma", "simple", "simple moving average"
+            - "ema", "ewma", "exponential", "exponential weighted", "exponential moving average", "exponential weighted moving average"
+            - "cma", "cumulative", "cumulative moving average"
+            - "wma", "weighted", "weighted moving average"
+        """
+        m = method.lower().replace("_", " ")
+        if m in ["sma", "simple", "simple moving average"]:
+            func = self._sma
+        elif m in ["ema", "ewma", "exponential", "exponential weighted", "exponential moving average", "exponential weighted moving average"]:
+            func = self._ema
+        elif m in ["cma", "cumulative", "cumulative moving average"]:
+            func = self._cma
+        elif m in ["wma", "weighted", "weighted moving average"]:
+            func = self._wma
+        else:
+            raise NotImplementedError
+        if data is not None:
+            self.data = np.array(data)
+        return func(**kwargs)
+
+    def _sma(self, window:int=5, center:bool=False, **kwargs:Any) -> np.ndarray:
+        """
+        simple moving average
+
+        Parameters
+        ----------
+        window: int, default 5,
+            window length of the moving average
+        center: bool, default False,
+            if True, when computing the output value at each point, the window will be centered at that point;
+            otherwise the previous `window` points of the current point will be used
+        """
+        smoothed = []
+        if center:
+            hw = window//2
+            window = hw*2+1
+        for n in range(window):
+            smoothed.append(np.mean(self.data[:n+1]))
+        prev = smoothed[-1]
+        for n, d in enumerate(self.data[window:]):
+            s = prev + (d - self.data[n]) / window
+            prev = s
+            smoothed.append(s)
+        smoothed = np.array(smoothed)
+        if center:
+            smoothed[hw:-hw] = smoothed[window-1:]
+            for n in range(hw):
+                smoothed[n] = np.mean(self.data[:n+hw+1])
+                smoothed[-n-1] = np.mean(self.data[-n-hw-1:])
+        return smoothed
+
+    def _ema(self, weight:float=0.6, **kwargs:Any) -> np.ndarray:
+        """
+        exponential moving average,
+        which is also the function used in Tensorboard Scalar panel,
+        whose parameter `smoothing` is the `weight` here
+
+        Parameters
+        ----------
+        weight: float, default 0.6,
+            weight of the previous data point
+        """
+        smoothed = []
+        prev = self.data[0]
+        for d in self.data:
+            s = prev * weight + (1 - weight) * d
+            prev = s
+            smoothed.append(s)
+        smoothed = np.array(smoothed)
+        return smoothed
+
+    def _cma(self, **kwargs) -> np.ndarray:
+        """
+        cumulative moving average
+        """
+        smoothed = []
+        prev = 0
+        for n, d in enumerate(self.data):
+            s = prev + (d - prev) / (n+1)
+            prev = s
+            smoothed.append(s)
+        smoothed = np.array(smoothed)
+        return smoothed
+
+    def _wma(self, window:int=5, **kwargs:Any) -> np.ndarray:
+        """
+        weighted moving average
+
+        Parameters
+        ----------
+        window: int, default 5,
+            window length of the moving average
+        """
+        # smoothed = []
+        # total = []
+        # numerator = []
+        conv = np.arange(1, window+1)[::-1]
+        deno = np.sum(conv)
+        smoothed = np.convolve(conv, self.data, mode="same") / deno
+        return smoothed
