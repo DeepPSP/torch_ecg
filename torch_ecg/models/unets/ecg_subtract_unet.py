@@ -464,7 +464,7 @@ class ECG_SUBTRACT_UNET(nn.Module):
 
     entry 0433 of CPSC2019
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "ECG_SUBTRACT_UNET"
 
     def __init__(self, classes:Sequence[str], n_leads:int, config:dict) -> NoReturn:

@@ -656,7 +656,7 @@ class ResNet(nn.Sequential):
     1. check performances of activations other than "nn.ReLU", especially mish and swish
     2. add functionality of "replace_stride_with_dilation"
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "ResNet"
     building_block = ResNetBasicBlock
     __DEFAULT_CONFIG__ = ED(
