@@ -27,8 +27,9 @@ class NAS:
                  model_cls:nn.Module,
                  dataset_cls:Dataset,
                  train_config:dict,
-                 model_configs:Sequence[dict],) -> NoReturn:
-        """ finished, NOT checked,
+                 model_configs:Sequence[dict],
+                 lazy:bool=False,) -> NoReturn:
+        """ finished, checked,
 
         Parameters
         ----------
@@ -42,15 +43,28 @@ class NAS:
             train configurations
         model_configs: sequence of dict,
             model configurations, each with a different network architecture
+        lazy: bool, default False,
+            whether to load the dataset in the trainer at initialization
         """
         self.trainer_cls = trainer_cls
         self.model_cls = model_cls
         self.dataset_cls = dataset_cls
         self.train_config = ED(train_config)
-        self.model_configs = ED(model_configs)
+        self.model_configs = model_configs
+        self.lazy = lazy
+        if not lazy:
+            self.ds_train = self.dataset_cls(
+                self.train_config, training=True, lazy=False
+            )
+            self.ds_val = self.dataset_cls(
+                self.train_config, training=False, lazy=False
+            )
+        else:
+            self.ds_train = None
+            self.ds_val = None
 
     def search(self) -> NoReturn:
-        """ finished, NOT checked,
+        """ finished, checked,
         """
         model = self.model_cls(
             classes=self.train_config.classes,
@@ -68,12 +82,15 @@ class NAS:
             model=model,
             dataset_cls=self.dataset_cls,
             train_config=self.train_config,
-            model_configs=self.model_configs[0],
+            model_config=self.model_configs[0],
             device=device,
-            lazy=False,
+            lazy=True,
         )
-        ds_train = trainer.train_loader.dataset
-        ds_val = trainer.val_loader.dataset
+
+        if self.ds_train is None or self.ds_val is None:
+            raise ValueError("training dataset or validation dataset is not set")
+
+        trainer._setup_dataloaders(self.ds_train, self.ds_val)
 
         trainer.train()
 
@@ -96,7 +113,7 @@ class NAS:
                 model=model,
                 dataset_cls=self.dataset_cls,
                 train_config=self.train_config,
-                model_configs=model_config,
+                model_config=model_config,
                 device=device,
                 lazy=True,
             )
@@ -107,3 +124,16 @@ class NAS:
             del model
             del trainer
             torch.cuda.empty_cache()
+
+    def _setup_dataset(self, ds_train:Dataset, ds_val:Dataset) -> NoReturn:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        ds_train: Dataset,
+            training dataset
+        ds_val: Dataset,
+            validation dataset
+        """
+        self.ds_train = ds_train
+        self.ds_val = ds_val
