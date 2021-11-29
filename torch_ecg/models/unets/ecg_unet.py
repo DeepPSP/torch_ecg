@@ -412,7 +412,7 @@ class ECG_UNET(nn.Module):
     [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
     [2] https://github.com/milesial/Pytorch-UNet/
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "ECG_UNET"
     
     def __init__(self, classes:Sequence[str], n_leads:int, config:dict) -> NoReturn:

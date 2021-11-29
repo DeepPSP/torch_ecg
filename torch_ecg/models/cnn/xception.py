@@ -56,7 +56,7 @@ class XceptionMultiConv(nn.Module):
     -> n(2 or 3) x (activation -> norm -> sep_conv) (-> optional sub-sample) ->
     |-------------------------------- shortcut ------------------------------|
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "XceptionMultiConv"
 
     def __init__(self,
@@ -217,7 +217,7 @@ class XceptionEntryFlow(nn.Sequential):
     consisting of 2 initial convolutions which subsamples at the first one,
     followed by several Xception blocks of 2 convolutions and of sub-sampling size 2
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "XceptionEntryFlow"
 
     def __init__(self,
@@ -417,7 +417,7 @@ class XceptionMiddleFlow(nn.Sequential):
     Middle flow of the Xception model,
     consisting of several Xception blocks of 3 convolutions and without sub-sampling
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "XceptionMiddleFlow"
 
     def __init__(self,
@@ -568,7 +568,7 @@ class XceptionExitFlow(nn.Sequential):
     consisting of several Xception blocks of 2 convolutions,
     followed by several separable convolutions
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "XceptionExitFlow"
 
     def __init__(self,
@@ -763,7 +763,7 @@ class Xception(nn.Sequential):
     [2] https://github.com/keras-team/keras-applications/blob/master/keras_applications/xception.py
     [3] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "Xception"
 
     def __init__(self, in_channels:int, **config) -> NoReturn:

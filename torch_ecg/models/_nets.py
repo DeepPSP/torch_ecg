@@ -895,7 +895,7 @@ class SeparableConv(nn.Sequential):
     [1] Kaiser, Lukasz, Aidan N. Gomez, and Francois Chollet. "Depthwise separable convolutions for neural machine translation." arXiv preprint arXiv:1706.03059 (2017).
     [2] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "SeparableConv"
 
     def __init__(self,
@@ -1350,7 +1350,7 @@ class BlurPool(nn.Module):
     3. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py
     4. https://github.com/kornia/kornia/blob/master/kornia/filters/blur_pool.py
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "BlurPool"
 
     def __init__(self,
@@ -2784,7 +2784,7 @@ class SEBlock(nn.Module):
     [3] https://github.com/hujie-frank/SENet
     [4] https://github.com/moskomule/senet.pytorch/blob/master/senet/se_module.py
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "SEBlock"
     __DEFAULT_CONFIG__ = ED(
         bias=False, activation="relu", kw_activation={"inplace": True}, dropouts=0.0
@@ -2931,7 +2931,7 @@ class GlobalContextBlock(nn.Module):
     NOTE that in refs. [1,2], `mid-channels` is raised from `in_channels` by a factor of `ratio`,
     while in [3], it is reduced from `in_channels` (divided) by `ratio`
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "GlobalContextBlock"
     __POOLING_TYPES__ = ["attn", "avg",]
     __FUSION_TYPES__ = ["add", "mul",]
