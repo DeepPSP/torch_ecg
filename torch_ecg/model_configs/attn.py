@@ -11,6 +11,7 @@ __all__ = [
     "non_local",
     "squeeze_excitation",
     "global_context",
+    "transformer",
 ]
 
 
@@ -35,3 +36,11 @@ global_context.ratio = 8
 global_context.reduction = False
 global_context.pooling_type = "attn"
 global_context.fusion_types = ["mul",]
+
+
+transformer = ED()
+transformer.hidden_size = 1024
+transformer.num_heads = 8
+transformer.num_layers = 1
+transformer.dropout = 0.1
+transformer.activation = "relu"

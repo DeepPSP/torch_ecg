@@ -32,6 +32,7 @@ from .attn import (
     non_local,
     squeeze_excitation,
     global_context,
+    transformer,
 )
 from ..utils.utils_nn import adjust_cnn_filter_lengths
 
@@ -151,6 +152,8 @@ ECG_CRNN_CONFIG.attn.se = deepcopy(squeeze_excitation)
 ECG_CRNN_CONFIG.attn.gc = deepcopy(global_context)
 
 ECG_CRNN_CONFIG.attn.nl = deepcopy(non_local)
+
+ECG_CRNN_CONFIG.attn.transformer = deepcopy(transformer)
 
 
 

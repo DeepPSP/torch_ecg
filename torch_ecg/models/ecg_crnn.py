@@ -41,6 +41,7 @@ from .cnn.xception import Xception
 # from .cnn import (
 #     VGG16, ResNet, MultiScopicCNN, DenseNet, Xception,
 # )
+from .transformers import Transformer
 
 
 if DEFAULTS.torch_dtype.lower() == "double":
@@ -187,6 +188,16 @@ class ECG_CRNN(nn.Module):
                 bias=self.config.attn.sa.bias,
             )
             clf_input_size = self.attn.compute_output_shape(None, None)[-1]
+        elif self.config.attn.name.lower() == "transformer":
+            self.attn = Transformer(
+                input_size=attn_input_size,
+                hidden_size=self.config.attn.transformer.hidden_size,
+                num_layers=self.config.attn.transformer.num_layers,
+                num_heads=self.config.attn.transformer.num_heads,
+                dropout=self.config.attn.transformer.dropout,
+                activation=self.config.attn.transformer.activation,
+            )
+            clf_input_size = self.attn.compute_output_shape(None, None)[-1]
         else:
             raise NotImplementedError
 
@@ -263,6 +274,10 @@ class ECG_CRNN(nn.Module):
             features = self.attn(features)  # (batch_size, channels, seq_len)
         elif self.config.attn.name.lower() in ["sa"]:
             features = self.attn(features)  # (seq_len, batch_size, channels)
+            # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
+            features = features.permute(1,2,0)
+        elif self.config.attn.name.lower() in ["transformer"]:
+            features = self.attn(features)
             # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
             features = features.permute(1,2,0)
         return features

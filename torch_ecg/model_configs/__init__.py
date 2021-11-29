@@ -50,7 +50,10 @@ from .cnn import (
 )
 from .rnn import lstm, attention
 from .mlp import linear
-from .attn import non_local, squeeze_excitation, global_context
+from .attn import (
+    non_local, squeeze_excitation, global_context,
+    transformer,
+)
 
 from .ati_cnn import ATI_CNN_CONFIG
 from .ecg_crnn import ECG_CRNN_CONFIG
@@ -122,6 +125,7 @@ __all__ = [
     "non_local",
     "squeeze_excitation",
     "global_context",
+    "transformer",
 
 
     # downstream tasks
