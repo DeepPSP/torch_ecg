@@ -117,7 +117,7 @@ class NAS:
                 device=device,
                 lazy=True,
             )
-            trainer._setup_train_loader(ds_train, ds_val)
+            trainer._setup_dataloaders(ds_train, ds_val)
 
             trainer.train()
 
