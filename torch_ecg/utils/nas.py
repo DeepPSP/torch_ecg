@@ -66,39 +66,10 @@ class NAS:
     def search(self) -> NoReturn:
         """ finished, checked,
         """
-        model = self.model_cls(
-            classes=self.train_config.classes,
-            n_leads=self.train_config.n_leads,
-            config=self.model_configs[0],
-        )
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        if torch.cuda.device_count() > 1:
-            model = DP(model)
-            # model = DDP(model)
-        model.to(device=device)
-        model.train()
-
-        trainer = self.trainer_cls(
-            model=model,
-            dataset_cls=self.dataset_cls,
-            train_config=self.train_config,
-            model_config=self.model_configs[0],
-            device=device,
-            lazy=True,
-        )
-
         if self.ds_train is None or self.ds_val is None:
             raise ValueError("training dataset or validation dataset is not set")
-
-        trainer._setup_dataloaders(self.ds_train, self.ds_val)
-
-        trainer.train()
-
-        del model
-        del trainer
-        torch.cuda.empty_cache()
-
-        for model_config in self.model_configs[1:]:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        for model_config in self.model_configs:
             model = self.model_cls(
                 classes=self.train_config.classes,
                 n_leads=self.train_config.n_leads,
@@ -117,8 +88,7 @@ class NAS:
                 device=device,
                 lazy=True,
             )
-            trainer._setup_dataloaders(ds_train, ds_val)
-
+            trainer._setup_dataloaders(self.ds_train, self.ds_val)
             trainer.train()
 
             del model
