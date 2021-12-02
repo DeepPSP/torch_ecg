@@ -17,7 +17,7 @@ from torch import Tensor
 from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
-from ...utils.utils_nn import compute_module_size
+from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str
 from ...models._nets import (
     Activations,
@@ -38,7 +38,7 @@ __all__ = [
 ]
 
 
-class MidPointResNet(nn.Module):
+class MidPointResNet(SizeMixin, nn.Module):
     """
     """
     def __init__(self, in_channels:int, **config) -> NoReturn:
@@ -47,7 +47,7 @@ class MidPointResNet(nn.Module):
         raise NotImplementedError
 
 
-class RK4ResNet(nn.Module):
+class RK4ResNet(SizeMixin, nn.Module):
     """
     """
     def __init__(self, in_channels:int, **config) -> NoReturn:
@@ -56,11 +56,10 @@ class RK4ResNet(nn.Module):
         raise NotImplementedError
 
 
-class RK8ResNet(nn.Module):
+class RK8ResNet(SizeMixin, nn.Module):
     """
     """
     def __init__(self, in_channels:int, **config) -> NoReturn:
         """
         """
         raise NotImplementedError
-

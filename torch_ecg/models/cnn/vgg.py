@@ -17,6 +17,7 @@ from ...cfg import DEFAULTS
 from ...utils.utils_nn import (
     compute_maxpool_output_shape,
     compute_module_size,
+    SizeMixin,
 )
 from ...utils.misc import dict_to_str
 from ...models._nets import (
@@ -34,7 +35,7 @@ __all__ = [
 ]
 
 
-class VGGBlock(nn.Sequential):
+class VGGBlock(SizeMixin, nn.Sequential):
     """ finished, checked,
 
     building blocks of the CNN feature extractor `VGG16`
@@ -150,18 +151,8 @@ class VGGBlock(nn.Sequential):
             num_layers += 1
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class VGG16(nn.Sequential):
+class VGG16(SizeMixin, nn.Sequential):
     """ finished, checked,
 
     CNN feature extractor of the CRNN models proposed in refs of `ECG_CRNN`
@@ -249,13 +240,3 @@ class VGG16(nn.Sequential):
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
         return output_shape
-
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )

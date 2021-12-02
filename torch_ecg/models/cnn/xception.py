@@ -18,7 +18,7 @@ import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
-from ...utils.utils_nn import compute_module_size
+from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str, list_sum
 from ...models._nets import (
     Conv_Bn_Activation, SeparableConv, MultiConv,
@@ -50,7 +50,7 @@ _DEFAULT_CONV_CONFIGS = ED(
 )
 
 
-class XceptionMultiConv(nn.Module):
+class XceptionMultiConv(SizeMixin, nn.Module):
     """
 
     -> n(2 or 3) x (activation -> norm -> sep_conv) (-> optional sub-sample) ->
@@ -199,18 +199,8 @@ class XceptionMultiConv(nn.Module):
             output_shape = self.subsample.compute_output_shape(output_shape[-1], output_shape[0])
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class XceptionEntryFlow(nn.Sequential):
+class XceptionEntryFlow(SizeMixin, nn.Sequential):
     """
 
     Entry flow of the Xception model,
@@ -400,18 +390,8 @@ class XceptionEntryFlow(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class XceptionMiddleFlow(nn.Sequential):
+class XceptionMiddleFlow(SizeMixin, nn.Sequential):
     """
 
     Middle flow of the Xception model,
@@ -550,18 +530,8 @@ class XceptionMiddleFlow(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class XceptionExitFlow(nn.Sequential):
+class XceptionExitFlow(SizeMixin, nn.Sequential):
     """
 
     Exit flow of the Xception model,
@@ -743,18 +713,8 @@ class XceptionExitFlow(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class Xception(nn.Sequential):
+class Xception(SizeMixin, nn.Sequential):
     """
 
     References
@@ -851,13 +811,3 @@ class Xception(nn.Sequential):
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
         return output_shape
-
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )

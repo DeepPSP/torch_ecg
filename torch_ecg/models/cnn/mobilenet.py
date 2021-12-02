@@ -21,7 +21,7 @@ from torch import Tensor
 from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
-from ...utils.utils_nn import compute_module_size
+from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str
 from ...models._nets import (
     Conv_Bn_Activation, MultiConv,
@@ -52,7 +52,7 @@ _DEFAULT_CONV_CONFIGS_MobileNetV1 = ED(
 )
 
 
-class MobileNetSeparableConv(nn.Sequential):
+class MobileNetSeparableConv(SizeMixin, nn.Sequential):
     """
 
     similar to `_nets.SeparableConv`,
@@ -215,18 +215,8 @@ class MobileNetSeparableConv(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class MobileNetV1(nn.Sequential):
+class MobileNetV1(SizeMixin, nn.Sequential):
     """
 
     Similar to Xception, but without skip connections,
@@ -453,18 +443,8 @@ class MobileNetV1(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class InvertedResidual(nn.Module):
+class InvertedResidual(SizeMixin, nn.Module):
     """
 
     inverted residual block
@@ -617,18 +597,8 @@ class InvertedResidual(nn.Module):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class MobileNetV2(nn.Sequential):
+class MobileNetV2(SizeMixin, nn.Sequential):
     """
 
     References
@@ -780,18 +750,8 @@ class MobileNetV2(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class MobileNetV3(nn.Module):
+class MobileNetV3(SizeMixin, nn.Module):
     """
 
     References

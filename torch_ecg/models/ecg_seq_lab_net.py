@@ -27,7 +27,10 @@ import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from ..cfg import DEFAULTS
-from ..utils.utils_nn import compute_conv_output_shape, compute_module_size
+from ..utils.utils_nn import (
+    compute_conv_output_shape, compute_module_size,
+    SizeMixin,
+)
 from ..utils.misc import dict_to_str
 from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
 from ._nets import (
@@ -50,7 +53,7 @@ __all__ = [
 ]
 
 
-class ECG_SEQ_LAB_NET(nn.Module):
+class ECG_SEQ_LAB_NET(SizeMixin, nn.Module):
     """ finished, checked,
 
     SOTA model from CPSC2019 challenge (entry 0416)
@@ -257,17 +260,6 @@ class ECG_SEQ_LAB_NET(nn.Module):
         if self.config.recover_length:
             output_shape = output_shape[0], seq_len, output_shape[2]
         return output_shape
-
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
 
     @staticmethod
     def from_checkpoint(path:str, device:Optional[torch.device]=None) -> Tuple[nn.Module, dict]:

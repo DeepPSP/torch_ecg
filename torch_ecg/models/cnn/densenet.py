@@ -22,7 +22,7 @@ from torch import Tensor
 from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
-from ...utils.utils_nn import compute_module_size
+from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str, list_sum
 from ...models._nets import (
     Conv_Bn_Activation,
@@ -44,7 +44,7 @@ __all__ = [
 ]
 
 
-class DenseBasicBlock(nn.Module):
+class DenseBasicBlock(SizeMixin, nn.Module):
     """ finished, checked,
 
     the basic building block for DenseNet,
@@ -169,18 +169,8 @@ class DenseBasicBlock(nn.Module):
         output_shape = (batch_size, out_channels, seq_len)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class DenseBottleNeck(nn.Module):
+class DenseBottleNeck(SizeMixin, nn.Module):
     """ finished, checked,
 
     bottleneck modification of `DenseBasicBlock`,
@@ -344,18 +334,8 @@ class DenseBottleNeck(nn.Module):
         output_shape = (batch_size, out_channels, seq_len)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class DenseMacroBlock(nn.Sequential):
+class DenseMacroBlock(SizeMixin, nn.Sequential):
     """ finished, checked,
 
     macro blocks for `DenseNet`,
@@ -474,18 +454,8 @@ class DenseMacroBlock(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class DenseTransition(nn.Sequential):
+class DenseTransition(SizeMixin, nn.Sequential):
     """ finished, checked,
 
     transition blocks between `DenseMacroBlock`s,
@@ -602,18 +572,8 @@ class DenseTransition(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class DenseNet(nn.Sequential):
+class DenseNet(SizeMixin, nn.Sequential):
     """ finished, checked,
 
     The core part of the SOTA model (framework) of CPSC2020
@@ -813,13 +773,3 @@ class DenseNet(nn.Sequential):
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
         return output_shape
-
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )

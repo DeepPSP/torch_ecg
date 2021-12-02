@@ -16,7 +16,7 @@ import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
-from ...utils.utils_nn import compute_module_size
+from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str
 from ...models._nets import (
     Activations,
@@ -40,7 +40,7 @@ __all__ = [
 ]
 
 
-class ResNetBasicBlock(nn.Module):
+class ResNetBasicBlock(SizeMixin, nn.Module):
     """ finished, checked,
 
     building blocks for `ResNet`, as implemented in ref. [2] of `ResNet`
@@ -252,18 +252,8 @@ class ResNetBasicBlock(nn.Module):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class ResNetBottleNeck(nn.Module):
+class ResNetBottleNeck(SizeMixin, nn.Module):
     """ finished, checked,
 
     bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
@@ -516,18 +506,8 @@ class ResNetBottleNeck(nn.Module):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class ResNetMacroBlock(nn.Sequential):
+class ResNetMacroBlock(SizeMixin, nn.Sequential):
     """ NOT finished, NOT checked,
     """
     __DEBUG__ = True
@@ -550,7 +530,7 @@ class ResNetMacroBlock(nn.Sequential):
         raise NotImplementedError
 
 
-class ResNetStem(nn.Sequential):
+class ResNetStem(SizeMixin, nn.Sequential):
     """
     the input stem of ResNet
     """
@@ -632,18 +612,8 @@ class ResNetStem(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class ResNet(nn.Sequential):
+class ResNet(SizeMixin, nn.Sequential):
     """ finished, checked,
 
     References
@@ -855,13 +825,3 @@ class ResNet(nn.Sequential):
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
         return output_shape
-
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )

@@ -24,7 +24,7 @@ from easydict import EasyDict as ED
 from ..cfg import DEFAULTS
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
 from ..utils.misc import dict_to_str
-from ..utils.utils_nn import compute_module_size
+from ..utils.utils_nn import compute_module_size, SizeMixin
 from ..models._nets import (
     Mish, Swish, Activations,
     NonLocalBlock, SEBlock, GlobalContextBlock,
@@ -45,7 +45,7 @@ __all__ = [
 ]
 
 
-class RR_LSTM(nn.Module):
+class RR_LSTM(SizeMixin, nn.Module):
     """
     classification or sequence labeling using LSTM and using RR intervals as input
     """
@@ -234,17 +234,6 @@ class RR_LSTM(nn.Module):
             # clf is "linear" or lstm.retseq is False
             output_shape = (batch_size, self.n_classes)
         return output_shape
-
-
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
 
 
     @staticmethod

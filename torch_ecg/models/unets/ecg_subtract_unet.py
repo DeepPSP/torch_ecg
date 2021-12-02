@@ -22,7 +22,10 @@ import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
-from ...utils.utils_nn import compute_deconv_output_shape, compute_module_size
+from ...utils.utils_nn import (
+    compute_deconv_output_shape, compute_module_size,
+    SizeMixin,
+)
 from ...utils.misc import dict_to_str
 from ...models._nets import (
     Conv_Bn_Activation, MultiConv, BranchedConv,
@@ -100,7 +103,7 @@ class TripleConv(MultiConv):
         )
 
 
-class DownTripleConv(nn.Sequential):
+class DownTripleConv(SizeMixin, nn.Sequential):
     """
     """
     __DEBUG__ = False
@@ -209,7 +212,7 @@ class DownTripleConv(nn.Sequential):
         return output_shape
 
 
-class DownBranchedDoubleConv(nn.Module):
+class DownBranchedDoubleConv(SizeMixin, nn.Module):
     """
     the bottom block of the `subtract_unet`
     """
@@ -324,7 +327,7 @@ class DownBranchedDoubleConv(nn.Module):
         return output_shape
 
 
-class UpTripleConv(nn.Module):
+class UpTripleConv(SizeMixin, nn.Module):
     """
     Upscaling then double conv, with input of corr. down layer concatenated
     up sampling --> conv (conv --> (dropout -->) conv --> (dropout -->) conv)
@@ -459,7 +462,7 @@ class UpTripleConv(nn.Module):
         return output_shape
 
 
-class ECG_SUBTRACT_UNET(nn.Module):
+class ECG_SUBTRACT_UNET(SizeMixin, nn.Module):
     """ finished, checked,
 
     entry 0433 of CPSC2019
@@ -670,9 +673,3 @@ class ECG_SUBTRACT_UNET(nn.Module):
         """
         output_shape = (batch_size, seq_len, self.n_classes)
         return output_shape
-
-    @property
-    def module_size(self) -> int:
-        """
-        """
-        return compute_module_size(self)

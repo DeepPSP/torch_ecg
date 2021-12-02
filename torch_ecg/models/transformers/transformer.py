@@ -7,13 +7,13 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ...utils.utils_nn import compute_module_size
+from ...utils.utils_nn import compute_module_size, SizeMixin
 
 
 __all__ = ["Transformer",]
 
 
-class Transformer(nn.Module):
+class Transformer(SizeMixin, nn.Module):
     """
     """
     __DEBUG__ = True
@@ -96,13 +96,3 @@ class Transformer(nn.Module):
             return (batch_size, seq_len, self.__input_size)
         else:
             return (seq_len, batch_size, self.__input_size)
-
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )

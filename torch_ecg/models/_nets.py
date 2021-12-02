@@ -25,6 +25,7 @@ from ..utils.utils_nn import (
     compute_maxpool_output_shape,
     compute_avgpool_output_shape,
     compute_module_size,
+    SizeMixin,
 )
 from ..utils.misc import dict_to_str
 
@@ -223,7 +224,7 @@ _DEFAULT_CONV_CONFIGS = ED(
 
 # ---------------------------------------------
 # basic building blocks of CNN
-class Bn_Activation(nn.Sequential):
+class Bn_Activation(SizeMixin, nn.Sequential):
     """ finished, checked,
 
     batch normalization --> activation
@@ -307,18 +308,8 @@ class Bn_Activation(nn.Sequential):
         output_shape = (batch_size, self.__num_features, seq_len)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class Conv_Bn_Activation(nn.Sequential):
+class Conv_Bn_Activation(SizeMixin, nn.Sequential):
     """ finished, checked,
 
     1d convolution --> batch normalization (optional) -- > activation (optional),
@@ -562,18 +553,8 @@ class Conv_Bn_Activation(nn.Sequential):
             output_shape = self.conv1d.compute_output_shape(seq_len, batch_size)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class MultiConv(nn.Sequential):
+class MultiConv(SizeMixin, nn.Sequential):
     """ finished, checked,
 
     a sequence (stack) of `Conv_Bn_Activation` blocks,
@@ -726,21 +707,11 @@ class MultiConv(nn.Sequential):
                 _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
 # alias
 CBA = Conv_Bn_Activation
 
 
-class BranchedConv(nn.Module):
+class BranchedConv(SizeMixin, nn.Module):
     """
 
     branched `MultiConv` blocks
@@ -861,31 +832,8 @@ class BranchedConv(nn.Module):
             output_shapes.append(branch_output_shape)
         return output_shapes
 
-    @property
-    def module_size(self) -> int:
-        """
-        """
-        n_params = 0
-        for idx in range(self.__num_branches): 
-            module_parameters = \
-                filter(lambda p: p.requires_grad, self.branches[f"multi_conv_{idx}"].parameters())
-            n_params += sum([np.prod(p.size()) for p in module_parameters])
-        return n_params
 
-    @property
-    def module_size_(self) -> str:
-        n_params = self.module_size
-        n_params = n_params * {"float16":2, "float32":4, "float64":8}[dtype.lower()] / 1024
-        div_count = 0
-        while n_params >= 1024:
-            n_params /= 1024
-            div_count += 1
-        # cvt_dict = {0:"K", 1:"M", 2:"G", 3:"T", 4:"P"}
-        cvt_dict = {c:u for c,u in enumerate(list("KMGTP"))}
-        n_params = f"""{n_params:.1f}{cvt_dict[div_count]}"""
-
-
-class SeparableConv(nn.Sequential):
+class SeparableConv(SizeMixin, nn.Sequential):
     """
 
     (Super-)Separable Convolution
@@ -1040,18 +988,8 @@ class SeparableConv(nn.Sequential):
         )
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class DeformConv(nn.Module):
+class DeformConv(SizeMixin, nn.Module):
     """
     
     Deformable Convolution
@@ -1091,18 +1029,8 @@ class DeformConv(nn.Module):
         """
         raise NotImplementedError
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class DownSample(nn.Sequential):
+class DownSample(SizeMixin, nn.Sequential):
     """
 
     NOTE: this down sampling module allows changement of number of channels,
@@ -1308,18 +1236,8 @@ class DownSample(nn.Sequential):
         output_shape = (batch_size, self.__out_channels, out_seq_len)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class ZeroPad1d(nn.ConstantPad1d):
+class ZeroPad1d(SizeMixin, nn.ConstantPad1d):
     """Pads the input tensor boundaries with zero.
     do NOT be confused with `ZeroPadding`, which pads along the channel dimension
     """
@@ -1338,7 +1256,7 @@ class ZeroPad1d(nn.ConstantPad1d):
         super().__init__(padding, 0.)
 
 
-class BlurPool(nn.Module):
+class BlurPool(SizeMixin, nn.Module):
     """
 
     Blur Pooling, also named as AntiAliasDownsample
@@ -1481,23 +1399,13 @@ class BlurPool(nn.Module):
         )
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
     def extra_repr(self):
         return "down_scale={}, in_channels={}, filt_size={}, pad_type={}, pad_off={},".format(
             self.__down_scale, self.__in_channels, self.__filt_size, self.__pad_type, self.__pad_off
         )
 
 
-class AntiAliasConv(nn.Sequential):
+class AntiAliasConv(SizeMixin, nn.Sequential):
     """
     """
     __DEBUG__ = False
@@ -1591,19 +1499,8 @@ class AntiAliasConv(nn.Sequential):
             output_shape = self.aa.compute_output_shape(output_shape[-1], batch_size)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-
-class BidirectionalLSTM(nn.Module):
+class BidirectionalLSTM(SizeMixin, nn.Module):
     """
     from crnn_torch of references.ati_cnn
     """
@@ -1682,18 +1579,8 @@ class BidirectionalLSTM(nn.Module):
         output_shape = (seq_len, batch_size, self.__output_size)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class StackedLSTM(nn.Sequential):
+class StackedLSTM(SizeMixin, nn.Sequential):
     """ finished, checked (no bugs, but correctness is left further to check),
 
     stacked LSTM, which allows different hidden sizes for each LSTM layer
@@ -1827,21 +1714,11 @@ class StackedLSTM(nn.Sequential):
             output_shape = (batch_size, output_size)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
 
 # ---------------------------------------------
 # attention mechanisms, from various sources
 @deprecated(reason="not checked yet")
-class AML_Attention(nn.Module):
+class AML_Attention(SizeMixin, nn.Module):
     """ NOT checked,
 
     the feature extraction part is eliminated,
@@ -1875,7 +1752,7 @@ class AML_Attention(nn.Module):
 
 
 @deprecated(reason="not checked yet")
-class AML_GatedAttention(nn.Module):
+class AML_GatedAttention(SizeMixin, nn.Module):
     """ NOT checked,
 
     the feature extraction part is eliminated,
@@ -1916,7 +1793,7 @@ class AML_GatedAttention(nn.Module):
         return A
 
 
-class AttentionWithContext(nn.Module):
+class AttentionWithContext(SizeMixin, nn.Module):
     """ finished, checked (might have bugs),
 
     from 0236 of CPSC2018 challenge
@@ -2038,18 +1915,8 @@ class AttentionWithContext(nn.Module):
         output_shape = (batch_size, self.__out_channels, seq_len)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class _ScaledDotProductAttention(nn.Module):
+class _ScaledDotProductAttention(SizeMixin, nn.Module):
     """
     References
     ----------
@@ -2075,7 +1942,7 @@ class _ScaledDotProductAttention(nn.Module):
         return output
 
 
-class MultiHeadAttention(nn.Module):
+class MultiHeadAttention(SizeMixin, nn.Module):
     """
 
     Multi-head attention.
@@ -2192,23 +2059,13 @@ class MultiHeadAttention(nn.Module):
         output_shape = (seq_len, batch_size, self.in_features*self.head_num)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
     def extra_repr(self):
         return "in_features={}, head_num={}, bias={}, activation={}".format(
             self.in_features, self.head_num, self.bias, self.activation,
         )
 
 
-class SelfAttention(nn.Module):
+class SelfAttention(SizeMixin, nn.Module):
     """
     """
     __DEBUG__ = False
@@ -2279,18 +2136,8 @@ class SelfAttention(nn.Module):
         output_shape = (seq_len, batch_size, self.in_features)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class AttentivePooling(nn.Module):
+class AttentivePooling(SizeMixin, nn.Module):
     """
     """
     __DEBUG__ = False
@@ -2368,18 +2215,8 @@ class AttentivePooling(nn.Module):
         output_shape = (batch_size, self.__in_channels)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class ZeroPadding(nn.Module):
+class ZeroPadding(SizeMixin, nn.Module):
     """
     zero padding for increasing channels,
     degenerates to `identity` if in and out channels are equal
@@ -2446,18 +2283,8 @@ class ZeroPadding(nn.Module):
         output_shape = (batch_size, self.__out_channels, seq_len)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class SeqLin(nn.Sequential):
+class SeqLin(SizeMixin, nn.Sequential):
     """
     Sequential linear,
     might be useful in learning non-linear classifying hyper-surfaces
@@ -2587,16 +2414,6 @@ class SeqLin(nn.Sequential):
             output_shape = (batch_size, self.__out_channels[-1])
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
 
 class MLP(SeqLin):
     """
@@ -2636,7 +2453,7 @@ class MLP(SeqLin):
         super().__init__(in_channels, out_channels, activation, kernel_initializer, bias, dropouts, **kwargs)
 
 
-class NonLocalBlock(nn.Module):
+class NonLocalBlock(SizeMixin, nn.Module):
     """
 
     Non-local Neural Networks
@@ -2761,18 +2578,8 @@ class NonLocalBlock(nn.Module):
         """
         return (batch_size, self.__in_channels, seq_len)
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class SEBlock(nn.Module):
+class SEBlock(SizeMixin, nn.Module):
     """ finished, checked,
 
     Squeeze-and-Excitation Block
@@ -2864,18 +2671,8 @@ class SEBlock(nn.Module):
         """
         return (batch_size, self.__in_channels, seq_len)
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class GEBlock(nn.Module):
+class GEBlock(SizeMixin, nn.Module):
     """
 
     Gather-excite Network
@@ -2897,7 +2694,7 @@ class GEBlock(nn.Module):
         raise NotImplementedError
 
 
-class SKBlock(nn.Module):
+class SKBlock(SizeMixin, nn.Module):
     """
 
     Selective Kernel Networks
@@ -2917,7 +2714,7 @@ class SKBlock(nn.Module):
         raise NotImplementedError
 
 
-class GlobalContextBlock(nn.Module):
+class GlobalContextBlock(SizeMixin, nn.Module):
     """ finished, checked,
 
     Global Context Block
@@ -3065,18 +2862,8 @@ class GlobalContextBlock(nn.Module):
         """
         return (batch_size, self.__in_channels, seq_len)
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class BAMBlock(nn.Module):
+class BAMBlock(SizeMixin, nn.Module):
     """
 
     Bottleneck Attention Module (BMVC2018)
@@ -3095,7 +2882,7 @@ class BAMBlock(nn.Module):
         raise NotImplementedError
 
 
-class CBAMBlock(nn.Module):
+class CBAMBlock(SizeMixin, nn.Module):
     """
 
     Convolutional Block Attention Module (ECCV2018)
@@ -3311,18 +3098,8 @@ class CBAMBlock(nn.Module):
         """
         return (batch_size, self.__gate_channels, seq_len)
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class CoordAttention(nn.Module):
+class CoordAttention(SizeMixin, nn.Module):
     """
 
     Coordinate attention
@@ -3341,7 +3118,7 @@ class CoordAttention(nn.Module):
         raise NotImplementedError
 
 
-class CRF(nn.Module):
+class CRF(SizeMixin, nn.Module):
     """Conditional random field, modified from [1]
 
     This module implements a conditional random field [2]. The forward computation
@@ -3718,18 +3495,8 @@ class CRF(nn.Module):
             output_shape = (seq_len, batch_size, self.num_tags)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class ExtendedCRF(nn.Sequential):
+class ExtendedCRF(SizeMixin, nn.Sequential):
     """
     (possibly) combination of a linear (projection) layer and a `CRF` layer,
     which allows the input size to be unequal to (usually greater than) num_tags,
@@ -3815,18 +3582,8 @@ class ExtendedCRF(nn.Sequential):
         """
         return (batch_size, seq_len, self.__num_tags)
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class SpaceToDepth(nn.Module):
+class SpaceToDepth(SizeMixin, nn.Module):
     """
 
     References
@@ -3903,16 +3660,6 @@ class SpaceToDepth(nn.Module):
             return (batch_size, self.__out_channels, seq_len // self.bs)
         else:
             return (batch_size, self.__out_channels, None)
-
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
 
 
 def make_attention_layer(in_channels:int, **config:dict) -> nn.Module:

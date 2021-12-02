@@ -15,7 +15,7 @@ from torch import Tensor
 from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
-from ...utils.utils_nn import compute_module_size
+from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str
 from ...models._nets import (
     Conv_Bn_Activation,
@@ -35,7 +35,7 @@ __all__ = [
 ]
 
 
-class MultiScopicBasicBlock(nn.Sequential):
+class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
     """ finished, checked,
 
     basic building block of the CNN part of the SOTA model
@@ -172,18 +172,8 @@ class MultiScopicBasicBlock(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class MultiScopicBranch(nn.Sequential):
+class MultiScopicBranch(SizeMixin, nn.Sequential):
     """ finished, checked,
     
     branch path of the CNN part of the SOTA model
@@ -300,18 +290,8 @@ class MultiScopicBranch(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
 
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )
-
-
-class MultiScopicCNN(nn.Module):
+class MultiScopicCNN(SizeMixin, nn.Module):
     """ finished, checked,
 
     CNN part of the SOTA model from CPSC2019 challenge (entry 0416)
@@ -422,13 +402,3 @@ class MultiScopicCNN(nn.Module):
             out_channels += _branch_oc
         output_shape = (batch_size, out_channels, _seq_len)
         return output_shape
-
-    @property
-    def module_size(self) -> int:
-        return compute_module_size(self)
-
-    @property
-    def module_size_(self) -> str:
-        return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
-        )

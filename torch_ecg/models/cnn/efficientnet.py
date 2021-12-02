@@ -21,7 +21,7 @@ from torch import Tensor
 from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
-from ...utils.utils_nn import compute_module_size
+from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str
 from ...models._nets import (
     Conv_Bn_Activation,
@@ -39,7 +39,7 @@ __all__ = [
 ]
 
 
-class EfficientNet(nn.Module):
+class EfficientNet(SizeMixin, nn.Module):
     """
 
     Reference
@@ -69,7 +69,7 @@ class EfficientNet(nn.Module):
         raise NotImplementedError
 
 
-class EfficientNetV2(nn.Module):
+class EfficientNetV2(SizeMixin, nn.Module):
     """
 
     Reference

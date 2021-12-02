@@ -22,7 +22,10 @@ import torch.nn.functional as F
 from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
-from ...utils.utils_nn import compute_deconv_output_shape, compute_module_size
+from ...utils.utils_nn import (
+    compute_deconv_output_shape, compute_module_size,
+    SizeMixin,
+)
 from ...utils.misc import dict_to_str
 from ...models._nets import (
     Conv_Bn_Activation, MultiConv,
@@ -102,7 +105,7 @@ class DoubleConv(MultiConv):
         )
 
 
-class DownDoubleConv(nn.Sequential):
+class DownDoubleConv(SizeMixin, nn.Sequential):
     """
     Downscaling with maxpool then double conv
     down sample (maxpool) --> double conv (conv --> conv)
@@ -225,14 +228,8 @@ class DownDoubleConv(nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        """
-        """
-        return compute_module_size(self)
 
-
-class UpDoubleConv(nn.Module):
+class UpDoubleConv(SizeMixin, nn.Module):
     """
     Upscaling then double conv, with input of corr. down layer concatenated
     up sampling --> conv (conv --> conv)
@@ -395,14 +392,8 @@ class UpDoubleConv(nn.Module):
         output_shape = self.conv.compute_output_shape(_seq_len, batch_size)
         return output_shape
 
-    @property
-    def module_size(self) -> int:
-        """
-        """
-        return compute_module_size(self)
 
-
-class ECG_UNET(nn.Module):
+class ECG_UNET(SizeMixin, nn.Module):
     """ finished, checked,
 
     UNet for (multi-lead) ECG wave delineation
@@ -580,9 +571,3 @@ class ECG_UNET(nn.Module):
         """
         output_shape = (batch_size, seq_len, self.n_classes)
         return output_shape
-
-    @property
-    def module_size(self) -> int:
-        """
-        """
-        return compute_module_size(self)
