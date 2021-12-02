@@ -36,6 +36,7 @@ __all__ = [
     "default_collate_fn",
     "compute_receptive_field",
     "adjust_cnn_filter_lengths",
+    "SizeMixin",
 ]
 
 
@@ -649,3 +650,20 @@ def adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True, pattern
     config = _adjust_cnn_filter_lengths(config, fs, ensure_odd, pattern)
     config["fs"] = fs
     return config
+
+
+class SizeMixin(object):
+    """ finished, checked,
+
+    mixin class for size related methods
+    """
+    
+    @property
+    def module_size(self) -> int:
+        return compute_module_size(self)
+
+    @property
+    def module_size_(self) -> str:
+        return compute_module_size(
+            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+        )
