@@ -2724,9 +2724,6 @@ class GlobalContextBlock(SizeMixin, nn.Module):
     [1] Cao, Yue, et al. "Gcnet: Non-local networks meet squeeze-excitation networks and beyond." Proceedings of the IEEE International Conference on Computer Vision Workshops. 2019.
     [2] https://github.com/xvjiarui/GCNet/blob/master/mmdet/ops/gcb/context_block.py
     [3] entry 0436 of CPSC2019
-
-    NOTE that in refs. [1,2], `mid-channels` is raised from `in_channels` by a factor of `ratio`,
-    while in [3], it is reduced from `in_channels` (divided) by `ratio`
     """
     __DEBUG__ = False
     __name__ = "GlobalContextBlock"
@@ -2736,7 +2733,7 @@ class GlobalContextBlock(SizeMixin, nn.Module):
     def __init__(self,
                  in_channels:int,
                  ratio:int,
-                 reduction:bool=False,
+                 reduction:bool=True,
                  pooling_type:str="attn",
                  fusion_types:Sequence[str]=["add",],
                  **kwargs:Any) -> NoReturn:
@@ -2749,9 +2746,9 @@ class GlobalContextBlock(SizeMixin, nn.Module):
         ratio: int,
             raise or reduction ratio of the mid-channels to `in_channels`
             in the "channel attention" sub-block
-        reduction: bool, default False,
+        reduction: bool, default True,
             if True, mid-channels would be `in_channels // ratio` (as in `SEBlock`),
-            otherwise, mid-channels would be `in_channels * ratio`,
+            otherwise, mid-channels would be `in_channels * ratio` (might should not be used),
         pooling_type: str, default "attn",
             mode (or type) of subsampling (or pooling) of "spatial attention"
         fusion_types: sequence of str, default ["add",],
