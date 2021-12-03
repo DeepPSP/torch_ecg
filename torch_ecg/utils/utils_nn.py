@@ -664,6 +664,10 @@ class SizeMixin(object):
 
     @property
     def module_size_(self) -> str:
+        try:
+            dtype = str(next(self.parameters()).dtype).replace("torch.", "")
+        except StopIteration:
+            dtype = "float32"  # can be set arbitrarily among all the supported types
         return compute_module_size(
-            self, human=True, dtype=str(next(self.parameters()).dtype).replace("torch.", "")
+            self, human=True, dtype=dtype,
         )
