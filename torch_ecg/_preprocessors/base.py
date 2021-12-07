@@ -16,6 +16,7 @@ from scipy.signal.signaltools import resample
 from biosppy.signals.tools import filter_signal
 
 from ..utils.misc import default_class_repr
+from ..utils.utils_signal import butter_bandpass_filter
 
 
 __all__ = [
@@ -90,7 +91,8 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
                                  fs:Real,
                                  sig_fmt:str="channel_first",
                                  bl_win:Optional[List[Real]]=None,
-                                 band_fs:Optional[List[Real]]=None,) -> np.ndarray:
+                                 band_fs:Optional[List[Real]]=None,
+                                 filter_type:str="butter",) -> np.ndarray:
     """ finished, checked,
 
     perform preprocessing for multi-lead ecg signal (with units in mV),
@@ -117,6 +119,8 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
         a typical pair is [0.5, 45],
         be careful when detecting paced rhythm,
         if is None or empty, bandpass filtering will not be performed
+    filter_type: str, default "butter",
+        type of the bandpass filter, can be "butter" or "fir"
 
     Returns
     -------
@@ -154,15 +158,24 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
             frequency = band_fs
         else:
             raise ValueError("Invalid frequency band")
-        filtered_ecg = filter_signal(
-            signal=filtered_ecg,
-            ftype="FIR",
-            # ftype="butter",
-            band=band,
-            order=int(0.3 * fs),
-            sampling_rate=fs,
-            frequency=frequency,
-        )["signal"]
+        if filter_type.lower() == "fir":
+            filtered_ecg = filter_signal(
+                signal=filtered_ecg,
+                ftype="FIR",
+                # ftype="butter",
+                band=band,
+                order=int(0.1 * fs),
+                sampling_rate=fs,
+                frequency=frequency,
+            )["signal"]
+        elif filter_type.lower() == "butter":
+            filtered_ecg = butter_bandpass_filter(
+                data=filtered_ecg,
+                lowcut=frequency[0],
+                highcut=frequency[1],
+                fs=fs,
+                order=5,
+            )
 
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
         filtered_ecg = filtered_ecg.T

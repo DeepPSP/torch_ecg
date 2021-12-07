@@ -39,6 +39,7 @@ class BandPass(PreProcessor):
             self.lowcut = 0
         if not self.highcut:
             self.highcut = float("inf")
+        self.filter_type = kwargs.get("filter_type", "butter")
 
     def apply(self, sig:np.ndarray, fs:int) -> Tuple[np.ndarray, int]:
         """ finished, checked,
@@ -67,6 +68,7 @@ class BandPass(PreProcessor):
             raw_sig=sig,
             fs=fs,
             band_fs=[self.lowcut, self.highcut],
+            filter_type=self.filter_type,
         )
         return filtered_sig, fs
 
