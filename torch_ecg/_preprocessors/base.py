@@ -92,7 +92,8 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
                                  sig_fmt:str="channel_first",
                                  bl_win:Optional[List[Real]]=None,
                                  band_fs:Optional[List[Real]]=None,
-                                 filter_type:str="butter",) -> np.ndarray:
+                                 filter_type:str="butter",
+                                 filter_order:Optional[int]=None) -> np.ndarray:
     """ finished, checked,
 
     perform preprocessing for multi-lead ecg signal (with units in mV),
@@ -121,6 +122,8 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
         if is None or empty, bandpass filtering will not be performed
     filter_type: str, default "butter",
         type of the bandpass filter, can be "butter" or "fir"
+    filter_order: int, optional,
+        order of the bandpass filter,
 
     Returns
     -------
@@ -164,7 +167,7 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
                 ftype="FIR",
                 # ftype="butter",
                 band=band,
-                order=int(0.1 * fs),
+                order=filter_order or int(0.2 * fs),
                 sampling_rate=fs,
                 frequency=frequency,
             )["signal"]
@@ -174,7 +177,7 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
                 lowcut=frequency[0],
                 highcut=frequency[1],
                 fs=fs,
-                order=5,
+                order=filter_order or int(0.05 * fs),
             )
 
     if sig_fmt.lower() in ["channel_last", "lead_last"]:

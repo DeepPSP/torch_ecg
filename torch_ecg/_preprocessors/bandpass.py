@@ -21,7 +21,12 @@ class BandPass(PreProcessor):
     """
     __name__ = "BandPass"
 
-    def __init__(self, lowcut:Optional[Real]=0.5, highcut:Optional[Real]=45, **kwargs:Any) -> NoReturn:
+    def __init__(self,
+                 lowcut:Optional[Real]=0.5,
+                 highcut:Optional[Real]=45,
+                 filter_type:str="butter",
+                 filter_order:Optional[int]=None,
+                 **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -30,6 +35,10 @@ class BandPass(PreProcessor):
             low cutoff frequency
         highcut: real number, optional,
             high cutoff frequency
+        filter_type: str, default "butter",
+            type of the bandpass filter, can be "butter" or "fir"
+        filter_order: int, optional,
+            order of the bandpass filter,
         """
         self.lowcut = lowcut
         self.highcut = highcut
@@ -39,7 +48,8 @@ class BandPass(PreProcessor):
             self.lowcut = 0
         if not self.highcut:
             self.highcut = float("inf")
-        self.filter_type = kwargs.get("filter_type", "butter")
+        self.filter_type = filter_type
+        self.filter_order = filter_order
 
     def apply(self, sig:np.ndarray, fs:int) -> Tuple[np.ndarray, int]:
         """ finished, checked,
@@ -69,6 +79,7 @@ class BandPass(PreProcessor):
             fs=fs,
             band_fs=[self.lowcut, self.highcut],
             filter_type=self.filter_type,
+            filter_order=self.filter_order,
         )
         return filtered_sig, fs
 
@@ -76,4 +87,4 @@ class BandPass(PreProcessor):
         """
         return the extra keys for `__repr__`
         """
-        return ["lowcut", "highcut"] + super().extra_repr_keys()
+        return ["lowcut", "highcut", "filter_type", "filter_order",] + super().extra_repr_keys()
