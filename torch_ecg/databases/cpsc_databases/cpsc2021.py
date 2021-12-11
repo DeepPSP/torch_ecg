@@ -21,7 +21,7 @@ import wfdb
 from ...utils.misc import (
     get_record_list_recursive,
     get_record_list_recursive3,
-    ms2samples,
+    ms2samples, list_sum,
 )
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (

@@ -135,21 +135,6 @@ class ApneaECG(PhysioNetDataBase):
         stoi = {"a":"1", "b":"2", "c":"3", "x":"4"}
         return int("2000" + stoi[rec[0]] + rec[1:3])
 
-    def database_info(self, detailed:bool=False) -> NoReturn:
-        """
-
-        Parameters
-        ----------
-        detailed: bool, default False,
-            if False, physionet"s "db_description" will be printed,
-            if True, then docstring of the class will be printed additionally
-        """
-        short_description = self.df_all_db_info[self.df_all_db_info["db_name"]==self.db_name]["db_description"].values[0]
-        print(short_description)
-
-        if detailed:
-            print(self.__doc__)
-
     def load_data(self, rec:str, lead:int=0, rec_path:Optional[str]=None) -> np.ndarray:
         """
 

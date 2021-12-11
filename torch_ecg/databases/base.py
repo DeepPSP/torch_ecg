@@ -212,6 +212,7 @@ class _DataBase(ABC):
     #     """
     #     raise NotImplementedError
 
+    @property
     def database_info(self) -> NoReturn:
         """
 
@@ -337,6 +338,7 @@ class PhysioNetDataBase(_DataBase):
         """
         raise NotImplementedError
 
+    @property
     def database_info(self, detailed:bool=False) -> NoReturn:
         """
         print the information about the database
@@ -345,6 +347,13 @@ class PhysioNetDataBase(_DataBase):
             if False, an short introduction of the database will be printed,
             if True, then docstring of the class will be printed additionally
         """
+        if not detailed:
+            try:
+                short_description = self.df_all_db_info[self.df_all_db_info["db_name"]==self.db_name]["db_description"].values[0]
+                print(short_description)
+                return
+            except:
+                pass
         print(self.__doc__)
 
     def helper(self, items:Union[List[str],str,type(None)]=None, **kwargs) -> NoReturn:
@@ -509,6 +518,7 @@ class NSRRDataBase(_DataBase):
         """
         raise NotImplementedError
 
+    @property
     def database_info(self, detailed:bool=False) -> NoReturn:
         """
         print the information about the database
@@ -517,17 +527,17 @@ class NSRRDataBase(_DataBase):
             if False, an short introduction of the database will be printed,
             if True, then docstring of the class will be printed additionally
         """
-        raw_info = {
-            "What": "",
-            "Who": "",
-            "When": "",
-            "Funding": ""
-        }
-
-        print(raw_info)
-        
-        if detailed:
-            print(self.__doc__)
+        if not detailed:
+            # raw_info = {
+            #     "What": "",
+            #     "Who": "",
+            #     "When": "",
+            #     "Funding": ""
+            # }
+            raw_info = self.df_all_db_info[self.df_all_db_info.db_name == self.db_name.lower()].db_description.values[0]
+            print(raw_info)
+            return
+        print(self.__doc__)
 
     def helper(self, items:Union[List[str],str,type(None)]=None, **kwargs) -> NoReturn:
         """
@@ -598,21 +608,6 @@ class CPSCDataBase(_DataBase):
         int, a `subject_id` attached to the record `rec`
         """
         raise NotImplementedError
-
-    def database_info(self, detailed:bool=False) -> NoReturn:
-        """
-        print the information about the database
-
-        detailed: bool, default False,
-            if False, an short introduction of the database will be printed,
-            if True, then docstring of the class will be printed additionally
-        """
-        raw_info = {}
-
-        print(raw_info)
-        
-        if detailed:
-            print(self.__doc__)
 
     def helper(self, items:Union[List[str],str,type(None)]=None, **kwargs) -> NoReturn:
         """
