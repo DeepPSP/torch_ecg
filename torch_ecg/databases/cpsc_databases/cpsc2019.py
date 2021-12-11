@@ -102,9 +102,9 @@ class CPSC2019(CPSCDataBase):
         self.rec_dir = os.path.join(self.db_dir, "data")
         self.ann_dir = os.path.join(self.db_dir, "ref")
 
-        self.nb_records = 2000
-        self._all_records = [f"data_{i:05d}" for i in range(1,1+self.nb_records)]
-        self._all_annotations = [f"R_{i:05d}" for i in range(1,1+self.nb_records)]
+        self.n_records = 2000
+        self._all_records = [f"data_{i:05d}" for i in range(1,1+self.n_records)]
+        self._all_annotations = [f"R_{i:05d}" for i in range(1,1+self.n_records)]
         self._ls_rec()
 
         # aliases
@@ -208,7 +208,7 @@ class CPSC2019(CPSCDataBase):
             data = data.flatten()
         return data
 
-    def load_ann(self, rec:Union[int,str], keep_dim:bool=True) -> Dict[str, np.ndarray]:
+    def load_ann(self, rec:Union[int,str], keep_dim:bool=True) -> np.ndarray:
         """ finished, checked,
 
         Parameters
@@ -221,8 +221,8 @@ class CPSC2019(CPSCDataBase):
         
         Returns
         -------
-        ann: dict,
-            with items "SPB_indices" and "PVC_indices", which record the indices of SPBs and PVCs
+        ann: ndarray,
+            array of indices of R peaks
         """
         fp = os.path.join(self.ann_dir, f"{self._get_ann_name(rec)}.{self.ann_ext}")
         ann = loadmat(fp)["R_peak"].astype(int)
@@ -251,7 +251,7 @@ class CPSC2019(CPSCDataBase):
             filename of the record
         """
         if isinstance(rec, int):
-            assert rec in range(1, self.nb_records+1), f"rec should be in range(1,{self.nb_records+1})"
+            assert rec in range(1, self.n_records+1), f"rec should be in range(1,{self.n_records+1})"
             rec_name = self.all_records[rec-1]
         elif isinstance(rec, str):
             assert rec in self.all_records, f"rec {rec} not found"

@@ -3,7 +3,7 @@ python modules to facilitate the reading of various databaese from [PhysioNet](h
 
 Migrated and improved from [DeepPSP/database_reader](https://github.com/DeepPSP/database_reader)
 
-After migration, all should be tested, the progression:
+After migration, all should be tested again, the progression:
 
 | Database      | Source    | Tested             |
 | ------------- | --------- | ------------------ |
@@ -18,6 +18,6 @@ After migration, all should be tested, the progression:
 | MITDB         | PhysioNet | :x:                |
 | SHHS          | NSRR      | :x:                |
 | CPSC2018      | CPSC      | :heavy_check_mark: |
-| CPSC2019      | CPSC      | :x:                |
+| CPSC2019      | CPSC      | :heavy_check_mark: |
 | CPSC2020      | CPSC      | :x:                |
 | CPSC2021      | CPSC      | :x:                |
