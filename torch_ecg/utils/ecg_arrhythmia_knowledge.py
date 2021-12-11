@@ -44,6 +44,11 @@ from easydict import EasyDict as ED
 
 
 __all__ = [
+    # named lead sets
+    "Standard12Leads",
+    "ChestLeads", "PrecordialLeads", "LimbLeads",
+    "InferiorLeads", "LateralLeads", "SeptalLeads", "AnteriorLeads",
+    # ECG abnormalities (arrhythmias)
     "AF", "AFL",  # atrial
     "IAVB", "LBBB", "CLBBB", "RBBB", "CRBBB", "IRBBB", "LAnFB", "NSIVCB", "BBB",  # conduction block
     "PAC", "PJC", "PVC", "SPB",  # premature: qrs, morphology
@@ -54,6 +59,16 @@ __all__ = [
     "PR",  # pacer
     "STD", "STE",  # ST segments
 ]
+
+
+Standard12Leads = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6",]
+ChestLeads = [f"V{n}" for n in range(1,7)]
+PrecordialLeads = ChestLeads
+LimbLeads = ["I", "II", "III", "aVR", "aVL", "aVF",]
+InferiorLeads = ["II", "III", "aVF",]
+LateralLeads = ["I", "aVL", "V5", "V6",]
+SeptalLeads = ["aVR", "V1",]
+AnteriorLeads = ["V2", "V3", "V4",]
 
 
 _snomedbrowser_url = "https://snomedbrowser.com/Codes/Details/"
