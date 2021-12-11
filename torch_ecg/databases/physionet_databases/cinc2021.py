@@ -20,6 +20,7 @@ from scipy.io import loadmat
 from scipy.signal import resample, resample_poly
 from easydict import EasyDict as ED
 
+from ...cfg import DEFAULTS
 from ...utils.misc import (
     get_record_list_recursive,
     get_record_list_recursive3,
@@ -34,7 +35,7 @@ from ..aux_data.cinc2021_aux_data import (
     df_weights_abbr,
     equiv_class_dict,
 )
-from ..base import PhysioNetDataBase
+from ..base import PhysioNetDataBase, DEFAULT_FIG_SIZE_PER_SEC
 
 
 __all__ = [
@@ -236,7 +237,7 @@ class CINC2021(PhysioNetDataBase):
         })
         self.spacing = ED({t: 1000 / f for t,f in self.fs.items()})
 
-        self.all_leads = deepcopy(Standard12Leads)
+        self.all_leads = deepcopy(EAK.Standard12Leads)
         self._all_leads_set = set(self.all_leads)
 
         self.df_ecg_arrhythmia = dx_mapping_all[["Dx", "SNOMEDCTCode", "Abbreviation"]]
@@ -296,15 +297,10 @@ class CINC2021(PhysioNetDataBase):
         """
         filename = "record_list.json"
         record_list_fp = os.path.join(self.db_dir_base, filename)
-        if not os.path.isfile(record_list_fp):
-            record_list_fp = os.path.join(utils._BASE_DIR, "utils", filename)
         if os.path.isfile(record_list_fp):
             with open(record_list_fp, "r") as f:
                 self._all_records = json.load(f)
             for tranche in self.db_tranches:
-                # self.db_dirs[tranche] = os.path.join(
-                #     self.db_dir_base, os.path.dirname(self._all_records[tranche][0])
-                # )
                 self._all_records[tranche] = [os.path.basename(f) for f in self._all_records[tranche]]
                 self.db_dirs[tranche] = self._find_dir(self.db_dir_base, tranche, 0)
                 if not self.db_dirs[tranche]:
@@ -331,8 +327,6 @@ class CINC2021(PhysioNetDataBase):
             print(f"Done in {time.time() - start:.5f} seconds!")
             with open(os.path.join(self.db_dir_base, filename), "w") as f:
                 json.dump(to_save, f)
-            with open(os.path.join(utils._BASE_DIR, "utils", filename), "w") as f:
-                json.dump(to_save, f)
         self._all_records = ED(self._all_records)
 
     def _aggregate_stats(self, fast:bool=False) -> NoReturn:
@@ -349,11 +343,8 @@ class CINC2021(PhysioNetDataBase):
         stats_file = "stats.csv"
         list_sep = ";"
         stats_file_fp = os.path.join(self.db_dir_base, stats_file)
-        stats_file_fp_aux = os.path.join(utils._BASE_DIR, "utils", stats_file)
         if os.path.isfile(stats_file_fp):
             self._stats = pd.read_csv(stats_file_fp, keep_default_na=False)
-        elif os.path.isfile(stats_file_fp_aux):
-            self._stats = pd.read_csv(stats_file_fp_aux, keep_default_na=False)
         if not fast and (self._stats.empty or self._stats_columns != set(self._stats.columns)):
             print("Please wait patiently to let the reader collect statistics on the whole dataset...")
             start = time.time()
@@ -375,7 +366,6 @@ class CINC2021(PhysioNetDataBase):
             for k in ["diagnosis", "diagnosis_scored",]:
                 _stats_to_save[k] = _stats_to_save[k].apply(lambda l: list_sep.join(l))
             _stats_to_save.to_csv(stats_file_fp, index=False)
-            _stats_to_save.to_csv(stats_file_fp_aux, index=False)
             print(f"Done in {time.time() - start:.5f} seconds!")
         else:
             print("converting dtypes of columns `diagnosis` and `diagnosis_scored`...")
@@ -599,7 +589,7 @@ class CINC2021(PhysioNetDataBase):
             rec_fp = self.get_data_filepath(rec, with_ext=False)
             # p_signal of "lead_last" format
             wfdb_rec = wfdb.rdrecord(rec_fp, physical=True, channel_names=_leads)
-            data = np.asarray(wfdb_rec.p_signal.T, dtype=_DTYPE)
+            data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.np_dtype)
             # lead_units = np.vectorize(lambda s: s.lower())(wfdb_rec.units)
         elif backend.lower() == "scipy":
             # loadmat of "lead_first" format
@@ -608,7 +598,7 @@ class CINC2021(PhysioNetDataBase):
             header_info = self.load_ann(rec, raw=False)["df_leads"]
             baselines = header_info["baseline"].values.reshape(data.shape[0], -1)
             adc_gain = header_info["adc_gain"].values.reshape(data.shape[0], -1)
-            data = np.asarray(data-baselines, dtype=_DTYPE) / adc_gain
+            data = np.asarray(data-baselines, dtype=DEFAULTS.np_dtype) / adc_gain
             leads_ind = [self.all_leads.index(item) for item in _leads]
             data = data[leads_ind,:]
             # lead_units = np.vectorize(lambda s: s.lower())(header_info["df_leads"]["adc_units"].values)
@@ -623,7 +613,7 @@ class CINC2021(PhysioNetDataBase):
 
         rec_fs = self.get_fs(rec, from_hea=True)
         if fs is not None and fs != rec_fs:
-            data = resample_poly(data, fs, rec_fs, axis=1).astype(_DTYPE)
+            data = resample_poly(data, fs, rec_fs, axis=1).astype(DEFAULTS.np_dtype)
         # if fs is not None and fs != self.fs[tranche]:
         #     data = resample_poly(data, fs, self.fs[tranche], axis=1)
 
@@ -926,7 +916,7 @@ class CINC2021(PhysioNetDataBase):
             - "s", SNOMEDCTCode
         normalize: bool, default True,
             if True, the labels will be transformed into their equavalents,
-            which are defined in `utils.scoring_aux_data.py`,
+            which are defined in `aux_data.cinc2021_aux_data.py`,
             and duplicates would be removed if exist after normalization
         
         Returns
@@ -1175,8 +1165,8 @@ class CINC2021(PhysioNetDataBase):
 
         t = np.arange(_data.shape[1]) / self.fs[tranche]
         duration = len(t) / self.fs[tranche]
-        fig_sz_w = int(round(4.8 * duration))
-        fig_sz_h = 6 * np.maximum(y_ranges,750) / 1500
+        fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * duration))
+        fig_sz_h = 6 * np.maximum(y_ranges, 750) / 1500
         fig, axes = plt.subplots(nb_leads, 1, sharex=False, figsize=(fig_sz_w, np.sum(fig_sz_h)))
         if nb_leads == 1:
             axes = [axes]
@@ -1203,7 +1193,7 @@ class CINC2021(PhysioNetDataBase):
                     axes[idx].axvspan(itv[0], itv[1], color=palette[w], alpha=plot_alpha)
             axes[idx].legend(loc="upper left", fontsize=14)
             axes[idx].set_xlim(t[0], t[-1])
-            axes[idx].set_ylim(min(-600,-y_ranges[idx]), max(600,y_ranges[idx]))
+            axes[idx].set_ylim(min(-600, -y_ranges[idx]), max(600, y_ranges[idx]))
             axes[idx].set_xlabel("Time [s]", fontsize=16)
             axes[idx].set_ylabel("Voltage [μV]", fontsize=16)
         plt.subplots_adjust(hspace=0.05)
@@ -1312,7 +1302,7 @@ class CINC2021(PhysioNetDataBase):
         if not os.path.isfile(rec_fp):
             # print(f"corresponding file {os.basename(rec_fp)} does not exist")
             # NOTE: if not exists, create the data file,
-            # so that the ordering of leads keeps in accordance with `Standard12Leads`
+            # so that the ordering of leads keeps in accordance with `EAK.Standard12Leads`
             data = self.load_data(
                 rec,
                 leads="all",
@@ -1322,20 +1312,20 @@ class CINC2021(PhysioNetDataBase):
             )
             rec_fs = self.get_fs(rec, from_hea=True)
             if rec_fs != 500:
-                data = resample_poly(data, 500, rec_fs, axis=1).astype(_DTYPE)
+                data = resample_poly(data, 500, rec_fs, axis=1).astype(DEFAULTS.np_dtype)
             # if self.fs[tranche] != 500:
             #     data = resample_poly(data, 500, self.fs[tranche], axis=1)
             if siglen is not None and data.shape[1] >= siglen:
                 # slice_start = (data.shape[1] - siglen)//2
                 # slice_end = slice_start + siglen
                 # data = data[..., slice_start:slice_end]
-                data = ensure_siglen(data, siglen=siglen, fmt="channel_first").astype(_DTYPE)
+                data = ensure_siglen(data, siglen=siglen, fmt="channel_first").astype(DEFAULTS.np_dtype)
                 np.save(rec_fp, data)
             elif siglen is None:
                 np.save(rec_fp, data)
         else:
             # print(f"loading from local file...")
-            data = np.load(rec_fp).astype(_DTYPE)
+            data = np.load(rec_fp).astype(DEFAULTS.np_dtype)
         # choose data of specific leads
         data = data[_leads, ...]
         if data_format.lower() in ["channel_last", "lead_last"]:
@@ -1367,10 +1357,10 @@ class CINC2021(PhysioNetDataBase):
         if backend.lower() == "wfdb":
             rec_fp = self.get_data_filepath(rec, with_ext=False)
             wfdb_rec = wfdb.rdrecord(rec_fp, physical=False)
-            raw_data = np.asarray(wfdb_rec.d_signal, dtype=_DTYPE)
+            raw_data = np.asarray(wfdb_rec.d_signal, dtype=DEFAULTS.np_dtype)
         elif backend.lower() == "scipy":
             rec_fp = self.get_data_filepath(rec, with_ext=True)
-            raw_data = loadmat(rec_fp)["val"].astype(_DTYPE)
+            raw_data = loadmat(rec_fp)["val"].astype(DEFAULTS.np_dtype)
         return raw_data
 
     def _check_exceptions(self, tranches:Optional[Union[str, Sequence[str]]]=None, flat_granularity:str="record") -> List[str]:
@@ -1440,7 +1430,7 @@ class CINC2021(PhysioNetDataBase):
         dx_cooccurrence_all: DataFrame,
             the coocurrence matrix (DataFrame) desired
         """
-        dx_cooccurrence_all_fp = os.path.join(utils._BASE_DIR, "utils", "dx_cooccurrence_all.csv")
+        dx_cooccurrence_all_fp = os.path.join(self.working_dir, "dx_cooccurrence_all.csv")
         if os.path.isfile(dx_cooccurrence_all_fp) and tranches is None:
             dx_cooccurrence_all = pd.read_csv(dx_cooccurrence_all_fp)
             return
