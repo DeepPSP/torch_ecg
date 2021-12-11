@@ -6,7 +6,14 @@ from numbers import Number, Real
 
 import numpy as np
 
-from train.train_crnn_cinc2020.scoring_aux_data import load_weights
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
+from torch_ecg.databases.aux_data.cinc2020_aux_data import load_weights
 
 
 __all__ = [

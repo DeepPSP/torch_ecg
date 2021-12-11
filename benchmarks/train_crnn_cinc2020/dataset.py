@@ -11,19 +11,25 @@ from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 from easydict import EasyDict as ED
-# try:
-#     from tqdm.auto import tqdm
-# except ModuleNotFoundError:
-#     from tqdm import tqdm
-from tqdm import tqdm
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
-from sklearn.preprocessing import StandardScaler
+
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
 from torch_ecg.utils.utils_signal import butter_bandpass_filter
 from torch_ecg.utils.misc import ensure_siglen, dict_to_str
-from train.database_reader.database_reader.physionet_databases import CINC2020 as CR
-from train.train_crnn_cinc2020.cfg import TrainCfg, ModelCfg
+from torch_ecg.databases import CINC2020 as CR
+
+from cfg import TrainCfg, ModelCfg
 
 
 if ModelCfg.torch_dtype.lower() == "double":

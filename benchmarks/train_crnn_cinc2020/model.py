@@ -9,8 +9,16 @@ import torch
 from torch import Tensor
 from easydict import EasyDict as ED
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.models.ecg_crnn import ECG_CRNN
-from train.train_crnn_cinc2020.cfg import ModelCfg
+
+from cfg import ModelCfg
 
 
 __all__ = [
@@ -40,7 +48,6 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         model_config = deepcopy(ModelCfg)
         model_config.update(deepcopy(config) or {})
         super().__init__(classes, n_leads, input_len, model_config, **kwargs)
-
 
     @torch.no_grad()
     def inference(self,
@@ -104,7 +111,6 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
                 pred.at[row_idx, "bin_pred"] = \
                     np.array(self.classes)[np.where(bin_pred==1)[0]].tolist()
         return pred, bin_pred
-
 
     def inference_CINC2020(self,
                            input:Union[np.ndarray,Tensor],
