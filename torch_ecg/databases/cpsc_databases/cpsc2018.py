@@ -490,7 +490,10 @@ class CPSC2018(CPSCDataBase):
             axes[idx].set_xlabel("Time [s]")
             axes[idx].set_ylabel("Voltage [μV]")
         plt.subplots_adjust(hspace=0.2)
-        plt.show()
+        if kwargs.get("save_path", None):
+            plt.savefig(kwargs["save_path"], dpi=200, bbox_inches="tight")
+        else:
+            plt.show()
 
 
 def compute_metrics():

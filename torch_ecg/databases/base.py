@@ -217,7 +217,8 @@ class _DataBase(ABC):
         """
 
         """
-        print(self.__doc__)
+        info = "\n".join(self.__doc__.split("\n")[1:])
+        print(info)
 
     @classmethod
     def get_arrhythmia_knowledge(cls, arrhythmias:Union[str,List[str]], **kwargs:Any) -> NoReturn:
@@ -302,6 +303,7 @@ class PhysioNetDataBase(_DataBase):
             return
         try:
             self._all_records = wfdb.get_record_list(db_name or self.db_name)
+            self._all_records = [os.path.basename(item) for item in self._all_records]
         except:
             self._ls_rec_local()
             
@@ -314,6 +316,7 @@ class PhysioNetDataBase(_DataBase):
         if os.path.isfile(record_list_fp):
             with open(record_list_fp, "r") as f:
                 self._all_records = f.read().splitlines()
+                self._all_records = [os.path.basename(item) for item in self._all_records]
                 return
         print("Please wait patiently to let the reader find all records of the database from local storage...")
         start = time.time()
@@ -354,7 +357,8 @@ class PhysioNetDataBase(_DataBase):
                 return
             except:
                 pass
-        print(self.__doc__)
+        info = "\n".join(self.__doc__.split("\n")[1:])
+        print(info)
 
     def helper(self, items:Union[List[str],str,type(None)]=None, **kwargs) -> NoReturn:
         """ finished, checked, to be improved,

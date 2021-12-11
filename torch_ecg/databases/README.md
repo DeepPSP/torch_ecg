@@ -14,10 +14,10 @@ After migration, all should be tested again, the progression:
 | CinC2020      | PhysioNet | :heavy_check_mark: |
 | CinC2021      | PhysioNet | :heavy_check_mark: |
 | LTAFDB        | PhysioNet | :x:                |
-| LUDB          | PhysioNet | :x:                |
+| LUDB          | PhysioNet | :heavy_check_mark: |
 | MITDB         | PhysioNet | :x:                |
 | SHHS          | NSRR      | :x:                |
 | CPSC2018      | CPSC      | :heavy_check_mark: |
 | CPSC2019      | CPSC      | :heavy_check_mark: |
 | CPSC2020      | CPSC      | :heavy_check_mark: |
-| CPSC2021      | CPSC      | :x:                |
+| CPSC2021      | CPSC      | :heavy_check_mark: |

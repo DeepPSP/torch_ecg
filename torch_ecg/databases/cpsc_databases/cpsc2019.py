@@ -321,7 +321,10 @@ class CPSC2019(CPSCDataBase):
         ax.set_ylim(-y_range, y_range)
         ax.set_xlabel("Time [s]")
         ax.set_ylabel("Voltage [μV]")
-        plt.show()
+        if kwargs.get("save_path", None):
+            plt.savefig(kwargs["save_path"], dpi=200, bbox_inches="tight")
+        else:
+            plt.show()
 
 
 def compute_metrics(rpeaks_truth:Sequence[Union[np.ndarray,Sequence[int]]],

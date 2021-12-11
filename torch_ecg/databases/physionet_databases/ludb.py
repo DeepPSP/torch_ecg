@@ -173,7 +173,8 @@ class LUDB(PhysioNetDataBase):
         self.data_ext = "dat"
         self.all_leads = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6",]
         self.all_leads_lower = [l.lower() for l in self.all_leads]
-        self.beat_ann_ext = [f"atr_{item}" for item in self.all_leads_lower]
+        # Version 1.0.0 has different beat_ann_ext: [f"atr_{item}" for item in self.all_leads_lower]
+        self.beat_ann_ext = [f"{item}" for item in self.all_leads_lower]
 
         self._all_symbols = ["(", ")", "p", "N", "t"]
         """
@@ -182,7 +183,7 @@ class LUDB(PhysioNetDataBase):
         >>> all_symbols = set()
         >>> for rec in data_gen.all_records:
         ...     for ext in data_gen.beat_ann_ext:
-        ...         ann = wfdb.rdann(os.path.join(data_gen.db_dir, rec), extension=ext)
+        ...         ann = wfdb.rdann(data_gen._get_path(rec), extension=ext)
         ...         all_symbols.update(ann.symbol)
         """
         self._symbol_to_wavename = ED(N="qrs", p="pwave", t="twave")
@@ -213,7 +214,30 @@ class LUDB(PhysioNetDataBase):
         """
         raise NotImplementedError
 
-    def load_data(self, rec:str, leads:Optional[Union[str, List[str]]]=None, data_format="channel_first", units:str="mV", fs:Optional[Real]=None) -> np.ndarray:
+    def _get_path(self, rec:str) -> str:
+        """ finished, checked,
+
+        get the path of a record, without file extension
+
+        Parameters
+        ----------
+        rec: str,
+            name of the record
+
+        Returns
+        -------
+        rec_fp: str,
+            path of the record, without file extension
+        """
+        rec_fp = os.path.join(self.db_dir, "data", rec)
+        return rec_fp
+
+    def load_data(self,
+                  rec:str,
+                  leads:Optional[Union[str, List[str]]]=None,
+                  data_format="channel_first",
+                  units:str="mV",
+                  fs:Optional[Real]=None) -> np.ndarray:
         """ finished, checked,
 
         load physical (converted from digital) ecg data,
@@ -241,8 +265,8 @@ class LUDB(PhysioNetDataBase):
         """
         assert data_format.lower() in ["channel_first", "lead_first", "channel_last", "lead_last"]
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=True)
-        
-        rec_fp = os.path.join(self.db_dir, rec)
+
+        rec_fp = self._get_path(rec)
         wfdb_rec = wfdb.rdrecord(rec_fp, physical=True, channel_names=_leads)
         # p_signal of "lead_last" format
         # ref. ISSUES 1. (fixed in version 1.0.1)
@@ -279,11 +303,11 @@ class LUDB(PhysioNetDataBase):
         ann_dict: dict,
         """
         ann_dict = ED()
-        rec_fp = os.path.join(self.db_dir, rec)
+        rec_fp = self._get_path(rec)
 
         # wave delineation annotations
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
-        _ann_ext = [f"atr_{l.lower()}" for l in _leads]
+        _ann_ext = [f"{l.lower()}" for l in _leads]  # for Version 1.0.0, it is f"{l.lower()}"
         ann_dict["waves"] = ED({l:[] for l in _leads})
         for l, e in zip(_leads, _ann_ext):
             ann = wfdb.rdann(rec_fp, extension=e)
@@ -359,7 +383,11 @@ class LUDB(PhysioNetDataBase):
         diagnoses = self._load_header(rec)["diagnoses"]
         return diagnoses
 
-    def load_masks(self, rec:str, leads:Optional[Sequence[str]]=None, mask_format:str="channel_first", class_map:Optional[Dict[str, int]]=None) -> np.ndarray:
+    def load_masks(self,
+                   rec:str,
+                   leads:Optional[Sequence[str]]=None,
+                   mask_format:str="channel_first",
+                   class_map:Optional[Dict[str, int]]=None,) -> np.ndarray:
         """ finished, checked,
 
         load the wave delineation in the form of masks
@@ -395,7 +423,12 @@ class LUDB(PhysioNetDataBase):
             masks = masks.T
         return masks
 
-    def from_masks(self, masks:np.ndarray, mask_format:str="channel_first", leads:Optional[Sequence[str]]=None, class_map:Optional[Dict[str, int]]=None, fs:Optional[Real]=None) -> Dict[str, List[ECGWaveForm]]:
+    def from_masks(self,
+                   masks:np.ndarray,
+                   mask_format:str="channel_first",
+                   leads:Optional[Sequence[str]]=None,
+                   class_map:Optional[Dict[str, int]]=None,
+                   fs:Optional[Real]=None) -> Dict[str, List[ECGWaveForm]]:
         """ finished, checked,
 
         convert masks into lists of waveforms
@@ -486,7 +519,7 @@ class LUDB(PhysioNetDataBase):
         header_dict: dict,
         """
         header_dict = ED({})
-        rec_fp = os.path.join(self.db_dir, rec)
+        rec_fp = self._get_path(rec)
         header_reader = wfdb.rdheader(rec_fp)
         header_dict["units"] = header_reader.units
         header_dict["baseline"] = header_reader.baseline
@@ -504,7 +537,10 @@ class LUDB(PhysioNetDataBase):
         header_dict["diagnoses"] = header_reader.comments[d_start:]
         return header_dict
 
-    def _normalize_leads(self, leads:Optional[Sequence[str]]=None, standard_ordering:bool=True, lower_cases:bool=False) -> List[str]:
+    def _normalize_leads(self,
+                         leads:Optional[Sequence[str]]=None,
+                         standard_ordering:bool=True,
+                         lower_cases:bool=False,) -> List[str]:
         """ finished, checked,
 
         Parameters
@@ -668,7 +704,7 @@ class LUDB(PhysioNetDataBase):
             axes = [axes]
         for idx in range(nb_leads):
             lead_name = self.all_leads[_lead_indices[idx]]
-            axes[idx].plot(t, _data[idx], color="black", label=f"lead - {lead_name}")
+            axes[idx].plot(t, _data[idx], color="black", linewidth="2.0", label=f"lead - {lead_name}")
             axes[idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
             # NOTE that `Locator` has default `MAXTICKS` equal to 1000
             if ticks_granularity >= 1:
@@ -695,4 +731,7 @@ class LUDB(PhysioNetDataBase):
             axes[idx].set_xlabel("Time [s]")
             axes[idx].set_ylabel("Voltage [μV]")
         plt.subplots_adjust(hspace=0.2)
-        plt.show()
+        if kwargs.get("save_path", None):
+            plt.savefig(kwargs["save_path"], dpi=200, bbox_inches="tight")
+        else:
+            plt.show()
