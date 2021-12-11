@@ -442,6 +442,10 @@ class AFDB(PhysioNetDataBase):
                         ri-0.01, ri+0.01,
                         color=self.palette["qrs"], alpha=rpeaks_plot_alpha,
                     )
+                    axes[idx].axvspan(
+                        ri-0.075, ri+0.075,
+                        color=self.palette["qrs"], alpha=ann_plot_alpha
+                    )
                 axes[idx].legend(loc="upper left")
                 axes[idx].set_xlim(secs[0], secs[-1])
                 axes[idx].set_ylim(-y_ranges[idx], y_ranges[idx])

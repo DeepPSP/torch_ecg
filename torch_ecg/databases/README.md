@@ -7,7 +7,7 @@ After migration, all should be tested again, the progression:
 
 | Database      | Source    | Tested             |
 | ------------- | --------- | ------------------ |
-| AFDB          | PhysioNet | :x:                |
+| AFDB          | PhysioNet | :heavy_check_mark: |
 | ApneaECG      | PhysioNet | :x:                |
 | CinC2017      | PhysioNet | :x:                |
 | CinC2018      | PhysioNet | :x:                |
