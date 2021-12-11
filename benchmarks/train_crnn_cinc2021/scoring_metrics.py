@@ -6,7 +6,7 @@ from numbers import Number, Real
 
 import numpy as np
 
-from .scoring_aux_data import load_weights
+from torch_ecg.databases.aux_data.cinc2021_aux_data import load_weights
 
 
 __all__ = [

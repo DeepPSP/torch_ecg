@@ -5,29 +5,36 @@ import os, sys
 import json
 import time
 import textwrap
-from random import shuffle, randint
+import multiprocessing as mp
+from random import shuffle, randint, sample
 from copy import deepcopy
 from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 from easydict import EasyDict as ED
-from tqdm import tqdm
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 
-from cfg import (
-    TrainCfg, ModelCfg,
-)
-# from cfg_ns import (
-#     TrainCfg, ModelCfg,
-# )
-from .data_reader import CINC2021Reader as CR
-from torch_ecg.utils.utils_signal import ensure_siglen, butter_bandpass_filter
-from torch_ecg.utils.misc import dict_to_str, list_sum
-from train.database_reader.database_reader.utils.utils_signal import remove_spikes_naive
+from torch_ecg.databases import CINC2021 as CR
+from torch_ecg.utils.misc import ensure_siglen, dict_to_str, list_sum
+from torch_ecg.utils.utils_signal import butter_bandpass_filter, normalize, remove_spikes_naive
+from torch_ecg.utils.ecg_arrhythmia_knowledge import Standard12Leads
+from torch_ecg._preprocessors import PreprocManager
 
+from .helper_code import (
+    load_recording, load_header,
+    get_adc_gains, get_baselines,
+)
+from .cfg import (
+    TrainCfg, ModelCfg,
+    TrainCfg_ns, ModelCfg_ns,
+)
 
 if ModelCfg.torch_dtype.lower() == "double":
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -45,9 +52,9 @@ class CINC2021(Dataset):
     """
     """
     __DEBUG__ = False
-    __name__ = "CPSC2021"
+    __name__ = "CINC2021"
 
-    def __init__(self, config:ED, training:bool=True) -> NoReturn:
+    def __init__(self, config:ED, training:bool=True, lazy:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -57,6 +64,8 @@ class CINC2021(Dataset):
             ref. `cfg.TrainCfg`
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
+        lazy: bool, default True,
+            if True, the data will not be loaded immediately,
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -64,7 +73,7 @@ class CINC2021(Dataset):
         self.reader = CR(db_dir=config.db_dir)
         self.tranches = config.tranches_for_training
         self.training = training
-        if ModelCfg.torch_dtype.lower() == "double":
+        if self.config.torch_dtype.lower() == "double":
             self.dtype = np.float64
         else:
             self.dtype = np.float32
@@ -75,6 +84,7 @@ class CINC2021(Dataset):
         else:
             self.all_classes = self.config.classes
             self.class_weights = self.config.class_weights
+        self.config.all_classes = deepcopy(self.all_classes)
         self.n_classes = len(self.all_classes)
         # print(f"tranches = {self.tranches}, all_classes = {self.all_classes}")
         # print(f"class_weights = {dict_to_str(self.class_weights)}")
@@ -82,78 +92,159 @@ class CINC2021(Dataset):
         for idx, c in enumerate(self.all_classes):
             cw[idx] = self.class_weights[c]
         self.class_weights = torch.from_numpy(cw.astype(self.dtype)).view(1, self.n_classes)
-        # if self.training:
-        #     self.siglen = self.config.siglen
-        # else:
-        #     self.siglen = None
         # validation also goes in batches, hence length has to be fixed
         self.siglen = self.config.input_len
-        self._epsilon = 1e-7  # to avoid nan values caused by dividing zero
+        self.lazy = lazy
+
+        self._indices = [Standard12Leads.index(l) for l in self.config.leads]
 
         self.records = self._train_test_split(config.train_ratio, force_recompute=False)
         # TODO: consider using `remove_spikes_naive` to treat these exceptional records
         self.records = [r for r in self.records if r not in self.reader.exceptional_records]
+        if self.__DEBUG__:
+            self.records = sample(self.records, int(len(self.records) * 0.01))
 
-        self.__data_aug = self.training
+        ppm_config = ED(random=False)
+        ppm_config.update(self.config)
+        self.ppm = PreprocManager.from_config(ppm_config)
+        self.ppm.rearrange(["bandpass", "normalize"])
 
+        self._signals = np.array([], dtype=self.dtype).reshape(0, len(self.config.leads), self.siglen)
+        self._labels = np.array([], dtype=self.dtype).reshape(0, self.n_classes)
+        if not self.lazy:
+            self._load_all_data()
+
+    def _load_all_data(self) -> NoReturn:
+        """
+        """
+        # self.reader can not be pickled
+        # with mp.Pool(processes=max(1, mp.cpu_count()-2)) as pool:
+        #     self._signals, self._labels = \
+        #         zip(*pool.starmap(_load_record, [(self.reader, r, self.config) for r in self.records]))
+
+        # self._signals = np.array([]).reshape(0, len(self.config.leads), self.siglen)
+        # self._labels = np.array([]).reshape(0, self.n_classes)
+
+        fdr = FastDataReader(self.reader, self.records, self.config, self.ppm)
+
+        # with tqdm(self.records, desc="Loading data", unit="records") as pbar:
+        #     for rec in pbar:
+                # s, l = self._load_one_record(rec)  # self._load_one_record is much slower than FastDataReader
+        self._signals, self._labels = [], []
+        with tqdm(range(len(fdr)), desc="Loading data", unit="records") as pbar:
+            for idx in pbar:
+                s, l = fdr[idx]
+                # np.concatenate slows down the process severely
+                # self._signals = np.concatenate((self._signals, s), axis=0)
+                # self._labels = np.concatenate((self._labels, l), axis=0)
+                self._signals.append(s)
+                self._labels.append(l)
+        self._signals = np.concatenate(self._signals, axis=0).astype(self.dtype)
+        self._labels = np.concatenate(self._labels, axis=0)
+
+    def _load_one_record(self, rec:str) -> Tuple[np.ndarray, np.ndarray]:
+        """ finished, checked,
+
+        load a record from the database using data reader
+
+        NOTE
+        ----
+        DO NOT USE THIS FUNCTION DIRECTLY for preloading data,
+        use `FastDataReader` instead
+
+        Parameters
+        ----------
+        rec: str,
+            the record to load
+
+        Returns
+        -------
+        values: np.ndarray,
+            the values of the record
+        labels: np.ndarray,
+            the labels of the record
+        """
+        values = self.reader.load_resampled_data(
+            rec,
+            leads=self.config.leads,
+            # leads=Standard12Leads,
+            data_format=self.config.data_format,
+            siglen=None
+        )
+        for l in range(values.shape[0]):
+            values[l] = remove_spikes_naive(values[l])
+        values, _ = self.ppm(values, self.config.fs)
+        values = ensure_siglen(
+            values,
+            siglen=self.siglen,
+            fmt=self.config.data_format,
+            tolerance=self.config.sig_slice_tol,
+        ).astype(self.dtype)
+        if values.ndim == 2:
+            values = values[np.newaxis, ...]
+        
+        labels = self.reader.get_labels(
+            rec, scored_only=True, fmt="a", normalize=True
+        )
+        labels = np.isin(self.all_classes, labels).astype(self.dtype)[np.newaxis, ...].repeat(values.shape[0], axis=0)
+
+        return values, labels
+
+    def to(self, leads:Sequence[str]) -> NoReturn:
+        """
+        """
+        prev_leads = self.config.leads
+        self.config.leads = leads
+        self._indices = [prev_leads.index(l) for l in leads]
+        self._signals = self._signals[:, self._indices, :]
+
+    def emtpy(self, leads:Optional[Sequence[str]]=None) -> NoReturn:
+        """
+        """
+        if leads is None:
+            leads = self.config.leads
+        else:
+            self.config.leads = leads
+        self._signals = np.array([], dtype=self.dtype).reshape(0, len(leads), self.siglen)
+
+    @classmethod
+    def from_extern(cls, ext_ds:"CINC2021", config:ED) -> "CINC2021":
+        """
+        """
+        new_ds = cls(config, ext_ds.training, lazy=True)
+        indices = [ext_ds.config.leads.index(l) for l in new_ds.config.leads]
+        new_ds._signals = ext_ds._signals[:, indices, :]
+        new_ds._labels = ext_ds._labels.copy()
+        return new_ds
+
+    def reload_from_extern(self, ext_ds:"CINC2021") -> NoReturn:
+        """
+        """
+        indices = [ext_ds.config.leads.index(l) for l in self.config.leads]
+        self._signals = ext_ds._signals[:, indices, :]
+        self._labels = ext_ds._labels.copy()
+
+    @property
+    def signals(self) -> np.ndarray:
+        """
+        """
+        return self._signals
+
+    @property
+    def labels(self) -> np.ndarray:
+        """
+        """
+        return self._labels
 
     def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
         """ finished, checked,
         """
-        rec = self.records[index]
-        values = self.reader.load_resampled_data(
-            rec,
-            leads=self.config.leads,
-            data_format="channel_first",
-            siglen=None
-        )
-        if self.config.bandpass is not None:
-            values = butter_bandpass_filter(
-                values,
-                lowcut=self.config.bandpass[0],
-                highcut=self.config.bandpass[1],
-                order=self.config.bandpass_order,
-                fs=self.config.fs,
-            )
-        values = ensure_siglen(values, siglen=self.siglen, fmt="channel_first")
-        if self.config.normalize_data:
-            values = (values - np.mean(values)) / (np.std(values) + self._epsilon)
-            # or the following `per lead` normalization of values?
-            # values = (values - np.mean(values, axis=1, keepdims=True)) / (np.std(values, axis=1, keepdims=True) + self._epsilon)
-        labels = self.reader.get_labels(
-            rec, scored_only=True, fmt="a", normalize=True
-        )
-        labels = np.isin(self.all_classes, labels).astype(int)
-
-        if self.__data_aug:
-            # data augmentation for input
-            if self.config.random_mask > 0:
-                mask_len = randint(0, self.config.random_mask)
-                mask_start = randint(0, self.siglen-mask_len-1)
-                values[...,mask_start:mask_start+mask_len] = 0
-            if self.config.stretch_compress != 1:
-                pass  # not implemented
-            # data augmentation for labels
-            labels = (1 - self.config.label_smoothing) * labels \
-                + self.config.label_smoothing / self.n_classes
-
-        if self.config.data_format.lower() in ["channel_last", "lead_last"]:
-            values = values.T
-
-        return values, labels
-
+        return self.signals[index], self.labels[index]
 
     def __len__(self) -> int:
         """
         """
-        return len(self.records)
-
-
-    def disable_data_augmentation(self) -> NoReturn:
-        """
-        """
-        self.__data_aug = False
-
+        return len(self._signals)
     
     def _train_test_split(self,
                           train_ratio:float=0.8,
@@ -259,7 +350,9 @@ class CINC2021(Dataset):
         print(f"train test split finished in {(time.time()-start)/60:.2f} minutes")
 
         _tranches = list(self.tranches or "ABEFG")
-        if self.training:
+        if self.training == "all":
+            records = list_sum([train_set[k] for k in _tranches]) + list_sum([test_set[k] for k in _tranches])
+        elif self.training is True:
             records = list_sum([train_set[k] for k in _tranches])
         else:
             records = list_sum([test_set[k] for k in _tranches])
@@ -357,3 +450,96 @@ class CINC2021(Dataset):
                 print(f"labels of {self.records[idx]} have nan values")
 
         self.__data_aug = prev_state
+
+
+class FastDataReader(Dataset):
+    """
+    """
+    def __init__(self, reader:CR, records:Sequence[str], config:ED, ppm:Optional[PreprocManager]=None) -> NoReturn:
+        """
+        """
+        self.reader = reader
+        self.records = records
+        self.config = config
+        self.ppm = ppm
+        if self.config.torch_dtype.lower() == "double":
+            self.dtype = np.float64
+        else:
+            self.dtype = np.float32
+
+    def __len__(self) -> int:
+        """
+        """
+        return len(self.records)
+
+    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        """
+        rec = self.records[index]
+        values = self.reader.load_resampled_data(
+            rec,
+            leads=self.config.leads,
+            # leads=Standard12Leads,
+            data_format=self.config.data_format,
+            siglen=None
+        )
+        for l in range(values.shape[0]):
+            values[l] = remove_spikes_naive(values[l])
+        if self.ppm:
+            values, _ = self.ppm(values, self.config.fs)
+        values = ensure_siglen(
+            values,
+            siglen=self.config.input_len,
+            fmt=self.config.data_format,
+            tolerance=self.config.sig_slice_tol,
+        ).astype(self.dtype)
+        if values.ndim == 2:
+            values = values[np.newaxis, ...]
+        
+        labels = self.reader.get_labels(
+            rec, scored_only=True, fmt="a", normalize=True
+        )
+        labels = np.isin(self.config.all_classes, labels).astype(self.dtype)[np.newaxis, ...].repeat(values.shape[0], axis=0)
+
+        return values, labels
+
+
+def _load_record(reader:CR, rec:str, config:ED) -> Tuple[np.ndarray, np.ndarray]:
+    """ finished, NOT checked,
+
+    load a record from the database using data reader
+
+    Parameters
+    ----------
+    reader: CR,
+        the data reader
+    rec: str,
+        the record to load
+    config: dict,
+        the configuration for loading record
+
+    Returns
+    -------
+    values: np.ndarray,
+        the values of the record
+    labels: np.ndarray,
+        the labels of the record
+    """
+    values = reader.load_resampled_data(
+        rec,
+        leads=config.leads,
+        data_format="channel_first",
+        siglen=None
+    )
+    values = ensure_siglen(values, siglen=config.input_len, fmt="channel_first")
+    
+    labels = reader.get_labels(
+        rec, scored_only=True, fmt="a", normalize=True
+    )
+    labels = np.isin(config.all_classes, labels).astype(int)
+
+    if config.data_format.lower() in ["channel_last", "lead_last"]:
+        values = values.T
+
+    return values, labels
+    

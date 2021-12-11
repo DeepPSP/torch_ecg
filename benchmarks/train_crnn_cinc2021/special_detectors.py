@@ -27,16 +27,18 @@ from biosppy.signals.tools import filter_signal
 from easydict import EasyDict as ED
 from deprecated import deprecated
 
-from .cfg import (
-    SpecialDetectorCfg,
-    Standard12Leads, ChestLeads, PrecordialLeads, LimbLeads
-)
 from torch_ecg.utils.preproc import (
     preprocess_multi_lead_signal,
     rpeaks_detect_multi_leads,
 )
 from torch_ecg.utils.utils_signal import detect_peaks, get_ampl
 from torch_ecg.utils.misc import ms2samples, samples2ms, get_mask
+from torch_ecg.utils.ecg_arrhythmia_knowledge import (
+    Standard12Leads, ChestLeads, PrecordialLeads, LimbLeads
+)
+
+from .cfg import SpecialDetectorCfg
+    
 
 
 __all__ = [
