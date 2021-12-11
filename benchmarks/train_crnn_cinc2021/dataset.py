@@ -27,11 +27,11 @@ from torch_ecg.utils.utils_signal import butter_bandpass_filter, normalize, remo
 from torch_ecg.utils.ecg_arrhythmia_knowledge import Standard12Leads
 from torch_ecg._preprocessors import PreprocManager
 
-from .helper_code import (
+from helper_code import (
     load_recording, load_header,
     get_adc_gains, get_baselines,
 )
-from .cfg import (
+from cfg import (
     TrainCfg, ModelCfg,
     TrainCfg_ns, ModelCfg_ns,
 )

@@ -12,7 +12,7 @@ from easydict import EasyDict as ED
 
 from torch_ecg.models.ecg_crnn import ECG_CRNN
 
-from .cfg import ModelCfg
+from cfg import ModelCfg
 
 
 __all__ = [

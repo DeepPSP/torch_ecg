@@ -20,7 +20,7 @@ from torch_ecg.databases.aux_data.cinc2021_aux_data import (
 from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
 from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
 
-from .cfg_models import ModelArchCfg
+from cfg_models import ModelArchCfg
 
 
 __all__ = [

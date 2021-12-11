@@ -37,7 +37,7 @@ from torch_ecg.utils.ecg_arrhythmia_knowledge import (
     Standard12Leads, ChestLeads, PrecordialLeads, LimbLeads
 )
 
-from .cfg import SpecialDetectorCfg
+from cfg import SpecialDetectorCfg
     
 
 
