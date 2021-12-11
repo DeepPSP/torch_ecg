@@ -155,14 +155,14 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
     while len(roots) > 0:
         new_roots = []
         for r in roots:
-            tmp = [os.path.join(r, item) for item in os.listdir(r)]
-            # res += [item for item in tmp if os.path.isfile(item)]
+            # tmp = [os.path.join(r, item) for item in os.listdir(r)]
+            tmp = os.listdir(r)
             if isinstance(rec_patterns, str):
-                res += list(filter(re.compile(rec_patterns).search, tmp))
+                res += [os.path.join(r, item) for item in filter(re.compile(rec_patterns).search, tmp)]
             elif isinstance(rec_patterns, dict):
                 for k in rec_patterns.keys():
-                    res[k] += list(filter(re.compile(rec_patterns[k]).search, tmp))
-            new_roots += [item for item in tmp if os.path.isdir(item)]
+                    res[k] += [os.path.join(r, item) for item in filter(re.compile(rec_patterns[k]).search, tmp)]
+            new_roots += [os.path.join(r, item) for item in tmp if os.path.isdir(os.path.join(r, item))]
         roots = deepcopy(new_roots)
     if isinstance(rec_patterns, str):
         res = [os.path.splitext(item)[0].replace(db_dir, "") for item in res]
