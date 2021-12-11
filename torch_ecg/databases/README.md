@@ -3,6 +3,8 @@ python modules to facilitate the reading of various databaese from [PhysioNet](h
 
 Migrated and improved from [DeepPSP/database_reader](https://github.com/DeepPSP/database_reader)
 
+After migration, all should be tested, the progression:
+
 | Database      | Source    | Tested             |
 | ------------- | --------- | ------------------ |
 | AFDB          | PhysioNet | :x:                |
