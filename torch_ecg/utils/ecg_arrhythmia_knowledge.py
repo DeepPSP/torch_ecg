@@ -233,9 +233,14 @@ PRWP = ED({  # voltage
     "url": [
         "https://litfl.com/poor-r-wave-progression-prwp-ecg-library/",
         "https://www.healio.com/cardiology/learn-the-heart/ecg-review/ecg-topic-reviews-and-criteria/poor-r-wave-progression",
+        "https://emergencymedicinecases.com/ecg-cases-poor-r-wave-progression-late-mnemonic/",
+        "https://www.wikidoc.org/index.php/Poor_R_Wave_Progression",
     ],
-    "knowledge": [
+    "knowledge": [  #The definition of poor R wave progression (PRWP) varies in the literature
         "absence of the normal increase in size of the R wave in the precordial leads when advancing from lead V1 to V6",
+        "in lead V1, the R wave should be small. The R wave becomes larger throughout the precordial leads, to the point where the R wave is larger than the S wave in lead V4. The S wave then becomes quite small in lead V6.",
+        "failure of the R wave to progress in amplitude (R<3mm in V3), reversal of the progression (eg R in V2>V3), or delayed transition beyond V4",
+        "R wave is less than 2–4 mm in leads V3 or V4 and/or there is presence of a reversed R wave progression, which is defined as R in V4 < R in V3 or R in V3 < R in V2 or R in V2 < R in V1, or any combination of these",
     ],
 })
 
