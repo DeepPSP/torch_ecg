@@ -19,5 +19,5 @@ After migration, all should be tested again, the progression:
 | SHHS          | NSRR      | :x:                |
 | CPSC2018      | CPSC      | :heavy_check_mark: |
 | CPSC2019      | CPSC      | :heavy_check_mark: |
-| CPSC2020      | CPSC      | :x:                |
+| CPSC2020      | CPSC      | :heavy_check_mark: |
 | CPSC2021      | CPSC      | :x:                |

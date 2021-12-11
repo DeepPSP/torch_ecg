@@ -155,24 +155,6 @@ class CPSC2018(CPSCDataBase):
             the `subject_id` corr. to `rec_no`
         """
         raise NotImplementedError
-    
-    def database_info(self, detailed:bool=False) -> NoReturn:
-        """ not finished,
-
-        print the information about the database
-
-        Parameters
-        ----------
-        detailed: bool, default False,
-            if False, an short introduction of the database will be printed,
-            if True, then docstring of the class will be printed additionally
-        """
-        raw_info = {}
-
-        print(raw_info)
-        
-        if detailed:
-            print(self.__doc__)
 
     def load_data(self, rec_no:Union[int,str], data_format="channel_first", units:str="mV",) -> np.ndarray:
         """ finished, checked,

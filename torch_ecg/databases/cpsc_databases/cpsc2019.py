@@ -167,24 +167,6 @@ class CPSC2019(CPSCDataBase):
         pid = 0
         raise NotImplementedError
 
-    def database_info(self, detailed:bool=False) -> NoReturn:
-        """ not finished,
-
-        print the information about the database
-
-        Parameters
-        ----------
-        detailed: bool, default False,
-            if False, an short introduction of the database will be printed,
-            if True, then docstring of the class will be printed additionally
-        """
-        raw_info = {}
-
-        print(raw_info)
-        
-        if detailed:
-            print(self.__doc__)
-
     def load_data(self, rec:Union[int,str], units:str="mV", keep_dim:bool=True) -> np.ndarray:
         """ finished, checked,
 
@@ -322,7 +304,7 @@ class CPSC2019(CPSCDataBase):
         y_range = np.max(np.abs(_data))
         fig_sz_h = 6 * y_range / 1500
         fig, ax = plt.subplots(figsize=(fig_sz_w, fig_sz_h))
-        ax.plot(secs, _data, color="black")
+        ax.plot(secs, _data, color="black", linewidth="2.0",)
         ax.axhline(y=0, linestyle="-", linewidth="1.0", color="red")
         if ticks_granularity >= 1:
             ax.xaxis.set_major_locator(plt.MultipleLocator(0.2))

@@ -171,7 +171,11 @@ class CPSC2020(CPSCDataBase):
     [2] https://github.com/PIA-Group/BioSPPy
     """
 
-    def __init__(self, db_dir:str, working_dir:Optional[str]=None, verbose:int=2, **kwargs:Any) -> NoReturn:
+    def __init__(self,
+                 db_dir:str,
+                 working_dir:Optional[str]=None,
+                 verbose:int=2,
+                 **kwargs:Any,) -> NoReturn:
         """ finished, to be improved,
 
         Parameters
@@ -191,10 +195,10 @@ class CPSC2020(CPSCDataBase):
         self.rec_ext = "mat"
         self.ann_ext = "mat"
 
-        self.nb_records = 10
-        self._all_records = [f"A{i:02d}" for i in range(1,1+self.nb_records)]
-        self._all_annotations = [f"R{i:02d}" for i in range(1,1+self.nb_records)]
-        # self.all_references = self.all_annotations
+        self.n_records = 10
+        self._all_records = None
+        self._all_annotations = None
+        self._ls_rec()
         self.rec_dir = os.path.join(self.db_dir, "data")
         self.ann_dir = os.path.join(self.db_dir, "ref")
         self.data_dir = self.rec_dir
@@ -209,6 +213,11 @@ class CPSC2020(CPSCDataBase):
 
         self.palette = {"spb": "yellow", "pvc": "red",}
 
+    def _ls_rec(self) -> NoReturn:
+        """
+        """
+        self._all_records = [f"A{i:02d}" for i in range(1,1+self.n_records)]
+        self._all_annotations = [f"R{i:02d}" for i in range(1,1+self.n_records)]
 
     @property
     def all_annotations(self):
@@ -221,7 +230,6 @@ class CPSC2020(CPSCDataBase):
         """
         """
         return self._all_annotations
-
 
     def get_subject_id(self, rec:Union[int,str]) -> int:
         """ not finished,
@@ -239,28 +247,13 @@ class CPSC2020(CPSCDataBase):
         """
         pid = 0
         raise NotImplementedError
-    
 
-    def database_info(self, detailed:bool=False) -> NoReturn:
-        """ not finished,
-
-        print the information about the database
-
-        Parameters
-        ----------
-        detailed: bool, default False,
-            if False, an short introduction of the database will be printed,
-            if True, then docstring of the class will be printed additionally
-        """
-        raw_info = {}
-
-        print(raw_info)
-        
-        if detailed:
-            print(self.__doc__)
-
-
-    def load_data(self, rec:Union[int,str], units:str="mV", sampfrom:Optional[int]=None, sampto:Optional[int]=None, keep_dim:bool=True) -> np.ndarray:
+    def load_data(self,
+                  rec:Union[int,str],
+                  units:str="mV",
+                  sampfrom:Optional[int]=None,
+                  sampto:Optional[int]=None,
+                  keep_dim:bool=True) -> np.ndarray:
         """ finished, checked,
 
         Parameters
@@ -292,7 +285,6 @@ class CPSC2020(CPSCDataBase):
         if not keep_dim:
             data = data.flatten()
         return data
-
 
     def load_ann(self, rec:Union[int,str], sampfrom:Optional[int]=None, sampto:Optional[int]=None) -> Dict[str, np.ndarray]:
         """ finished, checked,
@@ -331,7 +323,6 @@ class CPSC2020(CPSCDataBase):
         }
         return ann
 
-
     def _get_ann_name(self, rec:Union[int,str]) -> str:
         """ finished, checked,
 
@@ -347,13 +338,12 @@ class CPSC2020(CPSCDataBase):
             filename of the annotation file
         """
         if isinstance(rec, int):
-            assert rec in range(1, self.nb_records+1), f"rec should be in range(1,{self.nb_records+1})"
+            assert rec in range(1, self.n_records+1), f"rec should be in range(1,{self.n_records+1})"
             ann_name = self.all_annotations[rec-1]
         elif isinstance(rec, str):
             assert rec in self.all_annotations+self.all_records, f"rec should be one of {self.all_records} or one of {self.all_annotations}"
             ann_name = rec.replace("A", "R")
         return ann_name
-
 
     def _get_rec_name(self, rec:Union[int,str]) -> str:
         """ finished, checked,
@@ -370,14 +360,13 @@ class CPSC2020(CPSCDataBase):
             filename of the record
         """
         if isinstance(rec, int):
-            assert rec in range(1, self.nb_records+1), f"rec should be in range(1,{self.nb_records+1})"
+            assert rec in range(1, self.n_records+1), f"rec should be in range(1,{self.n_records+1})"
             rec_name = self.all_records[rec-1]
         elif isinstance(rec, str):
             assert rec in self.all_records, f"rec should be one of {self.all_records}"
             rec_name = rec
         return rec_name
 
-    
     def train_test_split_rec(self, test_rec_num:int=2) -> Dict[str, List[str]]:
         """ finished, checked,
 
@@ -414,9 +403,12 @@ class CPSC2020(CPSCDataBase):
         
         return split_res
 
-
     def locate_premature_beats(self, rec:Union[int,str], premature_type:Optional[str]=None, window:int=10000, sampfrom:Optional[int]=None, sampto:Optional[int]=None) -> List[List[int]]:
         """ finished, checked,
+
+        locate the sample indices of premature beats in a record,
+        in the form of a list of lists,
+        each list contains the interval of sample indices of premature beats
 
         Parameters
         ----------
@@ -459,8 +451,14 @@ class CPSC2020(CPSCDataBase):
         )
         return premature_intervals
 
-    
-    def plot(self, rec:Union[int,str], data:Optional[np.ndarray]=None, ann:Optional[Dict[str, np.ndarray]]=None, ticks_granularity:int=0, sampfrom:Optional[int]=None, sampto:Optional[int]=None, rpeak_inds:Optional[Union[Sequence[int],np.ndarray]]=None) -> NoReturn:
+    def plot(self,
+             rec:Union[int,str],
+             data:Optional[np.ndarray]=None,
+             ann:Optional[Dict[str, np.ndarray]]=None,
+             ticks_granularity:int=0,
+             sampfrom:Optional[int]=None,
+             sampto:Optional[int]=None,
+             rpeak_inds:Optional[Union[Sequence[int],np.ndarray]]=None,) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -534,7 +532,7 @@ class CPSC2020(CPSCDataBase):
             y_range = np.max(np.abs(seg)) + 100
             fig_sz_h = 6 * y_range / 1500
             fig, ax = plt.subplots(figsize=(fig_sz_w, fig_sz_h))
-            ax.plot(secs, seg, color="black")
+            ax.plot(secs, seg, color="black", linewidth="2.0",)
             ax.axhline(y=0, linestyle="-", linewidth="1.0", color="red")
             if ticks_granularity >= 1:
                 ax.xaxis.set_major_locator(plt.MultipleLocator(0.2))
@@ -626,7 +624,7 @@ def _ann_to_beat_ann_epoch_v1(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
     return retval
 
-@DeprecationWarning
+
 def _ann_to_beat_ann_epoch_v2(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias_thr:Real) -> dict:
     """ finished, checked, has flaws, deprecated,
 
@@ -692,6 +690,7 @@ def _ann_to_beat_ann_epoch_v2(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
     # retval = dict(augmented_rpeaks=augmented_rpeaks, beat_ann=beat_ann)
     # return retval
 
+
 def _ann_to_beat_ann_epoch_v3(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias_thr:Real) -> dict:
     """ finished, checked,
     
@@ -741,7 +740,11 @@ def _ann_to_beat_ann_epoch_v3(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
 
 
 
-def compute_metrics(sbp_true:List[np.ndarray], pvc_true:List[np.ndarray], sbp_pred:List[np.ndarray], pvc_pred:List[np.ndarray], verbose:int=0) -> Union[Tuple[int],dict]:
+def compute_metrics(sbp_true:List[np.ndarray],
+                    pvc_true:List[np.ndarray],
+                    sbp_pred:List[np.ndarray],
+                    pvc_pred:List[np.ndarray],
+                    verbose:int=0) -> Union[Tuple[int],dict]:
     """ finished, checked,
 
     Score Function for all (test) records
