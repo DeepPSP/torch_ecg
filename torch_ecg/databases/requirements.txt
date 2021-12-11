@@ -1,0 +1,15 @@
+numpy
+pandas
+scipy
+colour-science
+pyEDFlib
+xmltodict
+wfdb
+matplotlib
+librosa
+praat-parselmouth
+opencv-contrib-python
+easydict
+
+# ipympl
+# ipywidgets
