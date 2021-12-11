@@ -1,6 +1,6 @@
 # benchmarks of CinC and CPSC challenges, and using other databases
 
-a large part are migrated from other DeepPSP repositories, some are even imcompatible with the new system architecture of `torch_ecg`, hence need updating and testing
+a large part are migrated from other DeepPSP repositories, some are implemented in the old fasion, being inconsistent with the new system architecture of `torch_ecg`, hence need updating and testing
 
 | Benchmark  | Architecture              | Source                                                  | Updated            | Tested             |
 | ---------- | ------------------------- | ------------------------------------------------------- | ------------------ | ------------------ |

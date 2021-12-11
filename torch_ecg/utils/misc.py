@@ -673,14 +673,20 @@ def ensure_lead_fmt(values:Sequence[Real], n_leads:int=12, fmt:str="lead_first")
     return out_values
 
 
-def ensure_siglen(values:Sequence[Real], siglen:int, fmt:str="lead_first") -> np.ndarray:
+def ensure_siglen(values:Sequence[Real],
+                  siglen:int,
+                  fmt:str="lead_first",
+                  tolerance:Optional[float]=None,) -> np.ndarray:
     """ finished, checked,
 
     ensure the (ECG) signal to be of length `siglen`,
     strategy:
-        if `values` has length greater than `siglen`,
+        If `values` has length greater than `siglen`,
         the central `siglen` samples will be adopted;
-        otherwise, zero padding will be added to both sides
+        otherwise, zero padding will be added to both sides.
+        If `tolerance` is given,
+        then if the length of `values` is longer than `siglen` by more than `tolerance`,
+        the `values` will be sliced to have multiple of `siglen` samples.
 
     Parameters
     ----------
@@ -695,7 +701,8 @@ def ensure_siglen(values:Sequence[Real], siglen:int, fmt:str="lead_first") -> np
     Returns
     -------
     out_values: ndarray,
-        ECG signal in the format of `fmt` and of fixed length `siglen`
+        ECG signal in the format of `fmt` and of fixed length `siglen`,
+        of ndim=3 if `tolerence` is given, otherwise ndim=2
     """
     if fmt.lower() in ["channel_last", "lead_last"]:
         _values = np.array(values).T
@@ -704,19 +711,31 @@ def ensure_siglen(values:Sequence[Real], siglen:int, fmt:str="lead_first") -> np
     original_siglen = _values.shape[1]
     n_leads = _values.shape[0]
 
-    if original_siglen >= siglen:
-        start = (original_siglen - siglen) // 2
-        end = start + siglen
-        out_values = _values[..., start:end]
-    else:
-        pad_len = siglen - original_siglen
-        pad_left = pad_len // 2
-        pad_right = pad_len - pad_left
-        out_values = np.concatenate([np.zeros((n_leads, pad_left)), _values, np.zeros((n_leads, pad_right))], axis=1)
+    if tolerance is None or original_siglen <= siglen * (1+tolerance):
+        if original_siglen >= siglen:
+            start = (original_siglen - siglen) // 2
+            end = start + siglen
+            out_values = _values[..., start:end]
+        else:
+            pad_len = siglen - original_siglen
+            pad_left = pad_len // 2
+            pad_right = pad_len - pad_left
+            out_values = np.concatenate([np.zeros((n_leads, pad_left)), _values, np.zeros((n_leads, pad_right))], axis=1)
 
+        if fmt.lower() in ["channel_last", "lead_last"]:
+            out_values = out_values.T
+        if tolerance is not None:
+            out_values = out_values[np.newaxis, ...]
+        
+        return out_values
+
+    forward_len = int(round(siglen * tolerance))
+    out_values = np.array([
+        _values[..., idx*forward_len: idx*forward_len+siglen] \
+            for idx in range((original_siglen-siglen) // forward_len + 1)
+    ])
     if fmt.lower() in ["channel_last", "lead_last"]:
-        out_values = out_values.T
-    
+        out_values = np.moveaxis(out_values, 1, -1)
     return out_values
 
 
