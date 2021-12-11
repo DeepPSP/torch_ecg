@@ -40,13 +40,13 @@ from torch_ecg.utils.ecg_arrhythmia_knowledge import (
 from cfg import SpecialDetectorCfg
     
 
-
 __all__ = [
     "special_detectors",
     "pacing_rhythm_detector",
     "electrical_axis_detector",
     "brady_tachy_detector",
     "LQRSV_detector",
+    "PRWP_detector",
 ]
 
 
@@ -109,6 +109,8 @@ def special_detectors(raw_sig:np.ndarray,
     is_LQRSV = LQRSV_detector(
         filtered_sig, rpeaks, fs, sig_fmt, leads, verbose=verbose
     )
+    is_PRWP = PRWP_detector(filtered_sig, rpeaks, fs, sig_fmt, leads, verbose=verbose)
+
     is_LAD = (axis=="LAD")
     is_RAD = (axis=="RAD")
     is_brady = (brady_tachy=="B")
@@ -120,6 +122,7 @@ def special_detectors(raw_sig:np.ndarray,
         is_RAD=is_RAD,
         is_PR=is_PR,
         is_LQRSV=is_LQRSV,
+        is_PRWP=is_PRWP,
     )
     return conclusion
 
@@ -171,25 +174,6 @@ def pacing_rhythm_detector(raw_sig:np.ndarray,
             sampling_rate=fs)["signal"] \
                 for lead in range(s.shape[0])
     ])
-    # cpu_num = max(1, mp.cpu_count()-3)
-    # with mp.Pool(processes=cpu_num) as pool:
-    #     iterable = [(s[lead,...], "butter", "highpass", 20, SpecialDetectorCfg.pr_fs_lower_bound, fs) for lead in range(s.shape[0])]
-    #     results = pool.starmap(
-    #         func=filter_signal,
-    #         iterable=iterable,
-    #     )
-    # data_hp = np.array([item["signal"] for item in results])
-
-    # if the signal is "PR", then there's only sharp spikes left in data_hp
-    # however, "xqrs" seems unable to pick out these spikes as R peaks
-
-    # potential_spikes = rpeaks_detect_multi_leads(
-    #     sig=data_hp,
-    #     fs=fs,
-    #     sig_fmt="channel_first",
-    #     rpeak_fn="xqrs",
-    #     verbose=verbose,
-    # )
 
     potential_spikes = []
     # sig_len = data_hp.shape[-1]
@@ -291,10 +275,6 @@ def electrical_axis_detector(filtered_sig:np.ndarray,
         axis = "normal"
         return axis
     
-    
-    # lead_I = s[Standard12Leads.index("I")]
-    # lead_II = s[Standard12Leads.index("II")]
-    # lead_aVF = s[Standard12Leads.index("aVF")]
     lead_I = s[list(leads).index("I")]
     lead_aVF = s[list(leads).index("aVF")]
     try:
@@ -466,8 +446,6 @@ def LQRSV_detector(filtered_sig:np.ndarray,
         critical_points=rpeaks,
     )
 
-    # limb_lead_inds = [Standard12Leads.index(l) for l in LimbLeads]
-    # precordial_lead_inds = [Standard12Leads.index(l) for l in PrecordialLeads]
     limb_leads = [l for l in leads if l in LimbLeads]
     limb_lead_inds = [list(leads).index(l) for l in limb_leads]
     precordial_leads = [l for l in leads if l in PrecordialLeads]
@@ -546,8 +524,6 @@ def LQRSV_detector_backup(filtered_sig:np.ndarray,
     if verbose >= 2:
         print(f"qrs intervals = {l_qrs}")
 
-    # limb_lead_inds = [Standard12Leads.index(l) for l in LimbLeads]
-    # precordial_lead_inds = [Standard12Leads.index(l) for l in PrecordialLeads]
     limb_leads = [l for l in leads if l in LimbLeads]
     limb_lead_inds = [list(leads).index(l) for l in limb_leads]
     precordial_leads = [l for l in leads if l in PrecordialLeads]
@@ -590,3 +566,79 @@ def LQRSV_detector_backup(filtered_sig:np.ndarray,
         or (low_qrs_precordial_leads >= SpecialDetectorCfg.lqrsv_ratio_threshold)
 
     return is_LQRSV
+
+
+def PRWP_detector(filtered_sig:np.ndarray,
+                  rpeaks:np.ndarray,
+                  fs:Real,
+                  sig_fmt:str="channel_first",
+                  leads:Sequence[str]=Standard12Leads,
+                  verbose:int=0) -> bool:
+    """ finished, checked, to be improved
+
+    Parameters
+    ----------
+    filtered_sig: ndarray,
+        the filtered multi-lead ecg signal, with units in mV
+    rpeaks: ndarray,
+        array of indices of the R peaks
+    fs: real number,
+        sampling frequency of the ecg signal
+    sig_fmt: str, default "channel_first",
+        format of the 12 lead ecg signal,
+        "channel_last" (alias "lead_last"), or
+        "channel_first" (alias "lead_first", original)
+    leads: sequence of str,
+        names of the leads in the input signal
+    verbose: int, default 0,
+        print verbosity
+
+    Returns
+    -------
+    is_PRWP: bool,
+        the ecg signal is of arrhythmia `PRWP` or not
+    """
+    if sig_fmt.lower() in ["channel_first", "lead_first"]:
+        r_ampl = filtered_sig[..., rpeaks]
+    else:
+        # all change to lead_first
+        r_ampl = filtered_sig[rpeaks, ...].T
+
+    if len(set([f"V{n}" for n in range(1,5)]).intersection(leads)) < 2 and "V3" not in leads:
+        # leads insufficient to make decision
+        is_PRWP = False
+        return is_PRWP
+
+    limb_leads = [l for l in leads if l in LimbLeads]
+    limb_lead_inds = [list(leads).index(l) for l in limb_leads]
+
+    try:
+        lead_V3_ind = list(leads).index("V3")
+    except:
+        lead_V3_ind = None
+
+    leads_V1_4 = [l for l in leads if l in ["V1", "V2", "V3", "V4"]]
+    leads_V1_4_inds = [list(leads).index(l) for l in leads_V1_4]
+
+    # condition 1: R<3mm in V3
+    if lead_V3_ind is not None:
+        cond1 = (np.mean(r_ampl[lead_V3_ind, ...]) < SpecialDetectorCfg.prwp_v3_thr)
+        if verbose >= 1:
+            print(f"PRWP condition 1: R amplitude in lead V3 = {np.mean(r_ampl[lead_V3_ind, ...])}")
+    else:
+        cond1 = False
+
+    # condition 2: reversed R wave progression, which is defined as R in V4 < R in V3 or R in V3 < R in V2 or R in V2 < R in V1
+    cond2 = (np.diff(np.mean(r_ampl[leads_V1_4_inds, ...], axis=-1)) < 0).any()
+    if verbose >= 1:
+        diff = np.diff(np.mean(r_ampl[leads_V1_4_inds, ...], axis=-1))
+        print(f"PRWP condition 2: reversed R wave progression, diff of mean R amplitude in V1-4 = {diff}")
+
+    # condition 3: delayed transition beyond V4
+    # currently, exact meaning of condition 3 is not clear
+    cond3 = False
+
+    # the or rule
+    is_PRWP = cond1 or cond2 or cond3
+
+    return is_PRWP

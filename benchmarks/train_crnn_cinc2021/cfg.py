@@ -73,6 +73,7 @@ SpecialDetectorCfg.tachy_threshold = _ONE_MINUTE_IN_MS / 100  # ms, corr. to 100
 SpecialDetectorCfg.lqrsv_qrs_mask_radius = 60  # ms
 SpecialDetectorCfg.lqrsv_ampl_bias = 0.02  # mV, TODO: should be further determined by resolution, etc.
 SpecialDetectorCfg.lqrsv_ratio_threshold = 0.8
+SpecialDetectorCfg.prwp_v3_thr = 0.3  # mV
 
 # special classes using special detectors
 _SPECIAL_CLASSES = ["Brady", "LAD", "RAD", "PR", "LQRSV"]
