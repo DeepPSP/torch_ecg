@@ -17,7 +17,7 @@ After migration, all should be tested, the progression:
 | LUDB          | PhysioNet | :x:                |
 | MITDB         | PhysioNet | :x:                |
 | SHHS          | NSRR      | :x:                |
-| CPSC2018      | CPSC      | :x:                |
+| CPSC2018      | CPSC      | :heavy_check_mark: |
 | CPSC2019      | CPSC      | :x:                |
 | CPSC2020      | CPSC      | :x:                |
 | CPSC2021      | CPSC      | :x:                |

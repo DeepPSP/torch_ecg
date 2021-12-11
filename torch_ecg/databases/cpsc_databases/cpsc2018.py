@@ -13,9 +13,6 @@ np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 from scipy.io import loadmat
 
-from ...utils.ecg_arrhythmia_knowledge import (
-    AF, IAVB, LBBB, RBBB, PAC, PVC, STD, STE,
-)
 from ..aux_data.cinc2020_aux_data import (
     dx_mapping_all, dx_mapping_scored, dx_mapping_unscored,
     normalize_class, abbr_to_snomed_ct_code,
@@ -79,7 +76,11 @@ class CPSC2018(CPSCDataBase):
     [2] https://physionetchallenges.github.io/2020/
     """
 
-    def __init__(self, db_dir:str, working_dir:Optional[str]=None, verbose:int=2, **kwargs:Any) -> NoReturn:
+    def __init__(self,
+                 db_dir:str,
+                 working_dir:Optional[str]=None,
+                 verbose:int=2,
+                 **kwargs:Any) -> NoReturn:
         """ finished, to be improved,
 
         Parameters
@@ -98,7 +99,9 @@ class CPSC2018(CPSCDataBase):
         self.spacing = 1000 / self.fs
         self.rec_ext = "mat"
         self.ann_ext = "hea"
-        self._all_records = [os.path.splitext(os.path.basename(item))[0] for item in glob.glob(os.path.join(db_dir, "*."+self.rec_ext))]
+        self._all_records = None
+        self._ls_rec()
+
         self.nb_records = 6877
         self.all_leads = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6",]
         self.all_diagnosis = ["N", "AF", "I-AVB", "LBBB", "RBBB", "PAC", "PVC", "STD", "STE",]
@@ -130,6 +133,13 @@ class CPSC2018(CPSCDataBase):
             "df_leads",
         ]
 
+    def _ls_rec(self) -> NoReturn:
+        """
+        """
+        self._all_records = [
+            os.path.splitext(os.path.basename(item))[0] \
+                for item in glob.glob(os.path.join(self.db_dir, f"*.{self.rec_ext}"))
+        ]
 
     def get_subject_id(self, rec_no:Union[int,str]) -> int:
         """ not finished,
@@ -144,15 +154,8 @@ class CPSC2018(CPSCDataBase):
         pid: int,
             the `subject_id` corr. to `rec_no`
         """
-        if isinstance(rec_no, int):
-            pass
-        elif rec_no.startswith("A"):
-            pass
-        else:
-            pass
         raise NotImplementedError
     
-
     def database_info(self, detailed:bool=False) -> NoReturn:
         """ not finished,
 
@@ -171,7 +174,7 @@ class CPSC2018(CPSCDataBase):
         if detailed:
             print(self.__doc__)
 
-    def load_data(self, rec_no:Union[int,str], data_format="channels_last") -> np.ndarray:
+    def load_data(self, rec_no:Union[int,str], data_format="channel_first", units:str="mV",) -> np.ndarray:
         """ finished, checked,
 
         Parameters
@@ -179,8 +182,10 @@ class CPSC2018(CPSCDataBase):
         rec_no: int or str,
             number of the record, NOTE that rec_no starts from 1; or name of the record,
             int only supported for the original CPSC2018 dataset
-        data_format: str, default "channels_last",
+        data_format: str, default "channel_first",
             format of the ecg data, "channels_last" or "channels_first" (original)
+        units: str, default "mV",
+            units of the output signal, can also be "μV", with an alias of "uV"
         
         Returns
         -------
@@ -195,6 +200,11 @@ class CPSC2018(CPSCDataBase):
         data = np.asarray(data["val"], dtype=np.float64)
         if data_format == "channels_last":
             data = data.T
+
+        if units.lower() == "mv" and self._auto_infer_units(data) != "mV":
+            data /= 1000
+        elif units.lower() in ["uv", "μv",] and self._auto_infer_units(data) != "μV":
+            data *= 1000
         
         return data
 
@@ -223,7 +233,8 @@ class CPSC2018(CPSCDataBase):
             header_data = f.read().splitlines()
 
         ann_dict = {}
-        ann_dict["rec_name"], ann_dict["nb_leads"], ann_dict["fs"], ann_dict["nb_samples"], ann_dict["datetime"], daytime = header_data[0].split(" ")
+        ann_dict["rec_name"], ann_dict["nb_leads"], ann_dict["fs"], ann_dict["nb_samples"], ann_dict["datetime"], daytime \
+            = header_data[0].split(" ")
 
         ann_dict["nb_leads"] = int(ann_dict["nb_leads"])
         ann_dict["fs"] = int(ann_dict["fs"])
@@ -318,7 +329,10 @@ class CPSC2018(CPSCDataBase):
             infomation of each leads in the format of DataFrame
         """
         df_leads = pd.read_csv(io.StringIO("\n".join(l_leads_data)), delim_whitespace=True, header=None)
-        df_leads.columns = ["filename", "fmt+byte_offset", "adc_gain+units", "adc_res", "adc_zero", "init_value", "checksum", "block_size", "lead_name",]
+        df_leads.columns = [
+            "filename", "fmt+byte_offset", "adc_gain+units", "adc_res", "adc_zero",
+            "init_value", "checksum", "block_size", "lead_name",
+        ]
         df_leads["fmt"] = df_leads["fmt+byte_offset"].apply(lambda s: s.split("+")[0])
         df_leads["byte_offset"] = df_leads["fmt+byte_offset"].apply(lambda s: s.split("+")[1])
         df_leads["adc_gain"] = df_leads["adc_gain+units"].apply(lambda s: s.split("/")[0])
@@ -326,7 +340,10 @@ class CPSC2018(CPSCDataBase):
         for k in ["byte_offset", "adc_gain", "adc_res", "adc_zero", "init_value", "checksum",]:
             df_leads[k] = df_leads[k].apply(lambda s: int(s))
         df_leads["baseline"] = df_leads["adc_zero"]
-        df_leads = df_leads[["filename", "fmt", "byte_offset", "adc_gain", "adc_units", "adc_res", "adc_zero", "baseline", "init_value", "checksum", "block_size", "lead_name"]]
+        df_leads = df_leads[[
+            "filename", "fmt", "byte_offset", "adc_gain", "adc_units", "adc_res", "adc_zero", "baseline",
+            "init_value", "checksum", "block_size", "lead_name",
+        ]]
         df_leads.index = df_leads["lead_name"]
         df_leads.index.name = None
         return df_leads
@@ -370,7 +387,9 @@ class CPSC2018(CPSCDataBase):
         """
         diagonosis = self.get_labels(rec_no)
         if full_name:
-            diagonosis = [self.diagnosis_abbr_to_full[item] for item in diagonosis]
+            diagonosis = diagonosis["diagnosis_fullname"]
+        else:
+            diagonosis = diagonosis["diagnosis_abbr"]
         return diagonosis
 
     def get_subject_info(self, rec_no:Union[int,str], items:Optional[List[str]]=None) -> dict:
@@ -395,7 +414,7 @@ class CPSC2018(CPSCDataBase):
         else:
             info_items = items
         ann_dict = self.load_ann(rec_no)
-        subject_info = [ann_dict[item] for item in info_items]
+        subject_info = {item: ann_dict[item] for item in info_items}
 
         return subject_info
 
@@ -433,14 +452,17 @@ class CPSC2018(CPSCDataBase):
             # f.write(recording_string + "\n" + class_string + "\n" + label_string + "\n" + score_string + "\n")
             f.write("\n".join([recording_string, class_string, label_string, score_string, ""]))
 
-    def plot(self, rec_no:Union[int,str], leads:Optional[Union[str, List[str]]]=None, **kwargs:Any) -> NoReturn:
-        """ not finished, not checked,
+    def plot(self, rec_no:Union[int,str], ticks_granularity:int=0, leads:Optional[Union[str, List[str]]]=None, **kwargs:Any) -> NoReturn:
+        """ finished, checked,
 
         Parameters
         ----------
         rec_no: int or str,
             number of the record, NOTE that rec_no starts from 1; or name of the record,
             int only supported for the original CPSC2018 dataset
+        ticks_granularity: int, default 0,
+            the granularity to plot axis ticks, the higher the more,
+            0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
         leads: str or list of str, optional,
             the leads to plot
         kwargs: auxilliary key word arguments
@@ -456,7 +478,7 @@ class CPSC2018(CPSCDataBase):
 
         lead_list = self.load_ann(rec_no)["df_leads"]["lead_name"].tolist()
         lead_indices = [lead_list.index(l) for l in leads]
-        data = self.load_data(rec_no)[lead_indices]
+        data = self.load_data(rec_no, data_format="channel_first", units="μV")[lead_indices]
         y_ranges = np.max(np.abs(data), axis=1) + 100
 
         diag = self.get_diagnosis(rec_no, full_name=False)
@@ -469,15 +491,18 @@ class CPSC2018(CPSCDataBase):
         fig_sz_h = 6 * y_ranges / 1500
         fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
         for idx in range(nb_leads):
-            axes[idx].plot(t, data[idx], label="lead - " + leads[idx] + "\n" + "labels - " + ",".join(diag))
+            axes[idx].plot(t, data[idx], color="black", linewidth="2.0", label=f"lead - {leads[idx]}")
             axes[idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
-            axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
-            axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
-            axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-            axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-            axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
-            axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
-            axes[idx].legend(loc="best")
+            if ticks_granularity >= 1:
+                axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
+                axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
+                axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
+            if ticks_granularity >= 2:
+                axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
+                axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
+                axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
+            axes[idx].plot([], [], " ", label=f"labels - {','.join(diag)}")
+            axes[idx].legend(loc="upper left")
             axes[idx].set_xlim(t[0], t[-1])
             axes[idx].set_ylim(-y_ranges[idx], y_ranges[idx])
             axes[idx].set_xlabel("Time [s]")
@@ -485,25 +510,6 @@ class CPSC2018(CPSCDataBase):
         plt.subplots_adjust(hspace=0.2)
         plt.show()
 
-    @classmethod
-    def get_disease_knowledge(cls, diseases:Union[str,List[str]], **kwargs) -> Union[str, Dict[str, list]]:
-        """ not finished, not checked,
-
-        knowledge about ECG features of specific diseases,
-
-        Parameters
-        ----------
-        diseases: str, or list of str,
-            the disease(s) to check
-
-        Returns
-        -------
-        to write
-        """
-        if isinstance(diseases, str):
-            d = [diseases]
-        else:
-            d = diseases
 
 def compute_metrics():
     """

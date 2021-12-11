@@ -27,8 +27,9 @@ np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 from pyedflib import EdfReader
 
+from ..utils import ecg_arrhythmia_knowledge as EAK
 from ..utils.misc import (
-    get_record_list_recursive3,
+    get_record_list_recursive3, dict_to_str,
 )
 
 
@@ -216,6 +217,26 @@ class _DataBase(ABC):
 
         """
         print(self.__doc__)
+
+    @classmethod
+    def get_arrhythmia_knowledge(cls, arrhythmias:Union[str,List[str]], **kwargs:Any) -> NoReturn:
+        """ finished, checked,
+
+        knowledge about ECG features of specific arrhythmias,
+
+        Parameters
+        ----------
+        arrhythmias: str, or list of str,
+            the arrhythmia(s) to check, in abbreviations or in SNOMEDCTCode
+        """
+        if isinstance(arrhythmias, str):
+            d = [arrhythmias]
+        else:
+            d = arrhythmias
+        for idx, item in enumerate(d):
+            print(dict_to_str(eval(f"EAK.{item}")))
+            if idx < len(d)-1:
+                print("*"*110)
 
 
 class PhysioNetDataBase(_DataBase):
