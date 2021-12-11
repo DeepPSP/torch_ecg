@@ -4,6 +4,7 @@ import os, sys
 import re
 import logging
 import datetime
+import random
 from functools import reduce
 from collections import namedtuple
 from glob import glob
@@ -46,6 +47,8 @@ __all__ = [
     "dicts_equal",
     "default_class_repr",
     "MovingAverage",
+    "uniform",
+    "nildent",
 ]
 
 
@@ -1181,3 +1184,35 @@ class MovingAverage(object):
         deno = np.sum(conv)
         smoothed = np.convolve(conv, self.data, mode="same") / deno
         return smoothed
+
+
+def uniform(low:Real, high:Real, num:int) -> List[float]:
+    """ finished, checked,
+
+    Parameters
+    ----------
+    low: real number,
+        lower bound of the interval of the uniform distribution
+    high: real number,
+        upper bound of the interval of the uniform distribution
+    num: int,
+        number of random numbers to generate
+
+    Returns
+    -------
+    arr: list of float,
+        array of randomly generated numbers with uniform distribution
+    """
+    arr = [random.uniform(low,high) for _ in range(num)]
+    return arr
+
+
+def nildent(text:str) -> str:
+    """ finished, checked,
+
+    kill all leading white spaces in each line of `text`,
+    while keeping all lines (including empty)
+    """
+    new_text = "\n".join([l.lstrip() for l in text.splitlines()]) \
+        + ("\n" if text.endswith("\n") else "")
+    return new_text
