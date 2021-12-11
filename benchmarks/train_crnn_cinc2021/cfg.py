@@ -13,6 +13,13 @@ from typing import List, NoReturn
 import numpy as np
 from easydict import EasyDict as ED
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.databases.aux_data.cinc2021_aux_data import (
     equiv_class_dict,
     get_class_weight,

@@ -27,6 +27,13 @@ from biosppy.signals.tools import filter_signal
 from easydict import EasyDict as ED
 from deprecated import deprecated
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.utils.preproc import (
     preprocess_multi_lead_signal,
     rpeaks_detect_multi_leads,

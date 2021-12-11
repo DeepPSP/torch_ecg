@@ -21,6 +21,13 @@ import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.databases import CINC2021 as CR
 from torch_ecg.utils.misc import ensure_siglen, dict_to_str, list_sum
 from torch_ecg.utils.utils_signal import butter_bandpass_filter, normalize, remove_spikes_naive

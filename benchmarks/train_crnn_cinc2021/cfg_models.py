@@ -1,9 +1,16 @@
-
-
+"""
+"""
 from copy import deepcopy
 from itertools import repeat
 
 from easydict import EasyDict as ED
+
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
 from torch_ecg.model_configs import (
     # cnn bankbone
