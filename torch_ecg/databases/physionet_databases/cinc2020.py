@@ -33,7 +33,7 @@ from ..aux_data.cinc2020_aux_data import (
     df_weights_abbr,
     equiv_class_dict,
 )
-from ..base import PhysioNetDataBase
+from ..base import PhysioNetDataBase, DEFAULT_FIG_SIZE_PER_SEC
 
 
 __all__ = [
@@ -213,7 +213,8 @@ class CINC2020(PhysioNetDataBase):
         }
         self.spacing = {t: 1000 / f for t,f in self.fs.items()}
 
-        self.all_leads = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6",]
+        self.all_leads = deepcopy(EAK.Standard12Leads)
+        self._all_leads_set = set(self.all_leads)
 
         self.df_ecg_arrhythmia = dx_mapping_all[["Dx","SNOMED CT Code","Abbreviation"]]
         self.ann_items = [
@@ -227,7 +228,6 @@ class CINC2020(PhysioNetDataBase):
         # self.value_correction_factor.F = 4.88  # ref. ISSUES 3
 
         self.exceptional_records = ["E04603", "E06072", "E06909", "E07675", "E07941", "E08321"]  # ref. ISSUES 4
-
 
     def get_subject_id(self, rec:str) -> int:
         """ finished, checked,
@@ -249,7 +249,6 @@ class CINC2020(PhysioNetDataBase):
         sid = int(f"{s2d[prefix]}{'0'*(8-len(n))}{n}")
         return sid
 
-    
     def _ls_rec(self) -> NoReturn:
         """ finished, checked,
 
@@ -260,7 +259,7 @@ class CINC2020(PhysioNetDataBase):
         record_list_fp = os.path.join(self.db_dir_base, fn)
         if os.path.isfile(record_list_fp):
             with open(record_list_fp, "r") as f:
-                self._all_records = json.load(f)
+                self._all_records = {k:v for k,v in json.load(f).items() if k in self.tranche_names}
             for tranche in self.db_tranches:
                 self.db_dirs[tranche] = os.path.join(self.db_dir_base, os.path.dirname(self._all_records[tranche][0]))
                 self._all_records[tranche] = [os.path.basename(f) for f in self._all_records[tranche]]
@@ -268,7 +267,7 @@ class CINC2020(PhysioNetDataBase):
             print("Please wait patiently to let the reader find all records of all the tranches...")
             start = time.time()
             rec_patterns_with_ext = {
-                tranche: f"{self.rec_prefix[tranche]}(?:\d+).{self.rec_ext}" \
+                tranche: f"^{self.rec_prefix[tranche]}(?:\d+).{self.rec_ext}$" \
                     for tranche in self.db_tranches
             }
             self._all_records = \
@@ -286,7 +285,6 @@ class CINC2020(PhysioNetDataBase):
             print(f"Done in {time.time() - start:.5f} seconds!")
             with open(os.path.join(self.db_dir_base, fn), "w") as f:
                 json.dump(to_save, f)
-
 
     def _ls_diagnoses_records(self) -> NoReturn:
         """ finished, checked,
@@ -313,7 +311,6 @@ class CINC2020(PhysioNetDataBase):
                 json.dump(self._diagnoses_records_list, f)
         self._all_records = ED(self._all_records)
 
-
     @property
     def diagnoses_records_list(self):
         """ finished, checked,
@@ -321,7 +318,6 @@ class CINC2020(PhysioNetDataBase):
         if self._diagnoses_records_list is None:
             self._ls_diagnoses_records()
         return self._diagnoses_records_list
-
 
     def _get_tranche(self, rec:str) -> str:
         """ finished, checked,
@@ -341,7 +337,6 @@ class CINC2020(PhysioNetDataBase):
         prefix = "".join(re.findall(r"[A-Z]", rec))
         tranche = {v:k for k,v in self.rec_prefix.items()}[prefix]
         return tranche
-
 
     def get_data_filepath(self, rec:str, with_ext:bool=True) -> str:
         """ finished, checked,
@@ -368,7 +363,6 @@ class CINC2020(PhysioNetDataBase):
             fp = os.path.splitext(fp)[0]
         return fp
 
-    
     def get_header_filepath(self, rec:str, with_ext:bool=True) -> str:
         """ finished, checked,
 
@@ -394,14 +388,12 @@ class CINC2020(PhysioNetDataBase):
             fp = os.path.splitext(fp)[0]
         return fp
 
-    
     def get_ann_filepath(self, rec:str, with_ext:bool=True) -> str:
         """ finished, checked,
         alias for `get_header_filepath`
         """
         fp = self.get_header_filepath(rec, with_ext=with_ext)
         return fp
-
 
     def load_data(self, rec:str, leads:Optional[Union[str, List[str]]]=None, data_format:str="channel_first", backend:str="wfdb", units:str="mV", fs:Optional[Real]=None) -> np.ndarray:
         """ finished, checked,
@@ -475,7 +467,6 @@ class CINC2020(PhysioNetDataBase):
 
         return data
 
-    
     def load_ann(self, rec:str, raw:bool=False, backend:str="wfdb") -> Union[dict,str]:
         """ finished, checked,
 
@@ -512,7 +503,6 @@ class CINC2020(PhysioNetDataBase):
         else:
             raise ValueError(f"backend `{backend.lower()}` not supported for loading annotations")
         return ann_dict
-
 
     def _load_ann_wfdb(self, rec:str, header_data:List[str]) -> dict:
         """ finished, checked,
@@ -580,7 +570,6 @@ class CINC2020(PhysioNetDataBase):
 
         return ann_dict
 
-
     def _load_ann_naive(self, header_data:List[str]) -> dict:
         """ finished, checked,
 
@@ -631,7 +620,6 @@ class CINC2020(PhysioNetDataBase):
 
         return ann_dict
 
-
     def _parse_diagnosis(self, l_Dx:List[str]) -> Tuple[dict, dict]:
         """ finished, checked,
 
@@ -679,7 +667,6 @@ class CINC2020(PhysioNetDataBase):
         #             ann_dict["diagnosis_abbr"] = ["N"]
         return diag_dict, diag_scored_dict
 
-
     def _parse_leads(self, l_leads_data:List[str]) -> pd.DataFrame:
         """ finished, checked,
 
@@ -707,14 +694,12 @@ class CINC2020(PhysioNetDataBase):
         df_leads.index.name = None
         return df_leads
 
-
     def load_header(self, rec:str, raw:bool=False) -> Union[dict,str]:
         """
         alias for `load_ann`, as annotations are also stored in header files
         """
         return self.load_ann(rec, raw)
 
-    
     def get_labels(self, rec:str, scored_only:bool=True, fmt:str="s", normalize:bool=True) -> List[str]:
         """ finished, checked,
 
@@ -757,7 +742,6 @@ class CINC2020(PhysioNetDataBase):
             labels = [self.label_trans_dict.get(item, item) for item in labels]
         return labels
 
-
     def get_fs(self, rec:str) -> Real:
         """ finished, checked,
 
@@ -777,7 +761,6 @@ class CINC2020(PhysioNetDataBase):
         fs = self.fs[tranche]
         return fs
 
-    
     def get_subject_info(self, rec:str, items:Optional[List[str]]=None) -> dict:
         """ finished, checked,
 
@@ -806,7 +789,6 @@ class CINC2020(PhysioNetDataBase):
         subject_info = [ann_dict[item] for item in info_items]
 
         return subject_info
-
 
     def save_challenge_predictions(self, rec:str, output_dir:str, scores:List[Real], labels:List[int], classes:List[str]) -> NoReturn:
         """ NOT finished, NOT checked, need updating, 
@@ -839,8 +821,15 @@ class CINC2020(PhysioNetDataBase):
             # f.write(recording_string + "\n" + class_string + "\n" + label_string + "\n" + score_string + "\n")
             f.write("\n".join([recording_string, class_string, label_string, score_string, ""]))
 
-
-    def plot(self, rec:str, data:Optional[np.ndarray]=None, ann:Optional[Dict[str, np.ndarray]]=None, ticks_granularity:int=0, leads:Optional[Union[str, List[str]]]=None, same_range:bool=False, waves:Optional[Dict[str, Sequence[int]]]=None, **kwargs) -> NoReturn:
+    def plot(self,
+             rec:str,
+             data:Optional[np.ndarray]=None,
+             ann:Optional[Dict[str, np.ndarray]]=None,
+             ticks_granularity:int=0,
+             leads:Optional[Union[str, List[str]]]=None,
+             same_range:bool=False,
+             waves:Optional[Dict[str, Sequence[int]]]=None,
+             **kwargs:Any) -> NoReturn:
         """ finished, checked, to improve,
 
         plot the signals of a record or external signals (units in μV),
@@ -857,7 +846,7 @@ class CINC2020(PhysioNetDataBase):
             if given, data of `rec` will not be used,
             this is useful when plotting filtered data
         ann: dict, optional,
-            annotations for `data`,
+            annotations for `data`, with 2 items: "scored", "all",
             ignored if `data` is None
         ticks_granularity: int, default 0,
             the granularity to plot axis ticks, the higher the more,
@@ -873,8 +862,8 @@ class CINC2020(PhysioNetDataBase):
             "t_onsets", "t_peaks", "t_offsets"
         kwargs: dict,
 
-        TODO:
-        -----
+        TODO
+        ----
         1. slice too long records, and plot separately for each segment
         2. plot waves using `axvspan`
 
@@ -904,7 +893,8 @@ class CINC2020(PhysioNetDataBase):
             _leads = [leads]
         else:
             _leads = leads
-        assert all([l in self.all_leads for l in _leads])
+        # assert all([l in self.all_leads for l in _leads])
+        assert set(_leads).issubset(self._all_leads_set)
 
         # lead_list = self.load_ann(rec)["df_leads"]["lead_name"].tolist()
         # lead_indices = [lead_list.index(l) for l in _leads]
@@ -993,23 +983,23 @@ class CINC2020(PhysioNetDataBase):
 
         t = np.arange(_data.shape[1]) / self.fs[tranche]
         duration = len(t) / self.fs[tranche]
-        fig_sz_w = int(round(4.8 * duration))
-        fig_sz_h = 6 * y_ranges / 1500
-        fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
+        fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * duration))
+        fig_sz_h = 6 * np.maximum(y_ranges, 750) / 1500
+        fig, axes = plt.subplots(nb_leads, 1, sharex=False, figsize=(fig_sz_w, np.sum(fig_sz_h)))
         if nb_leads == 1:
             axes = [axes]
         for idx in range(nb_leads):
-            axes[idx].plot(t, _data[idx], color="black", label=f"lead - {_leads[idx]}")
+            axes[idx].plot(t, _data[idx], color="black", linewidth="2.0", label=f"lead - {_leads[idx]}")
             axes[idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
             # NOTE that `Locator` has default `MAXTICKS` equal to 1000
             if ticks_granularity >= 1:
                 axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                 axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
+                axes[idx].grid(which="major", linestyle="-", linewidth="0.4", color="red")
             if ticks_granularity >= 2:
                 axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                 axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
+                axes[idx].grid(which="minor", linestyle=":", linewidth="0.2", color="gray")
             # add extra info. to legend
             # https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib
             axes[idx].plot([], [], " ", label=f"labels_s - {','.join(diag_scored)}")
@@ -1019,14 +1009,17 @@ class CINC2020(PhysioNetDataBase):
             for w in ["p_waves", "qrs", "t_waves"]:
                 for itv in eval(w):
                     axes[idx].axvspan(itv[0], itv[1], color=palette[w], alpha=plot_alpha)
-            axes[idx].legend(loc="upper left")
+            axes[idx].legend(loc="upper left", fontsize=14)
             axes[idx].set_xlim(t[0], t[-1])
-            axes[idx].set_ylim(-y_ranges[idx], y_ranges[idx])
-            axes[idx].set_xlabel("Time [s]")
-            axes[idx].set_ylabel("Voltage [μV]")
-        plt.subplots_adjust(hspace=0.2)
-        plt.show()
-
+            axes[idx].set_ylim(min(-600, -y_ranges[idx]), max(600, y_ranges[idx]))
+            axes[idx].set_xlabel("Time [s]", fontsize=16)
+            axes[idx].set_ylabel("Voltage [μV]", fontsize=16)
+        plt.subplots_adjust(hspace=0.05)
+        fig.tight_layout()
+        if kwargs.get("save_path", None):
+            plt.savefig(kwargs["save_path"], dpi=200, bbox_inches="tight")
+        else:
+            plt.show()
 
     def get_tranche_class_distribution(self, tranches:Sequence[str], scored_only:bool=True) -> Dict[str, int]:
         """ finished, checked,
@@ -1051,7 +1044,6 @@ class CINC2020(PhysioNetDataBase):
             if num > 0:
                 distribution[row["Abbreviation"]] = num
         return distribution
-
 
     @staticmethod
     def get_arrhythmia_knowledge(arrhythmias:Union[str,List[str]], **kwargs) -> NoReturn:
@@ -1078,7 +1070,6 @@ class CINC2020(PhysioNetDataBase):
             print(dict_to_str(eval(f"EAK.{item}")))
             if idx < len(d)-1:
                 print("*"*110)
-
 
     def load_resampled_data(self, rec:str, data_format:str="channel_first", siglen:Optional[int]=None) -> np.ndarray:
         """ finished, checked,
@@ -1129,7 +1120,6 @@ class CINC2020(PhysioNetDataBase):
             data = data.T
         return data
 
-
     def load_raw_data(self, rec:str, backend:str="scipy") -> np.ndarray:
         """ finished, checked,
 
@@ -1160,7 +1150,6 @@ class CINC2020(PhysioNetDataBase):
             rec_fp = self.get_data_filepath(rec, with_ext=True)
             raw_data = loadmat(rec_fp)["val"]
         return raw_data
-
 
     def _check_nan(self, tranches:Union[str, Sequence[str]]) -> NoReturn:
         """ finished, checked,

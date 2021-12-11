@@ -299,7 +299,7 @@ class CINC2021(PhysioNetDataBase):
         record_list_fp = os.path.join(self.db_dir_base, filename)
         if os.path.isfile(record_list_fp):
             with open(record_list_fp, "r") as f:
-                self._all_records = json.load(f)
+                self._all_records = {k:v for k,v in json.load(f).items() if k in self.tranche_names}
             for tranche in self.db_tranches:
                 self._all_records[tranche] = [os.path.basename(f) for f in self._all_records[tranche]]
                 self.db_dirs[tranche] = self._find_dir(self.db_dir_base, tranche, 0)
