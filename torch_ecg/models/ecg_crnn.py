@@ -46,8 +46,7 @@ from .cnn.xception import Xception
 # )
 from .transformers import Transformer
 
-
-if DEFAULTS.torch_dtype.lower() == "double":
+if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

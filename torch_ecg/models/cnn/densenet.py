@@ -31,7 +31,7 @@ from ...models._nets import (
 )
 
 
-if DEFAULTS.torch_dtype.lower() == "double":
+if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

@@ -8,6 +8,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from ...utils.utils_nn import compute_module_size, SizeMixin
+from ...cfg import DEFAULTS
+
+if DEFAULTS.torch_dtype == torch.float64:
+    torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = ["Transformer",]

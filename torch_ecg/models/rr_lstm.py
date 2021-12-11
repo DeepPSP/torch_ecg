@@ -36,7 +36,7 @@ from ..models._nets import (
     CRF, ExtendedCRF,
 )
 
-if DEFAULTS.torch_dtype.lower() == "double":
+if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

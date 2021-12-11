@@ -30,6 +30,12 @@ from ...models._nets import (
     NonLocalBlock, SEBlock, GlobalContextBlock,
 )
 
+if DEFAULTS.torch_dtype == torch.float64:
+    torch.set_default_tensor_type(torch.DoubleTensor)
+
+
+__all__ = ["Darknet",]
+
 
 class DarkNet(SizeMixin, nn.Sequential):
     """

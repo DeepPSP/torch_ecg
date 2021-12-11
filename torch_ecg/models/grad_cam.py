@@ -16,7 +16,7 @@ from torch.autograd import Function
 
 from ..cfg import DEFAULTS
 
-if DEFAULTS.torch_dtype.lower() == "double":
+if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

@@ -18,11 +18,8 @@ from torch import nn
 from ..cfg import DEFAULTS
 
 
-if DEFAULTS.torch_dtype.lower() == "double":
+if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
-    _DTYPE = np.float64
-else:
-    _DTYPE = np.float32
 
 
 __all__ = [
@@ -523,7 +520,7 @@ def default_collate_fn(batch:Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, 
     ret = []
     for i in range(n_fields):
         values = [[item[i]] for item in batch]
-        values = np.concatenate(values, axis=0).astype(_DTYPE)
+        values = np.concatenate(values, axis=0).astype(DEFAULTS.np_dtype)
         values = torch.from_numpy(values)
         ret.append(values)
     return tuple(ret)
