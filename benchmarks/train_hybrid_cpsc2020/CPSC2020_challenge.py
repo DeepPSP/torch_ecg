@@ -8,10 +8,10 @@ from typing import Tuple
 import numpy as np
 from scipy.signal import resample_poly
 
-from train.train_crnn_cpsc2020.signal_processing import parallel_preprocess_signal
-from train.train_crnn_cpsc2020.signal_processing import ecg_denoise
-from train.train_crnn_cpsc2020.saved_models import load_model
-from train.train_crnn_cpsc2020.cfg import ModelCfg
+from signal_processing import parallel_preprocess_signal
+from signal_processing import ecg_denoise
+from saved_models import load_model
+from cfg import ModelCfg
 
 
 CRNN_MODEL, SEQ_LAB_MODEL = load_model(which="both")

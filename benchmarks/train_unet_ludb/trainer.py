@@ -16,11 +16,10 @@ from numbers import Real, Number
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
-# try:
-#     from tqdm.auto import tqdm
-# except ModuleNotFoundError:
-#     from tqdm import tqdm
-from tqdm import tqdm
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
 import torch
 from torch import nn
 from torch import optim
@@ -32,16 +31,22 @@ from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 
-from torch_ecg.models import ECG_UNET
-# from models.utils.torch_utils import BCEWithLogitsWithClassWeightLoss
-from torch_ecg.models.loss import default_collate_fn as collate_fn
-from torch_ecg.model_configs import ECG_UNET_VANILLA_CONFIG
-from torch_ecg.utils.misc import init_logger, get_date_str, dict_to_str, str2bool
-from train.train_unet_ludb.cfg import TrainCfg
-from train.train_unet_ludb.dataset import LUDB
-from train.train_unet_ludb.metrics import compute_metrics
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-if TrainCfg.torch_dtype.lower() == "double":
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
+from torch_ecg.utils.trainer import BaseTrainer
+
+from cfg import TrainCfg
+from dataset import LUDB
+from metrics import compute_metrics
+from model import ECG_UNET_LUDB
+
+if TrainCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

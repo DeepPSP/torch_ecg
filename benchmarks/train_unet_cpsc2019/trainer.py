@@ -13,11 +13,10 @@ from numbers import Real, Number
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
-# try:
-#     from tqdm.auto import tqdm
-# except ModuleNotFoundError:
-#     from tqdm import tqdm
-from tqdm import tqdm
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
 import torch
 from torch import nn
 from torch import optim
@@ -29,18 +28,25 @@ from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 import biosppy.signals.ecg as BSE
 
-from torch_ecg.models.loss import BCEWithLogitsWithClassWeightLoss
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from train.train_unet_cpsc2019.model import ECG_SUBTRACT_UNET_CPSC2019, ECG_UNET_CPSC2019
-from train.train_unet_cpsc2019.utils import (
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
+from torch_ecg.utils.trainer import BaseTrainer
+from torch_ecg.utils.misc import (
     init_logger, get_date_str, dict_to_str, str2bool,
     mask_to_intervals,
 )
-from train.train_unet_cpsc2019.cfg import ModelCfg, TrainCfg
-from train.train_unet_cpsc2019.dataset import CPSC2019
-from train.train_unet_cpsc2019.metrics import compute_metrics
 
-if ModelCfg.torch_dtype.lower() == "double":
+from cfg import ModelCfg, TrainCfg
+from model import ECG_SUBTRACT_UNET_CPSC2019, ECG_UNET_CPSC2019
+from dataset import CPSC2019
+from metrics import compute_metrics
+
+if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
     _DTYPE = torch.float64
 else:

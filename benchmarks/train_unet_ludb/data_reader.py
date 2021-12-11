@@ -14,6 +14,13 @@ import pandas as pd
 import wfdb
 from easydict import EasyDict as ED
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.utils.misc import (
     get_record_list_recursive,
     get_record_list_recursive2,
@@ -698,7 +705,7 @@ class LUDBReader(object):
             for d in diagnoses:
                 axes[idx].plot([], [], " ", label=d)
             for w in ["pwaves", "qrs", "twaves"]:
-                for itv in eval(f"{w}["{lead_name}"]"):
+                for itv in eval(f"{w}['{lead_name}']"):
                     axes[idx].axvspan(
                         itv[0]/self.fs, itv[1]/self.fs,
                         color=palette[w], alpha=plot_alpha,

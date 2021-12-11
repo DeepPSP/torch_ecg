@@ -11,23 +11,28 @@ from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
-# try:
-#     from tqdm.auto import tqdm
-# except ModuleNotFoundError:
-#     from tqdm import tqdm
-from tqdm import tqdm
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 from easydict import EasyDict as ED
 
-# from torch_ecg.utils.misc import ensure_siglen, dict_to_str
-from train.database_reader.database_reader.cpsc_databases import CPSC2019 as CR
-from train.train_seq_lab_net_cpsc2019.cfg import TrainCfg, ModelCfg
-from train.train_seq_lab_net_cpsc2019.utils import gen_baseline_wander
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.databases import CPSC2019 as CR
+from torch_ecg._preprocessors import PreprocManager
 
-if ModelCfg.torch_dtype.lower() == "double":
+from cfg import TrainCfg, ModelCfg
+
+if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

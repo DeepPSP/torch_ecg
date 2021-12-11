@@ -7,6 +7,13 @@ from itertools import repeat
 import numpy as np
 from easydict import EasyDict as ED
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.model_configs import (
     ECG_SEQ_LAB_NET_CONFIG,
     RR_LSTM_CONFIG,

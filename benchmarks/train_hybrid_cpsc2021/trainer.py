@@ -29,6 +29,13 @@ from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.utils.trainer import BaseTrainer
 from torch_ecg.models.loss import (
     BCEWithLogitsWithClassWeightLoss,

@@ -5,9 +5,18 @@ from typing import Union, Optional, Any, List, Tuple
 import numpy as np
 from easydict import EasyDict as ED
 
-from train.train_crnn_cpsc2020.utils import dict_to_str, in_generalized_interval
-from train.train_crnn_cpsc2020.cfg import BaseCfg
-from train.train_crnn_cpsc2020.metrics import CPSC2020_loss, CPSC2020_score
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
+from torch_ecg.utils.misc import dict_to_str
+from torch_ecg.utils.utils_interval import in_generalized_interval
+
+from cfg import BaseCfg
+from metrics import CPSC2020_loss, CPSC2020_score
 
 
 __all__ = [

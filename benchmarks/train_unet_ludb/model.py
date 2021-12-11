@@ -11,10 +11,19 @@ from torch import Tensor
 from easydict import EasyDict as ED
 import biosppy.signals.ecg as BSE
 
-# from torch_ecg.models.ecg_subtract_unet import ECG_SUBTRACT_UNET
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
+from torch_ecg.models.ecg_subtract_unet import ECG_SUBTRACT_UNET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
-from train.train_unet_ludb.cfg import ModelCfg
-from train.train_unet_ludb.utils import mask_to_intervals, _remove_spikes_naive
+from torch_ecg.utils.misc import mask_to_intervals
+from torch_ecg.utils.utils_signal import _remove_spikes_naive
+
+from cfg import ModelCfg
 
 
 __all__ = [

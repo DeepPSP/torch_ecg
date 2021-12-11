@@ -10,11 +10,19 @@ import torch
 from torch import Tensor
 from easydict import EasyDict as ED
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.models import (
     ECG_CRNN, ECG_SEQ_LAB_NET
 )
-from train.train_crnn_cpsc2020.cfg import ModelCfg
-from train.train_crnn_cpsc2020.utils import mask_to_intervals
+from torch_ecg.utils.misc import mask_to_intervals
+
+from cfg import ModelCfg
 
 
 __all__ = [

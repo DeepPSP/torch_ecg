@@ -11,9 +11,18 @@ from torch import Tensor
 from easydict import EasyDict as ED
 import biosppy.signals.ecg as BSE
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
-from train.train_seq_lab_net_cpsc2019.cfg import ModelCfg
-from train.train_seq_lab_net_cpsc2019.utils import mask_to_intervals, _remove_spikes_naive
+from torch_ecg.utils.misc import mask_to_intervals
+from torch_ecg.utils.utils_signal import remove_spikes_naive
+
+from cfg import ModelCfg
 
 
 __all__ = [
@@ -54,7 +63,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
 
         auxiliary function to `forward`, for CPSC2019,
 
-        NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
+        NOTE: each segment of input be better filtered using `remove_spikes_naive`,
         and normalized to a suitable mean and std
 
         Parameters

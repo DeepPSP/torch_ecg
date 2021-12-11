@@ -9,20 +9,27 @@ from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
-# try:
-#     from tqdm.auto import tqdm
-# except ModuleNotFoundError:
-#     from tqdm import tqdm
-from tqdm import tqdm
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 from easydict import EasyDict as ED
 
-from train.database_reader.database_reader.physionet_databases import LUDB as LR
-from train.train_unet_ludb.cfg import TrainCfg
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-if TrainCfg.torch_dtype.lower() == "double":
+from torch_ecg.databases import LUDB as LR
+
+from cfg import TrainCfg
+
+if TrainCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 
@@ -107,14 +114,12 @@ class LUDB(Dataset):
 
         return values, masks
 
-
     def __len__(self) -> int:
         """
         """
         if self.config.lead is None and self.config.use_single_lead:
             return 12 * len(self.records)
         return len(self.records)
-
 
     def disable_data_augmentation(self) -> NoReturn:
         """
@@ -166,8 +171,6 @@ class LUDB(Dataset):
             shuffle(records)
         return records
 
-
-    @DeprecationWarning
     def persistence(self) -> NoReturn:
         """ NOT finished, NOT checked,
 

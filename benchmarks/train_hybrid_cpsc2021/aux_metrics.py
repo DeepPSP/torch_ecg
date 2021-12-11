@@ -13,6 +13,13 @@ from numbers import Real
 import numpy as np
 import torch
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.models.loss import MaskedBCEWithLogitsLoss
 from torch_ecg.utils.utils_interval import mask_to_intervals
 

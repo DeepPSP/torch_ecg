@@ -19,6 +19,13 @@ import torch
 from torch import Tensor
 from easydict import EasyDict as ED
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 # models from torch_ecg
 from torch_ecg.models.ecg_crnn import ECG_CRNN
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET

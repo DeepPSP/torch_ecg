@@ -28,19 +28,27 @@ from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.models.loss import BCEWithLogitsWithClassWeightLoss
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from train.train_crnn_cpsc2020.model_legacy import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
-from train.train_crnn_cpsc2020.utils import (
+from torch_ecg.utils.misc import (
     get_date_str, dict_to_str, str2bool,
     mask_to_intervals, list_sum,
 )
-from train.train_crnn_cpsc2020.cfg import ModelCfg, TrainCfg
-# from dataset import CPSC2020
-from train.train_crnn_cpsc2020.dataset_simplified import CPSC2020 as CPSC2020_SIMPLIFIED
-from train.train_crnn_cpsc2020.metrics import eval_score, CPSC2020_loss, CPSC2020_score
 
-if ModelCfg.torch_dtype.lower() == "double":
+from model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
+from cfg import ModelCfg, TrainCfg
+# from dataset import CPSC2020
+from dataset_simplified import CPSC2020 as CPSC2020_SIMPLIFIED
+from metrics import eval_score, CPSC2020_loss, CPSC2020_score
+
+if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
     _DTYPE = torch.float64
 else:

@@ -7,7 +7,14 @@ from itertools import repeat
 import numpy as np
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
+from torch_ecg.cfg import DEFAULTS
 
 
 __all__ = [
@@ -28,7 +35,7 @@ BaseCfg.bias_thr = 0.075 * BaseCfg.fs  # keep the same with `THR` in `cpsc2019_s
 # detected rpeaks that are within `skip_dist` from two ends of the signal will be ignored,
 # as in the official entry function
 BaseCfg.skip_dist = 0.5 * BaseCfg.fs
-BaseCfg.torch_dtype = Cfg.torch_dtype
+BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
 

@@ -63,25 +63,30 @@ np.set_printoptions(precision=5, suppress=True)
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
 from easydict import EasyDict as ED
-# try:
-#     from tqdm.auto import tqdm
-# except ModuleNotFoundError:
-#     from tqdm import tqdm
-from tqdm import tqdm
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
-from sklearn.preprocessing import StandardScaler
 
-from train.database_reader.database_reader.cpsc_databases import CPSC2020 as CR
-from train.train_crnn_cpsc2020 import signal_processing as SP
-from train.train_crnn_cpsc2020.cfg import TrainCfg, ModelCfg, PreprocCfg
-from train.train_crnn_cpsc2020.utils import (
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
+from torch_ecg.databases import CPSC2020 as CR
+from torch_ecg.utils.misc import (
     mask_to_intervals, list_sum,
-    gen_baseline_wander,
     get_record_list_recursive3,
 )
+from torch_ecg._preprocessors import PreprocManager
 
-if ModelCfg.torch_dtype.lower() == "double":
+from cfg import TrainCfg, ModelCfg, PreprocCfg
+
+if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
     _DTYPE = np.float64
 else:

@@ -55,6 +55,13 @@ from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 from scipy.io import loadmat, savemat
 
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
 from torch_ecg.databases import CPSC2021 as CR
 from torch_ecg.utils.preproc import preprocess_multi_lead_signal
 from torch_ecg.utils.utils_signal import normalize

@@ -8,7 +8,14 @@ import pywt
 import numpy as np
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
+from torch_ecg.cfg import DEFAULTS
 
 
 __all__ = [
@@ -36,7 +43,7 @@ BaseCfg.beat_ann_bias_thr = 0.1 * BaseCfg.fs  # half width of broad qrs complex
 BaseCfg.beat_winL = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
 BaseCfg.beat_winR = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
 
-BaseCfg.torch_dtype = Cfg.torch_dtype
+BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
 
