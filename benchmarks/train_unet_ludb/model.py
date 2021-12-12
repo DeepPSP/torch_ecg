@@ -53,7 +53,9 @@ class ECG_UNET_LUDB(ECG_UNET):
         super().__init__(model_config.classes, n_leads, model_config, **kwargs)
 
     @torch.no_grad()
-    def inference(self, input:Union[Sequence[float],np.ndarray,Tensor]) -> Tuple[np.ndarray, List[np.ndarray]]:
+    def inference(self,
+                  input:Union[Sequence[float],np.ndarray,Tensor],
+                  bin_pred_thr:float=0.5,) -> Tuple[np.ndarray, List[np.ndarray]]:
         """ NOT finished, NOT checked,
         """
         self.eval()
@@ -69,7 +71,12 @@ class ECG_UNET_LUDB(ECG_UNET):
 
         raise NotImplementedError
 
-    def inference_LUDB(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200, correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
+    def inference_LUDB(self,
+                       input:Union[np.ndarray,Tensor],
+                       bin_pred_thr:float=0.5,
+                       duration_thr:int=4*16,
+                       dist_thr:Union[int,Sequence[int]]=200,
+                       correction:bool=False,) -> Tuple[np.ndarray, List[np.ndarray]]:
         """
         alias of `self.inference`
         """

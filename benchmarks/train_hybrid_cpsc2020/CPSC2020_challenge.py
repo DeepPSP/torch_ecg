@@ -5,6 +5,7 @@ import time
 from numbers import Real
 from typing import Tuple
 
+import torch
 import numpy as np
 from scipy.signal import resample_poly
 
@@ -17,7 +18,7 @@ from cfg import ModelCfg
 CRNN_MODEL, SEQ_LAB_MODEL = load_model(which="both")
 CRNN_CFG, SEQ_LAB_CFG = ModelCfg.crnn, ModelCfg.seq_lab
 
-if ModelCfg.torch_dtype.lower() == "double":
+if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
     _DTYPE = np.float64
 else:

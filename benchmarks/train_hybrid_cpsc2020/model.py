@@ -52,7 +52,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         """
         model_config = deepcopy(ModelCfg.crnn)
         model_config.update(deepcopy(config) or {})
-        super().__init__(classes, n_leads, input_len, model_config, **kwargs)
+        super().__init__(classes, n_leads, model_config, **kwargs)
 
     @torch.no_grad()
     def inference(self,
@@ -104,6 +104,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
                     np.array(self.classes)[np.where(bin_pred==1)[0]].tolist()
         return pred, bin_pred
 
+    @torch.no_grad()
     def inference_CPSC2020(self,
                            input:Union[np.ndarray,Tensor],
                            class_names:bool=False,

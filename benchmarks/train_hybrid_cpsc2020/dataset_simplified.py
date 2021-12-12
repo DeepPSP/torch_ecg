@@ -96,7 +96,6 @@ class CPSC2020(Dataset):
         split_res = self.reader.train_test_split_rec(
             test_rec_num=self.config.test_rec_num
         )
-        self.__data_aug = self.training
 
         self.seglen = self.config.input_len  # alias, for simplicity
 
@@ -126,7 +125,6 @@ class CPSC2020(Dataset):
             self._n_bw_choices = len(self.config.bw_ampl_ratio)
             self._n_gn_choices = len(self.config.bw_gaussian)
 
-
     def _ls_segments(self) -> NoReturn:
         """ finished, checked,
         """
@@ -152,7 +150,6 @@ class CPSC2020(Dataset):
     @property
     def all_segments(self):
         return self.__all_segments
-
 
     def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
         """ finished, checked,
@@ -214,12 +211,10 @@ class CPSC2020(Dataset):
 
         return seg_data, seg_label
 
-
     def __len__(self) -> int:
         """
         """
         return len(self.segments)
-
 
     def _get_seg_ampl(self, seg_data:np.ndarray, window:int=80) -> float:
         """ finished, checked,
@@ -245,7 +240,6 @@ class CPSC2020(Dataset):
             ampl = max(ampl, np.max(s)-np.min(s))
         return ampl
 
-
     def _get_seg_data_path(self, seg:str) -> str:
         """ finished, checked,
 
@@ -263,7 +257,6 @@ class CPSC2020(Dataset):
         fp = os.path.join(self.segments_dir, "data", rec, f"{seg}{self.reader.rec_ext}")
         return fp
 
-
     def _get_seg_ann_path(self, seg:str) -> str:
         """ finished, checked,
 
@@ -280,7 +273,6 @@ class CPSC2020(Dataset):
         rec = seg.split("_")[0].replace("S", "A")
         fp = os.path.join(self.segments_dir, "ann", rec, f"{seg}{self.reader.rec_ext}")
         return fp
-
 
     def _load_seg_data(self, seg:str) -> np.ndarray:
         """ finished, checked,
@@ -317,7 +309,6 @@ class CPSC2020(Dataset):
         seg_label = loadmat(seg_ann_fp)["label"].squeeze()
         return seg_label
 
-
     def _load_seg_beat_ann(self, seg:str) -> Dict[str, np.ndarray]:
         """ finished, checked,
 
@@ -337,7 +328,6 @@ class CPSC2020(Dataset):
             k:v.flatten() for k,v in seg_beat_ann.items() if k in ["SPB_indices", "PVC_indices"]
         }
         return seg_beat_ann
-
 
     def _load_seg_seq_lab(self, seg:str, reduction:int=8) -> np.ndarray:
         """ finished, checked,
@@ -375,14 +365,3 @@ class CPSC2020(Dataset):
             seq_lab[start_idx:end_idx, self.config.classes.index("V")] = 1
 
         return seq_lab
-
-
-    def disable_data_augmentation(self) -> NoReturn:
-        """
-        """
-        self.__data_aug = False
-
-    def enable_data_augmentation(self) -> NoReturn:
-        """
-        """
-        self.__data_aug = True

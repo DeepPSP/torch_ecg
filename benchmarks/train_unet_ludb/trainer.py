@@ -55,313 +55,222 @@ __all__ = [
 ]
 
 
-def train(model:nn.Module,
-          model_config:dict,
-          device:torch.device,
-          config:dict,
-          logger:Optional[logging.Logger]=None,
-          debug:bool=False) -> OrderedDict:
-    """ NOT finished, NOT checked,
-
-    Parameters
-    ----------
-    model: Module,
-        the model to train
-    model_config: dict,
-        config of the model, to store into the checkpoints
-    device: torch.device,
-        device on which the model trains
-    config: dict,
-        configurations of training, ref. `ModelCfg`, `TrainCfg`, etc.
-    logger: Logger, optional,
-        logger
-    debug: bool, default False,
-        if True, the training set itself would be evaluated 
-        to check if the model really learns from the training set
-
-    Returns
-    -------
-    best_state_dict: OrderedDict,
-        state dict of the best model
+class LUDBTrainer(BaseTrainer):
     """
-    raise NotImplementedError("Implementation NOT finished yet!")
-    msg = f"training configurations are as follows:\n{dict_to_str(config)}"
-    if logger:
-        logger.info(msg)
-    else:
-        print(msg)
-    
-    if type(model).__name__ in ["DataParallel",]:  # TODO: further consider "DistributedDataParallel"
-        _model = model.module
-    else:
-        _model = model
+    """
+    __DEBUG__ = True
+    __name__ = "LUDBTrainer"
 
-    train_dataset = LUDB(config=config, training=True)
+    def __init__(self,
+                 model:nn.Module,
+                 model_config:dict,
+                 train_config:dict,
+                 device:Optional[torch.device]=None,
+                 lazy:bool=True,
+                 **kwargs:Any,) -> NoReturn:
+        """ finished, checked,
 
-    if debug:
-        val_train_dataset = LUDB(config=config, training=True)
-        val_train_dataset.disable_data_augmentation()
-    val_dataset = LUDB(config=config, training=False)
+        Parameters
+        ----------
+        model: Module,
+            the model to be trained
+        model_config: dict,
+            the configuration of the model,
+            used to keep a record in the checkpoints
+        train_config: dict,
+            the configuration of the training,
+            including configurations for the data loader, for the optimization, etc.
+            will also be recorded in the checkpoints.
+            `train_config` should at least contain the following keys:
+                "monitor": str,
+                "loss": str,
+                "n_epochs": int,
+                "batch_size": int,
+                "learning_rate": float,
+                "lr_scheduler": str,
+                    "lr_step_size": int, optional, depending on the scheduler
+                    "lr_gamma": float, optional, depending on the scheduler
+                    "max_lr": float, optional, depending on the scheduler
+                "optimizer": str,
+                    "decay": float, optional, depending on the optimizer
+                    "momentum": float, optional, depending on the optimizer
+        device: torch.device, optional,
+            the device to be used for training
+        lazy: bool, default True,
+            whether to initialize the data loader lazily
+        """
+        super().__init__(model, CINC2021, model_config, train_config, device, lazy)
 
-    n_train = len(train_dataset)
-    n_val = len(val_dataset)
+    def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
+        """ finished, checked,
+        
+        setup the dataloaders for training and validation
 
-    n_epochs = config.n_epochs
-    batch_size = config.batch_size
-    lr = config.learning_rate
+        Parameters
+        ----------
+        train_dataset: Dataset, optional,
+            the training dataset
+        val_dataset: Dataset, optional,
+            the validation dataset
+        """
+        if train_dataset is None:
+            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
 
-    # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
-    num_workers = 4 * (torch.cuda.device_count() or 1)
+        if self.train_config.debug:
+            val_train_dataset = train_dataset
+        else:
+            val_train_dataset = None
+        if val_dataset is None:
+            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
 
-    train_loader = DataLoader(
-        dataset=train_dataset,
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=num_workers,
-        pin_memory=True,
-        drop_last=True,  # setting False would result in error
-        collate_fn=collate_fn,
-    )
+         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+        num_workers = 4
 
-    if debug:
-        val_train_loader = DataLoader(
-            dataset=val_train_dataset,
-            batch_size=batch_size,
+        self.train_loader = DataLoader(
+            dataset=train_dataset,
+            batch_size=self.batch_size,
             shuffle=True,
             num_workers=num_workers,
             pin_memory=True,
-            drop_last=True,  # setting False would result in error
+            drop_last=False,
             collate_fn=collate_fn,
         )
-    val_loader = DataLoader(
-        dataset=val_dataset,
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=num_workers,
-        pin_memory=True,
-        drop_last=True,  # setting False would result in error
-        collate_fn=collate_fn,
-    )
 
-    writer = SummaryWriter(
-        log_dir=config.log_dir,
-        filename_suffix=f"OPT_{_model.__name__}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
-        comment=f"OPT_{_model.__name__}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
-    )
-    
-    # max_itr = n_epochs * n_train
-
-    msg = textwrap.dedent(f"""
-        Starting training:
-        ------------------
-        Epochs:          {n_epochs}
-        Batch size:      {batch_size}
-        Learning rate:   {lr}
-        Training size:   {n_train}
-        Validation size: {n_val}
-        Device:          {device.type}
-        Optimizer:       {config.train_optimizer}
-        -----------------------------------------
-    """)
-    # print(msg)  # in case no logger
-    if logger:
-        logger.info(msg)
-    else:
-        print(msg)
-
-    if config.train_optimizer.lower() == "adam":
-        optimizer = optim.Adam(
-            params=model.parameters(),
-            lr=lr,
-            betas=(0.9, 0.999),  # default
-            eps=1e-08,  # default
+        if self.train_config.debug:
+            self.val_train_loader = DataLoader(
+                dataset=val_train_dataset,
+                batch_size=self.batch_size,
+                shuffle=True,
+                num_workers=num_workers,
+                pin_memory=True,
+                drop_last=False,
+                collate_fn=collate_fn,
+            )
+        else:
+            self.val_train_loader = None
+        self.val_loader = DataLoader(
+            dataset=val_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=num_workers,
+            pin_memory=True,
+            drop_last=False,
+            collate_fn=collate_fn,
         )
-        scheduler = None
-    elif config.train_optimizer.lower() == "sgd":
-        optimizer = optim.SGD(
-            params=model.parameters(),
-            lr=lr,
-            momentum=config.momentum,
-            weight_decay=config.decay,
+
+    def run_one_step(self, *data:Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
+        """
+
+        Parameters
+        ----------
+        data: tuple of Tensors,
+            the data to be processed for training one step (batch),
+            should be of the following order:
+            signals, labels, *extra_tensors
+
+        Returns
+        -------
+        preds: Tensor,
+            the predictions of the model for the given data
+        labels: Tensor,
+            the labels of the given data
+        """
+        signals, labels = data
+        signals = signals.to(self.device)
+        labels = labels.to(self.device)
+        preds = self.model(signals)
+        return preds, labels
+
+    @torch.no_grad()
+    def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
+        """
+        """
+        self.model.eval()
+
+        all_scalar_preds = []
+        all_bin_preds = []
+        all_labels = []
+
+        for signals, labels in data_loader:
+            signals = signals.to(device=self.device, dtype=self.dtype)
+            labels = labels.numpy()
+            all_labels.append(labels)
+
+            if torch.cuda.is_available():
+                torch.cuda.synchronize()
+            preds, bin_preds = self._model.inference(signals)
+            all_scalar_preds.append(preds)
+            all_bin_preds.append(bin_preds)
+        
+        all_scalar_preds = np.concatenate(all_scalar_preds, axis=0)
+        all_bin_preds = np.concatenate(all_bin_preds, axis=0)
+        all_labels = np.concatenate(all_labels, axis=0)
+        classes = data_loader.dataset.all_classes
+
+        if self.val_train_loader is not None:
+            msg = f"all_scalar_preds.shape = {all_scalar_preds.shape}, all_labels.shape = {all_labels.shape}"
+            self.log_manager.log_message(msg, level=logging.DEBUG)
+            head_num = 5
+            head_scalar_preds = all_scalar_preds[:head_num,...]
+            head_bin_preds = all_bin_preds[:head_num,...]
+            head_preds_classes = [np.array(classes)[np.where(row)] for row in head_bin_preds]
+            head_labels = all_labels[:head_num,...]
+            head_labels_classes = [np.array(classes)[np.where(row)] for row in head_labels]
+            for n in range(head_num):
+                msg = textwrap.dedent(f"""
+                ----------------------------------------------
+                scalar prediction:    {[round(n, 3) for n in head_scalar_preds[n].tolist()]}
+                binary prediction:    {head_bin_preds[n].tolist()}
+                labels:               {head_labels[n].astype(int).tolist()}
+                predicted classes:    {head_preds_classes[n].tolist()}
+                label classes:        {head_labels_classes[n].tolist()}
+                ----------------------------------------------
+                """)
+                self.log_manager.log_message(msg)
+
+        auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric = \
+            evaluate_scores(
+                classes=classes,
+                truth=all_labels,
+                scalar_pred=all_scalar_preds,
+                binary_pred=all_bin_preds,
+            )
+        eval_res = dict(
+            auroc=auroc,
+            auprc=auprc,
+            accuracy=accuracy,
+            f_measure=f_measure,
+            f_beta_measure=f_beta_measure,
+            g_beta_measure=g_beta_measure,
+            challenge_metric=challenge_metric,
         )
-        scheduler = optim.lr_scheduler.StepLR(optimizer, config.lr_step_size, config.lr_gamma)
-    elif config.train_optimizer.lower() == "rmsprop":
-        optimizer = optim.RMSprop(
-            params=model.parameters,
-            lr=lr,
-            alpha=0.99,  # default
-            eps=1e-08,  # default
-            weight_decay=config.weight_decay,
-            momentum=config.momentum,
-        )
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "min" if model.n_classes > 1 else "max", patience=2)
-    else:
-        raise NotImplementedError(f"optimizer `{config.train_optimizer}` not implemented!")
-    # scheduler = optim.lr_scheduler.LambdaLR(optimizer, burnin_schedule)
 
-    if config.loss == "CrossEntropyLoss":
-        criterion = nn.CrossEntropyLoss()
-    else:
-        raise NotImplementedError(f"loss `{config.loss}` not implemented!")
+        # in case possible memeory leakage?
+        del all_scalar_preds, all_bin_preds, all_labels
 
-    save_prefix = f"{model.__name__}_epoch"
+        self.model.train()
 
-    best_state_dict = OrderedDict()
-    best_challenge_metric = -np.inf
-    best_eval_res = tuple()
-    best_epoch = -1
-    pseudo_best_epoch = -1
+        return eval_res
 
-    saved_models = deque()
-    model.train()
-    global_step = 0
-    for epoch in range(n_epochs):
-        model.train()
-        epoch_loss = 0
+    @property
+    def batch_dim(self) -> int:
+        """
+        batch dimension, for CinC2021, it is 0,
+        """
+        return 0
 
-        with tqdm(total=n_train, desc=f"Epoch {epoch + 1}/{n_epochs}", ncols=110) as pbar:
-            for epoch_step, (signals, truth_masks) in enumerate(train_loader):
-                global_step += 1
-                signals = signals.to(device=device, dtype=torch.float64)
-                truth_masks = truth_masks.to(device=device, dtype=torch.float64)
-                
-                optimizer.zero_grad()
+    @property
+    def extra_required_train_config_fields(self) -> List[str]:
+        """
+        """
+        return []
 
-                pred_masks = model(signals)
-                loss = criterion(pred_masks, truth_masks)
-                loss.backward()
-                optimizer.step()
-                if scheduler:
-                    scheduler.step()
-                epoch_loss += loss.item()
+    @property
+    def save_prefix(self) -> str:
+        return f"{self._model.__name__}_{self.model_config.cnn.name}_epoch"
 
-                if global_step % log_step == 0:
-                    writer.add_scalar("train/loss", loss.item(), global_step)
-                    if scheduler:
-                        writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
-                        pbar.set_postfix(**{
-                            "loss (batch)": loss.item(),
-                            "lr": scheduler.get_lr()[0],
-                        })
-                        msg = f"Train step_{global_step}: loss : {loss.item()}, lr : {scheduler.get_lr()[0] * batch_size}"
-                    else:
-                        pbar.set_postfix(**{
-                            "loss (batch)": loss.item(),
-                        })
-                        msg = f"Train step_{global_step}: loss : {loss.item()}"
-                    # print(msg)  # in case no logger
-                    if logger:
-                        logger.info(msg)
-                    else:
-                        print(msg)
-                pbar.update(signals.shape[0])
-
-            writer.add_scalar("train/epoch_loss", epoch_loss, global_step)
-
-            if debug:
-                eval_train_res = evaluate(model, val_train_loader, config, device, debug)
-                for wave in ["pwave", "qrs", "twave",]:
-                    for term in ["onset", "offset"]:
-                        for metric in ["sensitivity", "precision", "f1_score", "mean_error", "standard_deviation"]:
-                            scalar_name = f"{wave}_{term}_{metric}"
-                            scalar = eval(f"eval_train_res.{wave}_{term}.{metric}")
-                            writer.add_scalar(f"train/{scalar_name}", scalar, global_step)
-            
-            eval_res = evaluate(model, val_loader, config, device, debug)
-            model.train()
-            for wave in ["pwave", "qrs", "twave",]:
-                for term in ["onset", "offset"]:
-                    for metric in ["sensitivity", "precision", "f1_score", "mean_error", "standard_deviation"]:
-                        scalar_name = f"{wave}_{term}_{metric}"
-                        scalar = eval(f"eval_res.{wave}_{term}.{metric}")
-                        writer.add_scalar(f"test/{scalar_name}", scalar, global_step)
-
-            try:
-                os.makedirs(config.checkpoints, exist_ok=True)
-                # if logger:
-                #     logger.info("Created checkpoint directory")
-            except OSError:
-                pass
-            save_suffix = f"epochloss_{epoch_loss:.5f}"
-            save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth"
-            save_path = os.path.join(config.checkpoints, save_filename)
-            torch.save(model.state_dict(), save_path)
-            if logger:
-                logger.info(f"Checkpoint {epoch + 1} saved!")
-            saved_models.append(save_path)
-            # remove outdated models
-            if len(saved_models) > config.keep_checkpoint_max > 0:
-                model_to_remove = saved_models.popleft()
-                try:
-                    os.remove(model_to_remove)
-                except:
-                    logger.info(f"failed to remove {model_to_remove}")
-
-    writer.close()
-    
-    if logger:
-        for h in logger.handlers:
-            h.close()
-            logger.removeHandler(h)
-        del logger
-    logging.shutdown()
-
-
-@torch.no_grad()
-def evaluate(model:nn.Module, data_loader:DataLoader, config:dict, device:torch.device, debug:bool=True, logger:Optional[logging.Logger]=None) -> Tuple[float]:
-    """ NOT finished, NOT checked,
-
-    Parameters
-    ----------
-    model: Module,
-        the model to evaluate
-    data_loader: DataLoader,
-        the data loader for loading data for evaluation
-    config: dict,
-        evaluation configurations
-    device: torch.device,
-        device for evaluation
-    debug: bool, default True,
-        more detailed evaluation output
-    logger: Logger, optional,
-        logger to record detailed evaluation output,
-        if is None, detailed evaluation output will be printed
-
-    Returns
-    -------
-    eval_res: tuple of float,
-        evaluation results, including
-        sensitivity, precision, f1_score, mean_error, standard_deviation, etc.
-    """
-    model.eval()
-    data_loader.dataset.disable_data_augmentation()
-
-    all_masks_pred = []
-    all_masks_truth = []
-
-    for signals, masks_truth in data_loader:
-        signals = signals.to(device=device, dtype=torch.float64)
-        masks_truth = masks_truth.numpy()
-        all_masks_truth.append(masks_truth)
-
-        if torch.cuda.is_available():
-            torch.cuda.synchronize()
-        masks_pred, _ = model.inference(signals)
-        all_masks_pred.append(masks_pred.cpu().detach().numpy())
-    
-    # all_masks_pred = np.concatenate(all_masks_pred, axis=0)
-    # all_masks_truth = np.concatenate(all_masks_truth, axis=0)
-
-    eval_res = compute_metrics(
-        truth_masks=all_masks_truth,
-        pred_masks=all_masks_pred,
-        class_map=config.class_map,
-        fs=config.fs,
-        mask_format="channel_first",
-    )
-    model.train()
-
-    return eval_res
+    def extra_log_suffix(self) -> str:
+        return super().extra_log_suffix() + f"_{self.model_config.cnn.name}"
 
 
 def get_args(**kwargs):

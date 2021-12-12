@@ -16,6 +16,9 @@ except ModuleNotFoundError:
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
 from torch_ecg.cfg import DEFAULTS
+from torch_ecg.model_configs import (
+    ECG_SUBTRACT_UNET_CONFIG, ECG_UNET_VANILLA_CONFIG,
+)
 
 
 __all__ = [
@@ -35,7 +38,7 @@ BaseCfg.classes = [
     "i",  # isoelectric
 ]
 BaseCfg.class_map = ED(p=1, N=2, t=3, i=0)
-BaseCfg.db_dir = "/home/wenhao71/data/data/PhysioNet/ludb/1.0.1/"
+BaseCfg.db_dir = None
 BaseCfg.bias_thr = int(0.075 * BaseCfg.fs)  # TODO: renew this const
 # detected waves that are within `skip_dist` from two ends of the signal will be ignored,
 BaseCfg.skip_dist = int(0.5 * BaseCfg.fs)
@@ -55,6 +58,8 @@ ModelCfg.n_leads = 1  # or 12
 ModelCfg.skip_dist = BaseCfg.skip_dist
 
 ModelCfg.model_name = "unet"
+
+ModelCfg.update(deepcopy(ECG_UNET_VANILLA_CONFIG))
 
 # TODO: add detailed ModelCfg
 

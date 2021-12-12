@@ -41,6 +41,9 @@ __all__ = [
 class LUDB(Dataset):
     """
     """
+    __DEBUG__ = False
+    __name__ = "LUDB"
+
     def __init__(self, config:ED, leads:Optional[Union[Sequence[str], str]], training:bool=True) -> NoReturn:
         """ finished, checked,
 
@@ -73,9 +76,6 @@ class LUDB(Dataset):
 
         self.records = self._train_test_split(config.train_ratio)
 
-        # self.__data_aug = self.training
-        self.__data_aug = False
-
     def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
         """ finished, checked,
         """
@@ -98,15 +98,11 @@ class LUDB(Dataset):
         )
         sampfrom = randint(
             self.config.start_from,
-            masks.shape[1] - self.config.config.end_to - self.siglen
+            masks.shape[1] - self.config.config.end_at - self.siglen
         )
         sampto = sampfrom + self.siglen
         values = values[..., sampfrom:sampto]
         masks = masks[..., sampfrom:sampto]
-
-        if self.__data_aug:
-            # data augmentation for input
-            raise NotImplementedError
 
         if lead_idx is not None:
             values = values[idx:idx+1, ...]
@@ -121,12 +117,6 @@ class LUDB(Dataset):
             return 12 * len(self.records)
         return len(self.records)
 
-    def disable_data_augmentation(self) -> NoReturn:
-        """
-        """
-        self.__data_aug = False
-
-    
     def _train_test_split(self, train_ratio:float=0.8, force_recompute:bool=False) -> List[str]:
         """ finished, checked,
 
@@ -176,12 +166,9 @@ class LUDB(Dataset):
 
         make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
         """
-        prev_state = self.__data_aug
         self.disable_data_augmentation()
         if self.training:
             ratio = int(self.config.train_ratio*100)
         else:
             ratio = 100 - int(self.config.train_ratio*100)
         raise NotImplementedError
-
-        self.__data_aug = prev_state
