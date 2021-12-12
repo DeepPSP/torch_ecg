@@ -47,12 +47,14 @@ from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.trainer import BaseTrainer
 
 from model import ECG_CRNN_CINC2021
+from dataset import CINC2021
 from scoring_metrics import evaluate_scores
 from cfg import BaseCfg, TrainCfg, ModelCfg
-from dataset import CINC2021
-CINC2021.__DEBUG__ = False
 
-if BaseCfg.torch_dtype.lower() == "double":
+CINC2021.__DEBUG__ = False
+ECG_CRNN_CINC2021.__DEBUG__ = False
+
+if BaseCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

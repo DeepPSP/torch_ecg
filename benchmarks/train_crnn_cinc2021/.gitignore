@@ -146,6 +146,4 @@ log
 
 
 *.ipynb
-!inspect_data.ipynb
 !train_models.ipynb
-!ablation_study.ipynb

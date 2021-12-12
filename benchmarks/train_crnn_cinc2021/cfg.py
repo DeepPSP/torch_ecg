@@ -20,6 +20,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import DEFAULTS
 from torch_ecg.databases.aux_data.cinc2021_aux_data import (
     equiv_class_dict,
     get_class_weight,
@@ -60,7 +61,7 @@ BaseCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
 os.makedirs(BaseCfg.log_dir, exist_ok=True)
 os.makedirs(BaseCfg.model_dir, exist_ok=True)
 BaseCfg.fs = 500
-BaseCfg.torch_dtype = "float"  # "double"
+BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
 

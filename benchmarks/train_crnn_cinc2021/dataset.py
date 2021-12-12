@@ -19,7 +19,6 @@ except ModuleNotFoundError:
     from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
-from sklearn.preprocessing import StandardScaler
 
 try:
     import torch_ecg
@@ -30,7 +29,7 @@ except ModuleNotFoundError:
 
 from torch_ecg.databases import CINC2021 as CR
 from torch_ecg.utils.misc import ensure_siglen, dict_to_str, list_sum
-from torch_ecg.utils.utils_signal import butter_bandpass_filter, normalize, remove_spikes_naive
+from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
 from torch_ecg.utils.ecg_arrhythmia_knowledge import Standard12Leads
 from torch_ecg._preprocessors import PreprocManager
 
@@ -43,7 +42,7 @@ from cfg import (
     TrainCfg_ns, ModelCfg_ns,
 )
 
-if ModelCfg.torch_dtype.lower() == "double":
+if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 
@@ -80,7 +79,7 @@ class CINC2021(Dataset):
         self.reader = CR(db_dir=config.db_dir)
         self.tranches = config.tranches_for_training
         self.training = training
-        if self.config.torch_dtype.lower() == "double":
+        if self.config.torch_dtype.lower() == torch.float64:
             self.dtype = np.float64
         else:
             self.dtype = np.float32
@@ -410,8 +409,6 @@ class CINC2021(Dataset):
         make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
         """
         _TRANCHES = "ABEFG"
-        prev_state = self.__data_aug
-        self.disable_data_augmentation()
         if self.training:
             ratio = int(self.config.train_ratio*100)
         else:
@@ -438,25 +435,17 @@ class CINC2021(Dataset):
         np.save(os.path.join(self.reader.db_dir_base, filename), y)
         print(f"y saved to {filename}")
 
-        self.__data_aug = prev_state
-
-
     def _check_nan(self) -> NoReturn:
         """ finished, checked,
 
         during training, sometimes nan values are encountered,
         which ruins the whole training process
         """
-        prev_state = self.__data_aug
-        self.disable_data_augmentation()
-
         for idx, (values, labels) in enumerate(self):
             if np.isnan(values).any():
                 print(f"values of {self.records[idx]} have nan values")
             if np.isnan(labels).any():
                 print(f"labels of {self.records[idx]} have nan values")
-
-        self.__data_aug = prev_state
 
 
 class FastDataReader(Dataset):
@@ -469,7 +458,7 @@ class FastDataReader(Dataset):
         self.records = records
         self.config = config
         self.ppm = ppm
-        if self.config.torch_dtype.lower() == "double":
+        if self.config.torch_dtype == torch.float64:
             self.dtype = np.float64
         else:
             self.dtype = np.float32
