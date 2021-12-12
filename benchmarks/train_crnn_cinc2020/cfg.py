@@ -1,9 +1,14 @@
 """
 configurations for signal preprocess, feature extraction, training, etc.
 along with some constants
+
+"Brady", "LAD", "RAD", "PR", "LQRSV" are treated exceptionally, as special classes
 """
+
 import os
 from copy import deepcopy
+from itertools import repeat
+from typing import List, NoReturn
 
 import numpy as np
 from easydict import EasyDict as ED
@@ -15,21 +20,22 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from torch_ecg.cfg import Cfg as BaseCfg
-from train.train_crnn_cinc2020.scoring_aux_data import (
+from torch_ecg.cfg import DEFAULTS
+from torch_ecg.databases.aux_data.cinc2020_aux_data import (
     equiv_class_dict,
     get_class_weight,
 )
+from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
+from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
+from torch_ecg.model_configs import ECG_CRNN_CONFIG
 
 
 __all__ = [
-    "PreprocCfg",
-    "FeatureCfg",
-    "TrainCfg",
+    "BaseCfg",
     "PlotCfg",
-    "Standard12Leads",
-    "InferiorLeads", "LateralLeads", "SeptalLeads",
-    "ChestLeads", "PrecordialLeads", "LimbLeads",
+    "SpecialDetectorCfg",
+    "TrainCfg", "TrainCfg_ns",
+    "ModelCfg", "ModelCfg_ns",
 ]
 
 
@@ -37,46 +43,38 @@ _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 _ONE_MINUTE_IN_MS = 60 * 1000
 
 
-# names of the 12 leads
-Standard12Leads = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6",]
-InferiorLeads = ["II", "III", "aVF",]
-LateralLeads = ["I", "aVL",] + [f"V{i}" for i in range(5,7)]
-SeptalLeads = ["aVR", "V1",]
-AnteriorLeads = [f"V{i}" for i in range(2,5)]
-ChestLeads = [f"V{i}" for i in range(1, 7)]
-PrecordialLeads = ChestLeads
-LimbLeads = ["I", "II", "III", "aVR", "aVL", "aVF",]
+BaseCfg = ED()
+BaseCfg.db_dir = None
+BaseCfg.log_dir = os.path.join(_BASE_DIR, "log")
+BaseCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
+os.makedirs(BaseCfg.log_dir, exist_ok=True)
+os.makedirs(BaseCfg.model_dir, exist_ok=True)
+BaseCfg.fs = 500
+BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
-# ecg signal preprocessing configurations
-PreprocCfg = ED()
-# PreprocCfg.fs = 500
-PreprocCfg.leads_ordering = deepcopy(Standard12Leads)
-PreprocCfg.rpeak_mask_radius = 50  # ms
-PreprocCfg.rpeak_num_threshold = 8  # used for merging rpeaks detected from 12 leads
-PreprocCfg.beat_winL = 250
-PreprocCfg.beat_winR = 250
 
+SpecialDetectorCfg = ED()
+SpecialDetectorCfg.leads_ordering = deepcopy(EAK.Standard12Leads)
+SpecialDetectorCfg.pr_fs_lower_bound = 47  # Hz
+SpecialDetectorCfg.pr_spike_mph_ratio = 15  # ratio to the average amplitude of the signal
+SpecialDetectorCfg.pr_spike_mpd = 300  # ms
+SpecialDetectorCfg.pr_spike_prominence = 0.3
+SpecialDetectorCfg.pr_spike_prominence_wlen = 120  # ms
+SpecialDetectorCfg.pr_spike_inv_density_threshold = 2500  # inverse density (1/density), one spike per 2000 ms
+SpecialDetectorCfg.pr_spike_leads_threshold = 7 / 12  # proportion
+SpecialDetectorCfg.axis_qrs_mask_radius = 70  # ms
+SpecialDetectorCfg.axis_method = "2-lead"  # can also be "3-lead"
+SpecialDetectorCfg.brady_threshold = _ONE_MINUTE_IN_MS / 60  # ms, corr. to 60 bpm
+SpecialDetectorCfg.tachy_threshold = _ONE_MINUTE_IN_MS / 100  # ms, corr. to 100 bpm
+SpecialDetectorCfg.lqrsv_qrs_mask_radius = 60  # ms
+SpecialDetectorCfg.lqrsv_ampl_bias = 0.02  # mV, TODO: should be further determined by resolution, etc.
+SpecialDetectorCfg.lqrsv_ratio_threshold = 0.8
+SpecialDetectorCfg.prwp_v3_thr = 0.3  # mV
 
-# feature extracting configurations,
-# mainly used by the special detectors
-FeatureCfg = ED()
-FeatureCfg.leads_ordering = deepcopy(PreprocCfg.leads_ordering)
-FeatureCfg.pr_fs_lower_bound = 47  # Hz
-FeatureCfg.pr_spike_mph_ratio = 15  # ratio to the average amplitude of the signal
-FeatureCfg.pr_spike_mpd = 300  # ms
-FeatureCfg.pr_spike_prominence = 0.3
-FeatureCfg.pr_spike_prominence_wlen = 120  # ms
-FeatureCfg.pr_spike_inv_density_threshold = 2500  # inverse density (1/density), one spike per 2000 ms
-FeatureCfg.pr_spike_leads_threshold = 7
-FeatureCfg.axis_qrs_mask_radius = 70  # ms
-FeatureCfg.axis_method = "2-lead"  # can also be "3-lead"
-FeatureCfg.brady_threshold = _ONE_MINUTE_IN_MS / 60  # ms, corr. to 60 bpm
-FeatureCfg.tachy_threshold = _ONE_MINUTE_IN_MS / 100  # ms, corr. to 100 bpm
-FeatureCfg.lqrsv_qrs_mask_radius = 60  # ms
-FeatureCfg.lqrsv_ampl_bias = 0.02  # mV, TODO: should be further determined by resolution, etc.
-FeatureCfg.lqrsv_ratio_threshold = 0.8
-FeatureCfg.spectral_hr_fs_band = [0.5, 4]  # corr. to hr from 30 to 240
+# special classes using special detectors
+_SPECIAL_CLASSES = ["Brady", "LAD", "RAD", "PR", "LQRSV"]
+
 
 
 # configurations for visualization
@@ -93,179 +91,196 @@ PlotCfg.t_onset = -100
 PlotCfg.t_offset = 60
 
 
-# configurations for building deep learning models
-# terminologies of stanford ecg repo. will be adopted
-# NOTE: configs of deep learning models have been moved to the folder `model_configs`
-ModelCfg = ED()
-ModelCfg.fs = 500
-ModelCfg.spacing = 1000 / ModelCfg.fs
-ModelCfg.n_leads = 12
-ModelCfg.bin_pred_thr = 0.5
-# `bin_pred_look_again_tol` is used when no prob is greater than `bin_pred_thr`,
-# then the prediction would be the one with the highest prob.,
-# along with those with prob. no less than the highest prob. minus `bin_pred_look_again_tol`
-ModelCfg.bin_pred_look_again_tol = 0.03
-ModelCfg.bin_pred_nsr_thr = 0.1
-ModelCfg.torch_dtype = BaseCfg.torch_dtype
 
-# configs of path of final models
-ModelCfg.tranche_model = ED({
-    "AB": os.path.join(_BASE_DIR, "saved_models", "ECG_CRNN_resnet_leadwise_none_tranche_AB.pth"),
-    "E": os.path.join(_BASE_DIR, "saved_models", "ECG_CRNN_resnet_leadwise_none_tranche_E.pth"),
-    "F": os.path.join(_BASE_DIR, "saved_models", "ECG_CRNN_resnet_leadwise_none_tranche_F.pth"),
-    # "all" refers to tranches A, B, E, F
-    "all": os.path.join(_BASE_DIR, "saved_models", "ECG_CRNN_resnet_leadwise_none_tranche_all.pth"),
-})
-ModelCfg.special_classes = ["Brady", "LAD", "RAD", "PR", "LQRSV"]
+def _assign_classes(cfg:ED, special_classes:List[str]) -> NoReturn:
+    """
+    """
+    cfg.special_classes = deepcopy(special_classes)
+    cfg.tranche_class_weights = ED({
+        t: get_class_weight(
+            t,
+            exclude_classes=cfg.special_classes,
+            scored_only=True,
+            threshold=20,
+            min_weight=cfg.min_class_weight,
+        ) for t in ["A", "B", "AB", "E", "F",]
+    })
+    cfg.tranche_classes = ED({
+        t: sorted(list(t_cw.keys())) \
+            for t, t_cw in cfg.tranche_class_weights.items()
+    })
+
+    cfg.class_weights = get_class_weight(
+        tranches="ABEF",
+        exclude_classes=cfg.special_classes,
+        scored_only=True,
+        threshold=20,
+        min_weight=cfg.min_class_weight,
+    )
+    cfg.classes = sorted(list(cfg.class_weights.keys()))
+
 
 
 # training configurations for machine learning and deep learning
 TrainCfg = ED()
+TrainCfg.torch_dtype = BaseCfg.torch_dtype
 
 # configs of files
-TrainCfg.db_dir = "/media/cfs/wenhao71/data/cinc2020_data/"
-TrainCfg.log_dir = os.path.join(_BASE_DIR, "log")
-TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
-TrainCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
-os.makedirs(TrainCfg.log_dir, exist_ok=True)
-os.makedirs(TrainCfg.checkpoints, exist_ok=True)
-os.makedirs(TrainCfg.model_dir, exist_ok=True)
+TrainCfg.db_dir = BaseCfg.db_dir
+TrainCfg.log_dir = BaseCfg.log_dir
+TrainCfg.model_dir = BaseCfg.model_dir
 TrainCfg.final_model_name = None
+TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
+os.makedirs(TrainCfg.checkpoints, exist_ok=True)
 TrainCfg.keep_checkpoint_max = 20
 
+TrainCfg.leads = deepcopy(EAK.Standard12Leads)
+
 # configs of training data
-TrainCfg.fs = ModelCfg.fs
-TrainCfg.n_leads = ModelCfg.n_leads
+TrainCfg.fs = BaseCfg.fs
 TrainCfg.data_format = "channel_first"
-TrainCfg.special_classes = ModelCfg.special_classes.copy()
-TrainCfg.normalize_data = True
+
 TrainCfg.train_ratio = 0.8
 TrainCfg.min_class_weight = 0.5
-TrainCfg.tranches_for_training = ""  # one of "", "AB", "E", "F"
-# TrainCfg.tranche_class_counts = ED({
-#     # classes with too few recordings are ignored
-#     # classes dealt with special detectors are ignored
-#     t: get_class_count(
-#         t, exclude_classes=TrainCfg.special_classes, scored_only=True, threshold=20
-#     ) for t in ["A", "B", "AB", "E", "F"]
-#     # "A": {
-#     #     "IAVB": 722, "AF": 1221, "LBBB": 236, "PAC": 616, "RBBB": 1857, "NSR": 918,
-#     # },
-#     # "B": {
-#     #     "IAVB": 106, "AF": 153, "AFL": 54, "IRBBB": 86, "LBBB": 38, "PAC": 126, "PVC": 196, "RBBB": 114, "SB": 45, "STach": 303, "TAb": 22,
-#     # },
-#     # "AB": {
-#     #     "IAVB": 828, "AF": 1374, "AFL": 54, "IRBBB": 86, "LBBB": 274, "PAC": 742, "PVC": 196, "RBBB": 1971, "SB": 45, "NSR": 922, "STach": 303, "TAb": 22,
-#     # },
-#     # "E": {
-#     #     "IAVB": 797, "AF": 1514, "AFL": 73, "RBBB": 542, "IRBBB": 1118, "LAnFB": 1626, "LBBB": 536, "NSIVCB": 789, "PAC": 555, "LPR": 340, "LQT": 118, "QAb": 548, "SA": 772, "SB": 637, "NSR": 18092, "STach": 826, "TAb": 2345, "TInv": 294,
-#     # },
-#     # "F": {
-#     #     "IAVB": 769, "AF": 570, "AFL": 186, "RBBB": 570, "IRBBB": 407, "LAnFB": 180, "LBBB": 231, "NSIVCB": 203, "PAC": 640, "LQT": 1391, "QAb": 464, "SA": 455, "SB": 1677, "NSR": 1752, "STach": 1261, "TAb": 2306, "TInv": 812, "PVC": 357,
-#     # },
-# })
-# TrainCfg.tranche_class_weights = ED({
-#     t: {k: sum(t_cw.values())/v for k, v in t_cw.items()} \
-#         for t, t_cw in TrainCfg.tranche_class_counts.items()
-# })
-# TrainCfg.tranche_class_weights = ED({
-#     t: {k: TrainCfg.min_class_weight * v / min(t_cw.values()) for k, v in t_cw.items()} \
-#         for t, t_cw in TrainCfg.tranche_class_weights.items()
-# })  # normalize class weights so that the minimun one equals `TrainCfg.min_class_weight`
-TrainCfg.tranche_class_weights = ED({
-    t: get_class_weight(
-        t,
-        exclude_classes=TrainCfg.special_classes,
-        scored_only=True,
-        threshold=20,
-        min_weight=TrainCfg.min_class_weight,
-    ) for t in ["A", "B", "AB", "E", "F"]
-})
-TrainCfg.tranche_classes = ED({
-    t: sorted(list(t_cw.keys())) \
-        for t, t_cw in TrainCfg.tranche_class_weights.items()
-})
-# TrainCfg.class_counts = ED({
-#     "IAVB": 2394, "AF": 3473, "AFL": 314, "RBBB": 3083, "IRBBB": 1611, "LAnFB": 1806, "LBBB": 1041, "NSIVCB": 996, "PAC": 1937, "PVC": 553, "LPR": 340, "LQT": 1513, "QAb": 1013, "SA": 1238, "SB": 2359, "NSR": 20846, "STach": 2391, "TAb": 4673, "TInv": 1111,
-# })  # count
-# TrainCfg.class_weights = ED({
-#     k: sum(TrainCfg.class_counts.values()) / v \
-#         for k, v in TrainCfg.class_counts.items()
-# })
-# TrainCfg.class_weights = ED({
-#     k: TrainCfg.min_class_weight * v / min(TrainCfg.class_weights.values()) \
-#         for k, v in TrainCfg.class_weights.items()
-# })  # normalize so that the smallest weight equals `TrainCfg.min_class_weight`
-TrainCfg.class_weights = get_class_weight(
-    tranches="ABEF",
-    exclude_classes=TrainCfg.special_classes,
-    scored_only=True,
-    threshold=20,
-    min_weight=TrainCfg.min_class_weight,
-)
-TrainCfg.classes = sorted(list(TrainCfg.class_weights.keys()))
+TrainCfg.tranches_for_training = ""  # one of "", "AB", "E", "F", "G"
+
+# assign classes, class weights, tranche classes, etc.
+_assign_classes(TrainCfg, _SPECIAL_CLASSES)
 
 # configs of signal preprocessing
+TrainCfg.normalize = ED(
+    method="z-score",
+    mean=0.0,
+    std=1.0,
+)
 # frequency band of the filter to apply, should be chosen very carefully
-# TrainCfg.bandpass = None  # [-np.inf, 45]
+TrainCfg.bandpass = None  # [-np.inf, 45]
 # TrainCfg.bandpass = [-np.inf, 45]
-TrainCfg.bandpass = [0.5, 60]
-TrainCfg.bandpass_order = 5
+# TrainCfg.bandpass = ED(
+#     lowcut=0.5,
+#     highcut=60,
+# )
 
 # configs of data aumentation
-TrainCfg.label_smoothing = 0.1
-TrainCfg.random_mask = int(TrainCfg.fs * 0.0)  # 1.0s, 0 for no masking
-TrainCfg.stretch_compress = 1.0  # stretch or compress in time axis
+# TrainCfg.label_smooth = ED(
+#     prob=0.8,
+#     smoothing=0.1,
+# )
+TrainCfg.label_smooth = False
+TrainCfg.random_masking = False
+TrainCfg.stretch_compress = False  # stretch or compress in time axis
+TrainCfg.mixup = ED(
+    prob=0.6,
+    alpha=0.3,
+)
 
 # configs of training epochs, batch, etc.
-TrainCfg.n_epochs = 300
-TrainCfg.batch_size = 128
+TrainCfg.n_epochs = 50
+# TODO: automatic adjust batch size according to GPU capacity
+# https://stackoverflow.com/questions/45132809/how-to-select-batch-size-automatically-to-fit-gpu
+TrainCfg.batch_size = 64
 # TrainCfg.max_batches = 500500
 
 # configs of optimizers and lr_schedulers
-TrainCfg.train_optimizer = "adamw_amsgrad"  # "sgd", "adam", "adamw"
+TrainCfg.optimizer = "adamw_amsgrad"  # "sgd", "adam", "adamw"
 TrainCfg.momentum = 0.949  # default values for corresponding PyTorch optimizers
 TrainCfg.betas = (0.9, 0.999)  # default values for corresponding PyTorch optimizers
 TrainCfg.decay = 1e-2  # default values for corresponding PyTorch optimizers
 
-TrainCfg.learning_rate = 1e-3  # 1e-4
+TrainCfg.learning_rate = 1e-4  # 1e-3
 TrainCfg.lr = TrainCfg.learning_rate
 
-TrainCfg.lr_scheduler = None  # "one_cycle", "plateau", "burn_in", "step", None
+TrainCfg.lr_scheduler = "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
 TrainCfg.lr_step_size = 50
 TrainCfg.lr_gamma = 0.1
-TrainCfg.max_lr = 1e-2  # for "one_cycle" scheduler, to adjust via expriments
+TrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
 
 TrainCfg.burn_in = 400
 TrainCfg.steps = [5000, 10000]
 
 TrainCfg.early_stopping = ED()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
-TrainCfg.early_stopping.patience = 6
+TrainCfg.early_stopping.patience = 10
 
 # configs of loss function
 # TrainCfg.loss = "BCEWithLogitsLoss"
-TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
-TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
+# TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
+TrainCfg.loss = "AsymmetricLoss"  # "FocalLoss"
+TrainCfg.loss_kw = ED(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp")
+TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2020?
+
+TrainCfg.monitor = "challenge_metric"
 
 TrainCfg.log_step = 20
 TrainCfg.eval_every = 20
 
 # configs of model selection
-TrainCfg.cnn_name = "resnet_leadwise"  # "vgg16", "resnet", "vgg16_leadwise", "cpsc", "cpsc_leadwise"
-TrainCfg.rnn_name = "none"  # "none", "lstm", "attention"
+# "resnet_nature_comm_se", "multi_scopic_leadwise", "vgg16", "vgg16_leadwise",
+TrainCfg.cnn_name = "resnet_nature_comm_bottle_neck_se"
+TrainCfg.rnn_name = "none"  # "none", "lstm"
+TrainCfg.attn_name = "none"  # "none", "se", "gc", "nl"
 
 # configs of inputs and outputs
-TrainCfg.input_len = int(500 * 8.0)  # almost all records has duration >= 8s
+# almost all records have duration >= 8s, most have duration >= 10s
+# use `utils.utils_signal.ensure_siglen` to ensure signal length
+TrainCfg.input_len = int(500 * 10.0)
+# tolerance for records with length shorter than `TrainCfg.input_len`
+TrainCfg.input_len_tol = int(0.2 * TrainCfg.input_len)
+TrainCfg.sig_slice_tol = 0.4  # None, do no slicing
 TrainCfg.siglen = TrainCfg.input_len
-TrainCfg.bin_pred_thr = ModelCfg.bin_pred_thr
-TrainCfg.bin_pred_look_again_tol = ModelCfg.bin_pred_look_again_tol
-TrainCfg.bin_pred_nsr_thr = ModelCfg.bin_pred_nsr_thr
 
 
+# constants for model inference
+_bin_pred_thr = 0.5
+# `bin_pred_look_again_tol` is used when no prob is greater than `bin_pred_thr`,
+# then the prediction would be the one with the highest prob.,
+# along with those with prob. no less than the highest prob. minus `bin_pred_look_again_tol`
+_bin_pred_look_again_tol = 0.03
+_bin_pred_nsr_thr = 0.1
+
+
+TrainCfg.bin_pred_thr = _bin_pred_thr
+TrainCfg.bin_pred_look_again_tol = _bin_pred_look_again_tol
+TrainCfg.bin_pred_nsr_thr = _bin_pred_nsr_thr
+
+
+# the no special classes version
+
+TrainCfg_ns = deepcopy(TrainCfg)
+_assign_classes(TrainCfg_ns, [])
+
+
+# configurations for building deep learning models
+# terminologies of stanford ecg repo. will be adopted
+ModelCfg = ED()
+ModelCfg.torch_dtype = BaseCfg.torch_dtype
+ModelCfg.fs = BaseCfg.fs
+ModelCfg.spacing = 1000 / ModelCfg.fs
+ModelCfg.bin_pred_thr = _bin_pred_thr
+ModelCfg.bin_pred_look_again_tol = _bin_pred_look_again_tol
+ModelCfg.bin_pred_nsr_thr =_bin_pred_nsr_thr
+
+ModelCfg.special_classes = deepcopy(_SPECIAL_CLASSES)
 ModelCfg.dl_classes = deepcopy(TrainCfg.classes)
-ModelCfg.dl_siglen = TrainCfg.siglen
 ModelCfg.tranche_classes = deepcopy(TrainCfg.tranche_classes)
 ModelCfg.full_classes = ModelCfg.dl_classes + ModelCfg.special_classes
+
+ModelCfg.dl_siglen = TrainCfg.siglen
+
 ModelCfg.cnn_name = TrainCfg.cnn_name
 ModelCfg.rnn_name = TrainCfg.rnn_name
+ModelCfg.attn_name = TrainCfg.attn_name
+
+ModelArchCfg = deepcopy(ECG_CRNN_CONFIG)
+ModelArchCfg.cnn.multi_scopic_leadwise.block.batch_norm = "group_norm"  # False
+
+# model architectures configs
+ModelCfg.update(ModelArchCfg)
+
+
+# the no special classes version
+ModelCfg_ns = deepcopy(ModelCfg)
+ModelCfg_ns.special_classes = []
+ModelCfg_ns.dl_classes = deepcopy(TrainCfg_ns.classes)
+ModelCfg_ns.tranche_classes = deepcopy(TrainCfg_ns.tranche_classes)
+ModelCfg_ns.full_classes = ModelCfg_ns.dl_classes + ModelCfg_ns.special_classes

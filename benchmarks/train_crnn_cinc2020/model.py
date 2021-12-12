@@ -6,6 +6,7 @@ from typing import Union, Optional, Sequence, Tuple, NoReturn, Any
 import numpy as np
 import pandas as pd
 import torch
+from torch import nn
 from torch import Tensor
 from easydict import EasyDict as ED
 
@@ -29,7 +30,7 @@ __all__ = [
 class ECG_CRNN_CINC2020(ECG_CRNN):
     """
     """
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "ECG_CRNN_CINC2020"
 
     def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
@@ -47,7 +48,8 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         """
         model_config = deepcopy(ModelCfg)
         model_config.update(deepcopy(config) or {})
-        super().__init__(classes, n_leads, input_len, model_config, **kwargs)
+        assert n_leads == 12, "CinC2020 only supports 12-lead models"
+        super().__init__(classes, n_leads, model_config, **kwargs)
 
     @torch.no_grad()
     def inference(self,
@@ -112,6 +114,7 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
                     np.array(self.classes)[np.where(bin_pred==1)[0]].tolist()
         return pred, bin_pred
 
+    @torch.no_grad()
     def inference_CINC2020(self,
                            input:Union[np.ndarray,Tensor],
                            class_names:bool=False,
@@ -120,3 +123,34 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         alias for `self.inference`
         """
         return self.inference(input, class_names, bin_pred_thr)
+
+    @staticmethod
+    def from_checkpoint(path:str, device:Optional[torch.device]=None) -> Tuple[nn.Module, dict]:
+        """
+
+        Parameters
+        ----------
+        path: str,
+            path of the checkpoint
+        device: torch.device, optional,
+            map location of the model parameters,
+            defaults "cuda" if available, otherwise "cpu"
+
+        Returns
+        -------
+        model: Module,
+            the model loaded from a checkpoint
+        aux_config: dict,
+            auxiliary configs that are needed for data preprocessing, etc.
+        """
+        _device = device or (torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"))
+        ckpt = torch.load(path, map_location=_device)
+        aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
+        assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
+        model = ECG_CRNN_CINC2020(
+            classes=aux_config["classes"],
+            n_leads=aux_config["n_leads"],
+            config=ckpt["model_config"],
+        )
+        model.load_state_dict(ckpt["model_state_dict"])
+        return model, aux_config

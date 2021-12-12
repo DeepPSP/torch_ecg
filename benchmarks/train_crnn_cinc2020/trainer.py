@@ -63,7 +63,7 @@ from cfg import BaseCfg, TrainCfg, ModelCfg
 from dataset import CINC2020
 CINC2020.__DEBUG__ = False
 
-if ModelCfg.torch_dtype.lower() == "double":
+if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
     _DTYPE = torch.float64
 else:
@@ -274,7 +274,7 @@ class CINC2020Trainer(BaseTrainer):
     @property
     def batch_dim(self) -> int:
         """
-        batch dimension, for CinC2021, it is 0,
+        batch dimension, for CinC2020, it is 0,
         """
         return 0
 

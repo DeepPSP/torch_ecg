@@ -1,8 +1,7 @@
 """
 data generator for feeding data into pytorch models
 """
-import os, sys
-import json
+import os, sys, time, json
 from random import shuffle, randint
 from copy import deepcopy
 from functools import reduce
@@ -25,14 +24,15 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from torch_ecg.utils.utils_signal import butter_bandpass_filter
+from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.utils.misc import ensure_siglen, dict_to_str
+from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
 from torch_ecg.databases import CINC2020 as CR
 
 from cfg import TrainCfg, ModelCfg
 
 
-if ModelCfg.torch_dtype.lower() == "double":
+if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 
@@ -44,7 +44,10 @@ __all__ = [
 class CINC2020(Dataset):
     """
     """
-    def __init__(self, config:ED, training:bool=True) -> NoReturn:
+    __DEBUG__ = False
+    __name__ = "CINC2020"
+
+    def __init__(self, config:ED, training:bool=True, lazy:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -54,6 +57,8 @@ class CINC2020(Dataset):
             ref. `cfg.TrainCfg`
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
+        lazy: bool, default True,
+            if True, the data will not be loaded immediately,
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -61,7 +66,7 @@ class CINC2020(Dataset):
         self.reader = CR(db_dir=config.db_dir)
         self.tranches = config.tranches_for_training
         self.training = training
-        if ModelCfg.torch_dtype.lower() == "double":
+        if self.config.torch_dtype == torch.float64:
             self.dtype = np.float64
         else:
             self.dtype = np.float32
@@ -72,6 +77,7 @@ class CINC2020(Dataset):
         else:
             self.all_classes = self.config.classes
             self.class_weights = self.config.class_weights
+        self.config.all_classes = deepcopy(self.all_classes)
         self.n_classes = len(self.all_classes)
         # print(f"tranches = {self.tranches}, all_classes = {self.all_classes}")
         # print(f"class_weights = {dict_to_str(self.class_weights)}")
@@ -79,74 +85,107 @@ class CINC2020(Dataset):
         for idx, c in enumerate(self.all_classes):
             cw[idx] = self.class_weights[c]
         self.class_weights = torch.from_numpy(cw.astype(self.dtype)).view(1, self.n_classes)
-        # if self.training:
-        #     self.siglen = self.config.siglen
-        # else:
-        #     self.siglen = None
         # validation also goes in batches, hence length has to be fixed
         self.siglen = self.config.input_len
+        self.lazy = lazy
 
         self.records = self._train_test_split(config.train_ratio, force_recompute=False)
+        # TODO: consider using `remove_spikes_naive` to treat these exceptional records
         self.records = [r for r in self.records if r not in self.reader.exceptional_records]
+        if self.__DEBUG__:
+            self.records = sample(self.records, int(len(self.records) * 0.01))
 
-        self.__data_aug = self.training
+        ppm_config = ED(random=False)
+        ppm_config.update(self.config)
+        self.ppm = PreprocManager.from_config(ppm_config)
+        self.ppm.rearrange(["bandpass", "normalize"])
+
+        self._signals = np.array([], dtype=self.dtype).reshape(0, len(self.config.leads), self.siglen)
+        self._labels = np.array([], dtype=self.dtype).reshape(0, self.n_classes)
+        if not self.lazy:
+            self._load_all_data()
+
+    def _load_all_data(self) -> NoReturn:
+        """
+        """
+        fdr = FastDataReader(self.reader, self.records, self.config, self.ppm)
+        self._signals, self._labels = [], []
+        with tqdm(range(len(fdr)), desc="Loading data", unit="records") as pbar:
+            for idx in pbar:
+                s, l = fdr[idx]
+                self._signals.append(s)
+                self._labels.append(l)
+        self._signals = np.concatenate(self._signals, axis=0).astype(self.dtype)
+        self._labels = np.concatenate(self._labels, axis=0)
+
+    def _load_one_record(self, rec:str) -> Tuple[np.ndarray, np.ndarray]:
+        """ finished, checked,
+
+        load a record from the database using data reader
+
+        NOTE
+        ----
+        DO NOT USE THIS FUNCTION DIRECTLY for preloading data,
+        use `FastDataReader` instead
+
+        Parameters
+        ----------
+        rec: str,
+            the record to load
+
+        Returns
+        -------
+        values: np.ndarray,
+            the values of the record
+        labels: np.ndarray,
+            the labels of the record
+        """
+        values = self.reader.load_resampled_data(
+            rec,
+            data_format=self.config.data_format,
+            siglen=None
+        )
+        for l in range(values.shape[0]):
+            values[l] = remove_spikes_naive(values[l])
+        values, _ = self.ppm(values, self.config.fs)
+        values = ensure_siglen(
+            values,
+            siglen=self.siglen,
+            fmt=self.config.data_format,
+            tolerance=self.config.sig_slice_tol,
+        ).astype(self.dtype)
+        if values.ndim == 2:
+            values = values[np.newaxis, ...]
+        
+        labels = self.reader.get_labels(
+            rec, scored_only=True, fmt="a", normalize=True
+        )
+        labels = np.isin(self.all_classes, labels).astype(self.dtype)[np.newaxis, ...].repeat(values.shape[0], axis=0)
+
+        return values, labels
+
+    @property
+    def signals(self) -> np.ndarray:
+        """
+        """
+        return self._signals
+
+    @property
+    def labels(self) -> np.ndarray:
+        """
+        """
+        return self._labels
 
     def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
         """ finished, checked,
         """
-        rec = self.records[index]
-        # values = self.reader.load_data(
-        #     rec,
-        #     data_format='channel_first', units='mV', backend='wfdb'
-        # )
-        # values = self.reader.load_resampled_data(rec, data_format="channel_first", siglen=self.siglen)
-        values = self.reader.load_resampled_data(rec, data_format="channel_first", siglen=None)
-        if self.config.bandpass is not None:
-            values = butter_bandpass_filter(
-                values,
-                lowcut=self.config.bandpass[0],
-                highcut=self.config.bandpass[1],
-                order=self.config.bandpass_order,
-                fs=self.config.fs,
-            )
-        values = ensure_siglen(values, siglen=self.siglen, fmt="channel_first")
-        if self.config.normalize_data:
-            values = (values - np.mean(values)) / np.std(values)
-        labels = self.reader.get_labels(
-            rec, scored_only=True, fmt='a', normalize=True
-        )
-        labels = np.isin(self.all_classes, labels).astype(int)
-
-        if self.__data_aug:
-            # data augmentation for input
-            if self.config.random_mask > 0:
-                mask_len = randint(0, self.config.random_mask)
-                mask_start = randint(0, self.siglen-mask_len-1)
-                values[...,mask_start:mask_start+mask_len] = 0
-            if self.config.stretch_compress != 1:
-                pass  # not implemented
-            # data augmentation for labels
-            labels = (1 - self.config.label_smoothing) * labels \
-                + self.config.label_smoothing / self.n_classes
-
-        if self.config.data_format.lower() in ['channel_last', 'lead_last']:
-            values = values.T
-
-        return values, labels
-
+        return self.signals[index], self.labels[index]
 
     def __len__(self) -> int:
         """
         """
-        return len(self.records)
+        return len(self._signals)
 
-
-    def disable_data_augmentation(self) -> NoReturn:
-        """
-        """
-        self.__data_aug = False
-
-    
     def _train_test_split(self, train_ratio:float=0.8, force_recompute:bool=False) -> List[str]:
         """ finished, checked,
 
@@ -166,12 +205,17 @@ class CINC2020(Dataset):
         records: list of str,
             list of the records split for training or validation
         """
+        time.sleep(1)
+        start = time.time()
+        print("\nstart performing train test split...\n")
+        time.sleep(1)
         _TRANCHES = list("ABEF")
         _train_ratio = int(train_ratio*100)
         _test_ratio = 100 - _train_ratio
         assert _train_ratio * _test_ratio > 0
 
-        file_suffix = f"_siglen_{self.siglen}.json"
+        ns = "_ns" if len(self.config.special_classes) == 0 else ""
+        file_suffix = f"_siglen_{self.siglen}{ns}.json"
         train_file = os.path.join(self.reader.db_dir_base, f"train_ratio_{_train_ratio}{file_suffix}")
         test_file = os.path.join(self.reader.db_dir_base, f"test_ratio_{_test_ratio}{file_suffix}")
 
@@ -221,7 +265,6 @@ class CINC2020(Dataset):
             records = reduce(add, [test_set[k] for k in _tranches])
         return records
 
-
     def _check_train_test_split_validity(self, train_set:List[str], test_set:List[str], all_classes:Set[str]) -> bool:
         """ finished, checked,
 
@@ -251,15 +294,12 @@ class CINC2020(Dataset):
         print(f"all_classes = {all_classes}\ntrain_classes = {train_classes}\ntest_classes = {test_classes}\nis_valid = {is_valid}")
         return is_valid
 
-
     def persistence(self) -> NoReturn:
         """ finished, checked,
 
         make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
         """
         _TRANCHES = "ABEF"
-        prev_state = self.__data_aug
-        self.disable_data_augmentation()
         if self.training:
             ratio = int(self.config.train_ratio*100)
         else:
@@ -294,13 +334,58 @@ class CINC2020(Dataset):
         during training, sometimes nan values are encountered,
         which ruins the whole training process
         """
-        prev_state = self.__data_aug
-        self.disable_data_augmentation()
-
         for idx, (values, labels) in self:
             if np.isnan(values).any():
                 print(f"values of {self.records[idx]} have nan values")
             if np.isnan(labels).any():
                 print(f"labels of {self.records[idx]} have nan values")
 
-        self.__data_aug = prev_state
+
+class FastDataReader(Dataset):
+    """
+    """
+    def __init__(self, reader:CR, records:Sequence[str], config:ED, ppm:Optional[PreprocManager]=None) -> NoReturn:
+        """
+        """
+        self.reader = reader
+        self.records = records
+        self.config = config
+        self.ppm = ppm
+        if self.config.torch_dtype == torch.float64:
+            self.dtype = np.float64
+        else:
+            self.dtype = np.float32
+
+    def __len__(self) -> int:
+        """
+        """
+        return len(self.records)
+
+    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        """
+        rec = self.records[index]
+        values = self.reader.load_resampled_data(
+            rec,
+            data_format=self.config.data_format,
+            siglen=None
+        )
+        for l in range(values.shape[0]):
+            values[l] = remove_spikes_naive(values[l])
+        if self.ppm:
+            values, _ = self.ppm(values, self.config.fs)
+        values = ensure_siglen(
+            values,
+            siglen=self.config.input_len,
+            fmt=self.config.data_format,
+            tolerance=self.config.sig_slice_tol,
+        ).astype(self.dtype)
+        if values.ndim == 2:
+            values = values[np.newaxis, ...]
+        
+        labels = self.reader.get_labels(
+            rec, scored_only=True, fmt="a", normalize=True
+        )
+        labels = np.isin(self.config.all_classes, labels).astype(self.dtype)[np.newaxis, ...].repeat(values.shape[0], axis=0)
+
+        return values, labels
