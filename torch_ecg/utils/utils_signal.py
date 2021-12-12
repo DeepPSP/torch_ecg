@@ -545,12 +545,13 @@ def _plot(x, mph, mpd, threshold, edge, valley, ax, ind):
     plt.show()
 
 
-def remove_spikes_naive(sig:np.ndarray, threshold:Real=20) -> np.ndarray:
+def remove_spikes_naive(sig:np.ndarray, threshold:Real=20, inplace:bool=True) -> np.ndarray:
     """ finished, checked,
 
     remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
 
     `spikes` here refers to abrupt large bumps with (abs) value larger than the given threshold,
+    or nan values (read by `wfdb`),
     do NOT confuse with `spikes` in paced rhythm
 
     Parameters
@@ -562,14 +563,18 @@ def remove_spikes_naive(sig:np.ndarray, threshold:Real=20) -> np.ndarray:
     
     Returns
     -------
-    filtered_sig: ndarray,
+    sig: ndarray,
         signal with `spikes` removed
     """
-    b = list(filter(lambda k: k > 0, np.argwhere(np.abs(sig)>threshold).squeeze(-1)))
-    filtered_sig = sig
+    b = list(filter(
+        lambda k: k > 0,
+        np.argwhere(np.logical_or(np.abs(sig)>threshold, np.isnan(sig))).squeeze(-1)
+    ))
+    if not inplace:
+        sig = sig.copy()
     for k in b:
-        filtered_sig[k] = filtered_sig[k-1]
-    return filtered_sig
+        sig[k] = sig[k-1]
+    return sig
 
 
 def butter_bandpass(lowcut:Real, highcut:Real, fs:Real, order:int, verbose:int=0) -> Tuple[np.ndarray, np.ndarray]:
