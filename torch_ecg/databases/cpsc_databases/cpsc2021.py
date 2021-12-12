@@ -135,6 +135,7 @@ class CPSC2021(CPSCDataBase):
         self.spacing = 1000/self.fs
         self.rec_ext = "dat"
         self.ann_ext = "atr"
+        self.header_ext = "hea"
         self.all_leads = ["I", "II"]
 
         self._labels_f2a = { # fullname to abbreviation
@@ -144,8 +145,8 @@ class CPSC2021(CPSCDataBase):
         }
         self._labels_f2n = { # fullname to number
             "non atrial fibrillation": 0,
-            "paroxysmal atrial fibrillation": 1,
-            "persistent atrial fibrillation": 2,
+            "paroxysmal atrial fibrillation": 2,
+            "persistent atrial fibrillation": 1,
         }
 
         self.nb_records = ED({"training_I":730, "training_II":706})
@@ -171,7 +172,7 @@ class CPSC2021(CPSCDataBase):
         # self.palette = {"spb": "yellow", "pvc": "red",}
 
     @property
-    def all_records(self):
+    def all_records(self) -> List[str]:
         """
         """
         if self.__all_records is None:
@@ -189,12 +190,13 @@ class CPSC2021(CPSCDataBase):
         self._subject_records = ED({t:[] for t in self.db_tranches})
 
         fn = "RECORDS"
+        rev_fn = "REVISED_RECORDS"
         for t in self.db_tranches:
-            dir_candidate = os.path.join(self.db_dir_base, t, t)
+            dir_candidate = os.path.join(self.db_dir_base, t.replace("training_", "training"), t)
             if os.path.isdir(dir_candidate):
                 dir_tranche = dir_candidate
             else:
-                dir_tranche = os.path.dirname(dir_candidate)
+                dir_tranche = os.path.join(self.db_dir_base, t)
             self.db_dirs[t] = dir_tranche
 
             record_list_fp = os.path.join(dir_tranche, fn)
@@ -215,9 +217,19 @@ class CPSC2021(CPSCDataBase):
                 with open(record_list_fp, "w") as f:
                     f.write("\n".join(self._all_records[t]))
 
-            self._all_subjects[t] = sorted([rec.split("_")[1] for rec in self._all_records[t]])
-            self._subject_records[t] = \
-                ED({sid: [rec for rec in self._all_records[t] if rec.split("_")[1]==sid] for sid in self._all_subjects[t]})
+            record_list_fp = os.path.join(dir_tranche, rev_fn)
+            if os.path.isfile(record_list_fp):
+                with open(record_list_fp, "r") as f:
+                    self.__revised_records.extend(f.read().splitlines())
+
+            self._all_subjects[t] = sorted(
+                list(set([rec.split("_")[1] for rec in self._all_records[t]])),
+                key=lambda s: int(s)
+            )
+            self._subject_records[t] =  ED({
+                sid: [rec for rec in self._all_records[t] if rec.split("_")[1]==sid] \
+                    for sid in self._all_subjects[t]
+            })
         self._all_records_inv = {r:t for t, l_r in self._all_records.items() for r in l_r}
         self._all_subjects_inv = {s:t for t, l_s in self._all_subjects.items() for s in l_s}
         self.__all_records = sorted(list_sum(self._all_records.values()))
@@ -251,22 +263,23 @@ class CPSC2021(CPSCDataBase):
             print(f"Done in {time.time() - start:.5f} seconds!")
         else:
             pass  # currently no need to parse the loaded csv file
+        self._stats["subject_id"] = self._stats["subject_id"].apply(lambda s: str(s))
         self.__all_records = self._stats["record"].tolist()
 
     @property
-    def all_subjects(self):
+    def all_subjects(self) -> List[str]:
         """
         """
         return self.__all_subjects
 
     @property
-    def subject_records(self):
+    def subject_records(self) -> ED:
         """
         """
         return self._subject_records
 
     @property
-    def df_stats(self):
+    def df_stats(self) -> pd.DataFrame:
         """
         """
         return self._stats
@@ -305,7 +318,7 @@ class CPSC2021(CPSCDataBase):
             self._ls_diagnoses_records()
         return self._diagnoses_records_list
 
-    def get_subject_id(self, rec:str) -> int:
+    def get_subject_id(self, rec:str) -> str:
         """ finished, checked,
 
         Parameters
@@ -315,10 +328,10 @@ class CPSC2021(CPSCDataBase):
 
         Returns
         -------
-        sid: int,
+        sid: str,
             subject id corresponding to the record
         """
-        sid = int(rec.split("_")[1])
+        sid = rec.split("_")[1]
         return sid
 
     def _get_path(self, rec:str, ext:Optional[str]=None) -> str:
@@ -676,6 +689,38 @@ class CPSC2021(CPSCDataBase):
             raise ValueError(f"format `{fmt}` of labels is not supported!")
         return label
 
+    def gen_endpoint_score_mask(self, rec:str, bias:dict={1:1, 2:0.5}) -> Tuple[np.ndarray, np.ndarray]:
+        """finished, checked,
+
+        generate the scoring mask for the onsets and offsets of af episodes,
+
+        Parameters
+        ----------
+        rec: str,
+            name of the record
+        bias: dict, default {1:1, 2:0.5},
+            keys are bias (with ±) in terms of number of rpeaks
+            values are corresponding scores
+
+        Returns
+        -------
+        (onset_score_mask, offset_score_mask): 2-tuple of ndarray,
+            scoring mask for the onset and offsets predictions of af episodes
+
+        NOTE
+        ----
+        the onsets in `af_intervals` are 0.15s ahead of the corresponding R peaks,
+        while the offsets in `af_intervals` are 0.15s behind the corresponding R peaks,
+        """
+        masks = gen_endpoint_score_mask(
+            siglen=self.df_stats[self.df_stats.record==rec].iloc[0].sig_len,
+            critical_points=wfdb.rdann(self._get_path(rec), extension=self.ann_ext).sample,
+            af_intervals=self.load_af_episodes(rec, fmt="c_intervals"),
+            bias=bias,
+            verbose=self.verbose,
+        )
+        return masks
+
     def plot(self,
              rec:str,
              data:Optional[np.ndarray]=None,
@@ -685,7 +730,7 @@ class CPSC2021(CPSCDataBase):
              sampto:Optional[int]=None, 
              leads:Optional[Union[str, List[str]]]=None,
              waves:Optional[Dict[str, Sequence[int]]]=None,
-             **kwargs:Any,) -> NoReturn:
+             **kwargs) -> NoReturn:
         """ finished, checked, to improve,
 
         plot the signals of a record or external signals (units in μV),
@@ -828,7 +873,7 @@ class CPSC2021(CPSCDataBase):
         else:
             rpeaks = ann.get("rpeaks", [])
             af_episodes = ann.get("af_episodes", [])
-            label = ann["label"]
+            label = ann.get("label", "")
 
         nb_leads = len(_leads)
 
@@ -867,7 +912,8 @@ class CPSC2021(CPSCDataBase):
                     axes[ax_idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
                 # add extra info. to legend
                 # https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib
-                axes[ax_idx].plot([], [], " ", label=f"label - {label}")
+                if label:
+                    axes[ax_idx].plot([], [], " ", label=f"label - {label}")
                 seg_rpeaks = [r/self.fs for r in rpeaks if idx*line_len <= r < (idx+1)*line_len]
                 for r in seg_rpeaks:
                     axes[ax_idx].axvspan(
@@ -890,9 +936,6 @@ class CPSC2021(CPSCDataBase):
                 axes[ax_idx].set_xlabel("Time [s]")
                 axes[ax_idx].set_ylabel("Voltage [μV]")
             plt.subplots_adjust(hspace=0.2)
-        if kwargs.get("save_path", None):
-            plt.savefig(kwargs["save_path"], dpi=200, bbox_inches="tight")
-        else:
             plt.show()
 
     def _round(self, n:Real) -> int:

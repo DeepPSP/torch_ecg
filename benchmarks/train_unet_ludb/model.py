@@ -21,7 +21,7 @@ except ModuleNotFoundError:
 from torch_ecg.models.ecg_subtract_unet import ECG_SUBTRACT_UNET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.utils.misc import mask_to_intervals
-from torch_ecg.utils.utils_signal import _remove_spikes_naive
+from torch_ecg.utils.utils_signal import remove_spikes_naive
 
 from cfg import ModelCfg
 

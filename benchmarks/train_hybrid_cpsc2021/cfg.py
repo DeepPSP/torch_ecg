@@ -14,24 +14,33 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import DEFAULTS
 from torch_ecg.model_configs import (
     ECG_SEQ_LAB_NET_CONFIG,
     RR_LSTM_CONFIG,
     RR_AF_CRF_CONFIG, RR_AF_VANILLA_CONFIG,
     ECG_UNET_VANILLA_CONFIG,
     ECG_SUBTRACT_UNET_CONFIG,
+    # cnn
     vgg_block_basic, vgg_block_mish, vgg_block_swish,
     vgg16, vgg16_leadwise,
-    resnet_block_stanford, resnet_stanford,
-    resnet_block_basic, resnet_bottle_neck,
-    resnet, resnet_leadwise,
+    resnet_block_basic, resnet_bottle_neck_B, resnet_bottle_neck_D,
+    resnet_block_basic_se, resnet_block_basic_gc,
+    resnet_bottle_neck_se, resnet_bottle_neck_gc,
+    resnet_nature_comm, resnet_nature_comm_se, resnet_nature_comm_gc,
+    resnet_nature_comm_bottle_neck, resnet_nature_comm_bottle_neck_se,
+    resnetN, resnetNB, resnetNS, resnetNBS,
+    tresnetF, tresnetP, tresnetN, tresnetS, tresnetM,
     multi_scopic_block,
     multi_scopic, multi_scopic_leadwise,
-    dense_net_leadwise,
+    densenet_leadwise,
     xception_leadwise,
+    # lstm
     lstm,
     attention,
+    # mlp
     linear,
+    # attn
     non_local,
     squeeze_excitation,
     global_context,
@@ -58,7 +67,7 @@ os.makedirs(BaseCfg.model_dir, exist_ok=True)
 BaseCfg.test_data_dir = os.path.join(_BASE_DIR, "working_dir", "sample_data")
 BaseCfg.fs = 200
 BaseCfg.n_leads = 2
-BaseCfg.torch_dtype = "float"  # "double"
+BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 BaseCfg.class_fn2abbr = { # fullname to abbreviation
     "non atrial fibrillation": "N",
@@ -87,6 +96,8 @@ TrainCfg = ED()
 TrainCfg.fs = BaseCfg.fs
 TrainCfg.n_leads = BaseCfg.n_leads
 TrainCfg.data_format = "channel_first"
+TrainCfg.torch_dtype = BaseCfg.torch_dtype
+
 TrainCfg.db_dir = BaseCfg.db_dir
 TrainCfg.log_dir = BaseCfg.log_dir
 TrainCfg.model_dir = BaseCfg.model_dir
@@ -96,96 +107,77 @@ TrainCfg.keep_checkpoint_max = 20
 
 TrainCfg.debug = True
 
-# preprocessing configs
-# sequential, keep correct ordering, to add 'motion_artefact'
-TrainCfg.preproc = ['bandpass',]  # 'baseline',
-# for 200 ms and 600 ms, ref. (`ecg_classification` in `reference`)
-# TrainCfg.baseline_window1 = int(0.2*TrainCfg.fs)  # 200 ms window
-# TrainCfg.baseline_window2 = int(0.6*TrainCfg.fs)  # 600 ms window
-TrainCfg.filter_band = [0.5, 45]
-# TrainCfg.parallel_epoch_len = 600  # second
-# TrainCfg.parallel_epoch_overlap = 10  # second
-# TrainCfg.parallel_keep_tail = True
-# TrainCfg.rpeaks = 'seq_lab'  # 'xqrs
-# or 'gqrs', or 'pantompkins', 'hamilton', 'ssf', 'christov', 'engzee', 'gamboa'
-# or empty string '' if not detecting rpeaks
-"""
-for qrs detectors:
-    `xqrs` sometimes detects s peak (valley) as r peak,
-    but according to Jeethan, `xqrs` has the best performance
-"""
 # least distance of an valid R peak to two ends of ECG signals
 TrainCfg.rpeaks_dist2border = int(0.5 * TrainCfg.fs)  # 0.5s
 TrainCfg.qrs_mask_bias = int(0.075 * TrainCfg.fs)  # bias to rpeaks
 
-TrainCfg.normalize_data = True
+# configs of signal preprocessing
+TrainCfg.normalize = ED(
+    method="z-score",
+    per_channel=True,
+    mean=0.0,
+    std=1.0,
+)
+# frequency band of the filter to apply, should be chosen very carefully
+# TrainCfg.bandpass = None
+TrainCfg.bandpass = ED(
+    lowcut=0.5,
+    highcut=45,
+    filter_type="fir",
+    filter_order=int(0.3*TrainCfg.fs),
+)
 
-# data augmentation
+# configs of data aumentation
+# TrainCfg.label_smooth = ED(
+#     prob=0.8,
+#     smoothing=0.1,
+# )
+TrainCfg.label_smooth = False
+TrainCfg.random_masking = False
+TrainCfg.stretch_compress = False  # stretch or compress in time axis
+# TrainCfg.mixup = ED(
+#     prob=0.6,
+#     alpha=0.3,
+# )
+TrainCfg.random_flip = ED(
+    per_channel=True,
+    prob=[0.4, 0.5],
+)
 
-TrainCfg.label_smoothing = 0.1
-TrainCfg.random_mask = int(TrainCfg.fs * 0.0)  # 1.0s, 0 for no masking
-TrainCfg.stretch_compress = 5  # stretch or compress in time axis, units in percentage (0 - inf)
-TrainCfg.stretch_compress_prob = 0.3  # probability of performing stretch or compress
-TrainCfg.random_normalize = True  # (re-)normalize to random mean and std
-# valid segments has
-# median of mean appr. 0, mean of mean 0.038
-# median of std 0.13, mean of std 0.18
-TrainCfg.random_normalize_mean = [-0.05, 0.1]
-TrainCfg.random_normalize_std = [0.08, 0.32]
-
-# TrainCfg.baseline_wander = True  # randomly shifting the baseline
-# TrainCfg.bw = TrainCfg.baseline_wander  # alias
-# TrainCfg.bw_fs = np.array([0.33, 0.1, 0.05, 0.01])
-# TrainCfg.bw_ampl_ratio = np.array([
-#     [0.01, 0.01, 0.02, 0.03],  # low
-#     [0.01, 0.02, 0.04, 0.05],  # low
-#     [0.1, 0.06, 0.04, 0.02],  # low
-#     [0.02, 0.04, 0.07, 0.1],  # low
-#     [0.05, 0.1, 0.16, 0.25],  # medium
-#     [0.1, 0.15, 0.25, 0.3],  # high
-#     [0.25, 0.25, 0.3, 0.35],  # extremely high
-# ])
-# TrainCfg.bw_gaussian = np.array([  # mean and std, ratio
-#     [0.0, 0.0],
-#     [0.0, 0.0],
-#     [0.0, 0.0],  # ensure at least one with no gaussian noise
-#     [0.0, 0.003],
-#     [0.0, 0.01],
-# ])
-
-TrainCfg.flip = [-1] + [1]*4  # making the signal upside down, with probability 1/(1+4)
 # TODO: explore and add more data augmentations
 
 # configs of training epochs, batch, etc.
-TrainCfg.n_epochs = 20
+TrainCfg.n_epochs = 30
 TrainCfg.batch_size = 64
 TrainCfg.train_ratio = 0.8
 
 # configs of optimizers and lr_schedulers
-TrainCfg.train_optimizer = "adamw_amsgrad"  # "sgd", "adam", "adamw"
+TrainCfg.optimizer = "adamw_amsgrad"  # "sgd", "adam", "adamw"
 TrainCfg.momentum = 0.949  # default values for corresponding PyTorch optimizers
 TrainCfg.betas = (0.9, 0.999)  # default values for corresponding PyTorch optimizers
 TrainCfg.decay = 1e-2  # default values for corresponding PyTorch optimizers
 
-TrainCfg.learning_rate = 1e-3  # 1e-4
+TrainCfg.learning_rate = 1e-4  # 1e-3
 TrainCfg.lr = TrainCfg.learning_rate
 
-TrainCfg.lr_scheduler = None  # "one_cycle", "plateau", "burn_in", "step", None
+TrainCfg.lr_scheduler = "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
 TrainCfg.lr_step_size = 50
 TrainCfg.lr_gamma = 0.1
-TrainCfg.max_lr = 1e-2  # for "one_cycle" scheduler, to adjust via expriments
+TrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
 
 TrainCfg.early_stopping = ED()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
-TrainCfg.early_stopping.patience = 5
+TrainCfg.early_stopping.patience = 8
 
 # configs of loss function
 # "MaskedBCEWithLogitsLoss", "BCEWithLogitsWithClassWeightLoss"  # "BCELoss"
-TrainCfg.loss = "BCEWithLogitsLoss"
+# TrainCfg.loss = "AsymmetricLoss"
+# TrainCfg.loss_kw = ED(gamma_pos=0, gamma_neg=1, implementation="deep-psp")
+TrainCfg.loss = "MaskedBCEWithLogitsLoss"
+TrainCfg.loss_kw = ED()
 TrainCfg.flooding_level = 0.0  # flooding performed if positive
 
-TrainCfg.log_step = 20
-TrainCfg.eval_every = 20
+TrainCfg.log_step = 40
 
 # tasks of training
 TrainCfg.tasks = [
@@ -202,7 +194,7 @@ for t in TrainCfg.tasks:
 
 TrainCfg.qrs_detection.final_model_name = None
 TrainCfg.qrs_detection.model_name = "seq_lab"  # "unet"
-TrainCfg.qrs_detection.reduction = 8
+TrainCfg.qrs_detection.reduction = 1
 TrainCfg.qrs_detection.cnn_name = "multi_scopic"
 TrainCfg.qrs_detection.rnn_name = "lstm"  # "none", "lstm"
 TrainCfg.qrs_detection.attn_name = "se"  # "none", "se", "gc", "nl"
@@ -211,7 +203,8 @@ TrainCfg.qrs_detection.overlap_len = int(15*TrainCfg.fs)
 TrainCfg.qrs_detection.critical_overlap_len = int(25*TrainCfg.fs)
 TrainCfg.qrs_detection.classes = ["N",]
 TrainCfg.qrs_detection.monitor = "qrs_score"  # monitor for determining the best model
-TrainCfg.qrs_detection.loss = TrainCfg.loss
+TrainCfg.qrs_detection.loss = "BCEWithLogitsLoss"  # "AsymmetricLoss"
+TrainCfg.qrs_detection.loss_kw = ED()
 
 TrainCfg.rr_lstm.final_model_name = None
 TrainCfg.rr_lstm.model_name = "lstm"  # "lstm", "lstm_crf"
@@ -221,10 +214,11 @@ TrainCfg.rr_lstm.critical_overlap_len = 25  # number of rr intervals ( number of
 TrainCfg.rr_lstm.classes = ["af",]
 TrainCfg.rr_lstm.monitor = "neg_masked_bce"  # "rr_score", "neg_masked_bce"  # monitor for determining the best model
 TrainCfg.rr_lstm.loss = "MaskedBCEWithLogitsLoss"
+TrainCfg.rr_lstm.loss_kw = ED()
 
 TrainCfg.main.final_model_name = None
 TrainCfg.main.model_name = "seq_lab"  # "unet"
-TrainCfg.main.reduction = 8
+TrainCfg.main.reduction = 1
 TrainCfg.main.cnn_name = "multi_scopic"
 TrainCfg.main.rnn_name = "lstm"  # "none", "lstm"
 TrainCfg.main.attn_name = "se"  # "none", "se", "gc", "nl"
@@ -233,8 +227,10 @@ TrainCfg.main.overlap_len = int(15*TrainCfg.fs)
 TrainCfg.main.critical_overlap_len = int(25*TrainCfg.fs)
 TrainCfg.main.classes = ["af",]
 TrainCfg.main.monitor = "neg_masked_bce"  # "main_score", "neg_masked_bce"  # monitor for determining the best model
-TrainCfg.main.loss = "MaskedBCEWithLogitsLoss"
-
+# TrainCfg.main.loss = "AsymmetricLoss" # "MaskedBCEWithLogitsLoss"
+# TrainCfg.main.loss_kw = ED(gamma_pos=0, gamma_neg=1, implementation="deep-psp")
+TrainCfg.main.loss = "MaskedBCEWithLogitsLoss" # "MaskedBCEWithLogitsLoss"
+TrainCfg.main.loss_kw = ED()
 
 
 # Plan:
@@ -339,7 +335,7 @@ ModelCfg.main.unet.up_num_filters = [
     ModelCfg.main.unet.init_num_filters * (2**idx) \
         for idx in range(ModelCfg.main.unet.down_up_block_num-1,-1,-1)
 ]
-ModelCfg.main.unet.up_mode = "deconv"
+ModelCfg.main.unet.up_mode = "interp"  # "deconv"
 
 
 # configurations for visualization

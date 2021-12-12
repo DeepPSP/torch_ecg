@@ -373,6 +373,7 @@ if __name__ == "__main__":
         model_config=model_config,
         train_config=train_config,
         device=device,
+        lazy=False,
     )
 
     try:

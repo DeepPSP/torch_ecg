@@ -69,7 +69,9 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
         model_cfg.model_name = "seq_lab"
         model = ECG_SEQ_LAB_NET_CPSC2021(model_cfg)
         """
-        super().__init__(config.classes, config.n_leads, config[config.model_name], **kwargs)
+        if config[config.model_name].reduction == 1:
+            config[config.model_name].recover_length = True
+        super().__init__(config.classes, config.n_leads, config[config.model_name])
         self.task = config.task
 
     @torch.no_grad()

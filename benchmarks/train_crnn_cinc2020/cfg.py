@@ -154,8 +154,7 @@ TrainCfg.normalize = ED(
     std=1.0,
 )
 # frequency band of the filter to apply, should be chosen very carefully
-TrainCfg.bandpass = None  # [-np.inf, 45]
-# TrainCfg.bandpass = [-np.inf, 45]
+TrainCfg.bandpass = None
 # TrainCfg.bandpass = ED(
 #     lowcut=0.5,
 #     highcut=60,

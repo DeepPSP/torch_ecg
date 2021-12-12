@@ -144,14 +144,12 @@ log
 # notebooks that are not ignored should be specified
 *.ipynb
 # to add ingored notebooks
-!inspect_data.ipynb
 !train_models.ipynb
-!aggregate_val_res.ipynb
 
 # dl models
 *.h5
 *.pth
 *.pth.tar
 
-!saved_models/*.pth.tar
+# !saved_models/*.pth.tar
 

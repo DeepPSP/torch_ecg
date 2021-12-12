@@ -7,7 +7,14 @@ from itertools import repeat
 import numpy as np
 from easydict import EasyDict as ED
 
-from torch_ecg.cfg import Cfg
+try:
+    import torch_ecg
+except ModuleNotFoundError:
+    import sys
+    from os.path import dirname, abspath
+    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
+from torch_ecg.cfg import DEFAULTS
 
 
 __all__ = [
@@ -24,13 +31,12 @@ BaseCfg.fs = 500  # Hz, CPSC2019 data fs
 BaseCfg.classes = ["N",]
 # BaseCfg.classes = ["N", "i"]   # N for qrs, i for other parts
 # BaseCfg.class_map = {c:i for i,c in enumerate(BaseCfg.classes)}
-# BaseCfg.training_data = os.path.join(_BASE_DIR, "training_data")
-BaseCfg.db_dir = "/media/cfs/wenhao71/data/CPSC2019/train/"
+BaseCfg.db_dir = None
 BaseCfg.bias_thr = int(0.075 * BaseCfg.fs)  # keep the same with `THR` in `cpsc2019_score.py`
 # detected rpeaks that are within `skip_dist` from two ends of the signal will be ignored,
 # as in the official entry function
 BaseCfg.skip_dist = int(0.5 * BaseCfg.fs)
-BaseCfg.torch_dtype = Cfg.torch_dtype
+BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
 

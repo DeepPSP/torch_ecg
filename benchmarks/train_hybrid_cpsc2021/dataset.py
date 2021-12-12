@@ -49,10 +49,12 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 from scipy import signal as SS
 from easydict import EasyDict as ED
-from tqdm import tqdm
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
-from sklearn.preprocessing import StandardScaler
 from scipy.io import loadmat, savemat
 
 try:
@@ -63,11 +65,11 @@ except ModuleNotFoundError:
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
 from torch_ecg.databases import CPSC2021 as CR
-from torch_ecg.utils.preproc import preprocess_multi_lead_signal
-from torch_ecg.utils.utils_signal import normalize
+from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.utils.utils_interval import mask_to_intervals
+from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
 from torch_ecg.utils.misc import (
-    dict_to_str, list_sum, nildent, uniform,
+    list_sum, nildent, uniform,
     get_record_list_recursive3,
 )
 
@@ -75,17 +77,13 @@ from cfg import (
     TrainCfg, ModelCfg,
 )
 
-
-if ModelCfg.torch_dtype.lower() == "double":
+if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = [
     "CPSC2021",
 ]
-
-
-_BASE_DIR = os.path.dirname(__file__)
 
 
 class CPSC2021(Dataset):
@@ -98,7 +96,7 @@ class CPSC2021(Dataset):
     __DEBUG__ = False
     __name__ = "CPSC2021"
     
-    def __init__(self, config:ED, task:str, training:bool=True) -> NoReturn:
+    def __init__(self, config:ED, task:str, training:bool=True, lazy:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -112,14 +110,24 @@ class CPSC2021(Dataset):
         super().__init__()
         self.config = deepcopy(config)
         self.reader = CR(db_dir=config.db_dir)
-        if ModelCfg.torch_dtype.lower() == "double":
+        if self.config.torch_dtype == torch.float64:
             self.dtype = np.float64
         else:
             self.dtype = np.float32
-        self.allowed_preproc = self.config.preproc
+        self.allowed_preproc = list(set(["bandpass", "baseline_remove",]).intersection(set(self.config.keys())))
 
         self.training = training
-        self.__data_aug = self.training
+
+        self.lazy = lazy
+
+        ppm_config = ED(random=False)
+        ppm_config.update(deepcopy(self.config))
+        ppm_config.pop("normalize")
+        seg_ppm_config = ED(random=False)
+        seg_ppm_config.update(deepcopy(self.config))
+        seg_ppm_config.pop("bandpass")
+        self.ppm = PreprocManager.from_config(ppm_config)
+        self.seg_ppm = PreprocManager.from_config(seg_ppm_config)
 
         # create directories if needed
         # preprocess_dir stores pre-processed signals
@@ -136,9 +144,17 @@ class CPSC2021(Dataset):
         self.rr_seq_name_pattern = "R_\d{1,3}_\d{1,2}_\d{7}"
         self.rr_seq_ext = "mat"
 
-        self.__set_task(task)
+        self._all_data = None
+        self._all_labels = None
+        self._all_masks = None
+        self.__set_task(task, lazy=self.lazy)
 
-    def __set_task(self, task:str) -> NoReturn:
+    def _load_all_data(self) -> NoReturn:
+        """
+        """
+        self.__set_task(self.task, lazy=False)
+
+    def __set_task(self, task:str, lazy:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -147,11 +163,12 @@ class CPSC2021(Dataset):
             name of the task, can be one of `TrainCfg.tasks`
         """
         assert task.lower() in TrainCfg.tasks, f"illegal task \042{task}\042"
-        if hasattr(self, "task") and self.task == task.lower():
+        if hasattr(self, "task") and self.task == task.lower() and self._all_data is not None and len(self._all_data)>0:
             return
         self.task = task.lower()
         self.all_classes = self.config[task].classes
         self.n_classes = len(self.config[task].classes)
+        self.lazy = lazy
 
         self.seglen = self.config[task].input_len  # alias, for simplicity
         split_res = self._train_test_split(
@@ -170,26 +187,58 @@ class CPSC2021(Dataset):
             self.segments_json = os.path.join(self.segments_base_dir, "segments.json")
             self._ls_segments()
             self.segments = list_sum([self.__all_segments[subject] for subject in self.subjects])
+            if self.__DEBUG__:
+                self.segments = random.sample(self.segments, int(len(self.segments) * 0.01))
             if self.training:
                 random.shuffle(self.segments)
+            # preload data
+            self.fdr = FastDataReader(self.config, self.task, self.seg_ppm, self.segments_dirs, self.segments, self.segment_ext)
+            if self.lazy:
+                return
+            self._all_data, self._all_labels, self._all_masks = [], [], []
+            with tqdm(range(len(self.fdr)), desc="Loading data", unit="records") as pbar:
+                for idx in pbar:
+                    d, l, m = self.fdr[idx]
+                    self._all_data.append(d)
+                    self._all_labels.append(l)
+                    self._all_masks.append(m)
+            self._all_data = np.array(self._all_data).astype(self.dtype)
+            self._all_labels = np.array(self._all_labels).astype(self.dtype)
+            if self.task == "qrs_detection":
+                self._all_masks = None
+            else:
+                self._all_masks = np.array(self._all_masks).astype(self.dtype)
         elif self.task in ["rr_lstm",]:
             self.rr_seq_dirs = ED()
             self.__all_rr_seq = ED()
             self.rr_seq_json = os.path.join(self.rr_seq_base_dir, "rr_seq.json")
             self._ls_rr_seq()
             self.rr_seq = list_sum([self.__all_rr_seq[subject] for subject in self.subjects])
+            if self.__DEBUG__:
+                self.rr_seq = random.sample(self.rr_seq, int(len(self.rr_seq) * 0.01))
             if self.training:
                 random.shuffle(self.rr_seq)
+            # preload data
+            self.fdr = FastDataReader(self.config, self.task, self.seg_ppm, self.rr_seq_dirs, self.rr_seq, self.rr_seq_ext)
+            if self.lazy:
+                return
+            self._all_data, self._all_labels, self._all_masks = [], [], []
+            with tqdm(range(len(self.fdr)), desc="Loading data", unit="records") as pbar:
+                for idx in pbar:
+                    d, l, m = self.fdr[idx]
+                    self._all_data.append(d)
+                    self._all_labels.append(l)
+                    self._all_masks.append(m)
+            self._all_data = np.array(self._all_data).astype(self.dtype)
+            self._all_labels = np.array(self._all_labels).astype(self.dtype)
+            self._all_masks = np.array(self._all_masks).astype(self.dtype)
         else:
             raise NotImplementedError(f"data generator for task \042{self.task}\042 not implemented")
-        
-        # more aux config on offline augmentations
-        self.config.stretch_compress_choices = [-1,1] + [0] * int(2/self.config.stretch_compress_prob - 2)
 
-    def reset_task(self, task:str) -> NoReturn:
+    def reset_task(self, task:str, lazy:bool=True) -> NoReturn:
         """ finished, checked,
         """
-        self.__set_task(task)
+        self.__set_task(task, lazy)
 
     def _ls_segments(self) -> NoReturn:
         """ finished, checked,
@@ -251,77 +300,20 @@ class CPSC2021(Dataset):
         else:
             return ED()
 
-    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ finished, checked,
-        """
-        if self.task in ["qrs_detection", "main",]:
-            seg_name = self.segments[index]
-            seg_data = self._load_seg_data(seg_name)
-            if self.config[self.task].model_name == "unet":
-                seg_label = self._load_seg_mask(seg_name)
-            else:  # "seq_lab"
-                seg_label = self._load_seg_seq_lab(seg_name, reduction=self.config[self.task].reduction)
-            # augmentation
-            if self.__data_aug:
-                if len(self.config.flip) > 0:
-                    sign = random.sample(self.config.flip, 1)[0]
-                    seg_data *= sign
-                if self.config.random_normalize:
-                    rn_mean = np.array(uniform(
-                        self.config.random_normalize_mean[0],
-                        self.config.random_normalize_mean[1],
-                        self.config.n_leads,
-                    ))
-                    rn_std = np.array(uniform(
-                        self.config.random_normalize_std[0],
-                        self.config.random_normalize_std[1],
-                        self.config.n_leads,
-                    ))
-                    seg_data = normalize(
-                        sig=seg_data,
-                        mean=rn_mean,
-                        std=rn_std,
-                        per_channel=True,
-                    )
-                if self.config.label_smoothing > 0:
-                    seg_label = (1 - self.config.label_smoothing) * seg_label \
-                        + self.config.label_smoothing / (1 + self.n_classes)
-            else:  # no augmentation
-                if self.config.random_normalize:  # to keep consistency of data distribution
-                    seg_data = normalize(
-                        sig=seg_data,
-                        mean=list(repeat(np.mean(self.config.random_normalize_mean), self.config.n_leads)),
-                        std=list(repeat(np.mean(self.config.random_normalize_std), self.config.n_leads)),
-                        per_channel=True,
-                    )
-            if self.task == "main":
-                weight_mask = _generate_weight_mask(
-                    target_mask=seg_label.squeeze(-1),
-                    fg_weight=2,
-                    fs=self.config.fs,
-                    reduction=self.config[self.task].reduction,
-                    radius=0.8,
-                    boundary_weight=5,
-                )[..., np.newaxis]
-                return seg_data, seg_label, weight_mask
-            return seg_data, seg_label
-        elif self.task in ["rr_lstm",]:
-            rr_seq = self._load_rr_seq(self.rr_seq[index])
-            weight_mask = _generate_weight_mask(
-                target_mask=rr_seq["label"].squeeze(-1), 
-                fg_weight=2, fs=1/0.8, reduction=1, radius=2, boundary_weight=5
-            )[..., np.newaxis]
-            return rr_seq["rr"], rr_seq["label"], weight_mask
-        else:
-            raise NotImplementedError(f"data generator for task \042{self.task}\042 not implemented")
-
     def __len__(self) -> int:
-        """ finished,
-        """
-        if self.task in ["qrs_detection", "main",]:
-            return len(self.segments)
-        else:  # "rr_lstm"
-            return len(self.rr_seq)
+        return len(self.fdr)
+
+    def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
+        if self.lazy:
+            if self.task in ["qrs_detection"]:
+                return self.fdr[index][:2]
+            else:
+                return self.fdr[index]
+        else:
+            if self.task in ["qrs_detection"]:
+                return self._all_data[index], self._all_labels[index]
+            else:
+                return self._all_data[index], self._all_labels[index], self._all_masks[index]
 
     def _get_seg_data_path(self, seg:str) -> str:
         """ finished, checked,
@@ -422,14 +414,14 @@ class CPSC2021(Dataset):
             seg_mask = seg_mask["af_mask"]
         return seg_mask
 
-    def _load_seg_seq_lab(self, seg:str, reduction:int=8) -> np.ndarray:
+    def _load_seg_seq_lab(self, seg:str, reduction:int) -> np.ndarray:
         """ finished, checked,
 
         Parameters
         ----------
         seg: str,
             name of the segment, of pattern like "S_1_1_0000193"
-        reduction: int, default 8,
+        reduction: int,
             reduction (granularity) of length of the model output,
             compared to the original signal length
 
@@ -490,20 +482,6 @@ class CPSC2021(Dataset):
         rr_seq["interval"] = rr_seq["interval"].flatten()
         return rr_seq
 
-    def disable_data_augmentation(self) -> NoReturn:
-        """
-        """
-        self.__data_aug = False
-
-    def enable_data_augmentation(self) -> NoReturn:
-        """
-        """
-        self.__data_aug = True
-
-    @property
-    def use_augmentation(self) -> bool:
-        return self.__data_aug
-
     def persistence(self, force_recompute:bool=False, verbose:int=0) -> NoReturn:
         """ finished, checked,
 
@@ -519,7 +497,6 @@ class CPSC2021(Dataset):
         if verbose >= 1:
             print(" preprocessing data ".center("#", 110))
         self._preprocess_data(
-            self.allowed_preproc,
             force_recompute=force_recompute,
             verbose=verbose,
         )
@@ -536,7 +513,7 @@ class CPSC2021(Dataset):
             verbose=verbose,
         )
 
-    def _preprocess_data(self, preproc:List[str], force_recompute:bool=False, verbose:int=0) -> NoReturn:
+    def _preprocess_data(self, force_recompute:bool=False, verbose:int=0) -> NoReturn:
         """ finished, checked,
 
         preprocesses the ecg data in advance for further use,
@@ -544,26 +521,21 @@ class CPSC2021(Dataset):
 
         Parameters
         ----------
-        preproc: list of str,
-            type of preprocesses to perform,
-            should be sublist of `self.allowed_preproc`
         force_recompute: bool, default False,
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
         """
-        preproc = self._normalize_preprocess_names(preproc, True)
         for idx, rec in enumerate(self.reader.all_records):
             self._preprocess_one_record(
                 rec=rec,
-                preproc=preproc,
                 force_recompute=force_recompute,
                 verbose=verbose,
             )
             if verbose >= 1:
                 print(f"{idx+1}/{len(self.reader.all_records)} records", end="\r")
 
-    def _preprocess_one_record(self, rec:str, preproc:List[str], force_recompute:bool=False, verbose:int=0) -> NoReturn:
+    def _preprocess_one_record(self, rec:str, force_recompute:bool=False, verbose:int=0) -> NoReturn:
         """ finished, checked,
 
         preprocesses the ecg data in advance for further use,
@@ -573,55 +545,33 @@ class CPSC2021(Dataset):
         ----------
         rec: str,
             filename of the record
-        preproc: list of str,
-            type of preprocesses to perform,
-            should be sublist of `self.allowed_preproc`
         force_recompute: bool, default False,
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
         """
-        suffix = self._get_rec_suffix(preproc)
+        suffix = self._get_rec_suffix(self.allowed_preproc)
         save_fp = os.path.join(self.preprocess_dir, f"{rec}-{suffix}.{self.segment_ext}")
         if (not force_recompute) and os.path.isfile(save_fp):
             return
         # perform pre-process
-        if "baseline" in preproc:
-            bl_win = [self.config.baseline_window1, self.config.baseline_window2]
-        else:
-            bl_win = None
-        if "bandpass" in preproc:
-            band_fs = self.config.filter_band
-        else:
-            band_fs = None
-        pps = preprocess_multi_lead_signal(
-            self.reader.load_data(rec),
-            fs=self.reader.fs,
-            bl_win=bl_win,
-            band_fs=band_fs,
-            verbose=verbose,
-        )
-        savemat(save_fp, {"ecg": pps["filtered_ecg"]}, format="5")
+        pps, _ = self.ppm(self.reader.load_data(rec), self.config.fs)
+        savemat(save_fp, {"ecg": pps}, format="5")
 
-    def load_preprocessed_data(self, rec:str, preproc:Optional[List[str]]=None) -> np.ndarray:
+    def load_preprocessed_data(self, rec:str) -> np.ndarray:
         """ finished, checked,
 
         Parameters
         ----------
         rec: str,
             filename of the record
-        preproc: list of str, optional
-            type of preprocesses to perform,
-            should be sublist of `self.allowed_preproc`,
-            defaults to `self.allowed_preproc`
 
         Returns
         -------
         p_sig: ndarray,
             the pre-computed processed ECG
         """
-        if preproc is None:
-            preproc = self.allowed_preproc
+        preproc = self.allowed_preproc
         suffix = self._get_rec_suffix(preproc)
         fp = os.path.join(self.preprocess_dir, f"{rec}-{suffix}.{self.segment_ext}")
         if not os.path.exists(fp):
@@ -630,34 +580,6 @@ class CPSC2021(Dataset):
         if p_sig.shape[0] != 2:
             p_sig = p_sig.T
         return p_sig
-
-    def _normalize_preprocess_names(self, preproc:List[str], ensure_nonempty:bool) -> List[str]:
-        """ finished, checked,
-
-        to transform all preproc into lower case,
-        and keep them in a specific ordering 
-        
-        Parameters
-        ----------
-        preproc: list of str,
-            list of preprocesses types,
-            should be sublist of `self.allowd_features`
-        ensure_nonempty: bool,
-            if True, when the passed `preproc` is empty,
-            `self.allowed_preproc` will be returned
-
-        Returns
-        -------
-        _p: list of str,
-            "normalized" list of preprocess types
-        """
-        _p = [item.lower() for item in preproc] if preproc else []
-        if ensure_nonempty:
-            _p = _p or self.allowed_preproc
-        # ensure ordering
-        _p = [item for item in self.allowed_preproc if item in _p]
-        # assert all([item in self.allowed_preproc for item in _p])
-        return _p
 
     def _get_rec_suffix(self, operations:List[str]) -> str:
         """ finished, checked,
@@ -701,11 +623,6 @@ class CPSC2021(Dataset):
             )
             if verbose >= 1:
                 print(f"{idx+1}/{len(self.reader.all_records)} records", end="\r")
-        # with mp.Pool(processes=max(1, mp.cpu_count()-3)) as pool:
-        #     pool.starmap(
-        #         func=self._slice_one_record,
-        #         iterable=[(rec, force_recompute, False, verbose) for rec in self.reader.all_records]
-        #     )
         if force_recompute:
             with open(self.segments_json, "w") as f:
                 json.dump(self.__all_segments, f)
@@ -1119,10 +1036,6 @@ class CPSC2021(Dataset):
         train_file = os.path.join(self.reader.db_dir_base, f"train_ratio_{_train_ratio}.json")
         test_file = os.path.join(self.reader.db_dir_base, f"test_ratio_{_test_ratio}.json")
 
-        if not all([os.path.isfile(train_file), os.path.isfile(test_file)]):
-            train_file = os.path.join(_BASE_DIR, "utils", os.path.basename(train_file))
-            test_file = os.path.join(_BASE_DIR, "utils", os.path.basename(test_file))
-
         if force_recompute or not all([os.path.isfile(train_file), os.path.isfile(test_file)]):
             all_subjects = set(self.reader.df_stats.subject_id.tolist())
             afp_subjects = set(self.reader.df_stats[self.reader.df_stats.label=="AFp"].subject_id.tolist())
@@ -1137,19 +1050,14 @@ class CPSC2021(Dataset):
             random.shuffle(test_set)
             random.shuffle(train_set)
 
-            train_file_1 = os.path.join(self.reader.db_dir_base, f"train_ratio_{_train_ratio}.json")
-            train_file_2 = os.path.join(_BASE_DIR, "utils", f"train_ratio_{_train_ratio}.json")
-            with open(train_file_1, "w") as f1, open(train_file_2, "w") as f2:
-                json.dump(train_set, f1, ensure_ascii=False)
-                json.dump(train_set, f2, ensure_ascii=False)
-            test_file_1 = os.path.join(self.reader.db_dir_base, f"test_ratio_{_test_ratio}.json")
-            test_file_2 = os.path.join(_BASE_DIR, "utils", f"test_ratio_{_test_ratio}.json")
-            with open(test_file_1, "w") as f1, open(test_file_2, "w") as f2:
-                json.dump(test_set, f1, ensure_ascii=False)
-                json.dump(test_set, f2, ensure_ascii=False)
+            train_file = os.path.join(self.reader.db_dir_base, f"train_ratio_{_train_ratio}.json")
+            with open(train_file, "w") as f:
+                json.dump(train_set, f, ensure_ascii=False)
+            test_file = os.path.join(self.reader.db_dir_base, f"test_ratio_{_test_ratio}.json")
+            with open(test_file, "w") as f:
+                json.dump(test_set, f, ensure_ascii=False)
             print(nildent(f"""
-                train set saved to \n\042{train_file_1}\042and\n\042{train_file_2}\042
-                test set saved to \n\042{test_file_1}\042and\n\042{test_file_2}\042
+                train set saved to \n\042{train_file}\042
                 """
             ))
         else:
@@ -1195,6 +1103,317 @@ class CPSC2021(Dataset):
             ann=seg_ann,
             ticks_granularity=ticks_granularity,
         )
+
+
+class FastDataReader(Dataset):
+    """
+    """
+    def __init__(self,
+                 config:ED,
+                 task:str,
+                 seg_ppm:PreprocManager,
+                 file_dirs:dict,
+                 files:List[str],
+                 file_ext:str) -> NoReturn:
+        """
+        """
+        self.config = config
+        self.task = task
+        self.seg_ppm = seg_ppm
+        self.file_dirs = file_dirs
+        self.files = files
+        self.file_ext = file_ext
+
+        self.seglen = self.config[self.task].input_len
+        self.n_classes = len(self.config[task].classes)
+
+        self._seg_keys = {
+            "qrs_detection": "qrs_mask",
+            "main": "af_mask",
+        }
+
+    def __getitem__(self, index:int) -> Tuple[np.ndarray,...]:
+        """
+        """
+        if self.task in ["qrs_detection", "main",]:
+            seg_name = self.files[index]
+            subject = seg_name.split("_")[1]
+            seg_data_fp = os.path.join(self.file_dirs.data[subject], f"{seg_name}.{self.file_ext}")
+            seg_data = loadmat(seg_data_fp)["ecg"]
+            for l in range(seg_data.shape[0]):
+                seg_data[l] = remove_spikes_naive(seg_data[l])
+            seg_ann_fp = os.path.join(self.file_dirs.ann[subject], f"{seg_name}.{self.file_ext}")
+            seg_label = loadmat(seg_ann_fp)[self._seg_keys[self.task]].reshape((self.seglen, -1))
+            if self.config[self.task].reduction > 1:
+                reduction = self.config[self.task].reduction
+                seg_len, n_classes = seg_label.shape
+                seg_label = np.stack(
+                    arrays=[
+                        np.mean(seg_mask[reduction*idx:reduction*(idx+1)],axis=0,keepdims=True).astype(int) \
+                            for idx in range(seg_len//reduction)
+                    ],
+                    axis=0,
+                ).squeeze(axis=1)
+            seg_data, _ = self.seg_ppm(seg_data, self.config.fs)
+            if self.task == "main":
+                weight_mask = _generate_weight_mask(
+                    target_mask=seg_label.squeeze(-1),
+                    fg_weight=2,
+                    fs=self.config.fs,
+                    reduction=self.config[self.task].reduction,
+                    radius=0.8,
+                    boundary_weight=5,
+                )[..., np.newaxis]
+                return seg_data, seg_label, weight_mask
+            return seg_data, seg_label, None
+        elif self.task in ["rr_lstm",]:
+            seq_name = self.files[index]
+            subject = seq_name.split("_")[1]
+            rr_seq_path = os.path.join(self.file_dirs[subject], f"{seq_name}.{self.file_ext}")
+            rr_seq = loadmat(rr_seq_path)
+            rr_seq["rr"] = rr_seq["rr"].reshape((self.seglen, 1))
+            rr_seq["label"] = rr_seq["label"].reshape((self.seglen, self.n_classes))
+            weight_mask = _generate_weight_mask(
+                target_mask=rr_seq["label"].squeeze(-1), 
+                fg_weight=2, fs=1/0.8, reduction=1, radius=2, boundary_weight=5
+            )[..., np.newaxis]
+            return rr_seq["rr"], rr_seq["label"], weight_mask
+        else:
+            raise NotImplementedError(f"data generator for task \042{self.task}\042 not implemented")
+
+    def __len__(self) -> int:
+        """
+        """
+        return len(self.files)
+
+
+class StandaloneSegmentSlicer(Dataset):
+    """
+    """
+
+    def __init__(self,
+                 reader:CR,
+                 config:ED,
+                 task:str,
+                 seg_ppm:PreprocManager,
+                 allowed_preproc:List[str],
+                 segment_ext:str,
+                 preprocess_dir:str,) -> NoReturn:
+        """
+        """
+        self.reader = reader
+        self.config = config
+
+        self.seg_ppm = seg_ppm
+        if self.config.torch_dtype == torch.float64:
+            self.dtype = np.float64
+        else:
+            self.dtype = np.float32
+
+        self.task = task
+        self.seglen = self.config[self.task].input_len
+        self.allowed_preproc = allowed_preproc
+        self.segment_ext = segment_ext
+        self.preprocess_dir = preprocess_dir
+
+    def __len__(self) -> int:
+        """
+        """
+        return len(self.reader.all_records)
+
+    def __getitem__(self, index:int) -> np.ndarray:
+        """
+        """
+        rec = self.reader.all_records[index]
+        data = self.load_preprocessed_data(rec)
+        siglen = data.shape[1]
+        rpeaks = self.reader.load_rpeaks(rec)
+        af_mask = self.reader.load_af_episodes(rec, fmt="mask")
+        forward_len = self.seglen - self.config[self.task].overlap_len
+        critical_forward_len = self.seglen - self.config[self.task].critical_overlap_len
+        critical_forward_len = [critical_forward_len//4, critical_forward_len]
+
+        # skip those records that are too short
+        if siglen < self.seglen:
+            return
+
+        # find critical points
+        critical_points = np.where(np.diff(af_mask)!=0)[0]
+        critical_points = [p for p in critical_points if critical_forward_len[1]<=p<siglen-critical_forward_len[1]]
+
+        segments = []
+
+        # ordinary segments with constant forward_len
+        for idx in range((siglen-self.seglen)//forward_len + 1):
+            start_idx = idx * forward_len
+            new_seg = self.__generate_segment(
+                rec=rec, data=data, start_idx=start_idx,
+            )
+            segments.append(new_seg)
+        # the tail segment
+        new_seg = self.__generate_segment(
+            rec=rec, data=data, end_idx=siglen,
+        )
+        segments.append(new_seg)
+
+        # special segments around critical_points with random forward_len in critical_forward_len
+        for cp in critical_points:
+            start_idx = max(0, cp - self.seglen + random.randint(critical_forward_len[0], critical_forward_len[1]))
+            while start_idx <= min(cp - critical_forward_len[1], siglen - self.seglen):
+                new_seg = self.__generate_segment(
+                    rec=rec, data=data, start_idx=start_idx,
+                )
+                segments.append(new_seg)
+                start_idx += random.randint(critical_forward_len[0], critical_forward_len[1])
+        
+        return segments
+
+    def __generate_segment(self, rec:str, data:np.ndarray, start_idx:Optional[int]=None, end_idx:Optional[int]=None) -> ED:
+        """ finished, checked,
+
+        generate segment, with possible data augmentation
+
+        Parameter
+        ---------
+        rec: str,
+            filename of the record
+        data: ndarray,
+            the whole of (preprocessed) ECG record
+        start_idx: int, optional,
+            start index of the signal of `rec` for generating the segment
+        end_idx: int, optional,
+            end index of the signal of `rec` for generating the segment,
+            if `start_idx` is set, `end_idx` is ignored,
+            at least one of `start_idx` and `end_idx` should be set
+
+        Returns
+        -------
+        new_seg: dict,
+            segments (meta-)data, containing:
+            - data: values of the segment, with units in mV
+            - rpeaks: indices of rpeaks of the segment
+            - qrs_mask: mask of qrs complexes of the segment
+            - af_mask: mask of af episodes of the segment
+            - interval: interval ([start_idx, end_idx]) in the original ECG record of the segment
+        """
+        assert not all([start_idx is None, end_idx is None]), \
+            "at least one of `start_idx` and `end_idx` should be set"
+        siglen = data.shape[1]
+        # offline augmentations are done, including strech-or-compress, ...
+        if self.config.stretch_compress != 0:
+            sign = random.sample(self.config.stretch_compress_choices, 1)[0]
+            if sign != 0:
+                sc_ratio = self.config.stretch_compress
+                sc_ratio = 1 + (random.uniform(sc_ratio/4, sc_ratio) * sign) / 100
+                sc_len = int(round(sc_ratio * self.seglen))
+                if start_idx is not None:
+                    end_idx = start_idx + sc_len
+                else:
+                    start_idx = end_idx - sc_len
+                if end_idx > siglen:
+                    end_idx = siglen
+                    start_idx = max(0, end_idx - sc_len)
+                    sc_ratio = (end_idx - start_idx) / self.seglen
+                aug_seg = data[..., start_idx: end_idx]
+                aug_seg = SS.resample(x=aug_seg, num=self.seglen, axis=1)
+            else:
+                if start_idx is not None:
+                    end_idx = start_idx + self.seglen
+                    if end_idx > siglen:
+                        end_idx = siglen
+                        start_idx = end_idx - self.seglen
+                else:
+                    start_idx = end_idx - self.seglen
+                    if start_idx < 0:
+                        start_idx = 0
+                        end_idx = self.seglen
+                # the segment of original signal, with no augmentation
+                aug_seg = data[..., start_idx: end_idx]
+                sc_ratio = 1
+        else:
+            if start_idx is not None:
+                end_idx = start_idx + self.seglen
+                if end_idx > siglen:
+                    end_idx = siglen
+                    start_idx = end_idx - self.seglen
+            else:
+                start_idx = end_idx - self.seglen
+                if start_idx < 0:
+                    start_idx = 0
+                    end_idx = self.seglen
+            aug_seg = data[..., start_idx: end_idx]
+            sc_ratio = 1
+        # adjust rpeaks
+        seg_rpeaks = self.reader.load_rpeaks(
+            rec=rec, sampfrom=start_idx, sampto=end_idx, zero_start=True,
+        )
+        seg_rpeaks = [
+            int(round(r/sc_ratio)) for r in seg_rpeaks \
+                if self.config.rpeaks_dist2border <= r < self.seglen-self.config.rpeaks_dist2border
+        ]
+        # generate qrs_mask from rpeaks
+        seg_qrs_mask = np.zeros((self.seglen,), dtype=int)
+        for r in seg_rpeaks:
+            seg_qrs_mask[r-self.config.qrs_mask_bias:r+self.config.qrs_mask_bias] = 1
+        # adjust af_intervals
+        seg_af_intervals = self.reader.load_af_episodes(
+            rec=rec, sampfrom=start_idx, sampto=end_idx, zero_start=True, fmt="intervals",
+        )
+        seg_af_intervals = [
+            [int(round(itv[0]/sc_ratio)), int(round(itv[1]/sc_ratio))] for itv in seg_af_intervals
+        ]
+        # generate af_mask from af_intervals
+        seg_af_mask = np.zeros((self.seglen,), dtype=int)
+        for itv in seg_af_intervals:
+            seg_af_mask[itv[0]:itv[1]] = 1
+
+        new_seg = ED(
+            data=aug_seg,
+            rpeaks=seg_rpeaks,
+            qrs_mask=seg_qrs_mask,
+            af_mask=seg_af_mask,
+            interval=[start_idx, end_idx],
+        )
+        return new_seg
+
+    def load_preprocessed_data(self, rec:str) -> np.ndarray:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        rec: str,
+            filename of the record
+
+        Returns
+        -------
+        p_sig: ndarray,
+            the pre-computed processed ECG
+        """
+        preproc = self.allowed_preproc
+        suffix = _get_rec_suffix(preproc)
+        fp = os.path.join(self.preprocess_dir, f"{rec}-{suffix}.{self.segment_ext}")
+        if not os.path.exists(fp):
+            raise FileNotFoundError(f"preprocess(es) \042{preproc}\042 not done for {rec} yet")
+        p_sig = loadmat(fp)["ecg"]
+        if p_sig.shape[0] != 2:
+            p_sig = p_sig.T
+        return p_sig
+
+def _get_rec_suffix(operations:List[str]) -> str:
+    """ finished, checked,
+
+    Parameters
+    ----------
+    operations: list of str,
+        names of operations to perform (or has performed),
+
+    Returns
+    -------
+    suffix: str,
+        suffix of the filename of the preprocessed ecg signal
+    """
+    suffix = "-".join(sorted([item.lower() for item in operations]))
+    return suffix
 
 
 def _generate_weight_mask(target_mask:np.ndarray,
