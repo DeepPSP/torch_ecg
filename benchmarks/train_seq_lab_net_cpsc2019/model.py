@@ -205,6 +205,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
             rpeaks.append(b_rpeaks)
         return rpeaks
 
+    @torch.no_grad()
     def inference_CPSC2019(self,
                            input:Union[np.ndarray,Tensor],
                            bin_pred_thr:float=0.5,

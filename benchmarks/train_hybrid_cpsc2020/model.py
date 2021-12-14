@@ -219,6 +219,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         ]
         return pred, SPB_indices, PVC_indices
 
+    @torch.no_grad()
     def inference_CPSC2020(self,
                            input:Union[np.ndarray,Tensor],
                            bin_pred_thr:float=0.5) -> Tuple[np.ndarray, List[np.ndarray], List[np.ndarray]]:

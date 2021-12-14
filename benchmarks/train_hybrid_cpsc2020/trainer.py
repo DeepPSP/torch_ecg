@@ -35,7 +35,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from torch_ecg.models.loss import BCEWithLogitsWithClassWeightLoss
+from torch_ecg.utils.trainer import BaseTrainer
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.misc import (
     get_date_str, dict_to_str, str2bool,

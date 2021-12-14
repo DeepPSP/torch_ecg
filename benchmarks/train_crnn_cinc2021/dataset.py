@@ -538,4 +538,3 @@ def _load_record(reader:CR, rec:str, config:ED) -> Tuple[np.ndarray, np.ndarray]
         values = values.T
 
     return values, labels
-    
