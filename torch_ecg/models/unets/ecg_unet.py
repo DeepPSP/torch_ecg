@@ -567,7 +567,7 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `ECG_UNET` layer, given `seq_len` and `batch_size`
+            the output shape of this model, given `seq_len` and `batch_size`
         """
         output_shape = (batch_size, seq_len, self.n_classes)
         return output_shape

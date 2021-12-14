@@ -333,3 +333,20 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             the array (with values 0, 1 for each class) of binary prediction
         """
         raise NotImplementedError(f"implement a task specific inference method")
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns
+        -------
+        output_shape: sequence,
+            the output shape of this model, given `seq_len` and `batch_size`
+        """
+        return (batch_size, len(self.classes))

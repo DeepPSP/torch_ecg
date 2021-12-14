@@ -245,7 +245,7 @@ class ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
+            the output shape of this model, given `seq_len` and `batch_size`
         """
         _seq_len = seq_len
         output_shape = self.cnn.compute_output_shape(_seq_len, batch_size)
