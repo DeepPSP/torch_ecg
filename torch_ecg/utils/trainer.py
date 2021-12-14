@@ -573,6 +573,8 @@ class BaseTrainer(ABC):
             self.criterion = FocalLoss(**loss_kw)
         elif self.train_config.loss == "AsymmetricLoss":
             self.criterion = AsymmetricLoss(**loss_kw)
+        elif self.train_config.loss == "CrossEntropyLoss":
+            self.criterion = nn.CrossEntropyLoss(**loss_kw)
         else:
             raise NotImplementedError(f"loss `{self.train_config.loss}` not implemented!")
 

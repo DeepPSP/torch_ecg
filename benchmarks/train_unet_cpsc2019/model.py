@@ -206,6 +206,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
             rpeaks.append(b_rpeaks)
         return rpeaks
 
+    @torch.no_grad()
     def inference_CPSC2019(self,
                            input:Union[np.ndarray,Tensor],
                            bin_pred_thr:float=0.5,
@@ -391,6 +392,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
             rpeaks.append(b_rpeaks)
         return rpeaks
 
+    @torch.no_grad()
     def inference_CPSC2019(self,
                            input:Union[np.ndarray,Tensor],
                            bin_pred_thr:float=0.5,

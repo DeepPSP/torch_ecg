@@ -26,11 +26,16 @@ except ModuleNotFoundError:
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
 from torch_ecg.databases import LUDB as LR
+from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
+from torch_ecg._preprocessors import PreprocManager
 
 from cfg import TrainCfg
 
 if TrainCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
+    _DTYPE = np.float64
+else:
+    _DTYPE = np.float32
 
 
 __all__ = [
@@ -44,7 +49,10 @@ class LUDB(Dataset):
     __DEBUG__ = False
     __name__ = "LUDB"
 
-    def __init__(self, config:ED, leads:Optional[Union[Sequence[str], str]], training:bool=True) -> NoReturn:
+    def __init__(self,
+                 config:ED,
+                 training:bool=True,
+                 lazy:bool=False,) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -52,9 +60,10 @@ class LUDB(Dataset):
         config: dict,
             configurations for the Dataset,
             ref. `cfg.TrainCfg`
-            can be one of "A", "B", "AB", "E", "F", or None (or "", defaults to "ABEF")
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
+        lazy: bool, default False,
+            if True, the data will not be loaded immediately,
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -63,59 +72,85 @@ class LUDB(Dataset):
         self.classes = self.config.classes
         self.n_classes = len(self.classes)
         self.siglen = self.config.input_len
-        if leads is None:
+        if self.config.leads is None:
             self.leads = self.reader.all_leads
-        elif isinstance(leads, str):
-            self.leads = [leads]
+        elif isinstance(self.config.leads, str):
+            self.leads = [self.config.leads]
         else:
-            self.leads = list(leads)
-        self.leads = [
-            self.reader.all_leads[idx] \
-                for idx,l in enumerate(self.leads) if l.lower() in self.reader.all_leads_lower
-        ]
+            self.leads = list(self.config.leads)
+        self.lazy = lazy
 
+        self.ppm = PreprocManager.from_config(self.config)
         self.records = self._train_test_split(config.train_ratio)
+        self.fdr = FastDataReader(self.reader, self.records, self.config)
+        self.waveform_priority = ["N", "t", "p", "i",]
 
-    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ finished, checked,
-        """
-        if self.config.lead is not None:
-            rec_idx = index
-            lead_idx = self.config.leads_ordering.index(self.config.lead)
-        elif self.config.use_single_lead:
-            rec_idx, lead_idx = divmod(index, 12)
-        else:
-            rec_idx, lead_idx = index, None
-        rec = self.records[rec_idx]
-        values = self.reader.load_data(
-            rec, data_format="channel_first", units="mV",
-        )
-        if self.config.normalize_data:
-            values = (values - np.mean(values)) / np.std(values)
-        masks = self.reader.load_masks(
-            rec, leads=self.leads, mask_format="channel_first",
-            class_map=self.config.class_map,
-        )
-        sampfrom = randint(
-            self.config.start_from,
-            masks.shape[1] - self.config.config.end_at - self.siglen
-        )
-        sampto = sampfrom + self.siglen
-        values = values[..., sampfrom:sampto]
-        masks = masks[..., sampfrom:sampto]
-
-        if lead_idx is not None:
-            values = values[idx:idx+1, ...]
-            masks = masks[idx:idx+1, ...]
-
-        return values, masks
+        self._signals = None
+        self._labels = None
+        if not self.lazy:
+            self._load_all_data()
 
     def __len__(self) -> int:
         """
         """
-        if self.config.lead is None and self.config.use_single_lead:
-            return 12 * len(self.records)
+        if self.config.use_single_lead:
+            return len(self.leads) * len(self.records)
         return len(self.records)
+
+    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
+        """ finished, checked,
+        """
+        if self.config.use_single_lead:
+            rec_idx, lead_idx = divmod(index, len(self.leads))
+        else:
+            rec_idx, lead_idx = index, None
+        rec = self.records[rec_idx]
+        if not self.lazy:
+            signals = self._signals[rec_idx]
+            labels = self._labels[rec_idx]
+        else:
+            signals, labels = self.fdr[rec_idx]
+        if lead_idx is not None:
+            signals = signals[[lead_idx], ...]
+            labels = labels[lead_idx, ...]
+        else:
+            # merge labels in all leads to one
+            # TODO: map via self.waveform_priority
+            labels = np.max(labels, axis=0)
+        sampfrom = randint(
+            self.config.start_from,
+            signals.shape[1] - self.config.end_at - self.siglen
+        )
+        sampto = sampfrom + self.siglen
+        signals = signals[..., sampfrom:sampto]
+        labels = labels[sampfrom:sampto, ...]
+
+        return signals, labels
+
+    def _load_all_data(self) -> NoReturn:
+        """ finished, checked,
+        """
+        self._signals, self._labels = [], []
+
+        with tqdm(self.fdr, total=len(self.fdr)) as bar:
+            for signals, labels in bar:
+                self._signals.append(signals)
+                self._labels.append(labels)
+
+        self._signals = np.array(self._signals)
+        self._labels = np.array(self._labels)
+
+    @property
+    def signals(self) -> np.ndarray:
+        """
+        """
+        return self._signals
+
+    @property
+    def labels(self) -> np.ndarray:
+        """
+        """
+        return self._labels
 
     def _train_test_split(self, train_ratio:float=0.8, force_recompute:bool=False) -> List[str]:
         """ finished, checked,
@@ -133,14 +168,16 @@ class LUDB(Dataset):
         records: list of str,
             list of the records split for training or validation
         """
-        file_suffix = f"_siglen_{self.siglen}.json"
-        train_file = os.path.join(self.reader.db_dir, f"train_ratio_{_train_ratio}{file_suffix}")
-        test_file = os.path.join(self.reader.db_dir, f"test_ratio_{_test_ratio}{file_suffix}")
+        _train_ratio = int(train_ratio*100)
+        _test_ratio = 100 - _train_ratio
+        assert _train_ratio * _test_ratio > 0
+        train_file = os.path.join(self.reader.db_dir, f"train_ratio_{_train_ratio}.json")
+        test_file = os.path.join(self.reader.db_dir, f"test_ratio_{_test_ratio}.json")
 
         if force_recompute or not all([os.path.isfile(train_file), os.path.isfile(test_file)]):
             all_records = deepcopy(self.reader.all_records)
             shuffle(all_records)
-            split_idx = int(train_ratio * len(all_records))
+            split_idx = int(_train_ratio * len(all_records) / 100)
             train_set = all_records[:split_idx]
             test_set = all_records[split_idx:]
             with open(train_file, "w") as f:
@@ -161,14 +198,49 @@ class LUDB(Dataset):
             shuffle(records)
         return records
 
-    def persistence(self) -> NoReturn:
-        """ NOT finished, NOT checked,
 
-        make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
+class FastDataReader(Dataset):
+    """
+    """
+    
+    def __init__(self, reader:LR, records:Sequence[str], config:ED, ppm:Optional[PreprocManager]=None) -> NoReturn:
         """
-        self.disable_data_augmentation()
-        if self.training:
-            ratio = int(self.config.train_ratio*100)
+        """
+        self.reader = reader
+        self.records = records
+        self.config = config
+        self.ppm = ppm
+
+        if self.config.leads is None:
+            self.leads = self.reader.all_leads
+        elif isinstance(self.config.leads, str):
+            self.leads = [self.config.leads]
         else:
-            ratio = 100 - int(self.config.train_ratio*100)
-        raise NotImplementedError
+            self.leads = list(self.config.leads)
+
+    def __len__(self) -> int:
+        """
+        """
+        return len(self.records)
+
+    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
+        """ finished, checked,
+        """
+        rec = self.records[index]
+        signals = self.reader.load_data(
+            rec, data_format="channel_first", units="mV",
+        ).astype(_DTYPE)
+        if self.ppm:
+            signals, _ = self.ppm(signals, self.config.fs)
+        masks = self.reader.load_masks(
+            rec, leads=self.leads, mask_format="channel_first",
+            class_map=self.config.class_map,
+        ).astype(_DTYPE)
+        if self.config.loss == "CrossEntropyLoss":
+            return signals, masks
+        # expand masks to have n vectors, with n = n_classes
+        labels = np.ones((*masks.shape, len(self.config.mask_class_map)), dtype=_DTYPE)
+        for i in range(len(self.leads)):
+            for key, val in self.config.mask_class_map.items():
+                labels[i, ..., val] = (masks[i, ...] == self.config.class_map[key]).astype(_DTYPE)
+        return signals, labels

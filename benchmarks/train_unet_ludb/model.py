@@ -18,7 +18,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from torch_ecg.models.ecg_subtract_unet import ECG_SUBTRACT_UNET
+from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.utils.misc import mask_to_intervals
 from torch_ecg.utils.utils_signal import remove_spikes_naive
@@ -49,14 +49,21 @@ class ECG_UNET_LUDB(ECG_UNET):
             ref. the corresponding config file
         """
         model_config = deepcopy(ModelCfg.unet)
-        model_config.update(deepcopy(config) or {})
-        super().__init__(model_config.classes, n_leads, model_config, **kwargs)
+        if config:
+            model_config.update(deepcopy(config[config.model_name]))
+            ModelCfg.update(deepcopy(config))
+        _inv_class_map = {v: k for k, v in ModelCfg.class_map.items()}
+        self._mask_map = ED({
+            k: _inv_class_map[v] \
+                for k, v in ModelCfg.mask_class_map.items()
+        })
+        super().__init__(ModelCfg.mask_classes, n_leads, model_config)
 
     @torch.no_grad()
     def inference(self,
                   input:Union[Sequence[float],np.ndarray,Tensor],
-                  bin_pred_thr:float=0.5,) -> Tuple[np.ndarray, List[np.ndarray]]:
-        """ NOT finished, NOT checked,
+                  bin_pred_thr:float=0.5,) -> Tuple[np.ndarray, np.ndarray]:
+        """ finished, NOT checked,
         """
         self.eval()
         _device = next(self.parameters()).device
@@ -67,16 +74,21 @@ class ECG_UNET_LUDB(ECG_UNET):
         batch_size, channels, seq_len = _input.shape
         pred = self.forward(_input)
         pred = self.softmax(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        pred = pred.cpu().detach().numpy()
 
-        raise NotImplementedError
+        if "i" in self.classes:
+            mask = np.argmax(pred, axis=-1)
+        else:
+            mask = np.vectorize(lambda n: self._mask_map[n])(np.argmax(pred, axis=-1))
+            mask *= (pred > bin_pred_thr).any(axis=-1)
+
+        # TODO: shoule one add more post-processing to filter out false positives of the waveforms?
+
+        return pred, mask
 
     def inference_LUDB(self,
                        input:Union[np.ndarray,Tensor],
-                       bin_pred_thr:float=0.5,
-                       duration_thr:int=4*16,
-                       dist_thr:Union[int,Sequence[int]]=200,
-                       correction:bool=False,) -> Tuple[np.ndarray, List[np.ndarray]]:
+                       bin_pred_thr:float=0.5,) -> Tuple[np.ndarray, List[np.ndarray]]:
         """
         alias of `self.inference`
         """

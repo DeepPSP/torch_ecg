@@ -26,3 +26,5 @@ DEFAULTS.torch_dtype = torch.float32  # torch.float64, torch.float16
 DEFAULTS.np_dtype = np.float32  # np.float64, np.float16
 
 DEFAULTS.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+
+DEFAULTS.eps = 1e-7

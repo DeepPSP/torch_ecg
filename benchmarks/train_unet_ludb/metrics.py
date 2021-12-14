@@ -30,6 +30,7 @@ from torch_ecg.utils.misc import (
     ECGWaveForm,
     masks_to_waveforms,
 )
+from torch_ecg.cfg import DEFAULTS
 
 
 __all__ = [
@@ -42,7 +43,11 @@ __TOLERANCE = 150  # ms
 __WaveNames = ["pwave", "qrs", "twave"]
 
 
-def compute_metrics(truth_masks:Sequence[np.ndarray], pred_masks:Sequence[np.ndarray], class_map:Dict[str, int], fs:Real, mask_format:str="channel_first") -> Dict[str, Dict[str, float]]:
+def compute_metrics(truth_masks:Sequence[np.ndarray],
+                    pred_masks:Sequence[np.ndarray],
+                    class_map:Dict[str, int],
+                    fs:Real,
+                    mask_format:str="channel_first") -> Dict[str, Dict[str, float]]:
     """ finished, checked,
 
     compute metrics
@@ -95,7 +100,9 @@ def compute_metrics(truth_masks:Sequence[np.ndarray], pred_masks:Sequence[np.nda
     return scorings
 
 
-def compute_metrics_waveform(truth_waveforms:Sequence[Sequence[ECGWaveForm]], pred_waveforms:Sequence[Sequence[ECGWaveForm]], fs:Real) -> Dict[str, Dict[str, float]]:
+def compute_metrics_waveform(truth_waveforms:Sequence[Sequence[ECGWaveForm]],
+                             pred_waveforms:Sequence[Sequence[ECGWaveForm]],
+                             fs:Real) -> Dict[str, Dict[str, float]]:
     """ finished, checked,
 
     compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
@@ -153,9 +160,9 @@ def compute_metrics_waveform(truth_waveforms:Sequence[Sequence[ECGWaveForm]], pr
             fp = false_positive[f"{wave}_{term}"]
             fn = false_negative[f"{wave}_{term}"]
             err = errors[f"{wave}_{term}"]
-            sensitivity = tp / (tp + fn)
-            precision = tp / (tp + fp)
-            f1_score = 2 * sensitivity * precision / (sensitivity + precision)
+            sensitivity = tp / (tp + fn + DEFAULTS.eps)
+            precision = tp / (tp + fp + DEFAULTS.eps)
+            f1_score = 2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
             mean_error = np.mean(err) * 1000 / fs
             standard_deviation = np.std(err) * 1000 / fs
             scorings[f"{wave}_{term}"] = ED(
@@ -169,7 +176,9 @@ def compute_metrics_waveform(truth_waveforms:Sequence[Sequence[ECGWaveForm]], pr
     return scorings
 
 
-def _compute_metrics_waveform(truths:Sequence[ECGWaveForm], preds:Sequence[ECGWaveForm], fs:Real) -> Dict[str, Dict[str, float]]:
+def _compute_metrics_waveform(truths:Sequence[ECGWaveForm],
+                              preds:Sequence[ECGWaveForm],
+                              fs:Real) -> Dict[str, Dict[str, float]]:
     """ finished, checked,
 
     compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
@@ -230,7 +239,9 @@ def _compute_metrics_waveform(truths:Sequence[ECGWaveForm], preds:Sequence[ECGWa
     return scorings
 
 
-def _compute_metrics_base(truths:Sequence[Real], preds:Sequence[Real], fs:Real) -> Tuple[float, ...]:
+def _compute_metrics_base(truths:Sequence[Real],
+                          preds:Sequence[Real],
+                          fs:Real) -> Dict[str,float]:
     """ finished, checked,
 
     Parameters
@@ -278,9 +289,9 @@ def _compute_metrics_base(truths:Sequence[Real], preds:Sequence[Real], fs:Real) 
     # print(f"len(truths) = {len(truths)}, truth_positive + false_negative = {truth_positive + false_negative}")
     # print(f"len(preds) = {len(preds)}, truth_positive + false_positive = {truth_positive + false_positive}")
 
-    sensitivity = truth_positive / (truth_positive + false_negative)
-    precision = truth_positive / (truth_positive + false_positive)
-    f1_score = 2 * sensitivity * precision / (sensitivity + precision)
+    sensitivity = truth_positive / (truth_positive + false_negative + DEFAULTS.eps)
+    precision = truth_positive / (truth_positive + false_positive + DEFAULTS.eps)
+    f1_score = 2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
     mean_error = np.mean(errors) * 1000 / fs
     standard_deviation = np.std(errors) * 1000 / fs
 

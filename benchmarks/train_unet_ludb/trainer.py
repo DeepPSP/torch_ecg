@@ -11,7 +11,7 @@ import argparse
 import textwrap
 from copy import deepcopy
 from collections import deque, OrderedDict
-from typing import Union, Optional, Tuple, Sequence, NoReturn
+from typing import Union, Optional, Tuple, Sequence, NoReturn, Any, Dict, List
 from numbers import Real, Number
 
 import numpy as np
@@ -22,13 +22,10 @@ except ModuleNotFoundError:
     from tqdm import tqdm
 import torch
 from torch import nn
-from torch import optim
 from torch import Tensor
-from torch.utils.data import DataLoader
+from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
-from torch.nn import CrossEntropyLoss
 from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
-from tensorboardX import SummaryWriter
 from easydict import EasyDict as ED
 
 try:
@@ -51,7 +48,7 @@ if TrainCfg.torch_dtype == torch.float64:
 
 
 __all__ = [
-    "train",
+    "LUDBTrainer",
 ]
 
 
@@ -99,7 +96,7 @@ class LUDBTrainer(BaseTrainer):
         lazy: bool, default True,
             whether to initialize the data loader lazily
         """
-        super().__init__(model, CINC2021, model_config, train_config, device, lazy)
+        super().__init__(model, LUDB, model_config, train_config, device, lazy)
 
     def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
         """ finished, checked,
@@ -185,69 +182,9 @@ class LUDBTrainer(BaseTrainer):
     def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
         """
         """
+        raise NotImplementedError
         self.model.eval()
-
-        all_scalar_preds = []
-        all_bin_preds = []
-        all_labels = []
-
-        for signals, labels in data_loader:
-            signals = signals.to(device=self.device, dtype=self.dtype)
-            labels = labels.numpy()
-            all_labels.append(labels)
-
-            if torch.cuda.is_available():
-                torch.cuda.synchronize()
-            preds, bin_preds = self._model.inference(signals)
-            all_scalar_preds.append(preds)
-            all_bin_preds.append(bin_preds)
-        
-        all_scalar_preds = np.concatenate(all_scalar_preds, axis=0)
-        all_bin_preds = np.concatenate(all_bin_preds, axis=0)
-        all_labels = np.concatenate(all_labels, axis=0)
-        classes = data_loader.dataset.all_classes
-
-        if self.val_train_loader is not None:
-            msg = f"all_scalar_preds.shape = {all_scalar_preds.shape}, all_labels.shape = {all_labels.shape}"
-            self.log_manager.log_message(msg, level=logging.DEBUG)
-            head_num = 5
-            head_scalar_preds = all_scalar_preds[:head_num,...]
-            head_bin_preds = all_bin_preds[:head_num,...]
-            head_preds_classes = [np.array(classes)[np.where(row)] for row in head_bin_preds]
-            head_labels = all_labels[:head_num,...]
-            head_labels_classes = [np.array(classes)[np.where(row)] for row in head_labels]
-            for n in range(head_num):
-                msg = textwrap.dedent(f"""
-                ----------------------------------------------
-                scalar prediction:    {[round(n, 3) for n in head_scalar_preds[n].tolist()]}
-                binary prediction:    {head_bin_preds[n].tolist()}
-                labels:               {head_labels[n].astype(int).tolist()}
-                predicted classes:    {head_preds_classes[n].tolist()}
-                label classes:        {head_labels_classes[n].tolist()}
-                ----------------------------------------------
-                """)
-                self.log_manager.log_message(msg)
-
-        auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric = \
-            evaluate_scores(
-                classes=classes,
-                truth=all_labels,
-                scalar_pred=all_scalar_preds,
-                binary_pred=all_bin_preds,
-            )
-        eval_res = dict(
-            auroc=auroc,
-            auprc=auprc,
-            accuracy=accuracy,
-            f_measure=f_measure,
-            f_beta_measure=f_beta_measure,
-            g_beta_measure=g_beta_measure,
-            challenge_metric=challenge_metric,
-        )
-
-        # in case possible memeory leakage?
-        del all_scalar_preds, all_bin_preds, all_labels
-
+        # TODO: add the evaluation of the model
         self.model.train()
 
         return eval_res
