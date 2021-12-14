@@ -24,7 +24,7 @@ from easydict import EasyDict as ED
 from ...cfg import DEFAULTS
 from ...utils.utils_nn import (
     compute_deconv_output_shape, compute_module_size,
-    SizeMixin,
+    SizeMixin, CkptMixin,
 )
 from ...utils.misc import dict_to_str
 from ...models._nets import (
@@ -393,7 +393,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
         return output_shape
 
 
-class ECG_UNET(SizeMixin, nn.Module):
+class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
     """ finished, checked,
 
     UNet for (multi-lead) ECG wave delineation

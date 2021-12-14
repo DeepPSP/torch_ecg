@@ -29,7 +29,7 @@ from easydict import EasyDict as ED
 from ..cfg import DEFAULTS
 from ..utils.utils_nn import (
     compute_conv_output_shape, compute_module_size,
-    SizeMixin,
+    SizeMixin, CkptMixin,
 )
 from ..utils.misc import dict_to_str
 from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
@@ -52,7 +52,7 @@ __all__ = [
 ]
 
 
-class ECG_SEQ_LAB_NET(SizeMixin, nn.Module):
+class ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
     """ finished, checked,
 
     SOTA model from CPSC2019 challenge (entry 0416)
@@ -259,34 +259,3 @@ class ECG_SEQ_LAB_NET(SizeMixin, nn.Module):
         if self.config.recover_length:
             output_shape = output_shape[0], seq_len, output_shape[2]
         return output_shape
-
-    @staticmethod
-    def from_checkpoint(path:str, device:Optional[torch.device]=None) -> Tuple[nn.Module, dict]:
-        """
-
-        Parameters
-        ----------
-        path: str,
-            path of the checkpoint
-        device: torch.device, optional,
-            map location of the model parameters,
-            defaults "cuda" if available, otherwise "cpu"
-
-        Returns
-        -------
-        model: Module,
-            the model loaded from a checkpoint
-        aux_config: dict,
-            auxiliary configs that are needed for data preprocessing, etc.
-        """
-        _device = device or (torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"))
-        ckpt = torch.load(path, map_location=_device)
-        aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
-        assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
-        model = ECG_SEQ_LAB_NET(
-            classes=aux_config["classes"],
-            n_leads=aux_config["n_leads"],
-            config=ckpt["model_config"],
-        )
-        model.load_state_dict(ckpt["model_state_dict"])
-        return model, aux_config

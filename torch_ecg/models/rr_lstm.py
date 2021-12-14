@@ -24,7 +24,7 @@ from easydict import EasyDict as ED
 from ..cfg import DEFAULTS
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
 from ..utils.misc import dict_to_str
-from ..utils.utils_nn import compute_module_size, SizeMixin
+from ..utils.utils_nn import compute_module_size, SizeMixin, CkptMixin
 from ..models._nets import (
     Mish, Swish, Activations,
     NonLocalBlock, SEBlock, GlobalContextBlock,
@@ -45,7 +45,7 @@ __all__ = [
 ]
 
 
-class RR_LSTM(SizeMixin, nn.Module):
+class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
     """
     classification or sequence labeling using LSTM and using RR intervals as input
     """
@@ -163,7 +163,6 @@ class RR_LSTM(SizeMixin, nn.Module):
         self.softmax = nn.Softmax(dim=-1)
         self.sigmoid = nn.Sigmoid()
 
-
     def forward(self, input:Tensor) -> Tensor:
         """ finished, checked,
 
@@ -203,14 +202,12 @@ class RR_LSTM(SizeMixin, nn.Module):
         output = x
 
         return output
-        
 
     @torch.no_grad()
     def inference(self, input:Tensor, bin_pred_thr:float=0.5) -> Tensor:
         """
         """
         raise NotImplementedError("implement a task specific inference method")
-
 
     def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
         """ finished, checked,
@@ -234,35 +231,3 @@ class RR_LSTM(SizeMixin, nn.Module):
             # clf is "linear" or lstm.retseq is False
             output_shape = (batch_size, self.n_classes)
         return output_shape
-
-
-    @staticmethod
-    def from_checkpoint(path:str, device:Optional[torch.device]=None) -> Tuple[nn.Module, dict]:
-        """
-
-        Parameters
-        ----------
-        path: str,
-            path of the checkpoint
-        device: torch.device, optional,
-            map location of the model parameters,
-            defaults "cuda" if available, otherwise "cpu"
-
-        Returns
-        -------
-        model: Module,
-            the model loaded from a checkpoint
-        aux_config: dict,
-            auxiliary configs that are needed for data preprocessing, etc.
-        """
-        _device = device or (torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu"))
-        ckpt = torch.load(path, map_location=_device)
-        aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
-        assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
-        model = RR_LSTM(
-            classes=aux_config["classes"],
-            n_leads=aux_config["n_leads"],
-            config=ckpt["model_config"],
-        )
-        model.load_state_dict(ckpt["model_state_dict"])
-        return model, aux_config

@@ -33,7 +33,7 @@ __all__ = [
     "default_collate_fn",
     "compute_receptive_field",
     "adjust_cnn_filter_lengths",
-    "SizeMixin",
+    "SizeMixin", "CkptMixin",
 ]
 
 
@@ -668,3 +668,45 @@ class SizeMixin(object):
         return compute_module_size(
             self, human=True, dtype=dtype,
         )
+
+
+class CkptMixin(object):
+    """ finished, checked,
+
+    mixin class for loading from checkpoint class methods
+    """
+
+    @classmethod
+    def from_checkpoint(cls, path:str, device:Optional[torch.device]=None) -> Tuple[nn.Module, dict]:
+        """ finished, checked,
+
+        load a model from a checkpoint
+
+        Parameters
+        ----------
+        path: str,
+            path of the checkpoint
+        device: torch.device, optional,
+            map location of the model parameters,
+            defaults "cuda" if available, otherwise "cpu"
+
+        Returns
+        -------
+        model: Module,
+            the model loaded from a checkpoint
+        aux_config: dict,
+            auxiliary configs that are needed for data preprocessing, etc.
+        """
+        _device = device or DEFAULTS.device
+        ckpt = torch.load(path, map_location=_device)
+        aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
+        assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
+        kwargs = dict(
+            classes=aux_config["classes"],
+            config=ckpt["model_config"],
+        )
+        if "n_leads" in aux_config:
+            kwargs["n_leads"] = aux_config["n_leads"]
+        model = cls(**kwargs)
+        model.load_state_dict(ckpt["model_state_dict"])
+        return model, aux_config
