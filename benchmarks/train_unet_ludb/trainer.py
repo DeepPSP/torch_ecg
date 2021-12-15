@@ -38,10 +38,13 @@ except ModuleNotFoundError:
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.trainer import BaseTrainer
 
-from cfg import TrainCfg
+from cfg import TrainCfg, ModelCfg
 from dataset import LUDB
 from metrics import compute_metrics
 from model import ECG_UNET_LUDB
+
+LUDB.__DEBUG__ = False
+ECG_UNET_LUDB.__DEBUG__ = False
 
 if TrainCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -174,20 +177,82 @@ class LUDBTrainer(BaseTrainer):
         """
         signals, labels = data
         signals = signals.to(self.device)
+        # labels of shape (batch_size, seq_len) if loss is CrossEntropyLoss
+        # otherwise of shape (batch_size, seq_len, n_classes)
         labels = labels.to(self.device)
-        preds = self.model(signals)
+        preds = self.model(signals)  # of shape (batch_size, seq_len, n_classes)
+        if self.train_config.loss == "CrossEntropyLoss":
+            preds = preds.permute(0, 2, 1)  # of shape (batch_size, n_classes, seq_len)
+            # or use the following
+            # preds = pres.reshape(-1, preds.shape[-1])  # of shape (batch_size * seq_len, n_classes)
+            # labels = labels.reshape(-1)  # of shape (batch_size * seq_len,)
         return preds, labels
 
     @torch.no_grad()
     def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
         """
         """
-        raise NotImplementedError
         self.model.eval()
         # TODO: add the evaluation of the model
+
+        all_scalar_preds = []
+        all_mask_preds = []
+        all_labels = []
+
+        for signals, labels in data_loader:
+            signals = signals.to(device=self.device, dtype=self.dtype)
+            labels = labels.numpy()
+            all_labels.append(labels)
+
+            if torch.cuda.is_available():
+                torch.cuda.synchronize()
+            scalar_preds, mask_preds = self._model.inference(signals)
+            all_scalar_preds.append(scalar_preds)
+            all_mask_preds.append(mask_preds)
+        
+        # all_scalar_preds of shape (n_samples, seq_len, n_classes)
+        all_scalar_preds = np.concatenate(all_scalar_preds, axis=0)
+        # all_scalar_preds of shape (n_samples, seq_len)
+        all_mask_preds = np.concatenate(all_mask_preds, axis=0)
+        # all_labels of shape (n_samples, seq_len) if loss is CrossEntropyLoss
+        # otherwise of shape (n_samples, seq_len, n_classes)
+        all_labels = np.concatenate(all_labels, axis=0)
+
+        if self.train_config.loss != "CrossEntropyLoss":
+            all_labels = all_labels.argmax(axis=-1)  # (n_samples, seq_len, n_classes) -> (n_samples, seq_len)
+
+        # eval_res are scorings of onsets and offsets of pwaves, qrs complexes, twaves,
+        # each scoring is a dict consisting of the following metrics:
+        # sensitivity, precision, f1_score, mean_error, standard_deviation
+        eval_res_split = compute_metrics(
+            all_labels,
+            np.repeat(all_mask_preds[:,np.newaxis,:], len(self._model.classes), axis=1),
+            self.train_config.mask_class_map,
+            self.train_config.fs,
+        )
+
+        # TODO: provide numerical values for the metrics from all of the dicts of eval_res
+        raise NotImplementedError
+        eval_res = {
+            metric: np.mean([eval_res_split[f"{wf}_{pos}"][metric]]) \
+                for metric in ["sensitivity", "precision", "f1_score", "mean_error", "standard_deviation",] \
+                    for wf in self._cm \
+                        for pos in ["onset", "offset",]
+        }
+
         self.model.train()
 
         return eval_res
+
+    @property
+    def _cm(self) -> Dict[str, str]:
+        """
+        """
+        return {
+            "pwave": self.train_config.class_map["p"],
+            "qrs": self.train_config.class_map["N"],
+            "twave": self.train_config.class_map["t"],
+        }
 
     @property
     def batch_dim(self) -> int:
@@ -254,41 +319,30 @@ def get_args(**kwargs):
 
 
 if __name__ == "__main__":
-    config = get_args(**TrainCfg)
-    # os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
+    train_config = get_args(**TrainCfg)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    logger = init_logger(log_dir=config.log_dir, verbose=2)
-    logger.info(f"\n{'*'*20}   Start Training   {'*'*20}\n")
-    logger.info(f"Using device {device}")
-    logger.info(f"Using torch of version {torch.__version__}")
-    logger.info(f"with configuration {config}")
-    # print(f"\n{'*'*20}   Start Training   {'*'*20}\n")
-    # print(f"Using device {device}")
-    # print(f"Using torch of version {torch.__version__}")
-    # print(f"with configuration {config}")
 
-    model_config = deepcopy(ECG_UNET_VANILLA_CONFIG)
+    model_config = deepcopy(ModelCfg)
 
-    model = ECG_UNET(classes=config.classes, config=model_config)
+    model = ECG_UNET_LUDB(n_leads=model_config.n_leads, config=model_config)
 
     if torch.cuda.device_count() > 1:
-        # model = torch.nn.DataParallel(model)
-        model = torch.nn.parallel.DistributedDataParallel(model)
+        model = DP(model)
+        # model = DDP(model)
 
     model.to(device=device)
-    model.__DEBUG__ = False
+
+    trainer = LUDBTrainer(
+        model=model,
+        model_config=model_config,
+        train_config=train_config,
+        device=device,
+        lazy=False,
+    )
 
     try:
-        train(
-            model=model,
-            config=config,
-            device=device,
-            logger=logger,
-            debug=config.debug,
-        )
+        best_model_state_dict = trainer.train()
     except KeyboardInterrupt:
-        torch.save(model.state_dict(), os.path.join(config.checkpoints, "INTERRUPTED.pth"))
-        logger.info("Saved interrupt")
         try:
             sys.exit(0)
         except SystemExit:
