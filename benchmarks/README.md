@@ -9,7 +9,7 @@ a large part are migrated from other DeepPSP repositories, some are implemented 
 | CPSC2019   | SequenceTagging/U-Net     | NA                                                      | :heavy_check_mark: | :x:                | :x:                |
 | CPSC2020   | CRNN/SequenceTagging      | [DeepPSP/cpsc2020](https://github.com/DeepPSP/cpsc2020) | :heavy_check_mark: | :x:                | :x:                |
 | CPSC2021   | CRNN/SequenceTagging/LSTM | [DeepPSP/cpsc2021](https://github.com/DeepPSP/cpsc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| LUDB       | U-Net                     | NA                                                      | :x:                | :x:                | :x:                |
+| LUDB       | U-Net                     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :x:                |
 
 
 Known Issues

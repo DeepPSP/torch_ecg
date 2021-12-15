@@ -64,6 +64,21 @@ class ECG_UNET_LUDB(ECG_UNET):
                   input:Union[Sequence[float],np.ndarray,Tensor],
                   bin_pred_thr:float=0.5,) -> Tuple[np.ndarray, np.ndarray]:
         """ finished, NOT checked,
+
+        Parameters
+        ----------
+        input: array-like,
+            input ECG signal
+        bin_pred_thr: float, default 0.5,
+            threshold for binary prediction,
+            used only when the `background` class "i" is not included in `mask_classes`
+
+        Returns
+        -------
+        pred: np.ndarray,
+            predicted probability map, of shape (n_samples, seq_len, n_classes)
+        mask: np.ndarray,
+            predicted mask, of shape (n_samples, seq_len)
         """
         self.eval()
         _device = next(self.parameters()).device
@@ -73,14 +88,17 @@ class ECG_UNET_LUDB(ECG_UNET):
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape
         pred = self.forward(_input)
-        pred = self.softmax(pred)
+        if "i" in self.classes:
+            pred = self.softmax(pred)
+        else:
+            pred = torch.sigmoid(pred)
         pred = pred.cpu().detach().numpy()
 
         if "i" in self.classes:
             mask = np.argmax(pred, axis=-1)
         else:
             mask = np.vectorize(lambda n: self._mask_map[n])(np.argmax(pred, axis=-1))
-            mask *= (pred > bin_pred_thr).any(axis=-1)
+            mask *= (pred > bin_pred_thr).any(axis=-1)  # class "i" mapped to 0
 
         # TODO: shoule one add more post-processing to filter out false positives of the waveforms?
 
