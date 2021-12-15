@@ -15,3 +15,4 @@ a large part are migrated from other DeepPSP repositories, some are implemented 
 Known Issues
 ----------------
 1. Slicing data for CPSC2021 is too slow
+2. Dataset for LUDB is too slow
