@@ -9,8 +9,8 @@ Section 3.2 of ref. [1] describes the metrics
 KEY points
 ----------
 1. an onset or an offset are detected correctly, if their deviation from the doctor annotations does not exceed in absolute value the tolerance of 150 ms
-2. if there is no corresponding significant point (onsets and offset of ECG waveforms P, QRS, T) in the test sample in the neighborhood of ±tolerance of the detected significant point, then the I type error is counted (false positive, FP)
-3. if the algorithm does not detect a significant point, then the II type error is counted (false negative, FN)
+2. if there is no corresponding critical point (onsets and offset of ECG waveforms P, QRS, T) in the test sample in the neighborhood of ±tolerance of the detected critical point, then the I type error is counted (false positive, FP)
+3. if the algorithm does not detect a critical point, then the II type error is counted (false negative, FN)
 """
 from numbers import Real
 from typing import Union, Optional, Sequence, Dict, Tuple
@@ -247,11 +247,11 @@ def _compute_metrics_base(truths:Sequence[Real],
     Parameters
     ----------
     truths: sequence of real numbers,
-        ground truth of indices of corresponding significant points
+        ground truth of indices of corresponding critical points
     preds: sequence of real numbers,
-        predicted indices of corresponding significant points
+        predicted indices of corresponding critical points
     fs: real number,
-        sampling frequency of the signal corresponding to the significant points,
+        sampling frequency of the signal corresponding to the critical points,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors
 

@@ -76,6 +76,11 @@ TrainCfg.skip_dist = BaseCfg.skip_dist
 TrainCfg.leads = EAK.Standard12Leads # ["II",]  # the lead to tain model, None --> all leads
 TrainCfg.use_single_lead = False  # use single lead as input or use all leads in `TrainCfg.leads`
 
+if TrainCfg.use_single_lead:
+    TrainCfg.n_leads = 1
+else:
+    TrainCfg.n_leads = len(TrainCfg.leads)
+
 # as for `start_from` and `end_at`, see ref. [1] section 3.1
 TrainCfg.start_from = int(2 * TrainCfg.fs)
 TrainCfg.end_at = int(2 * TrainCfg.fs)
@@ -85,7 +90,7 @@ TrainCfg.over_sampling = 1
 
 # configs of training epochs, batch, etc.
 TrainCfg.n_epochs = 300
-TrainCfg.batch_size = 128
+TrainCfg.batch_size = 32
 # TrainCfg.max_batches = 500500
 
 # configs of optimizers and lr_schedulers
@@ -114,8 +119,8 @@ TrainCfg.loss = "FocalLoss"  # "BCEWithLogitsLoss", "AsymmetricLoss", "CrossEntr
 TrainCfg.loss_kw = ED()  # "BCEWithLogitsLoss", "AsymmetricLoss"
 TrainCfg.flooding_level = 0.0  # flooding performed if positive
 
-TrainCfg.log_every = 20
-TrainCfg.monitor = "neg_loss"
+TrainCfg.log_every = 1
+TrainCfg.monitor = "f1_score"
 
 TrainCfg.model_name = "unet"
 
@@ -131,10 +136,8 @@ ModelCfg.class_map = deepcopy(BaseCfg.class_map)
 ModelCfg.mask_classes = deepcopy(BaseCfg.mask_classes)
 ModelCfg.mask_class_map = deepcopy(BaseCfg.mask_class_map)
 
-if TrainCfg.use_single_lead:
-    ModelCfg.n_leads = 1
-else:
-    ModelCfg.n_leads = len(TrainCfg.leads)
+ModelCfg.n_leads = TrainCfg.n_leads
+
 ModelCfg.skip_dist = BaseCfg.skip_dist
 
 ModelCfg.model_name = TrainCfg.model_name

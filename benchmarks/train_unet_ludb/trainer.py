@@ -221,18 +221,21 @@ class LUDBTrainer(BaseTrainer):
         if self.train_config.loss != "CrossEntropyLoss":
             all_labels = all_labels.argmax(axis=-1)  # (n_samples, seq_len, n_classes) -> (n_samples, seq_len)
 
+        # print(f"all_labels.shape: {all_labels.shape}, nan: {np.isnan(all_labels).any()}, inf: {np.isinf(all_labels).any()}")
+        # print(f"all_scalar_preds.shape: {all_scalar_preds.shape}, nan: {np.isnan(all_scalar_preds).any()}, inf: {np.isinf(all_scalar_preds).any()}")
+        # print(f"all_mask_preds.shape: {all_mask_preds.shape}, nan: {np.isnan(all_mask_preds).any()}, inf: {np.isinf(all_mask_preds).any()}")
+
         # eval_res are scorings of onsets and offsets of pwaves, qrs complexes, twaves,
         # each scoring is a dict consisting of the following metrics:
         # sensitivity, precision, f1_score, mean_error, standard_deviation
         eval_res_split = compute_metrics(
-            all_labels,
-            np.repeat(all_mask_preds[:,np.newaxis,:], len(self._model.classes), axis=1),
-            self.train_config.mask_class_map,
+            np.repeat(all_labels[:,np.newaxis,:], self.model_config.n_leads, axis=1),
+            np.repeat(all_mask_preds[:,np.newaxis,:], self.model_config.n_leads, axis=1),
+            self._cm,
             self.train_config.fs,
         )
 
         # TODO: provide numerical values for the metrics from all of the dicts of eval_res
-        raise NotImplementedError
         eval_res = {
             metric: np.mean([eval_res_split[f"{wf}_{pos}"][metric]]) \
                 for metric in ["sensitivity", "precision", "f1_score", "mean_error", "standard_deviation",] \
@@ -267,12 +270,12 @@ class LUDBTrainer(BaseTrainer):
         """
         return []
 
-    @property
-    def save_prefix(self) -> str:
-        return f"{self._model.__name__}_{self.model_config.cnn.name}_epoch"
+    # @property
+    # def save_prefix(self) -> str:
+    #     return f"{self._model.__name__}_{self.model_config.cnn.name}_epoch"
 
-    def extra_log_suffix(self) -> str:
-        return super().extra_log_suffix() + f"_{self.model_config.cnn.name}"
+    # def extra_log_suffix(self) -> str:
+    #     return super().extra_log_suffix() + f"_{self.model_config.cnn.name}"
 
 
 def get_args(**kwargs):
@@ -289,7 +292,7 @@ def get_args(**kwargs):
     #     dest="learning_rate")
     parser.add_argument(
         "-b", "--batch-size",
-        type=int, default=128,
+        type=int, default=32,
         help="the batch size for training",
         dest="batch_size")
     parser.add_argument(
@@ -302,7 +305,7 @@ def get_args(**kwargs):
         help="maximum number of checkpoints to keep. If set 0, all checkpoints will be kept",
         dest="keep_checkpoint_max")
     parser.add_argument(
-        "--optimizer", type=str, default="adam",
+        "--optimizer", type=str, default="adamw_amsgrad",
         help="training optimizer",
         dest="train_optimizer")
     parser.add_argument(
