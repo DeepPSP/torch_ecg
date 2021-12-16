@@ -304,7 +304,8 @@ class CINC2021(PhysioNetDataBase):
                 self._all_records[tranche] = [os.path.basename(f) for f in self._all_records[tranche]]
                 self.db_dirs[tranche] = self._find_dir(self.db_dir_base, tranche, 0)
                 if not self.db_dirs[tranche]:
-                    raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
+                    print(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
+                    # raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
         else:
             print("Please wait patiently to let the reader find all records of all the tranches...")
             start = time.time()
@@ -319,9 +320,11 @@ class CINC2021(PhysioNetDataBase):
                 tmp_dirname = [ os.path.dirname(f) for f in self._all_records[tranche] ]
                 if len(set(tmp_dirname)) != 1:
                     if len(set(tmp_dirname)) > 1:
-                        raise ValueError(f"records of tranche {tranche} are stored in several folders!")
+                        print(f"records of tranche {tranche} are stored in several folders!")
+                        # raise ValueError(f"records of tranche {tranche} are stored in several folders!")
                     else:
-                        raise ValueError(f"no record found for tranche {tranche}!")
+                        print(f"no record found for tranche {tranche}!")
+                        # raise ValueError(f"no record found for tranche {tranche}!")
                 self.db_dirs[tranche] = os.path.join(self.db_dir_base, tmp_dirname[0])
                 self._all_records[tranche] = [os.path.basename(f) for f in self._all_records[tranche]]
             print(f"Done in {time.time() - start:.5f} seconds!")
@@ -393,7 +396,9 @@ class CINC2021(PhysioNetDataBase):
         """
         # print(f"searching for dir for tranche {self.tranche_names[tranche]} with root {root} at level {level}")
         if level > 2:
-            raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
+            print(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
+            return
+            # raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
         rec_pattern = f"^{self.rec_prefix[tranche]}(?:\d+).{self.rec_ext}$"
         res = ""
         candidates = os.listdir(root)

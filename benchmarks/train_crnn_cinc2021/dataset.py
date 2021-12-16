@@ -106,7 +106,8 @@ class CINC2021(Dataset):
 
         self.records = self._train_test_split(config.train_ratio, force_recompute=False)
         # TODO: consider using `remove_spikes_naive` to treat these exceptional records
-        self.records = [r for r in self.records if r not in self.reader.exceptional_records]
+        self.records = [r for r in self.records if r not in self.reader.exceptional_records\
+            and os.path.isfile(self.reader.get_data_filepath(r))]
         if self.__DEBUG__:
             self.records = sample(self.records, int(len(self.records) * 0.01))
 
