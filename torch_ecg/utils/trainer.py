@@ -406,7 +406,7 @@ class BaseTrainer(ABC):
         _default_config = ED(deepcopy(self.__DEFATULT_CONFIGS__))
         _default_config.update(train_config)
         self._train_config = ED(deepcopy(_default_config))
-        if self.train_config.get("model_dir", None):
+        if not self.train_config.get("model_dir", None):
             self._train_config.model_dir = self.train_config.checkpoints
         self._validate_train_config()
 
@@ -539,7 +539,7 @@ class BaseTrainer(ABC):
             self.scheduler = optim.lr_scheduler.StepLR(
                 self.optimizer,
                 self.train_config.lr_step_size, self.train_config.lr_gamma,
-                verbose=False,
+                # verbose=False,
             )
         elif self.train_config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
             self.scheduler = optim.lr_scheduler.OneCycleLR(
@@ -547,7 +547,7 @@ class BaseTrainer(ABC):
                 max_lr=self.train_config.max_lr,
                 epochs=self.n_epochs,
                 steps_per_epoch=len(self.train_loader),
-                verbose=False,
+                # verbose=False,
             )
         else:
             raise NotImplementedError(f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training")
