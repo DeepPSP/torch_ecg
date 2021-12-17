@@ -135,6 +135,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             )
             attn_input_size = self.rnn.compute_output_shape(None, None)[-1]
         elif self.config.rnn.name.lower() == "linear":
+            # abuse of notation, to put before the global attention module
             self.rnn = SeqLin(
                 in_channels=rnn_input_size,
                 out_channels=self.config.rnn.linear.out_channels,
@@ -216,6 +217,8 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             self.pool = nn.AdaptiveAvgPool1d((1,))
         elif self.config.global_pool.lower() == "attn":
             raise NotImplementedError("Attentive pooling not implemented yet!")
+        elif self.config.global_pool.lower() == "none":
+            self.pool = None
         else:
             raise NotImplementedError(f"pooling method {self.config.global_pool} not implemented yet!")
 
@@ -229,8 +232,11 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             skip_last_activation=True,
         )
 
-        # sigmoid for inference
-        self.sigmoid = nn.Sigmoid()  # for making inference
+        # for inference
+        # classification: if single-label, use softmax; otherwise (multi-label) use sigmoid
+        # sequence tagging: if background counted in `classes`, use softmax; otherwise use sigmoid
+        self.sigmoid = nn.Sigmoid()
+        self.softmax = nn.Softmax(-1)
 
     def extract_features(self, input:Tensor) -> Tensor:
         """ finished, checked,
@@ -303,7 +309,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             features = self.pool(features)  # (batch_size, channels, 1)
             features = features.squeeze(dim=-1)
         else:
-            # features of shape (batch_size, channels)
+            # features of shape (batch_size, channels) or (batch_size, seq_len, channels)
             pass
 
         # print(f"clf in shape = {x.shape}")
@@ -312,7 +318,10 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         return pred
 
     @torch.no_grad()
-    def inference(self, input:Union[np.ndarray,Tensor], class_names:bool=False, bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+    def inference(self,
+                  input:Union[np.ndarray,Tensor],
+                  class_names:bool=False,
+                  bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
         """ finished, checked,
 
         Parameters
@@ -349,4 +358,17 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         output_shape: sequence,
             the output shape of this model, given `seq_len` and `batch_size`
         """
-        return (batch_size, len(self.classes))
+        if self.pool:
+            return (batch_size, len(self.classes))
+        else:
+            _seq_len = seq_len
+            output_shape = self.cnn.compute_output_shape(_seq_len, batch_size)
+            _, _, _seq_len = output_shape
+            if self.rnn:
+                output_shape = self.rnn.compute_output_shape(_seq_len, batch_size)
+                _seq_len = output_shape[0]
+            if self.attn:
+                output_shape = self.attn.compute_output_shape(_seq_len, batch_size)
+                _seq_len = output_shape[-1]
+            output_shape = self.clf.compute_output_shape(_seq_len, batch_size)
+            return output_shape

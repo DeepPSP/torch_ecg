@@ -42,6 +42,7 @@ from ._nets import (
     SeqLin,
 )
 from .cnn.multi_scopic import MultiScopicCNN
+from .ecg_crnn import ECG_CRNN
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -52,10 +53,125 @@ __all__ = [
 ]
 
 
-class ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
+class ECG_SEQ_LAB_NET(ECG_CRNN):
     """ finished, checked,
 
     SOTA model from CPSC2019 challenge (entry 0416)
+
+    pipeline
+    --------
+    (multi-scopic, etc.) cnn --> head ((bidi-lstm -->) "attention" --> seq linear) -> output
+
+    References
+    ----------
+    [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
+    """
+    __DEBUG__ = False
+    __name__ = "ECG_SEQ_LAB_NET"
+    __DEFAULT_CONFIG__ = {"recover_length": False}
+    __DEFAULT_CONFIG__.update(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
+
+    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        classes: list,
+            list of the classes for sequence labeling
+        n_leads: int,
+            number of leads (number of input channels)
+        config: dict, optional,
+            other hyper-parameters, including kernel sizes, etc.
+            ref. the corresponding config file
+        """
+        _config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        _config.update(deepcopy(config) or {})
+        _config.global_pool = "none"
+        super().__init__(classes, n_leads, _config)
+
+    def extract_features(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        extract feature map before the dense (linear) classifying layer(s)
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, channels, seq_len)
+        
+        Returns
+        -------
+        features: Tensor,
+            of shape (batch_size, seq_len, channels)
+        """
+        # cnn
+        cnn_output = self.cnn(input)  # (batch_size, channels, seq_len)
+
+        # rnn or none
+        if self.rnn:
+            rnn_output = cnn_output.permute(2,0,1)  # (seq_len, batch_size, channels)
+            rnn_output = self.rnn(rnn_output)  # (seq_len, batch_size, channels)
+            rnn_output = rnn_output.permute(1,2,0)  # (batch_size, channels, seq_len)
+        else:
+            rnn_output = cnn_output
+
+        # attention
+        features = self.attn(rnn_output)  # (batch_size, channels, seq_len)
+        features = features.permute(0,2,1)  # (batch_size, seq_len, channels)
+        return features
+
+    def forward(self, input:Tensor) -> Tensor:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        input: Tensor,
+            of shape (batch_size, channels, seq_len)
+        
+        Returns
+        -------
+        pred: Tensor,
+            of shape (batch_size, seq_len, n_classes)
+        """
+        batch_size, channels, seq_len = input.shape
+
+        pred = super().forward(input)  # (batch_size, len, n_classes)
+
+        if self.config.recover_length:
+            pred = F.interpolate(
+                pred.permute(0,2,1),
+                size=seq_len, mode="linear", align_corners=True,
+            ).permute(0,2,1)
+
+        return pred
+
+    def _recover_length(self, pred:Tensor, seq_len:int) -> Tensor:
+        """ finished, checked,
+
+        recover the length of `pred` to `seq_len`
+
+        Parameters
+        ----------
+        pred: Tensor,
+            of shape (batch_size, seq_len//factor, n_classes)
+        seq_len: int,
+            length to recover to
+
+        Returns
+        -------
+        Tensor,
+            of shape (batch_size, seq_len, n_classes)
+        """
+        return F.interpolate(
+            pred.permute(0,2,1),
+            size=seq_len, mode="linear", align_corners=True,
+        ).permute(0,2,1)
+
+
+class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
+    """ finished, checked,
+
+    SOTA model from CPSC2019 challenge (entry 0416), legacy version
 
     pipeline
     --------
@@ -223,6 +339,28 @@ class ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
             ).permute(0,2,1)
 
         return pred
+
+    def _recover_length(self, pred:Tensor, seq_len:int) -> Tensor:
+        """ finished, checked,
+
+        recover the length of `pred` to `seq_len`
+
+        Parameters
+        ----------
+        pred: Tensor,
+            of shape (batch_size, seq_len//factor, n_classes)
+        seq_len: int,
+            length to recover to
+
+        Returns
+        -------
+        Tensor,
+            of shape (batch_size, seq_len, n_classes)
+        """
+        return F.interpolate(
+            pred.permute(0,2,1),
+            size=seq_len, mode="linear", align_corners=True,
+        ).permute(0,2,1)
 
     # inference will not be included in the model itself
     # as it is strongly related to the usage scenario
