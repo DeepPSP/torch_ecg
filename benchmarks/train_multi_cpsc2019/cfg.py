@@ -65,7 +65,7 @@ ModelCfg.seq_lab_crnn = adjust_cnn_filter_lengths(
     deepcopy(ECG_SEQ_LAB_NET_CONFIG), BaseCfg.fs,
 )
 ModelCfg.seq_lab_crnn.reduction = 2**3
-ModelCfg.seq_lab_crnn.recover_length = False
+ModelCfg.seq_lab_crnn.recover_length = True
 ModelCfg.seq_lab_crnn.update(deepcopy(_COMMON_MODEL_CONFIGS))
 
 # NOTE: one can adjust any of the cnn, rnn, attn, clf part of ModelCfg.seq_lab_crnn like ModelCfg.seq_lab_cnn
@@ -196,6 +196,6 @@ TrainCfg.rnn_name = "lstm"
 TrainCfg.attn_name = "se"
 
 TrainCfg.reduction = 2**3  # TODO: automatic adjust via model config
-TrainCfg.recover_length = False
+TrainCfg.recover_length = True
 
 TrainCfg.monitor = "qrs_score"

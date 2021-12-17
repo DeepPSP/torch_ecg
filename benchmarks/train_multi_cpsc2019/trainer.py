@@ -54,6 +54,8 @@ from dataset import CPSC2019
 from metrics import compute_metrics
 
 ECG_SEQ_LAB_NET_CPSC2019.__DEBUG__ = False
+ECG_UNET_CPSC2019.__DEBUG__ = False
+ECG_SUBTRACT_UNET_CPSC2019.__DEBUG__ = False
 CPSC2019.__DEBUG__ = False
 
 if ModelCfg.torch_dtype == torch.float64:
