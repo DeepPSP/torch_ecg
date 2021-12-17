@@ -6,7 +6,7 @@ a large part are migrated from other DeepPSP repositories, some are implemented 
 | ---------- | ------------------------- | ------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
 | CinC2020   | CRNN                      | [DeepPSP/cinc2020](https://github.com/DeepPSP/cinc2020) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | CinC2021   | CRNN                      | [DeepPSP/cinc2021](https://github.com/DeepPSP/cinc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| CPSC2019   | SequenceTagging/U-Net     | NA                                                      | :heavy_check_mark: | :x:                | :x:                |
+| CPSC2019   | SequenceTagging/U-Net     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | CPSC2020   | CRNN/SequenceTagging      | [DeepPSP/cpsc2020](https://github.com/DeepPSP/cpsc2020) | :heavy_check_mark: | :x:                | :x:                |
 | CPSC2021   | CRNN/SequenceTagging/LSTM | [DeepPSP/cpsc2021](https://github.com/DeepPSP/cpsc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | LUDB       | U-Net                     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |

@@ -193,7 +193,6 @@ class LUDBTrainer(BaseTrainer):
         """
         """
         self.model.eval()
-        # TODO: add the evaluation of the model
 
         all_scalar_preds = []
         all_mask_preds = []
@@ -260,7 +259,7 @@ class LUDBTrainer(BaseTrainer):
     @property
     def batch_dim(self) -> int:
         """
-        batch dimension, for CinC2021, it is 0,
+        batch dimension,
         """
         return 0
 

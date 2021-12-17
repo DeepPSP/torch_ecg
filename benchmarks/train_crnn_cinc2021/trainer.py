@@ -43,6 +43,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import DEFAULTS
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.trainer import BaseTrainer
 
@@ -334,7 +335,6 @@ def get_args(**kwargs:Any):
 
 if __name__ == "__main__":
     train_config = get_args(**TrainCfg)
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     tranches = train_config.tranches_for_training
     if tranches:
@@ -366,13 +366,13 @@ if __name__ == "__main__":
     if torch.cuda.device_count() > 1:
         model = DP(model)
         # model = DDP(model)
-    model.to(device=device)
+    model.to(device=DEFAULTS.device)
 
     trainer = CINC2021Trainer(
         model=model,
         model_config=model_config,
         train_config=train_config,
-        device=device,
+        device=DEFAULTS.device,
         lazy=False,
     )
 

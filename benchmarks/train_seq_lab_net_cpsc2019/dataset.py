@@ -7,7 +7,7 @@ import math
 from random import shuffle, randint, uniform, sample
 from copy import deepcopy
 from functools import reduce
-from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
+from typing import Optional, List, Tuple, Sequence, NoReturn
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
@@ -47,7 +47,10 @@ class CPSC2019(Dataset):
     __DEBUG__ = False
     __name__ = "CPSC2019"
 
-    def __init__(self, config:ED, training:bool=True) -> NoReturn:
+    def __init__(self,
+                 config:ED,
+                 training:bool=True,
+                 lazy:bool=False,) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -57,17 +60,20 @@ class CPSC2019(Dataset):
             ref. `cfg.TrainCfg`
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
+        lazy: bool, default False,
+            if True, the data will not be loaded immediately,
         """
         super().__init__()
         self.config = deepcopy(config)
         self.reader = CR(db_dir=config.db_dir)
         self.training = training
         self.n_classes = 1
-        if ModelCfg.torch_dtype.lower() == "double":
+        self.lazy = lazy
+
+        if self.config.torch_dtype == torch.float64:
             self.dtype = np.float64
         else:
             self.dtype = np.float32
-        self.__data_aug = self.training
 
         self.siglen = self.config.input_len  # alias, for simplicity
         self.records = []
@@ -75,117 +81,51 @@ class CPSC2019(Dataset):
             train_ratio=self.config.train_ratio,
             force_recompute=False,
         )
+        self.ppm = PreprocManager.from_config(self.config)
 
-        if self.config.bw:
-            self._n_bw_choices = len(self.config.bw_ampl_ratio)
-            self._n_gn_choices = len(self.config.bw_gaussian)
+        self.fdr = FastDataReader(self.reader, self.records, self.config, self.ppm)
 
+        self._signals = None
+        self._labels = None
+        if not self.lazy:
+            self._load_all_data()
 
     def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
         """ finished, checked,
         """
-        rec_name = self.records[index]
-        values = self.reader.load_data(rec_name, units='mV', keep_dim=False)
-        rpeaks = self.reader.load_ann(rec_name, keep_dim=False)
-        labels = np.zeros((self.siglen//self.config.seq_lab_reduction))
-        # rpeak indices to mask
-        for r in rpeaks:
-            if r < self.config.skip_dist or r >= self.siglen - self.config.skip_dist:
-                continue
-            start_idx = math.floor((r-self.config.bias_thr)/self.config.seq_lab_reduction)
-            end_idx = math.ceil((r+self.config.bias_thr)/self.config.seq_lab_reduction)
-            labels[start_idx:end_idx] = 1
-
-        # data augmentation, finished yet
-        sig_ampl = self._get_ampl(values)
-        if self.__data_aug:
-            if self.config.bw:
-                ar = self.config.bw_ampl_ratio[randint(0, self._n_bw_choices-1)]
-                gm, gs = self.config.bw_gaussian[randint(0, self._n_gn_choices-1)]
-                bw_ampl = ar * sig_ampl
-                g_ampl = gm * sig_ampl
-                bw = gen_baseline_wander(
-                    siglen=self.siglen,
-                    fs=self.config.fs,
-                    bw_fs=self.config.bw_fs,
-                    amplitude=bw_ampl,
-                    amplitude_mean=gm,
-                    amplitude_std=gs,
-                )
-                values = values + bw
-            if len(self.config.flip) > 0:
-                sign = sample(self.config.flip, 1)[0]
-                values *= sign
-            if self.config.random_normalize:
-                rn_mean = uniform(
-                    self.config.random_normalize_mean[0],
-                    self.config.random_normalize_mean[1],
-                )
-                rn_std = uniform(
-                    self.config.random_normalize_std[0],
-                    self.config.random_normalize_std[1],
-                )
-                values = (values-np.mean(values)+rn_mean) / np.std(values) * rn_std
-            if self.config.label_smoothing > 0:
-                labels = (1 - self.config.label_smoothing) * labels \
-                    + self.config.label_smoothing / self.n_classes
-
-        if self.__DEBUG__:
-            self.reader.plot(
-                rec="",  # unnecessary indeed
-                data=values,
-                ann=rpeaks,
-                ticks_granularity=2,
-            )
-
-        values = values.reshape((self.config.n_leads, self.siglen))
-        labels = labels[..., np.newaxis]
-
-        return values, labels
-
+        if self.lazy:
+            signal, label = self.fdr[index]
+        else:
+            signal, label = self._signals[index], self._labels[index]
+        return signal, label
 
     def __len__(self) -> int:
         """
         """
-        return len(self.records)
+        return len(self.fdr)
 
-
-    def disable_data_augmentation(self) -> NoReturn:
+    def _load_all_data(self) -> NoReturn:
         """
         """
-        self.__data_aug = False
+        self._signals, self._labels = [], []
+        with tqdm(self.fdr, desc="loading data", unit="records") as pbar:
+            for sig, lab in pbar:
+                self._signals.append(sig)
+                self._labels.append(lab)
+        self._signals = np.array(self._signals)
+        self._labels = np.array(self._labels)
 
-
-    def enable_data_augmentation(self) -> NoReturn:
+    @property
+    def signals(self) -> np.ndarray:
         """
         """
-        self.__data_aug = True
+        return self._signals
 
-
-    def _get_ampl(self, values:np.ndarray, window:int=100) -> float:
-        """ finished, checked,
-
-        get amplitude of a segment
-
-        Parameters
-        ----------
-        values: ndarray,
-            data of the segment
-        window: int, default 100 (corr. to 200ms),
-            window length of a window for computing amplitude, with units in number of sample points
-
-        Returns
-        -------
-        ampl: float,
-            amplitude of `values`
+    @property
+    def labels(self) -> np.ndarray:
         """
-        half_window = window // 2
-        ampl = 0
-        for idx in range(len(values)//half_window-1):
-            s = values[idx*half_window: idx*half_window+window]
-            ampl = max(ampl, np.max(s)-np.min(s))
-        return ampl
-
+        """
+        return self._labels
     
     def _train_test_split(self, train_ratio:float=0.8, force_recompute:bool=False) -> List[str]:
         """
@@ -233,7 +173,46 @@ class CPSC2019(Dataset):
             self.records = test
 
 
-    # def _check_nan(self) -> NoReturn:
-    #     """
-    #     """
-    #     raise NotImplementedError
+class FastDataReader(Dataset):
+    """
+    """
+    def __init__(self, reader:CR, records:Sequence[str], config:ED, ppm:Optional[PreprocManager]=None) -> NoReturn:
+        """
+        """
+        self.reader = reader
+        self.records = records
+        self.config = config
+        self.ppm = ppm
+        
+        self.siglen = self.config.input_len  # alias, for simplicity
+
+    def __len__(self) -> int:
+        """
+        """
+        return len(self.records)
+
+    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        """
+        rec_name = self.records[index]
+        values = self.reader.load_data(rec_name, units="mV", keep_dim=False)
+        rpeaks = self.reader.load_ann(rec_name, keep_dim=False)
+        if self.config.get("recover_length", False):
+            reduction = 1
+        else:
+            reduction = self.config.reduction
+        labels = np.zeros((self.siglen // reduction))
+        # rpeak indices to mask
+        for r in rpeaks:
+            if r < self.config.skip_dist or r >= self.siglen - self.config.skip_dist:
+                continue
+            start_idx = math.floor( (r-self.config.bias_thr) / reduction )
+            end_idx = math.ceil( (r+self.config.bias_thr) / reduction )
+            labels[start_idx:end_idx] = 1
+
+        values = values.reshape((self.config.n_leads, self.siglen))
+        labels = labels[..., np.newaxis]
+
+        values, _ = self.ppm(values, self.config.fs)
+
+        return values, labels
