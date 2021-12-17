@@ -16,3 +16,4 @@ Known Issues
 ----------------
 1. Slicing data for CPSC2021 is too slow
 2. Dataset for LUDB is too slow
+3. cli for training models are completely not tested
