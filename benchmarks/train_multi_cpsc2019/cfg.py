@@ -157,9 +157,8 @@ TrainCfg.random_flip = ED(
 )
 
 # configs of training epochs, batch, etc.
-TrainCfg.n_epochs = 300
+TrainCfg.n_epochs = 150
 TrainCfg.batch_size = 32
-# TrainCfg.max_batches = 500500
 
 # configs of optimizers and lr_schedulers
 TrainCfg.optimizer = "adamw_amsgrad"  # "sgd", "adam", "adamw"
@@ -180,7 +179,7 @@ TrainCfg.steps = [5000, 10000]
 
 TrainCfg.early_stopping = ED()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.0001  # should be non-negative
-TrainCfg.early_stopping.patience = 25
+TrainCfg.early_stopping.patience = 15
 
 # configs of loss function
 TrainCfg.loss = "BCEWithLogitsLoss"
