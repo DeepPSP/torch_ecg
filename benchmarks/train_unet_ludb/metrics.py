@@ -8,7 +8,7 @@ Section 3.2 of ref. [1] describes the metrics
 
 KEY points
 ----------
-1. an onset or an offset are detected correctly, if their deviation from the doctor annotations does not exceed in absolute value the tolerance of 150 ms
+1. an onset or an offset is detected correctly, if their deviation from the doctor annotations does not exceed in absolute value the tolerance of 150 ms
 2. if there is no corresponding critical point (onsets and offset of ECG waveforms P, QRS, T) in the test sample in the neighborhood of ±tolerance of the detected critical point, then the I type error is counted (false positive, FP)
 3. if the algorithm does not detect a critical point, then the II type error is counted (false negative, FN)
 """
