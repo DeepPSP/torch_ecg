@@ -4,7 +4,7 @@ loggers, including (planned) CSVLogger, TensorBoardXLogger, WandbLogger
 with reference to `loggers` of `textattack` and `loggers` of `pytorch-lightning`
 """
 
-import os, logging, csv
+import os, logging, csv, importlib
 from datetime import datetime
 from abc import ABC, abstractmethod
 from typing import NoReturn, Optional, Union, List, Any, Dict
@@ -442,16 +442,32 @@ class WandbLogger(BaseLogger):
     """
     __name__ = "WandbLogger"
 
-    def __init__(self, project:str) -> NoReturn:
+    def __init__(self,
+                 log_dir:Optional[str]=None,
+                 log_suffix:Optional[str]=None,
+                 project:Optional[str]=None,
+                 entity:Optional[str]=None,
+                 hyperparameters:Optional[dict]=None) -> NoReturn:
         """
         """
+        self.__wandb = importlib.import_module("wandb")
+        self._log_dir = log_dir or DEFAULTS.log_dir
+        self._log_suffix = log_suffix
         self._project = project
-        raise NotImplementedError
+        self._entity = entity
+        self._hyperparameters = hyperparameters
+        self.__wandb.init(
+            name=self._log_suffix,
+            dir=self._log_dir,
+            config=self._hyperparameters,
+            project=self._project,
+            entity=self._entity,
+        )
 
     def log_metrics(self, metrics:Dict[str, float], step:Optional[int]=None) -> NoReturn:
         """
         """
-        raise NotImplementedError
+        self.__wandb.log(metrics, step=step)
 
     def log_message(self, msg:str, level:int=logging.INFO) -> NoReturn:
         pass
@@ -459,24 +475,30 @@ class WandbLogger(BaseLogger):
     def flush(self) -> NoReturn:
         """
         """
-        raise NotImplementedError
+        pass
 
     def close(self) -> NoReturn:
         """
         """
-        raise NotImplementedError
+        self.__wandb.finish()
 
     @classmethod
     def from_config(cls, config:Dict[str, Any]) -> "WandbLogger":
         """
         """
-        raise NotImplementedError
+        return cls(
+            config.get("log_dir", None),
+            config.get("log_suffix", None),
+            config.get("project", None),
+            config.get("entity", None),
+            config.get("hyperparameters", None),
+        )
 
     @property
     def filename(self) -> str:
         """
         """
-        raise NotImplementedError
+        return self.__wandb.run.dir
 
 
 class LoggerManager(object):
@@ -513,10 +535,11 @@ class LoggerManager(object):
         """
         self.loggers.append(TensorBoardXLogger(self._log_dir, self._log_suffix))
 
-    def _add_wandb_logger(self) -> NoReturn:
+    def _add_wandb_logger(self, **kwargs:dict) -> NoReturn:
         """
         """
-        raise NotImplementedError
+        raise NotImplementedError("NOT tested yet!")
+        self.loggers.append(WandbLogger(self._log_dir, self._log_suffix, **kwargs))
 
     def log_metrics(self,
                     metrics:Dict[str, Union[Real,torch.Tensor]],
@@ -630,7 +653,8 @@ class LoggerManager(object):
         if config.get("tensorboardx_logger", True):
             lm._add_tensorboardx_logger()
         if config.get("wandb_logger", False):
-            lm._add_wandb_logger()
+            kwargs = config.get("wandb_logger", {})
+            lm._add_wandb_logger(**kwargs)
         return lm
 
     def __repr__(self) -> str:
