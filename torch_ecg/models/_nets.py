@@ -50,6 +50,7 @@ __all__ = [
     "CBAMBlock", "BAMBlock", "CoordAttention",
     "CRF", "ExtendedCRF",
     "SpaceToDepth",
+    "MLDecoder",
     "make_attention_layer",
 ]
 
@@ -3657,6 +3658,164 @@ class SpaceToDepth(SizeMixin, nn.Module):
             return (batch_size, self.__out_channels, seq_len // self.bs)
         else:
             return (batch_size, self.__out_channels, None)
+
+
+@torch.jit.script
+class _GroupFC(object):
+    def __init__(self, embed_len_decoder: int):
+        self.embed_len_decoder = embed_len_decoder
+
+    def __call__(self, h: torch.Tensor, duplicate_pooling: torch.Tensor, out_extrap: torch.Tensor):
+        for i in range(h.shape[1]):
+            h_i = h[:, i, :]
+            if len(duplicate_pooling.shape)==3:
+                w_i = duplicate_pooling[i, :, :]
+            else:
+                w_i = duplicate_pooling
+            out_extrap[:, i, :] = torch.matmul(h_i, w_i)
+
+
+class MLDecoder(SizeMixin, nn.Module):
+    """
+
+    References
+    ----------
+    1. https://github.com/Alibaba-MIIL/ML_Decoder/blob/main/src_files/ml_decoder/ml_decoder.py
+    """
+    __DEBUG__ = False
+    __name__ = "MLDecoder"
+
+    def __init__(self,
+                 in_channels:int,
+                 out_channels:Sequence[int],
+                 num_of_groups:int=-1,
+                 decoder_embedding:int=768,
+                 zsl:bool=False) -> NoReturn:
+        """
+
+        Parameters
+        ----------
+        in_channels: int,
+            number of channels in the input
+        out_channels: int,
+            number of channels in the output
+        num_of_groups: int, default -1,
+            number of groups, if -1, then it defaults to min(100, out_channels)
+        decoder_embedding: int, default 768,
+            embedding size of the decoder,
+            this value determines the size (in terms of n_params) of the whole module
+        zsl: bool, default False,
+            indicator of zero shot learning
+        """
+        super().__init__()
+        embed_len_decoder = 100 if num_of_groups < 0 else num_of_groups
+        if embed_len_decoder > out_channels:
+            embed_len_decoder = out_channels
+
+        # switching to 768 initial embeddings
+        decoder_embedding = 768 if decoder_embedding < 0 else decoder_embedding
+        embed_standart = nn.Linear(in_channels, decoder_embedding)
+
+        # non-learnable queries
+        if not zsl:
+            query_embed = nn.Embedding(embed_len_decoder, decoder_embedding)
+            query_embed.requires_grad_(False)
+        else:
+            raise NotImplementedError
+            query_embed = None
+
+        # decoder
+        decoder_dropout = 0.1
+        num_layers_decoder = 1
+        dim_feedforward = 2048
+        # layer_decode = TransformerDecoderLayerOptimal(
+        layer_decode = nn.TransformerDecoderLayer(
+            d_model=decoder_embedding,
+            nhead=8,
+            dim_feedforward=dim_feedforward,
+            dropout=decoder_dropout,
+        )
+        self.decoder = nn.TransformerDecoder(layer_decode, num_layers=num_layers_decoder)
+        self.decoder.embed_standart = embed_standart
+        self.decoder.query_embed = query_embed
+        self.zsl = zsl
+
+        if self.zsl:
+            if decoder_embedding != 300:
+                self.wordvec_proj = nn.Linear(300, decoder_embedding)
+            else:
+                self.wordvec_proj = nn.Identity()
+            self.decoder.duplicate_pooling = Parameter(Tensor(decoder_embedding, 1))
+            self.decoder.duplicate_pooling_bias = Parameter(Tensor(1))
+            self.decoder.duplicate_factor = 1
+        else:
+            # group fully-connected
+            self.decoder.out_channels = out_channels
+            self.decoder.duplicate_factor = int(out_channels / embed_len_decoder + 0.999)
+            self.decoder.duplicate_pooling = Parameter(
+                Tensor(embed_len_decoder, decoder_embedding, self.decoder.duplicate_factor)
+            )
+            self.decoder.duplicate_pooling_bias = Parameter(Tensor(out_channels))
+        nn.init.xavier_normal_(self.decoder.duplicate_pooling)
+        nn.init.constant_(self.decoder.duplicate_pooling_bias, 0)
+        self.decoder.group_fc = _GroupFC(embed_len_decoder)
+        self.train_wordvecs = None
+        self.test_wordvecs = None
+
+    def forward(self, x:Tensor) -> Tensor:
+        """
+
+        Parameters
+        ----------
+        x: Tensor,
+            of shape (batch, channel, seqlen)
+        
+        Returns
+        -------
+        Tensor,
+            of shape (batch, out_channels)
+        """
+        embedding_spatial = x.permute(0, 2, 1)  # (batch, channel, seqlen) -> (batch, seqlen, channel)
+        embedding_spatial = self.decoder.embed_standart(embedding_spatial)
+        embedding_spatial = F.relu(embedding_spatial, inplace=True)
+
+        batch_size = embedding_spatial.shape[0]
+        if self.zsl:
+            query_embed = F.relu(self.wordvec_proj(self.decoder.query_embed))
+        else:
+            query_embed = self.decoder.query_embed.weight
+        # tgt = query_embed.unsqueeze(1).repeat(1, batch_size, 1)
+        tgt = query_embed.unsqueeze(1).expand(-1, batch_size, -1)  # no allocation of memory with expand
+        h = self.decoder(tgt, embedding_spatial.transpose(0, 1))  # (embed_len_decoder, batch, decoder_embedding)
+        h = h.transpose(0, 1)
+
+        out_extrap = torch.zeros(h.shape[0], h.shape[1], self.decoder.duplicate_factor, device=h.device, dtype=h.dtype)
+        self.decoder.group_fc(h, self.decoder.duplicate_pooling, out_extrap)
+        if not self.zsl:
+            h_out = out_extrap.flatten(1)[:, :self.decoder.out_channels]
+        else:
+            h_out = out_extrap.flatten(1)
+        h_out += self.decoder.duplicate_pooling_bias
+        logits = h_out
+        return logits
+
+    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
+        """ finished, checked,
+
+        Parameters
+        ----------
+        seq_len: int, optional,
+            length of the 1d sequence,
+            if is None, then the input is composed of single feature vectors for each batch
+        batch_size: int, optional,
+            the batch size, can be None
+
+        Returns
+        -------
+        tuple,
+            the output shape of this module, given `seq_len` and `batch_size`
+        """
+        return (batch_size, self.decoder.out_channels)
 
 
 def make_attention_layer(in_channels:int, **config:dict) -> nn.Module:
