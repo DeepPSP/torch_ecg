@@ -25,6 +25,7 @@ from ...models._nets import (
     ZeroPadding,
     NonLocalBlock, SEBlock, GlobalContextBlock,
     SpaceToDepth,
+    DropPath,
     make_attention_layer,
 )
 

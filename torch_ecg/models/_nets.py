@@ -51,6 +51,7 @@ __all__ = [
     "CRF", "ExtendedCRF",
     "SpaceToDepth",
     "MLDecoder",
+    "DropPath",
     "make_attention_layer",
 ]
 
@@ -3816,6 +3817,69 @@ class MLDecoder(SizeMixin, nn.Module):
             the output shape of this module, given `seq_len` and `batch_size`
         """
         return (batch_size, self.decoder.out_channels)
+
+class DropPath(SizeMixin, nn.Module):
+    """
+    
+    References
+    ----------
+    1. Huang, Gao, et al. "Deep networks with stochastic depth." European conference on computer vision. Springer, Cham, 2016.
+    2. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/drop.py
+    """
+    __name__ = "DropPath"
+
+    def __init__(self, p:float=0.2, inplace:bool=False) -> NoReturn:
+        """
+        Parameters
+        ----------
+        p: float, default 0.2,
+            drop path probability
+        inplace: bool, default False,
+            whether to do inplace operation
+        """
+        super().__init__()
+        self.p = p
+        self.inplace = inplace
+
+    def forward(self, x:Tensor) -> Tensor:
+        """
+        """
+        return drop_path(x, self.p, self.training, self.inplace)
+
+    def extra_repr(self) -> str:
+        return f"p={self.p}, inplace={self.inplace}"
+
+
+def drop_path(x:Tensor, p:float=0.2, training:bool=False, inplace:bool=False) -> Tensor:
+    """
+    modified from timm.models.layers.drop_path
+
+    Parameters
+    ----------
+    x: Tensor,
+        of shape (batch, *)
+    p: float, default 0.2,
+        drop path probability
+    training: bool, default False,
+        whether in training mode
+    inplace: bool, default False,
+        whether to do inplace operation
+
+    Returns
+    -------
+    Tensor,
+        of shape (batch, *)
+    """
+    if p == 0. or not training:
+        return x
+    if not inplace:
+        x = x.clone()
+    keep_prob = 1 - p
+    shape = (x.shape[0],) + (1,) * (x.ndim - 1)
+    random_tensor = keep_prob + torch.rand(shape, dtype=x.dtype, device=x.device)
+    random_tensor.floor_()  # binarize
+    x.div_(keep_prob).mul_(random_tensor)
+    return x
 
 
 def make_attention_layer(in_channels:int, **config:dict) -> nn.Module:
