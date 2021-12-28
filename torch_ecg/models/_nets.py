@@ -2344,7 +2344,10 @@ class SeqLin(SizeMixin, nn.Sequential):
             self.__kernel_initializer = None
         self.__bias = bias
         if isinstance(dropouts, Real):
-            self.__dropouts = list(repeat(dropouts, self.__num_layers))
+            if self.__num_layers > 1:
+                self.__dropouts = list(repeat(dropouts, self.__num_layers-1)) + [0.0]
+            else:
+                self.__dropouts = [dropouts]
         else:
             self.__dropouts = dropouts
             assert len(self.__dropouts) == self.__num_layers, \
@@ -2369,11 +2372,11 @@ class SeqLin(SizeMixin, nn.Sequential):
                     f"act_{idx}",
                     Activations[self.__activation](**kw_activation),
                 )
-                if self.__dropouts[idx] > 0:
-                    self.add_module(
-                        f"dropout_{idx}",
-                        nn.Dropout(self.__dropouts[idx]),
-                    )
+            if self.__dropouts[idx] > 0:
+                self.add_module(
+                    f"dropout_{idx}",
+                    nn.Dropout(self.__dropouts[idx]),
+                )
             lin_in_channels = self.__out_channels[idx]
 
     def forward(self, input:Tensor) -> Tensor:
