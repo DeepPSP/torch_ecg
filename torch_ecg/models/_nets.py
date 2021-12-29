@@ -156,12 +156,22 @@ Activations.mish = Mish
 Activations.swish = Swish
 Activations.hardswish = Hardswish
 Activations.relu = nn.ReLU
+Activations.relu6 = nn.ReLU6
+Activations.rrelu = nn.RReLU
 Activations.leaky = nn.LeakyReLU
 Activations.leaky_relu = Activations.leaky
+Activations.gelu = nn.GELU
+Activations.silu = nn.SiLU
+Activations.elu = nn.ELU
+Activations.celu = nn.CELU
+Activations.selu = nn.SELU
+Activations.glu = nn.GLU
+Activations.prelu = nn.PReLU
 Activations.tanh = nn.Tanh
+Activations.hardtanh = nn.Hardtanh
 Activations.sigmoid = nn.Sigmoid
+Activations.hardsigmoid = nn.Hardsigmoid
 Activations.softmax = nn.Softmax
-Activations.relu6 = nn.ReLU6
 # Activations.linear = None
 
 
@@ -2297,7 +2307,7 @@ class SeqLin(SizeMixin, nn.Sequential):
     def __init__(self,
                  in_channels:int,
                  out_channels:Sequence[int],
-                 activation:str="relu",
+                 activation:Union[str,nn.Module]="relu",
                  kernel_initializer:Optional[str]=None,
                  bias:bool=True,
                  dropouts:Union[float,Sequence[float]]=0.0,
@@ -2310,7 +2320,7 @@ class SeqLin(SizeMixin, nn.Sequential):
             number of channels in the input
         out_channels: sequence of int,
             number of ouput channels for each linear layer
-        activation: str, default "relu",
+        activation: str or nn.Module, default "relu",
             name of activation after each linear layer
         kernel_initializer: str, optional,
             name of kernel initializer for `weight` of each linear layer
@@ -2331,8 +2341,10 @@ class SeqLin(SizeMixin, nn.Sequential):
         self.__num_layers = len(self.__out_channels)
         kw_activation = kwargs.get("kw_activation", {})
         kw_initializer = kwargs.get("kw_initializer", {})
-        if activation.lower() in Activations.keys():
-            self.__activation = activation.lower()
+        if callable(activation):
+            self.__activation = activation
+        elif isinstance(activation, str) and activation.lower() in Activations.keys():
+            self.__activation = Activations[activation.lower()]
         else:
             raise ValueError(f"activation `{activation}` not supported")
         if kernel_initializer:
@@ -2370,7 +2382,7 @@ class SeqLin(SizeMixin, nn.Sequential):
             if idx < self.__num_layers-1 or not self.__skip_last_activation:
                 self.add_module(
                     f"act_{idx}",
-                    Activations[self.__activation](**kw_activation),
+                    self.__activation(**kw_activation),
                 )
             if self.__dropouts[idx] > 0:
                 self.add_module(
