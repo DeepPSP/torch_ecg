@@ -49,6 +49,7 @@ __all__ = [
     "MovingAverage",
     "uniform",
     "nildent",
+    "isclass",
 ]
 
 
@@ -1235,3 +1236,22 @@ def nildent(text:str) -> str:
     new_text = "\n".join([l.lstrip() for l in text.splitlines()]) \
         + ("\n" if text.endswith("\n") else "")
     return new_text
+
+
+def isclass(obj:Any) -> bool:
+    """ finished, checked,
+
+    Parameters
+    ----------
+    obj: any object,
+        any object, including class, instance of class, etc
+
+    Returns
+    -------
+    bool:
+        True if `obj` is a class, False otherwise
+    """
+    try:
+        return issubclass(obj, object)
+    except TypeError:
+        return False
