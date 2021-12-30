@@ -27,7 +27,7 @@ from ..utils.utils_nn import (
     compute_module_size,
     SizeMixin,
 )
-from ..utils.misc import dict_to_str
+from ..utils.misc import dict_to_str, isclass
 
 
 __all__ = [
@@ -175,6 +175,38 @@ Activations.softmax = nn.Softmax
 # Activations.linear = None
 
 
+def get_activation(act:Union[str,nn.Module,type(None)], kw_act:Optional[dict]=None) -> Optional[nn.Module]:
+    """ finished, checked,
+
+    Parameters
+    ----------
+    act: str or nn.Module or None,
+        name or the class or an instance of the activation, or None
+    kw_act: dict, optional,
+        keyword arguments for the activation
+
+    Returns
+    -------
+    nn.Module or None,
+        the class of the activation or an instance of the activation, or None
+    """
+    if act is None:
+        return act
+    if isclass(act):
+        _act = act
+    elif isinstance(act, str):
+        if act.lower() not in Activations:
+            raise ValueError(f"activation `{act}` not supported")
+        _act = Activations[act.lower()]
+    elif isinstance(act, nn.Module):
+        return act
+    else:
+        raise ValueError(f"activation `{act}` not supported")
+    if kw_act is None:
+        return _act
+    return _act(**kw_act)
+
+
 # ---------------------------------------------
 # normalizations
 Normalizations = ED()
@@ -200,24 +232,37 @@ Normalizations.local_response_normalization = Normalizations.local_response_norm
 # and ref. Zhou, Xiao-Yun, et al. "Batch Group Normalization." arXiv preprint arXiv:2012.02782 (2020).
 # problem: parameters of different normalizations are different
 
-def _get_normalization(normalization:str, in_channels:Optional[int]=None, **kwargs:Any) -> nn.Module:
-    """ NOT finished, NOT checked,
+
+def get_normalization(norm:Union[str,nn.Module,type(None)], kw_norm:Optional[dict]=None) -> Optional[nn.Module]:
+    """ finished, checked,
+
+    Parameters
+    ----------
+    norm: str or nn.Module or None,
+        name or the class or an instance of the normalization, or None
+    kw_norm: dict, optional,
+        keyword arguments for the normalization
+
+    Returns
+    -------
+    nn.Module or None,
+        the class of the normalization or an instance of the normalization, or None
     """
-    # if normalization.lower() in Normalizations:
-    #     norm_layer = Normalizations.get(normalization.lower())
-    if normalization.lower() in ["batch_norm", "batch_normalization",]:
-        norm_layer = nn.BatchNorm1d(in_channels, **kwargs)
-    elif normalization.lower() in ["instance_norm", "instance_normalization",]:
-        norm_layer = nn.InstanceNorm1d(in_channels, **kwargs)
-    elif normalization.lower() in ["group_norm", "group_normalization",]:
-        if "groups" not in kwargs:
-            raise ValueError(f"One has to specify `groups` (number of groups) to use `GroupNorm`!")
-        norm_layer = nn.GroupNorm(num_channels=in_channels, **kwargs)
-    elif normalization.lower() in ["layer_norm", "layer_normalization",]:
-        norm_layer = nn.LayerNorm(**kwargs)
+    if norm is None:
+        return norm
+    if isclass(norm):
+        _norm = norm
+    elif isinstance(norm, str):
+        if norm.lower() not in Normalizations:
+            raise ValueError(f"normalization `{norm}` not supported")
+        _norm = Normalizations.get(norm.lower())
+    elif isinstance(norm, nn.Module):
+        return norm
     else:
-        raise ValueError(f"normalization method {normalization} not supported yet!")
-    return norm_layer
+        raise ValueError(f"normalization `{norm}` not supported")
+    if kw_norm is None:
+        return _norm
+    return _norm(**kw_norm)
 
 
 # ---------------------------------------------
@@ -269,12 +314,8 @@ class Bn_Activation(SizeMixin, nn.Sequential):
         self.__num_features = num_features
         self.__kw_activation = kw_activation or {}
         self.__dropout = dropout
-        if callable(activation):
-            act_layer = activation
-            act_name = f"activation_{type(act_layer).__name__}"
-        elif isinstance(activation, str) and activation.lower() in Activations.keys():
-            act_layer = Activations[activation.lower()](**self.__kw_activation)
-            act_name = f"activation_{activation.lower()}"
+        act_layer = get_activation(activation, kw_activation or {})
+        act_name = f"activation_{type(act_layer).__name__}"
 
         self.add_module(  # TODO: add other normalizations
             "batch_norm",
@@ -475,22 +516,9 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
         else:
             bn_layer = None
 
-        if isinstance(activation, str):
-            activation = activation.lower()
-
-        if not activation:
-            act_layer = None
-            act_name = None
-        elif callable(activation):
-            act_layer = activation
+        act_layer = get_activation(activation, kw_activation)
+        if act_layer is not None:
             act_name = f"activation_{type(act_layer).__name__}"
-        elif isinstance(activation, str) and activation.lower() in Activations.keys():
-            act_layer = Activations[activation.lower()](**kw_activation)
-            act_name = f"activation_{activation.lower()}"
-        else:
-            print(f"activate error !!! {sys._getframe().f_code.co_filename} {sys._getframe().f_code.co_name} {sys._getframe().f_lineno}")
-            act_layer = None
-            act_name = None
 
         if self.__ordering in ["cba", "cb", "ca"]:
             self.add_module("conv1d", conv_layer)
@@ -1992,7 +2020,7 @@ class MultiHeadAttention(SizeMixin, nn.Module):
             raise ValueError(f"`in_features`({in_features}) should be divisible by `head_num`({head_num})")
         self.in_features = in_features
         self.head_num = head_num
-        self.activation = Activations[activation.lower()]() if isinstance(activation, str) else activation
+        self.activation = get_activation(activation, kwargs.get("kw_activation", {}))
         self.bias = bias
         self.linear_q = nn.Linear(in_features, in_features, bias)
         self.linear_k = nn.Linear(in_features, in_features, bias)
@@ -2073,7 +2101,7 @@ class MultiHeadAttention(SizeMixin, nn.Module):
 
     def extra_repr(self):
         return "in_features={}, head_num={}, bias={}, activation={}".format(
-            self.in_features, self.head_num, self.bias, self.activation,
+            self.in_features, self.head_num, self.bias, type(self.activation).__name__,
         )
 
 
@@ -2180,11 +2208,7 @@ class AttentivePooling(SizeMixin, nn.Module):
         self.__in_channels = in_channels
         self.__mid_channels = (mid_channels or self.__in_channels//2) or 1
         self.__dropout = dropout
-        kw_activation = kwargs.get("kw_activation", {})
-        if callable(activation):
-            self.activation = activation
-        elif isinstance(activation, str) and activation.lower() in Activations.keys():
-            self.activation = Activations[activation.lower()](**kw_activation)
+        self.activation = get_activation(activation, kwargs.get("kw_activation", {}))
 
         self.dropout = nn.Dropout(self.__dropout, inplace=False)
         self.mid_linear = nn.Linear(self.__in_channels, self.__mid_channels)
@@ -2341,12 +2365,10 @@ class SeqLin(SizeMixin, nn.Sequential):
         self.__num_layers = len(self.__out_channels)
         kw_activation = kwargs.get("kw_activation", {})
         kw_initializer = kwargs.get("kw_initializer", {})
-        if callable(activation):
-            self.__activation = activation
-        elif isinstance(activation, str) and activation.lower() in Activations.keys():
-            self.__activation = Activations[activation.lower()]
-        else:
-            raise ValueError(f"activation `{activation}` not supported")
+        act_layer = get_activation(activation)
+        if not isclass(act_layer):
+            raise TypeError(f"`activation` must be a class or str, not an instance")
+        self.__activation = act_layer.__name__
         if kernel_initializer:
             if kernel_initializer.lower() in Initializers.keys():
                 self.__kernel_initializer = Initializers[kernel_initializer.lower()]
@@ -2382,7 +2404,7 @@ class SeqLin(SizeMixin, nn.Sequential):
             if idx < self.__num_layers-1 or not self.__skip_last_activation:
                 self.add_module(
                     f"act_{idx}",
-                    self.__activation(**kw_activation),
+                    act_layer(**kw_activation),
                 )
             if self.__dropouts[idx] > 0:
                 self.add_module(
