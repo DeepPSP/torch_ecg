@@ -27,11 +27,21 @@ class CFG(ED):
     >>> c.update(hehe={"a":-1})
     >>> c
     ... {'hehe': {'a': -1, 'b': 2}}
+    >>> c.__update__(hehe={"a":-10})
+    >>> c
+    ... {'hehe': {'a': -10}}
     """
     __name__ = "CFG"
 
+    def __update__(self, new_cfg:Optional[MutableMapping]=None, **kwargs) -> NoReturn:
+        """
+        the original normal update method
+        """
+        super().update(new_cfg, **kwargs)
+
     def update(self, new_cfg:Optional[MutableMapping]=None, **kwargs) -> NoReturn:
         """
+        the new hierarchical update method
         """
         _new_cfg = new_cfg or CFG()
         if len(kwargs) > 0:  # avoid RecursionError
