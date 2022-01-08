@@ -9,7 +9,6 @@ import pandas as pd
 import torch
 from torch import Tensor
 import torch.nn.functional as F
-from easydict import EasyDict as ED
 import biosppy.signals.ecg as BSE
 
 try:
@@ -19,6 +18,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.models.ecg_seq_lab_net import (
     ECG_SEQ_LAB_NET,
     # _ECG_SEQ_LAB_NET,
@@ -43,7 +43,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2019"
     
-    def __init__(self, n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
+    def __init__(self, n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -152,7 +152,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
     __DEBUG__ = True
     __name__ = "ECG_SUBTRACT_UNET_CPSC2019"
     
-    def __init__(self, n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
+    def __init__(self, n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -258,7 +258,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
     __DEBUG__ = True
     __name__ = "ECG_UNET_CPSC2019"
     
-    def __init__(self, n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
+    def __init__(self, n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters

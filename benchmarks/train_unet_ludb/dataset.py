@@ -16,7 +16,6 @@ except ModuleNotFoundError:
 import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -25,6 +24,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.databases import LUDB as LR
 from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
 from torch_ecg._preprocessors import PreprocManager
@@ -50,7 +50,7 @@ class LUDB(Dataset):
     __name__ = "LUDB"
 
     def __init__(self,
-                 config:ED,
+                 config:CFG,
                  training:bool=True,
                  lazy:bool=False,) -> NoReturn:
         """ finished, checked,
@@ -203,7 +203,7 @@ class FastDataReader(Dataset):
     """
     """
     
-    def __init__(self, reader:LR, records:Sequence[str], config:ED, ppm:Optional[PreprocManager]=None) -> NoReturn:
+    def __init__(self, reader:LR, records:Sequence[str], config:CFG, ppm:Optional[PreprocManager]=None) -> NoReturn:
         """
         """
         self.reader = reader

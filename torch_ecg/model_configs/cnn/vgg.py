@@ -5,7 +5,8 @@ from itertools import repeat
 from copy import deepcopy
 
 import numpy as np
-from easydict import EasyDict as ED
+
+from ...cfg import CFG
 
 
 __all__ = [
@@ -14,7 +15,7 @@ __all__ = [
 ]
 
 
-vgg16 = ED()
+vgg16 = CFG()
 vgg16.fs = 500
 vgg16.num_convs = [2, 2, 3, 3, 3]
 _base_num_filters = 12
@@ -43,7 +44,7 @@ vgg16_leadwise.num_filters = [
 ]
 
 
-vgg_block_basic = ED()
+vgg_block_basic = CFG()
 vgg_block_basic.filter_length = 15
 vgg_block_basic.subsample_length = 1
 vgg_block_basic.dilation = 1

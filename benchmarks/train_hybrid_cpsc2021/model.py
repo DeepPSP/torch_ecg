@@ -17,7 +17,6 @@ import numpy as np
 import pandas as pd
 import torch
 from torch import Tensor
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -26,6 +25,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 # models from torch_ecg
 from torch_ecg.models.ecg_crnn import ECG_CRNN
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
@@ -52,7 +52,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2021"
 
-    def __init__(self, config:ED, **kwargs:Any) -> NoReturn:
+    def __init__(self, config:CFG, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -215,7 +215,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
     __DEBUG__ = True
     __name__ = "ECG_UNET_CPSC2021"
     
-    def __init__(self, config:ED, **kwargs:Any) -> NoReturn:
+    def __init__(self, config:CFG, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -376,7 +376,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
     __DEBUG__ = True
     __name__ = "ECG_SUBTRACT_UNET_CPSC2021"
 
-    def __init__(self, config:ED, **kwargs:Any) -> NoReturn:
+    def __init__(self, config:CFG, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -537,7 +537,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
     __DEBUG__ = True
     __name__ = "RR_LSTM_CPSC2021"
 
-    def __init__(self, config:ED, **kwargs:Any) -> NoReturn:
+    def __init__(self, config:CFG, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters

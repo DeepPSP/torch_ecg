@@ -12,8 +12,8 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 from scipy.io import loadmat
-from easydict import EasyDict as ED
 
+from ...cfg import CFG
 from ...utils.ecg_arrhythmia_knowledge import PVC, SPB
 from ...utils.utils_interval import get_optimal_covering
 from ..base import CPSCDataBase, DEFAULT_FIG_SIZE_PER_SEC
@@ -204,7 +204,7 @@ class CPSC2020(CPSCDataBase):
         self.data_dir = self.rec_dir
         self.ref_dir = self.ann_dir
 
-        self.subgroups = ED({
+        self.subgroups = CFG({
             "N":  ["A01", "A03", "A05", "A06",],
             "V":  ["A02", "A08"],
             "S":  ["A09", "A10"],
@@ -396,7 +396,7 @@ class CPSC2020(CPSCDataBase):
             raise ValueError("test data ratio too high")
         train_records = [r for r in self.all_records if r not in test_records]
         
-        split_res = ED({
+        split_res = CFG({
             "train": train_records,
             "test": test_records,
         })
@@ -764,7 +764,7 @@ def compute_metrics(sbp_true:List[np.ndarray],
         - false_positive: number of false positives of each ectopic beat type
         - false_negative: number of false negatives of each ectopic beat type
     """
-    BaseCfg = ED()
+    BaseCfg = CFG()
     BaseCfg.fs = 400
     BaseCfg.bias_thr = 0.15 * BaseCfg.fs
     s_score = np.zeros([len(sbp_true), ], dtype=int)
@@ -813,7 +813,7 @@ def compute_metrics(sbp_true:List[np.ndarray],
     Score2 = np.sum(v_score)
 
     if verbose >= 1:
-        retval = ED(
+        retval = CFG(
             total_loss=-(Score1+Score2),
             class_loss={"S":-Score1, "V":-Score2},
             true_positive={"S":s_tp, "V":v_tp},

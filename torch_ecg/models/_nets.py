@@ -16,7 +16,6 @@ from torch import Tensor
 from torch.nn import Parameter
 import torch.nn.functional as F
 from torch.nn.utils.rnn import PackedSequence
-from easydict import EasyDict as ED
 from deprecated import deprecated
 
 from ..utils.utils_nn import (
@@ -28,6 +27,7 @@ from ..utils.utils_nn import (
     SizeMixin,
 )
 from ..utils.misc import dict_to_str, isclass
+from ..cfg import CFG
 
 
 __all__ = [
@@ -132,7 +132,7 @@ except:
 
 # ---------------------------------------------
 # initializers
-Initializers = ED()
+Initializers = CFG()
 Initializers.he_normal = nn.init.kaiming_normal_
 Initializers.kaiming_normal = nn.init.kaiming_normal_
 Initializers.he_uniform = nn.init.kaiming_uniform_
@@ -151,7 +151,7 @@ Initializers.constant = nn.init.constant_
 
 # ---------------------------------------------
 # activations
-Activations = ED()
+Activations = CFG()
 Activations.mish = Mish
 Activations.swish = Swish
 Activations.hardswish = Hardswish
@@ -209,7 +209,7 @@ def get_activation(act:Union[str,nn.Module,type(None)], kw_act:Optional[dict]=No
 
 # ---------------------------------------------
 # normalizations
-Normalizations = ED()
+Normalizations = CFG()
 Normalizations.batch_norm = nn.BatchNorm1d
 Normalizations.batch_normalization = Normalizations.batch_norm
 Normalizations.group_norm = nn.GroupNorm
@@ -267,7 +267,7 @@ def get_normalization(norm:Union[str,nn.Module,type(None)], kw_norm:Optional[dic
 
 # ---------------------------------------------
 
-_DEFAULT_CONV_CONFIGS = ED(
+_DEFAULT_CONV_CONFIGS = CFG(
     batch_norm=True,
     activation="relu",
     kw_activation={"inplace": True},
@@ -2509,7 +2509,7 @@ class NonLocalBlock(SizeMixin, nn.Module):
     def __init__(self,
                  in_channels:int,
                  mid_channels:Optional[int]=None,
-                 filter_lengths:Union[ED,int]=1,
+                 filter_lengths:Union[CFG,int]=1,
                  subsample_length:int=2,
                  **config) -> NoReturn:
         """ finished, checked,
@@ -2534,11 +2534,11 @@ class NonLocalBlock(SizeMixin, nn.Module):
         self.__out_channels = self.__in_channels
         if isinstance(filter_lengths, dict):
             assert set(filter_lengths.keys()) == set(self.__MID_LAYERS__)
-            self.__kernel_sizes = ED({k:v for k,v in filter_lengths.items()})
+            self.__kernel_sizes = CFG({k:v for k,v in filter_lengths.items()})
         else:
-            self.__kernel_sizes = ED({k:filter_lengths for k in self.__MID_LAYERS__})
+            self.__kernel_sizes = CFG({k:filter_lengths for k in self.__MID_LAYERS__})
         self.__subsample_length = subsample_length
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
 
         self.mid_layers = nn.ModuleDict()
         for k in ["g", "theta", "phi"]:
@@ -2632,7 +2632,7 @@ class SEBlock(SizeMixin, nn.Module):
     """
     __DEBUG__ = False
     __name__ = "SEBlock"
-    __DEFAULT_CONFIG__ = ED(
+    __DEFAULT_CONFIG__ = CFG(
         bias=False, activation="relu", kw_activation={"inplace": True}, dropouts=0.0
     )
 
@@ -2654,7 +2654,7 @@ class SEBlock(SizeMixin, nn.Module):
         self.__in_channels = in_channels
         self.__mid_channels = in_channels // reduction
         self.__out_channels = in_channels
-        self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config))
 
         self.avg_pool = nn.AdaptiveAvgPool1d(1)

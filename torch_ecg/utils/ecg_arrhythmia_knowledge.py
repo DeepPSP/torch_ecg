@@ -40,7 +40,8 @@ NOTE that wikipedia is NOT listed in the References
 from io import StringIO
 
 import pandas as pd
-from easydict import EasyDict as ED
+
+from ..cfg import CFG
 
 
 __all__ = [
@@ -74,7 +75,7 @@ AnteriorLeads = ["V2", "V3", "V4",]
 _snomedbrowser_url = "https://snomedbrowser.com/Codes/Details/"
 
 
-AF = ED({  # rr, morphology
+AF = CFG({  # rr, morphology
     "fullname": "atrial fibrillation",
     "url": [
         "https://litfl.com/atrial-fibrillation-ecg-library/",
@@ -91,7 +92,7 @@ AF = ED({  # rr, morphology
     ],
 })
 
-AFL = ED({  # rr, morphology
+AFL = CFG({  # rr, morphology
     "fullname": "atrial flutter",
     "url": [
         "https://litfl.com/atrial-flutter-ecg-library/",
@@ -107,7 +108,7 @@ AFL = ED({  # rr, morphology
     ],
 })
 
-Brady = ED({  # rr
+Brady = CFG({  # rr
     "fullname": "bradycardia",
     "url": [
         "https://litfl.com/bradycardia-ddx/",
@@ -118,14 +119,14 @@ Brady = ED({  # rr
     ],
 })
 
-BBB = ED({  # morphology
+BBB = CFG({  # morphology
     "fullname": "bundle branch block",
     "url": [
     ],
     "knowledge": [],
 })
 
-IAVB = ED({  # morphology
+IAVB = CFG({  # morphology
     "fullname": "1st degree av block",
     "url": [
         "https://litfl.com/first-degree-heart-block-ecg-library/",
@@ -139,7 +140,7 @@ IAVB = ED({  # morphology
     ],
 })
 
-LBBB = ED({  # morphology
+LBBB = CFG({  # morphology
     "fullname": "left bundle branch block",
     "url": [
         "https://litfl.com/left-bundle-branch-block-lbbb-ecg-library/",
@@ -156,7 +157,7 @@ LBBB = ED({  # morphology
     ],
 })
 
-CLBBB = ED({  # morphology
+CLBBB = CFG({  # morphology
     "fullname": "complete left bundle branch block",
     "url": [
     ],
@@ -164,7 +165,7 @@ CLBBB = ED({  # morphology
     ],
 })
 
-RBBB = ED({  # morphology
+RBBB = CFG({  # morphology
     "fullname": "right bundle branch block",
     "url": [
         "https://litfl.com/right-bundle-branch-block-rbbb-ecg-library/",
@@ -177,7 +178,7 @@ RBBB = ED({  # morphology
     ],
 })
 
-CRBBB = ED({  # morphology
+CRBBB = CFG({  # morphology
     "fullname": "complete right bundle branch block",
     "url": [
         "https://litfl.com/right-bundle-branch-block-rbbb-ecg-library/",
@@ -190,7 +191,7 @@ CRBBB = ED({  # morphology
     ],
 })
 
-IRBBB = ED({  # morphology
+IRBBB = CFG({  # morphology
     "fullname": "incomplete right bundle branch block",
     "url": [
         "https://litfl.com/right-bundle-branch-block-rbbb-ecg-library/",
@@ -202,7 +203,7 @@ IRBBB = ED({  # morphology
     ],
 })
 
-LAnFB = ED({  # morphology
+LAnFB = CFG({  # morphology
     "fullname": "left anterior fascicular block",
     "url": [
         "https://litfl.com/left-anterior-fascicular-block-lafb-ecg-library/",
@@ -217,7 +218,7 @@ LAnFB = ED({  # morphology
     ],
 })
 
-LQRSV = ED({  # voltage
+LQRSV = CFG({  # voltage
     "fullname": "low qrs voltages",
     "url": [
         "https://litfl.com/low-qrs-voltage-ecg-library/",
@@ -228,7 +229,7 @@ LQRSV = ED({  # voltage
     ],
 })
 
-PRWP = ED({  # voltage
+PRWP = CFG({  # voltage
     "fullname": "poor R wave progression",
     "url": [
         "https://litfl.com/poor-r-wave-progression-prwp-ecg-library/",
@@ -244,7 +245,7 @@ PRWP = ED({  # voltage
     ],
 })
 
-NSIVCB = ED({  # mophology
+NSIVCB = CFG({  # mophology
     "fullname": "nonspecific intraventricular conduction disorder",
     "url": [
         "https://ecgwaves.com/topic/nonspecific-intraventricular-conduction-delay-defect/",
@@ -257,7 +258,7 @@ NSIVCB = ED({  # mophology
     ],
 })
 
-PR = ED({  # morphology
+PR = CFG({  # morphology
     "fullname": "pacing rhythm",
     "url": [
         "https://litfl.com/pacemaker-rhythms-normal-patterns/",
@@ -271,7 +272,7 @@ PR = ED({  # morphology
     ],
 })
 
-PAC = ED({  # morphology, very complicated
+PAC = CFG({  # morphology, very complicated
     "fullname": "premature atrial contraction",
     "url": [
         "https://litfl.com/premature-atrial-complex-pac/",
@@ -285,7 +286,7 @@ PAC = ED({  # morphology, very complicated
     ],
 })
 
-PJC = ED({  # morphology
+PJC = CFG({  # morphology
     "fullname": "premature junctional contraction",
     "url": [
         "https://litfl.com/premature-junctional-complex-pjc/",
@@ -298,7 +299,7 @@ PJC = ED({  # morphology
     ],
 })
 
-PVC = ED({  # morphology
+PVC = CFG({  # morphology
     "fullname": "premature ventricular contractions",
     "url": [
         "https://litfl.com/premature-ventricular-complex-pvc-ecg-library/",
@@ -313,7 +314,7 @@ PVC = ED({  # morphology
     ],
 })
 
-LPR = ED({  # morphology
+LPR = CFG({  # morphology
     "fullname": "prolonged pr interval",
     "url": [
         "https://litfl.com/pr-interval-ecg-library/",
@@ -325,7 +326,7 @@ LPR = ED({  # morphology
     ],
 })
 
-LQT = ED({  # morphology
+LQT = CFG({  # morphology
     "fullname": "prolonged qt interval",
     "url": [
         "https://litfl.com/qt-interval-ecg-library/",
@@ -337,7 +338,7 @@ LQT = ED({  # morphology
     ],
 })
 
-QAb = ED({   # morphology
+QAb = CFG({   # morphology
     "fullname": "qwave abnormal",
     "url": [
         "https://litfl.com/q-wave-ecg-library/",
@@ -350,7 +351,7 @@ QAb = ED({   # morphology
     ],
 })
 
-RAD = ED({  # morphology
+RAD = CFG({  # morphology
     "fullname": "right axis deviation",
     "url": [
         "https://litfl.com/right-axis-deviation-rad-ecg-library/",
@@ -366,7 +367,7 @@ RAD = ED({  # morphology
     ],
 })
 
-LAD = ED({  # morphology
+LAD = CFG({  # morphology
     "fullname": "left axis deviation",
     "url": [
         "https://litfl.com/left-axis-deviation-lad-ecg-library/",
@@ -383,7 +384,7 @@ LAD = ED({  # morphology
     ],
 })
 
-SA = ED({  # morphology
+SA = CFG({  # morphology
     "fullname": "sinus arrhythmia",
     "url": [
         "https://litfl.com/sinus-arrhythmia-ecg-library/",
@@ -397,7 +398,7 @@ SA = ED({  # morphology
     ],
 })
 
-SB = ED({  # rr, morphology
+SB = CFG({  # rr, morphology
     "fullname": "sinus bradycardia",
     "url": [
         "https://litfl.com/sinus-bradycardia-ecg-library/",
@@ -408,7 +409,7 @@ SB = ED({  # rr, morphology
     ],
 })
 
-NSR = ED({  # rr, morphology
+NSR = CFG({  # rr, morphology
     "fullname": "sinus rhythm",  # the NORMAL rhythm
     "url": [
         "https://litfl.com/normal-sinus-rhythm-ecg-library/",
@@ -421,7 +422,7 @@ NSR = ED({  # rr, morphology
     ],
 })
 
-STach = ED({  # rr, morphology,
+STach = CFG({  # rr, morphology,
     "fullname": "sinus tachycardia",
     "url": [
         "https://litfl.com/sinus-tachycardia-ecg-library/",
@@ -433,7 +434,7 @@ STach = ED({  # rr, morphology,
     ],
 })
 
-SVPB = ED({  # morphology, equiv. to PAC for CINC2020
+SVPB = CFG({  # morphology, equiv. to PAC for CINC2020
     "fullname": "supraventricular premature beats",
     "url": [
         "https://en.wikipedia.org/wiki/Premature_atrial_contraction#Supraventricular_extrasystole",
@@ -441,7 +442,7 @@ SVPB = ED({  # morphology, equiv. to PAC for CINC2020
     "knowledge": PAC["knowledge"] + PJC["knowledge"],
 })
 
-TAb = ED({  # morphology
+TAb = CFG({  # morphology
     "fullname": "t wave abnormal",
     "url": [
         "https://litfl.com/t-wave-ecg-library/",
@@ -453,7 +454,7 @@ TAb = ED({  # morphology
     ],
 })
 
-TInv = ED({  # morphology
+TInv = CFG({  # morphology
     "fullname": "t wave inversion",
     "url": [
         "https://en.wikipedia.org/wiki/T_wave#Inverted_T_wave",
@@ -464,7 +465,7 @@ TInv = ED({  # morphology
     ],
 })
 
-VPB = ED({
+VPB = CFG({
     "fullname": "ventricular premature beats",
     "url": PVC["url"],
     "knowledge": PVC["knowledge"],
@@ -472,7 +473,7 @@ VPB = ED({
 
 SPB = SVPB  # alias
 
-STD = ED({
+STD = CFG({
     "fullname": "st depression",
     "url": [
         "https://litfl.com/st-segment-ecg-library/",
@@ -484,7 +485,7 @@ STD = ED({
     ],
 })
 
-STE = ED({
+STE = CFG({
     "fullname": "st elevation",
     "url": [
         "https://litfl.com/st-segment-ecg-library/",

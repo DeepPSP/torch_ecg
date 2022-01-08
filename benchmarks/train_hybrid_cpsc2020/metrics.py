@@ -4,7 +4,6 @@ from numbers import Real
 from typing import Union, Optional, Any, List, Tuple, Sequence
 
 import numpy as np
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -13,6 +12,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import dict_to_str
 
 from cfg import BaseCfg
@@ -110,9 +110,9 @@ def CPSC2020_score(spb_true:List[np.ndarray], pvc_true:List[np.ndarray], spb_pre
     """
     s_score = np.zeros([len(spb_true), ], dtype=int)
     v_score = np.zeros([len(spb_true), ], dtype=int)
-    true_positive = ED({'S':0, 'V':0})
-    false_positive = ED({'S':0, 'V':0})
-    false_negative = ED({'S':0, 'V':0})
+    true_positive = CFG({'S':0, 'V':0})
+    false_positive = CFG({'S':0, 'V':0})
+    false_negative = CFG({'S':0, 'V':0})
     ## Scoring ##
     for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(zip(spb_true, pvc_true, spb_pred, pvc_pred)):
         s_tp = 0
@@ -164,7 +164,7 @@ def CPSC2020_score(spb_true:List[np.ndarray], pvc_true:List[np.ndarray], spb_pre
     Score2 = np.sum(v_score)
 
     if verbose >= 1:
-        retval = ED(
+        retval = CFG(
             total_loss=-(Score1+Score2),
             class_loss={'S':-Score1, 'V':-Score2},
             true_positive=true_positive,

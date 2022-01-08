@@ -15,9 +15,8 @@ import torch
 from torch import nn
 from torch import Tensor
 import torch.nn.functional as F
-from easydict import EasyDict as ED
 
-from ...cfg import DEFAULTS
+from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str, list_sum
 from ...models._nets import (
@@ -38,7 +37,7 @@ __all__ = [
 ]
 
 
-_DEFAULT_CONV_CONFIGS = ED(
+_DEFAULT_CONV_CONFIGS = CFG(
     ordering="acb",
     conv_type="separable",
     batch_norm=True,
@@ -122,7 +121,7 @@ class XceptionMultiConv(SizeMixin, nn.Module):
             self.__dropouts = list(dropouts)
         assert self.__num_convs == len(self.__dropouts), \
             f"the main stream has {self.__num_convs} convolutions, while `dropouts` indicates {len(self.__dropouts)}"
-        self.config = ED(deepcopy(_DEFAULT_CONV_CONFIGS))
+        self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
 
         self.main_stream_conv = MultiConv(
@@ -301,7 +300,7 @@ class XceptionEntryFlow(SizeMixin, nn.Sequential):
         assert self.__num_blocks == len(self.__block_dropouts), \
             f"the entry flow has {self.__num_blocks} blocks, except the initial convolutions, while `block_dropouts` indicates {len(self.__block_dropouts)}"
         self.__groups = groups
-        self.config = ED(deepcopy(_DEFAULT_CONV_CONFIGS))
+        self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
 
         self.add_module(
@@ -462,7 +461,7 @@ class XceptionMiddleFlow(SizeMixin, nn.Sequential):
         assert self.__num_blocks == len(self.__block_dropouts), \
             f"the middle flow has {self.__num_blocks} blocks, while `block_dropouts` indicates {len(self.__block_dropouts)}"
         self.__groups = groups
-        self.config = ED(deepcopy(_DEFAULT_CONV_CONFIGS))
+        self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
 
         block_in_channels = self.__in_channels
@@ -631,7 +630,7 @@ class XceptionExitFlow(SizeMixin, nn.Sequential):
         assert self.__num_blocks + len(final_num_filters) == len(self.__block_dropouts), \
             f"the exit flow has {self.__num_blocks + len(final_num_filters)} blocks, including the final convolutions, while `block_dropouts` indicates {len(self.__block_dropouts)}"
         self.__groups = groups
-        self.config = ED(deepcopy(_DEFAULT_CONV_CONFIGS))
+        self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
 
         block_in_channels = self.__in_channels
@@ -741,7 +740,7 @@ class Xception(SizeMixin, nn.Sequential):
         """
         super().__init__()
         self.__in_channels = in_channels
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 

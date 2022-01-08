@@ -5,7 +5,8 @@ from itertools import repeat
 from copy import deepcopy
 
 import numpy as np
-from easydict import EasyDict as ED
+
+from ...cfg import CFG
 
 
 __all__ = [
@@ -14,7 +15,7 @@ __all__ = [
 ]
 
 
-cpsc_2018 = ED()
+cpsc_2018 = CFG()
 cpsc_2018.fs = 500
 # cpsc_2018.num_filters = [  # original
 #     [12, 12, 12],
@@ -48,7 +49,7 @@ cpsc_2018.subsample_lengths = [
 cpsc_2018.dropouts = [0.2, 0.2, 0.2, 0.2, 0.2]
 cpsc_2018.groups = 1
 cpsc_2018.activation = "leaky"
-cpsc_2018.kw_activation = ED(negative_slope=0.3, inplace=True)
+cpsc_2018.kw_activation = CFG(negative_slope=0.3, inplace=True)
 cpsc_2018.kernel_initializer = "he_normal"
 cpsc_2018.kw_initializer = {}
 
@@ -56,7 +57,7 @@ cpsc_2018_leadwise = deepcopy(cpsc_2018)
 cpsc_2018_leadwise.groups = 12
 
 
-cpsc_block_basic = ED()
+cpsc_block_basic = CFG()
 cpsc_block_basic.activation = cpsc_2018.activation
 cpsc_block_basic.kw_activation = deepcopy(cpsc_2018.kw_activation)
 cpsc_block_basic.kernel_initializer = cpsc_2018.kernel_initializer

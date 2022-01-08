@@ -5,7 +5,8 @@ from itertools import repeat
 from copy import deepcopy
 
 import numpy as np
-from easydict import EasyDict as ED
+
+from ...cfg import CFG
 
 
 __all__ = [
@@ -15,7 +16,7 @@ __all__ = [
 ]
 
 
-mobilenet_v1_vanilla = ED()
+mobilenet_v1_vanilla = CFG()
 mobilenet_v1_vanilla.fs = 500
 mobilenet_v1_vanilla.groups = 1
 mobilenet_v1_vanilla.batch_norm = True
@@ -30,7 +31,7 @@ mobilenet_v1_vanilla.init_num_filters = _base_num_filters
 mobilenet_v1_vanilla.init_filter_lengths = 27
 mobilenet_v1_vanilla.init_subsample_lengths = 2
 
-mobilenet_v1_vanilla.entry_flow = ED()
+mobilenet_v1_vanilla.entry_flow = CFG()
 mobilenet_v1_vanilla.entry_flow.out_channels = [
     # 64, 128, 128, 256, 256
     _base_num_filters * 2,
@@ -46,7 +47,7 @@ mobilenet_v1_vanilla.entry_flow.groups = mobilenet_v1_vanilla.groups
 mobilenet_v1_vanilla.entry_flow.batch_norm = mobilenet_v1_vanilla.batch_norm
 mobilenet_v1_vanilla.entry_flow.activation = mobilenet_v1_vanilla.activation
 
-mobilenet_v1_vanilla.middle_flow = ED()
+mobilenet_v1_vanilla.middle_flow = CFG()
 mobilenet_v1_vanilla.middle_flow.out_channels = list(repeat(_base_num_filters * 16, 5))
 mobilenet_v1_vanilla.middle_flow.filter_lengths = 13
 mobilenet_v1_vanilla.middle_flow.subsample_lengths = 1
@@ -54,7 +55,7 @@ mobilenet_v1_vanilla.middle_flow.groups = mobilenet_v1_vanilla.groups
 mobilenet_v1_vanilla.middle_flow.batch_norm = mobilenet_v1_vanilla.batch_norm
 mobilenet_v1_vanilla.middle_flow.activation = mobilenet_v1_vanilla.activation
 
-mobilenet_v1_vanilla.exit_flow = ED()
+mobilenet_v1_vanilla.exit_flow = CFG()
 mobilenet_v1_vanilla.exit_flow.out_channels = [
     _base_num_filters * 32, _base_num_filters * 32,
 ]
@@ -67,7 +68,7 @@ mobilenet_v1_vanilla.exit_flow.batch_norm = mobilenet_v1_vanilla.batch_norm
 mobilenet_v1_vanilla.exit_flow.activation = mobilenet_v1_vanilla.activation
 
 
-mobilenet_v2_vanilla = ED()
+mobilenet_v2_vanilla = CFG()
 mobilenet_v2_vanilla.fs = 500
 mobilenet_v2_vanilla.groups = 1
 mobilenet_v2_vanilla.batch_norm = True
@@ -97,7 +98,7 @@ _inverted_residual_setting = np.array([
     # s: stride
     # k: kernel size
 ])
-mobilenet_v2_vanilla.inv_res = ED()
+mobilenet_v2_vanilla.inv_res = CFG()
 mobilenet_v2_vanilla.inv_res.expansions = _inverted_residual_setting[...,0]
 mobilenet_v2_vanilla.inv_res.out_channels = _inverted_residual_setting[...,1]
 mobilenet_v2_vanilla.inv_res.n_blocks = _inverted_residual_setting[...,2]

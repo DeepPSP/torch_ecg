@@ -21,7 +21,6 @@ from typing import Union, Optional, Any, List, Dict, Callable
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
-from easydict import EasyDict as ED
 from scipy.ndimage.filters import median_filter
 from scipy.signal.signaltools import resample
 # from scipy.signal import medfilt
@@ -37,6 +36,7 @@ from .rpeaks import (
 )
 from .utils_signal import remove_spikes_naive
 from .misc import ms2samples, get_mask, list_sum
+from ..cfg import CFG
 
 
 __all__ = [
@@ -62,7 +62,7 @@ DL_QRS_DETECTORS = [
     # "seq_lab",  # currently set empty
 ]
 # ecg signal preprocessing configurations
-PreprocCfg = ED()
+PreprocCfg = CFG()
 # PreprocCfg.fs = 500
 PreprocCfg.rpeak_mask_radius = 50  # ms
 PreprocCfg.rpeak_lead_num_thr = 8/12  # ratio of leads, used for merging rpeaks detected from multiple leads
@@ -153,7 +153,7 @@ def preprocess_multi_lead_signal(
             verbose=verbose,
         )
     rpeaks = merge_rpeaks(rpeaks_candidates, raw_sig, fs, verbose)
-    retval = ED({
+    retval = CFG({
         "filtered_ecg": filtered_ecg,
         "rpeaks": rpeaks,
     })
@@ -229,7 +229,7 @@ def preprocess_single_lead_signal(
     else:
         rpeaks = np.array([], dtype=int)
 
-    retval = ED({
+    retval = CFG({
         "filtered_ecg": filtered_ecg,
         "rpeaks": rpeaks,
     })

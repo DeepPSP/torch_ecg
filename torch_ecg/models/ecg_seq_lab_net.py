@@ -24,9 +24,8 @@ import torch
 from torch import nn
 from torch import Tensor
 import torch.nn.functional as F
-from easydict import EasyDict as ED
 
-from ..cfg import DEFAULTS
+from ..cfg import CFG, DEFAULTS
 from ..utils.utils_nn import (
     compute_conv_output_shape, compute_module_size,
     SizeMixin, CkptMixin,
@@ -71,7 +70,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
     __DEFAULT_CONFIG__ = {"recover_length": False}
     __DEFAULT_CONFIG__.update(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -84,7 +83,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
         """
-        _config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        _config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         _config.update(deepcopy(config) or {})
         _config.global_pool = "none"
         super().__init__(classes, n_leads, _config)
@@ -186,7 +185,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
     __DEFAULT_CONFIG__ = {"recover_length": False}
     __DEFAULT_CONFIG__.update(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -205,7 +204,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         self.__out_channels = self.n_classes
         # self.__out_channels = self.n_classes if self.n_classes > 2 else 1
         self.n_leads = n_leads
-        self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")

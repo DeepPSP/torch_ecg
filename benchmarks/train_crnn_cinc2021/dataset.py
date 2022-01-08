@@ -12,7 +12,6 @@ from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
-from easydict import EasyDict as ED
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
@@ -27,6 +26,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.databases import CINC2021 as CR
 from torch_ecg.utils.misc import ensure_siglen, dict_to_str, list_sum
 from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
@@ -60,7 +60,7 @@ class CINC2021(Dataset):
     __DEBUG__ = False
     __name__ = "CINC2021"
 
-    def __init__(self, config:ED, training:bool=True, lazy:bool=True) -> NoReturn:
+    def __init__(self, config:CFG, training:bool=True, lazy:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -111,7 +111,7 @@ class CINC2021(Dataset):
         if self.__DEBUG__:
             self.records = sample(self.records, int(len(self.records) * 0.01))
 
-        ppm_config = ED(random=False)
+        ppm_config = CFG(random=False)
         ppm_config.update(self.config)
         self.ppm = PreprocManager.from_config(ppm_config)
         self.ppm.rearrange(["bandpass", "normalize"])
@@ -215,7 +215,7 @@ class CINC2021(Dataset):
         self._signals = np.array([], dtype=self.dtype).reshape(0, len(leads), self.siglen)
 
     @classmethod
-    def from_extern(cls, ext_ds:"CINC2021", config:ED) -> "CINC2021":
+    def from_extern(cls, ext_ds:"CINC2021", config:CFG) -> "CINC2021":
         """
         """
         new_ds = cls(config, ext_ds.training, lazy=True)
@@ -452,7 +452,7 @@ class CINC2021(Dataset):
 class FastDataReader(Dataset):
     """
     """
-    def __init__(self, reader:CR, records:Sequence[str], config:ED, ppm:Optional[PreprocManager]=None) -> NoReturn:
+    def __init__(self, reader:CR, records:Sequence[str], config:CFG, ppm:Optional[PreprocManager]=None) -> NoReturn:
         """
         """
         self.reader = reader
@@ -501,7 +501,7 @@ class FastDataReader(Dataset):
         return values, labels
 
 
-def _load_record(reader:CR, rec:str, config:ED) -> Tuple[np.ndarray, np.ndarray]:
+def _load_record(reader:CR, rec:str, config:CFG) -> Tuple[np.ndarray, np.ndarray]:
     """ finished, NOT checked,
 
     load a record from the database using data reader

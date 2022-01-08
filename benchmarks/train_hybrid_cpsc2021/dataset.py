@@ -48,7 +48,6 @@ from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 from scipy import signal as SS
-from easydict import EasyDict as ED
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
@@ -64,6 +63,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2021 as CR
 from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.utils.utils_interval import mask_to_intervals
@@ -96,7 +96,7 @@ class CPSC2021(Dataset):
     __DEBUG__ = False
     __name__ = "CPSC2021"
     
-    def __init__(self, config:ED, task:str, training:bool=True, lazy:bool=True) -> NoReturn:
+    def __init__(self, config:CFG, task:str, training:bool=True, lazy:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -120,10 +120,10 @@ class CPSC2021(Dataset):
 
         self.lazy = lazy
 
-        ppm_config = ED(random=False)
+        ppm_config = CFG(random=False)
         ppm_config.update(deepcopy(self.config))
         ppm_config.pop("normalize")
-        seg_ppm_config = ED(random=False)
+        seg_ppm_config = CFG(random=False)
         seg_ppm_config.update(deepcopy(self.config))
         seg_ppm_config.pop("bandpass")
         self.ppm = PreprocManager.from_config(ppm_config)
@@ -182,8 +182,8 @@ class CPSC2021(Dataset):
 
         if self.task in ["qrs_detection", "main",]:
             # for qrs detection, or for the main task
-            self.segments_dirs = ED()
-            self.__all_segments = ED()
+            self.segments_dirs = CFG()
+            self.__all_segments = CFG()
             self.segments_json = os.path.join(self.segments_base_dir, "segments.json")
             self._ls_segments()
             self.segments = list_sum([self.__all_segments[subject] for subject in self.subjects])
@@ -209,8 +209,8 @@ class CPSC2021(Dataset):
             else:
                 self._all_masks = np.array(self._all_masks).astype(self.dtype)
         elif self.task in ["rr_lstm",]:
-            self.rr_seq_dirs = ED()
-            self.__all_rr_seq = ED()
+            self.rr_seq_dirs = CFG()
+            self.__all_rr_seq = CFG()
             self.rr_seq_json = os.path.join(self.rr_seq_base_dir, "rr_seq.json")
             self._ls_rr_seq()
             self.rr_seq = list_sum([self.__all_rr_seq[subject] for subject in self.subjects])
@@ -246,7 +246,7 @@ class CPSC2021(Dataset):
         list all the segments
         """
         for item in ["data", "ann"]:
-            self.segments_dirs[item] = ED()
+            self.segments_dirs[item] = CFG()
             for s in self.reader.all_subjects:
                 self.segments_dirs[item][s] = os.path.join(self.segments_base_dir, item, s)
                 os.makedirs(self.segments_dirs[item][s], exist_ok=True)
@@ -256,7 +256,7 @@ class CPSC2021(Dataset):
             return
         print(f"please allow the reader a few minutes to collect the segments from {self.segments_base_dir}...")
         seg_filename_pattern = f"{self.segment_name_pattern}.{self.segment_ext}"
-        self.__all_segments = ED({
+        self.__all_segments = CFG({
             s: get_record_list_recursive3(self.segments_dirs.data[s], seg_filename_pattern) \
                 for s in self.reader.all_subjects
         })
@@ -278,7 +278,7 @@ class CPSC2021(Dataset):
             return
         print(f"please allow the reader a few minutes to collect the rr sequences from {self.rr_seq_base_dir}...")
         rr_seq_filename_pattern = f"{self.rr_seq_name_pattern}.{self.rr_seq_ext}"
-        self.__all_rr_seq = ED({
+        self.__all_rr_seq = CFG({
             s: get_record_list_recursive3(self.rr_seq_dirs[s], rr_seq_filename_pattern) \
                 for s in self.reader.all_subjects
         })
@@ -287,18 +287,18 @@ class CPSC2021(Dataset):
                 json.dump(self.__all_rr_seq, f)
 
     @property
-    def all_segments(self) -> ED:
+    def all_segments(self) -> CFG:
         if self.task in ["qrs_detection", "main",]:
             return self.__all_segments
         else:
-            return ED()
+            return CFG()
 
     @property
-    def all_rr_seq(self) -> ED:
+    def all_rr_seq(self) -> CFG:
         if self.task.lower() in ["rr_lstm",]:
             return self.__all_rr_seq
         else:
-            return ED()
+            return CFG()
 
     def __len__(self) -> int:
         return len(self.fdr)
@@ -699,7 +699,7 @@ class CPSC2021(Dataset):
         # return segments
         self.__save_segments(rec, segments, update_segments_json)
 
-    def __generate_segment(self, rec:str, data:np.ndarray, start_idx:Optional[int]=None, end_idx:Optional[int]=None) -> ED:
+    def __generate_segment(self, rec:str, data:np.ndarray, start_idx:Optional[int]=None, end_idx:Optional[int]=None) -> CFG:
         """ finished, checked,
 
         generate segment, with possible data augmentation
@@ -798,7 +798,7 @@ class CPSC2021(Dataset):
         for itv in seg_af_intervals:
             seg_af_mask[itv[0]:itv[1]] = 1
 
-        new_seg = ED(
+        new_seg = CFG(
             data=aug_seg,
             rpeaks=seg_rpeaks,
             qrs_mask=seg_qrs_mask,
@@ -807,7 +807,7 @@ class CPSC2021(Dataset):
         )
         return new_seg
 
-    def __save_segments(self, rec:str, segments:List[ED], update_segments_json:bool=False) -> NoReturn:
+    def __save_segments(self, rec:str, segments:List[CFG], update_segments_json:bool=False) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -922,7 +922,7 @@ class CPSC2021(Dataset):
         for idx in range((len(rr)-self.seglen)//forward_len + 1):
             start_idx = idx * forward_len
             end_idx = start_idx + self.seglen
-            new_rr_seq = ED(
+            new_rr_seq = CFG(
                 rr=rr[start_idx:end_idx],
                 label=label_seq[start_idx:end_idx],
                 interval=[start_idx,end_idx],
@@ -931,7 +931,7 @@ class CPSC2021(Dataset):
         # the tail segment
         end_idx = len(rr)
         start_idx = start_idx + self.seglen
-        new_rr_seq = ED(
+        new_rr_seq = CFG(
             rr=rr[start_idx:end_idx],
             label=label_seq[start_idx:end_idx],
             interval=[start_idx,end_idx],
@@ -943,7 +943,7 @@ class CPSC2021(Dataset):
             start_idx = max(0, cp - self.seglen + random.randint(critical_forward_len[0], critical_forward_len[1]))
             while start_idx <= min(cp - critical_forward_len[1], len(rr) - self.seglen):
                 end_idx = start_idx + self.seglen
-                new_rr_seq = ED(
+                new_rr_seq = CFG(
                     rr=rr[start_idx:end_idx],
                     label=label_seq[start_idx:end_idx],
                     interval=[start_idx,end_idx],
@@ -1068,7 +1068,7 @@ class CPSC2021(Dataset):
 
         print(f"train test split finished in {(time.time()-start)/60:.2f} minutes")
 
-        split_res = ED({
+        split_res = CFG({
             "train": train_set,
             "test": test_set,
         })
@@ -1109,7 +1109,7 @@ class FastDataReader(Dataset):
     """
     """
     def __init__(self,
-                 config:ED,
+                 config:CFG,
                  task:str,
                  seg_ppm:PreprocManager,
                  file_dirs:dict,
@@ -1193,7 +1193,7 @@ class StandaloneSegmentSlicer(Dataset):
 
     def __init__(self,
                  reader:CR,
-                 config:ED,
+                 config:CFG,
                  task:str,
                  seg_ppm:PreprocManager,
                  allowed_preproc:List[str],
@@ -1268,7 +1268,7 @@ class StandaloneSegmentSlicer(Dataset):
         
         return segments
 
-    def __generate_segment(self, rec:str, data:np.ndarray, start_idx:Optional[int]=None, end_idx:Optional[int]=None) -> ED:
+    def __generate_segment(self, rec:str, data:np.ndarray, start_idx:Optional[int]=None, end_idx:Optional[int]=None) -> CFG:
         """ finished, checked,
 
         generate segment, with possible data augmentation
@@ -1367,7 +1367,7 @@ class StandaloneSegmentSlicer(Dataset):
         for itv in seg_af_intervals:
             seg_af_mask[itv[0]:itv[1]] = 1
 
-        new_seg = ED(
+        new_seg = CFG(
             data=aug_seg,
             rpeaks=seg_rpeaks,
             qrs_mask=seg_qrs_mask,

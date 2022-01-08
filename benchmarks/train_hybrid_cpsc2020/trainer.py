@@ -26,7 +26,6 @@ from torch.utils.data import DataLoader
 import torch.nn.functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from tensorboardX import SummaryWriter
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -35,6 +34,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.utils.trainer import BaseTrainer
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.misc import (
@@ -702,7 +702,7 @@ def evaluate_seq_lab(model:nn.Module,
     all_spb_labels = [np.array(item) for item in list_sum(all_spb_labels)]
     all_pvc_labels = [np.array(item) for item in list_sum(all_pvc_labels)]
 
-    eval_res_tmp = ED(CPSC2020_score(
+    eval_res_tmp = CFG(CPSC2020_score(
         spb_true=all_spb_labels,
         pvc_true=all_pvc_labels,
         spb_pred=all_spb_preds,
@@ -710,7 +710,7 @@ def evaluate_seq_lab(model:nn.Module,
         verbose=1
     ))
 
-    eval_res = ED(
+    eval_res = CFG(
         total_loss=eval_res_tmp.total_loss,
         spb_loss=eval_res_tmp.class_loss.S,
         pvc_loss=eval_res_tmp.class_loss.V,
@@ -776,7 +776,7 @@ def get_args(**kwargs):
 
     cfg.update(args)
     
-    return ED(cfg)
+    return CFG(cfg)
 
 
 

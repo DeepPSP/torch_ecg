@@ -6,8 +6,6 @@ but keep increasing the number of channels
 """
 from copy import deepcopy
 
-from easydict import EasyDict as ED
-
 from .cnn import (
     vgg_block_basic, vgg_block_mish, vgg_block_swish,
     vgg16, vgg16_leadwise,
@@ -16,6 +14,7 @@ from .cnn import (
     resnet_cpsc2018, resnet_cpsc2018_leadwise,
 )
 from ..utils.utils_nn import adjust_cnn_filter_lengths
+from ..cfg import CFG
 
 
 __all__ = [
@@ -23,12 +22,12 @@ __all__ = [
 ]
 
 
-ATI_CNN_CONFIG = ED()
+ATI_CNN_CONFIG = CFG()
 ATI_CNN_CONFIG.fs = 500
 
 
 # cnn part
-ATI_CNN_CONFIG.cnn = ED()
+ATI_CNN_CONFIG.cnn = CFG()
 ATI_CNN_CONFIG.cnn.name = "vgg16"
 
 
@@ -58,7 +57,7 @@ else:
 
 
 # rnn part
-ATI_CNN_CONFIG.rnn = ED()
+ATI_CNN_CONFIG.rnn = CFG()
 ATI_CNN_CONFIG.rnn.name = "lstm"
 
 if ATI_CNN_CONFIG.rnn.name == "lstm":

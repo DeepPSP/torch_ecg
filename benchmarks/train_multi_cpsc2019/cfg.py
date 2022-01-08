@@ -5,7 +5,6 @@ from copy import deepcopy
 from itertools import repeat
 
 import numpy as np
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -14,7 +13,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from torch_ecg.cfg import DEFAULTS
+from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.model_configs import (
     ECG_SEQ_LAB_NET_CONFIG,
     ECG_UNET_VANILLA_CONFIG,
@@ -32,7 +31,7 @@ __all__ = [
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-BaseCfg = ED()
+BaseCfg = CFG()
 BaseCfg.fs = 500  # Hz, CPSC2019 data fs
 BaseCfg.classes = ["N",]
 BaseCfg.n_leads = 1
@@ -47,7 +46,7 @@ BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
 
-_COMMON_MODEL_CONFIGS = ED()
+_COMMON_MODEL_CONFIGS = CFG()
 _COMMON_MODEL_CONFIGS.skip_dist = BaseCfg.skip_dist
 _COMMON_MODEL_CONFIGS.torch_dtype = BaseCfg.torch_dtype
 _COMMON_MODEL_CONFIGS.fs = BaseCfg.fs
@@ -73,7 +72,7 @@ ModelCfg.seq_lab_crnn.update(deepcopy(_COMMON_MODEL_CONFIGS))
 
 ModelCfg.seq_lab_cnn = deepcopy(ModelCfg.seq_lab_crnn)
 
-ModelCfg.seq_lab_cnn.rnn = ED()
+ModelCfg.seq_lab_cnn.rnn = CFG()
 ModelCfg.seq_lab_cnn.rnn.name = "none"  # "lstm"
 
 
@@ -83,7 +82,7 @@ ModelCfg.unet = adjust_cnn_filter_lengths(
 ModelCfg.unet.reduction = 1
 ModelCfg.unet.recover_length = True
 ModelCfg.unet.update(deepcopy(_COMMON_MODEL_CONFIGS))
-ModelCfg.unet.cnn = ED(name="none")
+ModelCfg.unet.cnn = CFG(name="none")
 
 
 ModelCfg.subtract_unet = adjust_cnn_filter_lengths(
@@ -92,12 +91,12 @@ ModelCfg.subtract_unet = adjust_cnn_filter_lengths(
 ModelCfg.subtract_unet.reduction = 1
 ModelCfg.subtract_unet.recover_length = True
 ModelCfg.subtract_unet.update(deepcopy(_COMMON_MODEL_CONFIGS))
-ModelCfg.subtract_unet.cnn = ED(name="none")
+ModelCfg.subtract_unet.cnn = CFG(name="none")
 
 
 
 
-TrainCfg = ED()
+TrainCfg = CFG()
 TrainCfg.torch_dtype = BaseCfg.torch_dtype
 TrainCfg.fs = BaseCfg.fs
 TrainCfg.db_dir = BaseCfg.db_dir
@@ -122,7 +121,7 @@ TrainCfg.skip_dist = BaseCfg.skip_dist
 TrainCfg.normalize = False
 # frequency band of the filter to apply, should be chosen very carefully
 TrainCfg.bandpass = False
-# TrainCfg.bandpass = ED(
+# TrainCfg.bandpass = CFG(
 #     lowcut=0.5,
 #     highcut=60,
 # )
@@ -134,7 +133,7 @@ TrainCfg.label_smooth = False
 TrainCfg.random_masking = False
 TrainCfg.stretch_compress = False  # stretch or compress in time axis
 TrainCfg.mixup = False
-# TrainCfg.baseline_wander = ED(  # too slow!
+# TrainCfg.baseline_wander = CFG(  # too slow!
 #     prob = 0.5,
 #     bw_fs = np.array([0.33, 0.1, 0.05, 0.01]),
 #     ampl_ratio = np.array([
@@ -152,7 +151,7 @@ TrainCfg.mixup = False
 #         [0.0, 0.01],
 #     ]),
 # )
-TrainCfg.random_flip = ED(
+TrainCfg.random_flip = CFG(
     prob = 0.5,
 )
 
@@ -177,7 +176,7 @@ TrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
 TrainCfg.burn_in = 400
 TrainCfg.steps = [5000, 10000]
 
-TrainCfg.early_stopping = ED()  # early stopping according to challenge metric
+TrainCfg.early_stopping = CFG()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.0001  # should be non-negative
 TrainCfg.early_stopping.patience = 15
 

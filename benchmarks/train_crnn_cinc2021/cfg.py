@@ -11,7 +11,6 @@ from itertools import repeat
 from typing import List, NoReturn
 
 import numpy as np
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -20,7 +19,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from torch_ecg.cfg import DEFAULTS
+from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.databases.aux_data.cinc2021_aux_data import (
     equiv_class_dict,
     get_class_weight,
@@ -54,7 +53,7 @@ lead_sets = (twelve_leads, six_leads, four_leads, three_leads, two_leads)
 
 
 
-BaseCfg = ED()
+BaseCfg = CFG()
 BaseCfg.db_dir = None
 BaseCfg.log_dir = os.path.join(_BASE_DIR, "log")
 BaseCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
@@ -65,7 +64,7 @@ BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
 
-SpecialDetectorCfg = ED()
+SpecialDetectorCfg = CFG()
 SpecialDetectorCfg.leads_ordering = deepcopy(EAK.Standard12Leads)
 SpecialDetectorCfg.pr_fs_lower_bound = 47  # Hz
 SpecialDetectorCfg.pr_spike_mph_ratio = 15  # ratio to the average amplitude of the signal
@@ -89,7 +88,7 @@ _SPECIAL_CLASSES = ["Brady", "LAD", "RAD", "PR", "LQRSV"]
 
 
 # configurations for visualization
-PlotCfg = ED()
+PlotCfg = CFG()
 # default const for the plot function in dataset.py
 # used only when corr. values are absent
 # all values are time bias w.r.t. corr. peaks, with units in ms
@@ -103,11 +102,11 @@ PlotCfg.t_offset = 60
 
 
 
-def _assign_classes(cfg:ED, special_classes:List[str]) -> NoReturn:
+def _assign_classes(cfg:CFG, special_classes:List[str]) -> NoReturn:
     """
     """
     cfg.special_classes = deepcopy(special_classes)
-    cfg.tranche_class_weights = ED({
+    cfg.tranche_class_weights = CFG({
         t: get_class_weight(
             t,
             exclude_classes=cfg.special_classes,
@@ -116,7 +115,7 @@ def _assign_classes(cfg:ED, special_classes:List[str]) -> NoReturn:
             min_weight=cfg.min_class_weight,
         ) for t in ["A", "B", "AB", "E", "F", "G",]
     })
-    cfg.tranche_classes = ED({
+    cfg.tranche_classes = CFG({
         t: sorted(list(t_cw.keys())) \
             for t, t_cw in cfg.tranche_class_weights.items()
     })
@@ -133,7 +132,7 @@ def _assign_classes(cfg:ED, special_classes:List[str]) -> NoReturn:
 
 
 # training configurations for machine learning and deep learning
-TrainCfg = ED()
+TrainCfg = CFG()
 TrainCfg.torch_dtype = BaseCfg.torch_dtype
 
 # configs of files
@@ -159,27 +158,27 @@ TrainCfg.tranches_for_training = ""  # one of "", "AB", "E", "F", "G"
 _assign_classes(TrainCfg, _SPECIAL_CLASSES)
 
 # configs of signal preprocessing
-TrainCfg.normalize = ED(
+TrainCfg.normalize = CFG(
     method="z-score",
     mean=0.0,
     std=1.0,
 )
 # frequency band of the filter to apply, should be chosen very carefully
 TrainCfg.bandpass = None
-# TrainCfg.bandpass = ED(
+# TrainCfg.bandpass = CFG(
 #     lowcut=0.5,
 #     highcut=60,
 # )
 
 # configs of data aumentation
-# TrainCfg.label_smooth = ED(
+# TrainCfg.label_smooth = CFG(
 #     prob=0.8,
 #     smoothing=0.1,
 # )
 TrainCfg.label_smooth = False
 TrainCfg.random_masking = False
 TrainCfg.stretch_compress = False  # stretch or compress in time axis
-TrainCfg.mixup = ED(
+TrainCfg.mixup = CFG(
     prob=0.6,
     alpha=0.3,
 )
@@ -208,7 +207,7 @@ TrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
 TrainCfg.burn_in = 400
 TrainCfg.steps = [5000, 10000]
 
-TrainCfg.early_stopping = ED()  # early stopping according to challenge metric
+TrainCfg.early_stopping = CFG()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
 TrainCfg.early_stopping.patience = 10
 
@@ -216,7 +215,7 @@ TrainCfg.early_stopping.patience = 10
 # TrainCfg.loss = "BCEWithLogitsLoss"
 # TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
 TrainCfg.loss = "AsymmetricLoss"  # "FocalLoss"
-TrainCfg.loss_kw = ED(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp")
+TrainCfg.loss_kw = CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp")
 TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
 
 TrainCfg.monitor = "challenge_metric"
@@ -262,7 +261,7 @@ _assign_classes(TrainCfg_ns, [])
 
 # configurations for building deep learning models
 # terminologies of stanford ecg repo. will be adopted
-ModelCfg = ED()
+ModelCfg = CFG()
 ModelCfg.torch_dtype = BaseCfg.torch_dtype
 ModelCfg.fs = BaseCfg.fs
 ModelCfg.spacing = 1000 / ModelCfg.fs
@@ -288,7 +287,7 @@ for l in ["twelve_leads", "six_leads", "four_leads", "three_leads", "two_leads"]
     ModelCfg[l].cnn.name = ModelCfg.cnn_name
     ModelCfg[l].rnn.name = ModelCfg.rnn_name
     ModelCfg[l].attn.name = ModelCfg.attn_name
-    # ModelCfg[l].clf = ED()
+    # ModelCfg[l].clf = CFG()
     # ModelCfg[l].clf.out_channels = [
     # # not including the last linear layer, whose out channels equals n_classes
     # ]

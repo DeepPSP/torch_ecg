@@ -4,7 +4,7 @@ configs of the model of (subtract) UNET structures
 from itertools import repeat
 from copy import deepcopy
 
-from easydict import EasyDict as ED
+from ..cfg import CFG
 
 
 __all__ = [
@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-ECG_SUBTRACT_UNET_CONFIG = ED()
+ECG_SUBTRACT_UNET_CONFIG = CFG()
 ECG_SUBTRACT_UNET_CONFIG.fs = 500
 
 
@@ -92,7 +92,7 @@ ECG_SUBTRACT_UNET_CONFIG.up_dropouts = [
 ]
 
 
-unet_down_block = ED()
+unet_down_block = CFG()
 unet_down_block.batch_norm = ECG_SUBTRACT_UNET_CONFIG.batch_norm
 unet_down_block.kernel_initializer = ECG_SUBTRACT_UNET_CONFIG.kernel_initializer 
 unet_down_block.kw_initializer = deepcopy(ECG_SUBTRACT_UNET_CONFIG.kw_initializer)
@@ -100,7 +100,7 @@ unet_down_block.activation = ECG_SUBTRACT_UNET_CONFIG.activation
 unet_down_block.kw_activation = deepcopy(ECG_SUBTRACT_UNET_CONFIG.kw_activation)
 
 
-unet_up_block = ED()
+unet_up_block = CFG()
 unet_up_block.batch_norm = ECG_SUBTRACT_UNET_CONFIG.batch_norm
 unet_up_block.kernel_initializer = ECG_SUBTRACT_UNET_CONFIG.kernel_initializer 
 unet_up_block.kw_initializer = deepcopy(ECG_SUBTRACT_UNET_CONFIG.kw_initializer)

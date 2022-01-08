@@ -26,7 +26,6 @@ from torch import Tensor
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -35,6 +34,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.trainer import BaseTrainer
 
@@ -316,7 +316,7 @@ def get_args(**kwargs):
 
     cfg.update(args)
     
-    return ED(cfg)
+    return CFG(cfg)
 
 
 

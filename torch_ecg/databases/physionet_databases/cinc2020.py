@@ -17,8 +17,8 @@ import pandas as pd
 import wfdb
 from scipy.io import loadmat
 from scipy.signal import resample, resample_poly
-from easydict import EasyDict as ED
 
+from ...cfg import CFG
 from ...utils.misc import (
     get_record_list_recursive,
     get_record_list_recursive3,
@@ -26,7 +26,6 @@ from ...utils.misc import (
     ensure_siglen,
 )
 from ...utils import ecg_arrhythmia_knowledge as EAK
-
 from ..aux_data.cinc2020_aux_data import (
     dx_mapping_all, dx_mapping_scored, dx_mapping_unscored,
     normalize_class, abbr_to_snomed_ct_code,
@@ -44,7 +43,7 @@ __all__ = [
 
 
 # configurations for visualization
-PlotCfg = ED()
+PlotCfg = CFG()
 # default const for the plot function in dataset.py
 # used only when corr. values are absent
 # all values are time bias w.r.t. corr. peaks, with units in ms
@@ -188,7 +187,7 @@ class CINC2020(PhysioNetDataBase):
         self.ann_ext = "hea"
 
         self.db_tranches = list("ABCDEF")
-        self.tranche_names = ED({
+        self.tranche_names = CFG({
             "A": "CPSC",
             "B": "CPSC-Extra",
             "C": "StPetersburg",
@@ -196,12 +195,12 @@ class CINC2020(PhysioNetDataBase):
             "E": "PTB-XL",
             "F": "Georgia",
         })
-        self.rec_prefix = ED({
+        self.rec_prefix = CFG({
             "A": "A", "B": "Q", "C": "I", "D": "S", "E": "HR", "F": "E",
         })
 
         self.db_dir_base = db_dir
-        self.db_dirs = ED({tranche:"" for tranche in self.db_tranches})
+        self.db_dirs = CFG({tranche:"" for tranche in self.db_tranches})
         self._all_records = None
         self._ls_rec()  # loads file system structures into self.db_dirs and self._all_records
 
@@ -224,7 +223,7 @@ class CINC2020(PhysioNetDataBase):
         ]
         self.label_trans_dict = equiv_class_dict.copy()
 
-        # self.value_correction_factor = ED({tranche:1 for tranche in self.db_tranches})
+        # self.value_correction_factor = CFG({tranche:1 for tranche in self.db_tranches})
         # self.value_correction_factor.F = 4.88  # ref. ISSUES 3
 
         self.exceptional_records = ["E04603", "E06072", "E06909", "E07675", "E07941", "E08321"]  # ref. ISSUES 4
@@ -309,7 +308,7 @@ class CINC2020(PhysioNetDataBase):
             print(f"Done in {time.time() - start:.5f} seconds!")
             with open(dr_fp, "w") as f:
                 json.dump(self._diagnoses_records_list, f)
-        self._all_records = ED(self._all_records)
+        self._all_records = CFG(self._all_records)
 
     @property
     def diagnoses_records_list(self):
@@ -876,7 +875,7 @@ class CINC2020(PhysioNetDataBase):
         """
         tranche = self._get_tranche(rec)
         if tranche in "CDE":
-            physionet_lightwave_suffix = ED({
+            physionet_lightwave_suffix = CFG({
                 "C": "incartdb/1.0.0",
                 "D": "ptbdb/1.0.0",
                 "E": "ptb-xl/1.0.1",
@@ -1038,7 +1037,7 @@ class CINC2020(PhysioNetDataBase):
         """
         tranche_names = [self.tranche_names[t] for t in tranches]
         df = dx_mapping_scored if scored_only else dx_mapping_all
-        distribution = ED()
+        distribution = CFG()
         for _, row in df.iterrows():
             num = (row[[tranche_names]].values).sum()
             if num > 0:

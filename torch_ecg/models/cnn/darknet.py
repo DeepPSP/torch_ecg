@@ -19,9 +19,8 @@ np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
-from easydict import EasyDict as ED
 
-from ...cfg import DEFAULTS
+from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str, list_sum
 from ...models._nets import (

@@ -15,9 +15,9 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 from scipy.signal import resample, resample_poly
-from easydict import EasyDict as ED
 import wfdb
 
+from ...cfg import CFG
 from ...utils.misc import (
     get_record_list_recursive,
     get_record_list_recursive3,
@@ -37,7 +37,7 @@ __all__ = [
 
 
 # configurations for visualization
-PlotCfg = ED()
+PlotCfg = CFG()
 # default const for the plot function in dataset.py
 # used only when corr. values are absent
 # all values are time bias w.r.t. corr. peaks, with units in ms
@@ -129,7 +129,7 @@ class CPSC2021(CPSCDataBase):
 
         self.db_dir_base = db_dir
         self.db_tranches = ["training_I", "training_II",]
-        self.db_dirs = ED({t:"" for t in self.db_tranches})
+        self.db_dirs = CFG({t:"" for t in self.db_tranches})
 
         self.fs = 200
         self.spacing = 1000/self.fs
@@ -149,13 +149,13 @@ class CPSC2021(CPSCDataBase):
             "persistent atrial fibrillation": 1,
         }
 
-        self.nb_records = ED({"training_I":730, "training_II":706})
-        self._all_records = ED({t:[] for t in self.db_tranches})
+        self.nb_records = CFG({"training_I":730, "training_II":706})
+        self._all_records = CFG({t:[] for t in self.db_tranches})
         self.__all_records = None
         self.__revised_records = []
-        self._all_subjects = ED({t:[] for t in self.db_tranches})
+        self._all_subjects = CFG({t:[] for t in self.db_tranches})
         self.__all_subjects = None
-        self._subject_records = ED({t:[] for t in self.db_tranches})
+        self._subject_records = CFG({t:[] for t in self.db_tranches})
         self._stats = pd.DataFrame()
         self._stats_columns = [
             "record", "tranche", "subject_id", "record_id", "label",
@@ -185,9 +185,9 @@ class CPSC2021(CPSCDataBase):
         list all the records and load into `self._all_records`,
         facilitating further uses
         """
-        self._all_records = ED({t:[] for t in self.db_tranches})
-        self._all_subjects = ED({t:[] for t in self.db_tranches})
-        self._subject_records = ED({t:[] for t in self.db_tranches})
+        self._all_records = CFG({t:[] for t in self.db_tranches})
+        self._all_subjects = CFG({t:[] for t in self.db_tranches})
+        self._subject_records = CFG({t:[] for t in self.db_tranches})
 
         fn = "RECORDS"
         rev_fn = "REVISED_RECORDS"
@@ -226,7 +226,7 @@ class CPSC2021(CPSCDataBase):
                 list(set([rec.split("_")[1] for rec in self._all_records[t]])),
                 key=lambda s: int(s)
             )
-            self._subject_records[t] =  ED({
+            self._subject_records[t] =  CFG({
                 sid: [rec for rec in self._all_records[t] if rec.split("_")[1]==sid] \
                     for sid in self._all_subjects[t]
             })
@@ -273,7 +273,7 @@ class CPSC2021(CPSCDataBase):
         return self.__all_subjects
 
     @property
-    def subject_records(self) -> ED:
+    def subject_records(self) -> CFG:
         """
         """
         return self._subject_records
@@ -308,7 +308,7 @@ class CPSC2021(CPSCDataBase):
                     {d: self.df_stats[self.df_stats["label"]==d]["record"].tolist() for d in self._labels_f2a.values()}
             with open(dr_fp, "w") as f:
                 json.dump(self._diagnoses_records_list, f)
-        self._diagnoses_records_list = ED(self._diagnoses_records_list)
+        self._diagnoses_records_list = CFG(self._diagnoses_records_list)
 
     @property
     def diagnoses_records_list(self):

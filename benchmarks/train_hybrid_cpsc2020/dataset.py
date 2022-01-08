@@ -62,7 +62,6 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
-from easydict import EasyDict as ED
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
@@ -77,6 +76,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2020 as CR
 from torch_ecg.utils.misc import (
     mask_to_intervals, list_sum,
@@ -112,7 +112,7 @@ class CPSC2020(Dataset):
     __DEBUG__ = False
     __name__ = "CPSC2020"
 
-    def __init__(self, config:ED, training:bool=True) -> NoReturn:
+    def __init__(self, config:CFG, training:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -156,8 +156,8 @@ class CPSC2020(Dataset):
 
         if self.config.model_name.lower() in ["crnn", "seq_lab"]:
             # for classification, or for sequence labeling
-            self.segments_dirs = ED()
-            self.__all_segments = ED()
+            self.segments_dirs = CFG()
+            self.__all_segments = CFG()
             self.segments_json = os.path.join(self.segments_dir, "crnn_segments.json")
             self._ls_segments()
 
@@ -180,7 +180,7 @@ class CPSC2020(Dataset):
         """ finished, checked,
         """
         for item in ["data", "ann"]:
-            self.segments_dirs[item] = ED()
+            self.segments_dirs[item] = CFG()
             for rec in self.reader.all_records:
                 self.segments_dirs[item][rec] = os.path.join(self.segments_dir, item, rec)
                 os.makedirs(self.segments_dirs[item][rec], exist_ok=True)
@@ -190,7 +190,7 @@ class CPSC2020(Dataset):
             return
         print(f"please allow the reader a few minutes to collect the segments from {self.segments_dir}...")
         seg_filename_pattern = f"S\d{{2}}_\d{{7}}{self.reader.rec_ext}"
-        self.__all_segments = ED({
+        self.__all_segments = CFG({
             rec: get_record_list_recursive3(self.segments_dirs.data[rec], seg_filename_pattern) \
                 for rec in self.reader.all_records
         })
@@ -450,7 +450,7 @@ class CPSC2020(Dataset):
             print verbosity
         """
         # if force_recompute:
-        #     self.__all_segments = ED({rec: [] for rec in self.reader.all_records})
+        #     self.__all_segments = CFG({rec: [] for rec in self.reader.all_records})
         self._preprocess_data(
             self.allowed_preproc,
             force_recompute=force_recompute,
@@ -510,7 +510,7 @@ class CPSC2020(Dataset):
             print verbosity
         """
         # format save path
-        save_fp = ED()
+        save_fp = CFG()
         rec_name = self.reader._get_rec_name(rec)
         suffix = self._get_rec_suffix(config.preproc)
         save_fp.data = os.path.join(self.preprocess_dir, f"{rec_name}-{suffix}{self.reader.rec_ext}")
@@ -623,7 +623,7 @@ class CPSC2020(Dataset):
             print verbosity
         """
         rec_name = self.reader._get_rec_name(rec)
-        save_dirs = ED()
+        save_dirs = CFG()
         save_dirs.data = self.segments_dirs.data[rec_name]
         save_dirs.ann = self.segments_dirs.ann[rec_name]
         os.makedirs(save_dirs.data, exist_ok=True)
@@ -729,7 +729,7 @@ class CPSC2020(Dataset):
         seg_inds = list(range(segments.shape[0]))
         shuffle(seg_inds)
         for i, ind in enumerate(seg_inds):
-            save_fp = ED()
+            save_fp = CFG()
             seg_name = f"{rec_name.replace('A', 'S')}_{i:07d}"
             save_fp.data = os.path.join(self.segments_dirs.data[rec_name], f"{seg_name}{self.reader.rec_ext}")
             save_fp.ann = os.path.join(self.segments_dirs.ann[rec_name], f"{seg_name}{self.reader.rec_ext}")

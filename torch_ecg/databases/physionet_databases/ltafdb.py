@@ -12,9 +12,8 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 import wfdb
-from easydict import EasyDict as ED
-from matplotlib.pyplot import cm
 
+from ...cfg import CFG
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import PhysioNetDataBase, DEFAULT_FIG_SIZE_PER_SEC
 
@@ -73,7 +72,9 @@ class LTAFDB(PhysioNetDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
-        """
+        """   
+        from matplotlib.pyplot import cm
+        
         super().__init__(db_name="ltafdb", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
         self.fs = 128
         self.data_ext = "dat"
@@ -86,14 +87,14 @@ class LTAFDB(PhysioNetDataBase):
             "(N", "(AB", "(AFIB", "(B", "(IVR", "(SBR", "(SVTA", "(T", "(VT",
             "NOISE",  # additional, since head of each record are noisy
         ] # others include "\x01 Aux", "M", "MB", "MISSB", "PSE"
-        self.rhythm_class_map = ED({
+        self.rhythm_class_map = CFG({
             k.replace("(", ""): idx for idx, k in enumerate(self.all_rhythms)
         })
         self.palette = kwargs.get("palette", None)
         if self.palette is None:
             n_colors = len([k for k in self.rhythm_class_map.keys() if k not in ["N", "NOISE"]])
             colors = iter(cm.rainbow(np.linspace(0, 1, n_colors)))
-            self.palette = ED()
+            self.palette = CFG()
             for k in self.rhythm_class_map.keys():
                 if k in ["N", "NOISE"]:
                     continue
@@ -224,11 +225,11 @@ class LTAFDB(PhysioNetDataBase):
         simplified_fp = os.path.join(self.db_dir, f"{rec}_ann.json")
         if os.path.isfile(simplified_fp):
             with open(simplified_fp, "r") as f:
-                ann = ED(json.load(f))
+                ann = CFG(json.load(f))
         else:
             wfdb_ann = wfdb.rdann(fp, extension=self.manual_ann_ext)
 
-            ann = ED({k: [] for k in self.rhythm_class_map.keys()})
+            ann = CFG({k: [] for k in self.rhythm_class_map.keys()})
             critical_points = wfdb_ann.sample.tolist()
             aux_note = wfdb_ann.aux_note
             start = 0
@@ -247,7 +248,7 @@ class LTAFDB(PhysioNetDataBase):
             with open(simplified_fp, "w") as f:
                 json.dump(ann, f, ensure_ascii=False)
         
-        ann = ED({
+        ann = CFG({
             k: generalized_intervals_intersection(l_itv, [[sf,st]]) \
                 for k, l_itv in ann.items()
         })
@@ -305,15 +306,15 @@ class LTAFDB(PhysioNetDataBase):
             sampfrom=sampfrom or 0,
             sampto=sampto,
         )
-        ann = ED({k: [] for k in self.all_beat_types})
+        ann = CFG({k: [] for k in self.all_beat_types})
         for idx, bt in zip(wfdb_ann.sample, wfdb_ann.symbol):
             if bt not in self.all_beat_types:
                 continue
             ann[bt].append(idx)
         if not keep_original and sampfrom is not None:
-            ann = ED({k: np.array(v, dtype=int) - sampfrom for k, v in ann.items()})
+            ann = CFG({k: np.array(v, dtype=int) - sampfrom for k, v in ann.items()})
         else:
-            ann = ED({k: np.array(v, dtype=int) for k, v in ann.items()})
+            ann = CFG({k: np.array(v, dtype=int) for k, v in ann.items()})
         return ann
 
     def load_rpeak_indices(self, rec:str, sampfrom:Optional[int]=None, sampto:Optional[int]=None, use_manual:bool=True, keep_original:bool=False) -> np.ndarray:
@@ -451,7 +452,7 @@ class LTAFDB(PhysioNetDataBase):
                 keep_original=False,
             )
         else:
-            _ann = ann or ED({k: [] for k in self.rhythm_class_map.keys()})
+            _ann = ann or CFG({k: [] for k in self.rhythm_class_map.keys()})
         # indices to time
         _ann = {
             k: [[itv[0]/self.fs, itv[1]/self.fs] for itv in l_itv] \
@@ -476,7 +477,7 @@ class LTAFDB(PhysioNetDataBase):
                 keep_original=False
             )
         else:
-            _beat_ann = beat_ann or ED({k: [] for k in self.all_beat_types})
+            _beat_ann = beat_ann or CFG({k: [] for k in self.all_beat_types})
         _beat_ann = { # indices to time
             k: [i/self.fs for i in l_inds] \
                 for k, l_inds in _beat_ann.items()

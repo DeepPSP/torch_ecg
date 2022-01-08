@@ -18,7 +18,6 @@ except ModuleNotFoundError:
 import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -27,6 +26,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2019 as CR
 from torch_ecg._preprocessors import PreprocManager
 
@@ -48,7 +48,7 @@ class CPSC2019(Dataset):
     __name__ = "CPSC2019"
 
     def __init__(self,
-                 config:ED,
+                 config:CFG,
                  training:bool=True,
                  lazy:bool=False,) -> NoReturn:
         """ finished, checked,
@@ -176,7 +176,7 @@ class CPSC2019(Dataset):
 class FastDataReader(Dataset):
     """
     """
-    def __init__(self, reader:CR, records:Sequence[str], config:ED, ppm:Optional[PreprocManager]=None) -> NoReturn:
+    def __init__(self, reader:CR, records:Sequence[str], config:CFG, ppm:Optional[PreprocManager]=None) -> NoReturn:
         """
         """
         self.reader = reader

@@ -6,7 +6,6 @@ from copy import deepcopy
 
 import pywt
 import numpy as np
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -15,7 +14,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from torch_ecg.cfg import DEFAULTS
+from torch_ecg.cfg import CFG, DEFAULTS
 
 
 __all__ = [
@@ -31,7 +30,7 @@ __all__ = [
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-BaseCfg = ED()
+BaseCfg = CFG()
 BaseCfg.fs = 400  # Hz, CPSC2020 data fs
 BaseCfg.classes = ["N", "S", "V"]
 BaseCfg.class_map = {c: idx for idx, c in enumerate(BaseCfg.classes)}
@@ -47,7 +46,7 @@ BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
 
-PreprocCfg = ED()
+PreprocCfg = CFG()
 PreprocCfg.fs = BaseCfg.fs
 # sequential, keep correct ordering, to add "motion_artefact"
 PreprocCfg.preproc = ["bandpass",]  # "baseline",
@@ -71,7 +70,7 @@ PreprocCfg.rpeaks_skip_dist = int(0.5 * PreprocCfg.fs)  # 0.5s
 
 
 # FeatureCfg only for ML models, deprecated
-FeatureCfg = ED()
+FeatureCfg = CFG()
 FeatureCfg.fs = BaseCfg.fs
 FeatureCfg.features = ["wavelet", "rr", "morph",]
 
@@ -93,21 +92,21 @@ FeatureCfg.morph_intervals = [[0,45], [85,95], [110,120], [170,200]]
 
 
 
-ModelCfg = ED()
+ModelCfg = CFG()
 ModelCfg.fs = BaseCfg.fs
 ModelCfg.n_leads = 1
 ModelCfg.torch_dtype = BaseCfg.torch_dtype
 
-ModelCfg.crnn = ED()
+ModelCfg.crnn = CFG()
 ModelCfg.crnn.fs = BaseCfg.fs
 ModelCfg.crnn.n_leads = ModelCfg.n_leads
 ModelCfg.crnn.torch_dtype = BaseCfg.torch_dtype
 ModelCfg.crnn.classes = deepcopy(BaseCfg.classes)
 ModelCfg.crnn.class_map = deepcopy(BaseCfg.class_map)
 
-ModelCfg.crnn.cnn = ED()
+ModelCfg.crnn.cnn = CFG()
 ModelCfg.crnn.cnn.name = "multi_scopic"  # resnet, resnet_gc, vgg, cpsc2018, etc.
-ModelCfg.crnn.cnn.multi_scopic = ED()
+ModelCfg.crnn.cnn.multi_scopic = CFG()
 ModelCfg.crnn.cnn.multi_scopic.groups = 1
 ModelCfg.crnn.cnn.multi_scopic.scopes = [
     [ # branch 0
@@ -165,7 +164,7 @@ ModelCfg.crnn.cnn.multi_scopic.kernel_initializer = "he_normal"
 ModelCfg.crnn.cnn.multi_scopic.kw_initializer = {}
 ModelCfg.crnn.cnn.multi_scopic.activation = "relu"
 ModelCfg.crnn.cnn.multi_scopic.kw_activation = {"inplace": True}
-ModelCfg.crnn.cnn.multi_scopic.block = ED()
+ModelCfg.crnn.cnn.multi_scopic.block = CFG()
 ModelCfg.crnn.cnn.multi_scopic.block.subsample_mode = "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
 ModelCfg.crnn.cnn.multi_scopic.block.bias = \
     ModelCfg.crnn.cnn.multi_scopic.bias
@@ -180,9 +179,9 @@ ModelCfg.crnn.cnn.multi_scopic.block.kw_activation = \
 
 # rnn part
 # abuse of notation
-ModelCfg.crnn.rnn = ED()
+ModelCfg.crnn.rnn = CFG()
 ModelCfg.crnn.rnn.name = "linear"  # "none", "lstm", "attention"
-ModelCfg.crnn.rnn.linear = ED()
+ModelCfg.crnn.rnn.linear = CFG()
 ModelCfg.crnn.rnn.linear.out_channels = [
     256, 64,
 ]
@@ -199,7 +198,7 @@ ModelCfg.crnn.rnn.linear.activation = "mish"
 ModelCfg.crnn.global_pool = "max"  # "avg", "attentive"
 
 
-ModelCfg.seq_lab = ED()
+ModelCfg.seq_lab = CFG()
 ModelCfg.seq_lab.fs = BaseCfg.fs
 ModelCfg.seq_lab.n_leads = 1
 ModelCfg.seq_lab.torch_dtype = BaseCfg.torch_dtype
@@ -208,24 +207,24 @@ ModelCfg.seq_lab.class_map = {c:v for c,v in BaseCfg.class_map.items() if c != "
 
 ModelCfg.seq_lab.cnn = ModelCfg.crnn.cnn.copy()
 
-ModelCfg.seq_lab.rnn = ED()
+ModelCfg.seq_lab.rnn = CFG()
 # ModelCfg.seq_lab.rnn.name = "lstm"  # "none"
 ModelCfg.seq_lab.rnn.name = "none"  # "lstm"
-# ModelCfg.seq_lab.rnn.lstm = ED()
+# ModelCfg.seq_lab.rnn.lstm = CFG()
 # ModelCfg.seq_lab.rnn.lstm.hidden_sizes = [256, 256]
 # ModelCfg.seq_lab.rnn.lstm.bias = True
 # ModelCfg.seq_lab.rnn.lstm.dropout = 0
 # ModelCfg.seq_lab.rnn.lstm.bidirectional = True
-ModelCfg.seq_lab.attn = ED()
+ModelCfg.seq_lab.attn = CFG()
 ModelCfg.seq_lab.attn.name = "se"  # "gc"
-ModelCfg.seq_lab.attn.se = ED()
+ModelCfg.seq_lab.attn.se = CFG()
 ModelCfg.seq_lab.attn.se.reduction = 8  # not including the last linear layer
 ModelCfg.seq_lab.attn.se.activation = "relu"
-ModelCfg.seq_lab.attn.se.kw_activation = ED(inplace=True)
+ModelCfg.seq_lab.attn.se.kw_activation = CFG(inplace=True)
 ModelCfg.seq_lab.attn.se.bias = True
 ModelCfg.seq_lab.attn.se.kernel_initializer = "he_normal"
 
-ModelCfg.seq_lab.clf = ED()
+ModelCfg.seq_lab.clf = CFG()
 ModelCfg.seq_lab.clf.out_channels = [256, 64]  # not including the last linear layer
 ModelCfg.seq_lab.clf.activation = "mish"
 ModelCfg.seq_lab.clf.bias = True
@@ -234,7 +233,7 @@ ModelCfg.seq_lab.clf.dropouts = [0.2, 0.2, 0.0]
 
 
 
-TrainCfg = ED()
+TrainCfg = CFG()
 TrainCfg.fs = ModelCfg.fs
 TrainCfg.n_leads = 1
 TrainCfg.db_dir = BaseCfg.db_dir
@@ -310,7 +309,7 @@ TrainCfg.max_lr = 1e-2  # for "one_cycle" scheduler, to adjust via expriments
 TrainCfg.burn_in = 400
 TrainCfg.steps = [5000, 10000]
 
-TrainCfg.early_stopping = ED()  # early stopping according to challenge metric
+TrainCfg.early_stopping = CFG()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
 TrainCfg.early_stopping.patience = 6
 
@@ -329,6 +328,6 @@ TrainCfg.eval_every = 20
 
 
 
-PlotCfg = ED()
+PlotCfg = CFG()
 PlotCfg.winL = 0.06  # second
 PlotCfg.winR = 0.08  # second

@@ -12,9 +12,8 @@ np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
-from easydict import EasyDict as ED
 
-from ...cfg import DEFAULTS
+from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str
 from ...models._nets import (
@@ -87,7 +86,7 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
                 f"`scopes` indicates {self.__num_convs} convolutional layers, while `filter_lengths` indicates {len(self.__filter_lengths)}"
         self.__subsample_length = subsample_length
         self.__groups = groups
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
 
         conv_in_channels = self.__in_channels
         for idx in range(self.__num_convs):
@@ -234,7 +233,7 @@ class MultiScopicBranch(SizeMixin, nn.Sequential):
             assert len(self.__subsample_lengths) == self.__num_blocks, \
             f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
         self.__groups = groups
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
 
         block_in_channels = self.__in_channels
         for idx in range(self.__num_blocks):
@@ -335,7 +334,7 @@ class MultiScopicCNN(SizeMixin, nn.Module):
         """
         super().__init__()
         self.__in_channels = in_channels
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         self.__scopes = self.config.scopes
         self.__num_branches = len(self.__scopes)
 

@@ -9,7 +9,10 @@ from functools import reduce
 from collections import namedtuple
 from glob import glob
 from copy import deepcopy
-from typing import Union, Optional, List, Dict, Tuple, Sequence, Iterable, NoReturn, Any
+from typing import (
+    Union, Optional, NoReturn, Any,
+    List, Dict, Tuple, Sequence, Iterable,
+)
 from numbers import Real, Number
 
 import numpy as np
@@ -19,9 +22,8 @@ from scipy import interpolate
 from sklearn.utils import compute_class_weight
 from wfdb.io import _header
 from wfdb import Record, MultiRecord
-from easydict import EasyDict as ED
 
-from ..cfg import DEFAULTS
+from ..cfg import CFG, DEFAULTS
 
 
 __all__ = [
@@ -793,9 +795,9 @@ def masks_to_waveforms(masks:np.ndarray,
     _leads = [f"lead_{idx+1}" for idx in range(_masks.shape[0])] if leads is None else leads
     assert len(_leads) == _masks.shape[0]
 
-    _class_map = ED(deepcopy(class_map))
+    _class_map = CFG(deepcopy(class_map))
 
-    waves = ED({lead_name:[] for lead_name in _leads})
+    waves = CFG({lead_name:[] for lead_name in _leads})
     for channel_idx, lead_name in enumerate(_leads):
         current_mask = _masks[channel_idx,...]
         for wave_name, wave_number in _class_map.items():

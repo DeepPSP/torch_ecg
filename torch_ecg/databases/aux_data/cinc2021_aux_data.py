@@ -10,7 +10,8 @@ from numbers import Real
 
 import numpy as np
 import pandas as pd
-from easydict import EasyDict as ED
+
+from ...cfg import CFG
 
 
 __all__ = [
@@ -261,8 +262,8 @@ df_weights_snomed = df_weights_expanded  # alias
 
 
 snomed_ct_code_to_abbr = \
-    ED({row["SNOMEDCTCode"]:row["Abbreviation"] for _,row in dx_mapping_all.iterrows()})
-abbr_to_snomed_ct_code = ED({v:k for k,v in snomed_ct_code_to_abbr.items()})
+    CFG({row["SNOMEDCTCode"]:row["Abbreviation"] for _,row in dx_mapping_all.iterrows()})
+abbr_to_snomed_ct_code = CFG({v:k for k,v in snomed_ct_code_to_abbr.items()})
 
 df_weights_abbr = df_weights_expanded.copy()
 
@@ -284,8 +285,8 @@ df_weights_abbreviations.index = \
 
 
 snomed_ct_code_to_fullname = \
-    ED({row["SNOMEDCTCode"]:row["Dx"] for _,row in dx_mapping_all.iterrows()})
-fullname_to_snomed_ct_code = ED({v:k for k,v in snomed_ct_code_to_fullname.items()})
+    CFG({row["SNOMEDCTCode"]:row["Dx"] for _,row in dx_mapping_all.iterrows()})
+fullname_to_snomed_ct_code = CFG({v:k for k,v in snomed_ct_code_to_fullname.items()})
 
 df_weights_fullname = df_weights_expanded.copy()
 
@@ -299,11 +300,11 @@ df_weights_fullname.index = \
 
 
 abbr_to_fullname = \
-    ED({row["Abbreviation"]:row["Dx"] for _,row in dx_mapping_all.iterrows()})
-fullname_to_abbr = ED({v:k for k,v in abbr_to_fullname.items()})
+    CFG({row["Abbreviation"]:row["Dx"] for _,row in dx_mapping_all.iterrows()})
+fullname_to_abbr = CFG({v:k for k,v in abbr_to_fullname.items()})
 
 
-# equiv_class_dict = ED({ # from unofficial phase, deprecated
+# equiv_class_dict = CFG({ # from unofficial phase, deprecated
 #     "CRBBB": "RBBB",
 #     "SVPB": "PAC",
 #     "VPB": "PVC",
@@ -451,7 +452,7 @@ def get_class_count(tranches:Union[str, Sequence[str]],
         value: count of a class in `tranches`
     """
     assert threshold >= 0
-    tranche_names = ED({
+    tranche_names = CFG({
         "A": "CPSC",
         "B": "CPSC_Extra",
         "C": "StPetersburg",
@@ -463,7 +464,7 @@ def get_class_count(tranches:Union[str, Sequence[str]],
     tranche_names = [tranche_names[t] for t in tranches]
     _exclude_classes = [normalize_class(c) for c in (exclude_classes or [])]
     df = dx_mapping_scored.copy() if scored_only else dx_mapping_all.copy()
-    class_count = ED()
+    class_count = CFG()
     for _, row in df.iterrows():
         key = row["Abbreviation"]
         val = row[tranche_names].values.sum()
@@ -479,7 +480,7 @@ def get_class_count(tranches:Union[str, Sequence[str]],
             class_count[key] += val
         else:
             class_count[key] = val
-    tmp = ED()
+    tmp = CFG()
     tot_count = sum(class_count.values())
     _threshold = threshold if threshold >= 1 else threshold * tot_count
     if fmt.lower() == "s":
@@ -546,10 +547,10 @@ def get_class_weight(tranches:Union[str, Sequence[str]],
         threshold=threshold,
         fmt=fmt,
     )
-    class_weight = ED({
+    class_weight = CFG({
         key: sum(class_count.values()) / val for key, val in class_count.items()
     })
-    class_weight = ED({
+    class_weight = CFG({
         key: min_weight * val / min(class_weight.values()) for key, val in class_weight.items()
     })
     return class_weight

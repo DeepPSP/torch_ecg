@@ -3,7 +3,6 @@
 from typing import Union, Optional, Any, List, Tuple
 
 import numpy as np
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -12,6 +11,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import dict_to_str
 from torch_ecg.utils.utils_interval import in_generalized_interval
 
@@ -93,7 +93,7 @@ def CPSC2020_loss_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarra
 
     total_loss = sum(class_loss.values())
 
-    retval = ED(
+    retval = CFG(
         total_loss=total_loss,
         class_loss=class_loss,
         true_positive=true_positive,
@@ -210,7 +210,7 @@ def CPSC2020_loss_v0(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray,
 
     total_loss = sum(class_loss.values())
 
-    retval = ED(
+    retval = CFG(
         total_loss=total_loss,
         class_loss=class_loss,
         true_positive=true_positive,

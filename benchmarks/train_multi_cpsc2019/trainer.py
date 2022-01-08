@@ -26,7 +26,6 @@ from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from tensorboardX import SummaryWriter
-from easydict import EasyDict as ED
 import biosppy.signals.ecg as BSE
 
 try:
@@ -36,7 +35,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from torch_ecg.cfg import DEFAULTS
+from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.trainer import BaseTrainer
 from torch_ecg.utils.misc import (
@@ -327,7 +326,7 @@ def get_args(**kwargs):
 
     cfg.update(args)
     
-    return ED(cfg)
+    return CFG(cfg)
 
 
 _MODEL_MAP = dict(

@@ -11,8 +11,8 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 import wfdb
-from easydict import EasyDict as ED
 
+from ...cfg import CFG
 from ..base import PhysioNetDataBase, ECGWaveForm
 
 
@@ -186,9 +186,9 @@ class LUDB(PhysioNetDataBase):
         ...         ann = wfdb.rdann(data_gen._get_path(rec), extension=ext)
         ...         all_symbols.update(ann.symbol)
         """
-        self._symbol_to_wavename = ED(N="qrs", p="pwave", t="twave")
-        self._wavename_to_symbol = ED({v:k for k,v in self._symbol_to_wavename.items()})
-        self.class_map = ED(
+        self._symbol_to_wavename = CFG(N="qrs", p="pwave", t="twave")
+        self._wavename_to_symbol = CFG({v:k for k,v in self._symbol_to_wavename.items()})
+        self.class_map = CFG(
             p=1, N=2, t=3, i=0  # an extra isoelectric
         )
 
@@ -302,13 +302,13 @@ class LUDB(PhysioNetDataBase):
         -------
         ann_dict: dict,
         """
-        ann_dict = ED()
+        ann_dict = CFG()
         rec_fp = self._get_path(rec)
 
         # wave delineation annotations
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
         _ann_ext = [f"{l.lower()}" for l in _leads]  # for Version 1.0.0, it is f"{l.lower()}"
-        ann_dict["waves"] = ED({l:[] for l in _leads})
+        ann_dict["waves"] = CFG({l:[] for l in _leads})
         for l, e in zip(_leads, _ann_ext):
             ann = wfdb.rdann(rec_fp, extension=e)
             df_lead_ann = pd.DataFrame()
@@ -411,7 +411,7 @@ class LUDB(PhysioNetDataBase):
         masks: ndarray,
             the masks corresponding to the wave delineation annotations of `rec`
         """
-        _class_map = ED(class_map) if class_map is not None else self.class_map
+        _class_map = CFG(class_map) if class_map is not None else self.class_map
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=True)
         data = self.load_data(rec, leads=_leads, data_format="channel_first")
         masks = np.full_like(data, fill_value=_class_map.i, dtype=int)
@@ -472,11 +472,11 @@ class LUDB(PhysioNetDataBase):
             _leads = [f"lead_{idx+1}" for idx in range(_masks.shape[0])]
         assert len(_leads) == _masks.shape[0]
 
-        _class_map = ED(class_map) if class_map is not None else self.class_map
+        _class_map = CFG(class_map) if class_map is not None else self.class_map
 
         _fs = fs if fs is not None else self.fs
 
-        waves = ED({lead_name:[] for lead_name in _leads})
+        waves = CFG({lead_name:[] for lead_name in _leads})
         for channel_idx, lead_name in enumerate(_leads):
             current_mask = _masks[channel_idx,...]
             for wave_symbol, wave_number in _class_map.items():
@@ -518,7 +518,7 @@ class LUDB(PhysioNetDataBase):
         -------
         header_dict: dict,
         """
-        header_dict = ED({})
+        header_dict = CFG({})
         rec_fp = self._get_path(rec)
         header_reader = wfdb.rdheader(rec_fp)
         header_dict["units"] = header_reader.units

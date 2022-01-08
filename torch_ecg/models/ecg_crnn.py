@@ -15,9 +15,8 @@ import torch
 from torch import nn
 from torch import Tensor
 import torch.nn.functional as F
-from easydict import EasyDict as ED
 
-from ..cfg import DEFAULTS
+from ..cfg import CFG, DEFAULTS
 from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
 from ..utils.utils_nn import (
     compute_conv_output_shape, compute_module_size,
@@ -73,7 +72,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
     __DEBUG__ = False
     __name__ = "ECG_CRNN"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters

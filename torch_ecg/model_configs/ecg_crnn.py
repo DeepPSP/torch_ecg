@@ -3,8 +3,6 @@ configs of models of CRNN structures, for classification
 """
 from copy import deepcopy
 
-from easydict import EasyDict as ED
-
 from .cnn import (
     vgg_block_basic, vgg_block_mish, vgg_block_swish,
     vgg16, vgg16_leadwise,
@@ -36,6 +34,7 @@ from .attn import (
     transformer,
 )
 from ..utils.utils_nn import adjust_cnn_filter_lengths
+from ..cfg import CFG
 
 
 __all__ = [
@@ -43,11 +42,11 @@ __all__ = [
 ]
 
 
-ECG_CRNN_CONFIG = ED()
+ECG_CRNN_CONFIG = CFG()
 ECG_CRNN_CONFIG.fs = 500
 
 # cnn part
-ECG_CRNN_CONFIG.cnn = ED()
+ECG_CRNN_CONFIG.cnn = CFG()
 # ECG_CRNN_CONFIG.cnn.name = "resnet_leadwise"
 ECG_CRNN_CONFIG.cnn.name = "multi_scopic_leadwise"
 
@@ -140,7 +139,7 @@ ECG_CRNN_CONFIG.cnn.densenet_leadwise = adjust_cnn_filter_lengths(ECG_CRNN_CONFI
 
 
 # rnn part
-ECG_CRNN_CONFIG.rnn = ED()
+ECG_CRNN_CONFIG.rnn = CFG()
 ECG_CRNN_CONFIG.rnn.name = "none"  # "none", "lstm", "linear"
 
 ECG_CRNN_CONFIG.rnn.lstm = deepcopy(lstm)
@@ -149,7 +148,7 @@ ECG_CRNN_CONFIG.rnn.linear = deepcopy(linear)
 
 
 # attention part
-ECG_CRNN_CONFIG.attn = ED()
+ECG_CRNN_CONFIG.attn = CFG()
 ECG_CRNN_CONFIG.attn.name = "se"  # "none", "se", "gc", "nl"
 
 ECG_CRNN_CONFIG.attn.se = deepcopy(squeeze_excitation)
@@ -167,7 +166,7 @@ ECG_CRNN_CONFIG.attn.transformer = deepcopy(transformer)
 ECG_CRNN_CONFIG.global_pool = "max"  # "avg", "attn"
 
 
-ECG_CRNN_CONFIG.clf = ED()
+ECG_CRNN_CONFIG.clf = CFG()
 ECG_CRNN_CONFIG.clf.out_channels = [
     1024,
     # not including the last linear layer, whose out channels equals n_classes

@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 import torch
 from torch import Tensor
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -17,6 +16,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.models import (
     ECG_CRNN, ECG_SEQ_LAB_NET
 )
@@ -37,7 +37,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
     __DEBUG__ = True
     __name__ = "ECG_CRNN_CPSC2020"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -122,7 +122,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2020"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
+    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters

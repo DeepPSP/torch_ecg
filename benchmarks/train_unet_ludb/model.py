@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 import torch
 from torch import Tensor
-from easydict import EasyDict as ED
 import biosppy.signals.ecg as BSE
 
 try:
@@ -18,6 +17,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.utils.misc import mask_to_intervals
@@ -37,7 +37,7 @@ class ECG_UNET_LUDB(ECG_UNET):
     __DEBUG__ = True
     __name__ = "ECG_UNET_LUDB"
     
-    def __init__(self, n_leads:int, config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
+    def __init__(self, n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -53,7 +53,7 @@ class ECG_UNET_LUDB(ECG_UNET):
             model_config.update(deepcopy(config[config.model_name]))
             ModelCfg.update(deepcopy(config))
         _inv_class_map = {v: k for k, v in ModelCfg.class_map.items()}
-        self._mask_map = ED({
+        self._mask_map = CFG({
             k: _inv_class_map[v] \
                 for k, v in ModelCfg.mask_class_map.items()
         })

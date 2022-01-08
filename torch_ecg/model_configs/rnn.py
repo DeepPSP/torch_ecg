@@ -4,7 +4,7 @@ mainly RNN, but can also be attention
 """
 from copy import deepcopy
 
-from easydict import EasyDict as ED
+from ..cfg import CFG
 
 
 __all__ = [
@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 
-lstm = ED()
+lstm = CFG()
 lstm.bias = True
 lstm.dropouts = 0.2
 lstm.bidirectional = True
@@ -21,7 +21,7 @@ lstm.retseq = True
 lstm.hidden_sizes = [12*16, 12*16]
 
 
-attention = ED()
+attention = CFG()
 # almost the same with lstm, but the last layer is an attention layer
 attention.head_num = 12
 attention.bias = True

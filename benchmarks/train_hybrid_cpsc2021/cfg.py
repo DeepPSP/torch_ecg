@@ -5,7 +5,6 @@ from copy import deepcopy
 from itertools import repeat
 
 import numpy as np
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -14,7 +13,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from torch_ecg.cfg import DEFAULTS
+from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.model_configs import (
     ECG_SEQ_LAB_NET_CONFIG,
     RR_LSTM_CONFIG,
@@ -58,7 +57,7 @@ __all__ = [
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-BaseCfg = ED()
+BaseCfg = CFG()
 BaseCfg.db_dir = None
 BaseCfg.log_dir = os.path.join(_BASE_DIR, "log")
 BaseCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
@@ -90,7 +89,7 @@ BaseCfg.beat_winR = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
 
 
 
-TrainCfg = ED()
+TrainCfg = CFG()
 
 # common confis for all training tasks
 TrainCfg.fs = BaseCfg.fs
@@ -112,7 +111,7 @@ TrainCfg.rpeaks_dist2border = int(0.5 * TrainCfg.fs)  # 0.5s
 TrainCfg.qrs_mask_bias = int(0.075 * TrainCfg.fs)  # bias to rpeaks
 
 # configs of signal preprocessing
-TrainCfg.normalize = ED(
+TrainCfg.normalize = CFG(
     method="z-score",
     per_channel=True,
     mean=0.0,
@@ -120,7 +119,7 @@ TrainCfg.normalize = ED(
 )
 # frequency band of the filter to apply, should be chosen very carefully
 # TrainCfg.bandpass = None
-TrainCfg.bandpass = ED(
+TrainCfg.bandpass = CFG(
     lowcut=0.5,
     highcut=45,
     filter_type="fir",
@@ -128,18 +127,18 @@ TrainCfg.bandpass = ED(
 )
 
 # configs of data aumentation
-# TrainCfg.label_smooth = ED(
+# TrainCfg.label_smooth = CFG(
 #     prob=0.8,
 #     smoothing=0.1,
 # )
 TrainCfg.label_smooth = False
 TrainCfg.random_masking = False
 TrainCfg.stretch_compress = False  # stretch or compress in time axis
-# TrainCfg.mixup = ED(
+# TrainCfg.mixup = CFG(
 #     prob=0.6,
 #     alpha=0.3,
 # )
-TrainCfg.random_flip = ED(
+TrainCfg.random_flip = CFG(
     per_channel=True,
     prob=[0.4, 0.5],
 )
@@ -165,16 +164,16 @@ TrainCfg.lr_step_size = 50
 TrainCfg.lr_gamma = 0.1
 TrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
 
-TrainCfg.early_stopping = ED()  # early stopping according to challenge metric
+TrainCfg.early_stopping = CFG()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
 TrainCfg.early_stopping.patience = 8
 
 # configs of loss function
 # "MaskedBCEWithLogitsLoss", "BCEWithLogitsWithClassWeightLoss"  # "BCELoss"
 # TrainCfg.loss = "AsymmetricLoss"
-# TrainCfg.loss_kw = ED(gamma_pos=0, gamma_neg=1, implementation="deep-psp")
+# TrainCfg.loss_kw = CFG(gamma_pos=0, gamma_neg=1, implementation="deep-psp")
 TrainCfg.loss = "MaskedBCEWithLogitsLoss"
-TrainCfg.loss_kw = ED()
+TrainCfg.loss_kw = CFG()
 TrainCfg.flooding_level = 0.0  # flooding performed if positive
 
 TrainCfg.log_step = 40
@@ -190,7 +189,7 @@ TrainCfg.tasks = [
 # "resnet_leadwise", "multi_scopic_leadwise", "vgg16", "resnet", "vgg16_leadwise", "cpsc", "cpsc_leadwise", etc.
 
 for t in TrainCfg.tasks:
-    TrainCfg[t] = ED()
+    TrainCfg[t] = CFG()
 
 TrainCfg.qrs_detection.final_model_name = None
 TrainCfg.qrs_detection.model_name = "seq_lab"  # "unet"
@@ -204,7 +203,7 @@ TrainCfg.qrs_detection.critical_overlap_len = int(25*TrainCfg.fs)
 TrainCfg.qrs_detection.classes = ["N",]
 TrainCfg.qrs_detection.monitor = "qrs_score"  # monitor for determining the best model
 TrainCfg.qrs_detection.loss = "BCEWithLogitsLoss"  # "AsymmetricLoss"
-TrainCfg.qrs_detection.loss_kw = ED()
+TrainCfg.qrs_detection.loss_kw = CFG()
 
 TrainCfg.rr_lstm.final_model_name = None
 TrainCfg.rr_lstm.model_name = "lstm"  # "lstm", "lstm_crf"
@@ -214,7 +213,7 @@ TrainCfg.rr_lstm.critical_overlap_len = 25  # number of rr intervals ( number of
 TrainCfg.rr_lstm.classes = ["af",]
 TrainCfg.rr_lstm.monitor = "neg_masked_bce"  # "rr_score", "neg_masked_bce"  # monitor for determining the best model
 TrainCfg.rr_lstm.loss = "MaskedBCEWithLogitsLoss"
-TrainCfg.rr_lstm.loss_kw = ED()
+TrainCfg.rr_lstm.loss_kw = CFG()
 
 TrainCfg.main.final_model_name = None
 TrainCfg.main.model_name = "seq_lab"  # "unet"
@@ -228,9 +227,9 @@ TrainCfg.main.critical_overlap_len = int(25*TrainCfg.fs)
 TrainCfg.main.classes = ["af",]
 TrainCfg.main.monitor = "neg_masked_bce"  # "main_score", "neg_masked_bce"  # monitor for determining the best model
 # TrainCfg.main.loss = "AsymmetricLoss" # "MaskedBCEWithLogitsLoss"
-# TrainCfg.main.loss_kw = ED(gamma_pos=0, gamma_neg=1, implementation="deep-psp")
+# TrainCfg.main.loss_kw = CFG(gamma_pos=0, gamma_neg=1, implementation="deep-psp")
 TrainCfg.main.loss = "MaskedBCEWithLogitsLoss" # "MaskedBCEWithLogitsLoss"
-TrainCfg.main.loss_kw = ED()
+TrainCfg.main.loss_kw = CFG()
 
 
 # Plan:
@@ -238,7 +237,7 @@ TrainCfg.main.loss_kw = ED()
 # main task via RR-LSTM using sequence of R peaks as input
 # main task via UNets, sequence labelling using raw ECGs
 
-_BASE_MODEL_CONFIG = ED()
+_BASE_MODEL_CONFIG = CFG()
 _BASE_MODEL_CONFIG.torch_dtype = BaseCfg.torch_dtype
 _BASE_MODEL_CONFIG.fs = BaseCfg.fs
 _BASE_MODEL_CONFIG.n_leads = BaseCfg.n_leads
@@ -279,22 +278,22 @@ ModelCfg.rr_lstm.model_name = TrainCfg.rr_lstm.model_name
 
 ModelCfg.rr_lstm.lstm = deepcopy(RR_AF_VANILLA_CONFIG)
 ModelCfg.rr_lstm.lstm.global_pool = "none"
-ModelCfg.rr_lstm.lstm.attn = ED()
+ModelCfg.rr_lstm.lstm.attn = CFG()
 ModelCfg.rr_lstm.lstm.attn.name = "se"  # "gc"
-ModelCfg.rr_lstm.lstm.attn.se = ED()
+ModelCfg.rr_lstm.lstm.attn.se = CFG()
 ModelCfg.rr_lstm.lstm.attn.se.reduction = 8  # not including the last linear layer
 ModelCfg.rr_lstm.lstm.attn.se.activation = "relu"
-ModelCfg.rr_lstm.lstm.attn.se.kw_activation = ED(inplace=True)
+ModelCfg.rr_lstm.lstm.attn.se.kw_activation = CFG(inplace=True)
 ModelCfg.rr_lstm.lstm.attn.se.bias = True
 ModelCfg.rr_lstm.lstm.attn.se.kernel_initializer = "he_normal"
 
 ModelCfg.rr_lstm.lstm_crf = deepcopy(RR_AF_CRF_CONFIG)
-ModelCfg.rr_lstm.lstm_crf.attn = ED()
+ModelCfg.rr_lstm.lstm_crf.attn = CFG()
 ModelCfg.rr_lstm.lstm_crf.attn.name = "se"  # "gc"
-ModelCfg.rr_lstm.lstm_crf.attn.se = ED()
+ModelCfg.rr_lstm.lstm_crf.attn.se = CFG()
 ModelCfg.rr_lstm.lstm_crf.attn.se.reduction = 8  # not including the last linear layer
 ModelCfg.rr_lstm.lstm_crf.attn.se.activation = "relu"
-ModelCfg.rr_lstm.lstm_crf.attn.se.kw_activation = ED(inplace=True)
+ModelCfg.rr_lstm.lstm_crf.attn.se.kw_activation = CFG(inplace=True)
 ModelCfg.rr_lstm.lstm_crf.attn.se.bias = True
 ModelCfg.rr_lstm.lstm_crf.attn.se.kernel_initializer = "he_normal"
 
@@ -339,7 +338,7 @@ ModelCfg.main.unet.up_mode = "interp"  # "deconv"
 
 
 # configurations for visualization
-PlotCfg = ED()
+PlotCfg = CFG()
 # default const for the plot function in dataset.py
 # used only when corr. values are absent
 # all values are time bias w.r.t. corr. peaks, with units in ms

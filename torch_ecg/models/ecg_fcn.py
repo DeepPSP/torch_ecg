@@ -18,4 +18,3 @@ import torch
 from torch import nn
 from torch import Tensor
 import torch.nn.functional as F
-from easydict import EasyDict as ED

@@ -18,7 +18,6 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -27,6 +26,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.utils.trainer import BaseTrainer
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.misc import (
@@ -357,7 +357,7 @@ def get_args(**kwargs:Any):
 
     cfg.update(args)
     
-    return ED(cfg)
+    return CFG(cfg)
 
 
 _MODEL_MAP = {
@@ -368,7 +368,7 @@ _MODEL_MAP = {
 }
 
 
-def _set_task(task:str, config:ED) -> NoReturn:
+def _set_task(task:str, config:CFG) -> NoReturn:
     """ finished, checked,
     """
     assert task in config.tasks

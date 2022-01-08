@@ -24,7 +24,6 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 from scipy.signal import peak_prominences, peak_widths
 from biosppy.signals.tools import filter_signal
-from easydict import EasyDict as ED
 from deprecated import deprecated
 
 try:
@@ -34,6 +33,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.utils.preproc import (
     preprocess_multi_lead_signal,
     rpeaks_detect_multi_leads,
@@ -122,7 +122,7 @@ def special_detectors(raw_sig:np.ndarray,
     is_RAD = (axis=="RAD")
     is_brady = (brady_tachy=="B")
     is_tachy = (brady_tachy=="T")
-    conclusion = ED(
+    conclusion = CFG(
         is_brady=is_brady,
         is_tachy=is_tachy,
         is_LAD=is_LAD,

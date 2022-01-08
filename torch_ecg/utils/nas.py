@@ -9,9 +9,10 @@ import torch.nn as nn
 from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
-from easydict import EasyDict as ED
+# from easydict import EasyDict as ED
 
 from .trainer import BaseTrainer
+from ..cfg import CFG
 
 
 __all__ = ["NAS",]
@@ -49,7 +50,7 @@ class NAS:
         self.trainer_cls = trainer_cls
         self.model_cls = model_cls
         self.dataset_cls = dataset_cls
-        self.train_config = ED(train_config)
+        self.train_config = CFG(train_config)
         self.model_configs = model_configs
         self.lazy = lazy
         if not lazy:

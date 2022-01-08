@@ -7,7 +7,6 @@ import wfdb
 import numpy as np
 import torch
 import scipy.signal as SS
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -16,6 +15,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.utils.preproc import (
     preprocess_multi_lead_signal,
     remove_spikes_naive,
@@ -55,13 +55,13 @@ _BATCH_SIZE = 32
 _VERBOSE = 1
 
 
-_ENTRY_CONFIG = ED()
+_ENTRY_CONFIG = CFG()
 _ENTRY_CONFIG.use_rr_lstm_model = True
 _ENTRY_CONFIG.use_main_seq_lab_model = True
 _ENTRY_CONFIG.use_main_unet_model = False
 _ENTRY_CONFIG.merge_rule = "union"
 
-_MODEL_FILENAME = ED(
+_MODEL_FILENAME = CFG(
     qrs_detection="BestModel_qrs_detection.pth.tar",
     rr_lstm="BestModel_rr_lstm.pth.tar",
     main_seq_lab="BestModel_main_seq_lab.pth.tar",
@@ -102,7 +102,7 @@ def challenge_entry(sample_path):
         device=_CPU,
     )
     rpeak_model.eval()
-    rpeak_cfg = ED(rpeak_cfg)
+    rpeak_cfg = CFG(rpeak_cfg)
     if _VERBOSE >= 1:
         print("QRS detection model is loaded")
     rr_lstm_model, rr_cfg = RR_LSTM_CPSC2021.from_checkpoint(
@@ -110,7 +110,7 @@ def challenge_entry(sample_path):
         device=_CPU,
     )
     rr_lstm_model.eval()
-    rr_cfg = ED(rr_cfg)
+    rr_cfg = CFG(rr_cfg)
     if _VERBOSE >= 1:
         print("RR LSTM model is loaded")
     if _ENTRY_CONFIG.use_main_seq_lab_model:
@@ -130,7 +130,7 @@ def challenge_entry(sample_path):
         if _VERBOSE >= 1:
             print("Main task UNet model is loaded")
     main_task_model.eval()
-    main_task_cfg = ED(main_task_cfg)
+    main_task_cfg = CFG(main_task_cfg)
 
     if _VERBOSE >= 1:
         print(f"models loaded in {time.time()-timer:.2f} seconds...")

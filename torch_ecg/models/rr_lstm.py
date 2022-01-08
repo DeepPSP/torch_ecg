@@ -19,9 +19,8 @@ import torch
 from torch import nn
 from torch import Tensor
 import torch.nn.functional as F
-from easydict import EasyDict as ED
 
-from ..cfg import DEFAULTS
+from ..cfg import CFG, DEFAULTS
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
 from ..utils.misc import dict_to_str
 from ..utils.utils_nn import compute_module_size, SizeMixin, CkptMixin
@@ -52,7 +51,7 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
     __DEBUG__ = True
     __name__ = "RR_LSTM"
 
-    def __init__(self, classes:Sequence[str], config:Optional[ED]=None, **kwargs:Any) -> NoReturn:
+    def __init__(self, classes:Sequence[str], config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters

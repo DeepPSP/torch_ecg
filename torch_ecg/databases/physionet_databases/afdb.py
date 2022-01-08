@@ -12,8 +12,8 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 import wfdb
-from easydict import EasyDict as ED
 
+from ...cfg import CFG
 from ...utils.misc import (
     get_record_list_recursive,
 )
@@ -92,12 +92,12 @@ class AFDB(PhysioNetDataBase):
         self.special_records = ["00735", "03665"]
         self.qrsc_records = get_record_list_recursive(self.db_dir, self.manual_beat_ann_ext)
 
-        self.class_map = ED(
+        self.class_map = CFG(
             AFIB=1, AFL=2, J=3, N=0  # an extra isoelectric
         )
         self.palette = kwargs.get("palette", None)
         if self.palette is None:
-            self.palette = ED(
+            self.palette = CFG(
                 AFIB="blue", AFL="red", J="yellow",
                 # N="green",
                 qrs="green",
@@ -202,7 +202,7 @@ class AFDB(PhysioNetDataBase):
         st = sampto or sig_len
         assert st > sf, "`sampto` should be greater than `sampfrom`!"
 
-        ann = ED({k:[] for k in self.class_map.keys()})
+        ann = CFG({k:[] for k in self.class_map.keys()})
         critical_points = wfdb_ann.sample.tolist() + [sig_len]
         aux_note = wfdb_ann.aux_note
         if aux_note[0] == "(N":
@@ -214,7 +214,7 @@ class AFDB(PhysioNetDataBase):
 
         for idx, rhythm in enumerate(aux_note):
             ann[rhythm.replace("(", "")].append([critical_points[idx], critical_points[idx+1]])
-        ann = ED({
+        ann = CFG({
             k: generalized_intervals_intersection(l_itv, [[sf,st]]) \
                 for k, l_itv in ann.items()
         })
@@ -373,7 +373,7 @@ class AFDB(PhysioNetDataBase):
                 keep_original=False,
             )
         else:
-            _ann = ann or ED({k:[] for k in self.class_map.keys()})
+            _ann = ann or CFG({k:[] for k in self.class_map.keys()})
         # indices to time
         _ann = {
             k: [[itv[0]/self.fs, itv[1]/self.fs] for itv in l_itv] \

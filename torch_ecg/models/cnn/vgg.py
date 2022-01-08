@@ -11,9 +11,8 @@ import pandas as pd
 import torch
 from torch import nn
 from torch import Tensor
-from easydict import EasyDict as ED
 
-from ...cfg import DEFAULTS
+from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import (
     compute_maxpool_output_shape,
     compute_module_size,
@@ -67,7 +66,7 @@ class VGGBlock(SizeMixin, nn.Sequential):
         self.__in_channels = in_channels
         self.__out_channels = out_channels
         self.__groups = groups
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
@@ -185,7 +184,7 @@ class VGG16(SizeMixin, nn.Sequential):
         super().__init__()
         self.__in_channels = in_channels
         # self.config = deepcopy(ECG_CRNN_CONFIG.cnn.vgg16)
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 

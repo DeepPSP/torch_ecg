@@ -5,7 +5,8 @@ from itertools import repeat
 from copy import deepcopy
 
 import numpy as np
-from easydict import EasyDict as ED
+
+from ...cfg import CFG
 
 
 __all__ = [
@@ -15,7 +16,7 @@ __all__ = [
 
 
 # configs of multi_scopic cnn net are set by path, not by level
-multi_scopic = ED()
+multi_scopic = CFG()
 multi_scopic.fs = 500
 multi_scopic.groups = 1
 multi_scopic.scopes = [
@@ -96,7 +97,7 @@ multi_scopic_leadwise.num_filters = [
 ]
 
 
-multi_scopic_block = ED()
+multi_scopic_block = CFG()
 multi_scopic_block.subsample_mode = "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
 multi_scopic_block.bias = multi_scopic.bias
 multi_scopic_block.kernel_initializer = multi_scopic.kernel_initializer

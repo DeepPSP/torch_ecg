@@ -23,7 +23,6 @@ from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
 import torch_optimizer as extra_optim
-from easydict import EasyDict as ED
 
 from .utils_nn import default_collate_fn as collate_fn
 from .misc import (
@@ -36,7 +35,7 @@ from ..models.loss import (
     MaskedBCEWithLogitsLoss,
     FocalLoss, AsymmetricLoss,
 )
-from ..cfg import DEFAULTS
+from ..cfg import CFG, DEFAULTS
 
 
 __all__ = ["BaseTrainer",]
@@ -104,8 +103,8 @@ class BaseTrainer(ABC):
         else:
             self._model = self.model
         self.dataset_cls = dataset_cls
-        self.model_config = ED(deepcopy(model_config))
-        self._train_config = ED(deepcopy(train_config))
+        self.model_config = CFG(deepcopy(model_config))
+        self._train_config = CFG(deepcopy(train_config))
         self.device = device or next(self._model.parameters()).device
         self.dtype = next(self._model.parameters()).dtype
         self.model.to(self.device)
@@ -324,7 +323,7 @@ class BaseTrainer(ABC):
         return f"{self._model.__name__}_epoch"
 
     @property
-    def train_config(self) -> ED:
+    def train_config(self) -> CFG:
         """
         """
         return self._train_config
@@ -403,9 +402,9 @@ class BaseTrainer(ABC):
         train_config: dict,
             training configuration
         """
-        _default_config = ED(deepcopy(self.__DEFATULT_CONFIGS__))
+        _default_config = CFG(deepcopy(self.__DEFATULT_CONFIGS__))
         _default_config.update(train_config)
-        self._train_config = ED(deepcopy(_default_config))
+        self._train_config = CFG(deepcopy(_default_config))
         if not self.train_config.get("model_dir", None):
             self._train_config.model_dir = self.train_config.checkpoints
         self._validate_train_config()

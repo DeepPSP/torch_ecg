@@ -18,9 +18,8 @@ np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
-from easydict import EasyDict as ED
 
-from ...cfg import DEFAULTS
+from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str
 from ...models._nets import (
@@ -41,7 +40,7 @@ __all__ = [
 ]
 
 
-_DEFAULT_CONV_CONFIGS_MobileNetV1 = ED(
+_DEFAULT_CONV_CONFIGS_MobileNetV1 = CFG(
     ordering="cba",
     conv_type="separable",
     batch_norm=True,
@@ -261,7 +260,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
         """
         super().__init__()
         self.__in_channels = in_channels
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
 
         if isinstance(self.config.init_num_filters, int):
             init_convs = Conv_Bn_Activation(
@@ -618,7 +617,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
         """
         super().__init__()
         self.__in_channels = in_channels
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 

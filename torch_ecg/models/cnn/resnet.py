@@ -13,9 +13,8 @@ import torch
 from torch import nn
 from torch import Tensor
 import torch.nn.functional as F
-from easydict import EasyDict as ED
 
-from ...cfg import DEFAULTS
+from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str
 from ...models._nets import (
@@ -99,7 +98,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
         self.__down_scale = subsample_length
         self.__stride = subsample_length
         self.__groups = groups
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
@@ -108,7 +107,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
         
         self.__attn = attn
         if self.__attn:
-            self.__attn = ED(self.__attn)
+            self.__attn = CFG(self.__attn)
         
         self.__increase_channels = (self.__out_channels > self.__in_channels)
         self.shortcut = self._make_shortcut_layer()
@@ -318,7 +317,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
         """
         super().__init__()
         self.__num_convs = 3
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
         self.expansion = self.config.get("expansion", self.expansion)
@@ -354,7 +353,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
         ]
         self.__attn = attn
         if self.__attn:
-            self.__attn = ED(self.__attn)
+            self.__attn = CFG(self.__attn)
 
         if self.config.increase_channels_method.lower() == "zero_padding" and self.__groups != 1:
             raise ValueError("zero padding for increasing channels can not be used with groups != 1")
@@ -630,7 +629,7 @@ class ResNet(SizeMixin, nn.Sequential):
     __DEBUG__ = False
     __name__ = "ResNet"
     building_block = ResNetBasicBlock
-    __DEFAULT_CONFIG__ = ED(
+    __DEFAULT_CONFIG__ = CFG(
         activation="relu", kw_activation={"inplace": True},
         kernel_initializer="he_normal", kw_initializer={},
         dropouts=0,
@@ -669,7 +668,7 @@ class ResNet(SizeMixin, nn.Sequential):
         """
         super().__init__()
         self.__in_channels = in_channels
-        self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
@@ -680,23 +679,23 @@ class ResNet(SizeMixin, nn.Sequential):
             for b in self.config.building_block:
                 if b.lower() in ["bottleneck", "bottle_neck",]:
                     self.building_block.append(ResNetBottleNeck)
-                    self.additional_kw.append(ED({
+                    self.additional_kw.append(CFG({
                         k: self.config[k] for k in ["base_width", "base_groups", "base_filter_length",] \
                             if k in self.config.keys()
                     }))
                 else:
                     self.building_block.append(ResNetBasicBlock)
-                    self.additional_kw.append(ED())
+                    self.additional_kw.append(CFG())
             assert isinstance(self.config.block, Sequence) and len(self.config.block) == len(self.config.building_block) == len(self.config.num_blocks)
         elif self.config.get("building_block", "").lower() in ["bottleneck", "bottle_neck",]:
             self.building_block = ResNetBottleNeck
             # additional parameters for bottleneck
-            self.additional_kw = ED({
+            self.additional_kw = CFG({
                 k: self.config[k] for k in ["base_width", "base_groups", "base_filter_length",] \
                     if k in self.config.keys()
             })
         else:
-            self.additional_kw = ED()
+            self.additional_kw = CFG()
         if self.__DEBUG__:
             print(f"additional_kw = {self.additional_kw}")
 

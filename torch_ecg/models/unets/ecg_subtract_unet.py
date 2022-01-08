@@ -19,9 +19,8 @@ import torch
 from torch import nn
 from torch import Tensor
 import torch.nn.functional as F
-from easydict import EasyDict as ED
 
-from ...cfg import DEFAULTS
+from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import (
     compute_deconv_output_shape, compute_module_size,
     SizeMixin, CkptMixin,
@@ -148,7 +147,7 @@ class DownTripleConv(SizeMixin, nn.Sequential):
         self.__down_scale = down_scale
         self.__in_channels = in_channels
         self.__out_channels = out_channels
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
@@ -259,7 +258,7 @@ class DownBranchedDoubleConv(SizeMixin, nn.Module):
         self.__down_scale = down_scale
         self.__in_channels = in_channels
         self.__out_channels = out_channels
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
@@ -384,7 +383,7 @@ class UpTripleConv(SizeMixin, nn.Module):
         self.__deconv_filter_length = deconv_filter_length
         self.__mode = mode.lower()
         assert self.__mode in self.__MODES__
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
 
@@ -488,7 +487,7 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
         self.n_classes = len(classes)
         self.__out_channels = len(classes)
         self.__in_channels = n_leads
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
             __debug_seq_len = 5000

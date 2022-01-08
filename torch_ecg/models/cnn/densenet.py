@@ -19,9 +19,8 @@ np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
-from easydict import EasyDict as ED
 
-from ...cfg import DEFAULTS
+from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str, list_sum
 from ...models._nets import (
@@ -53,7 +52,7 @@ class DenseBasicBlock(SizeMixin, nn.Module):
     """
     __DEBUG__ = True
     __name__ = "DenseBasicBlock"
-    __DEFAULT_CONFIG__ = ED(
+    __DEFAULT_CONFIG__ = CFG(
         activation="relu", kw_activation={"inplace": True}, memory_efficient=False,
     )
 
@@ -93,7 +92,7 @@ class DenseBasicBlock(SizeMixin, nn.Module):
         self.__growth_rate = growth_rate
         self.__kernel_size = filter_length
         self.__groups = groups
-        self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config))
         assert all([in_channels % groups == 0, growth_rate % groups == 0])
 
@@ -179,7 +178,7 @@ class DenseBottleNeck(SizeMixin, nn.Module):
     """
     __DEBUG__ = True
     __name__ = "DenseBottleNeck"
-    __DEFAULT_CONFIG__ = ED(
+    __DEFAULT_CONFIG__ = CFG(
         activation="relu", kw_activation={"inplace": True}, memory_efficient=False,
     )
 
@@ -223,7 +222,7 @@ class DenseBottleNeck(SizeMixin, nn.Module):
         self.__bn_size = bn_size
         self.__kernel_size = filter_length
         self.__groups = groups
-        self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config))
         bottleneck_channels = self.__bn_size * self.__growth_rate
 
@@ -464,7 +463,7 @@ class DenseTransition(SizeMixin, nn.Sequential):
     """
     __DEBUG__ = True
     __name__ = "DenseTransition"
-    __DEFAULT_CONFIG__ = ED(
+    __DEFAULT_CONFIG__ = CFG(
         activation="relu", kw_activation={"inplace": True}, subsample_mode="avg",
     )
 
@@ -501,7 +500,7 @@ class DenseTransition(SizeMixin, nn.Sequential):
         self.__subsample_length = subsample_length
         self.__groups = groups
         assert 0 < self.__compression <= 1.0 and self.__in_channels % self.__groups == 0
-        self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config))
 
         # input width per group
@@ -598,7 +597,7 @@ class DenseNet(SizeMixin, nn.Sequential):
     """
     __DEBUG__ = True
     __name__ = "DenseNet"
-    __DEFAULT_CONFIG__ = ED(
+    __DEFAULT_CONFIG__ = CFG(
         bias=False,
         activation="relu", kw_activation={"inplace": True},
         kernel_initializer="he_normal", kw_initializer={},
@@ -651,7 +650,7 @@ class DenseNet(SizeMixin, nn.Sequential):
         """
         super().__init__()
         self.__in_channels = in_channels
-        self.config = ED(deepcopy(self.__DEFAULT_CONFIG__))
+        self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config))
         self.__num_blocks = len(self.config.num_layers)
         if self.__DEBUG__:

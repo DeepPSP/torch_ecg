@@ -6,8 +6,6 @@ References
 import os
 from copy import deepcopy
 
-from easydict import EasyDict as ED
-
 try:
     import torch_ecg
 except ModuleNotFoundError:
@@ -15,7 +13,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from torch_ecg.cfg import DEFAULTS
+from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
 from torch_ecg.model_configs import (
     ECG_SUBTRACT_UNET_CONFIG, ECG_UNET_VANILLA_CONFIG,
@@ -30,7 +28,7 @@ __all__ = [
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-BaseCfg = ED()
+BaseCfg = CFG()
 BaseCfg.fs = 500  # Hz, LUDB data fs
 BaseCfg.classes = [
     "p",  # pwave
@@ -44,8 +42,8 @@ BaseCfg.classes = [
 #     "t",  # twave
 # ]
 BaseCfg.mask_classes = deepcopy(BaseCfg.classes)
-BaseCfg.class_map = ED(p=1, N=2, t=3, i=0)
-# BaseCfg.mask_class_map = ED({k:v-1 for k,v in BaseCfg.class_map.items() if k!="i"})
+BaseCfg.class_map = CFG(p=1, N=2, t=3, i=0)
+# BaseCfg.mask_class_map = CFG({k:v-1 for k,v in BaseCfg.class_map.items() if k!="i"})
 BaseCfg.mask_class_map = deepcopy(BaseCfg.class_map)
 BaseCfg.db_dir = None
 BaseCfg.bias_thr = int(0.075 * BaseCfg.fs)  # TODO: renew this const
@@ -55,7 +53,7 @@ BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
 
-TrainCfg = ED()
+TrainCfg = CFG()
 
 # configs of files
 TrainCfg.db_dir = BaseCfg.db_dir
@@ -110,13 +108,13 @@ TrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
 TrainCfg.burn_in = 400
 TrainCfg.steps = [5000, 10000]
 
-TrainCfg.early_stopping = ED()  # early stopping according to challenge metric
+TrainCfg.early_stopping = CFG()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
 TrainCfg.early_stopping.patience = 10
 
 # configs of loss function
 TrainCfg.loss = "FocalLoss"  # "BCEWithLogitsLoss", "AsymmetricLoss", "CrossEntropyLoss"
-TrainCfg.loss_kw = ED()  # "BCEWithLogitsLoss", "AsymmetricLoss"
+TrainCfg.loss_kw = CFG()  # "BCEWithLogitsLoss", "AsymmetricLoss"
 TrainCfg.flooding_level = 0.0  # flooding performed if positive
 
 TrainCfg.log_every = 1
@@ -126,7 +124,7 @@ TrainCfg.model_name = "unet"
 
 
 
-ModelCfg = ED()
+ModelCfg = CFG()
 ModelCfg.torch_dtype = BaseCfg.torch_dtype
 ModelCfg.fs = BaseCfg.fs
 ModelCfg.spacing = 1000 / ModelCfg.fs

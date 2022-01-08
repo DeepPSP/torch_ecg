@@ -19,7 +19,6 @@ import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
-from easydict import EasyDict as ED
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
@@ -34,6 +33,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2020 as CR
 from torch_ecg.utils.misc import (
     mask_to_intervals, list_sum,
@@ -69,7 +69,7 @@ class CPSC2020(Dataset):
     __DEBUG__ = False
     __name__ = "CPSC2020"
 
-    def __init__(self, config:ED, training:bool=True) -> NoReturn:
+    def __init__(self, config:CFG, training:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -106,8 +106,8 @@ class CPSC2020(Dataset):
 
         if self.config.model_name.lower() in ["crnn", "seq_lab"]:
             # for classification, or for sequence labeling
-            self.segments_dirs = ED()
-            self.__all_segments = ED()
+            self.segments_dirs = CFG()
+            self.__all_segments = CFG()
             self.segments_json = os.path.join(self.segments_dir, "crnn_segments.json")
             self._ls_segments()
 
@@ -129,7 +129,7 @@ class CPSC2020(Dataset):
         """ finished, checked,
         """
         for item in ["data", "ann"]:
-            self.segments_dirs[item] = ED()
+            self.segments_dirs[item] = CFG()
             for rec in self.reader.all_records:
                 self.segments_dirs[item][rec] = os.path.join(self.segments_dir, item, rec)
                 os.makedirs(self.segments_dirs[item][rec], exist_ok=True)
@@ -139,7 +139,7 @@ class CPSC2020(Dataset):
             return
         print(f"please allow the reader a few minutes to collect the segments from {self.segments_dir}...")
         seg_filename_pattern = f"S\d{{2}}_\d{{7}}{self.reader.rec_ext}"
-        self.__all_segments = ED({
+        self.__all_segments = CFG({
             rec: get_record_list_recursive3(self.segments_dirs.data[rec], seg_filename_pattern) \
                 for rec in self.reader.all_records
         })

@@ -3,8 +3,6 @@
 from copy import deepcopy
 from itertools import repeat
 
-from easydict import EasyDict as ED
-
 try:
     import torch_ecg
 except ModuleNotFoundError:
@@ -12,6 +10,7 @@ except ModuleNotFoundError:
     from os.path import dirname, abspath
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.model_configs import (
     # cnn bankbone
     vgg_block_basic, vgg_block_mish, vgg_block_swish,
@@ -51,7 +50,7 @@ _BASE_MODEL_CONFIG.cnn.multi_scopic_leadwise.block.batch_norm = "group_norm"  # 
 
 # detailed configs for 12-lead, 6-lead, 4-lead, 3-lead, 2-lead models
 # mostly follow from torch_ecg.torch_ecg.model_configs.ecg_crnn
-ModelArchCfg = ED()
+ModelArchCfg = CFG()
 
 ModelArchCfg.twelve_leads = deepcopy(_BASE_MODEL_CONFIG)
 
@@ -91,7 +90,7 @@ ModelArchCfg.six_leads.cnn.densenet_leadwise.groups = 6
 ModelArchCfg.six_leads.cnn.densenet_leadwise.init_num_filters = 6 * 8  # 12 * 8
 ModelArchCfg.six_leads.cnn.xception_leadwise.groups = 6
 _base_num_filters = 6 * 2  # 12 * 2
-ModelArchCfg.six_leads.cnn.xception_vanilla.entry_flow = ED(
+ModelArchCfg.six_leads.cnn.xception_vanilla.entry_flow = CFG(
     init_num_filters=[_base_num_filters*4, _base_num_filters*8],
     init_filter_lengths=3,
     init_subsample_lengths=[2,1],
@@ -100,11 +99,11 @@ ModelArchCfg.six_leads.cnn.xception_vanilla.entry_flow = ED(
     subsample_lengths=2,
     subsample_kernels=3,
 )
-ModelArchCfg.six_leads.cnn.xception_vanilla.middle_flow = ED(
+ModelArchCfg.six_leads.cnn.xception_vanilla.middle_flow = CFG(
     num_filters=list(repeat(_base_num_filters*91, 8)),
     filter_lengths=3,
 )
-ModelArchCfg.six_leads.cnn.xception_vanilla.exit_flow = ED(
+ModelArchCfg.six_leads.cnn.xception_vanilla.exit_flow = CFG(
     final_num_filters=[_base_num_filters*182, _base_num_filters*256],
     final_filter_lengths=3,
     num_filters=[[_base_num_filters*91, _base_num_filters*128]],
@@ -148,7 +147,7 @@ ModelArchCfg.four_leads.cnn.densenet_leadwise.groups = 4
 ModelArchCfg.four_leads.cnn.densenet_leadwise.init_num_filters = 6 * 6  # 12 * 8
 ModelArchCfg.four_leads.cnn.xception_leadwise.groups = 4
 _base_num_filters = 6 * 2  # 12 * 2
-ModelArchCfg.four_leads.cnn.xception_vanilla.entry_flow = ED(
+ModelArchCfg.four_leads.cnn.xception_vanilla.entry_flow = CFG(
     init_num_filters=[_base_num_filters*4, _base_num_filters*8],
     init_filter_lengths=3,
     init_subsample_lengths=[2,1],
@@ -157,11 +156,11 @@ ModelArchCfg.four_leads.cnn.xception_vanilla.entry_flow = ED(
     subsample_lengths=2,
     subsample_kernels=3,
 )
-ModelArchCfg.four_leads.cnn.xception_vanilla.middle_flow = ED(
+ModelArchCfg.four_leads.cnn.xception_vanilla.middle_flow = CFG(
     num_filters=list(repeat(_base_num_filters*91, 8)),
     filter_lengths=3,
 )
-ModelArchCfg.four_leads.cnn.xception_vanilla.exit_flow = ED(
+ModelArchCfg.four_leads.cnn.xception_vanilla.exit_flow = CFG(
     final_num_filters=[_base_num_filters*182, _base_num_filters*256],
     final_filter_lengths=3,
     num_filters=[[_base_num_filters*91, _base_num_filters*128]],
@@ -205,7 +204,7 @@ ModelArchCfg.three_leads.cnn.densenet_leadwise.groups = 3
 ModelArchCfg.three_leads.cnn.densenet_leadwise.init_num_filters = 3 * 12  # 12 * 8
 ModelArchCfg.three_leads.cnn.xception_leadwise.groups = 3
 _base_num_filters = 3 * 4  # 12 * 2
-ModelArchCfg.three_leads.cnn.xception_vanilla.entry_flow = ED(
+ModelArchCfg.three_leads.cnn.xception_vanilla.entry_flow = CFG(
     init_num_filters=[_base_num_filters*4, _base_num_filters*8],
     init_filter_lengths=3,
     init_subsample_lengths=[2,1],
@@ -214,11 +213,11 @@ ModelArchCfg.three_leads.cnn.xception_vanilla.entry_flow = ED(
     subsample_lengths=2,
     subsample_kernels=3,
 )
-ModelArchCfg.three_leads.cnn.xception_vanilla.middle_flow = ED(
+ModelArchCfg.three_leads.cnn.xception_vanilla.middle_flow = CFG(
     num_filters=list(repeat(_base_num_filters*91, 8)),
     filter_lengths=3,
 )
-ModelArchCfg.three_leads.cnn.xception_vanilla.exit_flow = ED(
+ModelArchCfg.three_leads.cnn.xception_vanilla.exit_flow = CFG(
     final_num_filters=[_base_num_filters*182, _base_num_filters*256],
     final_filter_lengths=3,
     num_filters=[[_base_num_filters*91, _base_num_filters*128]],
@@ -262,7 +261,7 @@ ModelArchCfg.two_leads.cnn.densenet_leadwise.groups = 2
 ModelArchCfg.two_leads.cnn.densenet_leadwise.init_num_filters = 2 * 12  # 12 * 8
 ModelArchCfg.two_leads.cnn.xception_leadwise.groups = 3
 _base_num_filters = 2 * 6  # 12 * 2
-ModelArchCfg.two_leads.cnn.xception_vanilla.entry_flow = ED(
+ModelArchCfg.two_leads.cnn.xception_vanilla.entry_flow = CFG(
     init_num_filters=[_base_num_filters*4, _base_num_filters*8],
     init_filter_lengths=3,
     init_subsample_lengths=[2,1],
@@ -271,11 +270,11 @@ ModelArchCfg.two_leads.cnn.xception_vanilla.entry_flow = ED(
     subsample_lengths=2,
     subsample_kernels=3,
 )
-ModelArchCfg.two_leads.cnn.xception_vanilla.middle_flow = ED(
+ModelArchCfg.two_leads.cnn.xception_vanilla.middle_flow = CFG(
     num_filters=list(repeat(_base_num_filters*91, 8)),
     filter_lengths=3,
 )
-ModelArchCfg.two_leads.cnn.xception_vanilla.exit_flow = ED(
+ModelArchCfg.two_leads.cnn.xception_vanilla.exit_flow = CFG(
     final_num_filters=[_base_num_filters*182, _base_num_filters*256],
     final_filter_lengths=3,
     num_filters=[[_base_num_filters*91, _base_num_filters*128]],

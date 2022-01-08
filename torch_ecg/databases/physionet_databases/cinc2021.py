@@ -18,9 +18,8 @@ import pandas as pd
 import wfdb
 from scipy.io import loadmat
 from scipy.signal import resample, resample_poly
-from easydict import EasyDict as ED
 
-from ...cfg import DEFAULTS
+from ...cfg import CFG, DEFAULTS
 from ...utils.misc import (
     get_record_list_recursive,
     get_record_list_recursive3,
@@ -44,7 +43,7 @@ __all__ = [
 
 
 # configurations for visualization
-PlotCfg = ED()
+PlotCfg = CFG()
 # default const for the plot function in dataset.py
 # used only when corr. values are absent
 # all values are time bias w.r.t. corr. peaks, with units in ms
@@ -202,7 +201,7 @@ class CINC2021(PhysioNetDataBase):
         self.ann_ext = "hea"
 
         self.db_tranches = list("ABCDEFG")
-        self.tranche_names = ED({
+        self.tranche_names = CFG({
             "A": "CPSC",
             "B": "CPSC_Extra",
             "C": "StPetersburg",
@@ -211,12 +210,12 @@ class CINC2021(PhysioNetDataBase):
             "F": "Georgia",
             "G": "CUSPHNFH",
         })
-        self.rec_prefix = ED({
+        self.rec_prefix = CFG({
             "A": "A", "B": "Q", "C": "I", "D": "S", "E": "HR", "F": "E", "G": "JS",
         })
 
         self.db_dir_base = db_dir
-        self.db_dirs = ED({tranche:"" for tranche in self.db_tranches})
+        self.db_dirs = CFG({tranche:"" for tranche in self.db_tranches})
         self._all_records = None
         self._stats = pd.DataFrame()
         self._stats_columns = {
@@ -232,10 +231,10 @@ class CINC2021(PhysioNetDataBase):
         self._diagnoses_records_list = None
         # self._ls_diagnoses_records()
 
-        self.fs = ED({
+        self.fs = CFG({
             "A": 500, "B": 500, "C": 257, "D": 1000, "E": 500, "F": 500, "G": 500,
         })
-        self.spacing = ED({t: 1000 / f for t,f in self.fs.items()})
+        self.spacing = CFG({t: 1000 / f for t,f in self.fs.items()})
 
         self.all_leads = deepcopy(EAK.Standard12Leads)
         self._all_leads_set = set(self.all_leads)
@@ -248,7 +247,7 @@ class CINC2021(PhysioNetDataBase):
         ]
         self.label_trans_dict = equiv_class_dict.copy()
 
-        # self.value_correction_factor = ED({tranche:1 for tranche in self.db_tranches})
+        # self.value_correction_factor = CFG({tranche:1 for tranche in self.db_tranches})
         # self.value_correction_factor.F = 4.88  # ref. ISSUES 3
 
         self.exceptional_records = ["I0002", "I0069", "E04603", "E06072", "E06909", "E07675", "E07941", "E08321",]  # ref. ISSUES 4
@@ -330,7 +329,7 @@ class CINC2021(PhysioNetDataBase):
             print(f"Done in {time.time() - start:.5f} seconds!")
             with open(os.path.join(self.db_dir_base, filename), "w") as f:
                 json.dump(to_save, f)
-        self._all_records = ED(self._all_records)
+        self._all_records = CFG(self._all_records)
 
     def _aggregate_stats(self, fast:bool=False) -> NoReturn:
         """ finished, checked,
@@ -460,7 +459,7 @@ class CINC2021(PhysioNetDataBase):
             print(f"Done in {time.time() - start:.5f} seconds!")
             with open(os.path.join(self.db_dir_base, filename), "w") as f:
                 json.dump(self._diagnoses_records_list, f)
-        self._diagnoses_records_list = ED(self._diagnoses_records_list)
+        self._diagnoses_records_list = CFG(self._diagnoses_records_list)
 
     @property
     def diagnoses_records_list(self):
@@ -1063,7 +1062,7 @@ class CINC2021(PhysioNetDataBase):
         """
         tranche = self._get_tranche(rec)
         if tranche in "CDE":
-            physionet_lightwave_suffix = ED({
+            physionet_lightwave_suffix = CFG({
                 "C": "incartdb/1.0.0",
                 "D": "ptbdb/1.0.0",
                 "E": "ptb-xl/1.0.1",
@@ -1227,7 +1226,7 @@ class CINC2021(PhysioNetDataBase):
         """
         tranche_names = [self.tranche_names[t] for t in tranches]
         df = dx_mapping_scored if scored_only else dx_mapping_all
-        distribution = ED()
+        distribution = CFG()
         for _, row in df.iterrows():
             num = (row[[tranche_names]].values).sum()
             if num > 0:

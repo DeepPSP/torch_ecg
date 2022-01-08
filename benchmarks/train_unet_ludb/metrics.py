@@ -17,7 +17,6 @@ from typing import Union, Optional, Sequence, Dict, Tuple
 
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg
@@ -30,7 +29,7 @@ from torch_ecg.utils.misc import (
     ECGWaveForm,
     masks_to_waveforms,
 )
-from torch_ecg.cfg import DEFAULTS
+from torch_ecg.cfg import CFG, DEFAULTS
 
 
 __all__ = [
@@ -128,19 +127,19 @@ def compute_metrics_waveform(truth_waveforms:Sequence[Sequence[ECGWaveForm]],
         each scoring is a dict consisting of the following metrics:
         sensitivity, precision, f1_score, mean_error, standard_deviation
     """
-    truth_positive = ED({
+    truth_positive = CFG({
         f"{wave}_{term}": 0 \
             for wave in ["pwave", "qrs", "twave",] for term in ["onset", "offset"]
     })
-    false_positive = ED({
+    false_positive = CFG({
         f"{wave}_{term}": 0 \
             for wave in ["pwave", "qrs", "twave",] for term in ["onset", "offset"]
     })
-    false_negative = ED({
+    false_negative = CFG({
         f"{wave}_{term}": 0 \
             for wave in ["pwave", "qrs", "twave",] for term in ["onset", "offset"]
     })
-    errors = ED({
+    errors = CFG({
         f"{wave}_{term}": [] \
             for wave in ["pwave", "qrs", "twave",] for term in ["onset", "offset"]
     })
@@ -153,7 +152,7 @@ def compute_metrics_waveform(truth_waveforms:Sequence[Sequence[ECGWaveForm]],
                 false_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"]["false_positive"]
                 false_negative[f"{wave}_{term}"] += s[f"{wave}_{term}"]["false_negative"]
                 errors[f"{wave}_{term}"] += s[f"{wave}_{term}"]["errors"]
-    scorings = ED()
+    scorings = CFG()
     for wave in ["pwave", "qrs", "twave",]:
         for term in ["onset", "offset"]:
             tp = truth_positive[f"{wave}_{term}"]
@@ -165,7 +164,7 @@ def compute_metrics_waveform(truth_waveforms:Sequence[Sequence[ECGWaveForm]],
             f1_score = 2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
             mean_error = np.mean(err) * 1000 / fs
             standard_deviation = np.std(err) * 1000 / fs
-            scorings[f"{wave}_{term}"] = ED(
+            scorings[f"{wave}_{term}"] = CFG(
                 sensitivity=sensitivity,
                 precision=precision,
                 f1_score=f1_score,
@@ -215,7 +214,7 @@ def _compute_metrics_waveform(truths:Sequence[ECGWaveForm],
             for term in ["onset", "offset"]:
                 eval(f"{w.name}_{term}_{item}.append(w.{term})")
 
-    scorings = ED()
+    scorings = CFG()
     for wave in ["pwave", "qrs", "twave",]:
         for term in ["onset", "offset"]:
             truth_positive, false_negative, false_positive, errors, \
@@ -225,7 +224,7 @@ def _compute_metrics_waveform(truths:Sequence[ECGWaveForm],
                     eval(f"{wave}_{term}_preds"),
                     fs
                 )
-            scorings[f"{wave}_{term}"] = ED(
+            scorings[f"{wave}_{term}"] = CFG(
                 truth_positive=truth_positive,
                 false_negative=false_negative,
                 false_positive=false_positive,
