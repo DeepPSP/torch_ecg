@@ -33,6 +33,21 @@ class CFG(ED):
     """
     __name__ = "CFG"
 
+    def __init__(self, d:Optional[MutableMapping]=None, **kwargs) -> NoReturn:
+        if d is None:
+            d = {}
+        if kwargs:
+            d.update(**kwargs)
+        for k, v in d.items():
+            try:
+                setattr(self, k, v)
+            except:
+                dict.__setitem__(self, k, v)
+        # Class attributes
+        for k in self.__class__.__dict__:
+            if not (k.startswith('__') and k.endswith('__')) and not k in ('update', 'pop'):
+                setattr(self, k, getattr(self, k))
+
     def __update__(self, new_cfg:Optional[MutableMapping]=None, **kwargs) -> NoReturn:
         """
         the original normal update method
@@ -51,7 +66,10 @@ class CFG(ED):
             if isinstance(_new_cfg[k], MutableMapping) and k in self:
                 self[k].update(_new_cfg[k])
             else:
-                setattr(self, k, _new_cfg[k])
+                try:
+                    setattr(self, k, _new_cfg[k])
+                except:
+                    dict.__setitem__(self, k, _new_cfg[k])
 
 
 DEFAULTS = CFG()
