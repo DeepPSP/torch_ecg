@@ -1257,3 +1257,35 @@ def isclass(obj:Any) -> bool:
         return issubclass(obj, object)
     except TypeError:
         return False
+
+
+def strafified_train_test_split(df:pd.DataFrame,
+                                 strafified_cols:Sequence[str],
+                                 test_ratio:float=0.2) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    """
+    df_inspection = df[strafified_cols].copy()
+    for item in strafified_cols:
+        all_entities = df_inspection[item].unique().tolist()
+        entities_dict = {e: str(i) for i, e in enumerate(all_entities)}
+        df_inspection[item] = df_inspection[item].apply(lambda e:entities_dict[e])
+
+    inspection_col_name = "Inspection" * (max([len(c) for c in strafified_cols])//10+1)
+    df_inspection[inspection_col_name] = ''
+    for idx, row in df_inspection.iterrows():
+        cn = "-".join([row[sc] for sc in strafified_cols])
+        df_inspection.loc[idx, inspection_col_name] = cn
+    item_names = df_inspection[inspection_col_name].unique().tolist()
+    item_indices = {
+        n: df_inspection.index[df_inspection[inspection_col_name]==n].tolist() for n in item_names
+    }
+    for n in item_names:
+        random.shuffle(item_indices[n])
+
+    test_indices = []
+    for n in item_names:
+        item_test_indices = item_indices[n][:round(test_ratio*len(item_indices[n]))]
+        test_indices += item_test_indices
+    df_test = df.loc[df.index.isin(test_indices)].reset_index(drop=True)
+    df_train = df.loc[~df.index.isin(test_indices)].reset_index(drop=True)
+    return df_train, df_test
