@@ -101,7 +101,7 @@ A typical signature of the instantiation (`__init__`) function of a model is as 
 ```python
 __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
 ```
-if a `config` is not specified, then the default config will be used (stored in the [`model_configs`](torch_ecg/model_configs) module.
+if a `config` is not specified, then the default config will be used (stored in the [`model_configs`](torch_ecg/model_configs) module).
 
 ### [CNN backbone](torch_ecg/models/cnn)
 #### Implemented
@@ -125,6 +125,8 @@ In general, variants of ResNet are the most commonly used architectures, as can 
 4. U-Squared Net
 5. etc.
 
+More details can be found in the [README file](torch_ecg/models/cnn/README.md) of this module.
+
 ## Other useful tools
 ### [Loggers](torch_ecg/utils/loggers.py)
 Loggers including
@@ -145,6 +147,18 @@ for evaluation on the validation set during training and perhaps further for mod
 
 ## Usage
 See case studies in the [benchmarks folder](/benchmarks/).
+
+a large part of the case studies are migrated from other DeepPSP repositories, some are implemented in the old fasion, being inconsistent with the new system architecture of `torch_ecg`, hence need updating and testing
+
+| Benchmark  | Architecture              | Source                                                  | Finished           | Updated            | Tested             |
+| ---------- | ------------------------- | ------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| CinC2020   | CRNN                      | [DeepPSP/cinc2020](https://github.com/DeepPSP/cinc2020) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| CinC2021   | CRNN                      | [DeepPSP/cinc2021](https://github.com/DeepPSP/cinc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| CPSC2019   | SequenceTagging/U-Net     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| CPSC2020   | CRNN/SequenceTagging      | [DeepPSP/cpsc2020](https://github.com/DeepPSP/cpsc2020) | :heavy_check_mark: | :x:                | :x:                |
+| CPSC2021   | CRNN/SequenceTagging/LSTM | [DeepPSP/cpsc2021](https://github.com/DeepPSP/cpsc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| LUDB       | U-Net                     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+
 
 Taking [CPSC2021](benchmarks/train_hybrid_cpsc2021) for example, the steps are
 1. Write a [`Dataset`](benchmarks/train_hybrid_cpsc2021/dataset.py) to fit the training data for the model(s) and the training workflow. In this example, 3 tasks are considered, 2 of which use a [`MaskedBCEWithLogitsLoss`](torch_ecg/models/loss.py) function, hence the `Dataset` produces an extra tensor for these 2 tasks
