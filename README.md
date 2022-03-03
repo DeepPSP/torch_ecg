@@ -73,22 +73,22 @@ This module include classes that manipulate the io of the ECG signals and labels
 
 After migration, all should be tested again, the progression:
 
-| Database      | Source    | Tested             |
-| ------------- | --------- | ------------------ |
-| AFDB          | PhysioNet | :heavy_check_mark: |
-| ApneaECG      | PhysioNet | :x:                |
-| CinC2017      | PhysioNet | :x:                |
-| CinC2018      | PhysioNet | :x:                |
-| CinC2020      | PhysioNet | :heavy_check_mark: |
-| CinC2021      | PhysioNet | :heavy_check_mark: |
-| LTAFDB        | PhysioNet | :x:                |
-| LUDB          | PhysioNet | :heavy_check_mark: |
-| MITDB         | PhysioNet | :x:                |
-| SHHS          | NSRR      | :x:                |
-| CPSC2018      | CPSC      | :heavy_check_mark: |
-| CPSC2019      | CPSC      | :heavy_check_mark: |
-| CPSC2020      | CPSC      | :heavy_check_mark: |
-| CPSC2021      | CPSC      | :heavy_check_mark: |
+| Database      | Source                                                           | Tested             |
+| ------------- | ---------------------------------------------------------------- | ------------------ |
+| AFDB          | [PhysioNet](https://physionet.org/content/afdb/1.0.0/)           | :heavy_check_mark: |
+| ApneaECG      | [PhysioNet](https://physionet.org/content/apnea-ecg/1.0.0/)      | :x:                |
+| CinC2017      | [PhysioNet](https://physionet.org/content/challenge-2017/1.0.0/) | :x:                |
+| CinC2018      | [PhysioNet](https://physionet.org/content/challenge-2018/1.0.0/) | :x:                |
+| CinC2020      | [PhysioNet](https://physionet.org/content/challenge-2020/1.0.1/) | :heavy_check_mark: |
+| CinC2021      | [PhysioNet](https://physionet.org/content/challenge-2021/1.0.2/) | :heavy_check_mark: |
+| LTAFDB        | [PhysioNet](https://physionet.org/content/ltafdb/1.0.0/)         | :x:                |
+| LUDB          | [PhysioNet](https://physionet.org/content/ludb/1.0.1/)           | :heavy_check_mark: |
+| MITDB         | [PhysioNet](https://physionet.org/content/mitdb/1.0.0/)          | :x:                |
+| SHHS          | [NSRR](https://sleepdata.org/datasets/shhs)                      | :x:                |
+| CPSC2018      | [CPSC](http://2018.icbeb.org/Challenge.html)                     | :heavy_check_mark: |
+| CPSC2019      | [CPSC](http://2019.icbeb.org/Challenge.html)                     | :heavy_check_mark: |
+| CPSC2020      | [CPSC](http://2020.icbeb.org/CSPC2020)                           | :heavy_check_mark: |
+| CPSC2021      | [CPSC](http://2021.icbeb.org/CPSC2021)                           | :heavy_check_mark: |
 
 NOTE that these classes should not be confused with a `torch` `Dataset`, which is strongly related to the task (or the model). However, one can build `Dataset`s based on these classes, for example the [`Dataset`](benchmarks/train_hybrid_cpsc2021/dataset.py) for the The 4th China Physiological Signal Challenge 2021 (CPSC2021)
 
