@@ -99,7 +99,7 @@ NOTE that these classes should not be confused with a `torch` `Dataset`, which i
 
 A typical signature of the instantiation (`__init__`) function of a model is as follows
 ```python
-__init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
+__init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn
 ```
 if a `config` is not specified, then the default config will be used (stored in the [`model_configs`](torch_ecg/model_configs) module).
 
@@ -141,7 +141,7 @@ This is a collection of traditional (non deep learning) algorithms for R peaks d
 ### [Trainer](torch_ecg/utils/trainer.py)
 An abstract base class `BaseTrainer` is implemented, in which some common steps in building a training pipeline (workflow) are impemented. A few task specific methods are assigned as `abstractmethod`s, for example the method
 ```python
-evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
+evaluate(self, data_loader:DataLoader) -> Dict[str, float]
 ```
 for evaluation on the validation set during training and perhaps further for model selection and early stopping.
 
