@@ -24,7 +24,7 @@ setuptools.setup(
     url="https://github.com/DeepPSP/torch_ecg",
     # project_urls={},
     packages=setuptools.find_packages(
-        exclude=["references*", "docs*", "benchmarks*"]
+        exclude=["references*", "docs*", "benchmarks*",]
     ),
     # entry_points=,
     classifiers=[
