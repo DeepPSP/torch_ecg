@@ -21,3 +21,4 @@ from . import augmenters
 from . import databases
 from . import models
 from . import model_configs
+from .version import __version__
