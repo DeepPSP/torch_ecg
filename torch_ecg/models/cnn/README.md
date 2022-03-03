@@ -38,6 +38,7 @@ purely used as feature extractors
    1. He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual learning for image recognition. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 770-778).
    2. https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
    3. https://github.com/awni/ecg
+   4. https://github.com/antonior92/automatic-ecg-diagnosis
 3. MultiScopicNet
    1. Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
 4. DenseNet
@@ -88,3 +89,5 @@ purely used as feature extractors
 14. ResNet-RS
     1. Bello, I., Fedus, W., Du, X., Cubuk, E. D., Srinivas, A., Lin, T. Y., ... & Zoph, B. (2021). Revisiting resnets: Improved training and scaling strategies. arXiv preprint arXiv:2103.07579.
     2. to add
+
+Many more from the CinC proceedings are not listed here.
