@@ -1,6 +1,10 @@
 # [torch_ecg](https://github.com/DeepPSP/torch_ecg/)
 
-Deep learning ecg models implemented using PyTorch
+Deep learning ecg models implemented using PyTorch.
+
+The system design is depicted as follows
+
+![system_design](images/system_design.jpg)
 
 ## Main Modules
 
@@ -177,6 +181,9 @@ def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
 ```
 2. Inherit a [base model](torch_ecg/models/ecg_seq_lab_net.py) to create [task specific models](benchmarks/train_hybrid_cpsc2021/model.py), along with [tailored model configs](benchmarks/train_hybrid_cpsc2021/cfg.py)
 3. Inherit the [`BaseTrainer`](torch_ecg/utils/trainer.py) to build the [training pipeline](benchmarks/train_hybrid_cpsc2021/trainer.py), with the `abstractmethod`s (`_setup_dataloaders`, `run_one_step`, `evaluate`, `batch_dim`, etc.) implemented.
+
+## Work in progress
+See the [project page](https://github.com/DeepPSP/torch_ecg/projects).
 
 ## Thanks
 Much is learned, especially the modular design, from the adversarial NLP library [`TextAttack`](https://github.com/QData/TextAttack) and from Hugging Face [`transformers`](https://github.com/huggingface/transformers).
