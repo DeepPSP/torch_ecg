@@ -103,7 +103,7 @@ __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **
 ```
 if a `config` is not specified, then the default config will be used (stored in the [`model_configs`](torch_ecg/model_configs) module.
 
-### CNN backbone
+### [CNN backbone](torch_ecg/models/cnn)
 #### Implemented
 1. VGG
 2. ResNet (including vanilla ResNet, ResNet-B, ResNet-C, ResNet-D, ResNeXT, TResNet, Stanford ResNet, Nature Communications ResNet, etc.)
@@ -163,3 +163,6 @@ def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
 ```
 2. Inherit a [base model](torch_ecg/models/ecg_seq_lab_net.py) to create [task specific models](benchmarks/train_hybrid_cpsc2021/model.py), along with [tailored model configs](benchmarks/train_hybrid_cpsc2021/cfg.py)
 3. Inherit the [`BaseTrainer`](torch_ecg/utils/trainer.py) to build the [training pipeline](benchmarks/train_hybrid_cpsc2021/trainer.py), with the `abstractmethod`s (`_setup_dataloaders`, `run_one_step`, `evaluate`, `batch_dim`, etc.) implemented.
+
+## Thanks
+Much is learned, especially the modular design, from the adversarial NLP library [`TextAttack`](https://github.com/QData/TextAttack) and from Hugging Face [`transformers`](https://github.com/huggingface/transformers).
