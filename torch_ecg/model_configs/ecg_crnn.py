@@ -48,7 +48,7 @@ ECG_CRNN_CONFIG.fs = 500
 # cnn part
 ECG_CRNN_CONFIG.cnn = CFG()
 # ECG_CRNN_CONFIG.cnn.name = "resnet_leadwise"
-ECG_CRNN_CONFIG.cnn.name = "multi_scopic_leadwise"
+ECG_CRNN_CONFIG.cnn.name = "resnet_nature_comm_bottle_neck"
 
 
 ECG_CRNN_CONFIG.cnn.vgg16 = deepcopy(vgg16)

@@ -21,6 +21,7 @@ from .cpsc_databases import (
 from .nsrr_databases import (
     SHHS,
 )
+from . import aux_data
 
 
 __all__ = [
@@ -43,4 +44,6 @@ __all__ = [
 
     # from NSRR
     "SHHS",
+
+    "aux_data",
 ]
