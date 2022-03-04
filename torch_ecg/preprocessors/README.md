@@ -1,6 +1,6 @@
-# Preprecessors
+# Preprocessors
 
-Also [preprecessors](/torch_ecg/_preprocessors) acting on `numpy` `array`s. 
+Also [preprocessors](/torch_ecg/_preprocessors) acting on `numpy` `array`s. 
 
 `Preprocessor`s do the job of ECG signal preprocessing before fed into some neural network and are monitored by a manager. A short example is as follows
 ```python
