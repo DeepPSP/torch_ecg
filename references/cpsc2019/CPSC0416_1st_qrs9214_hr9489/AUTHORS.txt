@@ -1,4 +1,0 @@
-Wenjie Cai, Danqin Hu, Liangyun Jiang.
-University of Shanghai for Science and Technology
-
-Please refer to the following paper for more details: W Cai, H Qin. QRS complex detection using novel deep learning neural networks. IEEE Access,10.1109/ACCESS.2020.2997473.
