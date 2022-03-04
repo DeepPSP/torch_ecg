@@ -1,6 +1,8 @@
 # [PhysioNet/CinC Challenge 2020](https://physionetchallenges.github.io/2020/)
 
-## Digest of Top Models ([CinC2020 papers](https://www.cinc.org/archives/2020/) searching `Challenge` on this page)
+Classification of 12-lead ECGs: the PhysioNet/Computing in Cardiology Challenge 2020
+
+## Digest of Top Models ([CinC2020 papers](https://www.cinc.org/archives/2020/) searching `Challenge` sessions on this page)
 - [prna](http://www.cinc.org/archives/2020/pdf/CinC2020-107.pdf):  Transformer (+ CNN + Manual (statitical) features)
 - [Between a ROC and a heart place](http://www.cinc.org/archives/2020/pdf/CinC2020-112.pdf):  Adaptive lead weighted ResNet
 - [HeartBeats](http://www.cinc.org/archives/2020/pdf/CinC2020-281.pdf):  SE-ResNet
