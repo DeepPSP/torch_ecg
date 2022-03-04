@@ -8,9 +8,11 @@ Paroxysmal Atrial Fibrillation Events Detection from Dynamic ECG Recordings: The
 
 ## Results (Rankings)
 
-### Results on the full hidden test set
+### Results on the full hidden test set (only the top 5 of the official entries are included)
 
 ![res_pht](results/cpsc2021-final_test.png)
+
+Check the [official website](http://2021.icbeb.org/CPSC2021) for the full list.
 
 ### Results on the validation set
 
@@ -26,14 +28,14 @@ Raw results are gathered into one zip file, the `val_res.zip` in the [`results`]
 |  LSTM + SeqTag    |  Union        |   1.9766                         | 2.1682                 |
 | **LSTM + SeqTag** | **New Union** |   **1.9972**                     | **2.2179**             |
 
-### Confusion matrices of the LSTM model and the SeqTag model
+### Confusion matrices of the LSTM model and the SeqTag model on the validation set
 <p align="middle">
   <img src="results/rr-lstm-confusion-matrix.svg" width="33%" />
   &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
   <img src="results/seq-tag-confusion-matrix.svg" width="33%" />
 </p>
 
-### More detailed analysis using `pandas`
+### More detailed analysis using `pandas` on the validation set
 <p align="middle">
   <img src="results/res_ana_1.png" width="60%" />
   <img src="results/res_ana_2.png" width="110%" />
@@ -42,4 +44,4 @@ Raw results are gathered into one zip file, the `val_res.zip` in the [`results`]
 ## References
 to add ...
 
-## [original repository](https://github.com/DeepPSP/cpsc2020)
+## [original repository](https://github.com/DeepPSP/cpsc2021)
