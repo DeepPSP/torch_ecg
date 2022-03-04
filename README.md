@@ -208,14 +208,14 @@ See case studies in the [benchmarks folder](/benchmarks/).
 
 a large part of the case studies are migrated from other DeepPSP repositories, some are implemented in the old fasion, being inconsistent with the new system architecture of `torch_ecg`, hence need updating and testing
 
-| Benchmark  | Architecture              | Source                                                  | Finished           | Updated            | Tested             |
-| ---------- | ------------------------- | ------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| CinC2020   | CRNN                      | [DeepPSP/cinc2020](https://github.com/DeepPSP/cinc2020) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| CinC2021   | CRNN                      | [DeepPSP/cinc2021](https://github.com/DeepPSP/cinc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| CPSC2019   | SequenceTagging/U-Net     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| CPSC2020   | CRNN/SequenceTagging      | [DeepPSP/cpsc2020](https://github.com/DeepPSP/cpsc2020) | :heavy_check_mark: | :x:                | :x:                |
-| CPSC2021   | CRNN/SequenceTagging/LSTM | [DeepPSP/cpsc2021](https://github.com/DeepPSP/cpsc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| LUDB       | U-Net                     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Benchmark                          | Architecture              | Source                                                  | Finished           | Updated            | Tested             |
+| ---------------------------------- | ------------------------- | ------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| [CinC2020](/benchmarks/train_crnn_cinc2020/)   | CRNN                      | [DeepPSP/cinc2020](https://github.com/DeepPSP/cinc2020) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| [CinC2021](/benchmarks/train_crnn_cinc2021/)   | CRNN                      | [DeepPSP/cinc2021](https://github.com/DeepPSP/cinc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| [CPSC2019](/benchmarks/train_multi_cpsc2019/)  | SequenceTagging/U-Net     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| [CPSC2020](/benchmarks/train_hybrid_cpsc2020/) | CRNN/SequenceTagging      | [DeepPSP/cpsc2020](https://github.com/DeepPSP/cpsc2020) | :heavy_check_mark: | :x:                | :x:                |
+| [CPSC2021](/benchmarks/train_hybrid_cpsc2021/) | CRNN/SequenceTagging/LSTM | [DeepPSP/cpsc2021](https://github.com/DeepPSP/cpsc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| [LUDB](/benchmarks/train_unet_ludb/)           | U-Net                     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 
 Taking [CPSC2021](/benchmarks/train_hybrid_cpsc2021) for example, the steps are
