@@ -6,6 +6,18 @@ The system design is depicted as follows
 
 ![system_design](images/system_design.jpg)
 
+## Installation
+`torch_ecg` requires Python 3.6+ and is available through pip:
+```bash
+pip install torch-ecg
+```
+One can download the development version hosted at [GitHub](https://github.com/DeepPSP/torch_ecg/) via
+```bash
+git clone https://github.com/DeepPSP/torch_ecg.git
+cd torch_ecg
+pip install .
+```
+
 ## Main Modules
 
 ### [Augmenters](torch_ecg/augmenters)
@@ -107,15 +119,40 @@ __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **
 ```
 if a `config` is not specified, then the default config will be used (stored in the [`model_configs`](torch_ecg/model_configs) module).
 
+A quick example is as follows:
+```python
+import torch
+from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
+from torch_ecg.model_configs import ECG_CRNN_CONFIG
+from torch_ecg.models.ecg_crnn import ECG_CRNN
+
+config = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG, fs=400)
+config.cnn.name="resnet_nature_comm_bottle_neck_gc"  # bottleneck with global context attention variant of Nature Communications ResNet
+
+classes = ["NSR", "AF", "PVC", "SPB"]
+n_leads = 12
+model = ECG_CRNN(classes, n_leads, config)
+
+model(torch.rand(2, 12, 4000))  # signal length 4000, batch size 2
+```
+One can check the size of a model, in terms of the number of parameters via
+```python
+model.module_size
+```
+or in terms of memory consumption via
+```python
+model.module_size_
+```
+
 ### [CNN backbone](torch_ecg/models/cnn)
 #### Implemented
 1. VGG
-2. ResNet (including vanilla ResNet, ResNet-B, ResNet-C, ResNet-D, ResNeXT, TResNet, Stanford ResNet, Nature Communications ResNet, etc.)
+2. ResNet (including vanilla ResNet, ResNet-B, ResNet-C, ResNet-D, ResNeXT, TResNet, [Stanford ResNet](https://github.com/awni/ecg), [Nature Communications ResNet](https://github.com/antonior92/automatic-ecg-diagnosis), etc.)
 3. MultiScopicNet (CPSC2019 SOTA)
 4. DenseNet (CPSC2020 SOTA)
 5. Xception
 
-In general, variants of ResNet are the most commonly used architectures, as can be inferred from CinC2020 and CinC2021.
+In general, variants of ResNet are the most commonly used architectures, as can be inferred from [CinC2020](https://cinc.org/archives/2020/) and [CinC2021](https://cinc.org/archives/2021/).
 
 #### Ongoing
 1. MobileNet
@@ -129,7 +166,7 @@ In general, variants of ResNet are the most commonly used architectures, as can 
 4. U-Squared Net
 5. etc.
 
-More details can be found in the [README file](torch_ecg/models/cnn/README.md) of this module.
+More details and a list of references can be found in the [README file](torch_ecg/models/cnn/README.md) of this module.
 
 ## Other useful tools
 ### [Loggers](torch_ecg/utils/loggers.py)
@@ -183,7 +220,7 @@ def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
 3. Inherit the [`BaseTrainer`](torch_ecg/utils/trainer.py) to build the [training pipeline](benchmarks/train_hybrid_cpsc2021/trainer.py), with the `abstractmethod`s (`_setup_dataloaders`, `run_one_step`, `evaluate`, `batch_dim`, etc.) implemented.
 
 ## Work in progress
-See the [project page](https://github.com/DeepPSP/torch_ecg/projects).
+See the [projects page](https://github.com/DeepPSP/torch_ecg/projects).
 
 ## Thanks
 Much is learned, especially the modular design, from the adversarial NLP library [`TextAttack`](https://github.com/QData/TextAttack) and from Hugging Face [`transformers`](https://github.com/huggingface/transformers).
