@@ -1,10 +1,10 @@
-# named Convolution Neural Networks
+# Named Convolution Neural Networks
 
 purely used as feature extractors
 
 ## Implemented
 1. VGG
-2. ResNet
+2. ResNet (including vanilla ResNet, ResNet-B, ResNet-C, ResNet-D, ResNeXT, TResNet, [Stanford ResNet](https://github.com/awni/ecg), [Nature Communications ResNet](https://github.com/antonior92/automatic-ecg-diagnosis), etc.)
 3. MultiScopicNet
 4. DenseNet
 5. Xception
@@ -29,6 +29,7 @@ purely used as feature extractors
 1. Ordering of (batch) normalization and activation after convolution, should it be
    - cba (conv -> bn -> act), or
    - cab (conv -> act -> bn)
+See the [reddit discussion](https://www.reddit.com/r/MachineLearning/comments/67gonq/d_batch_normalization_before_or_after_relu/).
 
 ## References:
 1. VGG
@@ -90,4 +91,4 @@ purely used as feature extractors
     1. Bello, I., Fedus, W., Du, X., Cubuk, E. D., Srinivas, A., Lin, T. Y., ... & Zoph, B. (2021). Revisiting resnets: Improved training and scaling strategies. arXiv preprint arXiv:2103.07579.
     2. to add
 
-Many more from the CinC proceedings are not listed here.
+Many more from the CinC proceedings ([CinC2020](https://cinc.org/archives/2020/) and [CinC2021](https://cinc.org/archives/2021/), the `Challenge` sessions) are not listed here.
