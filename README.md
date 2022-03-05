@@ -145,7 +145,9 @@ from torch_ecg.model_configs import ECG_CRNN_CONFIG
 from torch_ecg.models.ecg_crnn import ECG_CRNN
 
 config = adjust_cnn_filter_lengths(ECG_CRNN_CONFIG, fs=400)
-config.cnn.name="resnet_nature_comm_bottle_neck_gc"  # bottleneck with global context attention variant of Nature Communications ResNet
+# change the default CNN backbone
+# bottleneck with global context attention variant of Nature Communications ResNet
+config.cnn.name="resnet_nature_comm_bottle_neck_gc"
 
 classes = ["NSR", "AF", "PVC", "SPB"]
 n_leads = 12
