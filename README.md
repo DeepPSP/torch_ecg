@@ -168,6 +168,8 @@ model.module_size_
 
 One can adjust the configs to create a custom model. For example, the building blocks of the 4 stages of a `TResNet` backbone are `basic`, `basic`, `bottleneck`, `bottleneck`. If one wants to change the second block to be a `bottleneck` block with sequeeze and excitation (`SE`) attention, then
 ```python
+from copy import deepcopy
+
 from torch_ecg.models.ecg_crnn import ECG_CRNN
 from torch_ecg.model_configs import (
     ECG_CRNN_CONFIG,
