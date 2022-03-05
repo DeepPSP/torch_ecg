@@ -47,7 +47,7 @@ __all__ = [
     "list_sum",
     "read_log_txt", "read_event_scalars",
     "dicts_equal",
-    "default_class_repr",
+    "default_class_repr", "ReprMixin",
     "MovingAverage",
     "uniform",
     "nildent",
@@ -1075,6 +1075,22 @@ def default_class_repr(c:object, align:str="center", depth:int=1) -> str:
     else:
         extra_str = ""
     return f"{c.__class__.__name__}{extra_str}"
+
+
+class ReprMixin(object):
+    """
+    Mixin for enhanced __repr__ and __str__ methods.
+    """
+
+    def __repr__(self) -> str:
+        return default_class_repr(self)
+
+    __str__ = __repr__
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        """
+        return []
 
 
 class MovingAverage(object):

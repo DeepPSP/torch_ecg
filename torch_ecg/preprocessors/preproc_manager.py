@@ -10,13 +10,13 @@ from .bandpass import BandPass
 from .baseline_remove import BaselineRemove
 from .normalize import Normalize
 from .resample import Resample
-from ..utils.misc import default_class_repr
+from ..utils.misc import default_class_repr, ReprMixin
 
 
 __all__ = ["PreprocManager",]
 
 
-class PreprocManager(nn.Module):
+class PreprocManager(ReprMixin, nn.Module):
     """
 
     Examples
@@ -153,13 +153,8 @@ class PreprocManager(nn.Module):
     def preprocessors(self) -> List[nn.Module]:
         return self._preprocessors
 
-    def __repr__(self) -> str:
-        return default_class_repr(self)
-
-    __str__ = __repr__
-
     def extra_repr_keys(self) -> List[str]:
         """
         return the extra keys for `__repr__`
         """
-        return ["random", "preprocessors",]
+        return super().extra_repr_keys() + ["random", "preprocessors",]

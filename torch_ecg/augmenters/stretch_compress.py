@@ -13,7 +13,7 @@ import torch.multiprocessing as tmp
 from scipy.signal import resample, resample_poly
 
 from .base import Augmenter
-from ..utils.misc import default_class_repr
+from ..utils.misc import ReprMixin
 
 
 __all__ = ["StretchCompress", "StretchCompressOffline",]
@@ -289,7 +289,7 @@ def _stretch_compress_one_batch_element(ratio:Real, sig:Tensor, *labels:Sequence
     return sig
 
 
-class StretchCompressOffline(object):
+class StretchCompressOffline(ReprMixin):
     """
     stretch-or-compress augmenter on orginal length-varying ECG signals (in the form of numpy arrays),
     for the purpose of offline data generation
@@ -495,13 +495,7 @@ class StretchCompressOffline(object):
         """
         return self.generate(seglen, sig, *labels, critical_points=critical_points)
 
-    def __repr__(self) -> str:
-        return default_class_repr(self)
-
-    def __str__(self) -> str:
-        return repr(self)
-
     def extra_repr_keys(self) -> List[str]:
         """
         """
-        return ["ratio", "prob", "overlap", "critical_overlap",]
+        return super().extra_repr_keys() + ["ratio", "prob", "overlap", "critical_overlap",]

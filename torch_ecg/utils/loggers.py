@@ -15,7 +15,7 @@ import pandas as pd
 import tensorboardX
 
 from ..utils.misc import (
-    get_date_str, default_class_repr, init_logger,
+    get_date_str, ReprMixin, init_logger,
 )
 from ..cfg import DEFAULTS
 
@@ -30,7 +30,7 @@ __all__ = [
 ]
 
 
-class BaseLogger(ABC):
+class BaseLogger(ReprMixin, ABC):
     """
     the abstract base class of all loggers
     """
@@ -127,16 +127,11 @@ class BaseLogger(ABC):
         """
         raise NotImplementedError
 
-    def __repr__(self) -> str:
-        return default_class_repr(self)
-
-    __str__ = __repr__
-
     def extra_repr_keys(self) -> List[str]:
         """
         extra keys to be displayed in the repr of the logger
         """
-        return ["filename",]
+        return super().extra_repr_keys() + ["filename",]
 
 
 class TxtLogger(BaseLogger):
@@ -501,7 +496,7 @@ class WandbLogger(BaseLogger):
         return self.__wandb.run.dir
 
 
-class LoggerManager(object):
+class LoggerManager(ReprMixin):
     """
     """
     __name__ = "LoggerManager"
@@ -657,13 +652,8 @@ class LoggerManager(object):
             lm._add_wandb_logger(**kwargs)
         return lm
 
-    def __repr__(self) -> str:
-        return default_class_repr(self)
-
-    __str__ = __repr__
-
     def extra_repr_keys(self) -> List[str]:
         """
         extra keys to be displayed in the repr of the logger
         """
-        return ["loggers",]
+        return super().extra_repr_keys() + ["loggers",]

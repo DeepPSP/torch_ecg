@@ -17,7 +17,7 @@ from .random_flip import RandomFlip
 from .random_masking import RandomMasking
 from .random_renormalize import RandomRenormalize
 from .stretch_compress import StretchCompress
-from ..utils.misc import default_class_repr
+from ..utils.misc import default_class_repr, ReprMixin
 
 
 __all__ = ["AugmenterManager",]
