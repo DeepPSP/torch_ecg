@@ -101,6 +101,8 @@ The following preprocessors are implemented
 3. bandpass
 4. resample
 
+For more examples, see the [README file]((/torch_ecg/preprocessors/README.md)) of the `preprecessors` module.
+
 ### [Databases](/torch_ecg/databases)
 This module include classes that manipulate the io of the ECG signals and labels in an ECG database, and maintains metadata (statistics, paths, plots, list of records, etc.) of it. This module is migrated and improved from [DeepPSP/database_reader](https://github.com/DeepPSP/database_reader)
 
