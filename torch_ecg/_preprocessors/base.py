@@ -166,7 +166,7 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
                 lowcut=frequency[0],
                 highcut=frequency[1],
                 fs=fs,
-                order=filter_order or int(0.05 * fs),
+                order=filter_order or round(0.01 * fs),  # better be determined by the `buttord`
             )
 
     if sig_fmt.lower() in ["channel_last", "lead_last"]:

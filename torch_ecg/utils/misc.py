@@ -1039,7 +1039,7 @@ def dicts_equal(d1:dict, d2:dict) -> bool:
             if not (v==d2[k]).all():
                 return False
         # TODO: consider whether there are any other dtypes that should be treated similarly
-        else:  # other dtypes whose equality can be directly checked
+        else:  # other dtypes whose equality can be checked directly
             if v != d2[k]:
                 return False
     return True
@@ -1215,9 +1215,6 @@ class MovingAverage(object):
         window: int, default 5,
             window length of the moving average
         """
-        # smoothed = []
-        # total = []
-        # numerator = []
         conv = np.arange(1, window+1)[::-1]
         deno = np.sum(conv)
         smoothed = np.convolve(conv, self.data, mode="same") / deno
@@ -1276,8 +1273,8 @@ def isclass(obj:Any) -> bool:
 
 
 def strafified_train_test_split(df:pd.DataFrame,
-                                 strafified_cols:Sequence[str],
-                                 test_ratio:float=0.2) -> Tuple[pd.DataFrame, pd.DataFrame]:
+                                strafified_cols:Sequence[str],
+                                test_ratio:float=0.2) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     """
     df_inspection = df[strafified_cols].copy()

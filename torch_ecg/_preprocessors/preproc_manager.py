@@ -29,8 +29,8 @@ class PreprocManager(ReprMixin):
     config = ED(
         random=False,
         resample={"fs": 500},
-        bandpass={},
-        normalize={},
+        bandpass={"filter_type": "fir"},
+        normalize={"method": "min-max"},
     )
     ppm = PreprocManager.from_config(config)
     sig = torch.rand(12,80000).numpy()
@@ -153,6 +153,31 @@ class PreprocManager(ReprMixin):
             if k not in _mapping:
                 _mapping.update({k: k})
         self._preprocessors.sort(key=lambda aug: new_ordering.index(_mapping[aug.__name__]))
+
+    def add_(self, pp:PreProcessor, pos:int=-1) -> NoReturn:
+        """ finished, checked,
+
+        add a (custom) preprocessor to the manager,
+        this method is preferred against directly manipulating
+        the internal list of preprocessors via `PreprocManager.preprocessors.append(pp)`
+
+        Parameters
+        ----------
+        pp: PreProcessor,
+            the preprocessor to be added
+        pos: int, default -1,
+            the position to insert the preprocessor,
+            should be >= -1, with -1 the indicator of the end
+        """
+        assert isinstance(pp, PreProcessor)
+        assert pp.__class__.__name__ not in [p.__class__.__name__ for p in self.preprocessors], \
+            f"Preprocessor {pp.__class__.__name__} already exists."
+        assert isinstance(pos, int) and pos >= -1, \
+            f"pos must be an integer >= -1, but got {pos}."
+        if pos == -1:
+            self._preprocessors.append(pp)
+        else:
+            self._preprocessors.insert(pos, pp)
 
     @property
     def preprocessors(self) -> List[PreProcessor]:
