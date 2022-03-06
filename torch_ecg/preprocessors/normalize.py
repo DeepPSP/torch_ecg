@@ -32,6 +32,7 @@ class Normalize(torch.nn.Module):
             \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
             \end{align*}
     """
+    __name__ = "Normalize"
 
     def __init__(self,
                  method:str="z-score",

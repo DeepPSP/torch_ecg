@@ -24,17 +24,16 @@ class PreprocManager(ReprMixin, nn.Module):
     ```python
     import torch
     from easydict import EasyDict as ED
-    from torch_ecg._preprocessors import PreprocManager
+    from torch_ecg.preprocessors import PreprocManager
 
     config = ED(
         random=False,
-        resample={"fs": 500},
-        bandpass={},
-        normalize={},
+        bandpass={"fs":500},
+        normalize={"method": "min-max"},
     )
     ppm = PreprocManager.from_config(config)
-    sig = torch.rand(12,80000).numpy()
-    sig, fs = ppm(sig, 200)
+    sig = torch.rand(2,12,8000)
+    sig = ppm(sig)
     ```
     """
     __name__ = "PreprocManager"
@@ -120,10 +119,10 @@ class PreprocManager(ReprMixin, nn.Module):
             "resample": ppm._add_resample,
         }
         for pp_name, pp_config in config.items():
-            if pp_name in ["random", "inplace", "fs",]:
+            if pp_name in ["random", "inplace",]:
                 continue
             if pp_name in _mapping and isinstance(pp_config, dict):
-                _mapping[pp_name](fs=config["fs"], **pp_config)
+                _mapping[pp_name](**pp_config)
             else:
                 # just ignore the other items
                 pass
@@ -148,6 +147,31 @@ class PreprocManager(ReprMixin, nn.Module):
             if k not in _mapping:
                 _mapping.update({k: k})
         self._preprocessors.sort(key=lambda aug: new_ordering.index(_mapping[aug.__name__]))
+
+    def add_(self, pp:nn.Module, pos:int=-1) -> NoReturn:
+        """ finished, checked,
+
+        add a (custom) preprocessor to the manager,
+        this method is preferred against directly manipulating
+        the internal list of preprocessors via `PreprocManager.preprocessors.append(pp)`
+
+        Parameters
+        ----------
+        pp: Module,
+            the preprocessor to be added
+        pos: int, default -1,
+            the position to insert the preprocessor,
+            should be >= -1, with -1 the indicator of the end
+        """
+        assert isinstance(pp, nn.Module)
+        assert pp.__class__.__name__ not in [p.__class__.__name__ for p in self.preprocessors], \
+            f"Preprocessor {pp.__class__.__name__} already exists."
+        assert isinstance(pos, int) and pos >= -1, \
+            f"pos must be an integer >= -1, but got {pos}."
+        if pos == -1:
+            self._preprocessors.append(pp)
+        else:
+            self._preprocessors.insert(pos, pp)
 
     @property
     def preprocessors(self) -> List[nn.Module]:

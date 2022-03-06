@@ -17,6 +17,7 @@ class Resample(torch.nn.Module):
 
     TODO: consider vectorized `scipy.signal.resample`?
     """
+    __name__ = "Resample"
 
     def __init__(self,
                  fs:Optional[int]=None,
