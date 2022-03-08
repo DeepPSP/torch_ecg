@@ -118,16 +118,15 @@ The following preprocessors are implemented
 
 
 ## baseline removal
-to write
+Also known as detrending, via median filter, which removes baseline drifts.
 
 ## normalize
-to write
+Normalization methods including z-score normalization, min-max normalization, etc. are implemented. Refer to [wikipedia](https://en.wikipedia.org/wiki/Feature_scaling#Methods) for more details.
 
 ## bandpass
-to write
+This procedure is performed using finite impulse response (FIR) filters, Butterworth filters, etc., which removes noises of frequencies outside the given pass band.
 
 ## resample
-to write
+Resampling to a fixed sampling rate is done using the `interpolate` function from `torch.nn.functional` or using `resample_poly` function from `scipy.signal`.
 
 ## Issues
-
