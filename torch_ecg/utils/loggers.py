@@ -243,7 +243,7 @@ class TxtLogger(BaseLogger):
         """
         """
         for h in self.logger.handlers:
-            if hasattr(h, flush):
+            if hasattr(h, "flush"):
                 h.flush()
 
     def close(self) -> NoReturn:
