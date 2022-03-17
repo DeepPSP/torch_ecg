@@ -125,7 +125,15 @@ After migration, all should be tested again, the progression:
 | CPSC2020      | [CPSC](http://2020.icbeb.org/CSPC2020)                           | :heavy_check_mark: |
 | CPSC2021      | [CPSC](http://2021.icbeb.org/CPSC2021)                           | :heavy_check_mark: |
 
-NOTE that these classes should not be confused with a `torch` `Dataset`, which is strongly related to the task (or the model). However, one can build `Dataset`s based on these classes, for example the [`Dataset`](/benchmarks/train_hybrid_cpsc2021/dataset.py) for the The 4th China Physiological Signal Challenge 2021 (CPSC2021)
+NOTE that these classes should not be confused with a `torch` `Dataset`, which is strongly related to the task (or the model). However, one can build `Dataset`s based on these classes, for example the [`Dataset`](/benchmarks/train_hybrid_cpsc2021/dataset.py) for the The 4th China Physiological Signal Challenge 2021 (CPSC2021).
+
+One can use the built-in `Dataset`s in [`torch_ecg.databases.datasets`](/torch_ecg/databases/datasets) as follows
+```python
+from torch_ecg.databases.datasets.cinc2021 import CINC2021Dataset, CINC2021TrainCfg
+config = deepcopy(CINC2021TrainCfg)
+config.db_dir = "some/path/to/db"
+dataset = CINC2021Dataset(config, training=True, lazy=False)
+```
 
 ### [Implemented Neural Network Architectures](/torch_ecg/models)
 1. CRNN, both for classification and sequence tagging (segmentation)
@@ -259,7 +267,7 @@ a large part of the case studies are migrated from other DeepPSP repositories, s
 
 
 Taking [CPSC2021](/benchmarks/train_hybrid_cpsc2021) for example, the steps are
-1. Write a [`Dataset`](/benchmarks/train_hybrid_cpsc2021/dataset.py) to fit the training data for the model(s) and the training workflow. In this example, 3 tasks are considered, 2 of which use a [`MaskedBCEWithLogitsLoss`](/torch_ecg/models/loss.py) function, hence the `Dataset` produces an extra tensor for these 2 tasks
+1. Write a [`Dataset`](/benchmarks/train_hybrid_cpsc2021/dataset.py) to fit the training data for the model(s) and the training workflow. Or directly use the built-in `Dataset`s in [`torch_ecg.databases.datasets`](/torch_ecg/databases/datasets). In this example, 3 tasks are considered, 2 of which use a [`MaskedBCEWithLogitsLoss`](/torch_ecg/models/loss.py) function, hence the `Dataset` produces an extra tensor for these 2 tasks
 ```python
 def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
     if self.lazy:
