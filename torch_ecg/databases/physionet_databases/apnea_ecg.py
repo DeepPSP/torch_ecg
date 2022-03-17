@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os
-import json
+
+from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, Tuple, NoReturn
 from numbers import Real
@@ -58,18 +58,18 @@ class ApneaECG(PhysioNetDataBase):
     """
 
     def __init__(self,
-                 db_dir:Optional[str]=None,
-                 working_dir:Optional[str]=None,
+                 db_dir:Optional[Union[str,Path]]=None,
+                 working_dir:Optional[Union[str,Path]]=None,
                  verbose:int=2,
                  **kwargs:Any,) -> NoReturn:
         """
 
         Parameters
         ----------
-        db_dir: str, optional,
+        db_dir: str or Path, optional,
             storage path of the database
             if not specified, data will be fetched from Physionet
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity
@@ -135,7 +135,7 @@ class ApneaECG(PhysioNetDataBase):
         stoi = {"a":"1", "b":"2", "c":"3", "x":"4"}
         return int("2000" + stoi[rec[0]] + rec[1:3])
 
-    def load_data(self, rec:str, lead:int=0, rec_path:Optional[str]=None) -> np.ndarray:
+    def load_data(self, rec:str, lead:int=0, rec_path:Optional[Union[str,Path]]=None) -> np.ndarray:
         """
 
         Parameters
@@ -144,11 +144,11 @@ class ApneaECG(PhysioNetDataBase):
             record name
         lead: int, default 0
             number of the lead, can be 0 or 1
-        rec_path: str, optional,
+        rec_path: str or Path, optional,
             path of the file which contains the ecg data,
             if not given, default path will be used
         """
-        file_path = rec_path if rec_path is not None else os.path.join(self.db_dir, rec)
+        file_path = str(rec_path or (self.db_dir/ rec))
         self.wfdb_rec = wfdb.rdrecord(file_path)
         sig = self.wfdb_rec.p_signal
         if not rec.endswith(("r", "er")):
@@ -177,14 +177,14 @@ class ApneaECG(PhysioNetDataBase):
         sig = {c: sig[:,self.wfdb_rec.sig_name.index(c)] for c in chns}
         return sig
 
-    def load_ann(self, rec:str, ann_path:Optional[str]=None, **kwargs) -> list:
+    def load_ann(self, rec:str, ann_path:Optional[Union[str,Path]]=None, **kwargs) -> list:
         """
 
         Parameters
         ----------
         rec: str,
             record name
-        ann_path: str, optional,
+        ann_path: str or Path, optional,
             path of the file which contains the annotations,
             if not given, default path will be used
 
@@ -193,7 +193,7 @@ class ApneaECG(PhysioNetDataBase):
         detailed_ann: list,
             annotations of the form [idx, ann]
         """
-        file_path = ann_path if ann_path is not None else os.path.join(self.db_dir, rec)
+        file_path = str(ann_path or (self.db_dir / rec))
         extension = kwargs.get("extension", "apn")
         self.wfdb_ann = wfdb.rdann(file_path, extension=extension)
         detailed_ann = [[si//(self.fs*60), sy] for si, sy in zip(self.wfdb_ann.sample, self.wfdb_ann.symbol)]

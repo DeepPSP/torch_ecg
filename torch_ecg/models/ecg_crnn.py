@@ -2,6 +2,7 @@
 validated C(R)NN structure models,
 for classifying ECG arrhythmias
 """
+
 from copy import deepcopy
 from itertools import repeat
 from collections import OrderedDict
@@ -40,9 +41,6 @@ from .cnn.resnet import ResNet
 from .cnn.multi_scopic import MultiScopicCNN
 from .cnn.densenet import DenseNet
 from .cnn.xception import Xception
-# from .cnn import (
-#     VGG16, ResNet, MultiScopicCNN, DenseNet, Xception,
-# )
 from .transformers import Transformer
 
 if DEFAULTS.torch_dtype == torch.float64:

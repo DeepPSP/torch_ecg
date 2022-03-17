@@ -1,7 +1,7 @@
 """
 basic building blocks, for 1d signal (time series)
 """
-import sys
+
 from copy import deepcopy
 from math import sqrt
 from itertools import repeat

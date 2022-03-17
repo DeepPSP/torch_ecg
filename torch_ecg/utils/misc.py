@@ -1,10 +1,7 @@
 """
 """
-import os, sys
-import re
-import logging
-import datetime
-import random
+import os, sys, re, logging, datetime, random
+from pathlib import Path
 from functools import reduce
 from collections import namedtuple
 from glob import glob
@@ -484,12 +481,16 @@ def plot_single_lead(t:np.ndarray, sig:np.ndarray, ax:Optional[Any]=None, ticks_
     ax.set_ylabel("Voltage [μV]")
 
 
-def init_logger(log_dir:str, log_file:Optional[str]=None, log_name:Optional[str]=None, mode:str="a", verbose:int=0) -> logging.Logger:
+def init_logger(log_dir:Union[str,Path],
+                log_file:Optional[str]=None,
+                log_name:Optional[str]=None,
+                mode:str="a",
+                verbose:int=0,) -> logging.Logger:
     """ finished, checked,
 
     Parameters
     ----------
-    log_dir: str,
+    log_dir: str or Path,
         directory of the log file
     log_file: str, optional,
         name of the log file
@@ -506,15 +507,15 @@ def init_logger(log_dir:str, log_file:Optional[str]=None, log_name:Optional[str]
     """
     if log_file is None:
         log_file = f"log_{get_date_str()}.txt"
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
-    log_file = os.path.join(log_dir, log_file)
-    print(f"log file path: {log_file}")
+    log_dir = Path(log_dir)
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_file = log_dir / log_file
+    print(f"log file path: {str(log_file)}")
 
     logger = logging.getLogger(log_name or DEFAULTS.prefix)  # "ECG" to prevent from using the root logger
 
     c_handler = logging.StreamHandler(sys.stdout)
-    f_handler = logging.FileHandler(log_file)
+    f_handler = logging.FileHandler(str(log_file))
 
     if verbose >= 2:
         print("levels of c_handler and f_handler are set DEBUG")

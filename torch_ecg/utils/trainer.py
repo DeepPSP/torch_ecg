@@ -3,8 +3,8 @@ Abstract base class for trainers,
 in order to replace the functions for classes in the training pipelines
 """
 
-import os
 import textwrap
+from pathlib import Path
 from copy import deepcopy
 from abc import ABC, abstractmethod
 from collections import deque, OrderedDict
@@ -105,6 +105,7 @@ class BaseTrainer(ABC):
         self.dataset_cls = dataset_cls
         self.model_config = CFG(deepcopy(model_config))
         self._train_config = CFG(deepcopy(train_config))
+        self._train_config.checkpoints = Path(self._train_config.checkpoints)
         self.device = device or next(self._model.parameters()).device
         self.dtype = next(self._model.parameters()).dtype
         self.model.to(self.device)
@@ -206,8 +207,8 @@ class BaseTrainer(ABC):
                 # save checkpoint
                 save_suffix = f"epochloss_{self.epoch_loss:.5f}_metric_{eval_res[self.train_config.monitor]:.2f}"
                 save_filename = f"{self.save_prefix}{self.epoch}_{get_date_str()}_{save_suffix}.pth.tar"
-                save_path = os.path.join(self.train_config.checkpoints, save_filename)
-                self.save_checkpoint(save_path)
+                save_path = self.train_config.checkpoints / save_filename
+                self.save_checkpoint(str(save_path))
 
                 # update learning rate using lr_scheduler
                 if self.train_config.lr_scheduler.lower() == "plateau":
@@ -423,8 +424,8 @@ class BaseTrainer(ABC):
 
         self._setup_augmenter_manager()
 
-        os.makedirs(self.train_config.checkpoints, exist_ok=True)
-        os.makedirs(self.train_config.model_dir, exist_ok=True)
+        self.train_config.checkpoints.mkdir(parents=True, exist_ok=True)
+        self.train_config.model_dir.mkdir(parents=True, exist_ok=True)
 
     def extra_log_suffix(self) -> str:
         """

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os
+
+from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, NoReturn
 from numbers import Real
@@ -75,7 +76,7 @@ class CINC2018(PhysioNetDataBase):
     """
 
     def __init__(self,
-                 db_dir:str,
+                 db_dir:Union[str,Path],
                  working_dir:Optional[str]=None,
                  verbose:int=2,
                  **kwargs:Any) -> NoReturn:
@@ -91,10 +92,10 @@ class CINC2018(PhysioNetDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="CINC2018", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(db_name="challenge-2018", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
         self.fs = None
-        self.training_dir = os.path.join(self.db_dir, "training")
-        self.test_dir = os.path.join(self.db_dir, "test")
+        self.training_dir = self.db_dir / "training"
+        self.test_dir = self.db_dir / "test"
         self.training_records = []
         self.test_records = []
         self._all_records = []

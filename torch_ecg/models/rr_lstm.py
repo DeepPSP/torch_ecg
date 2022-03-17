@@ -6,6 +6,7 @@ References
 ----------
 [1] https://github.com/al3xsh/rnn-based-af-detection
 """
+
 from copy import deepcopy
 from itertools import repeat
 from collections import OrderedDict

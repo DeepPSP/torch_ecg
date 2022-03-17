@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 """
+
 import io
-import os
-import glob
+from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, Dict, Tuple, NoReturn
 from numbers import Real
@@ -77,17 +77,17 @@ class CPSC2018(CPSCDataBase):
     """
 
     def __init__(self,
-                 db_dir:str,
-                 working_dir:Optional[str]=None,
+                 db_dir:Union[str,Path],
+                 working_dir:Optional[Union[str,Path]]=None,
                  verbose:int=2,
                  **kwargs:Any) -> NoReturn:
         """ finished, to be improved,
 
         Parameters
         ----------
-        db_dir: str,
+        db_dir: str or Path,
             storage path of the database
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity
@@ -137,8 +137,8 @@ class CPSC2018(CPSCDataBase):
         """
         """
         self._all_records = [
-            os.path.splitext(os.path.basename(item))[0] \
-                for item in glob.glob(os.path.join(self.db_dir, f"*.{self.rec_ext}"))
+            item.with_suffix("").name \
+                for item in self.db_dir.glob(f"*.{self.rec_ext}")
         ]
 
     def get_subject_id(self, rec_no:Union[int,str]) -> int:
@@ -177,8 +177,8 @@ class CPSC2018(CPSCDataBase):
         if isinstance(rec_no, int):
             assert rec_no in range(1, self.nb_records+1), f"rec_no should be in range(1,{self.nb_records+1})"
             rec_no = f"A{rec_no:04d}"
-        rec_fp = os.path.join(self.db_dir, f"{rec_no}.{self.rec_ext}")
-        data = loadmat(rec_fp)
+        rec_fp = self.db_dir / f"{rec_no}.{self.rec_ext}"
+        data = loadmat(str(rec_fp))
         data = np.asarray(data["val"], dtype=np.float64)
         if data_format == "channels_last":
             data = data.T
@@ -210,9 +210,8 @@ class CPSC2018(CPSCDataBase):
         if isinstance(rec_no, int):
             assert rec_no in range(1, self.nb_records+1), f"rec_no should be in range(1, {self.nb_records+1})"
             rec_no = f"A{rec_no:04d}"
-        ann_fp = os.path.join(self.db_dir, f"{rec_no}.{self.ann_ext}")
-        with open(ann_fp, "r") as f:
-            header_data = f.read().splitlines()
+        ann_fp = self.db_dir / f"{rec_no}.{self.ann_ext}"
+        header_data = ann_fp.read_text().splitlines()
 
         ann_dict = {}
         ann_dict["rec_name"], ann_dict["nb_leads"], ann_dict["fs"], ann_dict["nb_samples"], ann_dict["datetime"], daytime \
@@ -400,7 +399,12 @@ class CPSC2018(CPSCDataBase):
 
         return subject_info
 
-    def save_challenge_predictions(self, rec_no:Union[int,str], output_dir:str, scores:List[Real], labels:List[int], classes:List[str]) -> NoReturn:
+    def save_challenge_predictions(self,
+                                   rec_no:Union[int,str],
+                                   output_dir:Union[str,Path],
+                                   scores:List[Real],
+                                   labels:List[int],
+                                   classes:List[str],) -> NoReturn:
         """ finished, checked,
 
         Parameters
@@ -408,7 +412,7 @@ class CPSC2018(CPSCDataBase):
         rec_no: int or str,
             number of the record, NOTE that rec_no starts from 1; or name of the record,
             int only supported for the original CPSC2018 dataset
-        output_dir: str,
+        output_dir: str or Path,
             directory to save the predictions
         scores: list of real,
             ...
@@ -422,7 +426,7 @@ class CPSC2018(CPSCDataBase):
         assert rec_no in range(1, self.nb_records+1), f"rec_no should be in range(1, {self.nb_records+1})"
         recording = self._all_records[rec_no]
         new_file = recording + ".csv"
-        output_file = os.path.join(output_dir, new_file)
+        output_file = Path(output_dir) / new_file
 
         # Include the filename as the recording number
         recording_string = f"#{recording}"
@@ -430,9 +434,7 @@ class CPSC2018(CPSCDataBase):
         label_string = ",".join(str(i) for i in labels)
         score_string = ",".join(str(i) for i in scores)
 
-        with open(output_file, "w") as f:
-            # f.write(recording_string + "\n" + class_string + "\n" + label_string + "\n" + score_string + "\n")
-            f.write("\n".join([recording_string, class_string, label_string, score_string, ""]))
+        output_file.write_text("\n".join([recording_string, class_string, label_string, score_string, ""]))
 
     def plot(self, rec_no:Union[int,str], ticks_granularity:int=0, leads:Optional[Union[str, List[str]]]=None, **kwargs:Any) -> NoReturn:
         """ finished, checked,

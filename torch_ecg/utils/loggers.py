@@ -4,7 +4,8 @@ loggers, including (planned) CSVLogger, TensorBoardXLogger, WandbLogger
 with reference to `loggers` of `textattack` and `loggers` of `pytorch-lightning`
 """
 
-import os, logging, csv, importlib
+import logging, csv, importlib
+from pathlib import Path
 from datetime import datetime
 from abc import ABC, abstractmethod
 from typing import NoReturn, Optional, Union, List, Any, Dict
@@ -139,17 +140,17 @@ class TxtLogger(BaseLogger):
     """
     __name__ = "TxtLogger"
 
-    def __init__(self, log_dir:Optional[str]=None, log_suffix:Optional[str]=None,) -> NoReturn:
+    def __init__(self, log_dir:Optional[Union[str,Path]]=None, log_suffix:Optional[str]=None,) -> NoReturn:
         """
 
         Parameters
         ----------
-        log_dir: str, optional,
+        log_dir: str or Path, optional,
             the directory to save the log file
         log_suffix: str, optional,
             the suffix of the log file
         """
-        self._log_dir = log_dir or DEFAULTS.log_dir
+        self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         if log_suffix is None:
             log_suffix = ""
         else:
@@ -264,7 +265,7 @@ class TxtLogger(BaseLogger):
     def filename(self) -> str:
         """
         """
-        return os.path.join(self.log_dir, self.log_file)
+        return str(self.log_dir / self.log_file)
 
 
 class CSVLogger(BaseLogger):
@@ -272,17 +273,17 @@ class CSVLogger(BaseLogger):
     """
     __name__ = "CSVLogger"
 
-    def __init__(self, log_dir:Optional[str]=None, log_suffix:Optional[str]=None,) -> NoReturn:
+    def __init__(self, log_dir:Optional[Union[str,Path]]=None, log_suffix:Optional[str]=None,) -> NoReturn:
         """
 
         Parameters
         ----------
-        log_dir: str, optional,
+        log_dir: str or Path, optional,
             the directory to save the log file
         log_suffix: str, optional,
             the suffix of the log file
         """
-        self._log_dir = log_dir or DEFAULTS.log_dir
+        self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         if log_suffix is None:
             log_suffix = ""
         else:
@@ -355,7 +356,7 @@ class CSVLogger(BaseLogger):
     def filename(self) -> str:
         """
         """
-        return os.path.join(self.log_dir, self.log_file)
+        return str(self.log_dir / self.log_file)
 
 
 class TensorBoardXLogger(BaseLogger):
@@ -363,7 +364,7 @@ class TensorBoardXLogger(BaseLogger):
     """
     __name__ = "TensorBoardXLogger"
 
-    def __init__(self, log_dir:Optional[str]=None, log_suffix:Optional[str]=None,) -> NoReturn:
+    def __init__(self, log_dir:Optional[Union[str,Path]]=None, log_suffix:Optional[str]=None,) -> NoReturn:
         """
 
         Parameters
@@ -373,8 +374,8 @@ class TensorBoardXLogger(BaseLogger):
         log_suffix: str, optional,
             the suffix of the log file
         """
-        self._log_dir = log_dir or DEFAULTS.log_dir
-        self.logger = tensorboardX.SummaryWriter(log_dir, filename_suffix=log_suffix or "")
+        self._log_dir = Path(log_dir or DEFAULTS.log_dir)
+        self.logger = tensorboardX.SummaryWriter(str(self._log_dir), filename_suffix=log_suffix or "")
         self.log_file = self.logger.file_writer.event_writer._ev_writer._file_name
         self.step = -1
 
@@ -429,7 +430,7 @@ class TensorBoardXLogger(BaseLogger):
     def filename(self) -> str:
         """
         """
-        return os.path.join(self.log_dir, self.log_file)
+        return str(self.log_dir / self.log_file)
 
 
 class WandbLogger(BaseLogger):
@@ -438,15 +439,16 @@ class WandbLogger(BaseLogger):
     __name__ = "WandbLogger"
 
     def __init__(self,
-                 log_dir:Optional[str]=None,
+                 log_dir:Optional[Union[str,Path]]=None,
                  log_suffix:Optional[str]=None,
                  project:Optional[str]=None,
                  entity:Optional[str]=None,
                  hyperparameters:Optional[dict]=None) -> NoReturn:
         """
+        to write docstring
         """
         self.__wandb = importlib.import_module("wandb")
-        self._log_dir = log_dir or DEFAULTS.log_dir
+        self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         self._log_suffix = log_suffix
         self._project = project
         self._entity = entity
@@ -501,17 +503,17 @@ class LoggerManager(ReprMixin):
     """
     __name__ = "LoggerManager"
 
-    def __init__(self, log_dir:Optional[str]=None, log_suffix:Optional[str]=None,) -> NoReturn:
+    def __init__(self, log_dir:Optional[Union[str,Path]]=None, log_suffix:Optional[str]=None,) -> NoReturn:
         """
 
         Parameters
         ----------
-        log_dir: str, optional,
+        log_dir: str or Path, optional,
             the directory to save the log file
         log_suffix: str, optional,
             the suffix of the log file
         """
-        self._log_dir = log_dir or DEFAULTS.log_dir
+        self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         self._log_suffix = log_suffix
         self._loggers = []
 

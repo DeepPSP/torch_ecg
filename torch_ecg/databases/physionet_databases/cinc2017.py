@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os
+
 import math
+from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, Sequence, NoReturn
 from numbers import Real
@@ -59,15 +60,15 @@ class CINC2017(PhysioNetDataBase):
     """
 
     def __init__(self,
-                 db_dir:str,
-                 working_dir:Optional[str]=None,
+                 db_dir:Union[str,Path],
+                 working_dir:Optional[Union[str,Path]]=None,
                  verbose:int=2,
                  **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
         ----------
-        db_dir: str, optional,
+        db_dir: str or Path,
             storage path of the database
         working_dir: str, optional,
             working directory, to store intermediate files and log file
@@ -75,7 +76,7 @@ class CINC2017(PhysioNetDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="CINC2017", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(db_name="challenge-2017", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
         self.fs = 300
         
         self.rec_ext = "mat"
@@ -84,9 +85,9 @@ class CINC2017(PhysioNetDataBase):
         self._all_records = []
         self._ls_rec()
 
-        self._df_ann = pd.read_csv(os.path.join(self.db_dir, "REFERENCE.csv"), header=None)
+        self._df_ann = pd.read_csv(self.db_dir / "REFERENCE.csv", header=None)
         self._df_ann.columns = ["rec", "ann",]
-        self._df_ann_ori = pd.read_csv(os.path.join(self.db_dir, "REFERENCE-original.csv"), header=None)
+        self._df_ann_ori = pd.read_csv(self.db_dir / "REFERENCE-original.csv", header=None)
         self._df_ann_ori.columns = ["rec", "ann",]
         # ["N", "A", "O", "~"]
         self._all_ann = list(set(self._df_ann.ann.unique().tolist() + self._df_ann_ori.ann.unique().tolist()))
@@ -106,18 +107,15 @@ class CINC2017(PhysioNetDataBase):
     def _ls_rec(self) -> NoReturn:
         """
         """
-        fp = os.path.join(self.db_dir, "RECORDS")
-        if os.path.isfile(fp):
-            with open(fp, "r") as f:
-                self._all_records = f.read().splitlines()
-                return
+        fp = self.db_dir / "RECORDS"
+        if fp.exists():
+            self._all_records = fp.read_text().splitlines()
+            return
         self._all_records = get_record_list_recursive3(
             db_dir=self.db_dir,
             rec_patterns=f"A[\d]{{5}}.{self.rec_ext}"
         )
-        with open(fp, "w") as f:
-            for rec in self._all_records:
-                f.write(f"{rec}\n")
+        fp.write_text("\n".join(self._all_records) + "\n")
 
     def load_data(self, rec:str, data_format:str="channel_first", units:str="mV") -> np.ndarray:
         """ finished, checked,
@@ -141,7 +139,7 @@ class CINC2017(PhysioNetDataBase):
         """
         assert data_format.lower() in ["channel_first", "lead_first", "channel_last", "lead_last", "flat",]
         assert units.lower() in ["mv", "uv", "μv",]
-        wr = wfdb.rdrecord(os.path.join(self.db_dir, rec))
+        wr = wfdb.rdrecord(str(self.db_dir / rec))
         data = wr.p_signal
 
         if wr.units[0].lower() == units.lower():

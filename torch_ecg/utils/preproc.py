@@ -12,7 +12,7 @@ References:
 [1] https://github.com/PIA-Group/BioSPPy
 [2] to add
 """
-import os
+
 import multiprocessing as mp
 from collections import Counter
 from copy import deepcopy

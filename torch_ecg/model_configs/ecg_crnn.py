@@ -1,6 +1,7 @@
 """
 configs of models of CRNN structures, for classification
 """
+
 from copy import deepcopy
 
 from .cnn import (

@@ -2,7 +2,7 @@
 utilities for signal processing,
 including spatial, temporal, spatio-temporal domains
 """
-import os
+
 from copy import deepcopy
 from typing import Union, Optional, List, Tuple, Sequence, Iterable, NoReturn
 from numbers import Real

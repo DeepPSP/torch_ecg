@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os
-import json
+
+from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
 from numbers import Real
@@ -150,17 +150,17 @@ class LUDB(PhysioNetDataBase):
     """
 
     def __init__(self,
-                 db_dir:str,
-                 working_dir:Optional[str]=None,
+                 db_dir:Union[str,Path],
+                 working_dir:Optional[Union[str,Path]]=None,
                  verbose:int=2,
                  **kwargs:Any) -> NoReturn:
         """ finished, checked,
         
         Parameters
         ----------
-        db_dir: str,
+        db_dir: str or Path,
             storage path of the database
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity
@@ -192,9 +192,9 @@ class LUDB(PhysioNetDataBase):
             p=1, N=2, t=3, i=0  # an extra isoelectric
         )
 
-        if os.path.isfile(os.path.join(self.db_dir, "ludb.csv")):
+        if (self.db_dir / "ludb.csv").is_file():
             # newly added in version 1.0.1
-            self._df_subject_info = pd.read_csv(os.path.join(self.db_dir, "ludb.csv"))
+            self._df_subject_info = pd.read_csv(self.db_dir / "ludb.csv")
             self._df_subject_info.ID = self._df_subject_info.ID.apply(str)
             self._df_subject_info.Sex = self._df_subject_info.Sex.apply(lambda s: s.strip())
             self._df_subject_info.Age = self._df_subject_info.Age.apply(lambda s: s.strip())
@@ -229,7 +229,7 @@ class LUDB(PhysioNetDataBase):
         rec_fp: str,
             path of the record, without file extension
         """
-        rec_fp = os.path.join(self.db_dir, "data", rec)
+        rec_fp = str(self.db_dir / "data" / rec)
         return rec_fp
 
     def load_data(self,

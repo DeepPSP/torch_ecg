@@ -4,6 +4,7 @@ the model of (attention-based) time-incremental CNN
 the cnn layers of this model has a constant kernel size 3,
 but keep increasing the number of channels
 """
+
 from copy import deepcopy
 
 from .cnn import (

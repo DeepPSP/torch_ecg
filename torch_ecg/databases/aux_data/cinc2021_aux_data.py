@@ -3,7 +3,8 @@ from 3 files of the official evaluation repo:
 
     dx_mapping_scored.csv, dx_mapping_unscored.csv, weights.csv
 """
-import os
+
+from pathlib import Path
 from io import StringIO
 from typing import Union, Optional, List, Tuple, Sequence, Dict
 from numbers import Real
@@ -557,8 +558,8 @@ def get_class_weight(tranches:Union[str, Sequence[str]],
 
 
 # extra statistics
-dx_cooccurrence_all_fp = "./dx_cooccurrence_all.csv"
-if os.path.isfile(dx_cooccurrence_all_fp):
+dx_cooccurrence_all_fp = Path("./dx_cooccurrence_all.csv")
+if dx_cooccurrence_all_fp.is_file():
     dx_cooccurrence_all = pd.read_csv(dx_cooccurrence_all_fp, index_col=0)
     dx_cooccurrence_scored = dx_cooccurrence_all.loc[dx_mapping_scored.Abbreviation, dx_mapping_scored.Abbreviation]
 else:

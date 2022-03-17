@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os
-import random
-import math
-import time
-import warnings
-import json
+
+import math, time, json, warnings
+from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
 from numbers import Real
@@ -127,7 +124,7 @@ class CPSC2021(CPSCDataBase):
         """
         super().__init__(db_name="CPSC2021", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
 
-        self.db_dir_base = db_dir
+        self.db_dir_base = Path(db_dir)
         self.db_tranches = ["training_I", "training_II",]
         self.db_dirs = CFG({t:"" for t in self.db_tranches})
 
@@ -192,17 +189,16 @@ class CPSC2021(CPSCDataBase):
         fn = "RECORDS"
         rev_fn = "REVISED_RECORDS"
         for t in self.db_tranches:
-            dir_candidate = os.path.join(self.db_dir_base, t.replace("training_", "training"), t)
-            if os.path.isdir(dir_candidate):
+            dir_candidate = self.db_dir_base / t.replace("training_", "training") / t
+            if dir_candidate.is_dir():
                 dir_tranche = dir_candidate
             else:
-                dir_tranche = os.path.join(self.db_dir_base, t)
+                dir_tranche = self.db_dir_base / t
             self.db_dirs[t] = dir_tranche
 
-            record_list_fp = os.path.join(dir_tranche, fn)
-            if os.path.isfile(record_list_fp):
-                with open(record_list_fp, "r") as f:
-                    self._all_records[t] = f.read().splitlines()
+            record_list_fp = dir_tranche / fn
+            if record_list_fp.is_file():
+                self._all_records[t] = record_list_fp.read_text().splitlines()
             else:
                 self._all_records[t] = []
             if len(self._all_records[t]) == self.nb_records[t]:
@@ -214,13 +210,11 @@ class CPSC2021(CPSCDataBase):
                 self._all_records[t] = \
                     get_record_list_recursive3(dir_tranche, rec_patterns_with_ext)
                 print(f"Done in {time.time() - start:.5f} seconds!")
-                with open(record_list_fp, "w") as f:
-                    f.write("\n".join(self._all_records[t]))
+                record_list_fp.write_text("\n".join(self._all_records[t]))
 
-            record_list_fp = os.path.join(dir_tranche, rev_fn)
-            if os.path.isfile(record_list_fp):
-                with open(record_list_fp, "r") as f:
-                    self.__revised_records.extend(f.read().splitlines())
+            record_list_fp = dir_tranche / rev_fn
+            if record_list_fp.is_file():
+                self.__revised_records.extend(record_list_fp.read_text().splitlines())
 
             self._all_subjects[t] = sorted(
                 list(set([rec.split("_")[1] for rec in self._all_records[t]])),
@@ -241,8 +235,8 @@ class CPSC2021(CPSCDataBase):
         aggregate stats on the whole dataset
         """
         stats_file = "stats.csv"
-        stats_file_fp = os.path.join(self.db_dir_base, stats_file)
-        if os.path.isfile(stats_file_fp):
+        stats_file_fp = self.db_dir_base / stats_file
+        if stats_file_fp.is_file():
             self._stats = pd.read_csv(stats_file_fp)
         
         if self._stats.empty or set(self._stats_columns) != set(self._stats.columns):
@@ -254,7 +248,7 @@ class CPSC2021(CPSCDataBase):
             self._stats["record_id"] = self._stats["record"].apply(lambda s: int(s.split("_")[2]))
             self._stats["label"] = self._stats["record"].apply(lambda s: self.load_label(s))
             self._stats["fs"] = self.fs
-            self._stats["sig_len"] = self._stats["record"].apply(lambda s: wfdb.rdheader(self._get_path(s)).sig_len)
+            self._stats["sig_len"] = self._stats["record"].apply(lambda s: wfdb.rdheader(str(self._get_path(s))).sig_len)
             self._stats["sig_len_sec"] = self._stats["sig_len"] / self._stats["fs"]
             self._stats["revised"] = self._stats["record"].apply(lambda s: 1 if s in self.__revised_records else 0)
             self._stats = self._stats.sort_values(by=["subject_id", "record_id"], ignore_index=True)
@@ -290,10 +284,9 @@ class CPSC2021(CPSCDataBase):
         list all the records for all diagnoses
         """
         fn = "diagnoses_records_list.json"
-        dr_fp = os.path.join(self.db_dir_base, fn)
-        if os.path.isfile(dr_fp):
-            with open(dr_fp, "r") as f:
-                self._diagnoses_records_list = json.load(f)
+        dr_fp = self.db_dir_base / fn
+        if dr_fp.is_file():
+            self._diagnoses_records_list = json.loads(dr_fp.read_text())
         else:
             start = time.time()
             if self.df_stats.empty:
@@ -306,8 +299,7 @@ class CPSC2021(CPSCDataBase):
             else:
                 self._diagnoses_records_list = \
                     {d: self.df_stats[self.df_stats["label"]==d]["record"].tolist() for d in self._labels_f2a.values()}
-            with open(dr_fp, "w") as f:
-                json.dump(self._diagnoses_records_list, f)
+            dr_fp.write_text(json.dumps(self._diagnoses_records_list, ensure_ascii=False))
         self._diagnoses_records_list = CFG(self._diagnoses_records_list)
 
     @property
@@ -334,7 +326,7 @@ class CPSC2021(CPSCDataBase):
         sid = rec.split("_")[1]
         return sid
 
-    def _get_path(self, rec:str, ext:Optional[str]=None) -> str:
+    def _get_path(self, rec:str, ext:Optional[str]=None) -> Path:
         """ finished, checked,
 
         Parameters
@@ -346,12 +338,12 @@ class CPSC2021(CPSCDataBase):
 
         Returns
         -------
-        p: str,
+        p: Path,
             path (with or without file extension) of the record
         """
-        p = os.path.join(self.db_dirs[self._all_records_inv[rec]], rec)
         if ext:
-            p += f".{ext}"
+            rec += f".{ext}"
+        p = self.db_dirs[self._all_records_inv[rec]] / rec
         return p
 
     def _validate_samp_interval(self,
@@ -431,7 +423,7 @@ class CPSC2021(CPSCDataBase):
 
         rec_fp = self._get_path(rec)
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
-        wfdb_rec = wfdb.rdrecord(rec_fp, sampfrom=sf, sampto=st, physical=True, channel_names=_leads)
+        wfdb_rec = wfdb.rdrecord(str(rec_fp), sampfrom=sf, sampto=st, physical=True, channel_names=_leads)
         data = np.asarray(wfdb_rec.p_signal.T)
         # lead_units = np.vectorize(lambda s: s.lower())(wfdb_rec.units)
 
@@ -484,7 +476,7 @@ class CPSC2021(CPSCDataBase):
             annotaton of the record
         """
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
-        ann = wfdb.rdann(self._get_path(rec), extension=self.ann_ext, sampfrom=sf, sampto=st)
+        ann = wfdb.rdann(str(self._get_path(rec)), extension=self.ann_ext, sampfrom=sf, sampto=st)
         # `load_af_episodes` should not use sampfrom, sampto
         func = {
             "rpeaks": self.load_rpeaks,
@@ -542,7 +534,7 @@ class CPSC2021(CPSCDataBase):
         """
         if ann is None:
             sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
-            ann = wfdb.rdann(self._get_path(rec), extension=self.ann_ext, sampfrom=sf, sampto=st)
+            ann = wfdb.rdann(str(self._get_path(rec)), extension=self.ann_ext, sampfrom=sf, sampto=st)
         critical_points = ann.sample
         symbols = ann.symbol
         rpeaks_valid = np.isin(symbols, list(WFDB_Beat_Annotations.keys()))
@@ -592,14 +584,14 @@ class CPSC2021(CPSCDataBase):
         af_episodes: list or ndarray,
             episodes of atrial fibrillation, in terms of intervals or mask
         """
-        header = wfdb.rdheader(self._get_path(rec))
+        header = wfdb.rdheader(str(self._get_path(rec)))
         label = self._labels_f2a[header.comments[0]]
         siglen = header.sig_len
         # if ann is None or fmt.lower() in ["c_intervals",]:
-        #     _ann = wfdb.rdann(self._get_path(rec), extension=self.ann_ext)
+        #     _ann = wfdb.rdann(str(self._get_path(rec)), extension=self.ann_ext)
         # else:
         #     _ann = ann
-        _ann = wfdb.rdann(self._get_path(rec), extension=self.ann_ext)
+        _ann = wfdb.rdann(str(self._get_path(rec)), extension=self.ann_ext)
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
         aux_note = np.array(_ann.aux_note)
         critical_points = _ann.sample
@@ -679,7 +671,7 @@ class CPSC2021(CPSCDataBase):
         label: str,
             classifying label of the record
         """
-        header = wfdb.rdheader(self._get_path(rec))
+        header = wfdb.rdheader(str(self._get_path(rec)))
         label = header.comments[0]
         if fmt.lower() in ["a", "abbr", "abbreviation"]:
             label = self._labels_f2a[label]
@@ -714,7 +706,7 @@ class CPSC2021(CPSCDataBase):
         """
         masks = gen_endpoint_score_mask(
             siglen=self.df_stats[self.df_stats.record==rec].iloc[0].sig_len,
-            critical_points=wfdb.rdann(self._get_path(rec), extension=self.ann_ext).sample,
+            critical_points=wfdb.rdann(str(self._get_path(rec)), extension=self.ann_ext).sample,
             af_intervals=self.load_af_episodes(rec, fmt="c_intervals"),
             bias=bias,
             verbose=self.verbose,

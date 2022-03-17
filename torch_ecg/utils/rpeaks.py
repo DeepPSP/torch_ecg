@@ -14,6 +14,7 @@ References:
 -----------
 [1] Liu, Feifei, et al. "Performance analysis of ten common QRS detectors on different ECG application cases." Journal of healthcare engineering 2018 (2018).
 """
+
 from numbers import Real
 from typing import Union, Optional
 

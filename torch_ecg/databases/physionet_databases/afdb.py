@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os
-import json
+
+from pathlib import Path
 import math
 from datetime import datetime
 from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
@@ -62,7 +62,7 @@ class AFDB(PhysioNetDataBase):
     [2] Moody GB, Mark RG. A new method for detecting atrial fibrillation using R-R intervals. Computers in Cardiology. 10:227-230 (1983).
     """
     def __init__(self,
-                 db_dir:Optional[str]=None,
+                 db_dir:Optional[Union[str,Path]]=None,
                  working_dir:Optional[str]=None,
                  verbose:int=2,
                  **kwargs:Any) -> NoReturn:
@@ -70,7 +70,7 @@ class AFDB(PhysioNetDataBase):
 
         Parameters
         ----------
-        db_dir: str, optional,
+        db_dir: str or Path, optional,
             storage path of the database
             if not specified, data will be fetched from Physionet
         working_dir: str, optional,
@@ -140,7 +140,7 @@ class AFDB(PhysioNetDataBase):
         data: ndarray,
             the ecg data
         """
-        fp = os.path.join(self.db_dir, rec)
+        fp = str(self.db_dir / rec)
         if not leads:
             _leads = self.all_leads
         elif isinstance(leads, str):
@@ -194,7 +194,7 @@ class AFDB(PhysioNetDataBase):
         ann, dict or ndarray,
             the annotations in the format of intervals, or in the format of mask
         """
-        fp = os.path.join(self.db_dir, rec)
+        fp = str(self.db_dir / rec)
         wfdb_ann = wfdb.rdann(fp, extension=self.ann_ext)
         header = wfdb.rdheader(fp)
         sig_len = header.sig_len
@@ -261,7 +261,7 @@ class AFDB(PhysioNetDataBase):
         ann, ndarray,
             locations (indices) of the qrs complexes
         """
-        fp = os.path.join(self.db_dir, rec)
+        fp = str(self.db_dir / rec)
         if use_manual and rec in self.qrsc_records:
             ext = self.manual_beat_ann_ext
         else:

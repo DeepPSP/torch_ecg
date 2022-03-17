@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os, json
+
+import json
+from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, Dict, Sequence, NoReturn
 from numbers import Real
@@ -74,17 +76,17 @@ class CPSC2019(CPSCDataBase):
     """
 
     def __init__(self,
-                 db_dir:str,
-                 working_dir:Optional[str]=None,
+                 db_dir:Union[str,Path],
+                 working_dir:Optional[Union[str,Path]]=None,
                  verbose:int=2,
                  **kwargs:Any) -> NoReturn:
         """ finished, to be improved,
 
         Parameters
         ----------
-        db_dir: str,
+        db_dir: str or Path,
             storage path of the database
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity
@@ -99,8 +101,8 @@ class CPSC2019(CPSCDataBase):
         self.ann_ext = "mat"
 
         # self.all_references = self.all_annotations
-        self.rec_dir = os.path.join(self.db_dir, "data")
-        self.ann_dir = os.path.join(self.db_dir, "ref")
+        self.rec_dir = self.db_dir / "data"
+        self.ann_dir = self.db_dir / "ref"
 
         self.n_records = 2000
         self._all_records = [f"data_{i:05d}" for i in range(1,1+self.n_records)]
@@ -114,30 +116,28 @@ class CPSC2019(CPSCDataBase):
     def _ls_rec(self) -> NoReturn:
         """ finished, checked,
         """
-        records_fn = os.path.join(self.db_dir, "records.json")
-        if os.path.isfile(records_fn):
-            with open(records_fn, "r") as f:
-                records_json = json.load(f)
-                self._all_records = records_json["rec"]
-                self._all_annotations = records_json["ann"]
+        records_fn = self.db_dir / "records.json"
+        if records_fn.is_file():
+            records_json = json.loads(records_fn.read_text())
+            self._all_records = records_json["rec"]
+            self._all_annotations = records_json["ann"]
             return
         print(f"Please allow some time for the reader to confirm the existence of corresponding data files and annotation files...")
         self._all_records = [
             rec for rec in self._all_records \
-                if os.path.isfile(os.path.join(self.rec_dir, f"{rec}.{self.rec_ext}"))
+                if (self.rec_dir / f"{rec}.{self.rec_ext}").is_file()
         ]
         self._all_annotations = [
             ann for ann in self._all_annotations \
-                if os.path.isfile(os.path.join(self.ann_dir, f"{ann}.{self.ann_ext}"))
+                if (self.ann_dir, f"{ann}.{self.ann_ext}").is_file()
         ]
         common = set([rec.split("_")[1] for rec in self._all_records]) \
             & set([ann.split("_")[1] for ann in self._all_annotations])
         common = sorted(list(common))
         self._all_records = [f"data_{item}" for item in common]
         self._all_annotations = [f"R_{item}" for item in common]
-        with open(records_fn, "w") as f:
-            records_json = {"rec": self._all_records, "ann": self._all_annotations}
-            json.dump(records_json, f, ensure_ascii=False)
+        records_json = {"rec": self._all_records, "ann": self._all_annotations}
+        records_fn.write_text(json.dumps(records_json, ensure_ascii=False))
 
     @property
     def all_annotations(self):
@@ -182,8 +182,8 @@ class CPSC2019(CPSCDataBase):
         data: ndarray,
             the ecg data
         """
-        fp = os.path.join(self.data_dir, f"{self._get_rec_name(rec)}.{self.rec_ext}")
-        data = loadmat(fp)["ecg"]
+        fp = self.data_dir / f"{self._get_rec_name(rec)}.{self.rec_ext}"
+        data = loadmat(str(fp))["ecg"]
         if units.lower() in ["uv", "μv",]:
             data = (1000 * data).astype(int)
         if not keep_dim:
@@ -206,8 +206,8 @@ class CPSC2019(CPSCDataBase):
         ann: ndarray,
             array of indices of R peaks
         """
-        fp = os.path.join(self.ann_dir, f"{self._get_ann_name(rec)}.{self.ann_ext}")
-        ann = loadmat(fp)["R_peak"].astype(int)
+        fp = self.ann_dir / f"{self._get_ann_name(rec)}.{self.ann_ext}"
+        ann = loadmat(str(fp))["R_peak"].astype(int)
         if not keep_dim:
             ann = ann.flatten()
         return ann

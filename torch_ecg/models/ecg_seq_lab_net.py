@@ -11,6 +11,7 @@ References
 ----------
 [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
 """
+
 from copy import deepcopy
 from itertools import repeat
 from collections import OrderedDict

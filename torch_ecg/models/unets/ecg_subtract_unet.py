@@ -7,7 +7,6 @@ the main differences to a normal Unet are that
 3. dropout is used between certain convolutional layers ("cba" layers indeed)
 """
 
-import sys
 from copy import deepcopy
 from collections import OrderedDict
 from itertools import repeat

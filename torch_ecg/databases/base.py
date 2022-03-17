@@ -10,12 +10,9 @@ Remarks:
 1. for whole-dataset visualizing: http://zzz.bwh.harvard.edu/luna/vignettes/dataplots/
 2. visualizing using UMAP: http://zzz.bwh.harvard.edu/luna/vignettes/nsrr-umap/
 """
-import os
-import sys
-import pprint
-import logging
-import time
-import json
+
+import os, pprint, time
+from pathlib import Path
 from abc import ABC, abstractmethod
 from collections import namedtuple
 from typing import Union, Optional, Any, List, NoReturn
@@ -119,8 +116,8 @@ class _DataBase(ABC):
     """
     def __init__(self,
                  db_name:str,
-                 db_dir:Optional[str]=None,
-                 working_dir:Optional[str]=None,
+                 db_dir:Optional[Union[str,Path]]=None,
+                 working_dir:Optional[Union[str,Path]]=None,
                  verbose:int=2,
                  **kwargs:Any,) -> NoReturn:
         """
@@ -128,19 +125,19 @@ class _DataBase(ABC):
         ----------
         db_name: str,
             name of the database
-        db_dir: str, optional,
+        db_dir: str or Path, optional,
             storage path of the database,
             if not specified, `wfdb` will fetch data from the website of PhysioNet
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
         """
         self.db_name = db_name
-        self.db_dir = db_dir
-        self.working_dir = working_dir or os.getcwd()
-        os.makedirs(self.working_dir, exist_ok=True)
+        self.db_dir = Path(db_dir)
+        self.working_dir = Path(working_dir or os.getcwd())
+        self.working_dir.mkdir(parents=True, exist_ok=True)
         self.data_ext = None
         self.ann_ext = None
         self.header_ext = "hea"
@@ -247,8 +244,8 @@ class PhysioNetDataBase(_DataBase):
     """
     def __init__(self,
                  db_name:str,
-                 db_dir:Optional[str]=None,
-                 working_dir:Optional[str]=None,
+                 db_dir:Optional[Union[str,Path]]=None,
+                 working_dir:Optional[Union[str,Path]]=None,
                  verbose:int=2,
                  **kwargs:Any,) -> NoReturn:
         """
@@ -256,10 +253,10 @@ class PhysioNetDataBase(_DataBase):
         ----------
         db_name: str,
             name of the database
-        db_dir: str, optional,
+        db_dir: str or Path, optional,
             storage path of the database,
             if not specified, `wfdb` will fetch data from the website of PhysioNet
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity
@@ -303,7 +300,7 @@ class PhysioNetDataBase(_DataBase):
             return
         try:
             self._all_records = wfdb.get_record_list(db_name or self.db_name)
-            self._all_records = [os.path.basename(item) for item in self._all_records]
+            self._all_records = [Path(item).name for item in self._all_records]
         except:
             self._ls_rec_local()
             
@@ -312,19 +309,16 @@ class PhysioNetDataBase(_DataBase):
 
         find all records in `self.db_dir`
         """
-        record_list_fp = os.path.join(self.db_dir, "RECORDS")
-        if os.path.isfile(record_list_fp):
-            with open(record_list_fp, "r") as f:
-                self._all_records = f.read().splitlines()
-                self._all_records = [os.path.basename(item) for item in self._all_records]
-                return
+        record_list_fp = self.db_dir / "RECORDS"
+        if record_list_fp.is_file():
+            self._all_records = record_list_fp.read_text().splitlines()
+            self._all_records = [Path(item).name for item in self._all_records]
+            return
         print("Please wait patiently to let the reader find all records of the database from local storage...")
         start = time.time()
         self._all_records = get_record_list_recursive3(self.db_dir, self.data_ext)
         print(f"Done in {time.time() - start:.3f} seconds!")
-        with open(record_list_fp, "w") as f:
-            for rec in self._all_records:
-                f.write(f"{rec}\n")
+        record_list_fp.write_text("\n".join(self._all_records) + "\n")
 
     def get_subject_id(self, rec:str) -> int:
         """
@@ -474,21 +468,21 @@ class NSRRDataBase(_DataBase):
         )
         self.kwargs = kwargs
 
-    def safe_edf_file_operation(self, operation:str="close", full_file_path:Optional[str]=None) -> NoReturn:
+    def safe_edf_file_operation(self, operation:str="close", full_file_path:Optional[Union[str,Path]]=None) -> NoReturn:
         """ finished, checked,
 
         Parameters
         ----------
         operation: str, default "close",
             operation name, can be "open" and "close"
-        full_file_path: str, optional,
+        full_file_path: str or Path, optional,
             path of the file which contains the psg data,
             if not given, default path will be used
         """
         if operation == "open":
             if self.file_opened is not None:
                 self.file_opened._close()
-            self.file_opened = EdfReader(full_file_path)
+            self.file_opened = EdfReader(str(full_file_path))
         elif operation =="close":
             if self.file_opened is not None:
                 self.file_opened._close()

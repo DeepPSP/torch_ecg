@@ -6,6 +6,7 @@ References
 ----------
 https://github.com/jacobgil/pytorch-grad-cam
 """
+
 from typing import Union, Optional, Sequence, Tuple, List, NoReturn
 
 import numpy as np

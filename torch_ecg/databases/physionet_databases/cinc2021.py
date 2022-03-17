@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os, io, sys
-import re
-import json
-import time
-import warnings
+
+import io, re, json, time, warnings
+from pathlib import Path
 from copy import deepcopy
 from datetime import datetime
 from typing import Union, Optional, Any, List, Dict, Tuple, Set, Sequence, NoReturn
@@ -173,29 +171,34 @@ class CINC2021(PhysioNetDataBase):
 
     References
     ----------
-    [0] https://physionetchallenges.github.io/2021/
-    [1] https://physionetchallenges.github.io/2020/
-    [2] http://2018.icbeb.org/#
-    [3] https://physionet.org/content/incartdb/1.0.0/
-    [4] https://physionet.org/content/ptbdb/1.0.0/
-    [5] https://physionet.org/content/ptb-xl/1.0.1/
-    [6] (deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ecg-public/
-    [7] (recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/
+    [1] https://physionetchallenges.github.io/2021/
+    [2] https://physionet.org/content/challenge-2021/1.0.2/
+    [3] https://physionetchallenges.github.io/2020/
+    [4] http://2018.icbeb.org/#
+    [5] https://physionet.org/content/incartdb/1.0.0/
+    [6] https://physionet.org/content/ptbdb/1.0.0/
+    [7] https://physionet.org/content/ptb-xl/1.0.1/
+    [8] (deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ecg-public/
+    [9] (recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/
     """
 
-    def __init__(self, db_dir:str, working_dir:Optional[str]=None, verbose:int=2, **kwargs:Any) -> NoReturn:
+    def __init__(self,
+                 db_dir:Union[str,Path],
+                 working_dir:Optional[Union[str,Path]]=None,
+                 verbose:int=2,
+                 **kwargs:Any) -> NoReturn:
         """
         Parameters
         ----------
-        db_dir: str,
+        db_dir: str or Path,
             storage path of the database
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="CinC2021", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(db_name="challenge-2021", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
         
         self.rec_ext = "mat"
         self.ann_ext = "hea"
@@ -214,7 +217,7 @@ class CINC2021(PhysioNetDataBase):
             "A": "A", "B": "Q", "C": "I", "D": "S", "E": "HR", "F": "E", "G": "JS",
         })
 
-        self.db_dir_base = db_dir
+        self.db_dir_base = Path(db_dir)
         self.db_dirs = CFG({tranche:"" for tranche in self.db_tranches})
         self._all_records = None
         self._stats = pd.DataFrame()
@@ -295,12 +298,14 @@ class CINC2021(PhysioNetDataBase):
         facilitating further uses
         """
         filename = "record_list.json"
-        record_list_fp = os.path.join(self.db_dir_base, filename)
-        if os.path.isfile(record_list_fp):
-            with open(record_list_fp, "r") as f:
-                self._all_records = {k:v for k,v in json.load(f).items() if k in self.tranche_names}
+        record_list_fp = self.db_dir_base / filename
+        if record_list_fp.is_file():
+            self._all_records = {
+                k: v for k, v in json.loads(record_list_fp.read_text()).items() \
+                    if k in self.tranche_names
+            }
             for tranche in self.db_tranches:
-                self._all_records[tranche] = [os.path.basename(f) for f in self._all_records[tranche]]
+                self._all_records[tranche] = [ Path(f).name for f in self._all_records[tranche]]
                 self.db_dirs[tranche] = self._find_dir(self.db_dir_base, tranche, 0)
                 if not self.db_dirs[tranche]:
                     print(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
@@ -316,7 +321,7 @@ class CINC2021(PhysioNetDataBase):
                 get_record_list_recursive3(self.db_dir_base, rec_patterns_with_ext)
             to_save = deepcopy(self._all_records)
             for tranche in self.db_tranches:
-                tmp_dirname = [ os.path.dirname(f) for f in self._all_records[tranche] ]
+                tmp_dirname = [ Path(f).name for f in self._all_records[tranche] ]
                 if len(set(tmp_dirname)) != 1:
                     if len(set(tmp_dirname)) > 1:
                         print(f"records of tranche {tranche} are stored in several folders!")
@@ -324,11 +329,10 @@ class CINC2021(PhysioNetDataBase):
                     else:
                         print(f"no record found for tranche {tranche}!")
                         # raise ValueError(f"no record found for tranche {tranche}!")
-                self.db_dirs[tranche] = os.path.join(self.db_dir_base, tmp_dirname[0])
-                self._all_records[tranche] = [os.path.basename(f) for f in self._all_records[tranche]]
+                self.db_dirs[tranche] = self.db_dir_base / tmp_dirname[0]
+                self._all_records[tranche] = [ Path(f).name for f in self._all_records[tranche] ]
             print(f"Done in {time.time() - start:.5f} seconds!")
-            with open(os.path.join(self.db_dir_base, filename), "w") as f:
-                json.dump(to_save, f)
+            record_list_fp.write_text(json.dumps(to_save))
         self._all_records = CFG(self._all_records)
 
     def _aggregate_stats(self, fast:bool=False) -> NoReturn:
@@ -344,8 +348,8 @@ class CINC2021(PhysioNetDataBase):
         """
         stats_file = "stats.csv"
         list_sep = ";"
-        stats_file_fp = os.path.join(self.db_dir_base, stats_file)
-        if os.path.isfile(stats_file_fp):
+        stats_file_fp = self.db_dir_base / stats_file
+        if stats_file_fp.is_file():
             self._stats = pd.read_csv(stats_file_fp, keep_default_na=False)
         if not fast and (self._stats.empty or self._stats_columns != set(self._stats.columns)):
             print("Please wait patiently to let the reader collect statistics on the whole dataset...")
@@ -375,7 +379,7 @@ class CINC2021(PhysioNetDataBase):
                 for idx, row in self._stats.iterrows():
                     self._stats.at[idx, k] = list(filter(lambda v:len(v)>0, row[k].split(list_sep)))
 
-    def _find_dir(self, root:str, tranche:str, level:int=0) -> str:
+    def _find_dir(self, root:Union[str,Path], tranche:str, level:int=0) -> Path:
         """ finished, checked,
 
         Parameters
@@ -389,29 +393,30 @@ class CINC2021(PhysioNetDataBase):
 
         Returns
         -------
-        res: str,
+        res: Path,
             the directory containing the tranche,
-            if is "", then not found
+            if is None, then not found
         """
         # print(f"searching for dir for tranche {self.tranche_names[tranche]} with root {root} at level {level}")
         if level > 2:
             print(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
-            return
+            return None
             # raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
         rec_pattern = f"^{self.rec_prefix[tranche]}(?:\d+).{self.rec_ext}$"
-        res = ""
-        candidates = os.listdir(root)
+        res = None
+        root = Path(root)
+        assert root.is_dir()
+        candidates = [ f.name for f in root.iterdir() ]
         if len(list(filter(re.compile(rec_pattern).search, candidates))) > 0:
             res = root
             return res
-        new_roots = [os.path.join(root, item) for item in candidates if os.path.isdir(os.path.join(root, item))]
+        new_roots = [ root / item for item in candidates if (root / item).is_dir() ]
         for r in new_roots:
             tmp = self._find_dir(r, tranche, level+1)
             if tmp:
                 res = tmp
                 return res
         return res
-
 
     @property
     def all_records(self):
@@ -421,7 +426,6 @@ class CINC2021(PhysioNetDataBase):
             self._ls_rec()
         return self._all_records
 
-
     @property
     def df_stats(self):
         """
@@ -430,17 +434,15 @@ class CINC2021(PhysioNetDataBase):
             warnings.warn("the dataframe of stats is empty, try using _aggregate_stats")
         return self._stats
 
-
     def _ls_diagnoses_records(self) -> NoReturn:
         """ finished, checked,
 
         list all the records for all diagnoses
         """
         filename = "diagnoses_records_list.json"
-        dr_fp = os.path.join(self.db_dir_base, filename)
-        if os.path.isfile(dr_fp):
-            with open(dr_fp, "r") as f:
-                self._diagnoses_records_list = json.load(f)
+        dr_fp = self.db_dir_base / filename
+        if dr_fp.is_file():
+            self._diagnoses_records_list = json.loads(dr_fp.read_text())
         else:
             print("Please wait several minutes patiently to let the reader list records for each diagnosis...")
             start = time.time()
@@ -457,8 +459,7 @@ class CINC2021(PhysioNetDataBase):
                         for d in ld:
                             self._diagnoses_records_list[d].append(rec)
             print(f"Done in {time.time() - start:.5f} seconds!")
-            with open(os.path.join(self.db_dir_base, filename), "w") as f:
-                json.dump(self._diagnoses_records_list, f)
+            dr_fp.write_text(json.dumps(self._diagnoses_records_list))
         self._diagnoses_records_list = CFG(self._diagnoses_records_list)
 
     @property
@@ -508,10 +509,10 @@ class CINC2021(PhysioNetDataBase):
             absolute file path of the data file of the record
         """
         tranche = self._get_tranche(rec)
-        fp = os.path.join(self.db_dirs[tranche], f"{rec}.{self.rec_ext}")
+        fp = self.db_dirs[tranche] / f"{rec}.{self.rec_ext}"
         if not with_ext:
-            fp = os.path.splitext(fp)[0]
-        return fp
+            fp = fp.with_suffix("")
+        return str(fp)
     
     def get_header_filepath(self, rec:str, with_ext:bool=True) -> str:
         """ finished, checked,
@@ -533,10 +534,10 @@ class CINC2021(PhysioNetDataBase):
             absolute file path of the header file of the record
         """
         tranche = self._get_tranche(rec)
-        fp = os.path.join(self.db_dirs[tranche], f"{rec}.{self.ann_ext}")
+        fp = self.db_dirs[tranche] / f"{rec}.{self.ann_ext}"
         if not with_ext:
-            fp = os.path.splitext(fp)[0]
-        return fp
+            fp = fp.with_suffix("")
+        return str(fp)
     
     def get_ann_filepath(self, rec:str, with_ext:bool=True) -> str:
         """ finished, checked,
@@ -1300,11 +1301,11 @@ class CINC2021(PhysioNetDataBase):
 
         tranche = self._get_tranche(rec)
         if siglen is None:
-            rec_fp = os.path.join(self.db_dirs[tranche], f"{rec}_500Hz.npy")
+            rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz.npy"
         else:
-            rec_fp = os.path.join(self.db_dirs[tranche], f"{rec}_500Hz_siglen_{siglen}.npy")
-        if not os.path.isfile(rec_fp):
-            # print(f"corresponding file {os.basename(rec_fp)} does not exist")
+            rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz_siglen_{siglen}.npy"
+        if not rec_fp.is_file():
+            # print(f"corresponding file {rec_fp.name} does not exist")
             # NOTE: if not exists, create the data file,
             # so that the ordering of leads keeps in accordance with `EAK.Standard12Leads`
             data = self.load_data(
@@ -1434,11 +1435,14 @@ class CINC2021(PhysioNetDataBase):
         dx_cooccurrence_all: DataFrame,
             the coocurrence matrix (DataFrame) desired
         """
-        dx_cooccurrence_all_fp = os.path.join(self.working_dir, "dx_cooccurrence_all.csv")
-        if os.path.isfile(dx_cooccurrence_all_fp) and tranches is None:
+        dx_cooccurrence_all_fp = self.working_dir / "dx_cooccurrence_all.csv"
+        if dx_cooccurrence_all_fp.is_file() and tranches is None:
             dx_cooccurrence_all = pd.read_csv(dx_cooccurrence_all_fp)
             return
-        dx_cooccurrence_all = pd.DataFrame(np.zeros((len(dx_mapping_all.Abbreviation), len(dx_mapping_all.Abbreviation)),dtype=int), columns=dx_mapping_all.Abbreviation.values)
+        dx_cooccurrence_all = pd.DataFrame(
+            np.zeros((len(dx_mapping_all.Abbreviation), len(dx_mapping_all.Abbreviation)),dtype=int),
+            columns=dx_mapping_all.Abbreviation.values
+        )
         dx_cooccurrence_all.index = dx_mapping_all.Abbreviation.values
         start = time.time()
         print("start computing the cooccurrence matrix...")
@@ -1490,17 +1494,17 @@ _exceptional_records = [ # with nan values (p_signal) read by wfdb
 ]
 
 
-def prepare_dataset(input_directory:str,
-                    output_directory:Optional[str]=None,
+def prepare_dataset(input_directory:Union[str,Path],
+                    output_directory:Optional[Union[str,Path]]=None,
                     tranches:Optional[Sequence[str]]=None,
                     verbose:bool=False) -> NoReturn:
     """ finished, checked,
 
     Parameters
     ----------
-    input_directory: str,
+    input_directory: str or Path,
         directory containing the .tar.gz files of the records and headers
-    output_directory: str, optional,
+    output_directory: str or Path, optional,
         directory to store the extracted records and headers, under specific organization,
         if not specified, defaults to `input_directory`
     tranches: sequence of str, optional,
@@ -1513,7 +1517,6 @@ def prepare_dataset(input_directory:str,
     currently, for updating headers only, corresponding .tar.gz file of records should be presented
     """
     import shutil, tarfile
-    from glob import glob
 
     data_files = [
         "WFDB_CPSC2018.tar.gz",
@@ -1539,9 +1542,9 @@ def prepare_dataset(input_directory:str,
     ]
     _tranches = "CPSC,CPSC_Extra,StPetersburg,PTB,PTB_XL,Georgia,CUSPHNFH".split(",")
 
-    _dir = os.path.abspath(input_directory)
+    _dir = Path(input_directory).absolute()
     # ShaoxingUniv (CUSPHNFH) is the union of ChapmanShaoxing and Ningbo
-    if data_files[-3] in os.listdir(input_directory):
+    if data_files[-3] in input_directory.iterdir():
         flag_CUSPHNFH = False
         _data_files =  data_files[:-2]
         _header_files = header_files[:-2]
@@ -1550,15 +1553,15 @@ def prepare_dataset(input_directory:str,
         _data_files = deepcopy(data_files)
         _header_files = deepcopy(header_files)
     _data_files = \
-        [os.path.basename(item) for item in glob(os.path.join(_dir, "WFDB_*.tar.gz")) if os.path.basename(item) in _data_files]
+        [item.name for item in _dir.glob("WFDB_*.tar.gz") if item.name in _data_files]
     _header_files = \
-        [os.path.basename(item) for item in glob(os.path.join(_dir, "*Headers.tar.gz")) if os.path.basename(item) in _header_files]
-    _output_directory = output_directory or input_directory
+        [item.name for item in _dir.glob("*Headers.tar.gz") if item.name in _header_files]
+    _output_directory = Path(output_directory or input_directory)
     assert all([header_files[data_files.index(item)] in _header_files for item in _data_files]), \
         "header files corresponding to some data files not found"
 
     if flag_CUSPHNFH:
-        os.makedirs(os.path.join(_output_directory, "WFDB_CUSPHNFH"), exist_ok=True)
+        (_output_directory / "WFDB_CUSPHNFH").mkdir(parents=True, exist_ok=True)
 
     acc = 0
     for i, df in enumerate(_data_files):
@@ -1569,31 +1572,31 @@ def prepare_dataset(input_directory:str,
             df_name = "WFDB_CUSPHNFH"
         else:
             df_name = df.replace(".tar.gz", "")
-        if len(glob(os.path.join(_output_directory, df_name, "*.mat"))) > 0:
+        if len((_output_directory / df_name).glob("*.mat")) > 0:
             pass
         else:
-            with tarfile.open(os.path.join(_dir, df), "r:gz") as tar:
+            with tarfile.open(str(_dir / df), "r:gz") as tar:
                 for member in tar.getmembers():
                     if member.isfile():
-                        member.name = os.path.basename(member.name)
+                        member.name = Path(member.name).name
                         # header files will not be extracted,
                         # instead, they will be extracted from corresponding headers-only .tar.gz file
-                        if os.path.splitext(member.name)[1] == ".hea":
+                        if Path(member.name).suffix == ".hea":
                             continue
-                        tar.extract(member, os.path.join(_output_directory, df_name))
+                        tar.extract(member, str(_output_directory / df_name))
                         if verbose:
-                            print(f"extracted '{os.path.join(_output_directory, df_name, member.name)}'")
+                            print(f"extracted '{str(_output_directory / df_name / member.name)}'")
         print(f"finish extracting {df}")
         time.sleep(3)
         # corresponding header files
         hf = header_files[data_files.index(df)]
-        with tarfile.open(os.path.join(_dir, hf), "r:gz") as tar:
+        with tarfile.open(str(_dir / hf), "r:gz") as tar:
             for member in tar.getmembers():
                 if member.isfile():
-                    member.name = os.path.basename(member.name)
-                    tar.extract(member, os.path.join(_output_directory, df_name))
+                    member.name = Path(member.name).name
+                    tar.extract(member, str(_output_directory / df_name))
                     if verbose:
-                        print(f"extracted '{os.path.join(_output_directory, df_name, member.name)}'")
+                        print(f"extracted '{str(_output_directory / df_name / member.name)}'")
         print(f"finish extracting {hf}")
         print(f"{df_name} done! --- {acc}/{len(tranches) if tranches else len(_data_files)}")
         if i < len(_data_files) - 1:

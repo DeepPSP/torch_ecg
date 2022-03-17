@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os
-import json
-import math
+
+import json, math
+from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
 from numbers import Real
@@ -59,15 +59,19 @@ class LTAFDB(PhysioNetDataBase):
     [3] https://physionet.org/files/ltafdb/1.0.0/tables.shtml
     """
 
-    def __init__(self, db_dir:Optional[str]=None, working_dir:Optional[str]=None, verbose:int=2, **kwargs:Any) -> NoReturn:
+    def __init__(self,
+                 db_dir:Optional[Union[str,Path]]=None,
+                 working_dir:Optional[Union[str,Path]]=None,
+                 verbose:int=2,
+                 **kwargs:Any) -> NoReturn:
         """ finished, checked,
 
         Parameters
         ----------
-        db_dir: str, optional,
+        db_dir: str or Path, optional,
             storage path of the database
             if not specified, data will be fetched from Physionet
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity
@@ -158,7 +162,7 @@ class LTAFDB(PhysioNetDataBase):
         data: ndarray,
             the ecg data
         """
-        fp = os.path.join(self.db_dir, rec)
+        fp = self.db_dir / rec
         if not leads:
             _leads = self.all_leads
         elif isinstance(leads, int):
@@ -168,7 +172,7 @@ class LTAFDB(PhysioNetDataBase):
         assert set(_leads).issubset(self.all_leads)
         # p_signal in the format of "lead_last", and in units "mV"
         data = wfdb.rdrecord(
-            fp,
+            str(fp),
             sampfrom=sampfrom or 0,
             sampto=sampto,
             physical=True,
@@ -215,19 +219,18 @@ class LTAFDB(PhysioNetDataBase):
 
         NOTE that at head and tail of the record, segments named "NOISE" are added
         """
-        fp = os.path.join(self.db_dir, rec)
-        header = wfdb.rdheader(fp)
+        fp = self.db_dir / rec
+        header = wfdb.rdheader(str(fp))
         sig_len = header.sig_len
         sf = sampfrom or 0
         st = sampto or sig_len
         assert st > sf, "`sampto` should be greater than `sampfrom`!"
 
-        simplified_fp = os.path.join(self.db_dir, f"{rec}_ann.json")
-        if os.path.isfile(simplified_fp):
-            with open(simplified_fp, "r") as f:
-                ann = CFG(json.load(f))
+        simplified_fp = self.db_dir / f"{rec}_ann.json"
+        if simplified_fp.is_file():
+            ann = CFG(json.loads(simplified_fp.read_text()))
         else:
-            wfdb_ann = wfdb.rdann(fp, extension=self.manual_ann_ext)
+            wfdb_ann = wfdb.rdann(str(fp), extension=self.manual_ann_ext)
 
             ann = CFG({k: [] for k in self.rhythm_class_map.keys()})
             critical_points = wfdb_ann.sample.tolist()
@@ -245,8 +248,7 @@ class LTAFDB(PhysioNetDataBase):
             ann[current_rhythm].append([start, critical_points[-1]])
             ann["NOISE"].append([critical_points[-1], sig_len])
 
-            with open(simplified_fp, "w") as f:
-                json.dump(ann, f, ensure_ascii=False)
+            simplified_fp.write_text(json.dumps(ann, ensure_ascii=False))
         
         ann = CFG({
             k: generalized_intervals_intersection(l_itv, [[sf,st]]) \
@@ -264,13 +266,22 @@ class LTAFDB(PhysioNetDataBase):
         
         return ann
 
-    def load_rhythm_ann(self, rec:str, sampfrom:Optional[int]=None, sampto:Optional[int]=None, fmt:str="interval", keep_original:bool=False) -> Union[Dict[str, list], np.ndarray]:
+    def load_rhythm_ann(self,
+                        rec:str,
+                        sampfrom:Optional[int]=None,
+                        sampto:Optional[int]=None,
+                        fmt:str="interval",
+                        keep_original:bool=False,) -> Union[Dict[str, list], np.ndarray]:
         """
         alias of `self.load_ann`
         """
         return self.load_ann(rec, sampfrom, sampto, fmt, keep_original)
 
-    def load_beat_ann(self, rec:str, sampfrom:Optional[int]=None, sampto:Optional[int]=None, keep_original:bool=False) -> Dict[str, np.ndarray]:
+    def load_beat_ann(self,
+                      rec:str,
+                      sampfrom:Optional[int]=None,
+                      sampto:Optional[int]=None,
+                      keep_original:bool=False,) -> Dict[str, np.ndarray]:
         """ finished, checked,
 
         load beat annotations,
@@ -293,15 +304,15 @@ class LTAFDB(PhysioNetDataBase):
         ann, dict,
             locations (indices) of the all the beat types ("A", "N", "Q", "V",)
         """
-        fp = os.path.join(self.db_dir, rec)
-        header = wfdb.rdheader(fp)
+        fp = self.db_dir / rec
+        header = wfdb.rdheader(str(fp))
         sig_len = header.sig_len
         sf = sampfrom or 0
         st = sampto or sig_len
         assert st > sf, "`sampto` should be greater than `sampfrom`!"
 
         wfdb_ann = wfdb.rdann(
-            fp,
+            str(fp),
             extension=self.manual_ann_ext,
             sampfrom=sampfrom or 0,
             sampto=sampto,
@@ -317,7 +328,12 @@ class LTAFDB(PhysioNetDataBase):
             ann = CFG({k: np.array(v, dtype=int) for k, v in ann.items()})
         return ann
 
-    def load_rpeak_indices(self, rec:str, sampfrom:Optional[int]=None, sampto:Optional[int]=None, use_manual:bool=True, keep_original:bool=False) -> np.ndarray:
+    def load_rpeak_indices(self,
+                           rec:str,
+                           sampfrom:Optional[int]=None,
+                           sampto:Optional[int]=None,
+                           use_manual:bool=True,
+                           keep_original:bool=False,) -> np.ndarray:
         """ finished, checked,
 
         load rpeak indices, or equivalently qrs complex locations,
@@ -344,13 +360,13 @@ class LTAFDB(PhysioNetDataBase):
         ann, ndarray,
             locations (indices) of the all the rpeaks (qrs complexes)
         """
-        fp = os.path.join(self.db_dir, rec)
+        fp = self.db_dir / rec
         if use_manual:
             ext = self.manual_ann_ext
         else:
             ext = self.auto_ann_ext
         wfdb_ann = wfdb.rdann(
-            fp,
+            str(fp),
             extension=ext,
             sampfrom=sampfrom or 0,
             sampto=sampto,

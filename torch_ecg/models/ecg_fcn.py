@@ -5,6 +5,7 @@ References
 ----------
 [1] https://github.com/pytorch/vision/tree/master/torchvision/models/segmentation
 """
+
 from copy import deepcopy
 from itertools import repeat
 from collections import OrderedDict

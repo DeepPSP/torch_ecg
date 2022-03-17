@@ -2,7 +2,8 @@
 """
 docstring, to write
 """
-import os
+
+from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, Dict, Iterable, Sequence, NoReturn
 from numbers import Real
@@ -204,24 +205,21 @@ class SHHS(NSRRDataBase):
     """
 
     def __init__(self,
-                 db_dir:str,
-                 working_dir:Optional[str]=None,
+                 db_dir:Union[str,Path],
+                 working_dir:Optional[Union[str,Path]]=None,
                  verbose:int=2,
                  **kwargs:Any,) -> NoReturn:
         """
         
         Parameters
         ----------
-        db_dir: str,
+        db_dir: str or Path,
             storage path of the database
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
-
-        default db_dir:
-            "/export/algo/wenh06/ecg_data/shhs/"
         """
         super().__init__(db_name="SHHS", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
 
@@ -439,13 +437,13 @@ class SHHS(NSRRDataBase):
     def form_paths(self) -> NoReturn:
         """ finished,
         """
-        self.psg_data_path = os.path.join(self.db_dir, "polysomnography", "edfs")
-        self.ann_path = os.path.join(self.db_dir, "datasets")
-        self.hrv_ann_path = os.path.join(self.ann_path, "hrv-analysis")
-        self.eeg_ann_path = os.path.join(self.ann_path, "eeg-spectral-analysis")
-        self.wave_deli_path = os.path.join(self.db_dir, "polysomnography", "annotations-rpoints")
-        self.event_ann_path = os.path.join(self.db_dir, "polysomnography", "annotations-events-nsrr")
-        self.event_profusion_ann_path = os.path.join(self.db_dir, "polysomnography", "annotations-events-profusion")
+        self.psg_data_path = self.db_dir / "polysomnography" / "edfs"
+        self.ann_path = self.db_dir / "datasets"
+        self.hrv_ann_path = self.ann_path / "hrv-analysis"
+        self.eeg_ann_path = self.ann_path / "eeg-spectral-analysis"
+        self.wave_deli_path = self.db_dir / "polysomnography" / "annotations-rpoints"
+        self.event_ann_path = self.db_dir / "polysomnography" / "annotations-events-nsrr"
+        self.event_profusion_ann_path = self.db_dir / "polysomnography" / "annotations-events-profusion"
 
     def update_sleep_stage_names(self) -> NoReturn:
         """ finished,
@@ -575,14 +573,14 @@ class SHHS(NSRRDataBase):
                 return sig
         raise ValueError(f"No channel named {channel}")
 
-    def match_full_rec_path(self, rec:str, rec_path:Optional[str]=None, rec_type:str="psg") -> str:
+    def match_full_rec_path(self, rec:str, rec_path:Optional[Union[str,Path]]=None, rec_type:str="psg") -> Path:
         """ finished,
 
         Parameters
         ----------
         rec: str,
             record name, typically in the form "shhs1-200001"
-        rec_path: str, optional,
+        rec_path: str or Path, optional,
             path of the file which contains the desired data,
             if not given, default path will be used
         rec_type: str, default "psg",
@@ -590,7 +588,7 @@ class SHHS(NSRRDataBase):
         
         Returns
         -------
-
+        rp: Path,
         """
         extension = {
             "psg": ".edf",
@@ -600,21 +598,21 @@ class SHHS(NSRRDataBase):
         }
         folder_or_file = {
             "psg": self.psg_data_path,
-            "hrv_summary": os.path.join(self.hrv_ann_path, f"shhs{self.get_visit_number(rec)}-hrv-summary-{self.current_version}.csv"),
-            "hrv_5min": os.path.join(self.hrv_ann_path, f"shhs{self.get_visit_number(rec)}-hrv-5min-{self.current_version}.csv"),
-            "eeg_band_summary": os.path.join(self.eeg_ann_path, f"shhs{self.get_visit_number(rec)}-eeg-band-summary-dataset-{self.current_version}.csv"),
-            "eeg_spectral_summary": os.path.join(self.eeg_ann_path, f"shhs{self.get_visit_number(rec)}-eeg-spectral-summary-dataset-{self.current_version}.csv"),
+            "hrv_summary": self.hrv_ann_path / f"shhs{self.get_visit_number(rec)}-hrv-summary-{self.current_version}.csv",
+            "hrv_5min": self.hrv_ann_path / f"shhs{self.get_visit_number(rec)}-hrv-5min-{self.current_version}.csv",
+            "eeg_band_summary": self.eeg_ann_path / f"shhs{self.get_visit_number(rec)}-eeg-band-summary-dataset-{self.current_version}.csv",
+            "eeg_spectral_summary": self.eeg_ann_path / f"shhs{self.get_visit_number(rec)}-eeg-spectral-summary-dataset-{self.current_version}.csv",
             "wave_delineation": self.wave_deli_path,
             "event": self.event_ann_path,
             "event_profusion": self.event_profusion_ann_path
         }
 
         if rec_path is not None:
-            rp = rec_path
+            rp = Path(rec_path)
         elif rec_type.split("_")[0] in ["hrv", "eeg"]:
             rp = folder_or_file[rec_type]
         else:
-            rp = os.path.join(folder_or_file[rec_type]+rec.split("-")[0], rec+extension[rec_type])
+            rp = Path(str(folder_or_file[rec_type]) + rec.split("-")[0]) / (rec+extension[rec_type])
 
         return rp
 
@@ -744,8 +742,7 @@ class SHHS(NSRRDataBase):
         df_events: DataFrame,
         """
         file_path = self.match_full_rec_path(rec, event_ann_path, rec_type="event")
-        with open(file_path) as fd:
-            doc = xtd.parse(fd.read())
+        doc = xtd.parse(file_path.read_text())
         df_events = pd.DataFrame(doc["PSGAnnotation"]["ScoredEvents"]["ScoredEvent"][1:])
         if simplify:
             df_events["EventType"] = df_events["EventType"].apply(lambda s: s.split("|")[1])
@@ -774,8 +771,7 @@ class SHHS(NSRRDataBase):
             merge "sleep_stage_list" and "df_events" into one DataFrame
         """
         file_path = self.match_full_rec_path(rec, event_profusion_ann_path, rec_type="event_profusion")
-        with open(file_path) as fd:
-            doc = xtd.parse(fd.read())
+        doc = xtd.parse(file_path.read_text())
         sleep_stage_list = [int(ss) for ss in doc["CMPStudyConfig"]["SleepStages"]["SleepStage"]]
         df_events = pd.DataFrame(doc["CMPStudyConfig"]["ScoredEvents"]["ScoredEvent"])
         for c in ["Start", "Duration", "LowestSpO2", "Desaturation"]:
@@ -838,10 +834,13 @@ class SHHS(NSRRDataBase):
         """
         file_path = self.match_full_rec_path(rec, hrv_ann_path, rec_type="hrv_5min")
 
-        if not os.path.isfile(file_path):
-            raise FileNotFoundError(f"Record {rec} has no HRV annotation (including sleep annotaions). Or the annotation file has not been downloaded yet. Or the path {file_path} is not correct. Please check!")
+        if not file_path.is_file():
+            raise FileNotFoundError(
+                f"Record {rec} has no HRV annotation (including sleep annotaions). "
+                f"Or the annotation file has not been downloaded yet. Or the path {file_path} is not correct. Please check!"
+            )
 
-        self.logger.info(f"HRV annotations of record {rec} will be loaded from the file\n{file_path}")
+        self.logger.info(f"HRV annotations of record {rec} will be loaded from the file\n{str(file_path)}")
 
         df_hrv_ann = pd.read_csv(file_path, engine="python")
         df_hrv_ann = df_hrv_ann[df_hrv_ann["nsrrid"]==self.get_nsrrid(rec)].reset_index(drop=True)
@@ -1143,10 +1142,13 @@ class SHHS(NSRRDataBase):
         """
         file_path = self.match_full_rec_path(rec, wave_deli_path, rec_type="wave_delineation")
 
-        if not os.path.isfile(file_path):
-            raise FileNotFoundError(f"The annotation file of wave delineation of record {rec} has not been downloaded yet. Or the path {file_path} is not correct. Please check!")
+        if not file_path.is_file():
+            raise FileNotFoundError(
+                f"The annotation file of wave delineation of record {rec} has not been downloaded yet. "
+                f"Or the path {str(file_path)} is not correct. Please check!"
+            )
 
-        df_wave_delineation = pd.read_csv(file_path,engine="python")
+        df_wave_delineation = pd.read_csv(file_path, engine="python")
         df_wave_delineation = df_wave_delineation[self.wave_deli_keys].reset_index(drop=True)
         return df_wave_delineation
 

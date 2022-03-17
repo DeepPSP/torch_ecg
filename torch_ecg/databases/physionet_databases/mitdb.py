@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os
+
+from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, NoReturn
 from numbers import Real
@@ -43,18 +44,18 @@ class MITDB(PhysioNetDataBase):
     [1] https://physionet.org/content/mitdb/1.0.0/
     """
     def __init__(self,
-                 db_dir:Optional[str]=None,
-                 working_dir:Optional[str]=None,
+                 db_dir:Optional[Union[str,Path]]=None,
+                 working_dir:Optional[Union[str,Path]]=None,
                  verbose:int=2,
                  **kwargs:Any) -> NoReturn:
         """
 
         Parameters
         ----------
-        db_dir: str, optional,
+        db_dir: str or Path, optional,
             storage path of the database
             if not specified, data will be fetched from Physionet
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity

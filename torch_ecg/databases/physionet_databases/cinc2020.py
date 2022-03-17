@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 """
-import os, io, sys
-import re
-import json
-import time
-# import pprint
+
+import io, re, json, time
+from pathlib import Path
 from copy import deepcopy
 from datetime import datetime
 from typing import Union, Optional, Any, List, Dict, Tuple, Set, Sequence, NoReturn
@@ -156,32 +154,33 @@ class CINC2020(PhysioNetDataBase):
     References
     ----------
     [1] https://physionetchallenges.github.io/2020/
-    [2] http://2018.icbeb.org/#
-    [3] https://physionet.org/content/incartdb/1.0.0/
-    [4] https://physionet.org/content/ptbdb/1.0.0/
-    [5] https://physionet.org/content/ptb-xl/1.0.1/
-    [6] (deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ecg-public/
-    [7] (recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/
+    [2] https://physionet.org/content/challenge-2020/1.0.1/
+    [3] http://2018.icbeb.org/#
+    [4] https://physionet.org/content/incartdb/1.0.0/
+    [5] https://physionet.org/content/ptbdb/1.0.0/
+    [6] https://physionet.org/content/ptb-xl/1.0.1/
+    [7] (deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ecg-public/
+    [8] (recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/
     """
 
     def __init__(self,
-                 db_dir:str,
-                 working_dir:Optional[str]=None,
+                 db_dir:Union[str,Path],
+                 working_dir:Optional[Union[str,Path]]=None,
                  verbose:int=2,
                  **kwargs:Any) -> NoReturn:
         """
 
         Parameters
         ----------
-        db_dir: str,
+        db_dir: str or Path,
             storage path of the database
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="CINC2020", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(db_name="challenge-2020", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
         
         self.rec_ext = "mat"
         self.ann_ext = "hea"
@@ -199,7 +198,7 @@ class CINC2020(PhysioNetDataBase):
             "A": "A", "B": "Q", "C": "I", "D": "S", "E": "HR", "F": "E",
         })
 
-        self.db_dir_base = db_dir
+        self.db_dir_base = Path(db_dir)
         self.db_dirs = CFG({tranche:"" for tranche in self.db_tranches})
         self._all_records = None
         self._ls_rec()  # loads file system structures into self.db_dirs and self._all_records
@@ -255,13 +254,15 @@ class CINC2020(PhysioNetDataBase):
         facilitating further uses
         """
         fn = "record_list.json"
-        record_list_fp = os.path.join(self.db_dir_base, fn)
-        if os.path.isfile(record_list_fp):
-            with open(record_list_fp, "r") as f:
-                self._all_records = {k:v for k,v in json.load(f).items() if k in self.tranche_names}
+        record_list_fp = self.db_dir_base / fn
+        if record_list_fp.is_file():
+            self._all_records = {
+                k: v for k, v in json.loads(record_list_fp.read_text()).items() \
+                    if k in self.tranche_names
+            }
             for tranche in self.db_tranches:
-                self.db_dirs[tranche] = os.path.join(self.db_dir_base, os.path.dirname(self._all_records[tranche][0]))
-                self._all_records[tranche] = [os.path.basename(f) for f in self._all_records[tranche]]
+                self.db_dirs[tranche] = self.db_dir_base / Path(self._all_records[tranche][0]).parent
+                self._all_records[tranche] = [Path(f).name for f in self._all_records[tranche]]
         else:
             print("Please wait patiently to let the reader find all records of all the tranches...")
             start = time.time()
@@ -273,17 +274,16 @@ class CINC2020(PhysioNetDataBase):
                 get_record_list_recursive3(self.db_dir_base, rec_patterns_with_ext)
             to_save = deepcopy(self._all_records)
             for tranche in self.db_tranches:
-                tmp_dirname = [ os.path.dirname(f) for f in self._all_records[tranche] ]
+                tmp_dirname = [ Path(f).parent for f in self._all_records[tranche] ]
                 if len(set(tmp_dirname)) != 1:
                     if len(set(tmp_dirname)) > 1:
                         raise ValueError(f"records of tranche {tranche} are stored in several folders!")
                     else:
                         raise ValueError(f"no record found for tranche {tranche}!")
-                self.db_dirs[tranche] = os.path.join(self.db_dir_base, tmp_dirname[0])
-                self._all_records[tranche] = [os.path.basename(f) for f in self._all_records[tranche]]
+                self.db_dirs[tranche] = self.db_dir_base / tmp_dirname[0]
+                self._all_records[tranche] = [ Path(f).parent for f in self._all_records[tranche] ]
             print(f"Done in {time.time() - start:.5f} seconds!")
-            with open(os.path.join(self.db_dir_base, fn), "w") as f:
-                json.dump(to_save, f)
+            record_list_fp.write_text(json.dumps(to_save))
 
     def _ls_diagnoses_records(self) -> NoReturn:
         """ finished, checked,
@@ -291,10 +291,9 @@ class CINC2020(PhysioNetDataBase):
         list all the records for all diagnoses
         """
         fn = "diagnoses_records_list.json"
-        dr_fp = os.path.join(self.db_dir_base, fn)
-        if os.path.isfile(dr_fp):
-            with open(dr_fp, "r") as f:
-                self._diagnoses_records_list = json.load(f)
+        dr_fp = self.db_dir_base / fn
+        if dr_fp.is_file():
+            self._diagnoses_records_list = json.loads(dr_fp.read_text())
         else:
             print("Please wait several minutes patiently to let the reader list records for each diagnosis...")
             start = time.time()
@@ -306,8 +305,7 @@ class CINC2020(PhysioNetDataBase):
                     for d in ld:
                         self._diagnoses_records_list[d].append(rec)
             print(f"Done in {time.time() - start:.5f} seconds!")
-            with open(dr_fp, "w") as f:
-                json.dump(self._diagnoses_records_list, f)
+            dr_fp.write_text(json.dumps(self._diagnoses_records_list))
         self._all_records = CFG(self._all_records)
 
     @property
@@ -357,10 +355,10 @@ class CINC2020(PhysioNetDataBase):
             absolute file path of the data file of the record
         """
         tranche = self._get_tranche(rec)
-        fp = os.path.join(self.db_dirs[tranche], f"{rec}.{self.rec_ext}")
+        fp = self.db_dirs[tranche] / f"{rec}.{self.rec_ext}"
         if not with_ext:
-            fp = os.path.splitext(fp)[0]
-        return fp
+            fp = fp.with_suffix("")
+        return str(fp)
 
     def get_header_filepath(self, rec:str, with_ext:bool=True) -> str:
         """ finished, checked,
@@ -382,10 +380,10 @@ class CINC2020(PhysioNetDataBase):
             absolute file path of the header file of the record
         """
         tranche = self._get_tranche(rec)
-        fp = os.path.join(self.db_dirs[tranche], f"{rec}.{self.ann_ext}")
+        fp = self.db_dirs[tranche] / f"{rec}.{self.ann_ext}"
         if not with_ext:
-            fp = os.path.splitext(fp)[0]
-        return fp
+            fp = fp.with_suffix("")
+        return str(fp)
 
     def get_ann_filepath(self, rec:str, with_ext:bool=True) -> str:
         """ finished, checked,
@@ -488,8 +486,7 @@ class CINC2020(PhysioNetDataBase):
         """
         tranche = self._get_tranche(rec)
         ann_fp = self.get_ann_filepath(rec, with_ext=True)
-        with open(ann_fp, "r") as f:
-            header_data = f.read().splitlines()
+        header_data = Path(ann_fp).read_text().splitlines()
         
         if raw:
             ann_dict = "\n".join(header_data)
@@ -789,7 +786,7 @@ class CINC2020(PhysioNetDataBase):
 
         return subject_info
 
-    def save_challenge_predictions(self, rec:str, output_dir:str, scores:List[Real], labels:List[int], classes:List[str]) -> NoReturn:
+    def save_challenge_predictions(self, rec:str, output_dir:Union[str,Path], scores:List[Real], labels:List[int], classes:List[str]) -> NoReturn:
         """ NOT finished, NOT checked, need updating, 
         
         TODO: update for the official phase
@@ -798,7 +795,7 @@ class CINC2020(PhysioNetDataBase):
         ----------
         rec: str,
             name of the record
-        output_dir: str,
+        output_dir: str or Path,
             directory to save the predictions
         scores: list of real,
             raw predictions
@@ -808,7 +805,7 @@ class CINC2020(PhysioNetDataBase):
             SNOMED CT Code of binary predictions
         """
         new_file = f"{rec}.csv"
-        output_file = os.path.join(output_dir, new_file)
+        output_file = Path(output_dir) / new_file
 
         # Include the filename as the recording number
         recording_string = f"#{rec}"
@@ -816,9 +813,7 @@ class CINC2020(PhysioNetDataBase):
         label_string = ",".join(str(i) for i in labels)
         score_string = ",".join(str(i) for i in scores)
 
-        with open(output_file, "w") as f:
-            # f.write(recording_string + "\n" + class_string + "\n" + label_string + "\n" + score_string + "\n")
-            f.write("\n".join([recording_string, class_string, label_string, score_string, ""]))
+        output_file.write_text("\n".join([recording_string, class_string, label_string, score_string, ""]))
 
     def plot(self,
              rec:str,
@@ -1096,11 +1091,11 @@ class CINC2020(PhysioNetDataBase):
         """
         tranche = self._get_tranche(rec)
         if siglen is None:
-            rec_fp = os.path.join(self.db_dirs[tranche], f"{rec}_500Hz.npy")
+            rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz.npy"
         else:
-            rec_fp = os.path.join(self.db_dirs[tranche], f"{rec}_500Hz_siglen_{siglen}.npy")
-        if not os.path.isfile(rec_fp):
-            # print(f"corresponding file {os.basename(rec_fp)} does not exist")
+            rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz_siglen_{siglen}.npy"
+        if not rec_fp.is_file():
+            # print(f"corresponding file {rec_fp.name} does not exist")
             data = self.load_data(rec, data_format="channel_first", units="mV", fs=None)
             if self.fs[tranche] != 500:
                 data = resample_poly(data, 500, self.fs[tranche], axis=1)

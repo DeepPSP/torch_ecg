@@ -2,6 +2,7 @@
 The most frequently used (can serve as baseline) CNN family of physiological signal processing,
 whose performance however seems exceeded by newer networks
 """
+
 from copy import deepcopy
 from itertools import repeat
 from typing import Union, Optional, Sequence, NoReturn

@@ -2,6 +2,7 @@
 the modules that follows CNN feature extractor,
 mainly RNN, but can also be attention
 """
+
 from copy import deepcopy
 
 from ..cfg import CFG
