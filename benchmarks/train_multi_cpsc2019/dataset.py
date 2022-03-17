@@ -1,9 +1,9 @@
 """
 data generator for feeding data into pytorch models
 """
-import os, sys
-import json
-import math
+
+import json, math
+from pathlib import Path
 from random import shuffle, randint, uniform, sample
 from copy import deepcopy
 from functools import reduce
@@ -23,8 +23,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2019 as CR
@@ -148,15 +147,14 @@ class CPSC2019(Dataset):
         """
         assert 0 < train_ratio < 100
         _train_ratio = train_ratio if train_ratio < 1 else train_ratio/100
-        split_fn = os.path.join(self.reader.db_dir, f"train_test_split_{_train_ratio:.2f}.json")
-        if os.path.isfile(split_fn) and not force_recompute:
-            with open(split_fn, "r") as f:
-                split_res = json.load(f)
-                if self.training:
-                    self.records = split_res["train"]
-                    shuffle(self.records)
-                else:
-                    self.records = split_res["test"]
+        split_fn = self.reader.db_dir / f"train_test_split_{_train_ratio:.2f}.json"
+        if split_fn.is_file() and not force_recompute:
+            split_res = json.loads(split_fn.read_text())
+            if self.training:
+                self.records = split_res["train"]
+                shuffle(self.records)
+            else:
+                self.records = split_res["test"]
             return
         records = deepcopy(self.reader.all_records)
         shuffle(records)
@@ -164,8 +162,7 @@ class CPSC2019(Dataset):
         train = sorted(records[:split_num])
         test = sorted(records[split_num:])
         split_res = {"train":train, "test":test}
-        with open(split_fn, "w") as f:
-            json.dump(split_res, f, ensure_ascii=False)
+        split_fn.write_text(json.dumps(split_res, ensure_ascii=False))
         if self.training:
             self.records = train
             shuffle(self.records)

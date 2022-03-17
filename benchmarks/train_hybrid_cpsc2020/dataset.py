@@ -51,7 +51,9 @@ References
 [2] Tan, Jen Hong, et al. "Application of stacked convolutional and long short-term memory network for accurate identification of CAD ECG signals." Computers in biology and medicine 94 (2018): 19-26.
 [3] Yao, Qihang, et al. "Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based Time-Incremental Convolutional Neural Network." Information Fusion 53 (2020): 174-182.
 """
-import os, sys, re, json
+
+import json
+from pathlib import Path
 from random import shuffle, randint, uniform, sample
 from copy import deepcopy
 from functools import reduce
@@ -73,8 +75,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2020 as CR
@@ -125,7 +126,9 @@ class CPSC2020(Dataset):
         """
         super().__init__()
         self.config = deepcopy(config)
-        self.reader = CR(db_dir=config.db_dir)
+        assert self.config.db_dir is not None, "db_dir must be specified"
+        self.config.db_dir = Path(self.config.db_dir)
+        self.reader = CR(db_dir=self.config.db_dir)
         if ModelCfg.torch_dtype.lower() == "double":
             self.dtype = np.float64
         else:
@@ -145,20 +148,20 @@ class CPSC2020(Dataset):
 
         # create directories if needed
         # preprocess_dir stores pre-processed signals
-        self.preprocess_dir = os.path.join(config.db_dir, "preprocessed")
-        os.makedirs(self.preprocess_dir, exist_ok=True)
+        self.preprocess_dir = self.config.db_dir / "preprocessed"
+        self.preprocess_dir.mkdir(parents=True, exist_ok=True)
         # segments_dir for sliced segments
-        self.segments_dir = os.path.join(config.db_dir, "segments")
-        os.makedirs(self.segments_dir, exist_ok=True)
+        self.segments_dir = self.config.db_dir / "segments"
+        self.segments_dir.mkdir(parents=True, exist_ok=True)
         # rpeaks_dir for detected r peaks, for optional use
-        self.rpeaks_dir = os.path.join(config.db_dir, "rpeaks")
-        os.makedirs(self.rpeaks_dir, exist_ok=True)
+        self.rpeaks_dir = self.config.db_dir / "rpeaks"
+        self.rpeaks_dir.mkdir(parents=True, exist_ok=True)
 
         if self.config.model_name.lower() in ["crnn", "seq_lab"]:
             # for classification, or for sequence labeling
             self.segments_dirs = CFG()
             self.__all_segments = CFG()
-            self.segments_json = os.path.join(self.segments_dir, "crnn_segments.json")
+            self.segments_json = self.segments_dir / "crnn_segments.json"
             self._ls_segments()
 
             if self.training:
@@ -182,21 +185,19 @@ class CPSC2020(Dataset):
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
             for rec in self.reader.all_records:
-                self.segments_dirs[item][rec] = os.path.join(self.segments_dir, item, rec)
-                os.makedirs(self.segments_dirs[item][rec], exist_ok=True)
-        if os.path.isfile(self.segments_json):
-            with open(self.segments_json, "r") as f:
-                self.__all_segments = json.load(f)
+                self.segments_dirs[item][rec] = self.segments_dir / item / rec
+                self.segments_dirs[item][rec].mkdir(parents=True, exist_ok=True)
+        if self.segments_json.is_file():
+            self.__all_segments = json.loads(self.segments_json.read_text())
             return
         print(f"please allow the reader a few minutes to collect the segments from {self.segments_dir}...")
         seg_filename_pattern = f"S\d{{2}}_\d{{7}}{self.reader.rec_ext}"
         self.__all_segments = CFG({
-            rec: get_record_list_recursive3(self.segments_dirs.data[rec], seg_filename_pattern) \
+            rec: get_record_list_recursive3(str(self.segments_dirs.data[rec]), seg_filename_pattern) \
                 for rec in self.reader.all_records
         })
         if all([len(self.__all_segments[rec])>0 for rec in self.reader.all_records]):
-            with open(self.segments_json, "w") as f:
-                json.dump(self.__all_segments, f)
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     @property
     def all_segments(self):
@@ -294,8 +295,7 @@ class CPSC2020(Dataset):
             ampl = max(ampl, np.max(s)-np.min(s))
         return ampl
 
-
-    def _get_seg_data_path(self, seg:str) -> str:
+    def _get_seg_data_path(self, seg:str) -> Path:
         """ finished, checked,
 
         Parameters
@@ -305,15 +305,15 @@ class CPSC2020(Dataset):
 
         Returns
         -------
-        fp: str,
+        fp: Path,
             path of the data file of the segment
         """
         rec = seg.split("_")[0].replace("S", "A")
-        fp = os.path.join(self.segments_dir, "data", rec, f"{seg}{self.reader.rec_ext}")
+        fp = self.segments_dir / "data" / rec / f"{seg}{self.reader.rec_ext}"
         return fp
 
 
-    def _get_seg_ann_path(self, seg:str) -> str:
+    def _get_seg_ann_path(self, seg:str) -> Path:
         """ finished, checked,
 
         Parameters
@@ -323,11 +323,11 @@ class CPSC2020(Dataset):
 
         Returns
         -------
-        fp: str,
+        fp: Path,
             path of the annotation file of the segment
         """
         rec = seg.split("_")[0].replace("S", "A")
-        fp = os.path.join(self.segments_dir, "ann", rec, f"{seg}{self.reader.rec_ext}")
+        fp = self.segments_dir / "ann" / rec / f"{seg}{self.reader.rec_ext}"
         return fp
 
 
@@ -345,7 +345,7 @@ class CPSC2020(Dataset):
             data of the segment, of shape (self.seglen,)
         """
         seg_data_fp = self._get_seg_data_path(seg)
-        seg_data = loadmat(seg_data_fp)["ecg"].squeeze()
+        seg_data = loadmat(str(seg_data_fp))["ecg"].squeeze()
         return seg_data
 
 
@@ -363,7 +363,7 @@ class CPSC2020(Dataset):
             label of the segment, of shape (self.n_classes,)
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
-        seg_label = loadmat(seg_ann_fp)["label"].squeeze()
+        seg_label = loadmat(str(seg_ann_fp))["label"].squeeze()
         return seg_label
 
 
@@ -381,9 +381,10 @@ class CPSC2020(Dataset):
             "SPB_indices", "PVC_indices", each of ndarray values
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
-        seg_beat_ann = loadmat(seg_ann_fp)
+        seg_beat_ann = loadmat(str(seg_ann_fp))
         seg_beat_ann = {
-            k:v.flatten() for k,v in seg_beat_ann.items() if k in ["SPB_indices", "PVC_indices"]
+            k:v.flatten() for k,v in seg_beat_ann.items() \
+                if k in ["SPB_indices", "PVC_indices"]
         }
         return seg_beat_ann
 
@@ -513,9 +514,9 @@ class CPSC2020(Dataset):
         save_fp = CFG()
         rec_name = self.reader._get_rec_name(rec)
         suffix = self._get_rec_suffix(config.preproc)
-        save_fp.data = os.path.join(self.preprocess_dir, f"{rec_name}-{suffix}{self.reader.rec_ext}")
-        save_fp.rpeaks = os.path.join(self.rpeaks_dir, f"{rec_name}-{suffix}{self.reader.rec_ext}")
-        if (not force_recompute) and os.path.isfile(save_fp.data) and os.path.isfile(save_fp.rpeaks):
+        save_fp.data = self.preprocess_dir / f"{rec_name}-{suffix}{self.reader.rec_ext}"
+        save_fp.rpeaks = self.rpeaks_dir / f"{rec_name}-{suffix}{self.reader.rec_ext}"
+        if (not force_recompute) and save_fp.data.is_file() and save_fp.rpeaks.is_file():
             return
         # perform pre-process
         pps = SP.parallel_preprocess_signal(
@@ -599,8 +600,7 @@ class CPSC2020(Dataset):
             if verbose >= 1:
                 print(f"{idx+1}/{len(self.reader.all_records)} records", end="\r")
         if force_recompute:
-            with open(self.segments_json, "w") as f:
-                json.dump(self.__all_segments, f)
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     def _slice_one_record(self, rec:Union[int,str], force_recompute:bool=False, update_segments_json:bool=False, verbose:int=0) -> NoReturn:
         """ finished, checked,
@@ -623,11 +623,8 @@ class CPSC2020(Dataset):
             print verbosity
         """
         rec_name = self.reader._get_rec_name(rec)
-        save_dirs = CFG()
-        save_dirs.data = self.segments_dirs.data[rec_name]
-        save_dirs.ann = self.segments_dirs.ann[rec_name]
-        os.makedirs(save_dirs.data, exist_ok=True)
-        os.makedirs(save_dirs.data, exist_ok=True)
+        self.segments_dirs.data[rec_name].mkdir(parents=True, exist_ok=True)
+        self.segments_dirs.ann[rec_name].mkdir(parents=True, exist_ok=True)
         if (not force_recompute) and len(self.__all_segments[rec_name]) > 0:
             return
         elif force_recompute:
@@ -731,26 +728,24 @@ class CPSC2020(Dataset):
         for i, ind in enumerate(seg_inds):
             save_fp = CFG()
             seg_name = f"{rec_name.replace('A', 'S')}_{i:07d}"
-            save_fp.data = os.path.join(self.segments_dirs.data[rec_name], f"{seg_name}{self.reader.rec_ext}")
-            save_fp.ann = os.path.join(self.segments_dirs.ann[rec_name], f"{seg_name}{self.reader.rec_ext}")
+            save_fp.data = self.segments_dirs.data[rec_name] / f"{seg_name}{self.reader.rec_ext}"
+            save_fp.ann = self.segments_dirs.ann[rec_name] / f"{seg_name}{self.reader.rec_ext}"
             seg = segments[ind, ...]
             # if self._get_seg_ampl(seg) < 0.1:  # drop out flat segments
             #     continue
             if SP.ecg_denoise(seg, self.reader.fs, config={"ampl_min":0.15}) != [[0, self.seglen]]:
                 continue
-            savemat(save_fp.data, {"ecg": seg}, format="5")
+            savemat(str(save_fp.data), {"ecg": seg}, format="5")
             seg_label = labels[ind, ...]
             seg_beat_ann = beat_ann[ind]
             save_ann_dict = seg_beat_ann.copy()
             save_ann_dict.update({"label": seg_label})
-            savemat(save_fp.ann, save_ann_dict, format="5")
+            savemat(str(save_fp.ann), save_ann_dict, format="5")
             self.__all_segments[rec_name].append(seg_name)
             if verbose >= 2:
                 print(f"saving {i+1}/{len(seg_inds)}...", end="\r")
         if update_segments_json:
-            with open(self.segments_json, "w") as f:
-                json.dump(self.__all_segments, f)
-
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     def plot_seg(self, seg:str, ticks_granularity:int=0, rpeak_inds:Optional[Union[Sequence[int],np.ndarray]]=None) -> NoReturn:
         """ finished, checked,

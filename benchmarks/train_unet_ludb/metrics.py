@@ -12,6 +12,7 @@ KEY points
 2. if there is no corresponding critical point (onsets and offset of ECG waveforms P, QRS, T) in the test sample in the neighborhood of ±tolerance of the detected critical point, then the I type error is counted (false positive, FP)
 3. if the algorithm does not detect a critical point, then the II type error is counted (false negative, FN)
 """
+
 from numbers import Real
 from typing import Union, Optional, Sequence, Dict, Tuple
 
@@ -22,8 +23,8 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.utils.misc import (
     ECGWaveForm,

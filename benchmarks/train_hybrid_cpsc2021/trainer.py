@@ -1,12 +1,8 @@
 """
 """
 
-import os
-import sys
-import time
-import logging
-import argparse
-import textwrap
+import os, sys, argparse
+from pathlib import Path
 from copy import deepcopy
 from collections import deque, OrderedDict
 from typing import Any, Union, Optional, Tuple, Sequence, NoReturn, Dict, List
@@ -22,9 +18,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 try:
     import torch_ecg
 except ModuleNotFoundError:
-    import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.trainer import BaseTrainer

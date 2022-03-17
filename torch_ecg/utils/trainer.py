@@ -225,8 +225,8 @@ class BaseTrainer(ABC):
             else:
                 save_suffix = f"metric_{self.best_eval_res[self.train_config.monitor]:.2f}"
                 save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"
-            save_path = os.path.join(self.train_config.model_dir, save_filename)
-            self.save_checkpoint(path=save_path)
+            save_path = self.train_config.model_dir / save_filename
+            self.save_checkpoint(path=str(save_path))
             self.log_manager.log_message(f"best model is saved at {save_path}")
         else:
             raise ValueError("No best model found!")
@@ -408,6 +408,7 @@ class BaseTrainer(ABC):
         self._train_config = CFG(deepcopy(_default_config))
         if not self.train_config.get("model_dir", None):
             self._train_config.model_dir = self.train_config.checkpoints
+        self._train_config.model_dir = Path(self._train_config.model_dir)
         self._validate_train_config()
 
         self.n_epochs = self.train_config.n_epochs

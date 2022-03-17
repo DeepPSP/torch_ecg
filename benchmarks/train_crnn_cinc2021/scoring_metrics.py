@@ -1,6 +1,7 @@
 """
 metrics from the official scoring repository
 """
+
 from typing import Union, Optional, List, Tuple, Sequence, NoReturn
 from numbers import Number, Real
 
@@ -10,8 +11,8 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.databases.aux_data.cinc2021_aux_data import load_weights
 

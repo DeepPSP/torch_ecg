@@ -1,11 +1,8 @@
 """
 """
-import os
-import sys
-import time
-import logging
-import argparse
-import textwrap
+
+import os, sys, logging, argparse, textwrap
+from pathlib import Path    
 from copy import deepcopy
 from collections import deque, OrderedDict
 from typing import Union, Optional, Tuple, Dict, Sequence, NoReturn
@@ -30,9 +27,7 @@ from tensorboardX import SummaryWriter
 try:
     import torch_ecg
 except ModuleNotFoundError:
-    import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.trainer import BaseTrainer
@@ -90,6 +85,7 @@ def train(model:nn.Module,
         state dict of the best model
     """
     msg = f"training configurations are as follows:\n{dict_to_str(config)}"
+    config = CFG(config)
     if logger:
         logger.info(msg)
     else:
@@ -99,6 +95,13 @@ def train(model:nn.Module,
         _model = model.module
     else:
         _model = model
+
+    config.log_dir = Path(config.log_dir)
+    config.log_dir.mkdir(parents=True, exist_ok=True)
+    config.checkpoints = Path(config.checkpoints)
+    config.checkpoints.mkdir(parents=True, exist_ok=True)
+    config.model_dir = Path(config.model_dir)
+    config.model_dir.mkdir(parents=True, exist_ok=True)
 
     ds = CPSC2020_SIMPLIFIED
     train_dataset = ds(config=config, training=True)
@@ -152,7 +155,7 @@ def train(model:nn.Module,
     )
 
     writer = SummaryWriter(
-        log_dir=config.log_dir,
+        log_dir=str(config.log_dir),
         filename_suffix=f"OPT_{config.model_name}_{config.cnn_name}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
         comment=f"OPT_{config.model_name}_{config.cnn_name}_{config.train_optimizer}_LR_{lr}_BS_{batch_size}",
     )
@@ -232,9 +235,6 @@ def train(model:nn.Module,
     # scheduler = CosineAnnealingWarmRestarts(optimizer, 0.001, 1e-6, 20)
 
     save_prefix = f"{_model.__name__}_{config.cnn_name}_{config.rnn_name}_epoch"
-
-    os.makedirs(config.checkpoints, exist_ok=True)
-    os.makedirs(config.model_dir, exist_ok=True)
 
     best_state_dict = OrderedDict()
     best_challenge_metric = -np.inf
@@ -452,7 +452,7 @@ def train(model:nn.Module,
                 print(msg)
 
             try:
-                os.makedirs(config.checkpoints, exist_ok=True)
+                config.checkpoints.mkdir(parents=True, exist_ok=True)
                 # if logger:
                 #     logger.info("Created checkpoint directory")
             except OSError:
@@ -462,14 +462,14 @@ def train(model:nn.Module,
             elif config.model_name == "seq_lab":
                 save_suffix = f"epochloss_{epoch_loss:.5f}_challenge_loss_{eval_res.total_loss}"
             save_filename = f"{save_prefix}{epoch + 1}_{get_date_str()}_{save_suffix}.pth.tar"
-            save_path = os.path.join(config.checkpoints, save_filename)
+            save_path = config.checkpoints / save_filename
             torch.save({
                 "model_state_dict": _model.state_dict(),
                 "optimizer_state_dict": optimizer.state_dict(),
                 "model_config": model_config,
                 "train_config": config,
                 "epoch": epoch+1,
-            }, save_path)
+            }, str(save_path))
             if logger:
                 logger.info(f"Checkpoint {epoch + 1} saved!")
             saved_models.append(save_path)
@@ -491,13 +491,13 @@ def train(model:nn.Module,
             elif config.model_name == "seq_lab":
                 save_suffix = f"BestModel_challenge_loss_{best_eval_res.total_loss}"
             save_filename = f"{save_prefix}_{get_date_str()}_{save_suffix}.pth.tar"
-        save_path = os.path.join(config.model_dir, save_filename)
+        save_path = config.model_dir / save_filename
         torch.save({
             "model_state_dict": best_state_dict,
             "model_config": model_config,
             "train_config": config,
             "epoch": best_epoch,
-        }, save_path)
+        }, str(save_path))
         if logger:
             logger.info(f"Best model saved to {save_path}!")
 
@@ -783,7 +783,6 @@ def get_args(**kwargs):
 if __name__ == "__main__":
     from utils import init_logger
     train_config = get_args(**TrainCfg)
-    # os.environ["CUDA_VISIBLE_DEVICES"] = train_config.gpu
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # classes = train_config.classes
@@ -826,7 +825,7 @@ if __name__ == "__main__":
     model.to(device=device)
     model.__DEBUG__ = False
 
-    logger = init_logger(log_dir=train_config.log_dir, verbose=2)
+    logger = init_logger(log_dir=str(train_config.log_dir), verbose=2)
     logger.info(f"\n{'*'*20}   Start Training   {'*'*20}\n")
     logger.info(f"Model name = {train_config.model_name}")
     logger.info(f"Using device {device}")
@@ -851,7 +850,7 @@ if __name__ == "__main__":
             "model_state_dict": model.state_dict(),
             "model_config": model_config,
             "train_config": config,
-        }, os.path.join(config.checkpoints, "INTERRUPTED.pth.tar"))
+        }, str(config.checkpoints / "INTERRUPTED.pth.tar"))
         logger.info("Saved interrupt")
         try:
             sys.exit(0)

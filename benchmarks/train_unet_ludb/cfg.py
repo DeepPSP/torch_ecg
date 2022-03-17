@@ -3,15 +3,15 @@ References
 ----------
 [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
 """
-import os
+
+from pathlib import Path
 from copy import deepcopy
 
 try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
@@ -25,7 +25,7 @@ __all__ = [
 ]
 
 
-_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_BASE_DIR = Path(__file__).absolute().parent
 
 
 BaseCfg = CFG()
@@ -57,8 +57,10 @@ TrainCfg = CFG()
 
 # configs of files
 TrainCfg.db_dir = BaseCfg.db_dir
-TrainCfg.log_dir = os.path.join(_BASE_DIR, "log")
-TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
+TrainCfg.log_dir = _BASE_DIR / "log"
+TrainCfg.checkpoints = _BASE_DIR / "checkpoints"
+TrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
+TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 TrainCfg.keep_checkpoint_max = 20
 TrainCfg.torch_dtype = BaseCfg.torch_dtype
 

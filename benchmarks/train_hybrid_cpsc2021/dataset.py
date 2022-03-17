@@ -35,10 +35,8 @@ for idx, seg in enumerate(err_list):
 and similarly for the task of `rr_lstm`
 """
 
-import os, sys
-import json
-import re
-import time
+import os, json, re, time
+from pathlib import Path
 import multiprocessing as mp
 import random
 from itertools import repeat
@@ -60,8 +58,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2021 as CR
@@ -109,7 +106,9 @@ class CPSC2021(Dataset):
         """
         super().__init__()
         self.config = deepcopy(config)
-        self.reader = CR(db_dir=config.db_dir)
+        assert self.config.db_dir is not None, "db_dir must be specified"
+        self.config.db_dir = Path(self.config.db_dir)
+        self.reader = CR(db_dir=self.config.db_dir)
         if self.config.torch_dtype == torch.float64:
             self.dtype = np.float64
         else:
@@ -131,16 +130,16 @@ class CPSC2021(Dataset):
 
         # create directories if needed
         # preprocess_dir stores pre-processed signals
-        self.preprocess_dir = os.path.join(config.db_dir, "preprocessed")
-        os.makedirs(self.preprocess_dir, exist_ok=True)
+        self.preprocess_dir = self.config.db_dir / "preprocessed"
+        self.preprocess_dir.mkdir(parents=True, exist_ok=True)
         # segments_dir for sliced segments of fixed length
-        self.segments_base_dir = os.path.join(config.db_dir, "segments")
-        os.makedirs(self.segments_base_dir, exist_ok=True)
+        self.segments_base_dir = self.config.db_dir / "segments"
+        self.segments_base_dir.mkdir(parents=True, exist_ok=True)
         self.segment_name_pattern = "S_\d{1,3}_\d{1,2}_\d{7}"
         self.segment_ext = "mat"
         # rr_dir for sequence of rr intervals of fix length
-        self.rr_seq_base_dir = os.path.join(config.db_dir, "rr_seq")
-        os.makedirs(self.rr_seq_base_dir, exist_ok=True)
+        self.rr_seq_base_dir = self.config.db_dir / "rr_seq"
+        self.rr_seq_base_dir.mkdir(parents=True, exist_ok=True)
         self.rr_seq_name_pattern = "R_\d{1,3}_\d{1,2}_\d{7}"
         self.rr_seq_ext = "mat"
 
@@ -184,7 +183,7 @@ class CPSC2021(Dataset):
             # for qrs detection, or for the main task
             self.segments_dirs = CFG()
             self.__all_segments = CFG()
-            self.segments_json = os.path.join(self.segments_base_dir, "segments.json")
+            self.segments_json = self.segments_base_dir / "segments.json"
             self._ls_segments()
             self.segments = list_sum([self.__all_segments[subject] for subject in self.subjects])
             if self.__DEBUG__:
@@ -211,7 +210,7 @@ class CPSC2021(Dataset):
         elif self.task in ["rr_lstm",]:
             self.rr_seq_dirs = CFG()
             self.__all_rr_seq = CFG()
-            self.rr_seq_json = os.path.join(self.rr_seq_base_dir, "rr_seq.json")
+            self.rr_seq_json = self.rr_seq_base_dir / "rr_seq.json"
             self._ls_rr_seq()
             self.rr_seq = list_sum([self.__all_rr_seq[subject] for subject in self.subjects])
             if self.__DEBUG__:
@@ -248,21 +247,19 @@ class CPSC2021(Dataset):
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
             for s in self.reader.all_subjects:
-                self.segments_dirs[item][s] = os.path.join(self.segments_base_dir, item, s)
-                os.makedirs(self.segments_dirs[item][s], exist_ok=True)
-        if os.path.isfile(self.segments_json):
-            with open(self.segments_json, "r") as f:
-                self.__all_segments = json.load(f)
+                self.segments_dirs[item][s] = self.segments_base_dir / item / s
+                self.segments_dirs[item][s].mkdir(parents=True, exist_ok=True)
+        if self.segments_json.is_file():
+            self.__all_segments = json.loads(self.segments_json.read_text())
             return
         print(f"please allow the reader a few minutes to collect the segments from {self.segments_base_dir}...")
         seg_filename_pattern = f"{self.segment_name_pattern}.{self.segment_ext}"
         self.__all_segments = CFG({
-            s: get_record_list_recursive3(self.segments_dirs.data[s], seg_filename_pattern) \
+            s: get_record_list_recursive3(str(self.segments_dirs.data[s]), seg_filename_pattern) \
                 for s in self.reader.all_subjects
         })
         if all([len(self.__all_segments[s])>0 for s in self.reader.all_subjects]):
-            with open(self.segments_json, "w") as f:
-                json.dump(self.__all_segments, f)
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     def _ls_rr_seq(self) -> NoReturn:
         """ finished, checked,
@@ -270,11 +267,10 @@ class CPSC2021(Dataset):
         list all the rr sequences
         """
         for s in self.reader.all_subjects:
-            self.rr_seq_dirs[s] = os.path.join(self.rr_seq_base_dir, s)
-            os.makedirs(self.rr_seq_dirs[s], exist_ok=True)
-        if os.path.isfile(self.rr_seq_json):
-            with open(self.rr_seq_json, "r") as f:
-                self.__all_rr_seq = json.load(f)
+            self.rr_seq_dirs[s] = self.rr_seq_base_dir / s
+            self.rr_seq_dirs[s].mkdir(parents=True, exist_ok=True)
+        if self.rr_seq_json.is_file():
+            self.__all_rr_seq = json.loads(self.rr_seq_json.read_text())
             return
         print(f"please allow the reader a few minutes to collect the rr sequences from {self.rr_seq_base_dir}...")
         rr_seq_filename_pattern = f"{self.rr_seq_name_pattern}.{self.rr_seq_ext}"
@@ -283,8 +279,7 @@ class CPSC2021(Dataset):
                 for s in self.reader.all_subjects
         })
         if all([len(self.__all_rr_seq[s])>0 for s in self.reader.all_subjects]):
-            with open(self.rr_seq_json, "w") as f:
-                json.dump(self.__all_rr_seq, f)
+            self.rr_seq_json.write_text(json.dumps(self.__all_rr_seq, ensure_ascii=False))
 
     @property
     def all_segments(self) -> CFG:
@@ -315,7 +310,7 @@ class CPSC2021(Dataset):
             else:
                 return self._all_data[index], self._all_labels[index], self._all_masks[index]
 
-    def _get_seg_data_path(self, seg:str) -> str:
+    def _get_seg_data_path(self, seg:str) -> Path:
         """ finished, checked,
 
         Parameters
@@ -325,14 +320,14 @@ class CPSC2021(Dataset):
 
         Returns
         -------
-        fp: str,
+        fp: Path,
             path of the data file of the segment
         """
         subject = seg.split("_")[1]
-        fp = os.path.join(self.segments_dirs.data[subject], f"{seg}.{self.segment_ext}")
+        fp = self.segments_dirs.data[subject] / f"{seg}.{self.segment_ext}"
         return fp
 
-    def _get_seg_ann_path(self, seg:str) -> str:
+    def _get_seg_ann_path(self, seg:str) -> Path:
         """ finished, checked,
 
         Parameters
@@ -342,11 +337,11 @@ class CPSC2021(Dataset):
 
         Returns
         -------
-        fp: str,
+        fp: Path,
             path of the annotation file of the segment
         """
         subject = seg.split("_")[1]
-        fp = os.path.join(self.segments_dirs.ann[subject], f"{seg}.{self.segment_ext}")
+        fp = self.segments_dirs.ann[subject] / f"{seg}.{self.segment_ext}"
         return fp
 
     def _load_seg_data(self, seg:str) -> np.ndarray:
@@ -363,7 +358,7 @@ class CPSC2021(Dataset):
             data of the segment, of shape (2, `self.seglen`)
         """
         seg_data_fp = self._get_seg_data_path(seg)
-        seg_data = loadmat(seg_data_fp)["ecg"]
+        seg_data = loadmat(str(seg_data_fp))["ecg"]
         return seg_data
 
     def _load_seg_ann(self, seg:str) -> dict:
@@ -384,7 +379,10 @@ class CPSC2021(Dataset):
             - interval: interval ([start_idx, end_idx]) in the original ECG record of the segment
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
-        seg_ann = {k:v.flatten() for k,v in loadmat(seg_ann_fp).items() if not k.startswith("__")}
+        seg_ann = {
+            k:v.flatten() for k,v in loadmat(str(seg_ann_fp)).items() \
+                if not k.startswith("__")
+        }
         return seg_ann
 
     def _load_seg_mask(self, seg:str, task:Optional[str]=None) -> Union[np.ndarray, Dict[str, np.ndarray]]:
@@ -442,7 +440,7 @@ class CPSC2021(Dataset):
         ).squeeze(axis=1)
         return seq_lab
 
-    def _get_rr_seq_path(self, seq_name:str) -> str:
+    def _get_rr_seq_path(self, seq_name:str) -> Path:
         """ finished, checked,
 
         Parameters
@@ -452,11 +450,11 @@ class CPSC2021(Dataset):
 
         Returns
         -------
-        fp: str,
+        fp: Path,
             path of the annotation file of the rr_seq
         """
         subject = seq_name.split("_")[1]
-        fp = os.path.join(self.rr_seq_dirs[subject], f"{seq_name}.{self.rr_seq_ext}")
+        fp = self.rr_seq_dirs[subject] / f"{seq_name}.{self.rr_seq_ext}"
         return fp
 
     def _load_rr_seq(self, seq_name:str) -> Dict[str, np.ndarray]:
@@ -476,7 +474,7 @@ class CPSC2021(Dataset):
             - interval: interval of the current rr sequence in the whole rr sequence in the original record
         """
         rr_seq_path = self._get_rr_seq_path(seq_name)
-        rr_seq = {k:v for k,v in loadmat(rr_seq_path).items() if not k.startswith("__")}
+        rr_seq = {k:v for k,v in loadmat(str(rr_seq_path)).items() if not k.startswith("__")}
         rr_seq["rr"] = rr_seq["rr"].reshape((self.seglen, 1))
         rr_seq["label"] = rr_seq["label"].reshape((self.seglen, self.n_classes))
         rr_seq["interval"] = rr_seq["interval"].flatten()
@@ -551,8 +549,8 @@ class CPSC2021(Dataset):
             print verbosity
         """
         suffix = self._get_rec_suffix(self.allowed_preproc)
-        save_fp = os.path.join(self.preprocess_dir, f"{rec}-{suffix}.{self.segment_ext}")
-        if (not force_recompute) and os.path.isfile(save_fp):
+        save_fp = self.preprocess_dir / f"{rec}-{suffix}.{self.segment_ext}"
+        if (not force_recompute) and save_fp.is_file():
             return
         # perform pre-process
         pps, _ = self.ppm(self.reader.load_data(rec), self.config.fs)
@@ -573,10 +571,10 @@ class CPSC2021(Dataset):
         """
         preproc = self.allowed_preproc
         suffix = self._get_rec_suffix(preproc)
-        fp = os.path.join(self.preprocess_dir, f"{rec}-{suffix}.{self.segment_ext}")
-        if not os.path.exists(fp):
+        fp = self.preprocess_dir / f"{rec}-{suffix}.{self.segment_ext}"
+        if not fp.is_file():
             raise FileNotFoundError(f"preprocess(es) \042{preproc}\042 not done for {rec} yet")
-        p_sig = loadmat(fp)["ecg"]
+        p_sig = loadmat(str(fp))["ecg"]
         if p_sig.shape[0] != 2:
             p_sig = p_sig.T
         return p_sig
@@ -825,14 +823,13 @@ class CPSC2021(Dataset):
         for i, idx in enumerate(ordering):
             seg = segments[idx]
             filename = f"{rec}_{i:07d}.{self.segment_ext}".replace("data", "S")
-            data_path = os.path.join(self.segments_dirs.data[subject], filename)
-            savemat(data_path, {"ecg": seg.data})
-            self.__all_segments[subject].append(os.path.splitext(filename)[0])
-            ann_path = os.path.join(self.segments_dirs.ann[subject], filename)
-            savemat(ann_path, {k:v for k,v in seg.items() if k not in ["data",]})
+            data_path = self.segments_dirs.data[subject] / filename
+            savemat(str(data_path), {"ecg": seg.data})
+            self.__all_segments[subject].append(Path(filename).with_suffix(""))
+            ann_path = self.segments_dirs.ann[subject] / filename
+            savemat(str(ann_path), {k:v for k,v in seg.items() if k not in ["data",]})
         if update_segments_json:
-            with open(self.segments_json, "w") as f:
-                json.dump(self.__all_segments, f)
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     def _clear_cached_segments(self, recs:Optional[Sequence[str]]=None) -> NoReturn:
         """ finished, checked,
@@ -848,7 +845,7 @@ class CPSC2021(Dataset):
             for rec in recs:
                 subject = self.reader.get_subject_id(rec)
                 for item in ["data", "ann",]:
-                    path = self.segments_dirs[item][subject]
+                    path = str(self.segments_dirs[item][subject])
                     for f in [n for n in os.listdir(path) if n.endswith(self.segment_ext)]:
                         if self._get_rec_name(f) == rec:
                             os.remove(os.path.join(path, f))
@@ -856,7 +853,7 @@ class CPSC2021(Dataset):
         else:
             for subject in self.reader.all_subjects:
                 for item in ["data", "ann",]:
-                    path = self.segments_dirs[item][subject]
+                    path = str(self.segments_dirs[item][subject])
                     for f in [n for n in os.listdir(path) if n.endswith(self.segment_ext)]:
                         os.remove(os.path.join(path, f))
                         self.__all_segments[subject].remove(os.path.splitext(f)[0])
@@ -956,12 +953,11 @@ class CPSC2021(Dataset):
         for i, idx in enumerate(ordering):
             item = rr_seq[idx]
             filename = f"{rec}_{i:07d}.{self.rr_seq_ext}".replace("data", "R")
-            data_path = os.path.join(self.rr_seq_dirs[subject], filename)
-            savemat(data_path, item)
-            self.__all_rr_seq[subject].append(os.path.splitext(filename)[0])
+            data_path = self.rr_seq_dirs[subject] / filename
+            savemat(str(data_path), item)
+            self.__all_rr_seq[subject].append(Path(filename).with_suffix(""))
         if update_rr_seq_json:
-            with open(self.rr_seq_json, "w") as f:
-                json.dump(self.__all_rr_seq, f)
+            self.rr_seq_json.write_text(json.dumps(self.__all_rr_seq, ensure_ascii=False))
 
     def _clear_cached_rr_seq(self, recs:Optional[Sequence[str]]=None) -> NoReturn:
         """ finished, checked,
@@ -976,14 +972,14 @@ class CPSC2021(Dataset):
         if recs is not None:
             for rec in recs:
                 subject = self.reader.get_subject_id(rec)
-                path = self.rr_seq_dirs[subject]
+                path = str(self.rr_seq_dirs[subject])
                 for f in [n for n in os.listdir(path) if n.endswith(self.rr_seq_ext)]:
                     if self._get_rec_name(f) == rec:
                         os.remove(os.path.join(path, f))
                         self.__all_rr_seq[subject].remove(os.path.splitext(f)[0])
         else:
             for subject in self.reader.all_subjects:
-                    path = self.rr_seq_dirs[subject]
+                    path = str(self.rr_seq_dirs[subject])
                     for f in [n for n in os.listdir(path) if n.endswith(self.rr_seq_ext)]:
                         os.remove(os.path.join(path, f))
                         self.__all_rr_seq[subject].remove(os.path.splitext(f)[0])
@@ -1033,10 +1029,10 @@ class CPSC2021(Dataset):
         _test_ratio = 100 - _train_ratio
         assert _train_ratio * _test_ratio > 0
 
-        train_file = os.path.join(self.reader.db_dir_base, f"train_ratio_{_train_ratio}.json")
-        test_file = os.path.join(self.reader.db_dir_base, f"test_ratio_{_test_ratio}.json")
+        train_file = self.reader.db_dir_base / f"train_ratio_{_train_ratio}.json"
+        test_file = self.reader.db_dir_base / f"test_ratio_{_test_ratio}.json"
 
-        if force_recompute or not all([os.path.isfile(train_file), os.path.isfile(test_file)]):
+        if force_recompute or not all([train_file.is_file(), test_file.is_file()]):
             all_subjects = set(self.reader.df_stats.subject_id.tolist())
             afp_subjects = set(self.reader.df_stats[self.reader.df_stats.label=="AFp"].subject_id.tolist())
             aff_subjects = set(self.reader.df_stats[self.reader.df_stats.label=="AFf"].subject_id.tolist()) - afp_subjects
@@ -1050,21 +1046,16 @@ class CPSC2021(Dataset):
             random.shuffle(test_set)
             random.shuffle(train_set)
 
-            train_file = os.path.join(self.reader.db_dir_base, f"train_ratio_{_train_ratio}.json")
-            with open(train_file, "w") as f:
-                json.dump(train_set, f, ensure_ascii=False)
-            test_file = os.path.join(self.reader.db_dir_base, f"test_ratio_{_test_ratio}.json")
-            with open(test_file, "w") as f:
-                json.dump(test_set, f, ensure_ascii=False)
+            train_file.write_text(json.dumps(train_set, ensure_ascii=False))
+            test_file.write_text(json.dumps(test_set, ensure_ascii=False))
             print(nildent(f"""
-                train set saved to \n\042{train_file}\042
+                train set saved to \n\042{str(train_file)}\042
+                test set saved to \n\042{str(test_file)}\042
                 """
             ))
         else:
-            with open(train_file, "r") as f:
-                train_set = json.load(f)
-            with open(test_file, "r") as f:
-                test_set = json.load(f)
+            train_set = json.loads(train_file.read_text())
+            test_set = json.loads(test_file.read_text())
 
         print(f"train test split finished in {(time.time()-start)/60:.2f} minutes")
 
@@ -1138,12 +1129,12 @@ class FastDataReader(Dataset):
         if self.task in ["qrs_detection", "main",]:
             seg_name = self.files[index]
             subject = seg_name.split("_")[1]
-            seg_data_fp = os.path.join(self.file_dirs.data[subject], f"{seg_name}.{self.file_ext}")
-            seg_data = loadmat(seg_data_fp)["ecg"]
+            seg_data_fp = self.file_dirs.data[subject] / f"{seg_name}.{self.file_ext}"
+            seg_data = loadmat(str(seg_data_fp))["ecg"]
             for l in range(seg_data.shape[0]):
                 seg_data[l] = remove_spikes_naive(seg_data[l])
-            seg_ann_fp = os.path.join(self.file_dirs.ann[subject], f"{seg_name}.{self.file_ext}")
-            seg_label = loadmat(seg_ann_fp)[self._seg_keys[self.task]].reshape((self.seglen, -1))
+            seg_ann_fp = self.file_dirs.ann[subject] / f"{seg_name}.{self.file_ext}"
+            seg_label = loadmat(str(seg_ann_fp))[self._seg_keys[self.task]].reshape((self.seglen, -1))
             if self.config[self.task].reduction > 1:
                 reduction = self.config[self.task].reduction
                 seg_len, n_classes = seg_label.shape
@@ -1169,8 +1160,8 @@ class FastDataReader(Dataset):
         elif self.task in ["rr_lstm",]:
             seq_name = self.files[index]
             subject = seq_name.split("_")[1]
-            rr_seq_path = os.path.join(self.file_dirs[subject], f"{seq_name}.{self.file_ext}")
-            rr_seq = loadmat(rr_seq_path)
+            rr_seq_path = self.file_dirs[subject] / f"{seq_name}.{self.file_ext}"
+            rr_seq = loadmat(str(rr_seq_path))
             rr_seq["rr"] = rr_seq["rr"].reshape((self.seglen, 1))
             rr_seq["label"] = rr_seq["label"].reshape((self.seglen, self.n_classes))
             weight_mask = _generate_weight_mask(
@@ -1391,8 +1382,8 @@ class StandaloneSegmentSlicer(Dataset):
         """
         preproc = self.allowed_preproc
         suffix = _get_rec_suffix(preproc)
-        fp = os.path.join(self.preprocess_dir, f"{rec}-{suffix}.{self.segment_ext}")
-        if not os.path.exists(fp):
+        fp = self.preprocess_dir / f"{rec}-{suffix}.{self.segment_ext}"
+        if not fp.exists():
             raise FileNotFoundError(f"preprocess(es) \042{preproc}\042 not done for {rec} yet")
         p_sig = loadmat(fp)["ecg"]
         if p_sig.shape[0] != 2:

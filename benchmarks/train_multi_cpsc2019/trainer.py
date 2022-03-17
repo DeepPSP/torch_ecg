@@ -1,11 +1,7 @@
 """
 """
-import os
-import sys
-import time
-import logging
-import argparse
-import textwrap
+
+import os, sys, argparse
 from copy import deepcopy
 from collections import deque, OrderedDict
 from typing import Union, Optional, Tuple, Sequence, Dict, List, NoReturn, Any
@@ -31,9 +27,8 @@ import biosppy.signals.ecg as BSE
 try:
     import torch_ecg
 except ModuleNotFoundError:
-    import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn

@@ -1,6 +1,7 @@
 """
 """
-import os
+
+from pathlib import Path
 from copy import deepcopy
 from itertools import repeat
 
@@ -10,8 +11,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.model_configs import (
@@ -28,14 +28,13 @@ __all__ = [
 ]
 
 
-_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_BASE_DIR = Path(__file__).absolute().parent
 
 
 BaseCfg = CFG()
 BaseCfg.fs = 500  # Hz, CPSC2019 data fs
 BaseCfg.classes = ["N",]
 BaseCfg.n_leads = 1
-# BaseCfg.training_data = os.path.join(_BASE_DIR, "training_data")
 BaseCfg.db_dir = None
 BaseCfg.bias_thr = 0.075 * BaseCfg.fs  # keep the same with `THR` in `cpsc2019_score.py`
 # detected rpeaks that are within `skip_dist` from two ends of the signal will be ignored,
@@ -100,12 +99,12 @@ TrainCfg = CFG()
 TrainCfg.torch_dtype = BaseCfg.torch_dtype
 TrainCfg.fs = BaseCfg.fs
 TrainCfg.db_dir = BaseCfg.db_dir
-TrainCfg.log_dir = os.path.join(_BASE_DIR, "log")
-TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
-TrainCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
-os.makedirs(TrainCfg.log_dir, exist_ok=True)
-os.makedirs(TrainCfg.checkpoints, exist_ok=True)
-os.makedirs(TrainCfg.model_dir, exist_ok=True)
+TrainCfg.log_dir = _BASE_DIR / "log"
+TrainCfg.checkpoints = _BASE_DIR / "checkpoints"
+TrainCfg.model_dir = _BASE_DIR / "saved_models"
+TrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
+TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
+TrainCfg.model_dir.mkdir(parents=True, exist_ok=True)
 TrainCfg.final_model_name = None
 TrainCfg.keep_checkpoint_max = 20
 TrainCfg.train_ratio = 0.8

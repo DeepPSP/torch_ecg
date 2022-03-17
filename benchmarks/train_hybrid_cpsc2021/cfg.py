@@ -1,6 +1,7 @@
 """
 """
-import os
+
+from pathlib import Path
 from copy import deepcopy
 from itertools import repeat
 
@@ -10,8 +11,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.model_configs import (
@@ -54,16 +54,16 @@ __all__ = [
 ]
 
 
-_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_BASE_DIR = Path(__file__).parent.absolute()
 
 
 BaseCfg = CFG()
 BaseCfg.db_dir = None
-BaseCfg.log_dir = os.path.join(_BASE_DIR, "log")
-BaseCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
-os.makedirs(BaseCfg.log_dir, exist_ok=True)
-os.makedirs(BaseCfg.model_dir, exist_ok=True)
-BaseCfg.test_data_dir = os.path.join(_BASE_DIR, "working_dir", "sample_data")
+BaseCfg.log_dir = _BASE_DIR / "log"
+BaseCfg.model_dir = _BASE_DIR / "saved_models"
+BaseCfg.log_dir.mkdir(parents=True, exist_ok=True)
+BaseCfg.model_dir.mkdir(parents=True, exist_ok=True)
+BaseCfg.test_data_dir = _BASE_DIR / "working_dir" / "sample_data"
 BaseCfg.fs = 200
 BaseCfg.n_leads = 2
 BaseCfg.torch_dtype = DEFAULTS.torch_dtype
@@ -100,8 +100,8 @@ TrainCfg.torch_dtype = BaseCfg.torch_dtype
 TrainCfg.db_dir = BaseCfg.db_dir
 TrainCfg.log_dir = BaseCfg.log_dir
 TrainCfg.model_dir = BaseCfg.model_dir
-TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
-os.makedirs(TrainCfg.checkpoints, exist_ok=True)
+TrainCfg.checkpoints = _BASE_DIR / "checkpoints"
+TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 TrainCfg.keep_checkpoint_max = 20
 
 TrainCfg.debug = True

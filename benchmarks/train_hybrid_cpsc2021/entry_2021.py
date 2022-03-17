@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os, sys, time, json
+from pathlib import Path
 from itertools import repeat
 
 import wfdb
@@ -11,9 +12,7 @@ import scipy.signal as SS
 try:
     import torch_ecg
 except ModuleNotFoundError:
-    import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.preproc import (
@@ -47,7 +46,7 @@ Save answers to '.json' files, the format is as {‘predict_endpoints’: [[s0, 
 ECG_SEQ_LAB_NET_CPSC2021.__DEBUG__ = False
 ECG_UNET_CPSC2021.__DEBUG__ = False
 RR_LSTM_CPSC2021.__DEBUG__ = False
-_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_BASE_DIR = Path(__file__).absolute().parent
 _CUDA = torch.device("cuda")
 _CPU = torch.device("cpu")
 _BATCH_SIZE = 32
@@ -98,7 +97,7 @@ def challenge_entry(sample_path):
     # all models are loaded into cpu
     # when using, move to gpu
     rpeak_model, rpeak_cfg = ECG_SEQ_LAB_NET_CPSC2021.from_checkpoint(
-        os.path.join(_BASE_DIR, "saved_models", _MODEL_FILENAME.qrs_detection),
+        str(_BASE_DIR / "saved_models" / _MODEL_FILENAME.qrs_detection),
         device=_CPU,
     )
     rpeak_model.eval()
@@ -106,7 +105,7 @@ def challenge_entry(sample_path):
     if _VERBOSE >= 1:
         print("QRS detection model is loaded")
     rr_lstm_model, rr_cfg = RR_LSTM_CPSC2021.from_checkpoint(
-        os.path.join(_BASE_DIR, "saved_models", _MODEL_FILENAME.rr_lstm),
+        str(_BASE_DIR / "saved_models" / _MODEL_FILENAME.rr_lstm),
         device=_CPU,
     )
     rr_lstm_model.eval()
@@ -116,7 +115,7 @@ def challenge_entry(sample_path):
     if _ENTRY_CONFIG.use_main_seq_lab_model:
         # SeqLab (SeqTag) model for the main task
         main_task_model, main_task_cfg = ECG_SEQ_LAB_NET_CPSC2021.from_checkpoint(
-            os.path.join(_BASE_DIR, "saved_models", _MODEL_FILENAME.main_seq_lab),
+            str(_BASE_DIR / "saved_models" / _MODEL_FILENAME.main_seq_lab),
             device=_CPU,
         )
         if _VERBOSE >= 1:
@@ -124,7 +123,7 @@ def challenge_entry(sample_path):
     else:
         # UNet model for the main task
         main_task_model, main_task_cfg = ECG_UNET_CPSC2021.from_checkpoint(
-            os.path.join(_BASE_DIR, "saved_models", _MODEL_FILENAME.main_unet),
+            str(_BASE_DIR / "saved_models" / _MODEL_FILENAME.main_unet),
             device=_CPU,
         )
         if _VERBOSE >= 1:
@@ -136,7 +135,7 @@ def challenge_entry(sample_path):
         print(f"models loaded in {time.time()-timer:.2f} seconds...")
         timer = time.time()
 
-    _sample_path = os.path.splitext(sample_path)[0]
+    _sample_path = Path(sample_path).with_suffix("")
     try:
         wfdb_rec = wfdb.rdrecord(sample_path, physical=True)
     except:
@@ -514,15 +513,15 @@ def _merge_rule_union(rr_pred, rr_pred_cls, main_pred, main_pred_cls):
 
 
 if __name__ == '__main__':
-    DATA_PATH = sys.argv[1]
-    RESULT_PATH = sys.argv[2]
-    if not os.path.exists(RESULT_PATH):
-        os.makedirs(RESULT_PATH)
+    DATA_PATH = Path(sys.argv[1])
+    RESULT_PATH = Path(sys.argv[2])
+    if not RESULT_PATH.exists():
+        RESULT_PATH.mkdir(parents=True)
         
-    test_set = open(os.path.join(DATA_PATH, 'RECORDS'), 'r').read().splitlines()
+    test_set = (DATA_PATH / 'RECORDS').read_text().splitlines()
     for i, sample in enumerate(test_set):
         print(sample)
-        sample_path = os.path.join(DATA_PATH, sample)
-        pred_dict = challenge_entry(sample_path)
+        sample_path = DATA_PATH / sample
+        pred_dict = challenge_entry(str(sample_path))
 
-        save_dict(os.path.join(RESULT_PATH, sample+'.json'), pred_dict)
+        save_dict(str(RESULT_PATH / sample+'.json'), pred_dict)

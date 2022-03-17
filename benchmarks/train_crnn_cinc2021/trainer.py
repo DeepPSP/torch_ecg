@@ -21,7 +21,7 @@ References: (mainly tips for faster and better training)
 4. more....
 """
 
-import os, sys, time, textwrap, argparse, logging
+import os, sys, textwrap, argparse, logging
 from copy import deepcopy
 from typing import Tuple, Dict, Any, List, NoReturn, Optional
 
@@ -39,8 +39,8 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn

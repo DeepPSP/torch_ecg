@@ -5,7 +5,7 @@ along with some constants
 "Brady", "LAD", "RAD", "PR", "LQRSV" are treated exceptionally, as special classes
 """
 
-import os
+from pathlib import Path
 from copy import deepcopy
 from itertools import repeat
 from typing import List, NoReturn
@@ -16,8 +16,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.databases.aux_data.cinc2021_aux_data import (
@@ -39,7 +38,7 @@ __all__ = [
 ]
 
 
-_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_BASE_DIR = Path(__file__).parent.absolute()
 _ONE_MINUTE_IN_MS = 60 * 1000
 
 
@@ -55,10 +54,10 @@ lead_sets = (twelve_leads, six_leads, four_leads, three_leads, two_leads)
 
 BaseCfg = CFG()
 BaseCfg.db_dir = None
-BaseCfg.log_dir = os.path.join(_BASE_DIR, "log")
-BaseCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
-os.makedirs(BaseCfg.log_dir, exist_ok=True)
-os.makedirs(BaseCfg.model_dir, exist_ok=True)
+BaseCfg.log_dir = _BASE_DIR / "log"
+BaseCfg.model_dir = _BASE_DIR / "saved_models"
+BaseCfg.log_dir.mkdir(parents=True, exist_ok=True)
+BaseCfg.model_dir.mkdir(parents=True, exist_ok=True)
 BaseCfg.fs = 500
 BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
@@ -140,8 +139,8 @@ TrainCfg.db_dir = BaseCfg.db_dir
 TrainCfg.log_dir = BaseCfg.log_dir
 TrainCfg.model_dir = BaseCfg.model_dir
 TrainCfg.final_model_name = None
-TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
-os.makedirs(TrainCfg.checkpoints, exist_ok=True)
+TrainCfg.checkpoints = _BASE_DIR / "checkpoints"
+TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 TrainCfg.keep_checkpoint_max = 20
 
 TrainCfg.leads = deepcopy(twelve_leads)

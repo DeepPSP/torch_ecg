@@ -318,7 +318,7 @@ class CINC2021(PhysioNetDataBase):
                     for tranche in self.db_tranches
             }
             self._all_records = \
-                get_record_list_recursive3(self.db_dir_base, rec_patterns_with_ext)
+                get_record_list_recursive3(str(self.db_dir_base), rec_patterns_with_ext)
             to_save = deepcopy(self._all_records)
             for tranche in self.db_tranches:
                 tmp_dirname = [ Path(f).name for f in self._all_records[tranche] ]
@@ -489,7 +489,7 @@ class CINC2021(PhysioNetDataBase):
         tranche = {v:k for k,v in self.rec_prefix.items()}[prefix]
         return tranche
 
-    def get_data_filepath(self, rec:str, with_ext:bool=True) -> str:
+    def get_data_filepath(self, rec:str, with_ext:bool=True) -> Path:
         """ finished, checked,
 
         get the absolute file path of the data file of `rec`
@@ -512,9 +512,9 @@ class CINC2021(PhysioNetDataBase):
         fp = self.db_dirs[tranche] / f"{rec}.{self.rec_ext}"
         if not with_ext:
             fp = fp.with_suffix("")
-        return str(fp)
-    
-    def get_header_filepath(self, rec:str, with_ext:bool=True) -> str:
+        return fp
+
+    def get_header_filepath(self, rec:str, with_ext:bool=True) -> Path:
         """ finished, checked,
 
         get the absolute file path of the header file of `rec`
@@ -530,16 +530,16 @@ class CINC2021(PhysioNetDataBase):
 
         Returns
         -------
-        fp: str,
+        fp: Path,
             absolute file path of the header file of the record
         """
         tranche = self._get_tranche(rec)
         fp = self.db_dirs[tranche] / f"{rec}.{self.ann_ext}"
         if not with_ext:
             fp = fp.with_suffix("")
-        return str(fp)
-    
-    def get_ann_filepath(self, rec:str, with_ext:bool=True) -> str:
+        return fp
+
+    def get_ann_filepath(self, rec:str, with_ext:bool=True) -> Path:
         """ finished, checked,
         alias for `get_header_filepath`
         """
@@ -593,13 +593,13 @@ class CINC2021(PhysioNetDataBase):
         if backend.lower() == "wfdb":
             rec_fp = self.get_data_filepath(rec, with_ext=False)
             # p_signal of "lead_last" format
-            wfdb_rec = wfdb.rdrecord(rec_fp, physical=True, channel_names=_leads)
+            wfdb_rec = wfdb.rdrecord(str(rec_fp), physical=True, channel_names=_leads)
             data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.np_dtype)
             # lead_units = np.vectorize(lambda s: s.lower())(wfdb_rec.units)
         elif backend.lower() == "scipy":
             # loadmat of "lead_first" format
             rec_fp = self.get_data_filepath(rec, with_ext=True)
-            data = loadmat(rec_fp)["val"]
+            data = loadmat(str(rec_fp))["val"]
             header_info = self.load_ann(rec, raw=False)["df_leads"]
             baselines = header_info["baseline"].values.reshape(data.shape[0], -1)
             adc_gain = header_info["adc_gain"].values.reshape(data.shape[0], -1)
@@ -649,8 +649,7 @@ class CINC2021(PhysioNetDataBase):
         """
         # tranche = self._get_tranche(rec)
         ann_fp = self.get_ann_filepath(rec, with_ext=True)
-        with open(ann_fp, "r") as f:
-            header_data = f.read().splitlines()
+        header_data = ann_fp.read_text().splitlines()
         
         if raw:
             ann_dict = "\n".join(header_data)
@@ -682,7 +681,7 @@ class CINC2021(PhysioNetDataBase):
             the annotations with items: ref. `self.ann_items`
         """
         header_fp = self.get_header_filepath(rec, with_ext=False)
-        header_reader = wfdb.rdheader(header_fp)
+        header_reader = wfdb.rdheader(str(header_fp))
         ann_dict = {}
         ann_dict["rec_name"], ann_dict["nb_leads"], ann_dict["fs"], ann_dict["nb_samples"], ann_dict["datetime"], daytime = header_data[0].split(" ")
 
@@ -1361,11 +1360,11 @@ class CINC2021(PhysioNetDataBase):
         # tranche = self._get_tranche(rec)
         if backend.lower() == "wfdb":
             rec_fp = self.get_data_filepath(rec, with_ext=False)
-            wfdb_rec = wfdb.rdrecord(rec_fp, physical=False)
+            wfdb_rec = wfdb.rdrecord(str(rec_fp), physical=False)
             raw_data = np.asarray(wfdb_rec.d_signal, dtype=DEFAULTS.np_dtype)
         elif backend.lower() == "scipy":
             rec_fp = self.get_data_filepath(rec, with_ext=True)
-            raw_data = loadmat(rec_fp)["val"].astype(DEFAULTS.np_dtype)
+            raw_data = loadmat(str(rec_fp))["val"].astype(DEFAULTS.np_dtype)
         return raw_data
 
     def _check_exceptions(self, tranches:Optional[Union[str, Sequence[str]]]=None, flat_granularity:str="record") -> List[str]:

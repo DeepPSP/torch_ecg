@@ -1,10 +1,9 @@
 """
 data generator for feeding data into pytorch models
 """
-import os, sys
-import json
-import time
-import textwrap
+
+import json, time, textwrap
+from pathlib import Path
 import multiprocessing as mp
 from random import shuffle, randint, sample
 from copy import deepcopy
@@ -23,8 +22,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CINC2021 as CR
@@ -51,7 +49,7 @@ __all__ = [
 ]
 
 
-_BASE_DIR = os.path.dirname(__file__)
+_BASE_DIR = Path(__file__).absolute().parent
 
 
 class CINC2021(Dataset):
@@ -75,11 +73,13 @@ class CINC2021(Dataset):
         """
         super().__init__()
         self.config = deepcopy(config)
+        assert self.config.db_dir is not None, "db_dir must be specified"
+        self.config.db_dir = Path(self.config.db_dir)
         self._TRANCHES = self.config.tranche_classes.keys()  # ["A", "B", "AB", "E", "F", "G",]
-        self.reader = CR(db_dir=config.db_dir)
-        self.tranches = config.tranches_for_training
+        self.reader = CR(db_dir=self.config.db_dir)
+        self.tranches = self.config.tranches_for_training
         self.training = training
-        if self.config.torch_dtype.lower() == torch.float64:
+        if self.config.torch_dtype == torch.float64:
             self.dtype = np.float64
         else:
             self.dtype = np.float32
@@ -104,10 +104,10 @@ class CINC2021(Dataset):
 
         self._indices = [Standard12Leads.index(l) for l in self.config.leads]
 
-        self.records = self._train_test_split(config.train_ratio, force_recompute=False)
+        self.records = self._train_test_split(self.config.train_ratio, force_recompute=False)
         # TODO: consider using `remove_spikes_naive` to treat these exceptional records
         self.records = [r for r in self.records if r not in self.reader.exceptional_records\
-            and os.path.isfile(self.reader.get_data_filepath(r))]
+            and (self.reader.get_data_filepath(r)).is_file()]
         if self.__DEBUG__:
             self.records = sample(self.records, int(len(self.records) * 0.01))
 
@@ -285,16 +285,12 @@ class CINC2021(Dataset):
 
         ns = "_ns" if len(self.config.special_classes) == 0 else ""
         file_suffix = f"_siglen_{self.siglen}{ns}.json"
-        train_file = os.path.join(self.reader.db_dir_base, f"train_ratio_{_train_ratio}{file_suffix}")
-        test_file = os.path.join(self.reader.db_dir_base, f"test_ratio_{_test_ratio}{file_suffix}")
-
-        if not all([os.path.isfile(train_file), os.path.isfile(test_file)]):
-            train_file = os.path.join(_BASE_DIR, "utils", f"train_ratio_{_train_ratio}{file_suffix}")
-            test_file = os.path.join(_BASE_DIR, "utils", f"test_ratio_{_test_ratio}{file_suffix}")
+        train_file = self.reader.db_dir_base / f"train_ratio_{_train_ratio}{file_suffix}"
+        test_file = self.reader.db_dir_base / f"test_ratio_{_test_ratio}{file_suffix}"
 
         # TODO: use self.reader.df_stats (precomputed and stored in utils/stats.csv)
         # to accelerate the validity examinations
-        if force_recompute or not all([os.path.isfile(train_file), os.path.isfile(test_file)]):
+        if force_recompute or not all([train_file.is_file(), test_file.is_file()]):
             tranche_records = {t: [] for t in _TRANCHES}
             train_set = {t: [] for t in _TRANCHES}
             test_set = {t: [] for t in _TRANCHES}
@@ -333,26 +329,16 @@ class CINC2021(Dataset):
                     is_valid = self._check_train_test_split_validity(
                         train_set[t], test_set[t], set(self.config.tranche_classes[t])
                     )
-            train_file_1 = os.path.join(self.reader.db_dir_base, f"train_ratio_{_train_ratio}{file_suffix}")
-            train_file_2 = os.path.join(_BASE_DIR, "utils", f"train_ratio_{_train_ratio}{file_suffix}")
-            with open(train_file_1, "w") as f1, open(train_file_2, "w") as f2:
-                json.dump(train_set, f1, ensure_ascii=False)
-                json.dump(train_set, f2, ensure_ascii=False)
-            test_file_1 = os.path.join(self.reader.db_dir_base, f"test_ratio_{_test_ratio}{file_suffix}")
-            test_file_2 = os.path.join(_BASE_DIR, "utils", f"test_ratio_{_test_ratio}{file_suffix}")
-            with open(test_file_1, "w") as f1, open(test_file_2, "w") as f2:
-                json.dump(test_set, f1, ensure_ascii=False)
-                json.dump(test_set, f2, ensure_ascii=False)
+            train_file.write_text(json.dumps(train_set, ensure_ascii=False))
+            test_file.write_text(json.dumps(test_set, ensure_ascii=False))
             print(textwrap.dedent(f"""
-                train set saved to \n\042{train_file_1}\042and\n\042{train_file_2}\042
-                test set saved to \n\042{test_file_1}\042and\n\042{test_file_2}\042
+                train set saved to \n\042{str(train_file)}\042
+                test set saved to \n\042{str(test_file)}\042
                 """
             ))
         else:
-            with open(train_file, "r") as f:
-                train_set = json.load(f)
-            with open(test_file, "r") as f:
-                test_set = json.load(f)
+            train_set = json.loads(train_file.read_text())
+            test_set = json.loads(test_file.read_text())
 
         print(f"train test split finished in {(time.time()-start)/60:.2f} minutes")
 
@@ -430,10 +416,10 @@ class CINC2021(Dataset):
         X, y = np.array(X), np.array(y)
         print(f"X.shape = {X.shape}, y.shape = {y.shape}")
         filename = f"{'train' if self.training else 'test'}_X_{fn_suffix}.npy"
-        np.save(os.path.join(self.reader.db_dir_base, filename), X)
+        np.save(self.reader.db_dir_base / filename, X)
         print(f"X saved to {filename}")
         filename = f"{'train' if self.training else 'test'}_y_{fn_suffix}.npy"
-        np.save(os.path.join(self.reader.db_dir_base, filename), y)
+        np.save(self.reader.db_dir_base / filename, y)
         print(f"y saved to {filename}")
 
     def _check_nan(self) -> NoReturn:

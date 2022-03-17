@@ -112,7 +112,7 @@ class CINC2017(PhysioNetDataBase):
             self._all_records = fp.read_text().splitlines()
             return
         self._all_records = get_record_list_recursive3(
-            db_dir=self.db_dir,
+            db_dir=str(self.db_dir),
             rec_patterns=f"A[\d]{{5}}.{self.rec_ext}"
         )
         fp.write_text("\n".join(self._all_records) + "\n")

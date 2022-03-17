@@ -1,6 +1,7 @@
 """
 """
-import os
+
+from pathlib import Path
 from itertools import repeat
 from copy import deepcopy
 
@@ -11,8 +12,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 
@@ -27,15 +27,14 @@ __all__ = [
 ]
 
 
-_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_BASE_DIR = Path(__file__).parent.absolute()
 
 
 BaseCfg = CFG()
 BaseCfg.fs = 400  # Hz, CPSC2020 data fs
 BaseCfg.classes = ["N", "S", "V"]
 BaseCfg.class_map = {c: idx for idx, c in enumerate(BaseCfg.classes)}
-# BaseCfg.training_data = os.path.join(_BASE_DIR, "training_data")
-BaseCfg.db_dir = "/media/cfs/wenhao71/data/CPSC2020/TrainingSet/"
+BaseCfg.db_dir = None
 
 BaseCfg.bias_thr = 0.15 * BaseCfg.fs  # keep the same with `THR` in `CPSC202_score.py`
 BaseCfg.beat_ann_bias_thr = 0.1 * BaseCfg.fs  # half width of broad qrs complex
@@ -218,7 +217,7 @@ ModelCfg.seq_lab.rnn.name = "none"  # "lstm"
 ModelCfg.seq_lab.attn = CFG()
 ModelCfg.seq_lab.attn.name = "se"  # "gc"
 ModelCfg.seq_lab.attn.se = CFG()
-ModelCfg.seq_lab.attn.se.reduction = 8  # not including the last linear layer
+ModelCfg.seq_lab.attn.se.reduction = 16  # not including the last linear layer
 ModelCfg.seq_lab.attn.se.activation = "relu"
 ModelCfg.seq_lab.attn.se.kw_activation = CFG(inplace=True)
 ModelCfg.seq_lab.attn.se.bias = True
@@ -237,13 +236,12 @@ TrainCfg = CFG()
 TrainCfg.fs = ModelCfg.fs
 TrainCfg.n_leads = 1
 TrainCfg.db_dir = BaseCfg.db_dir
-TrainCfg.log_dir = os.path.join(_BASE_DIR, "log")
-TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
-TrainCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
-os.makedirs(TrainCfg.log_dir, exist_ok=True)
-os.makedirs(TrainCfg.checkpoints, exist_ok=True)
-os.makedirs(TrainCfg.model_dir, exist_ok=True)
-TrainCfg.final_model_name = None
+TrainCfg.log_dir = _BASE_DIR / "log"
+TrainCfg.checkpoints = _BASE_DIR / "checkpoints"
+TrainCfg.model_dir = _BASE_DIR / "saved_models"
+TrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
+TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
+TrainCfg.model_dir.mkdir(parents=True, exist_ok=True)
 TrainCfg.keep_checkpoint_max = 50
 TrainCfg.input_len = int(10 * TrainCfg.fs)  # 10 s
 TrainCfg.overlap_len = int(6 * TrainCfg.fs)  # 6 s

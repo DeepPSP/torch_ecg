@@ -1,5 +1,6 @@
 """
 """
+
 from numbers import Real
 from typing import Union, Optional, Any, List, Tuple, Sequence
 
@@ -9,8 +10,8 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import dict_to_str

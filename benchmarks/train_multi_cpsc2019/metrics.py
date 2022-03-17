@@ -3,6 +3,7 @@ References
 ----------
 [1] http://2019.icbeb.org/Challenge.html
 """
+
 import math
 from typing import Union, Optional, Sequence
 from numbers import Real

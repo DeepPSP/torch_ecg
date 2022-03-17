@@ -1,7 +1,9 @@
 """
 data generator for feeding data into pytorch models
 """
-import os, sys, time, json
+
+import time, json
+from pathlib import Path
 from random import shuffle, randint
 from copy import deepcopy
 from functools import reduce
@@ -20,8 +22,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg._preprocessors import PreprocManager
@@ -62,9 +63,11 @@ class CINC2020(Dataset):
         """
         super().__init__()
         self.config = deepcopy(config)
+        assert self.config.db_dir is not None, "db_dir must be specified"
+        self.config.db_dir = Path(self.config.db_dir)
         self._TRANCHES = self.config.tranche_classes.keys()  # ["A", "B", "AB", "E", "F"]
-        self.reader = CR(db_dir=config.db_dir)
-        self.tranches = config.tranches_for_training
+        self.reader = CR(db_dir=self.config.db_dir)
+        self.tranches = self.config.tranches_for_training
         self.training = training
         if self.config.torch_dtype == torch.float64:
             self.dtype = np.float64
@@ -89,7 +92,7 @@ class CINC2020(Dataset):
         self.siglen = self.config.input_len
         self.lazy = lazy
 
-        self.records = self._train_test_split(config.train_ratio, force_recompute=False)
+        self.records = self._train_test_split(self.config.train_ratio, force_recompute=False)
         # TODO: consider using `remove_spikes_naive` to treat these exceptional records
         self.records = [r for r in self.records if r not in self.reader.exceptional_records]
         if self.__DEBUG__:
@@ -216,10 +219,10 @@ class CINC2020(Dataset):
 
         ns = "_ns" if len(self.config.special_classes) == 0 else ""
         file_suffix = f"_siglen_{self.siglen}{ns}.json"
-        train_file = os.path.join(self.reader.db_dir_base, f"train_ratio_{_train_ratio}{file_suffix}")
-        test_file = os.path.join(self.reader.db_dir_base, f"test_ratio_{_test_ratio}{file_suffix}")
+        train_file = self.reader.db_dir_base / f"train_ratio_{_train_ratio}{file_suffix}"
+        test_file = self.reader.db_dir_base / f"test_ratio_{_test_ratio}{file_suffix}"
 
-        if force_recompute or not all([os.path.isfile(train_file), os.path.isfile(test_file)]):
+        if force_recompute or not all([train_file.is_file(), test_file.is_file()]):
             tranche_records = {t: [] for t in _TRANCHES}
             train_set = {t: [] for t in _TRANCHES}
             test_set = {t: [] for t in _TRANCHES}
@@ -247,15 +250,11 @@ class CINC2020(Dataset):
                     train_set[t] = tranche_records[t][:split_idx]
                     test_set[t] = tranche_records[t][split_idx:]
                     is_valid = _check_train_test_split_validity(train_set[t], test_set[t], set(TrainCfg.tranche_classes[t]))
-            with open(train_file, "w") as f:
-                json.dump(train_set, f, ensure_ascii=False)
-            with open(test_file, "w") as f:
-                json.dump(test_set, f, ensure_ascii=False)
+            train_file.write_text(json.dumps(train_set, ensure_ascii=False))
+            test_file.write_text(json.dumps(test_set, ensure_ascii=False))
         else:
-            with open(train_file, "r") as f:
-                train_set = json.load(f)
-            with open(test_file, "r") as f:
-                test_set = json.load(f)
+            train_set = json.loads(train_file.read_text())
+            test_set = json.loads(test_file.read_text())
 
         add = lambda a,b:a+b
         _tranches = list(self.tranches or "ABEF")
@@ -320,10 +319,10 @@ class CINC2020(Dataset):
         X, y = np.array(X), np.array(y)
         print(f"X.shape = {X.shape}, y.shape = {y.shape}")
         filename = f"{'train' if self.training else 'test'}_X_{fn_suffix}.npy"
-        np.save(os.path.join(self.reader.db_dir_base, filename), X)
+        np.save(self.reader.db_dir_base / filename, X)
         print(f"X saved to {filename}")
         filename = f"{'train' if self.training else 'test'}_y_{fn_suffix}.npy"
-        np.save(os.path.join(self.reader.db_dir_base, filename), y)
+        np.save(self.reader.db_dir_base / filename, y)
         print(f"y saved to {filename}")
 
         self.__data_aug = prev_state

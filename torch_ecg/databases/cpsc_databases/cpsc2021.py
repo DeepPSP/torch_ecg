@@ -208,7 +208,7 @@ class CPSC2021(CPSCDataBase):
                 start = time.time()
                 rec_patterns_with_ext = f"^data_(?:\d+)_(?:\d+).{self.rec_ext}$"
                 self._all_records[t] = \
-                    get_record_list_recursive3(dir_tranche, rec_patterns_with_ext)
+                    get_record_list_recursive3(str(dir_tranche), rec_patterns_with_ext)
                 print(f"Done in {time.time() - start:.5f} seconds!")
                 record_list_fp.write_text("\n".join(self._all_records[t]))
 

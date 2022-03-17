@@ -8,7 +8,9 @@ References
 [2] Tan, Jen Hong, et al. "Application of stacked convolutional and long short-term memory network for accurate identification of CAD ECG signals." Computers in biology and medicine 94 (2018): 19-26.
 [3] Yao, Qihang, et al. "Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based Time-Incremental Convolutional Neural Network." Information Fusion 53 (2020): 174-182.
 """
-import os, sys, re, json
+
+import json
+from pathlib import Path
 from random import shuffle, randint, uniform, sample
 from copy import deepcopy
 from functools import reduce
@@ -30,8 +32,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2020 as CR
@@ -82,7 +83,9 @@ class CPSC2020(Dataset):
         """
         super().__init__()
         self.config = deepcopy(config)
-        self.reader = CR(db_dir=config.db_dir)
+        assert self.config.db_dir is not None, "db_dir must be specified"
+        self.config.db_dir = Path(self.config.db_dir)
+        self.reader = CR(db_dir=self.config.db_dir)
         if ModelCfg.torch_dtype.lower() == "double":
             self.dtype = np.float64
         else:
@@ -101,14 +104,14 @@ class CPSC2020(Dataset):
 
         # create directories if needed
         # segments_dir for sliced segments
-        self.segments_dir = os.path.join(config.db_dir, "segments")
-        os.makedirs(self.segments_dir, exist_ok=True)
+        self.segments_dir = self.config.db_dir / "segments"
+        self.segments_dir.mkdir(parents=True, exist_ok=True)
 
         if self.config.model_name.lower() in ["crnn", "seq_lab"]:
             # for classification, or for sequence labeling
             self.segments_dirs = CFG()
             self.__all_segments = CFG()
-            self.segments_json = os.path.join(self.segments_dir, "crnn_segments.json")
+            self.segments_json = self.segments_dir / "crnn_segments.json"
             self._ls_segments()
 
             if self.training:
@@ -131,21 +134,19 @@ class CPSC2020(Dataset):
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
             for rec in self.reader.all_records:
-                self.segments_dirs[item][rec] = os.path.join(self.segments_dir, item, rec)
-                os.makedirs(self.segments_dirs[item][rec], exist_ok=True)
-        if os.path.isfile(self.segments_json):
-            with open(self.segments_json, "r") as f:
-                self.__all_segments = json.load(f)
+                self.segments_dirs[item][rec] = self.segments_dir / item / rec
+                self.segments_dirs[item][rec].mkdir(parents=True, exist_ok=True)
+        if self.segments_json.is_file():
+            self.__all_segments = json.loads(self.segments_json.read_text())
             return
         print(f"please allow the reader a few minutes to collect the segments from {self.segments_dir}...")
         seg_filename_pattern = f"S\d{{2}}_\d{{7}}{self.reader.rec_ext}"
         self.__all_segments = CFG({
-            rec: get_record_list_recursive3(self.segments_dirs.data[rec], seg_filename_pattern) \
+            rec: get_record_list_recursive3(str(self.segments_dirs.data[rec]), seg_filename_pattern) \
                 for rec in self.reader.all_records
         })
         if all([len(self.__all_segments[rec])>0 for rec in self.reader.all_records]):
-            with open(self.segments_json, "w") as f:
-                json.dump(self.__all_segments, f)
+            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
 
     @property
     def all_segments(self):
@@ -240,7 +241,7 @@ class CPSC2020(Dataset):
             ampl = max(ampl, np.max(s)-np.min(s))
         return ampl
 
-    def _get_seg_data_path(self, seg:str) -> str:
+    def _get_seg_data_path(self, seg:str) -> Path:
         """ finished, checked,
 
         Parameters
@@ -250,14 +251,14 @@ class CPSC2020(Dataset):
 
         Returns
         -------
-        fp: str,
+        fp: Path,
             path of the data file of the segment
         """
         rec = seg.split("_")[0].replace("S", "A")
-        fp = os.path.join(self.segments_dir, "data", rec, f"{seg}{self.reader.rec_ext}")
+        fp = self.segments_dir / "data" / rec / f"{seg}{self.reader.rec_ext}"
         return fp
 
-    def _get_seg_ann_path(self, seg:str) -> str:
+    def _get_seg_ann_path(self, seg:str) -> Path:
         """ finished, checked,
 
         Parameters
@@ -267,11 +268,11 @@ class CPSC2020(Dataset):
 
         Returns
         -------
-        fp: str,
+        fp: Path,
             path of the annotation file of the segment
         """
         rec = seg.split("_")[0].replace("S", "A")
-        fp = os.path.join(self.segments_dir, "ann", rec, f"{seg}{self.reader.rec_ext}")
+        fp = self.segments_dir / "ann" / rec / f"{seg}{self.reader.rec_ext}"
         return fp
 
     def _load_seg_data(self, seg:str) -> np.ndarray:
@@ -288,9 +289,8 @@ class CPSC2020(Dataset):
             data of the segment, of shape (self.seglen,)
         """
         seg_data_fp = self._get_seg_data_path(seg)
-        seg_data = loadmat(seg_data_fp)["ecg"].squeeze()
+        seg_data = loadmat(str(seg_data_fp))["ecg"].squeeze()
         return seg_data
-
 
     def _load_seg_label(self, seg:str) -> np.ndarray:
         """ finished, checked,
@@ -306,7 +306,7 @@ class CPSC2020(Dataset):
             label of the segment, of shape (self.n_classes,)
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
-        seg_label = loadmat(seg_ann_fp)["label"].squeeze()
+        seg_label = loadmat(str(seg_ann_fp))["label"].squeeze()
         return seg_label
 
     def _load_seg_beat_ann(self, seg:str) -> Dict[str, np.ndarray]:
@@ -323,7 +323,7 @@ class CPSC2020(Dataset):
             "SPB_indices", "PVC_indices", each of ndarray values
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
-        seg_beat_ann = loadmat(seg_ann_fp)
+        seg_beat_ann = loadmat(str(seg_ann_fp))
         seg_beat_ann = {
             k:v.flatten() for k,v in seg_beat_ann.items() if k in ["SPB_indices", "PVC_indices"]
         }

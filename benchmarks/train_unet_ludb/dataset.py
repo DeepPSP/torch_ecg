@@ -1,7 +1,8 @@
 """
 """
-import os, sys
+
 import json
+from pathlib import Path
 from random import shuffle, randint
 from copy import deepcopy
 from functools import reduce
@@ -21,8 +22,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import LUDB as LR
@@ -171,24 +171,20 @@ class LUDB(Dataset):
         _train_ratio = int(train_ratio*100)
         _test_ratio = 100 - _train_ratio
         assert _train_ratio * _test_ratio > 0
-        train_file = os.path.join(self.reader.db_dir, f"train_ratio_{_train_ratio}.json")
-        test_file = os.path.join(self.reader.db_dir, f"test_ratio_{_test_ratio}.json")
+        train_file = self.reader.db_dir / f"train_ratio_{_train_ratio}.json"
+        test_file = self.reader.db_dir / f"test_ratio_{_test_ratio}.json"
 
-        if force_recompute or not all([os.path.isfile(train_file), os.path.isfile(test_file)]):
+        if force_recompute or not all([train_file.is_file(), test_file.is_file()]):
             all_records = deepcopy(self.reader.all_records)
             shuffle(all_records)
             split_idx = int(_train_ratio * len(all_records) / 100)
             train_set = all_records[:split_idx]
             test_set = all_records[split_idx:]
-            with open(train_file, "w") as f:
-                json.dump(train_set, f, ensure_ascii=False)
-            with open(test_file, "w") as f:
-                json.dump(test_set, f, ensure_ascii=False)
+            train_file.write_text(json.dumps(train_set, ensure_ascii=False))
+            test_file.write_text(json.dumps(test_set, ensure_ascii=False))
         else:
-            with open(train_file, "r") as f:
-                train_set = json.load(f)
-            with open(test_file, "r") as f:
-                test_set = json.load(f)
+            train_set = json.loads(train_file.read_text())
+            test_set = json.loads(test_file.read_text())
         if self.training:
             records = train_set
         else:

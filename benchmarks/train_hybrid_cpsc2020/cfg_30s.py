@@ -3,7 +3,8 @@ NOTE:
 
 pipeline under this config file is NOT tested!
 """
-import os
+
+from pathlib import Path
 from itertools import repeat
 from copy import deepcopy
 
@@ -14,8 +15,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 
@@ -30,15 +30,14 @@ __all__ = [
 ]
 
 
-_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_BASE_DIR = Path(__file__).parent.absolute()
 
 
 BaseCfg = CFG()
 BaseCfg.fs = 400  # Hz, CPSC2020 data fs
 BaseCfg.classes = ["N", "S", "V"]
 BaseCfg.class_map = {c: idx for idx, c in enumerate(BaseCfg.classes)}
-# BaseCfg.training_data = os.path.join(_BASE_DIR, "training_data")
-BaseCfg.db_dir = "/media/cfs/wenhao71/data/CPSC2020_30S/TrainingSet/"
+BaseCfg.db_dir = None
 
 BaseCfg.bias_thr = 0.15 * BaseCfg.fs  # keep the same with `THR` in `CPSC202_score.py`
 BaseCfg.beat_ann_bias_thr = 0.1 * BaseCfg.fs  # half width of broad qrs complex
@@ -51,8 +50,8 @@ BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 PreprocCfg = CFG()
 PreprocCfg.fs = BaseCfg.fs
-# sequential, keep correct ordering, to add 'motion_artefact'
-PreprocCfg.preproc = ['bandpass',]  # 'baseline',
+# sequential, keep correct ordering, to add "motion_artefact"
+PreprocCfg.preproc = ["bandpass",]  # "baseline",
 # for 200 ms and 600 ms, ref. (`ecg_classification` in `reference`)
 PreprocCfg.baseline_window1 = int(0.2*PreprocCfg.fs)  # 200 ms window
 PreprocCfg.baseline_window2 = int(0.6*PreprocCfg.fs)  # 600 ms window
@@ -60,9 +59,9 @@ PreprocCfg.filter_band = [0.5, 45]
 PreprocCfg.parallel_epoch_len = 600  # second
 PreprocCfg.parallel_epoch_overlap = 10  # second
 PreprocCfg.parallel_keep_tail = True
-PreprocCfg.rpeaks = 'seq_lab'  # 'xqrs'
-# or 'gqrs', or 'pantompkins', 'hamilton', 'ssf', 'christov', 'engzee', 'gamboa'
-# or empty string '' if not detecting rpeaks
+PreprocCfg.rpeaks = "seq_lab"  # "xqrs"
+# or "gqrs", or "pantompkins", "hamilton", "ssf", "christov", "engzee", "gamboa"
+# or empty string "" if not detecting rpeaks
 """
 for qrs detectors:
     `xqrs` sometimes detects s peak (valley) as r peak,
@@ -75,9 +74,9 @@ PreprocCfg.rpeaks_skip_dist = int(0.5 * PreprocCfg.fs)  # 0.5s
 # FeatureCfg only for ML models, deprecated
 FeatureCfg = CFG()
 FeatureCfg.fs = BaseCfg.fs
-FeatureCfg.features = ['wavelet', 'rr', 'morph',]
+FeatureCfg.features = ["wavelet", "rr", "morph",]
 
-FeatureCfg.wt_family = 'db1'
+FeatureCfg.wt_family = "db1"
 FeatureCfg.wt_level = 3
 FeatureCfg.beat_winL = BaseCfg.beat_winL
 FeatureCfg.beat_winR = BaseCfg.beat_winR
@@ -102,13 +101,13 @@ ModelCfg.torch_dtype = BaseCfg.torch_dtype
 
 ModelCfg.crnn = CFG()
 ModelCfg.crnn.fs = BaseCfg.fs
-ModelCfg.crnn.n_leads = 1
+ModelCfg.crnn.n_leads = ModelCfg.n_leads
 ModelCfg.crnn.torch_dtype = BaseCfg.torch_dtype
 ModelCfg.crnn.classes = deepcopy(BaseCfg.classes)
 ModelCfg.crnn.class_map = deepcopy(BaseCfg.class_map)
 
 ModelCfg.crnn.cnn = CFG()
-ModelCfg.crnn.cnn.name = 'multi_scopic'  # resnet, resnet_gc, vgg, cpsc2018, etc.
+ModelCfg.crnn.cnn.name = "multi_scopic"  # resnet, resnet_gc, vgg, cpsc2018, etc.
 ModelCfg.crnn.cnn.multi_scopic = CFG()
 ModelCfg.crnn.cnn.multi_scopic.groups = 1
 ModelCfg.crnn.cnn.multi_scopic.scopes = [
@@ -174,7 +173,7 @@ ModelCfg.crnn.cnn.multi_scopic.kw_initializer = {}
 ModelCfg.crnn.cnn.multi_scopic.activation = "relu"
 ModelCfg.crnn.cnn.multi_scopic.kw_activation = {"inplace": True}
 ModelCfg.crnn.cnn.multi_scopic.block = CFG()
-ModelCfg.crnn.cnn.multi_scopic.block.subsample_mode = 'max'  # or 'conv', 'avg', 'nearest', 'linear', 'bilinear'
+ModelCfg.crnn.cnn.multi_scopic.block.subsample_mode = "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
 ModelCfg.crnn.cnn.multi_scopic.block.bias = \
     ModelCfg.crnn.cnn.multi_scopic.bias
 ModelCfg.crnn.cnn.multi_scopic.block.kernel_initializer = \
@@ -189,14 +188,14 @@ ModelCfg.crnn.cnn.multi_scopic.block.kw_activation = \
 # rnn part
 # abuse of notation
 ModelCfg.crnn.rnn = CFG()
-ModelCfg.crnn.rnn.name = 'linear'  # 'none', 'lstm', 'attention'
+ModelCfg.crnn.rnn.name = "linear"  # "none", "lstm", "attention"
 ModelCfg.crnn.rnn.linear = CFG()
 ModelCfg.crnn.rnn.linear.out_channels = [
     256, 64,
 ]
 ModelCfg.crnn.rnn.linear.bias = True
 ModelCfg.crnn.rnn.linear.dropouts = 0.2
-ModelCfg.crnn.rnn.linear.activation = 'mish'
+ModelCfg.crnn.rnn.linear.activation = "mish"
 
 # ModelCfg.crnn.rnn.lstm = deepcopy(lstm)
 # ModelCfg.crnn.rnn.attention = deepcopy(attention)
@@ -204,7 +203,7 @@ ModelCfg.crnn.rnn.linear.activation = 'mish'
 
 # global pooling
 # currently is fixed using `AdaptiveMaxPool1d`
-ModelCfg.crnn.global_pool = 'max'  # 'avg', 'attentive'
+ModelCfg.crnn.global_pool = "max"  # "avg", "attentive"
 
 
 ModelCfg.seq_lab = CFG()
@@ -217,27 +216,27 @@ ModelCfg.seq_lab.class_map = {c:v for c,v in BaseCfg.class_map.items() if c != "
 ModelCfg.seq_lab.cnn = ModelCfg.crnn.cnn.copy()
 
 ModelCfg.seq_lab.rnn = CFG()
-# ModelCfg.seq_lab.rnn.name = 'lstm'  # 'none'
-ModelCfg.seq_lab.rnn.name = 'none'  # 'lstm'
+# ModelCfg.seq_lab.rnn.name = "lstm"  # "none"
+ModelCfg.seq_lab.rnn.name = "none"  # "lstm"
 # ModelCfg.seq_lab.rnn.lstm = CFG()
 # ModelCfg.seq_lab.rnn.lstm.hidden_sizes = [256, 256]
 # ModelCfg.seq_lab.rnn.lstm.bias = True
 # ModelCfg.seq_lab.rnn.lstm.dropout = 0
 # ModelCfg.seq_lab.rnn.lstm.bidirectional = True
 ModelCfg.seq_lab.attn = CFG()
-ModelCfg.seq_lab.attn.name = 'se'  # 'gc'
+ModelCfg.seq_lab.attn.name = "se"  # "gc"
 ModelCfg.seq_lab.attn.se = CFG()
 ModelCfg.seq_lab.attn.se.reduction = 16  # not including the last linear layer
 ModelCfg.seq_lab.attn.se.activation = "relu"
 ModelCfg.seq_lab.attn.se.kw_activation = CFG(inplace=True)
 ModelCfg.seq_lab.attn.se.bias = True
-ModelCfg.seq_lab.attn.se.kernel_initializer = 'he_normal'
+ModelCfg.seq_lab.attn.se.kernel_initializer = "he_normal"
 
 ModelCfg.seq_lab.clf = CFG()
 ModelCfg.seq_lab.clf.out_channels = [256, 64]  # not including the last linear layer
 ModelCfg.seq_lab.clf.activation = "mish"
 ModelCfg.seq_lab.clf.bias = True
-ModelCfg.seq_lab.clf.kernel_initializer = 'he_normal'
+ModelCfg.seq_lab.clf.kernel_initializer = "he_normal"
 ModelCfg.seq_lab.clf.dropouts = [0.2, 0.2, 0.0]
 
 
@@ -246,12 +245,12 @@ TrainCfg = CFG()
 TrainCfg.fs = ModelCfg.fs
 TrainCfg.n_leads = 1
 TrainCfg.db_dir = BaseCfg.db_dir
-TrainCfg.log_dir = os.path.join(_BASE_DIR, 'log')
-TrainCfg.checkpoints = os.path.join(_BASE_DIR, "checkpoints")
-TrainCfg.model_dir = os.path.join(_BASE_DIR, "saved_models")
-os.makedirs(TrainCfg.log_dir, exist_ok=True)
-os.makedirs(TrainCfg.checkpoints, exist_ok=True)
-os.makedirs(TrainCfg.model_dir, exist_ok=True)
+TrainCfg.log_dir = _BASE_DIR / "log"
+TrainCfg.checkpoints = _BASE_DIR / "checkpoints"
+TrainCfg.model_dir = _BASE_DIR / "saved_models"
+TrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
+TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
+TrainCfg.model_dir.mkdir(parents=True, exist_ok=True)
 TrainCfg.keep_checkpoint_max = 50
 TrainCfg.input_len = int(30 * TrainCfg.fs)  # 30 s
 TrainCfg.overlap_len = int(20 * TrainCfg.fs)  # 20 s
@@ -327,8 +326,8 @@ TrainCfg.classes = deepcopy(ModelCfg[TrainCfg.model_name].classes)
 TrainCfg.class_map = deepcopy(ModelCfg[TrainCfg.model_name].class_map)
 
 # configs of loss function
-TrainCfg.loss = 'BCEWithLogitsLoss'
-# TrainCfg.loss = 'BCEWithLogitsWithClassWeightLoss'
+TrainCfg.loss = "BCEWithLogitsLoss"
+# TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
 TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
 
 TrainCfg.log_step = 20

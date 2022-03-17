@@ -271,7 +271,7 @@ class CINC2020(PhysioNetDataBase):
                     for tranche in self.db_tranches
             }
             self._all_records = \
-                get_record_list_recursive3(self.db_dir_base, rec_patterns_with_ext)
+                get_record_list_recursive3(str(self.db_dir_base), rec_patterns_with_ext)
             to_save = deepcopy(self._all_records)
             for tranche in self.db_tranches:
                 tmp_dirname = [ Path(f).parent for f in self._all_records[tranche] ]

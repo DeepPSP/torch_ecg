@@ -5,6 +5,7 @@ References
 ----------
 [1] http://2019.icbeb.org/Challenge.html
 """
+
 import math
 import multiprocessing as mp
 from typing import Union, Optional, Sequence, Dict
@@ -17,8 +18,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
-    sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.models.loss import MaskedBCEWithLogitsLoss
 from torch_ecg.utils.utils_interval import mask_to_intervals
