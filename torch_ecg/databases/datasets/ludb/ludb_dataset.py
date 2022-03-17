@@ -16,37 +16,25 @@ except ModuleNotFoundError:
     from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
-from sklearn.preprocessing import StandardScaler
 
-try:
-    import torch_ecg
-except ModuleNotFoundError:
-    import sys
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
+from ....cfg import CFG
+from ....databases import LUDB as LR
+from ...._preprocessors import PreprocManager
+from ....utils.misc import ReprMixin
 
-from torch_ecg.cfg import CFG
-from torch_ecg.databases import LUDB as LR
-from torch_ecg._preprocessors import PreprocManager
-
-from cfg import TrainCfg
-
-if TrainCfg.torch_dtype == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
-    _DTYPE = np.float64
-else:
-    _DTYPE = np.float32
+from .ludb_cfg import LUDBTrainCfg
 
 
 __all__ = [
-    "LUDB",
+    "LUDBDataset",
 ]
 
 
-class LUDB(Dataset):
+class LUDBDataset(ReprMixin, Dataset):
     """
     """
     __DEBUG__ = False
-    __name__ = "LUDB"
+    __name__ = "LUDBDataset"
 
     def __init__(self,
                  config:CFG,
@@ -68,6 +56,10 @@ class LUDB(Dataset):
         self.config = deepcopy(config)
         self.reader = LR(db_dir=self.config.db_dir)
         self.training = training
+        if self.config.torch_dtype == torch.float64:
+            self.dtype = np.float64
+        else:
+            self.dtype = np.float32
         self.classes = self.config.classes
         self.n_classes = len(self.classes)
         self.siglen = self.config.input_len
@@ -193,8 +185,11 @@ class LUDB(Dataset):
             shuffle(records)
         return records
 
+    def extra_repr_keys(self) -> List[str]:
+        return ["training", "reader",]
 
-class FastDataReader(Dataset):
+
+class FastDataReader(ReprMixin, Dataset):
     """
     """
     
@@ -205,6 +200,10 @@ class FastDataReader(Dataset):
         self.records = records
         self.config = config
         self.ppm = ppm
+        if self.config.torch_dtype == torch.float64:
+            self.dtype = np.float64
+        else:
+            self.dtype = np.float32
 
         if self.config.leads is None:
             self.leads = self.reader.all_leads
@@ -224,18 +223,22 @@ class FastDataReader(Dataset):
         rec = self.records[index]
         signals = self.reader.load_data(
             rec, data_format="channel_first", units="mV",
-        ).astype(_DTYPE)
+        ).astype(self.dtype)
         if self.ppm:
             signals, _ = self.ppm(signals, self.config.fs)
         masks = self.reader.load_masks(
             rec, leads=self.leads, mask_format="channel_first",
             class_map=self.config.class_map,
-        ).astype(_DTYPE)
+        ).astype(self.dtype)
         if self.config.loss == "CrossEntropyLoss":
             return signals, masks
         # expand masks to have n vectors, with n = n_classes
-        labels = np.ones((*masks.shape, len(self.config.mask_class_map)), dtype=_DTYPE)
+        labels = np.ones((*masks.shape, len(self.config.mask_class_map)), dtype=self.dtype)
         for i in range(len(self.leads)):
             for key, val in self.config.mask_class_map.items():
-                labels[i, ..., val] = (masks[i, ...] == self.config.class_map[key]).astype(_DTYPE)
+                labels[i, ..., val] = \
+                    (masks[i, ...] == self.config.class_map[key]).astype(self.dtype)
         return signals, labels
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["reader", "ppm",]

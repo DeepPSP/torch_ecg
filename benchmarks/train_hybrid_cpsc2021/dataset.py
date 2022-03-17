@@ -103,6 +103,8 @@ class CPSC2021(Dataset):
             ref. `cfg.TrainCfg`
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
+        lazy: bool, default False,
+            if True, the data will not be loaded immediately,
         """
         super().__init__()
         self.config = deepcopy(config)
