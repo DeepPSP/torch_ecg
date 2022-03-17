@@ -26,7 +26,7 @@ from pyedflib import EdfReader
 
 from ..utils import ecg_arrhythmia_knowledge as EAK
 from ..utils.misc import (
-    get_record_list_recursive3, dict_to_str,
+    get_record_list_recursive3, dict_to_str, ReprMixin,
 )
 
 
@@ -109,7 +109,7 @@ WFDB_Rhythm_Annotations = {
 
 
 
-class _DataBase(ABC):
+class _DataBase(ReprMixin, ABC):
     """
 
     universal abstract base class for all databases
@@ -236,6 +236,11 @@ class _DataBase(ABC):
             print(dict_to_str(eval(f"EAK.{item}")))
             if idx < len(d)-1:
                 print("*"*110)
+
+    def extra_repr_keys(self) -> List[str]:
+        """
+        """
+        return ["db_name", "db_dir",]
 
 
 class PhysioNetDataBase(_DataBase):
