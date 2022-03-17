@@ -18,51 +18,39 @@ except ModuleNotFoundError:
 import torch
 from torch.utils.data.dataset import Dataset
 
-try:
-    import torch_ecg
-except ModuleNotFoundError:
-    import sys
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
+from ....cfg import CFG
+from ....databases import CINC2021 as CR
+from ....utils.misc import ensure_siglen, dict_to_str, list_sum, ReprMixin
+from ....utils.utils_signal import normalize, remove_spikes_naive
+from ....utils.ecg_arrhythmia_knowledge import Standard12Leads
+from ...._preprocessors import PreprocManager
 
-from torch_ecg.cfg import CFG
-from torch_ecg.databases import CINC2021 as CR
-from torch_ecg.utils.misc import ensure_siglen, dict_to_str, list_sum
-from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
-from torch_ecg.utils.ecg_arrhythmia_knowledge import Standard12Leads
-from torch_ecg._preprocessors import PreprocManager
-
-from helper_code import (
-    load_recording, load_header,
-    get_adc_gains, get_baselines,
-)
-from cfg import (
-    TrainCfg, ModelCfg,
-    TrainCfg_ns, ModelCfg_ns,
-)
-
-if ModelCfg.torch_dtype == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
+from .cinc2021_cfg import CINC2021TrainCfg
 
 
 __all__ = [
-    "CINC2021",
+    "CINC2021Dataset",
 ]
 
 
-class CINC2021(Dataset):
+class CINC2021Dataset(ReprMixin, Dataset):
     """
     """
     __DEBUG__ = False
-    __name__ = "CINC2021"
+    __name__ = "CINC2021Dataset"
 
-    def __init__(self, config:CFG, training:bool=True, lazy:bool=True) -> NoReturn:
+    def __init__(self, config:Optional[CFG]=None, training:bool=True, lazy:bool=True) -> NoReturn:
         """ finished, checked,
 
         Parameters
         ----------
         config: dict,
             configurations for the Dataset,
-            ref. `cfg.TrainCfg`
+            ref. `CINC2021TrainCfg`,
+            a simple example is:
+            >>> config = deepcopy(CINC2021TrainCfg)
+            >>> config.db_dir = "some/path/to/db"
+            >>> dataset = CINC2021Dataset(config, training=True, lazy=False)
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default True,
@@ -135,14 +123,15 @@ class CINC2021(Dataset):
         #     for rec in pbar:
                 # s, l = self._load_one_record(rec)  # self._load_one_record is much slower than FastDataReader
         self._signals, self._labels = [], []
-        with tqdm(range(len(fdr)), desc="Loading data", unit="records") as pbar:
-            for idx in pbar:
+        with tqdm(desc="Loading data", total=len(fdr), unit="records") as pbar:
+            for idx in range(len(fdr)):
                 s, l = fdr[idx]
                 # np.concatenate slows down the process severely
                 # self._signals = np.concatenate((self._signals, s), axis=0)
                 # self._labels = np.concatenate((self._labels, l), axis=0)
                 self._signals.append(s)
                 self._labels.append(l)
+                pbar.update(1)
         self._signals = np.concatenate(self._signals, axis=0).astype(self.dtype)
         self._labels = np.concatenate(self._labels, axis=0)
 
@@ -431,8 +420,11 @@ class CINC2021(Dataset):
             if np.isnan(labels).any():
                 print(f"labels of {self.records[idx]} have nan values")
 
+    def extra_repr_keys(self) -> List[str]:
+        return ["training", "tranches", "reader",]
 
-class FastDataReader(Dataset):
+
+class FastDataReader(ReprMixin, Dataset):
     """
     """
     def __init__(self, reader:CR, records:Sequence[str], config:CFG, ppm:Optional[PreprocManager]=None) -> NoReturn:
@@ -482,6 +474,9 @@ class FastDataReader(Dataset):
         labels = np.isin(self.config.all_classes, labels).astype(self.dtype)[np.newaxis, ...].repeat(values.shape[0], axis=0)
 
         return values, labels
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["reader", "ppm",]
 
 
 def _load_record(reader:CR, rec:str, config:CFG) -> Tuple[np.ndarray, np.ndarray]:
