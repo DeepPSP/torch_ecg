@@ -1,7 +1,7 @@
 """
 """
 
-import os
+from pathlib import Path
 from typing import Optional, MutableMapping, NoReturn
 
 import numpy as np
@@ -12,9 +12,9 @@ from easydict import EasyDict as ED
 __all__ = ["CFG", "DEFAULTS",]
 
 
-_PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-_PROJECT_CACHE = os.path.join(os.path.expanduser("~"), ".cache", "torch_ecg")
-os.makedirs(name=_PROJECT_CACHE, exist_ok=True)
+_PROJECT_ROOT = Path(__file__).parent.absolute()
+_PROJECT_CACHE = Path("~").expanduser() / ".cache" / "torch_ecg"
+_PROJECT_CACHE.mkdir(parents=True, exist_ok=True)
 
 
 class CFG(ED):
@@ -74,8 +74,9 @@ class CFG(ED):
 
 DEFAULTS = CFG()
 
-DEFAULTS.log_dir = os.path.join(_PROJECT_CACHE, "log")
-DEFAULTS.checkpoints = os.path.join(_PROJECT_CACHE, "checkpoints")
+DEFAULTS.log_dir = _PROJECT_CACHE / "log"
+DEFAULTS.checkpoints = _PROJECT_CACHE / "checkpoints"
+DEFAULTS.model_dir = _PROJECT_CACHE / "saved_models"
 DEFAULTS.prefix = "TorchECG"
 
 DEFAULTS.torch_dtype = torch.float32  # torch.float64, torch.float16
