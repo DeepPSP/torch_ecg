@@ -17,7 +17,6 @@ except ModuleNotFoundError:
     from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
-from sklearn.preprocessing import StandardScaler
 
 try:
     import torch_ecg
@@ -26,6 +25,7 @@ except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
+from torch_ecg.utils.misc import ReprMixin
 from torch_ecg.databases import CPSC2019 as CR
 from torch_ecg._preprocessors import PreprocManager
 
@@ -40,7 +40,7 @@ __all__ = [
 ]
 
 
-class CPSC2019(Dataset):
+class CPSC2019(ReprMixin, Dataset):
     """
     """
     __DEBUG__ = False
@@ -169,8 +169,11 @@ class CPSC2019(Dataset):
         else:
             self.records = test
 
+    def extra_repr_keys(self) -> List[str]:
+        return ["training", "reader",]
 
-class FastDataReader(Dataset):
+
+class FastDataReader(ReprMixin, Dataset):
     """
     """
     def __init__(self, reader:CR, records:Sequence[str], config:CFG, ppm:Optional[PreprocManager]=None) -> NoReturn:
@@ -213,3 +216,6 @@ class FastDataReader(Dataset):
         values, _ = self.ppm(values, self.config.fs)
 
         return values, labels
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["reader", "ppm",]

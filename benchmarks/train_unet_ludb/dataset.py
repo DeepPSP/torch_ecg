@@ -16,7 +16,6 @@ except ModuleNotFoundError:
     from tqdm import tqdm
 import torch
 from torch.utils.data.dataset import Dataset
-from sklearn.preprocessing import StandardScaler
 
 try:
     import torch_ecg
@@ -27,6 +26,7 @@ except ModuleNotFoundError:
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import LUDB as LR
 from torch_ecg._preprocessors import PreprocManager
+from ....utils.misc import ReprMixin
 
 from cfg import TrainCfg
 
@@ -42,7 +42,7 @@ __all__ = [
 ]
 
 
-class LUDB(Dataset):
+class LUDB(ReprMixin, Dataset):
     """
     """
     __DEBUG__ = False
@@ -193,8 +193,11 @@ class LUDB(Dataset):
             shuffle(records)
         return records
 
+    def extra_repr_keys(self) -> List[str]:
+        return ["training", "reader",]
 
-class FastDataReader(Dataset):
+
+class FastDataReader(ReprMixin, Dataset):
     """
     """
     
@@ -239,3 +242,6 @@ class FastDataReader(Dataset):
             for key, val in self.config.mask_class_map.items():
                 labels[i, ..., val] = (masks[i, ...] == self.config.class_map[key]).astype(_DTYPE)
         return signals, labels
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["reader", "ppm",]

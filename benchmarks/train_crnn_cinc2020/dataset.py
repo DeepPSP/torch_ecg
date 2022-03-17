@@ -26,7 +26,7 @@ except ModuleNotFoundError:
 
 from torch_ecg.cfg import CFG
 from torch_ecg._preprocessors import PreprocManager
-from torch_ecg.utils.misc import ensure_siglen, dict_to_str
+from torch_ecg.utils.misc import ensure_siglen, dict_to_str, list_sum, ReprMixin
 from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
 from torch_ecg.databases import CINC2020 as CR
 
@@ -42,7 +42,7 @@ __all__ = [
 ]
 
 
-class CINC2020(Dataset):
+class CINC2020(ReprMixin, Dataset):
     """
     """
     __DEBUG__ = False
@@ -256,12 +256,11 @@ class CINC2020(Dataset):
             train_set = json.loads(train_file.read_text())
             test_set = json.loads(test_file.read_text())
 
-        add = lambda a,b:a+b
         _tranches = list(self.tranches or "ABEF")
         if self.training:
-            records = reduce(add, [train_set[k] for k in _tranches])
+            records = list_sum([train_set[k] for k in _tranches])
         else:
-            records = reduce(add, [test_set[k] for k in _tranches])
+            records = list_sum([test_set[k] for k in _tranches])
         return records
 
     def _check_train_test_split_validity(self, train_set:List[str], test_set:List[str], all_classes:Set[str]) -> bool:
@@ -339,8 +338,11 @@ class CINC2020(Dataset):
             if np.isnan(labels).any():
                 print(f"labels of {self.records[idx]} have nan values")
 
+    def extra_repr_keys(self) -> List[str]:
+        return ["training", "tranches", "reader",]
 
-class FastDataReader(Dataset):
+
+class FastDataReader(ReprMixin, Dataset):
     """
     """
     def __init__(self, reader:CR, records:Sequence[str], config:CFG, ppm:Optional[PreprocManager]=None) -> NoReturn:
@@ -388,3 +390,6 @@ class FastDataReader(Dataset):
         labels = np.isin(self.config.all_classes, labels).astype(self.dtype)[np.newaxis, ...].repeat(values.shape[0], axis=0)
 
         return values, labels
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["reader", "ppm",]

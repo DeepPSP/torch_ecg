@@ -82,6 +82,7 @@ from torch_ecg.databases import CPSC2020 as CR
 from torch_ecg.utils.misc import (
     mask_to_intervals, list_sum,
     get_record_list_recursive3,
+    ReprMixin,
 )
 from torch_ecg._preprocessors import PreprocManager
 
@@ -99,7 +100,7 @@ __all__ = [
 ]
 
 
-class CPSC2020(Dataset):
+class CPSC2020(ReprMixin, Dataset):
     """
 
     data generator for deep learning models,
@@ -770,3 +771,6 @@ class CPSC2020(Dataset):
             ticks_granularity=ticks_granularity,
             rpeak_inds=rpeak_inds,
         )
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["training", "reader",]

@@ -19,9 +19,9 @@ except ModuleNotFoundError:
     from tqdm import tqdm
 
 from ....cfg import CFG
-from ....utils.misc import ReprMixin
 from ....databases import CPSC2019 as CR
 from ...._preprocessors import PreprocManager
+from ....utils.misc import ReprMixin
 
 from .cpsc2019_cfg import CPSC2019TrainCfg
 

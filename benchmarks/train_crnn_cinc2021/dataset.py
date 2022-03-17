@@ -26,7 +26,7 @@ except ModuleNotFoundError:
 
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CINC2021 as CR
-from torch_ecg.utils.misc import ensure_siglen, dict_to_str, list_sum
+from torch_ecg.utils.misc import ensure_siglen, dict_to_str, list_sum, ReprMixin
 from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
 from torch_ecg.utils.ecg_arrhythmia_knowledge import Standard12Leads
 from torch_ecg._preprocessors import PreprocManager
@@ -49,7 +49,7 @@ __all__ = [
 ]
 
 
-class CINC2021(Dataset):
+class CINC2021(ReprMixin, Dataset):
     """
     """
     __DEBUG__ = False
@@ -431,8 +431,11 @@ class CINC2021(Dataset):
             if np.isnan(labels).any():
                 print(f"labels of {self.records[idx]} have nan values")
 
+    def extra_repr_keys(self) -> List[str]:
+        return ["training", "tranches", "reader",]
 
-class FastDataReader(Dataset):
+
+class FastDataReader(ReprMixin, Dataset):
     """
     """
     def __init__(self, reader:CR, records:Sequence[str], config:CFG, ppm:Optional[PreprocManager]=None) -> NoReturn:
@@ -482,6 +485,9 @@ class FastDataReader(Dataset):
         labels = np.isin(self.config.all_classes, labels).astype(self.dtype)[np.newaxis, ...].repeat(values.shape[0], axis=0)
 
         return values, labels
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["reader", "ppm",]
 
 
 def _load_record(reader:CR, rec:str, config:CFG) -> Tuple[np.ndarray, np.ndarray]:

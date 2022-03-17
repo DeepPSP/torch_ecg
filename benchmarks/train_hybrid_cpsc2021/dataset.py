@@ -68,6 +68,7 @@ from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
 from torch_ecg.utils.misc import (
     list_sum, nildent, uniform,
     get_record_list_recursive3,
+    ReprMixin,
 )
 
 from cfg import (
@@ -83,7 +84,7 @@ __all__ = [
 ]
 
 
-class CPSC2021(Dataset):
+class CPSC2021(ReprMixin, Dataset):
     """
     1. ECGs are preprocessed and stored in one folder
     2. preprocessed ECGs are sliced with overlap to generate data and label for different tasks:
@@ -1097,8 +1098,11 @@ class CPSC2021(Dataset):
             ticks_granularity=ticks_granularity,
         )
 
+    def extra_repr_keys(self) -> List[str]:
+        return ["training", "task", "reader",]
 
-class FastDataReader(Dataset):
+
+class FastDataReader(ReprMixin, Dataset):
     """
     """
     def __init__(self,
@@ -1179,8 +1183,11 @@ class FastDataReader(Dataset):
         """
         return len(self.files)
 
+    def extra_repr_keys(self) -> List[str]:
+        return ["task", "reader", "ppm",]
 
-class StandaloneSegmentSlicer(Dataset):
+
+class StandaloneSegmentSlicer(ReprMixin, Dataset):
     """
     """
 
@@ -1391,6 +1398,9 @@ class StandaloneSegmentSlicer(Dataset):
         if p_sig.shape[0] != 2:
             p_sig = p_sig.T
         return p_sig
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["task", "reader", "seg_ppm",]
 
 def _get_rec_suffix(operations:List[str]) -> str:
     """ finished, checked,
