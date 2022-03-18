@@ -27,6 +27,7 @@ import torch_optimizer as extra_optim
 from .utils_nn import default_collate_fn as collate_fn
 from .misc import (
     dicts_equal, init_logger, get_date_str, dict_to_str, str2bool,
+    ReprMixin,
 )
 from .loggers import LoggerManager
 from ..augmenters import AugmenterManager
@@ -41,7 +42,7 @@ from ..cfg import CFG, DEFAULTS
 __all__ = ["BaseTrainer",]
 
 
-class BaseTrainer(ABC):
+class BaseTrainer(ReprMixin, ABC):
     """
     """
     __name__ = "BaseTrainer"
@@ -636,3 +637,13 @@ class BaseTrainer(ABC):
             "train_config": self.train_config,
             "epoch": self.epoch,
         }, path)
+
+    def extra_repr_keys(self) -> List[str]:
+        """ finished, checked,
+
+        Returns
+        -------
+        list of str,
+            extra keys to display in the string representation of the trainer
+        """
+        return ["train_config",]
