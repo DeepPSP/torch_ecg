@@ -1034,9 +1034,9 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             aff_subjects = set(self.reader.df_stats[self.reader.df_stats.label=="AFf"].subject_id.tolist()) - afp_subjects
             normal_subjects = all_subjects - afp_subjects - aff_subjects
 
-            test_set = random.sample(afp_subjects, int(round(len(afp_subjects)*_test_ratio/100))) + \
-                random.sample(aff_subjects, int(round(len(aff_subjects)*_test_ratio/100))) + \
-                random.sample(normal_subjects, int(round(len(normal_subjects)*_test_ratio/100)))
+            test_set = random.sample(afp_subjects, max(1, int(round(len(afp_subjects)*_test_ratio/100)))) + \
+                random.sample(aff_subjects, max(1, int(round(len(aff_subjects)*_test_ratio/100)))) + \
+                random.sample(normal_subjects, max(1, int(round(len(normal_subjects)*_test_ratio/100))))
             train_set = list(all_subjects - set(test_set))
             
             random.shuffle(test_set)

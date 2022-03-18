@@ -126,7 +126,7 @@ class CPSC2021(CPSCDataBase):
 
         self.db_dir_base = Path(db_dir)
         self.db_tranches = ["training_I", "training_II",]
-        self.db_dirs = CFG({t:"" for t in self.db_tranches})
+        self.db_dirs = CFG({t: None for t in self.db_tranches})
 
         self.fs = 200
         self.spacing = 1000/self.fs
@@ -134,6 +134,7 @@ class CPSC2021(CPSCDataBase):
         self.ann_ext = "atr"
         self.header_ext = "hea"
         self.all_leads = ["I", "II"]
+        self.rec_patterns_with_ext = f"^data_(?:\d+)_(?:\d+).{self.rec_ext}$"
 
         self._labels_f2a = { # fullname to abbreviation
             "non atrial fibrillation": "N",
@@ -186,6 +187,47 @@ class CPSC2021(CPSCDataBase):
         self._all_subjects = CFG({t:[] for t in self.db_tranches})
         self._subject_records = CFG({t:[] for t in self.db_tranches})
 
+        self._ls_rec_split()
+        if self.__all_records is not None and len(self.__all_records) > 0:
+            pass
+        else:
+            for rec in get_record_list_recursive3(self.db_dir_base, self.rec_patterns_with_ext):
+                rec_dir = self.db_dir_base / Path(rec).parent
+                rec_name = Path(rec).name
+                if int(self.get_subject_id(rec_name)) > 53:
+                    tranche = self.db_tranches[1]
+                else:
+                    tranche = self.db_tranches[0]
+                if self.db_dirs[tranche] is None:
+                    self.db_dirs[tranche] = rec_dir
+                elif self.db_dirs[tranche] != rec_dir:
+                    raise ValueError(
+                        "Records from the same tranche should be in the same directory"
+                        f" (some in {str(self.db_dirs[tranche])}, and some other in {str(rec_dir)})"
+                    )
+                self._all_records[tranche].append(rec_name)
+
+        for t in self.db_tranches:
+            self._all_subjects[t] = sorted(
+                list(set([self.get_subject_id(rec) for rec in self._all_records[t]])),
+                key=lambda s: int(s)
+            )
+            self._subject_records[t] =  CFG({
+                sid: [rec for rec in self._all_records[t] if self.get_subject_id(rec)==sid] \
+                    for sid in self._all_subjects[t]
+            })
+
+        self._all_records_inv = {r:t for t, l_r in self._all_records.items() for r in l_r}
+        self._all_subjects_inv = {s:t for t, l_s in self._all_subjects.items() for s in l_s}
+        self.__all_records = sorted(list_sum(self._all_records.values()))
+        self.__all_subjects = sorted(list_sum(self._all_subjects.values()), key=lambda s: int(s))
+        
+    def _ls_rec_split(self) -> NoReturn:
+        """
+
+        list all the records assuming the records
+        are split into two folders (training_I and training_II)
+        """
         fn = "RECORDS"
         rev_fn = "REVISED_RECORDS"
         for t in self.db_tranches:
@@ -194,7 +236,8 @@ class CPSC2021(CPSCDataBase):
                 dir_tranche = dir_candidate
             else:
                 dir_tranche = self.db_dir_base / t
-            self.db_dirs[t] = dir_tranche
+            if dir_tranche.is_dir():
+                self.db_dirs[t] = dir_tranche
 
             record_list_fp = dir_tranche / fn
             if record_list_fp.is_file():
@@ -204,30 +247,18 @@ class CPSC2021(CPSCDataBase):
             if len(self._all_records[t]) == self.nb_records[t]:
                 pass
             else:
+                if not dir_tranche.is_dir():
+                    continue
                 print("Please wait patiently to let the reader find all records...")
                 start = time.time()
-                rec_patterns_with_ext = f"^data_(?:\d+)_(?:\d+).{self.rec_ext}$"
                 self._all_records[t] = \
-                    get_record_list_recursive3(str(dir_tranche), rec_patterns_with_ext)
+                    get_record_list_recursive3(str(dir_tranche), self.rec_patterns_with_ext)
                 print(f"Done in {time.time() - start:.5f} seconds!")
                 record_list_fp.write_text("\n".join(self._all_records[t]))
 
             record_list_fp = dir_tranche / rev_fn
             if record_list_fp.is_file():
                 self.__revised_records.extend(record_list_fp.read_text().splitlines())
-
-            self._all_subjects[t] = sorted(
-                list(set([rec.split("_")[1] for rec in self._all_records[t]])),
-                key=lambda s: int(s)
-            )
-            self._subject_records[t] =  CFG({
-                sid: [rec for rec in self._all_records[t] if rec.split("_")[1]==sid] \
-                    for sid in self._all_subjects[t]
-            })
-        self._all_records_inv = {r:t for t, l_r in self._all_records.items() for r in l_r}
-        self._all_subjects_inv = {s:t for t, l_s in self._all_subjects.items() for s in l_s}
-        self.__all_records = sorted(list_sum(self._all_records.values()))
-        self.__all_subjects = sorted(list_sum(self._all_subjects.values()), key=lambda s: int(s))
 
     def _aggregate_stats(self) -> NoReturn:
         """ finished, checked,
