@@ -1475,6 +1475,42 @@ class CINC2021(PhysioNetDataBase):
             dx_cooccurrence_all.to_csv(dx_cooccurrence_all_fp)
         return dx_cooccurrence_all
 
+    @property
+    def version(self) -> str:
+        return "1.0.2"
+
+    @property
+    def url(self) -> List[str]:
+        domain = "https://storage.cloud.google.com/physionetchallenge2021-public-datasets/"
+        return [
+            str(Path(domain) / f) for f in self.data_files
+        ]
+
+    data_files = [
+        "WFDB_CPSC2018.tar.gz",
+        "WFDB_CPSC2018_2.tar.gz",
+        "WFDB_StPetersburg.tar.gz",
+        "WFDB_PTB.tar.gz",
+        "WFDB_PTBXL.tar.gz",
+        "WFDB_Ga.tar.gz",
+        # "WFDB_ShaoxingUniv.tar.gz",
+        "WFDB_ChapmanShaoxing.tar.gz",
+        "WFDB_Ningbo.tar.gz",
+    ]
+    
+    header_files = [
+        "CPSC2018-Headers.tar.gz",
+        "CPSC2018-2-Headers.tar.gz",
+        "StPetersburg-Headers.tar.gz",
+        "PTB-Headers.tar.gz",
+        "PTB-XL-Headers.tar.gz",
+        "Ga-Headers.tar.gz",
+        # "ShaoxingUniv_Headers.tar.gz",
+        "ChapmanShaoxing-Headers.tar.gz",
+        "Ningbo-Headers.tar.gz",
+    ]
+
+
 _exceptional_records = [ # with nan values (p_signal) read by wfdb
     "I0002", "I0069", "E04603", "E06072", "E06909", "E07675", "E07941", "E08321",
     "JS10765", "JS10767", "JS10890", "JS10951", "JS11887", "JS11897", "JS11956",
@@ -1493,6 +1529,7 @@ _exceptional_records = [ # with nan values (p_signal) read by wfdb
     # with totally flat values
     "Q0400", "Q2961",
 ]
+
 
 
 from ..aux_data.cinc2021_aux_data import load_weights
@@ -1885,47 +1922,25 @@ def prepare_dataset(input_directory:Union[str,Path],
     currently, for updating headers only, corresponding .tar.gz file of records should be presented
     """
     import shutil, tarfile
-
-    data_files = [
-        "WFDB_CPSC2018.tar.gz",
-        "WFDB_CPSC2018_2.tar.gz",
-        "WFDB_StPetersburg.tar.gz",
-        "WFDB_PTB.tar.gz",
-        "WFDB_PTBXL.tar.gz",
-        "WFDB_Ga.tar.gz",
-        "WFDB_ShaoxingUniv.tar.gz",
-        "WFDB_ChapmanShaoxing.tar.gz",
-        "WFDB_Ningbo.tar.gz",
-    ]
-    header_files = [
-        "CPSC2018-Headers.tar.gz",
-        "CPSC2018-2-Headers.tar.gz",
-        "StPetersburg-Headers.tar.gz",
-        "PTB-Headers.tar.gz",
-        "PTB-XL-Headers.tar.gz",
-        "Ga-Headers.tar.gz",
-        "ShaoxingUniv_Headers.tar.gz",
-        "ChapmanShaoxing-Headers.tar.gz",
-        "Ningbo-Headers.tar.gz",
-    ]
+    
     _tranches = "CPSC,CPSC_Extra,StPetersburg,PTB,PTB_XL,Georgia,CUSPHNFH".split(",")
 
     _dir = Path(input_directory).absolute()
     # ShaoxingUniv (CUSPHNFH) is the union of ChapmanShaoxing and Ningbo
-    if data_files[-3] in input_directory.iterdir():
+    if "WFDB_ShaoxingUniv.tar.gz" in input_directory.iterdir():
         flag_CUSPHNFH = False
-        _data_files =  data_files[:-2]
-        _header_files = header_files[:-2]
+        _data_files =  CINC2021.data_files[:-2]
+        _header_files = CINC2021.header_files[:-2]
     else:
         flag_CUSPHNFH = True
-        _data_files = deepcopy(data_files)
-        _header_files = deepcopy(header_files)
+        _data_files = deepcopy(CINC2021.data_files)
+        _header_files = deepcopy(CINC2021.header_files)
     _data_files = \
         [item.name for item in _dir.glob("WFDB_*.tar.gz") if item.name in _data_files]
     _header_files = \
         [item.name for item in _dir.glob("*Headers.tar.gz") if item.name in _header_files]
     _output_directory = Path(output_directory or input_directory)
-    assert all([header_files[data_files.index(item)] in _header_files for item in _data_files]), \
+    assert all([CINC2021.header_files[CINC2021.data_files.index(item)] in _header_files for item in _data_files]), \
         "header files corresponding to some data files not found"
 
     if flag_CUSPHNFH:
@@ -1933,7 +1948,7 @@ def prepare_dataset(input_directory:Union[str,Path],
 
     acc = 0
     for i, df in enumerate(_data_files):
-        if tranches and _tranches[data_files.index(df)] not in tranches:
+        if tranches and _tranches[CINC2021.data_files.index(df)] not in tranches:
             continue
         acc += 1
         if df in ["WFDB_ChapmanShaoxing.tar.gz", "WFDB_Ningbo.tar.gz",]:
@@ -1957,7 +1972,7 @@ def prepare_dataset(input_directory:Union[str,Path],
         print(f"finish extracting {df}")
         time.sleep(3)
         # corresponding header files
-        hf = header_files[data_files.index(df)]
+        hf = CINC2021.header_files[CINC2021.data_files.index(df)]
         with tarfile.open(str(_dir / hf), "r:gz") as tar:
             for member in tar.getmembers():
                 if member.isfile():

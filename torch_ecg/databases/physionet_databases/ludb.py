@@ -735,3 +735,7 @@ class LUDB(PhysioNetDataBase):
             plt.savefig(kwargs["save_path"], dpi=200, bbox_inches="tight")
         else:
             plt.show()
+
+    @property
+    def version(self) -> str:
+        return "1.0.1"

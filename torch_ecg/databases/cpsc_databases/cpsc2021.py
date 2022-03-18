@@ -103,7 +103,8 @@ class CPSC2021(CPSCDataBase):
     References
     ----------
     [1] http://www.icbeb.org/CPSC2021
-    [2] https://archive.physionet.org/physiobank/annotations.shtml
+    [2] https://www.physionet.org/content/cpsc2021/1.0.0/
+    [3] https://archive.physionet.org/physiobank/annotations.shtml
     """
 
     def __init__(self,
@@ -123,7 +124,7 @@ class CPSC2021(CPSCDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="CPSC2021", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(db_name="cpsc2021", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
 
         self.db_dir_base = Path(db_dir)
         self.db_tranches = ["training_I", "training_II",]
@@ -968,6 +969,14 @@ class CPSC2021(CPSCDataBase):
         dealing with round(0.5) = 0, hence keeping accordance with output length of `resample_poly`
         """
         return int(round(n + self._epsilon))
+
+    @property
+    def version(self) -> str:
+        raise "1.0.0"
+
+    @property
+    def url(self) -> str:
+        return f"https://physionet.org/files/{self.db_name}/{self.version}/"
 
 
 ###################################################################

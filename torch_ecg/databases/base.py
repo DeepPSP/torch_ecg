@@ -242,6 +242,14 @@ class _DataBase(ReprMixin, ABC):
         """
         return ["db_name", "db_dir",]
 
+    @property
+    @abstractmethod
+    def url(self) -> Union[str, List[str]]:
+        """
+        URL(s) for downloading the database
+        """
+        raise NotImplementedError
+
 
 class PhysioNetDataBase(_DataBase):
     """
@@ -428,6 +436,14 @@ class PhysioNetDataBase(_DataBase):
                     except:
                         print(f"{k} stands for {a['('+k]}")
 
+    @property
+    @abstractmethod
+    def version(self) -> str:
+        raise NotImplementedError
+
+    @property
+    def url(self) -> str:
+        return f"https://physionet.org/files/{self.db_name}/{self.version}/"
 
 class NSRRDataBase(_DataBase):
     """

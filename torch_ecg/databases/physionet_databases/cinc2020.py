@@ -1165,6 +1165,26 @@ class CINC2020(PhysioNetDataBase):
                 if np.isnan(data).any():
                     print(f"record {rec} from tranche {t} has nan values")
 
+    @property
+    def version(self) -> str:
+        return "1.0.1"
+
+    @property
+    def url(self) -> List[str]:
+        domain = "https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ecg-public/"
+        return [
+            str(Path(domain) / f) for f in self.data_files
+        ]
+
+    data_files = [
+        "PhysioNetChallenge2020_Training_CPSC.tar.gz",
+        "PhysioNetChallenge2020_Training_2.tar.gz",
+        "PhysioNetChallenge2020_Training_StPetersburg.tar.gz",
+        "PhysioNetChallenge2020_Training_PTB.tar.gz",
+        "PhysioNetChallenge2020_Training_PTB-XL.tar.gz",
+        "PhysioNetChallenge2020_Training_E.tar.gz",
+    ]
+
 
 
 from ..aux_data.cinc2020_aux_data import load_weights

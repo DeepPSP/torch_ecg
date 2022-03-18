@@ -82,3 +82,7 @@ class MITDB(PhysioNetDataBase):
         """
         """
         raise NotImplementedError
+
+    @property
+    def version(self) -> str:
+        return "1.0.1"

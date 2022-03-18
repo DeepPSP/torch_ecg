@@ -92,7 +92,7 @@ class CPSC2019(CPSCDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="CPSC2019", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(db_name="cpsc2019", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
         
         self.fs = 500
         self.spacing = 1000 / self.fs
@@ -325,6 +325,10 @@ class CPSC2019(CPSCDataBase):
             plt.savefig(kwargs["save_path"], dpi=200, bbox_inches="tight")
         else:
             plt.show()
+
+    @property
+    def url(self) -> str:
+        return "http://2019.icbeb.org/file/train.rar"
 
 
 def compute_metrics(rpeaks_truth:Sequence[Union[np.ndarray,Sequence[int]]],

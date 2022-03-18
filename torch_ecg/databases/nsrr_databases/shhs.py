@@ -3,6 +3,7 @@
 docstring, to write
 """
 
+import warnings
 from pathlib import Path
 from datetime import datetime
 from typing import Union, Optional, Any, List, Dict, Iterable, Sequence, NoReturn
@@ -1480,3 +1481,8 @@ class SHHS(NSRRDataBase):
                 return int(s)
         else:  # NaN case
             return s
+
+    @property
+    def url(self) -> str:
+        warnings.warn("one has to apply for a token and uses `nsrr` to download the data")
+        return ""

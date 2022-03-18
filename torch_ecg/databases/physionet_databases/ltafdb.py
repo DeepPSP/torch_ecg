@@ -565,3 +565,7 @@ class LTAFDB(PhysioNetDataBase):
                 axes[idx].set_ylabel("Voltage [μV]")
             plt.subplots_adjust(hspace=0.2)
             plt.show()
+
+    @property
+    def version(self) -> str:
+        return "1.0.0"

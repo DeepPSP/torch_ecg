@@ -188,7 +188,7 @@ class CPSC2020(CPSCDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="CPSC2020", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(db_name="cpsc2020", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
 
         self.fs = 400
         self.spacing = 1000/self.fs
@@ -739,6 +739,9 @@ def _ann_to_beat_ann_epoch_v3(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
     return retval
 
+    @property
+    def url(self) -> str:
+        return "https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/TrainingSet.zip"
 
 
 def compute_metrics(sbp_true:List[np.ndarray],

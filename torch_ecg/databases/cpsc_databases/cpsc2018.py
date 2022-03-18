@@ -93,7 +93,7 @@ class CPSC2018(CPSCDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="CPSC2018", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(db_name="cpsc2018", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
 
         self.fs = 500
         self.spacing = 1000 / self.fs
@@ -496,6 +496,14 @@ class CPSC2018(CPSCDataBase):
             plt.savefig(kwargs["save_path"], dpi=200, bbox_inches="tight")
         else:
             plt.show()
+
+    @property
+    def url(self) -> List[str]:
+        return [
+            "http://hhbucket.oss-cn-hongkong.aliyuncs.com/TrainingSet1.zip",
+            "http://hhbucket.oss-cn-hongkong.aliyuncs.com/TrainingSet2.zip",
+            "http://hhbucket.oss-cn-hongkong.aliyuncs.com/TrainingSet3.zip",
+        ]
 
 
 def compute_metrics():
