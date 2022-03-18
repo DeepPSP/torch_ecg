@@ -1,7 +1,7 @@
 """
 """
 
-import os, sys, time
+import time
 from typing import NoReturn
 
 import torch
@@ -10,7 +10,9 @@ from easydict import EasyDict as ED
 try:
     import torch_ecg
 except:
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    import sys
+    from pathlib import Path
+    sys.path.append(Path(__file__).absolute().parent.parent)
     import torch_ecg
 
 from torch_ecg.model_configs import (

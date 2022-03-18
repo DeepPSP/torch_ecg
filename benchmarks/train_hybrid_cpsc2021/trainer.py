@@ -45,9 +45,6 @@ from dataset import CPSC2021
 
 if BaseCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
-    _DTYPE = torch.float64
-else:
-    _DTYPE = torch.float32
 
 
 __all__ = [

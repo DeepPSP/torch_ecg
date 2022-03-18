@@ -54,9 +54,6 @@ CPSC2019.__DEBUG__ = False
 
 if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
-    _DTYPE = torch.float64
-else:
-    _DTYPE = torch.float32
 
 
 __all__ = [
@@ -68,7 +65,7 @@ class CPSC2019Trainer(BaseTrainer):
     """
     """
     __DEBUG__ = True
-    __name__ = "LUDBTrainer"
+    __name__ = "CPSC2019Trainer"
 
     def __init__(self,
                  model:nn.Module,

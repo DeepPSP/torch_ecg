@@ -1,7 +1,7 @@
 """
 """
 
-import os
+from pathlib import Path
 from typing import List, Tuple, Dict
 
 import wfdb
@@ -22,7 +22,7 @@ _test_seg_records = [
     "data_66_16",  # from CPSC2021
 ]
 
-_CWD = os.path.dirname(os.path.abspath(__file__))
+_CWD = Path(__file__).absolute().parent
 
 
 def load_test_clf_data() -> List[Tuple[np.ndarray, List[str]]]:
@@ -31,8 +31,8 @@ def load_test_clf_data() -> List[Tuple[np.ndarray, List[str]]]:
     """
     examples = []
     for rec in _test_clf_records:
-        path = os.path.join(_CWD, rec)
-        sig = wfdb.rdrecord(path).p_signal.T
+        path = _CWD / rec
+        sig = wfdb.rdrecord(str(path)).p_signal.T
         header = wfdb.rdheader(path)
         label = [l.replace("Dx:", "").strip() for l in header.comments if "Dx:" in l][0].split(",")
         examples.append((sig, label))
@@ -46,9 +46,9 @@ def load_test_seg_data() -> List[Dict[str, np.ndarray]]:
     qrs_radius = int(0.06*200)
     examples = []
     for rec in _test_seg_records:
-        path = os.path.join(_CWD, rec)
-        sig = wfdb.rdrecord(path).p_signal.T
-        ann = wfdb.rdann(path, extension="atr")
+        path = _CWD / rec
+        sig = wfdb.rdrecord(str(path)).p_signal.T
+        ann = wfdb.rdann(str(path), extension="atr")
         qrs_mask = np.zeros((sig.shape[1],1))
         af_mask = np.zeros((sig.shape[1],1))
         af_start, af_end = None, None

@@ -30,7 +30,7 @@ from ..base import (
 
 __all__ = [
     "CPSC2021",
-    "compute_challenge_metric",
+    "compute_metrics",
 ]
 
 
@@ -1292,5 +1292,6 @@ def gen_endpoint_score_mask(siglen:int,
         offset_score_mask = np.maximum(offset_score_mask, mask_offset)
     return onset_score_mask, offset_score_mask
 
-
-gen_endpoint_score_range = gen_endpoint_score_mask  # alias
+# aliases
+gen_endpoint_score_range = gen_endpoint_score_mask
+compute_metrics = compute_challenge_metric
