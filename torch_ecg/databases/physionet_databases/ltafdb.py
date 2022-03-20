@@ -4,7 +4,6 @@
 
 import json, math
 from pathlib import Path
-from datetime import datetime
 from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
 from numbers import Real
 
@@ -15,7 +14,7 @@ import wfdb
 
 from ...cfg import CFG
 from ...utils.utils_interval import generalized_intervals_intersection
-from ..base import PhysioNetDataBase, DEFAULT_FIG_SIZE_PER_SEC
+from ..base import PhysioNetDataBase, DEFAULT_FIG_SIZE_PER_SEC, BeatAnn
 
 
 __all__ = [
@@ -87,24 +86,24 @@ class LTAFDB(PhysioNetDataBase):
         self.all_leads = [0, 1]
         self._ls_rec()
 
-        self.all_rhythms = [
+        self.rhythm_types = [
             "(N", "(AB", "(AFIB", "(B", "(IVR", "(SBR", "(SVTA", "(T", "(VT",
             "NOISE",  # additional, since head of each record are noisy
         ] # others include "\x01 Aux", "M", "MB", "MISSB", "PSE"
-        self.rhythm_class_map = CFG({
-            k.replace("(", ""): idx for idx, k in enumerate(self.all_rhythms)
+        self.rhythm_types_map = CFG({
+            k.replace("(", ""): idx for idx, k in enumerate(self.rhythm_types)
         })
         self.palette = kwargs.get("palette", None)
         if self.palette is None:
-            n_colors = len([k for k in self.rhythm_class_map.keys() if k not in ["N", "NOISE"]])
+            n_colors = len([k for k in self.rhythm_types_map.keys() if k not in ["N", "NOISE"]])
             colors = iter(cm.rainbow(np.linspace(0, 1, n_colors)))
             self.palette = CFG()
-            for k in self.rhythm_class_map.keys():
+            for k in self.rhythm_types_map.keys():
                 if k in ["N", "NOISE"]:
                     continue
                 self.palette[k] = next(colors)
         
-        self.all_beat_types = [
+        self.beat_types = [
             "A", "N", "Q", "V",
             # '"', "+", are not beat types
         ]
@@ -190,8 +189,56 @@ class LTAFDB(PhysioNetDataBase):
                  rec:str,
                  sampfrom:Optional[int]=None,
                  sampto:Optional[int]=None,
-                 fmt:str="interval",
-                 keep_original:bool=False,) -> Union[Dict[str, list], np.ndarray]:
+                 rhythm_format:str="interval",
+                 beat_format:str="beat",
+                 keep_original:bool=False,) -> dict:
+        """  finished, checked,
+
+        load rhythm and beat annotations,
+        which are stored in the `aux_note`, `symbol` attributes of corresponding annotation files.
+        NOTE that qrs annotations (.qrs files) do NOT contain any rhythm annotations
+        
+        Parameters
+        ----------
+        rec: str,
+            name of the record
+        sampfrom: int, optional,
+            start index of the annotations to be loaded
+        sampto: int, optional,
+            end index of the annotations to be loaded
+        rhythm_format: str, default "interval", case insensitive,
+            format of returned annotation, can also be "mask"
+        beat_format: str, default "beat", case insensitive,
+            format of returned annotation, can also be "dict"
+        keep_original: bool, default False,
+            if True, indices will keep the same with the annotation file
+            otherwise subtract `sampfrom` if specified
+        
+        Returns
+        -------
+        ann, dict,
+            the annotations of `rhythm` and `beat`, with
+            `rhythm` annotatoins in the format of `intervals`, or `mask`;
+            `beat` annotations in the format of `dict` or `BeatAnn`
+
+        NOTE that at head and tail of the record, segments named "NOISE" are added
+        """
+        ann = {
+            "beat": self.load_beat_ann(
+                rec, sampfrom, sampto, beat_format, keep_original,
+            ),
+            "rhythm": self.load_rhythm_ann(
+                rec, sampfrom, sampto, rhythm_format, keep_original,
+            ),
+        }
+        return ann
+    
+    def load_rhythm_ann(self,
+                        rec:str,
+                        sampfrom:Optional[int]=None,
+                        sampto:Optional[int]=None,
+                        rhythm_format:str="interval",
+                        keep_original:bool=False,) -> Union[Dict[str, list], np.ndarray]:
         """  finished, checked,
 
         load rhythm annotations,
@@ -206,7 +253,7 @@ class LTAFDB(PhysioNetDataBase):
             start index of the annotations to be loaded
         sampto: int, optional,
             end index of the annotations to be loaded
-        fmt: str, default "interval", case insensitive,
+        rhythm_format: str, default "interval", case insensitive,
             format of returned annotation, can also be "mask"
         keep_original: bool, default False,
             if True, indices will keep the same with the annotation file
@@ -219,6 +266,8 @@ class LTAFDB(PhysioNetDataBase):
 
         NOTE that at head and tail of the record, segments named "NOISE" are added
         """
+        assert rhythm_format.lower() in ["interval", "mask"], \
+            f"rhythm_format must be 'interval' or 'mask', got {rhythm_format}"
         fp = self.db_dir / rec
         header = wfdb.rdheader(str(fp))
         sig_len = header.sig_len
@@ -232,13 +281,13 @@ class LTAFDB(PhysioNetDataBase):
         else:
             wfdb_ann = wfdb.rdann(str(fp), extension=self.manual_ann_ext)
 
-            ann = CFG({k: [] for k in self.rhythm_class_map.keys()})
+            ann = CFG({k: [] for k in self.rhythm_types_map.keys()})
             critical_points = wfdb_ann.sample.tolist()
             aux_note = wfdb_ann.aux_note
             start = 0
             current_rhythm = "NOISE"
             for idx, rhythm in zip(critical_points, aux_note):
-                if rhythm not in self.all_rhythms:
+                if rhythm not in self.rhythm_types:
                     continue
                 ann[current_rhythm].append([start, idx])
                 current_rhythm = rhythm.replace("(", "")
@@ -254,34 +303,24 @@ class LTAFDB(PhysioNetDataBase):
             k: generalized_intervals_intersection(l_itv, [[sf,st]]) \
                 for k, l_itv in ann.items()
         })
-        if fmt.lower() == "mask":
+        if rhythm_format.lower() == "mask":
             tmp = deepcopy(ann)
-            ann = np.full(shape=(st-sf,), fill_value=self.rhythm_class_map.N, dtype=int)
+            ann = np.full(shape=(st-sf,), fill_value=self.rhythm_types_map.N, dtype=int)
             for rhythm, l_itv in tmp.items():
                 for itv in l_itv:
-                    ann[itv[0]-sf: itv[1]-sf] = self.rhythm_class_map[rhythm]
+                    ann[itv[0]-sf: itv[1]-sf] = self.rhythm_types_map[rhythm]
         elif not keep_original:
             for k, l_itv in ann.items():
                 ann[k] = [[itv[0]-sf, itv[1]-sf] for itv in l_itv]
         
         return ann
 
-    def load_rhythm_ann(self,
-                        rec:str,
-                        sampfrom:Optional[int]=None,
-                        sampto:Optional[int]=None,
-                        fmt:str="interval",
-                        keep_original:bool=False,) -> Union[Dict[str, list], np.ndarray]:
-        """
-        alias of `self.load_ann`
-        """
-        return self.load_ann(rec, sampfrom, sampto, fmt, keep_original)
-
     def load_beat_ann(self,
                       rec:str,
                       sampfrom:Optional[int]=None,
                       sampto:Optional[int]=None,
-                      keep_original:bool=False,) -> Dict[str, np.ndarray]:
+                      beat_format:str="beat",
+                      keep_original:bool=False,) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
         """ finished, checked,
 
         load beat annotations,
@@ -295,15 +334,19 @@ class LTAFDB(PhysioNetDataBase):
             start index of the annotations to be loaded
         sampto: int, optional,
             end index of the annotations to be loaded
+        beat_format: str, default "beat", case insensitive,
+            format of returned annotation, can also be "dict"
         keep_original: bool, default False,
             if True, indices will keep the same with the annotation file
             otherwise subtract `sampfrom` if specified
         
         Returns
         -------
-        ann, dict,
+        ann, dict or list,
             locations (indices) of the all the beat types ("A", "N", "Q", "V",)
         """
+        assert beat_format.lower() in ["beat", "dict"], \
+            f"beat_format must be 'beat' or 'dict', got {beat_format}"
         fp = self.db_dir / rec
         header = wfdb.rdheader(str(fp))
         sig_len = header.sig_len
@@ -314,18 +357,23 @@ class LTAFDB(PhysioNetDataBase):
         wfdb_ann = wfdb.rdann(
             str(fp),
             extension=self.manual_ann_ext,
-            sampfrom=sampfrom or 0,
+            sampfrom=sf,
             sampto=sampto,
         )
-        ann = CFG({k: [] for k in self.all_beat_types})
+        ann = CFG({k: [] for k in self.beat_types})
         for idx, bt in zip(wfdb_ann.sample, wfdb_ann.symbol):
-            if bt not in self.all_beat_types:
+            if bt not in self.beat_types:
                 continue
             ann[bt].append(idx)
         if not keep_original and sampfrom is not None:
-            ann = CFG({k: np.array(v, dtype=int) - sampfrom for k, v in ann.items()})
+            ann = CFG({k: np.array(v, dtype=int) - sf for k, v in ann.items()})
         else:
             ann = CFG({k: np.array(v, dtype=int) for k, v in ann.items()})
+
+        if beat_format.lower() == "beat":
+            ann = [
+                BeatAnn(i, s) for s, l in ann.items() for i in l
+            ]
         return ann
 
     def load_rpeak_indices(self,
@@ -357,7 +405,7 @@ class LTAFDB(PhysioNetDataBase):
         
         Returns
         -------
-        ann, ndarray,
+        rpeak_inds, ndarray,
             locations (indices) of the all the rpeaks (qrs complexes)
         """
         fp = self.db_dir / rec
@@ -371,7 +419,7 @@ class LTAFDB(PhysioNetDataBase):
             sampfrom=sampfrom or 0,
             sampto=sampto,
         )
-        rpeak_inds = wfdb_ann.sample[np.isin(wfdb_ann.symbol, self.all_beat_types)]
+        rpeak_inds = wfdb_ann.sample[np.isin(wfdb_ann.symbol, self.beat_types)]
         if not keep_original and sampfrom is not None:
             rpeak_inds = rpeak_inds - sampfrom
         return rpeak_inds
@@ -406,13 +454,13 @@ class LTAFDB(PhysioNetDataBase):
         ann: dict, optional,
             rhythm annotations for `data`, covering those from annotation files,
             in the form of {k: l_itv, ...},
-            where `k` in `self.rhythm_class_map.keys()`,
+            where `k` in `self.rhythm_types_map.keys()`,
             and `l_itv` in the form of [[a,b], ...],
             ignored if `data` is None
         beat_ann: dict, optional,
             beat annotations for `data`, covering those from annotation files,
             in the form of {k: l_inds, ...},
-            where `k` in `self.all_beat_types`, and `l_inds` array of indices,
+            where `k` in `self.beat_types`, and `l_inds` array of indices,
             ignored if `data` is None
         rpeak_inds: array_like, optional,
             indices of R peaks, covering those from annotation files,
@@ -464,11 +512,11 @@ class LTAFDB(PhysioNetDataBase):
                 rec,
                 sampfrom=sampfrom,
                 sampto=sampto,
-                fmt="interval",
+                ann_format="interval",
                 keep_original=False,
             )
         else:
-            _ann = ann or CFG({k: [] for k in self.rhythm_class_map.keys()})
+            _ann = ann or CFG({k: [] for k in self.rhythm_types_map.keys()})
         # indices to time
         _ann = {
             k: [[itv[0]/self.fs, itv[1]/self.fs] for itv in l_itv] \
@@ -493,7 +541,7 @@ class LTAFDB(PhysioNetDataBase):
                 keep_original=False
             )
         else:
-            _beat_ann = beat_ann or CFG({k: [] for k in self.all_beat_types})
+            _beat_ann = beat_ann or CFG({k: [] for k in self.beat_types})
         _beat_ann = { # indices to time
             k: [i/self.fs for i in l_inds] \
                 for k, l_inds in _beat_ann.items()
