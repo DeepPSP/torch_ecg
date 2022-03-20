@@ -22,6 +22,13 @@ from .nsrr_databases import (
     SHHS,
 )
 from . import aux_data
+from .base import (
+    WFDB_Beat_Annotations,
+    WFDB_Non_Beat_Annotations,
+    WFDB_Rhythm_Annotations,
+    ECGWaveForm,
+    BeatAnn,
+)
 
 
 __all__ = [
@@ -46,4 +53,10 @@ __all__ = [
     "SHHS",
 
     "aux_data",
+
+    "WFDB_Beat_Annotations",
+    "WFDB_Non_Beat_Annotations",
+    "WFDB_Rhythm_Annotations",
+    "ECGWaveForm",
+    "BeatAnn",
 ]

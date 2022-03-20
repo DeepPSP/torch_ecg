@@ -15,6 +15,7 @@ import os, pprint, time
 from pathlib import Path
 from abc import ABC, abstractmethod
 from collections import namedtuple
+from dataclasses import dataclass
 from typing import Union, Optional, Any, List, NoReturn
 from numbers import Real
 
@@ -31,7 +32,9 @@ from ..utils.misc import (
 
 
 __all__ = [
-    "WFDB_Beat_Annotations", "WFDB_Non_Beat_Annotations", "WFDB_Rhythm_Annotations",
+    "WFDB_Beat_Annotations",
+    "WFDB_Non_Beat_Annotations",
+    "WFDB_Rhythm_Annotations",
     "PhysioNetDataBase",
     "NSRRDataBase",
     "ImageDataBase",
@@ -39,6 +42,7 @@ __all__ = [
     "OtherDataBase",
     "ECGWaveForm",
     "DEFAULT_FIG_SIZE_PER_SEC",
+    "BeatAnn",
 ]
 
 
@@ -659,3 +663,17 @@ ECGWaveForm = namedtuple(
 )
 
 DEFAULT_FIG_SIZE_PER_SEC = 4.8
+
+
+@dataclass
+class BeatAnn:
+    """
+    """
+    index : int
+    symbol : str
+
+    @property
+    def name(self) -> str:
+        if self.symbol in WFDB_Beat_Annotations:
+            return WFDB_Beat_Annotations[self.symbol]
+        return WFDB_Non_Beat_Annotations.get(self.symbol, self.symbol)
