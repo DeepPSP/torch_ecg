@@ -4,7 +4,6 @@
 
 import math, time, json, warnings
 from pathlib import Path
-from datetime import datetime
 from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
 from numbers import Real
 
@@ -24,7 +23,8 @@ from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (
     CPSCDataBase,
     DEFAULT_FIG_SIZE_PER_SEC,
-    WFDB_Beat_Annotations, WFDB_Non_Beat_Annotations, WFDB_Rhythm_Annotations,
+    WFDB_Beat_Annotations, WFDB_Non_Beat_Annotations,
+    WFDB_Rhythm_Annotations,
 )
 
 

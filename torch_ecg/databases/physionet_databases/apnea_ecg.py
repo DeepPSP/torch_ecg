@@ -279,7 +279,12 @@ class ApneaECG(PhysioNetDataBase):
         _, ax = plt.subplots(figsize=(20,4))
         plot_alpha = 0.5
         for _, row in df_apnea_ann.iterrows():
-            ax.axvspan(datetime.fromtimestamp(row["event_start"]), datetime.fromtimestamp(row["event_end"]), color=self.palette[row["event_name"]], alpha=plot_alpha)
+            ax.axvspan(
+                datetime.fromtimestamp(row["event_start"]),
+                datetime.fromtimestamp(row["event_end"]),
+                color=self.palette[row["event_name"]],
+                alpha=plot_alpha,
+            )
             ax.legend(handles=[patches[k] for k in self.palette.keys()],loc="best")  # keep ordering
             plt.setp(ax.get_yticklabels(), visible=False)
             ax.tick_params(axis="y", which="both", length=0)
