@@ -74,7 +74,6 @@ def get_record_list_recursive(db_dir:str, rec_ext:str) -> List[str]:
         list of records, in lexicographical order
     """
     res = []
-    db_dir = os.path.join(db_dir, "tmp").replace("tmp", "")  # make sure `db_dir` ends with a sep
     roots = [db_dir]
     while len(roots) > 0:
         new_roots = []
@@ -83,7 +82,10 @@ def get_record_list_recursive(db_dir:str, rec_ext:str) -> List[str]:
             res += [item for item in tmp if os.path.isfile(item)]
             new_roots += [item for item in tmp if os.path.isdir(item)]
         roots = deepcopy(new_roots)
-    res = [os.path.splitext(item)[0].replace(db_dir, "") for item in res if item.endswith(rec_ext)]
+    res = [
+        os.path.splitext(item)[0].replace(db_dir, "").strip(os.sep) \
+            for item in res if item.endswith(rec_ext)
+        ]
     res = sorted(res)
 
     return res
@@ -111,7 +113,6 @@ def get_record_list_recursive2(db_dir:str, rec_pattern:str) -> List[str]:
         list of records, in lexicographical order
     """
     res = []
-    db_dir = os.path.join(db_dir, "tmp").replace("tmp", "")  # make sure `db_dir` ends with a sep
     roots = [db_dir]
     while len(roots) > 0:
         new_roots = []
@@ -121,7 +122,7 @@ def get_record_list_recursive2(db_dir:str, rec_pattern:str) -> List[str]:
             res += glob(os.path.join(r, rec_pattern), recursive=False)
             new_roots += [item for item in tmp if os.path.isdir(item)]
         roots = deepcopy(new_roots)
-    res = [os.path.splitext(item)[0].replace(db_dir, "") for item in res]
+    res = [os.path.splitext(item)[0].replace(db_dir, "").strip(os.sep) for item in res]
     res = sorted(res)
 
     return res
@@ -153,7 +154,6 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
         res = []
     elif isinstance(rec_patterns, dict):
         res = {k:[] for k in rec_patterns.keys()}
-    db_dir = os.path.join(db_dir, "tmp").replace("tmp", "")  # make sure `db_dir` ends with a sep
     roots = [db_dir]
     while len(roots) > 0:
         new_roots = []
@@ -172,7 +172,7 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
         res = sorted(res)
     elif isinstance(rec_patterns, dict):
         for k in rec_patterns.keys():
-            res[k] = [os.path.splitext(item)[0].replace(db_dir, "") for item in res[k]]
+            res[k] = [os.path.splitext(item)[0].replace(db_dir, "").strip(os.sep) for item in res[k]]
             res[k] = sorted(res[k])
     return res
 
