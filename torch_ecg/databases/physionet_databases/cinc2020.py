@@ -2,7 +2,7 @@
 """
 """
 
-import io, re, json, time
+import io, re, json, time, posixpath
 from pathlib import Path
 from copy import deepcopy
 from datetime import datetime
@@ -23,6 +23,7 @@ from ...utils.misc import (
     ms2samples, dict_to_str,
     ensure_siglen,
 )
+from ...utils.download import http_get, _stem
 from ...utils import ecg_arrhythmia_knowledge as EAK
 from ..aux_data.cinc2020_aux_data import (
     dx_mapping_all, dx_mapping_scored, dx_mapping_unscored,
@@ -1170,7 +1171,7 @@ class CINC2020(PhysioNetDataBase):
     def url(self) -> List[str]:
         domain = "https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ecg-public/"
         return [
-            str(Path(domain) / f) for f in self.data_files
+            posixpath.join(domain, f) for f in self.data_files
         ]
 
     data_files = [
@@ -1182,6 +1183,11 @@ class CINC2020(PhysioNetDataBase):
         "PhysioNetChallenge2020_Training_E.tar.gz",
     ]
 
+    def download(self) -> NoReturn:
+        """
+        """
+        for url in self.url:
+            http_get(url, self.db_dir_base / _stem(url), extract=True)
 
 
 from ..aux_data.cinc2020_aux_data import load_weights

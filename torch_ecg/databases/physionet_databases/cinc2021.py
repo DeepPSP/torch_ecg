@@ -2,7 +2,7 @@
 """
 """
 
-import io, re, json, time, warnings
+import io, re, json, time, warnings, posixpath
 from pathlib import Path
 from copy import deepcopy
 from datetime import datetime
@@ -24,8 +24,8 @@ from ...utils.misc import (
     ms2samples, dict_to_str, list_sum,
     ensure_siglen,
 )
+from ...utils.download import http_get
 from ...utils import ecg_arrhythmia_knowledge as EAK
-
 from ..aux_data.cinc2021_aux_data import (
     dx_mapping_all, dx_mapping_scored, dx_mapping_unscored,
     normalize_class, abbr_to_snomed_ct_code,
@@ -1480,7 +1480,7 @@ class CINC2021(PhysioNetDataBase):
     def url(self) -> List[str]:
         domain = "https://storage.cloud.google.com/physionetchallenge2021-public-datasets/"
         return [
-            str(Path(domain) / f) for f in self.data_files
+            posixpath.join(domain, f) for f in self.data_files
         ]
 
     data_files = [
@@ -1506,6 +1506,13 @@ class CINC2021(PhysioNetDataBase):
         "ChapmanShaoxing-Headers.tar.gz",
         "Ningbo-Headers.tar.gz",
     ]
+
+    def download(self) -> NoReturn:
+        """
+        """
+        for url in self.url:
+            http_get(url, self.db_dir_base, extract=False)
+        prepare_dataset(self.db_dir_base, verbose=True)
 
 
 _exceptional_records = [ # with nan values (p_signal) read by wfdb
