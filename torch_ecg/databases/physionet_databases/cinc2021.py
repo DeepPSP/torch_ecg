@@ -1476,10 +1476,6 @@ class CINC2021(PhysioNetDataBase):
         return dx_cooccurrence_all
 
     @property
-    def version(self) -> str:
-        return "1.0.2"
-
-    @property
     def url(self) -> List[str]:
         domain = "https://storage.cloud.google.com/physionetchallenge2021-public-datasets/"
         return [

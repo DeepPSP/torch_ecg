@@ -1055,6 +1055,8 @@ def default_class_repr(c:object, align:str="center", depth:int=1) -> str:
         the object to be represented
     align: str, default "center",
         the alignment of the class arguments
+    depth: int, default 1,
+        the depth of the class arguments to display
 
     Returns
     -------

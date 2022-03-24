@@ -132,7 +132,3 @@ class CINC2018(PhysioNetDataBase):
         """
         """
         raise NotImplementedError
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"

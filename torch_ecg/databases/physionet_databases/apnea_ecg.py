@@ -288,7 +288,3 @@ class ApneaECG(PhysioNetDataBase):
             ax.legend(handles=[patches[k] for k in self.palette.keys()],loc="best")  # keep ordering
             plt.setp(ax.get_yticklabels(), visible=False)
             ax.tick_params(axis="y", which="both", length=0)
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"

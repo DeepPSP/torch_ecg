@@ -270,7 +270,3 @@ class CINC2017(PhysioNetDataBase):
             ax.set_xlabel("Time [s]")
             ax.set_ylabel("Voltage [μV]")
             plt.show()
-
-    @property
-    def version(self) -> str:
-        return "1.0.0"

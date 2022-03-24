@@ -1166,10 +1166,6 @@ class CINC2020(PhysioNetDataBase):
                     print(f"record {rec} from tranche {t} has nan values")
 
     @property
-    def version(self) -> str:
-        return "1.0.1"
-
-    @property
     def url(self) -> List[str]:
         domain = "https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ecg-public/"
         return [

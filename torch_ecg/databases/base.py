@@ -11,7 +11,7 @@ Remarks:
 2. visualizing using UMAP: http://zzz.bwh.harvard.edu/luna/vignettes/nsrr-umap/
 """
 
-import os, pprint, time
+import os, pprint, time, posixpath
 from pathlib import Path
 from abc import ABC, abstractmethod
 from collections import namedtuple
@@ -28,6 +28,7 @@ from pyedflib import EdfReader
 from ..utils import ecg_arrhythmia_knowledge as EAK
 from ..utils.misc import (
     get_record_list_recursive3, dict_to_str, ReprMixin,
+    list_sum,
 )
 
 
@@ -441,13 +442,26 @@ class PhysioNetDataBase(_DataBase):
                         print(f"{k} stands for {a['('+k]}")
 
     @property
-    @abstractmethod
     def version(self) -> str:
-        raise NotImplementedError
+        return wfdb.io.record.get_version(self.db_name)
 
     @property
     def url(self) -> str:
-        return f"https://physionet.org/files/{self.db_name}/{self.version}/"
+        return posixpath.join(
+            wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/{self.version}"
+        )
+
+    def download(self) -> NoReturn:
+        """
+        download the database from Physionet
+        """
+        wfdb.dl_database(
+            self.db_name,
+            self.db_dir,
+            keep_subdirs=True,
+            overwrite=False,
+        )
+
 
 class NSRRDataBase(_DataBase):
     """
