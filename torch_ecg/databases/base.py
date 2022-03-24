@@ -330,7 +330,7 @@ class PhysioNetDataBase(_DataBase):
         record_list_fp = self.db_dir / "RECORDS"
         if record_list_fp.is_file():
             self._all_records = record_list_fp.read_text().splitlines()
-            self._all_records = [Path(item).name for item in self._all_records]
+            self._all_records = [Path(item).name for item in self._all_records if len(item) > 0]
             return
         print("Please wait patiently to let the reader find all records of the database from local storage...")
         start = time.time()

@@ -280,6 +280,7 @@ class CINC2020(PhysioNetDataBase):
                         raise ValueError(f"records of tranche {tranche} are stored in several folders!")
                     else:
                         raise ValueError(f"no record found for tranche {tranche}!")
+                        continue
                 self.db_dirs[tranche] = self.db_dir_base / tmp_dirname[0]
                 self._all_records[tranche] = [ Path(f).parent for f in self._all_records[tranche] ]
             print(f"Done in {time.time() - start:.5f} seconds!")
