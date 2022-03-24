@@ -18,7 +18,20 @@ __all__ = ["http_get",]
 def http_get(url:str, dst_dir:Union[str,Path], proxies:Optional[dict]=None, extract:bool=True) -> NoReturn:
     """Get contents of a URL and save to a file.
 
-    https://github.com/huggingface/transformers/blob/master/src/transformers/file_utils.py
+    Parameters
+    ----------
+    url: str,
+        URL to download.
+    dst_dir: str or Path,
+        Directory to save the file.
+    proxies: dict, optional,
+        Dictionary of proxy settings.
+    extract: bool, default True,
+        Whether to extract the downloaded file.
+
+    References
+    ----------
+    1. https://github.com/huggingface/transformers/blob/master/src/transformers/file_utils.py
     """
     print(f"Downloading {url}.")
     parent_dir = Path(dst_dir).parent
@@ -52,6 +65,16 @@ def http_get(url:str, dst_dir:Union[str,Path], proxies:Optional[dict]=None, extr
 def _stem(path:Union[str,Path]) -> str:
     """
     get filename without extension, especially for .tar.xx files
+
+    Parameters
+    ----------
+    path: str or Path,
+        path to the file
+    
+    Returns
+    -------
+    str,
+        filename without extension
     """
     ret = Path(path).stem
     for _ in range(3):
@@ -62,19 +85,47 @@ def _stem(path:Union[str,Path]) -> str:
 def _suffix(path:Union[str,Path]) -> str:
     """
     get file extension, including all suffixes
+
+    Parameters
+    ----------
+    path: str or Path,
+        path to the file
+
+    Returns
+    -------
+    str,
+        full file extension
     """
     return "".join(Path(path).suffixes)
 
 
 def _unzip_file(path_to_zip_file:Union[str, Path], dst_dir:Union[str, Path]) -> NoReturn:
-    """Unzips a .zip file to folder path."""
+    """
+    Unzips a .zip file to folder path.
+    
+    Parameters
+    ----------
+    path_to_zip_file: str or Path,
+        path to the .zip file
+    dst_dir: str or Path,
+        path to the destination folder
+    """
     print(f"Extracting file {path_to_zip_file} to {dst_dir}.")
     with zipfile.ZipFile(str(path_to_zip_file)) as zip_ref:
         zip_ref.extractall(str(dst_dir))
 
 
 def _untar_file(path_to_tar_file:Union[str, Path], dst_dir:Union[str, Path]) -> NoReturn:
-    """decompress a .tar.xx file to folder path."""
+    """
+    Decompress a .tar.xx file to folder path.
+    
+    Parameters
+    ----------
+    path_to_tar_file: str or Path,
+        path to the .tar.xx file
+    dst_dir: str or Path,
+        path to the destination folder
+    """
     print(f"Extracting file {path_to_tar_file} to {dst_dir}.")
     mode = Path(path_to_tar_file).suffix.replace(".", "r:").replace("tar", "")
     # print(f"mode: {mode}")
