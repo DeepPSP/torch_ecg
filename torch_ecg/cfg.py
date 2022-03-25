@@ -33,8 +33,16 @@ class CFG(ED):
     """
     __name__ = "CFG"
 
-    def __init__(self, d:Optional[MutableMapping]=None, **kwargs) -> NoReturn:
-        if d is None:
+    def __init__(*args, **kwargs):
+        if not args:
+            raise TypeError(f"descriptor '__init__' of '{self.__name__}' object "
+                            "needs an argument")
+        self, *args = args
+        if len(args) > 1:
+            raise TypeError(f"expected at most 1 arguments, got {len(args)}")
+        elif len(args) == 1:
+            d = args[0]
+        else:
             d = {}
         if kwargs:
             d.update(**kwargs)
