@@ -82,9 +82,7 @@ class ECG_UNET_LUDB(ECG_UNET):
             predicted mask, of shape (n_samples, seq_len)
         """
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape

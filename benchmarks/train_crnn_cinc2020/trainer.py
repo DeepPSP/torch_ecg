@@ -62,12 +62,6 @@ from cfg import BaseCfg, TrainCfg, ModelCfg
 from dataset import CINC2020
 CINC2020.__DEBUG__ = False
 
-if ModelCfg.torch_dtype == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
-    _DTYPE = torch.float64
-else:
-    _DTYPE = torch.float32
-
 
 __all__ = [
     "CINC2020Trainer",

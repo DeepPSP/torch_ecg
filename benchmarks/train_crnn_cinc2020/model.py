@@ -84,9 +84,7 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         else:
             nsr_cid = None
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         pred = self.forward(_input)
@@ -100,14 +98,13 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
                 bin_pred[row_idx, nsr_cid] = 1
             elif row.sum() == 0:
                 bin_pred[row_idx,...] = \
-                    (((pred[row_idx,...]+ModelCfg.bin_pred_look_again_tol) >= row_max_prob) & (pred[row_idx,...] >= ModelCfg.bin_pred_nsr_thr)).astype(int)
+                    (
+                        ((pred[row_idx,...]+ModelCfg.bin_pred_look_again_tol) >= row_max_prob) \
+                            & (pred[row_idx,...] >= ModelCfg.bin_pred_nsr_thr )
+                    ).astype(int)
         if class_names:
             pred = pd.DataFrame(pred)
             pred.columns = self.classes
-            # pred["bin_pred"] = pred.apply(
-            #     lambda row: np.array(self.classes)[np.where(row.values>=bin_pred_thr)[0]],
-            #     axis=1
-            # )
             pred["bin_pred"] = ""
             for row_idx in range(len(pred)):
                 pred.at[row_idx, "bin_pred"] = \

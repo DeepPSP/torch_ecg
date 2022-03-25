@@ -100,9 +100,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
             list of rpeak indices for each batch element
         """
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape
@@ -208,9 +206,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
             list of rpeak indices for each batch element
         """
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape
@@ -313,9 +309,8 @@ class ECG_UNET_CPSC2019(ECG_UNET):
         rpeaks: list of ndarray,
             list of rpeak indices for each batch element
         """
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        self.eval()
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape

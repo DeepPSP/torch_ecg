@@ -138,9 +138,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
             list of rpeak indices for each batch element
         """
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         # batch_size, channels, seq_len = _input.shape
@@ -187,9 +185,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
             af episodes, in the form of intervals of [start, end]
         """
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, n_leads, seq_len = _input.shape
@@ -299,9 +295,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
             list of rpeak indices for each batch element
         """
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         # batch_size, channels, seq_len = _input.shape
@@ -348,9 +342,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
             af episodes, in the form of intervals of [start, end]
         """
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, n_leads, seq_len = _input.shape
@@ -460,9 +452,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
             list of rpeak indices for each batch element
         """
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         # batch_size, channels, seq_len = _input.shape
@@ -509,9 +499,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
             af episodes, in the form of intervals of [start, end]
         """
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, n_leads, seq_len = _input.shape
@@ -590,9 +578,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
         rather than the indices of the first and the last rpeak
         """
         self.eval()
-        _device = next(self.parameters()).device
-        _dtype = next(self.parameters()).dtype
-        _input = torch.as_tensor(input, dtype=_dtype, device=_device)
+        _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         elif _input.ndim == 1:
