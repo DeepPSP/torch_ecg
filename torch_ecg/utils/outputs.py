@@ -3,7 +3,7 @@
 
 from abc import ABC, abstractmethod
 from collections import OrderedDict
-from typing import Optional, List, Tuple, NoReturn, Sequence, Any
+from typing import Optional, Tuple, NoReturn, Sequence, Any, Set
 
 import numpy as np
 
@@ -35,12 +35,12 @@ class BaseOutput(CFG, ABC):
             self.pop(f)
         assert all(field in self.keys() for field in self.required_fields()), \
             f"{self.__name__} requires {self.required_fields()}, " \
-            f"but `{', '.join([field for field in self.keys() if field not in self.required_fields()])}` is missing"
+            f"but `{', '.join(self.required_fields() - set(self.keys()))}` are missing"
         assert all(self[field] is not None for field in self.required_fields()), \
             f"Fields `{', '.join([field for field in self.required_fields() if self[field] is None])}` are not set"
 
     @abstractmethod
-    def required_fields(self) -> List[str]:
+    def required_fields(self) -> Set[str]:
         """
         """
         raise NotImplementedError
@@ -61,10 +61,10 @@ class ClassificationOutput(BaseOutput):
         """
         super().__init__(*args, classes=classes, prob=prob, pred=pred, **kwargs)
 
-    def required_fields(self) -> List[str]:
+    def required_fields(self) -> Set[str]:
         """
         """
-        return ["classes", "prob", "pred",]
+        return set(["classes", "prob", "pred",])
 
 
 class MultiLabelClassificationOutput(BaseOutput):
@@ -83,10 +83,10 @@ class MultiLabelClassificationOutput(BaseOutput):
         """
         super().__init__(*args, classes=classes, thr=thr, prob=prob, pred=pred, **kwargs)
 
-    def required_fields(self) -> List[str]:
+    def required_fields(self) -> Set[str]:
         """
         """
-        return ["classes", "thr", "prob", "pred",]
+        return set(["classes", "thr", "prob", "pred",])
 
 
 class SequenceTaggingOutput(BaseOutput):
@@ -104,10 +104,10 @@ class SequenceTaggingOutput(BaseOutput):
         """
         super().__init__(*args, classes=classes, prob=prob, pred=pred, **kwargs)
 
-    def required_fields(self) -> List[str]:
+    def required_fields(self) -> Set[str]:
         """
         """
-        return ["classes", "prob", "pred",]
+        return set(["classes", "prob", "pred",])
 
 # alias
 SequenceLabelingOutput = SequenceTaggingOutput
@@ -119,11 +119,27 @@ class WaveDelineationOutput(SequenceTaggingOutput):
     """
     __name__ = "WaveDelineationOutput"
 
+    def __init__(self,
+                 *args:Any,
+                 classes:Sequence[str]=None,
+                 prob:np.ndarray=None,
+                 mask:np.ndarray=None,
+                 **kwargs:Any) -> NoReturn:
+        """
+        """
+        super().__init__(*args, classes=classes, prob=prob, pred=mask, mask=mask, **kwargs)
+        self.pop("pred")
 
-class RPeaksDectectionOutput(BaseOutput):
+    def required_fields(self) -> Set[str]:
+        """
+        """
+        return set(["classes", "prob", "mask",])
+
+
+class RPeaksDetectionOutput(BaseOutput):
     """
     """
-    __name__ = "RPeaksDectectionOutput"
+    __name__ = "RPeaksDetectionOutput"
 
     def __init__(self,
                  *args:Any,
@@ -133,9 +149,9 @@ class RPeaksDectectionOutput(BaseOutput):
                  **kwargs:Any) -> NoReturn:
         """
         """
-        super().__init__(*args, rpeak_indices=rpeak_indices, prob=prob, pred=pred, **kwargs)
+        super().__init__(*args, rpeak_indices=rpeak_indices, prob=prob, **kwargs)
 
-    def required_fields(self) -> List[str]:
+    def required_fields(self) -> Set[str]:
         """
         """
-        return ["rpeak_indices", "prob", "pred",]
+        return set(["rpeak_indices", "prob",])
