@@ -52,7 +52,7 @@ __all__ = [
 ]
 
 
-def get_record_list_recursive(db_dir:str, rec_ext:str) -> List[str]:
+def get_record_list_recursive(db_dir:Union[str,Path], rec_ext:str) -> List[str]:
     """ finished, checked,
 
     get the list of records in `db_dir` recursively,
@@ -63,7 +63,7 @@ def get_record_list_recursive(db_dir:str, rec_ext:str) -> List[str]:
 
     Parameters
     ----------
-    db_dir: str,
+    db_dir: str or Path,
         the parent (root) path of the whole database
     rec_ext: str,
         extension of the record files
@@ -74,7 +74,7 @@ def get_record_list_recursive(db_dir:str, rec_ext:str) -> List[str]:
         list of records, in lexicographical order
     """
     res = []
-    roots = [db_dir]
+    roots = [str(db_dir)]
     while len(roots) > 0:
         new_roots = []
         for r in roots:
@@ -83,7 +83,7 @@ def get_record_list_recursive(db_dir:str, rec_ext:str) -> List[str]:
             new_roots += [item for item in tmp if os.path.isdir(item)]
         roots = deepcopy(new_roots)
     res = [
-        os.path.splitext(item)[0].replace(db_dir, "").strip(os.sep) \
+        os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep) \
             for item in res if item.endswith(rec_ext)
         ]
     res = sorted(res)
@@ -91,7 +91,7 @@ def get_record_list_recursive(db_dir:str, rec_ext:str) -> List[str]:
     return res
 
 
-def get_record_list_recursive2(db_dir:str, rec_pattern:str) -> List[str]:
+def get_record_list_recursive2(db_dir:Union[str,Path], rec_pattern:str) -> List[str]:
     """ finished, checked,
 
     get the list of records in `db_dir` recursively,
@@ -102,7 +102,7 @@ def get_record_list_recursive2(db_dir:str, rec_pattern:str) -> List[str]:
 
     Parameters
     ----------
-    db_dir: str,
+    db_dir: str or Path,
         the parent (root) path of the whole database
     rec_pattern: str,
         pattern of the record filenames, e.g. "A*.mat"
@@ -113,7 +113,7 @@ def get_record_list_recursive2(db_dir:str, rec_pattern:str) -> List[str]:
         list of records, in lexicographical order
     """
     res = []
-    roots = [db_dir]
+    roots = [str(db_dir)]
     while len(roots) > 0:
         new_roots = []
         for r in roots:
@@ -122,13 +122,13 @@ def get_record_list_recursive2(db_dir:str, rec_pattern:str) -> List[str]:
             res += glob(os.path.join(r, rec_pattern), recursive=False)
             new_roots += [item for item in tmp if os.path.isdir(item)]
         roots = deepcopy(new_roots)
-    res = [os.path.splitext(item)[0].replace(db_dir, "").strip(os.sep) for item in res]
+    res = [os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep) for item in res]
     res = sorted(res)
 
     return res
 
 
-def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]) -> Union[List[str], Dict[str, List[str]]]:
+def get_record_list_recursive3(db_dir:Union[str,Path], rec_patterns:Union[str,Dict[str,str]]) -> Union[List[str], Dict[str, List[str]]]:
     """ finished, checked,
 
     get the list of records in `db_dir` recursively,
@@ -139,7 +139,7 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
 
     Parameters
     ----------
-    db_dir: str,
+    db_dir: str or Path,
         the parent (root) path of the whole database
     rec_patterns: str or dict,
         pattern of the record filenames, e.g. "A(?:\d+).mat",
@@ -154,7 +154,7 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
         res = []
     elif isinstance(rec_patterns, dict):
         res = {k:[] for k in rec_patterns.keys()}
-    roots = [db_dir]
+    roots = [str(db_dir)]
     while len(roots) > 0:
         new_roots = []
         for r in roots:
@@ -168,11 +168,11 @@ def get_record_list_recursive3(db_dir:str, rec_patterns:Union[str,Dict[str,str]]
             new_roots += [os.path.join(r, item) for item in tmp if os.path.isdir(os.path.join(r, item))]
         roots = deepcopy(new_roots)
     if isinstance(rec_patterns, str):
-        res = [os.path.splitext(item)[0].replace(db_dir, "") for item in res]
+        res = [os.path.splitext(item)[0].replace(str(db_dir), "") for item in res]
         res = sorted(res)
     elif isinstance(rec_patterns, dict):
         for k in rec_patterns.keys():
-            res[k] = [os.path.splitext(item)[0].replace(db_dir, "").strip(os.sep) for item in res[k]]
+            res[k] = [os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep) for item in res[k]]
             res[k] = sorted(res[k])
     return res
 
