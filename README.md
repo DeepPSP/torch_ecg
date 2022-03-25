@@ -284,6 +284,9 @@ def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
 2. Inherit a [base model](/torch_ecg/models/ecg_seq_lab_net.py) to create [task specific models](/benchmarks/train_hybrid_cpsc2021/model.py), along with [tailored model configs](/benchmarks/train_hybrid_cpsc2021/cfg.py)
 3. Inherit the [`BaseTrainer`](/torch_ecg/utils/trainer.py) to build the [training pipeline](/benchmarks/train_hybrid_cpsc2021/trainer.py), with the `abstractmethod`s (`_setup_dataloaders`, `run_one_step`, `evaluate`, `batch_dim`, etc.) implemented.
 
+## CAUTION
+For the most of the time, but not always, after updates, I will run the notebooks in the [benchmarks](/benchmarks/) manually. If someone finds some bug, please raise an issue. The test workflow is to be enhanced and automated, see [this project](https://github.com/DeepPSP/torch_ecg/projects/8).
+
 ## Work in progress
 See the [projects page](https://github.com/DeepPSP/torch_ecg/projects).
 
