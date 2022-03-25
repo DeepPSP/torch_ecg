@@ -24,6 +24,7 @@ from ..utils.utils_nn import (
     SizeMixin, CkptMixin,
 )
 from ..utils.misc import dict_to_str
+from ..utils.outputs import BaseOutput
 from ._nets import (
     Mish, Swish, Activations,
     Bn_Activation, Conv_Bn_Activation,
@@ -318,7 +319,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
     def inference(self,
                   input:Union[np.ndarray,Tensor],
                   class_names:bool=False,
-                  bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+                  bin_pred_thr:float=0.5) -> BaseOutput:
         """ finished, checked,
 
         Parameters
@@ -333,10 +334,11 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
 
         Returns
         -------
-        pred: ndarray or DataFrame,
-            scalar predictions, (and binary predictions if `class_names` is True)
-        bin_pred: ndarray,
-            the array (with values 0, 1 for each class) of binary prediction
+        output: BaseOutput, including the following items:
+            prob: ndarray or DataFrame,
+                scalar predictions, (and binary predictions if `class_names` is True)
+            pred: ndarray,
+                the array (with values 0, 1 for each class) of binary prediction
         """
         raise NotImplementedError(f"implement a task specific inference method")
 

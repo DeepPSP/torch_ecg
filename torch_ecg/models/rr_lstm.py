@@ -25,6 +25,7 @@ from ..cfg import CFG, DEFAULTS
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
 from ..utils.misc import dict_to_str
 from ..utils.utils_nn import compute_module_size, SizeMixin, CkptMixin
+from ..utils.outputs import BaseOutput
 from ..models._nets import (
     Mish, Swish, Activations,
     NonLocalBlock, SEBlock, GlobalContextBlock,
@@ -204,7 +205,7 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
         return output
 
     @torch.no_grad()
-    def inference(self, input:Tensor, bin_pred_thr:float=0.5) -> Tensor:
+    def inference(self, input:Tensor, bin_pred_thr:float=0.5) -> BaseOutput:
         """
         """
         raise NotImplementedError("implement a task specific inference method")

@@ -32,6 +32,7 @@ from ..utils.utils_nn import (
     SizeMixin, CkptMixin,
 )
 from ..utils.misc import dict_to_str
+from ..utils.outputs import SequenceLabelingOutput
 from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
 from ._nets import (
     Mish, Swish, Activations,
@@ -365,7 +366,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
     # inference will not be included in the model itself
     # as it is strongly related to the usage scenario
     @torch.no_grad()
-    def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5) -> Any:
+    def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5) -> SequenceLabelingOutput:
         """
         """
         raise NotImplementedError("implement a task specific inference method")

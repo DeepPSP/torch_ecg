@@ -166,7 +166,7 @@ class LUDB(PhysioNetDataBase):
         kwargs: auxilliary key word arguments
         """
         super().__init__(db_name="ludb", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
-        print("Version 1.0.0 has bugs, make sure that version 1.0.1 or higher is used")
+        print("Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used")
         self.fs = 500
         self.spacing = 1000 / self.fs
         self.data_ext = "dat"

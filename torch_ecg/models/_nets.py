@@ -1723,6 +1723,7 @@ class StackedLSTM(SizeMixin, nn.Sequential):
             elif name == "lstm":
                 if idx > 0:
                     _hx = None
+                module.flatten_parameters()
                 output, _hx = module(output, _hx)
         if self.return_sequences:
             final_output = output  # seq_len, batch_size, n_direction*hidden_size
