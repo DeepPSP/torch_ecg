@@ -23,6 +23,7 @@ from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.utils.misc import mask_to_intervals
 from torch_ecg.utils.utils_signal import remove_spikes_naive
+from torch_ecg.utils.outputs import WaveDelineationOutput
 
 from cfg import ModelCfg
 
@@ -63,8 +64,8 @@ class ECG_UNET_LUDB(ECG_UNET):
     @torch.no_grad()
     def inference(self,
                   input:Union[Sequence[float],np.ndarray,Tensor],
-                  bin_pred_thr:float=0.5,) -> Tuple[np.ndarray, np.ndarray]:
-        """ finished, NOT checked,
+                  bin_pred_thr:float=0.5,) -> WaveDelineationOutput:
+        """ finished, checked,
 
         Parameters
         ----------
@@ -76,36 +77,41 @@ class ECG_UNET_LUDB(ECG_UNET):
 
         Returns
         -------
-        pred: np.ndarray,
-            predicted probability map, of shape (n_samples, seq_len, n_classes)
-        mask: np.ndarray,
-            predicted mask, of shape (n_samples, seq_len)
+        output: WaveDelineationOutput, with items:
+            - classes: list of str,
+                list of classes
+            - prob: np.ndarray,
+                predicted probability map, of shape (n_samples, seq_len, n_classes)
+            - mask: np.ndarray,
+                predicted mask, of shape (n_samples, seq_len)
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape
-        pred = self.forward(_input)
+        prob = self.forward(_input)
         if "i" in self.classes:
-            pred = self.softmax(pred)
+            prob = self.softmax(prob)
         else:
-            pred = torch.sigmoid(pred)
-        pred = pred.cpu().detach().numpy()
+            prob = torch.sigmoid(prob)
+        prob = prob.cpu().detach().numpy()
 
         if "i" in self.classes:
-            mask = np.argmax(pred, axis=-1)
+            mask = np.argmax(prob, axis=-1)
         else:
-            mask = np.vectorize(lambda n: self._mask_map[n])(np.argmax(pred, axis=-1))
-            mask *= (pred > bin_pred_thr).any(axis=-1)  # class "i" mapped to 0
+            mask = np.vectorize(lambda n: self._mask_map[n])(np.argmax(prob, axis=-1))
+            mask *= (prob > bin_pred_thr).any(axis=-1)  # class "i" mapped to 0
 
         # TODO: shoule one add more post-processing to filter out false positives of the waveforms?
 
-        return pred, mask
+        return WaveDelineationOutput(
+            classes=self.classes, prob=prob, mask=mask,
+        )
 
     def inference_LUDB(self,
                        input:Union[np.ndarray,Tensor],
-                       bin_pred_thr:float=0.5,) -> Tuple[np.ndarray, List[np.ndarray]]:
+                       bin_pred_thr:float=0.5,) -> WaveDelineationOutput:
         """
         alias of `self.inference`
         """

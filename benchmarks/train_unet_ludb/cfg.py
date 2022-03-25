@@ -112,7 +112,7 @@ TrainCfg.steps = [5000, 10000]
 
 TrainCfg.early_stopping = CFG()  # early stopping according to challenge metric
 TrainCfg.early_stopping.min_delta = 0.001  # should be non-negative
-TrainCfg.early_stopping.patience = 10
+TrainCfg.early_stopping.patience = 30
 
 # configs of loss function
 TrainCfg.loss = "FocalLoss"  # "BCEWithLogitsLoss", "AsymmetricLoss", "CrossEntropyLoss"

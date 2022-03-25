@@ -200,9 +200,9 @@ class CINC2021Trainer(BaseTrainer):
 
             if torch.cuda.is_available():
                 torch.cuda.synchronize()
-            preds, bin_preds = self._model.inference(signals)
-            all_scalar_preds.append(preds)
-            all_bin_preds.append(bin_preds)
+            model_output = self._model.inference(signals)
+            all_scalar_preds.append(model_output.prob)
+            all_bin_preds.append(model_output.pred)
         
         all_scalar_preds = np.concatenate(all_scalar_preds, axis=0)
         all_bin_preds = np.concatenate(all_bin_preds, axis=0)

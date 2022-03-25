@@ -220,8 +220,8 @@ class CPSC2021Trainer(BaseTrainer):
 
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
-                prob, rpeak_preds = self._model.inference(signals)
-                all_rpeak_preds += rpeak_preds
+                model_output = self._model.inference(signals)
+                all_rpeak_preds += model_output.rpeak_indices
             eval_res = compute_rpeak_metric(
                 rpeaks_truths=all_rpeak_labels,
                 rpeaks_preds=all_rpeak_preds,
@@ -242,8 +242,8 @@ class CPSC2021Trainer(BaseTrainer):
                 all_weight_masks = np.concatenate((all_weight_masks, weight_masks))
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
-                preds, _ = self._model.inference(signals)
-                all_preds = np.concatenate((all_preds, preds))
+                model_output = self._model.inference(signals)
+                all_preds = np.concatenate((all_preds, model_output.af_mask))  # or model_output.prob ?
             eval_res = compute_rr_metric(all_labels, all_preds, all_weight_masks)
             # in case possible memeory leakage?
             del all_preds, all_labels, all_weight_masks
@@ -259,8 +259,8 @@ class CPSC2021Trainer(BaseTrainer):
                 all_weight_masks = np.concatenate((all_weight_masks, weight_masks))
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
-                preds, _ = self._model.inference(signals)
-                all_preds = np.concatenate((all_preds, preds))
+                model_output = self._model.inference(signals)
+                all_preds = np.concatenate((all_preds, model_output.af_mask))  # or model_output.prob ?
             eval_res = compute_main_task_metric(
                 mask_truths=all_labels,
                 mask_preds=all_preds,

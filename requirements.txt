@@ -6,7 +6,7 @@ pandas
 scikit-learn
 packaging
 easydict
-wfdb
+wfdb==3.2.0
 biosppy
 torch
 torchsummary

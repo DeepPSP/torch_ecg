@@ -217,14 +217,14 @@ class CPSC2019Trainer(BaseTrainer):
 
             if torch.cuda.is_available():
                 torch.cuda.synchronize()
-            prob, rpeak_preds = self._model.inference(
+            model_output = self._model.inference(
                 signals,
                 bin_pred_thr=0.5,
                 duration_thr=4*16,
                 dist_thr=200,
                 correction=False
             )
-            all_rpeak_preds += rpeak_preds
+            all_rpeak_preds += model_output.rpeak_indices
 
         qrs_score = compute_metrics(
             rpeaks_truths=all_rpeak_labels,

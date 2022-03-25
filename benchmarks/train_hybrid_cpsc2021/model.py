@@ -34,6 +34,7 @@ from torch_ecg.models.rr_lstm import RR_LSTM
 from torch_ecg.utils.misc import mask_to_intervals
 from torch_ecg.utils.utils_interval import intervals_union
 from torch_ecg.utils.preproc import merge_rpeaks
+from torch_ecg.utils.outputs import SequenceTaggingOutput, RPeaksDetectionOutput
 
 from cfg import ModelCfg
 
@@ -63,11 +64,13 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
 
         Usage
         -----
+        ```python
         from cfg import ModelCfg
         task = "qrs_detection"  # or "main"
         model_cfg = deepcopy(ModelCfg[task])
         model_cfg.model_name = "seq_lab"
         model = ECG_SEQ_LAB_NET_CPSC2021(model_cfg)
+        ````
         """
         if config[config.model_name].reduction == 1:
             config[config.model_name].recover_length = True
@@ -78,7 +81,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
     def inference(self,
                   input:Union[Sequence[float],np.ndarray,Tensor],
                   bin_pred_thr:float=0.5,
-                  **kwargs:Any) -> Union[Tuple[np.ndarray, List[List[List[int]]]], Tuple[np.ndarray, List[np.ndarray]]]:
+                  **kwargs:Any) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
         """ finished, checked,
 
         Parameters
@@ -88,6 +91,26 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
         bin_pred_thr: float, default 0.5,
             the threshold for making binary predictions from scalar predictions
         kwargs: task specific key word arguments
+
+        Returns
+        -------
+        output: SequenceTaggingOutput or RPeaksDetectionOutput,
+            the output of the model
+            for qrs_detection task, the output is a RPeaksDetectionOutput instance, with items:
+                - rpeak_indices: list of ndarray,
+                    list of ndarray of rpeak indices for each batch element
+                - prob: array_like,
+                    the probability array of the input sequence of signals
+            for main task, the output is a SequenceTaggingOutput instance, with items:
+                - classes: list,
+                    the list of classes
+                - prob: array_like,
+                    the probability array of the input sequence of signals
+                - pred: array_like,
+                    the binary prediction array of the input sequence of signals
+                - af_episodes: list of list of intervals,
+                    af episodes, in the form of intervals of [start, end], right inclusive
+                - af_mask: alias of pred
         """
         if self.task == "qrs_detection":
             return self._inference_qrs_detection(input, bin_pred_thr, **kwargs)
@@ -98,7 +121,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
     def inference_CPSC2021(self,
                            input:Union[Sequence[float],np.ndarray,Tensor],
                            bin_pred_thr:float=0.5,
-                           **kwargs:Any) -> Union[Tuple[np.ndarray, List[List[List[int]]]], Tuple[np.ndarray, List[np.ndarray]]]:
+                           **kwargs:Any) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
         """
         alias for `self.inference`
         """
@@ -109,7 +132,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
                                  input:Union[Sequence[float],np.ndarray,Tensor],
                                  bin_pred_thr:float=0.5,
                                  duration_thr:int=4*16,
-                                 dist_thr:Union[int,Sequence[int]]=200,) -> Tuple[np.ndarray, List[np.ndarray]]:
+                                 dist_thr:Union[int,Sequence[int]]=200,) -> RPeaksDetectionOutput:
         """ finished, checked,
 
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
@@ -132,37 +155,39 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
 
         Returns
         -------
-        pred: ndarray,
-            the array of scalar predictions
-        rpeaks: list of ndarray,
-            list of rpeak indices for each batch element
+        output: RPeaksDetectionOutput, with items:
+            - rpeak_indices: list of ndarray,
+                list of ndarray of rpeak indices for each batch element
+            - prob: array_like,
+                the probability array of the input sequence of signals
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         # batch_size, channels, seq_len = _input.shape
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        prob = self.sigmoid(self.forward(_input))
+        prob = prob.cpu().detach().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _qrs_detection_post_process(
-            pred=pred,
+            prob=prob,
             fs=self.config.fs,
             reduction=self.config.reduction,
             bin_pred_thr=bin_pred_thr,
             duration_thr=duration_thr,
             dist_thr=dist_thr
         )
-        return pred, rpeaks
+        return RPeaksDetectionOutput(
+            rpeak_indices=rpeaks, prob=prob,
+        )
 
     @torch.no_grad()
     def _inference_main_task(self,
                              input:Union[Sequence[float],np.ndarray,Tensor],
                              bin_pred_thr:float=0.5,
                              rpeaks:Optional[Union[Sequence[int],Sequence[Sequence[int]]]]=None,
-                             episode_len_thr:int=5,) -> Tuple[np.ndarray, List[List[List[int]]]]:
+                             episode_len_thr:int=5,) -> SequenceTaggingOutput:
         """ finished, checked,
 
         Parameters
@@ -179,22 +204,27 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
 
         Returns
         -------
-        pred: ndarray,
-            the array of scalar predictions
-        af_episodes: list of list of intervals,
-            af episodes, in the form of intervals of [start, end]
+        output: SequenceTaggingOutput, with items:
+            - classes: list,
+                the list of classes
+            - prob: array_like,
+                the probability array of the input sequence of signals
+            - pred: array_like,
+                the binary prediction array of the input sequence of signals
+            - af_episodes: list of list of intervals,
+                af episodes, in the form of intervals of [start, end], right inclusive
+            - af_mask: alias of pred
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, n_leads, seq_len = _input.shape
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        prob = self.sigmoid(self.forward(_input))
+        prob = prob.cpu().detach().numpy().squeeze(-1)
         
-        af_episodes = _main_task_post_process(
-            pred=pred,
+        af_episodes, af_mask = _main_task_post_process(
+            prob=prob,
             fs=self.config.fs,
             reduction=self.config.reduction,
             bin_pred_thr=bin_pred_thr,
@@ -202,7 +232,11 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
             siglens=list(repeat(seq_len, batch_size)),
             episode_len_thr=episode_len_thr,
         )
-        return pred, af_episodes
+        return SequenceTaggingOutput(
+            classes=self.class_names, prob=prob, pred=af_mask,
+            af_episodes=af_episodes,
+            af_mask=af_mask,  # alias of pred
+        )
 
 
 class ECG_UNET_CPSC2021(ECG_UNET):
@@ -235,7 +269,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
     def inference(self,
                   input:Union[Sequence[float],np.ndarray,Tensor],
                   bin_pred_thr:float=0.5,
-                  **kwargs:Any) -> Union[Tuple[np.ndarray, List[List[List[int]]]], Tuple[np.ndarray, List[np.ndarray]]]:
+                  **kwargs:Any) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
         """ finished, checked,
 
         Parameters
@@ -245,6 +279,26 @@ class ECG_UNET_CPSC2021(ECG_UNET):
         bin_pred_thr: float, default 0.5,
             the threshold for making binary predictions from scalar predictions
         kwargs: task specific key word arguments
+
+        Returns
+        -------
+        output: SequenceTaggingOutput or RPeaksDetectionOutput,
+            the output of the model
+            for qrs_detection task, the output is a RPeaksDetectionOutput instance, with items:
+                - rpeak_indices: list of ndarray,
+                    list of ndarray of rpeak indices for each batch element
+                - prob: array_like,
+                    the probability array of the input sequence of signals
+            for main task, the output is a SequenceTaggingOutput instance, with items:
+                - classes: list,
+                    the list of classes
+                - prob: array_like,
+                    the probability array of the input sequence of signals
+                - pred: array_like,
+                    the binary prediction array of the input sequence of signals
+                - af_episodes: list of list of intervals,
+                    af episodes, in the form of intervals of [start, end], right inclusive
+                - af_mask: alias of pred
         """
         if self.task == "qrs_detection":
             return self._inference_qrs_detection(input, bin_pred_thr, **kwargs)
@@ -255,7 +309,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
     def inference_CPSC2021(self,
                            input:Union[Sequence[float],np.ndarray,Tensor],
                            bin_pred_thr:float=0.5,
-                           **kwargs:Any) -> Union[Tuple[np.ndarray, List[List[List[int]]]], Tuple[np.ndarray, List[np.ndarray]]]:
+                           **kwargs:Any) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
         """
         alias for `self.inference`
         """
@@ -266,7 +320,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
                                  input:Union[Sequence[float],np.ndarray,Tensor],
                                  bin_pred_thr:float=0.5,
                                  duration_thr:int=4*16,
-                                 dist_thr:Union[int,Sequence[int]]=200,) -> Tuple[np.ndarray, List[np.ndarray]]:
+                                 dist_thr:Union[int,Sequence[int]]=200,) -> RPeaksDetectionOutput:
         """ finished, checked,
 
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
@@ -289,37 +343,39 @@ class ECG_UNET_CPSC2021(ECG_UNET):
 
         Returns
         -------
-        pred: ndarray,
-            the array of scalar predictions
-        rpeaks: list of ndarray,
-            list of rpeak indices for each batch element
+        output: RPeaksDetectionOutput, with items:
+            - rpeak_indices: list of ndarray,
+                list of ndarray of rpeak indices for each batch element
+            - prob: array_like,
+                the probability array of the input sequence of signals
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         # batch_size, channels, seq_len = _input.shape
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        prob = self.sigmoid(self.forward(_input))
+        prob = prob.cpu().detach().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _qrs_detection_post_process(
-            pred=pred,
+            prob=prob,
             fs=self.config.fs,
             reduction=1,
             bin_pred_thr=bin_pred_thr,
             duration_thr=duration_thr,
             dist_thr=dist_thr
         )
-        return pred, rpeaks
+        return RPeaksDetectionOutput(
+            rpeak_indices=rpeaks, prob=prob,
+        )
 
     @torch.no_grad()
     def _inference_main_task(self,
                              input:Union[Sequence[float],np.ndarray,Tensor],
                              bin_pred_thr:float=0.5,
                              rpeaks:Optional[Union[Sequence[int],Sequence[Sequence[int]]]]=None,
-                             episode_len_thr:int=5,) -> Tuple[np.ndarray, List[List[List[int]]]]:
+                             episode_len_thr:int=5,) -> SequenceTaggingOutput:
         """ finished, checked,
 
         Parameters
@@ -336,22 +392,27 @@ class ECG_UNET_CPSC2021(ECG_UNET):
 
         Returns
         -------
-        pred: ndarray,
-            the array of scalar predictions
-        af_episodes: list of list of intervals,
-            af episodes, in the form of intervals of [start, end]
+        output: SequenceTaggingOutput, with items:
+            - classes: list,
+                the list of classes
+            - prob: array_like,
+                the probability array of the input sequence of signals
+            - pred: array_like,
+                the binary prediction array of the input sequence of signals
+            - af_episodes: list of list of intervals,
+                af episodes, in the form of intervals of [start, end], right inclusive
+            - af_mask: alias of pred
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, n_leads, seq_len = _input.shape
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        prob = self.sigmoid(self.forward(_input))
+        prob = prob.cpu().detach().numpy().squeeze(-1)
         
-        af_episodes = _main_task_post_process(
-            pred=pred,
+        af_episodes, af_mask = _main_task_post_process(
+            prob=prob,
             fs=self.config.fs,
             reduction=self.config.reduction,
             bin_pred_thr=bin_pred_thr,
@@ -359,7 +420,11 @@ class ECG_UNET_CPSC2021(ECG_UNET):
             siglens=list(repeat(seq_len, batch_size)),
             episode_len_thr=episode_len_thr,
         )
-        return pred, af_episodes
+        return SequenceTaggingOutput(
+            classes=self.classes, prob=prob, pred=af_mask,
+            af_episodes=af_episodes,
+            af_mask=af_mask,  # alias of pred
+        )
 
 
 class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
@@ -392,7 +457,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
     def inference(self,
                   input:Union[Sequence[float],np.ndarray,Tensor],
                   bin_pred_thr:float=0.5,
-                  **kwargs:Any) -> Union[Tuple[np.ndarray, List[List[List[int]]]], Tuple[np.ndarray, List[np.ndarray]]]:
+                  **kwargs:Any) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
         """ finished, checked,
 
         Parameters
@@ -402,6 +467,26 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
         bin_pred_thr: float, default 0.5,
             the threshold for making binary predictions from scalar predictions
         kwargs: task specific key word arguments
+
+        Returns
+        -------
+        output: SequenceTaggingOutput or RPeaksDetectionOutput,
+            the output of the model
+            for qrs_detection task, the output is a RPeaksDetectionOutput instance, with items:
+                - rpeak_indices: list of ndarray,
+                    list of ndarray of rpeak indices for each batch element
+                - prob: array_like,
+                    the probability array of the input sequence of signals
+            for main task, the output is a SequenceTaggingOutput instance, with items:
+                - classes: list,
+                    the list of classes
+                - prob: array_like,
+                    the probability array of the input sequence of signals
+                - pred: array_like,
+                    the binary prediction array of the input sequence of signals
+                - af_episodes: list of list of intervals,
+                    af episodes, in the form of intervals of [start, end], right inclusive
+                - af_mask: alias of pred
         """
         if self.task == "qrs_detection":
             return self._inference_qrs_detection(input, bin_pred_thr, **kwargs)
@@ -412,7 +497,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
     def inference_CPSC2021(self,
                            input:Union[Sequence[float],np.ndarray,Tensor],
                            bin_pred_thr:float=0.5,
-                           **kwargs:Any,) -> Union[Tuple[np.ndarray, List[List[List[int]]]], Tuple[np.ndarray, List[np.ndarray]]]:
+                           **kwargs:Any,) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
         """
         alias for `self.inference`
         """
@@ -423,7 +508,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
                                  input:Union[Sequence[float],np.ndarray,Tensor],
                                  bin_pred_thr:float=0.5,
                                  duration_thr:int=4*16,
-                                 dist_thr:Union[int,Sequence[int]]=200,) -> Tuple[np.ndarray, List[np.ndarray]]:
+                                 dist_thr:Union[int,Sequence[int]]=200,) -> RPeaksDetectionOutput:
         """ finished, checked,
 
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
@@ -446,37 +531,39 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
 
         Returns
         -------
-        pred: ndarray,
-            the array of scalar predictions
-        rpeaks: list of ndarray,
-            list of rpeak indices for each batch element
+        output: RPeaksDetectionOutput, with items:
+            - rpeak_indices: list of ndarray,
+                list of ndarray of rpeak indices for each batch element
+            - prob: array_like,
+                the probability array of the input sequence of signals
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         # batch_size, channels, seq_len = _input.shape
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        prob = self.sigmoid(self.forward(_input))
+        prob = prob.cpu().detach().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _qrs_detection_post_process(
-            pred=pred,
+            prob=prob,
             fs=self.config.fs,
             reduction=1,
             bin_pred_thr=bin_pred_thr,
             duration_thr=duration_thr,
             dist_thr=dist_thr
         )
-        return pred, rpeaks
+        return RPeaksDetectionOutput(
+            rpeak_indices=rpeaks, prob=prob,
+        )
 
     @torch.no_grad()
     def _inference_main_task(self,
                              input:Union[Sequence[float],np.ndarray,Tensor],
                              bin_pred_thr:float=0.5,
                              rpeaks:Optional[Union[Sequence[int],Sequence[Sequence[int]]]]=None,
-                             episode_len_thr:int=5,) -> Tuple[np.ndarray, List[List[List[int]]]]:
+                             episode_len_thr:int=5,) -> SequenceTaggingOutput:
         """ finished, checked,
 
         Parameters
@@ -493,22 +580,27 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
 
         Returns
         -------
-        pred: ndarray,
-            the array of scalar predictions
-        af_episodes: list of list of intervals,
-            af episodes, in the form of intervals of [start, end]
+        output: SequenceTaggingOutput, with items:
+            - classes: list,
+                the list of classes
+            - prob: array_like,
+                the probability array of the input sequence of signals
+            - pred: array_like,
+                the binary prediction array of the input sequence of signals
+            - af_episodes: list of list of intervals,
+                af episodes, in the form of intervals of [start, end], right inclusive
+            - af_mask: alias of pred
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, n_leads, seq_len = _input.shape
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        prob = self.sigmoid(self.forward(_input))
+        prob = prob.cpu().detach().numpy().squeeze(-1)
         
-        af_episodes = _main_task_post_process(
-            pred=pred,
+        af_episodes, af_mask = _main_task_post_process(
+            prob=prob,
             fs=self.config.fs,
             reduction=self.config.reduction,
             bin_pred_thr=bin_pred_thr,
@@ -516,7 +608,11 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
             siglens=list(repeat(seq_len, batch_size)),
             episode_len_thr=episode_len_thr,
         )
-        return pred, af_episodes
+        return SequenceTaggingOutput(
+            classes=self.classes, prob=prob, pred=af_mask,
+            af_episodes=af_episodes,
+            af_mask=af_mask,  # alias of pred
+        )
 
 
 class RR_LSTM_CPSC2021(RR_LSTM):
@@ -549,7 +645,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
                   input:Union[Sequence[float],np.ndarray,Tensor],
                   bin_pred_thr:float=0.5,
                   rpeaks:Optional[Union[Sequence[int],Sequence[Sequence[int]]]]=None,
-                  episode_len_thr:int=5,) -> Tuple[np.ndarray, List[List[List[int]]]]:
+                  episode_len_thr:int=5,) -> SequenceTaggingOutput:
         """ finished, checked,
 
         Parameters
@@ -566,10 +662,16 @@ class RR_LSTM_CPSC2021(RR_LSTM):
 
         Returns
         -------
-        pred: ndarray,
-            the array of scalar predictions
-        af_episodes: list of list of intervals,
-            af episodes, in the form of intervals of [start, end], right inclusive
+        output: SequenceTaggingOutput, with items:
+            - classes: list,
+                the list of classes
+            - prob: array_like,
+                the probability array of the input sequence of signals
+            - pred: array_like,
+                the binary prediction array of the input sequence of signals
+            - af_episodes: list of list of intervals,
+                af episodes, in the form of intervals of [start, end], right inclusive
+            - af_mask: alias of pred
 
         WARNING
         -------
@@ -585,13 +687,13 @@ class RR_LSTM_CPSC2021(RR_LSTM):
             _input = _input.unsqueeze(0).unsqueeze(-1)  # add a batch dimension and a channel dimension
         # (batch_size, seq_len, n_channels) -> (seq_len, batch_size, n_channels)
         _input = _input.permute(1,0,2)
-        pred = self.forward(_input)
+        prob = self.forward(_input)
         if self.config.clf.name != "crf":
-            pred = self.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+            prob = self.sigmoid(prob)
+        prob = prob.cpu().detach().numpy().squeeze(-1)
 
-        af_episodes = _main_task_post_process(
-            pred=pred,
+        af_episodes, af_mask = _main_task_post_process(
+            prob=prob,
             fs=1/0.8,
             reduction=1,
             bin_pred_thr=bin_pred_thr,
@@ -607,12 +709,16 @@ class RR_LSTM_CPSC2021(RR_LSTM):
             # WARNING: need further processing to move start and end for the case of AFf
             # NOTE that the next rpeak to the interval (of rr sequences) ends are added
             af_episodes = [[[r[itv[0]], r[itv[1]+1]] for itv in a] for a,r in zip(af_episodes, _rpeaks)]
-        return pred, af_episodes
+        return SequenceTaggingOutput(
+            classes=self.classes, prob=prob, pred=af_mask,
+            af_episodes=af_episodes,
+            af_mask=af_mask,  # alias of pred
+        )
 
     @torch.no_grad()
     def inference_CPSC2021(self,
                            input:Union[Sequence[float],np.ndarray,Tensor],
-                           bin_pred_thr:float=0.5,) -> Any:
+                           bin_pred_thr:float=0.5,) -> SequenceTaggingOutput:
         """
         alias for `self.inference`
         """
@@ -646,7 +752,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
         return model, aux_config
 
 
-def _qrs_detection_post_process(pred:np.ndarray,
+def _qrs_detection_post_process(prob:np.ndarray,
                                 fs:Real,
                                 reduction:int,
                                 bin_pred_thr:float=0.5,
@@ -659,12 +765,12 @@ def _qrs_detection_post_process(pred:np.ndarray,
 
     Parameters
     ----------
-    pred: ndarray,
+    prob: ndarray,
         array of predicted probability
     fs: real number,
         sampling frequency of the ECG
     reduction: int,
-        reduction (granularity) of `pred` w.r.t. the ECG
+        reduction (granularity) of `prob` w.r.t. the ECG
     bin_pred_thr: float, default 0.5,
         the threshold for making binary predictions from scalar predictions
     skip_dist: int, default 500,
@@ -679,7 +785,7 @@ def _qrs_detection_post_process(pred:np.ndarray,
         e.g. [200, 1200]
         if is int, then is the case of (0-th element).
     """
-    batch_size, prob_arr_len = pred.shape
+    batch_size, prob_arr_len = prob.shape
     # print(batch_size, prob_arr_len)
     model_spacing = 1000 / fs  # units in ms
     input_len = reduction * prob_arr_len
@@ -688,10 +794,10 @@ def _qrs_detection_post_process(pred:np.ndarray,
     _dist_thr = [dist_thr] if isinstance(dist_thr, int) else dist_thr
     assert len(_dist_thr) <= 2
 
-    # mask = (pred > bin_pred_thr).astype(int)
+    # mask = (prob > bin_pred_thr).astype(int)
     rpeaks = []
     for b_idx in range(batch_size):
-        b_prob = pred[b_idx,...]
+        b_prob = prob[b_idx,...]
         b_mask = (b_prob >= bin_pred_thr).astype(int)
         b_qrs_intervals = mask_to_intervals(b_mask, 1)
         # print(b_qrs_intervals)
@@ -754,13 +860,13 @@ def _qrs_detection_post_process(pred:np.ndarray,
     return rpeaks
 
 
-def _main_task_post_process(pred:np.ndarray,
+def _main_task_post_process(prob:np.ndarray,
                             fs:Real,
                             reduction:int,
                             bin_pred_thr:float=0.5,
                             rpeaks:Sequence[Sequence[int]]=None,
                             siglens:Optional[Sequence[int]]=None,
-                            episode_len_thr:int=5,) -> List[List[List[int]]]:
+                            episode_len_thr:int=5,) -> Tuple[List[List[List[int]]], np.ndarray]:
     """ finished, checked,
 
     post processing of the main task,
@@ -769,7 +875,7 @@ def _main_task_post_process(pred:np.ndarray,
 
     Parameters
     ----------
-    pred: ndarray,
+    prob: ndarray,
         predicted af mask, of shape (batch_size, seq_len)
     fs: real number,
         sampling frequency of the signal
@@ -790,13 +896,15 @@ def _main_task_post_process(pred:np.ndarray,
     -------
     af_episodes: list of list of intervals,
         af episodes, in the form of intervals of [start, end], right inclusive
+    af_mask: ndarray,
+        array (mask) of binary prediction of af, of shape (batch_size, seq_len)
     """
-    batch_size, prob_arr_len = pred.shape
+    batch_size, prob_arr_len = prob.shape
     model_spacing = 1000 / fs  # units in ms
     input_len = reduction * prob_arr_len
     default_rr = int(fs * 0.8)
 
-    af_mask = (pred >= bin_pred_thr).astype(int)
+    af_mask = (prob >= bin_pred_thr).astype(int)
 
     af_episodes = []
     for b_idx in range(batch_size):
@@ -838,4 +946,4 @@ def _main_task_post_process(pred:np.ndarray,
                     if itv[1] - itv[0] >= default_rr * episode_len_thr
             ]
         af_episodes.append(b_af_episodes)
-    return af_episodes
+    return af_episodes, af_mask

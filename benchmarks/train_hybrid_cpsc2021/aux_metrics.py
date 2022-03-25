@@ -126,7 +126,7 @@ def compute_rr_metric(rr_truths:Sequence[Union[np.ndarray,Sequence[int]]],
     ----------
     rr_truths: array_like,
         sequences of AF labels on rr intervals, of shape (n_samples, seq_len)
-    rr_truths: array_like,
+    rr_preds: array_like,
         sequences of AF predictions on rr intervals, of shape (n_samples, seq_len)
 
     Returns

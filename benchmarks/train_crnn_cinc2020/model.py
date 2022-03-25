@@ -18,6 +18,7 @@ except ModuleNotFoundError:
 
 from torch_ecg.cfg import CFG
 from torch_ecg.models.ecg_crnn import ECG_CRNN
+from torch_ecg.utils.outputs import MultiLabelClassificationOutput
 
 from cfg import ModelCfg
 
@@ -55,7 +56,7 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
     def inference(self,
                   input:Union[Sequence[float],np.ndarray,Tensor],
                   class_names:bool=False,
-                  bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+                  bin_pred_thr:float=0.5) -> MultiLabelClassificationOutput:
         """ finished, checked,
 
         auxiliary function to `forward`, for CINC2020,
@@ -72,10 +73,15 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
 
         Returns
         -------
-        pred: ndarray or DataFrame,
-            scalar predictions, (and binary predictions if `class_names` is True)
-        bin_pred: ndarray,
-            the array (with values 0, 1 for each class) of binary prediction
+        MultiLabelClassificationOutput, with the following items:
+            classes: list,
+                list of the classes for classification
+            thr: float,
+                threshold for making binary predictions from scalar predictions
+            prob: ndarray or DataFrame,
+                scalar predictions, (and binary predictions if `class_names` is True)
+            prob: ndarray,
+                the array (with values 0, 1 for each class) of binary prediction
         """
         if "NSR" in self.classes:
             nsr_cid = self.classes.index("NSR")
@@ -87,35 +93,36 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        bin_pred = (pred>=bin_pred_thr).int()
+        prob = self.sigmoid(self.forward(_input))
+        pred = (prob>=bin_pred_thr).int()
+        prob = prob.cpu().detach().numpy()
         pred = pred.cpu().detach().numpy()
-        bin_pred = bin_pred.cpu().detach().numpy()
-        for row_idx, row in enumerate(bin_pred):
-            row_max_prob = pred[row_idx,...].max()
+        for row_idx, row in enumerate(pred):
+            row_max_prob = prob[row_idx,...].max()
             if row_max_prob < ModelCfg.bin_pred_nsr_thr and nsr_cid is not None:
-                bin_pred[row_idx, nsr_cid] = 1
+                pred[row_idx, nsr_cid] = 1
             elif row.sum() == 0:
-                bin_pred[row_idx,...] = \
+                pred[row_idx,...] = \
                     (
-                        ((pred[row_idx,...]+ModelCfg.bin_pred_look_again_tol) >= row_max_prob) \
-                            & (pred[row_idx,...] >= ModelCfg.bin_pred_nsr_thr )
+                        ((prob[row_idx,...]+ModelCfg.bin_pred_look_again_tol) >= row_max_prob) \
+                            & (prob[row_idx,...] >= ModelCfg.bin_pred_nsr_thr )
                     ).astype(int)
         if class_names:
-            pred = pd.DataFrame(pred)
-            pred.columns = self.classes
-            pred["bin_pred"] = ""
-            for row_idx in range(len(pred)):
-                pred.at[row_idx, "bin_pred"] = \
-                    np.array(self.classes)[np.where(bin_pred==1)[0]].tolist()
-        return pred, bin_pred
+            prob = pd.DataFrame(prob)
+            prob.columns = self.classes
+            prob["pred"] = ""
+            for row_idx in range(len(prob)):
+                prob.at[row_idx, "pred"] = \
+                    np.array(self.classes)[np.where(pred==1)[0]].tolist()
+        return MultiLabelClassificationOutput(
+            classes=self.classes, thr=bin_pred_thr, prob=prob, pred=pred,
+        )
 
     @torch.no_grad()
     def inference_CINC2020(self,
                            input:Union[np.ndarray,Tensor],
                            class_names:bool=False,
-                           bin_pred_thr:float=0.5) -> Tuple[Union[np.ndarray, pd.DataFrame], np.ndarray]:
+                           bin_pred_thr:float=0.5) -> MultiLabelClassificationOutput:
         """
         alias for `self.inference`
         """

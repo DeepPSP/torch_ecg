@@ -36,6 +36,7 @@ from torch_ecg.utils.misc import (
     get_date_str, dict_to_str, str2bool,
     mask_to_intervals, list_sum,
 )
+from torch_ecg.utils.outputs import BaseOutput
 
 from model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
 from cfg import ModelCfg, TrainCfg
@@ -563,9 +564,9 @@ def evaluate_crnn(model:nn.Module,
 
         if torch.cuda.is_available():
             torch.cuda.synchronize()
-        preds, bin_preds = _model.inference(signals)
-        all_scalar_preds.append(preds)
-        all_bin_preds.append(bin_preds)
+        model_output = _model.inference(signals)
+        all_scalar_preds.append(model_output.prob)
+        all_bin_preds.append(model_output.pred)
     
     all_scalar_preds = np.concatenate(all_scalar_preds, axis=0)
     all_bin_preds = np.concatenate(all_bin_preds, axis=0)
@@ -687,10 +688,10 @@ def evaluate_seq_lab(model:nn.Module,
 
         if torch.cuda.is_available():
             torch.cuda.synchronize()
-        preds, spb_preds, pvc_preds = _model.inference(signals)
-        all_scalar_preds.append(preds)
-        all_spb_preds.append(spb_preds)
-        all_pvc_preds.append(pvc_preds)
+        model_output = _model.inference(signals)
+        all_scalar_preds.append(model_output.prob)
+        all_spb_preds.append(model_output.SPB_indices)
+        all_pvc_preds.append(model_output.PVC_indices)
 
     all_scalar_preds = np.concatenate(all_scalar_preds, axis=0)
     # all_spb_preds = np.concatenate(all_spb_preds, axis=0)

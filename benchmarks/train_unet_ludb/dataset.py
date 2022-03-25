@@ -26,7 +26,7 @@ except ModuleNotFoundError:
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import LUDB as LR
 from torch_ecg._preprocessors import PreprocManager
-from ....utils.misc import ReprMixin
+from torch_ecg.utils.misc import ReprMixin
 
 from cfg import TrainCfg
 

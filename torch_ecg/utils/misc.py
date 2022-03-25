@@ -581,6 +581,10 @@ def rdheader(header_data:Union[str, Sequence[str]]) -> Union[Record, MultiRecord
             raise FileNotFoundError
         with open(_header_data, "r") as f:
             _header_data = f.read().splitlines()
+    elif isinstance(header_data, Sequence):
+        _header_data = header_data
+    else:
+        raise TypeError(f"header_data must be str or sequence of str, but got {type(header_data)}")
     # Read the header file. Separate comment and non-comment lines
     header_lines, comment_lines = [], []
     for line in _header_data:

@@ -28,6 +28,7 @@ from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.utils.misc import mask_to_intervals
 from torch_ecg.utils.utils_signal import remove_spikes_naive
+from torch_ecg.utils.outputs import RPeaksDetectionOutput
 
 from cfg import ModelCfg
 
@@ -66,7 +67,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
                   bin_pred_thr:float=0.5,
                   duration_thr:int=4*16,
                   dist_thr:Union[int,Sequence[int]]=200,
-                  correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
+                  correction:bool=False) -> RPeaksDetectionOutput:
         """ finished, checked,
 
         auxiliary function to `forward`, for CPSC2019,
@@ -94,25 +95,25 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
 
         Returns
         -------
-        pred: ndarray,
-            the array of scalar predictions
-        rpeaks: list of ndarray,
-            list of rpeak indices for each batch element
+        output: RPeaksDetectionOutput, with items:
+            - rpeak_indices: list of ndarray,
+                list of ndarray of rpeak indices for each batch element
+            - prob: array_like,
+                the probability array of the input sequence of signals
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        if pred.shape[1] != _input.shape[-1]:
-            pred = self._recover_length(pred, _input.shape[-1])
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        prob = self.sigmoid(self.forward(_input))
+        if prob.shape[1] != _input.shape[-1]:
+            prob = self._recover_length(prob, _input.shape[-1])
+        prob = prob.cpu().detach().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _inference_post_process(
-            pred=pred,
+            prob=prob,
             fs=self.config.fs,
             skip_dist=self.config.skip_dist,
             bin_pred_thr=bin_pred_thr,
@@ -130,7 +131,9 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
                 )[0] for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
             ]
 
-        return pred, rpeaks
+        return RPeaksDetectionOutput(
+            rpeak_indices=rpeaks, prob=prob,
+        )
 
     @torch.no_grad()
     def inference_CPSC2019(self,
@@ -172,8 +175,8 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
                   bin_pred_thr:float=0.5,
                   duration_thr:int=4*16,
                   dist_thr:Union[int,Sequence[int]]=200,
-                  correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
-        """ finished, NOT checked,
+                  correction:bool=False) -> RPeaksDetectionOutput:
+        """ finished, checked,
 
         auxiliary function to `forward`, for CPSC2019,
 
@@ -200,23 +203,23 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
 
         Returns
         -------
-        pred: ndarray,
-            the array of scalar predictions
-        rpeaks: list of ndarray,
-            list of rpeak indices for each batch element
+        output: RPeaksDetectionOutput, with items:
+            - rpeak_indices: list of ndarray,
+                list of ndarray of rpeak indices for each batch element
+            - prob: array_like,
+                the probability array of the input sequence of signals
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        prob = self.sigmoid(self.forward(_input))
+        prob = prob.cpu().detach().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _inference_post_process(
-            pred=pred,
+            prob=prob,
             fs=self.config.fs,
             skip_dist=self.config.skip_dist,
             bin_pred_thr=bin_pred_thr,
@@ -234,7 +237,9 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
                 )[0] for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
             ]
 
-        return pred, rpeaks
+        return RPeaksDetectionOutput(
+            rpeak_indices=rpeaks, prob=prob,
+        )
 
     @torch.no_grad()
     def inference_CPSC2019(self,
@@ -242,7 +247,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
                            bin_pred_thr:float=0.5,
                            duration_thr:int=4*16,
                            dist_thr:Union[int,Sequence[int]]=200,
-                           correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
+                           correction:bool=False) -> RPeaksDetectionOutput:
         """
         alias of `self.inference`
         """
@@ -276,8 +281,8 @@ class ECG_UNET_CPSC2019(ECG_UNET):
                   bin_pred_thr:float=0.5,
                   duration_thr:int=4*16,
                   dist_thr:Union[int,Sequence[int]]=200,
-                  correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
-        """ finished, NOT checked,
+                  correction:bool=False) -> RPeaksDetectionOutput:
+        """ finished, checked,
 
         auxiliary function to `forward`, for CPSC2019,
 
@@ -304,23 +309,23 @@ class ECG_UNET_CPSC2019(ECG_UNET):
 
         Returns
         -------
-        pred: ndarray,
-            the array of scalar predictions
-        rpeaks: list of ndarray,
-            list of rpeak indices for each batch element
+        output: RPeaksDetectionOutput, with items:
+            - rpeak_indices: list of ndarray,
+                list of ndarray of rpeak indices for each batch element
+            - prob: array_like,
+                the probability array of the input sequence of signals
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
         if _input.ndim == 2:
             _input = _input.unsqueeze(0)  # add a batch dimension
         batch_size, channels, seq_len = _input.shape
-        pred = self.forward(_input)
-        pred = self.sigmoid(pred)
-        pred = pred.cpu().detach().numpy().squeeze(-1)
+        prob = self.sigmoid(self.forward(_input))
+        prob = prob.cpu().detach().numpy().squeeze(-1)
 
         # prob --> qrs mask --> qrs intervals --> rpeaks
         rpeaks = _inference_post_process(
-            pred=pred,
+            prob=prob,
             fs=self.config.fs,
             skip_dist=self.config.skip_dist,
             bin_pred_thr=bin_pred_thr,
@@ -338,7 +343,9 @@ class ECG_UNET_CPSC2019(ECG_UNET):
                 )[0] for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
             ]
 
-        return pred, rpeaks
+        return RPeaksDetectionOutput(
+            rpeak_indices=rpeaks, prob=prob,
+        )
 
     @torch.no_grad()
     def inference_CPSC2019(self,
@@ -346,14 +353,14 @@ class ECG_UNET_CPSC2019(ECG_UNET):
                            bin_pred_thr:float=0.5,
                            duration_thr:int=4*16,
                            dist_thr:Union[int,Sequence[int]]=200,
-                           correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
+                           correction:bool=False) -> RPeaksDetectionOutput:
         """
         alias of `self.inference`
         """
         return self.inference(input, bin_pred_thr, duration_thr, dist_thr, correction)
 
 
-def _inference_post_process(pred:np.ndarray,
+def _inference_post_process(prob:np.ndarray,
                             fs:int,
                             skip_dist:int,
                             bin_pred_thr:float=0.5,
@@ -365,17 +372,17 @@ def _inference_post_process(pred:np.ndarray,
 
     Parameters: ref. `inference` method of the models
     """
-    batch_size, prob_arr_len = pred.shape
+    batch_size, prob_arr_len = prob.shape
     input_len = prob_arr_len
     model_spacing = 1000 / fs  # units in ms
     _duration_thr = duration_thr / model_spacing
     _dist_thr = [dist_thr] if isinstance(dist_thr, int) else dist_thr
     assert len(_dist_thr) <= 2
 
-    # mask = (pred > bin_pred_thr).astype(int)
+    # mask = (prob > bin_pred_thr).astype(int)
     rpeaks = []
     for b_idx in range(batch_size):
-        b_prob = pred[b_idx,...]
+        b_prob = prob[b_idx,...]
         b_mask = (b_prob > bin_pred_thr).astype(int)
         b_qrs_intervals = mask_to_intervals(b_mask, 1)
         b_rpeaks = np.array([

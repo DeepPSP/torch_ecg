@@ -200,9 +200,9 @@ class LUDBTrainer(BaseTrainer):
 
             if torch.cuda.is_available():
                 torch.cuda.synchronize()
-            scalar_preds, mask_preds = self._model.inference(signals)
-            all_scalar_preds.append(scalar_preds)
-            all_mask_preds.append(mask_preds)
+            model_output = self._model.inference(signals)
+            all_scalar_preds.append(model_output.prob)
+            all_mask_preds.append(model_output.mask)
         
         # all_scalar_preds of shape (n_samples, seq_len, n_classes)
         all_scalar_preds = np.concatenate(all_scalar_preds, axis=0)
