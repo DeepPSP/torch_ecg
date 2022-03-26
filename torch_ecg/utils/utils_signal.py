@@ -560,7 +560,7 @@ def remove_spikes_naive(sig:np.ndarray, threshold:Real=20, inplace:bool=True) ->
         1d signal with potential spikes
     threshold: real number,
         values of `sig` that are larger than `threshold` will be removed
-    
+
     Returns
     -------
     sig: ndarray,
@@ -616,28 +616,34 @@ def butter_bandpass(lowcut:Real, highcut:Real, fs:Real, order:int, verbose:int=0
     if low <= 0 and high >= 1:
         b, a = [1], [1]
         return b, a
-    
+
     if low <= 0:
         Wn = high
-        btype = 'low'
+        btype = "low"
     elif high >= 1:
         Wn = low
-        btype = 'high'
+        btype = "high"
     elif lowcut==highcut:
         Wn = high
-        btype = 'low'
+        btype = "low"
     else:
         Wn = [low, high]
-        btype = 'band'
-    
+        btype = "band"
+
     if verbose >= 1:
-        print(f'by the setup of lowcut and highcut, the filter type falls to {btype}, with Wn = {Wn}')
+        print(f"by the setup of lowcut and highcut, the filter type falls to {btype}, with Wn = {Wn}")
     
     b, a = butter(order, Wn, btype=btype)
     return b, a
 
 
-def butter_bandpass_filter(data:np.ndarray, lowcut:Real, highcut:Real, fs:Real, order:int, verbose:int=0) -> np.ndarray:
+def butter_bandpass_filter(data:np.ndarray,
+                           lowcut:Real,
+                           highcut:Real,
+                           fs:Real,
+                           order:int,
+                           btype:Optional[str]=None,
+                           verbose:int=0,) -> np.ndarray:
     """
     Butterworth Bandpass
 
@@ -653,6 +659,9 @@ def butter_bandpass_filter(data:np.ndarray, lowcut:Real, highcut:Real, fs:Real, 
         frequency of `data`
     order: int,
         order of the filter
+    btype: str, optional,
+        (special) type of the filter, can be "lohi", "hilo",
+        ignored for lowpass and highpass filters (as given by `lowcut` and `highcut`)
     verbose: int, default 0
 
     Returns
@@ -665,8 +674,22 @@ def butter_bandpass_filter(data:np.ndarray, lowcut:Real, highcut:Real, fs:Real, 
     [1] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
     [2] https://dsp.stackexchange.com/questions/19084/applying-filter-in-scipy-signal-use-lfilter-or-filtfilt
     """
-    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
-    y = filtfilt(b, a, data)
+    if btype is None:
+        b, a = butter_bandpass(lowcut, highcut, fs, order=order, verbose=verbose)
+        y = filtfilt(b, a, data)
+        return y
+    if btype.lower() == "lohi":
+        b, a = butter_bandpass(0, highcut, fs, order=order, verbose=verbose)
+        y = filtfilt(b, a, data)
+        b, a = butter_bandpass(lowcut, fs, fs, order=order, verbose=verbose)
+        y = filtfilt(b, a, y)
+    elif btype.lower() == "hilo":
+        b, a = butter_bandpass(lowcut, fs, fs, order=order, verbose=verbose)
+        y = filtfilt(b, a, data)
+        b, a = butter_bandpass(0, highcut, fs, order=order, verbose=verbose)
+        y = filtfilt(b, a, y)
+    else:
+        raise ValueError(f"special btype {btype} is not supported")
     return y
 
 
