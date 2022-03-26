@@ -49,6 +49,7 @@ __all__ = [
     "uniform",
     "nildent",
     "isclass",
+    "strafified_train_test_split",
 ]
 
 
@@ -1283,6 +1284,34 @@ def strafified_train_test_split(df:pd.DataFrame,
                                 strafified_cols:Sequence[str],
                                 test_ratio:float=0.2) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
+    Do stratified train-test split on the dataframe,
+
+    Parameters
+    ----------
+    df: pd.DataFrame,
+        dataframe to be split
+    strafified_cols: sequence of str,
+        columns to be strafified, assuming each column is a categorical variable
+        each class in any of the columns will be 
+        split into train and test sets with an approximate ratio of `test_ratio`
+    test_ratio: float, default 0.2,
+        ratio of test set to the whole dataframe
+
+    Returns
+    -------
+    df_train: pd.DataFrame,
+        the dataframe of the train set
+    df_test: pd.DataFrame,
+        the dataframe of the test set
+
+    For example,
+    if one has a dataframe with columns `sex`, `nationality`, etc.,
+    assuming `sex` includes `male`, `female`; `nationality` includes `Chinese`, `American`,
+    and sets `strafified_cols = ["sex", "nationality"]` with `test_ratio = 0.2`,
+    then approximately 20% of the male and 20% of the female subjects
+    will be put into the test set,
+    and **at the same time**, approximately 20% of the Chinese and 20% of the Americans
+    lie in the test set as well.
     """
     df_inspection = df[strafified_cols].copy()
     for item in strafified_cols:
