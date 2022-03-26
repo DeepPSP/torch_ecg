@@ -163,11 +163,13 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
         elif filter_type.lower() == "butter":
             filtered_ecg = butter_bandpass_filter(
                 data=filtered_ecg,
-                lowcut=frequency[0],
-                highcut=frequency[1],
+                lowcut=band_fs[0],
+                highcut=band_fs[1],
                 fs=fs,
                 order=filter_order or round(0.01 * fs),  # better be determined by the `buttord`
             )
+        else:
+            raise ValueError("Unsupported filter type")
 
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
         filtered_ecg = filtered_ecg.T
