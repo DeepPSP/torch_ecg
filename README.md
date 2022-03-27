@@ -26,13 +26,17 @@ The system design is depicted as follows
 ## Installation
 `torch_ecg` requires Python 3.6+ and is available through pip:
 ```bash
-pip install torch-ecg
+python -m pip install torch-ecg
 ```
 One can download the development version hosted at [GitHub](https://github.com/DeepPSP/torch_ecg/) via
 ```bash
 git clone https://github.com/DeepPSP/torch_ecg.git
 cd torch_ecg
-pip install .
+python -m pip install .
+```
+or use pip directly via
+```bash
+python -m pip install git+https://github.com/DeepPSP/torch_ecg.git
 ```
 
 ## Main Modules
