@@ -15,16 +15,20 @@ from .base import (
 )
 
 
-__all__ = ["BaselineRemove",]
+__all__ = [
+    "BaselineRemove",
+]
 
 
 class BaselineRemove(PreProcessor):
-    """
-    """
+    """ """
+
     __name__ = "BaselineRemove"
 
-    def __init__(self, window1:float=0.2, window2:float=0.6, **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self, window1: float = 0.2, window2: float = 0.6, **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -39,8 +43,8 @@ class BaselineRemove(PreProcessor):
             self.window1, self.window2 = self.window2, self.window1
             warnings.warn("values of window1 and window2 are switched")
 
-    def apply(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
-        """ finished, checked,
+    def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
+        """finished, checked,
 
         apply the preprocessor to `sig`
 

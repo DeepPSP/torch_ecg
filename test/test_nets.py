@@ -9,25 +9,39 @@ try:
 except:
     import sys
     from pathlib import Path
+
     sys.path.append(Path(__file__).absolute().parent.parent)
     import torch_ecg
 
 from torch_ecg.models._nets import (
-    Mish, Swish, Hardswish,
-    Initializers, Activations,
-    Bn_Activation, Conv_Bn_Activation, CBA,
-    MultiConv, BranchedConv,
+    Mish,
+    Swish,
+    Hardswish,
+    Initializers,
+    Activations,
+    Bn_Activation,
+    Conv_Bn_Activation,
+    CBA,
+    MultiConv,
+    BranchedConv,
     SeparableConv,
     DownSample,
-    BidirectionalLSTM, StackedLSTM,
+    BidirectionalLSTM,
+    StackedLSTM,
     AttentionWithContext,
-    MultiHeadAttention, SelfAttention,
+    MultiHeadAttention,
+    SelfAttention,
     AttentivePooling,
     ZeroPadding,
-    SeqLin, MLP,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
-    CRF, ExtendedCRF,
-    WeightedBCELoss, BCEWithLogitsWithClassWeightLoss,
+    SeqLin,
+    MLP,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
+    CRF,
+    ExtendedCRF,
+    WeightedBCELoss,
+    BCEWithLogitsWithClassWeightLoss,
 )
 
 
@@ -37,7 +51,7 @@ hard_swish = Hardswish()
 
 cba = Conv_Bn_Activation(
     in_channels=12,
-    out_channels=12*4,
+    out_channels=12 * 4,
     kernel_size=5,
     stride=1,
     activation="relu6",
@@ -45,7 +59,7 @@ cba = Conv_Bn_Activation(
 )
 cba_alpha = Conv_Bn_Activation(
     in_channels=12,
-    out_channels=12*4,
+    out_channels=12 * 4,
     kernel_size=5,
     stride=1,
     activation="hardswish",
@@ -56,7 +70,7 @@ cba_alpha = Conv_Bn_Activation(
 )
 cab = Conv_Bn_Activation(
     in_channels=12,
-    out_channels=12*4,
+    out_channels=12 * 4,
     kernel_size=5,
     stride=1,
     activation="relu6",
@@ -65,7 +79,7 @@ cab = Conv_Bn_Activation(
 )
 bac = Conv_Bn_Activation(
     in_channels=12,
-    out_channels=12*4,
+    out_channels=12 * 4,
     kernel_size=5,
     stride=1,
     activation="relu6",
@@ -77,7 +91,7 @@ bac = Conv_Bn_Activation(
 
 
 if __name__ == "__main__":
-    test_input = torch.rand((1,12,5000))
+    test_input = torch.rand((1, 12, 5000))
 
     out = cba(test_input)
     print(f"out shape of cba = {out.shape}")

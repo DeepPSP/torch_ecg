@@ -11,16 +11,20 @@ import scipy.signal as SS
 from .base import PreProcessor
 
 
-__all__ = ["Resample",]
+__all__ = [
+    "Resample",
+]
 
 
 class Resample(PreProcessor):
-    """
-    """
+    """ """
+
     __name__ = "Resample"
 
-    def __init__(self, fs:Optional[int]=None, siglen:Optional[int]=None, **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self, fs: Optional[int] = None, siglen: Optional[int] = None, **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -33,11 +37,12 @@ class Resample(PreProcessor):
         """
         self.fs = fs
         self.siglen = siglen
-        assert sum([bool(self.fs), bool(self.siglen)]) == 1, \
-            "one and only one of `fs` and `siglen` should be set"
+        assert (
+            sum([bool(self.fs), bool(self.siglen)]) == 1
+        ), "one and only one of `fs` and `siglen` should be set"
 
-    def apply(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
-        """ finished, checked,
+    def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
+        """finished, checked,
 
         apply the preprocessor to `sig`
 
@@ -71,4 +76,7 @@ class Resample(PreProcessor):
         """
         return the extra keys for `__repr__`
         """
-        return ["fs", "siglen",] + super().extra_repr_keys()
+        return [
+            "fs",
+            "siglen",
+        ] + super().extra_repr_keys()

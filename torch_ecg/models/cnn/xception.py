@@ -11,7 +11,6 @@ from typing import Union, Optional, Sequence, NoReturn
 from numbers import Real
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
@@ -21,9 +20,13 @@ from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str, list_sum
 from ...models._nets import (
-    Conv_Bn_Activation, SeparableConv, MultiConv,
+    Conv_Bn_Activation,
+    SeparableConv,
+    MultiConv,
     DownSample,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
 )
 
 
@@ -33,7 +36,9 @@ if DEFAULTS.torch_dtype == torch.float64:
 
 __all__ = [
     "Xception",
-    "XceptionEntryFlow", "XceptionMiddleFlow", "XceptionExitFlow",
+    "XceptionEntryFlow",
+    "XceptionMiddleFlow",
+    "XceptionExitFlow",
     "XceptionMultiConv",
 ]
 
@@ -56,20 +61,23 @@ class XceptionMultiConv(SizeMixin, nn.Module):
     -> n(2 or 3) x (activation -> norm -> sep_conv) (-> optional sub-sample) ->
     |-------------------------------- shortcut ------------------------------|
     """
+
     __DEBUG__ = False
     __name__ = "XceptionMultiConv"
 
-    def __init__(self,
-                 in_channels:int,
-                 num_filters:Sequence[int],
-                 filter_lengths:Union[Sequence[int],int],
-                 subsample_length:int=1,
-                 subsample_kernel:Optional[int]=None,
-                 dilations:Union[Sequence[int],int]=1,
-                 groups:int=1,
-                 dropouts:Union[Sequence[float],float]=0.0,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        num_filters: Sequence[int],
+        filter_lengths: Union[Sequence[int], int],
+        subsample_length: int = 1,
+        subsample_kernel: Optional[int] = None,
+        dilations: Union[Sequence[int], int] = 1,
+        groups: int = 1,
+        dropouts: Union[Sequence[float], float] = 0.0,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -105,8 +113,9 @@ class XceptionMultiConv(SizeMixin, nn.Module):
             self.__filter_lengths = list(repeat(filter_lengths, self.__num_convs))
         else:
             self.__filter_lengths = list(filter_lengths)
-        assert self.__num_convs == len(self.__filter_lengths), \
-            f"the main stream has {self.__num_convs} convolutions, while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        assert self.__num_convs == len(
+            self.__filter_lengths
+        ), f"the main stream has {self.__num_convs} convolutions, while `filter_lengths` indicates {len(self.__filter_lengths)}"
         self.__subsample_length = subsample_length
         self.__subsample_kernel = subsample_kernel or subsample_length
         self.__groups = groups
@@ -114,14 +123,16 @@ class XceptionMultiConv(SizeMixin, nn.Module):
             self.__dilations = list(repeat(dilations, self.__num_convs))
         else:
             self.__dilations = list(dilations)
-        assert self.__num_convs == len(self.__dilations), \
-            f"the main stream has {self.__num_convs} convolutions, while `dilations` indicates {len(self.__dilations)}"
+        assert self.__num_convs == len(
+            self.__dilations
+        ), f"the main stream has {self.__num_convs} convolutions, while `dilations` indicates {len(self.__dilations)}"
         if isinstance(dropouts, Real):
             self.__dropouts = list(repeat(dropouts, self.__num_convs))
         else:
             self.__dropouts = list(dropouts)
-        assert self.__num_convs == len(self.__dropouts), \
-            f"the main stream has {self.__num_convs} convolutions, while `dropouts` indicates {len(self.__dropouts)}"
+        assert self.__num_convs == len(
+            self.__dropouts
+        ), f"the main stream has {self.__num_convs} convolutions, while `dropouts` indicates {len(self.__dropouts)}"
         self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
 
@@ -133,7 +144,7 @@ class XceptionMultiConv(SizeMixin, nn.Module):
             dilations=self.__dilations,
             groups=self.__groups,
             dropouts=self.__dropouts,
-            **self.config
+            **self.config,
         )
         if self.__subsample_length > 1:
             self.subsample = DownSample(
@@ -141,7 +152,7 @@ class XceptionMultiConv(SizeMixin, nn.Module):
                 in_channels=self.__num_filters[-1],
                 kernel_size=self.__subsample_kernel,
                 groups=self.__groups,
-                padding=(self.__subsample_kernel-1)//2,
+                padding=(self.__subsample_kernel - 1) // 2,
                 mode=self.config.subsample_mode,
             )
             self.shortcut = DownSample(
@@ -156,9 +167,9 @@ class XceptionMultiConv(SizeMixin, nn.Module):
         else:
             self.subsample = None
             self.shortcut = None
-    
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -179,8 +190,10 @@ class XceptionMultiConv(SizeMixin, nn.Module):
         output = residue + main_out
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -196,7 +209,9 @@ class XceptionMultiConv(SizeMixin, nn.Module):
         """
         output_shape = self.main_stream_conv.compute_output_shape(seq_len, batch_size)
         if self.subsample is not None:
-            output_shape = self.subsample.compute_output_shape(output_shape[-1], output_shape[0])
+            output_shape = self.subsample.compute_output_shape(
+                output_shape[-1], output_shape[0]
+            )
         return output_shape
 
 
@@ -207,24 +222,27 @@ class XceptionEntryFlow(SizeMixin, nn.Sequential):
     consisting of 2 initial convolutions which subsamples at the first one,
     followed by several Xception blocks of 2 convolutions and of sub-sampling size 2
     """
+
     __DEBUG__ = False
     __name__ = "XceptionEntryFlow"
 
-    def __init__(self,
-                 in_channels:int,
-                 init_num_filters:Sequence[int],
-                 init_filter_lengths:Union[int,Sequence[int]],
-                 init_subsample_lengths:Union[int,Sequence[int]],
-                 num_filters:Union[Sequence[int],Sequence[Sequence[int]]],
-                 filter_lengths:Union[int,Sequence[int],Sequence[Sequence[int]]],
-                 subsample_lengths:Union[int,Sequence[int]],
-                 subsample_kernels:Optional[Union[int,Sequence[int]]]=None,
-                 dilations:Union[int,Sequence[int],Sequence[Sequence[int]]]=1,
-                 groups:int=1,
-                 dropouts:Union[float,Sequence[float],Sequence[Sequence[float]]]=0.0,
-                 block_dropouts:Union[float,Sequence[float]]=0.0,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        init_num_filters: Sequence[int],
+        init_filter_lengths: Union[int, Sequence[int]],
+        init_subsample_lengths: Union[int, Sequence[int]],
+        num_filters: Union[Sequence[int], Sequence[Sequence[int]]],
+        filter_lengths: Union[int, Sequence[int], Sequence[Sequence[int]]],
+        subsample_lengths: Union[int, Sequence[int]],
+        subsample_kernels: Optional[Union[int, Sequence[int]]] = None,
+        dilations: Union[int, Sequence[int], Sequence[Sequence[int]]] = 1,
+        groups: int = 1,
+        dropouts: Union[float, Sequence[float], Sequence[Sequence[float]]] = 0.0,
+        block_dropouts: Union[float, Sequence[float]] = 0.0,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -266,40 +284,50 @@ class XceptionEntryFlow(SizeMixin, nn.Sequential):
             self.__filter_lengths = list(repeat(filter_lengths, self.__num_blocks))
         else:
             self.__filter_lengths = list(filter_lengths)
-        assert self.__num_blocks == len(self.__filter_lengths), \
-            f"the entry flow has {self.__num_blocks} blocks, while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        assert self.__num_blocks == len(
+            self.__filter_lengths
+        ), f"the entry flow has {self.__num_blocks} blocks, while `filter_lengths` indicates {len(self.__filter_lengths)}"
         if isinstance(subsample_lengths, int):
-            self.__subsample_lengths = list(repeat(subsample_lengths, self.__num_blocks))
+            self.__subsample_lengths = list(
+                repeat(subsample_lengths, self.__num_blocks)
+            )
         else:
             self.__subsample_lengths = list(subsample_lengths)
-        assert self.__num_blocks == len(self.__subsample_lengths), \
-            f"the entry flow has {self.__num_blocks} blocks, while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
+        assert self.__num_blocks == len(
+            self.__subsample_lengths
+        ), f"the entry flow has {self.__num_blocks} blocks, while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
         if subsample_kernels is None:
             self.__subsample_kernels = deepcopy(self.__subsample_lengths)
         elif isinstance(subsample_kernels, int):
-            self.__subsample_kernels = list(repeat(subsample_kernels, self.__num_blocks))
+            self.__subsample_kernels = list(
+                repeat(subsample_kernels, self.__num_blocks)
+            )
         else:
             self.__subsample_kernels = list(subsample_kernels)
-        assert self.__num_blocks == len(self.__subsample_kernels), \
-            f"the entry flow has {self.__num_blocks} blocks, while `subsample_kernels` indicates {len(self.__subsample_kernels)}"
+        assert self.__num_blocks == len(
+            self.__subsample_kernels
+        ), f"the entry flow has {self.__num_blocks} blocks, while `subsample_kernels` indicates {len(self.__subsample_kernels)}"
         if isinstance(dilations, int):
             self.__dilations = list(repeat(dilations, self.__num_blocks))
         else:
             self.__dilations = list(dilations)
-        assert self.__num_blocks == len(self.__dilations), \
-            f"the entry flow has {self.__num_blocks} blocks, while `dilations` indicates {len(self.__dilations)}"
+        assert self.__num_blocks == len(
+            self.__dilations
+        ), f"the entry flow has {self.__num_blocks} blocks, while `dilations` indicates {len(self.__dilations)}"
         if isinstance(dropouts, Real):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
-        assert self.__num_blocks == len(self.__dropouts), \
-            f"the entry flow has {self.__num_blocks} blocks, while `dropouts` indicates {len(self.__dropouts)}"
+        assert self.__num_blocks == len(
+            self.__dropouts
+        ), f"the entry flow has {self.__num_blocks} blocks, while `dropouts` indicates {len(self.__dropouts)}"
         if isinstance(block_dropouts, Real):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks))
         else:
             self.__block_dropouts = list(block_dropouts)
-        assert self.__num_blocks == len(self.__block_dropouts), \
-            f"the entry flow has {self.__num_blocks} blocks, except the initial convolutions, while `block_dropouts` indicates {len(self.__block_dropouts)}"
+        assert self.__num_blocks == len(
+            self.__block_dropouts
+        ), f"the entry flow has {self.__num_blocks} blocks, except the initial convolutions, while `block_dropouts` indicates {len(self.__block_dropouts)}"
         self.__groups = groups
         self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
@@ -313,7 +341,7 @@ class XceptionEntryFlow(SizeMixin, nn.Sequential):
                 subsample_lengths=init_subsample_lengths,
                 groups=groups,
                 activation=self.config.activation,
-            )
+            ),
         )
 
         block_in_channels = init_num_filters[-1]
@@ -341,18 +369,17 @@ class XceptionEntryFlow(SizeMixin, nn.Sequential):
                     groups=self.__groups,
                     dropouts=self.__dropouts[idx],
                     out_activation=out_activation,
-                    **self.config
-                )
+                    **self.config,
+                ),
             )
             block_in_channels = block_out_channels[-1]
             if self.__block_dropouts[idx] > 0:
                 self.add_module(
-                    f"entry_flow_dropout_{idx}",
-                    nn.Dropout(self.__block_dropouts[idx])
+                    f"entry_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx])
                 )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -367,8 +394,10 @@ class XceptionEntryFlow(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -397,19 +426,22 @@ class XceptionMiddleFlow(SizeMixin, nn.Sequential):
     Middle flow of the Xception model,
     consisting of several Xception blocks of 3 convolutions and without sub-sampling
     """
+
     __DEBUG__ = False
     __name__ = "XceptionMiddleFlow"
 
-    def __init__(self,
-                 in_channels:int,
-                 num_filters:Union[Sequence[int],Sequence[Sequence[int]]],
-                 filter_lengths:Union[int,Sequence[int],Sequence[Sequence[int]]],
-                 dilations:Union[int,Sequence[int],Sequence[Sequence[int]]]=1,
-                 groups:int=1,
-                 dropouts:Union[float,Sequence[float],Sequence[Sequence[float]]]=0.0,
-                 block_dropouts:Union[float,Sequence[float]]=0.0,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        num_filters: Union[Sequence[int], Sequence[Sequence[int]]],
+        filter_lengths: Union[int, Sequence[int], Sequence[Sequence[int]]],
+        dilations: Union[int, Sequence[int], Sequence[Sequence[int]]] = 1,
+        groups: int = 1,
+        dropouts: Union[float, Sequence[float], Sequence[Sequence[float]]] = 0.0,
+        block_dropouts: Union[float, Sequence[float]] = 0.0,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -441,26 +473,30 @@ class XceptionMiddleFlow(SizeMixin, nn.Sequential):
             self.__filter_lengths = list(repeat(filter_lengths, self.__num_blocks))
         else:
             self.__filter_lengths = list(filter_lengths)
-        assert self.__num_blocks == len(self.__filter_lengths), \
-            f"the middle flow has {self.__num_blocks} blocks, while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        assert self.__num_blocks == len(
+            self.__filter_lengths
+        ), f"the middle flow has {self.__num_blocks} blocks, while `filter_lengths` indicates {len(self.__filter_lengths)}"
         if isinstance(dilations, int):
             self.__dilations = list(repeat(dilations, self.__num_blocks))
         else:
             self.__dilations = list(dilations)
-        assert self.__num_blocks == len(self.__dilations), \
-            f"the middle flow has {self.__num_blocks} blocks, while `dilations` indicates {len(self.__dilations)}"
+        assert self.__num_blocks == len(
+            self.__dilations
+        ), f"the middle flow has {self.__num_blocks} blocks, while `dilations` indicates {len(self.__dilations)}"
         if isinstance(dropouts, Real):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
-        assert self.__num_blocks == len(self.__dropouts), \
-            f"the middle flow has {self.__num_blocks} blocks, while `dropouts` indicates {len(self.__dropouts)}"
+        assert self.__num_blocks == len(
+            self.__dropouts
+        ), f"the middle flow has {self.__num_blocks} blocks, while `dropouts` indicates {len(self.__dropouts)}"
         if isinstance(block_dropouts, Real):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks))
         else:
             self.__block_dropouts = list(block_dropouts)
-        assert self.__num_blocks == len(self.__block_dropouts), \
-            f"the middle flow has {self.__num_blocks} blocks, while `block_dropouts` indicates {len(self.__block_dropouts)}"
+        assert self.__num_blocks == len(
+            self.__block_dropouts
+        ), f"the middle flow has {self.__num_blocks} blocks, while `block_dropouts` indicates {len(self.__block_dropouts)}"
         self.__groups = groups
         self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
@@ -481,18 +517,17 @@ class XceptionMiddleFlow(SizeMixin, nn.Sequential):
                     dilations=self.__dilations[idx],
                     groups=self.__groups,
                     dropouts=self.__dropouts[idx],
-                    **self.config
-                )
+                    **self.config,
+                ),
             )
             block_in_channels = block_out_channels[-1]
             if self.__block_dropouts[idx] > 0:
                 self.add_module(
-                    f"middle_flow_dropout_{idx}",
-                    nn.Dropout(self.__block_dropouts[idx])
+                    f"middle_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx])
                 )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -507,8 +542,10 @@ class XceptionMiddleFlow(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -538,23 +575,26 @@ class XceptionExitFlow(SizeMixin, nn.Sequential):
     consisting of several Xception blocks of 2 convolutions,
     followed by several separable convolutions
     """
+
     __DEBUG__ = False
     __name__ = "XceptionExitFlow"
 
-    def __init__(self,
-                 in_channels:int,
-                 final_num_filters:Sequence[int],
-                 final_filter_lengths:Union[int,Sequence[int]],
-                 num_filters:Union[Sequence[int],Sequence[Sequence[int]]],
-                 filter_lengths:Union[int,Sequence[int],Sequence[Sequence[int]]],
-                 subsample_lengths:Union[int,Sequence[int]],
-                 subsample_kernels:Optional[Union[int,Sequence[int]]]=None,
-                 dilations:Union[int,Sequence[int],Sequence[Sequence[int]]]=1,
-                 groups:int=1,
-                 dropouts:Union[float,Sequence[float],Sequence[Sequence[float]]]=0.0,
-                 block_dropouts:Union[float,Sequence[float]]=0.0,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        final_num_filters: Sequence[int],
+        final_filter_lengths: Union[int, Sequence[int]],
+        num_filters: Union[Sequence[int], Sequence[Sequence[int]]],
+        filter_lengths: Union[int, Sequence[int], Sequence[Sequence[int]]],
+        subsample_lengths: Union[int, Sequence[int]],
+        subsample_kernels: Optional[Union[int, Sequence[int]]] = None,
+        dilations: Union[int, Sequence[int], Sequence[Sequence[int]]] = 1,
+        groups: int = 1,
+        dropouts: Union[float, Sequence[float], Sequence[Sequence[float]]] = 0.0,
+        block_dropouts: Union[float, Sequence[float]] = 0.0,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -596,40 +636,52 @@ class XceptionExitFlow(SizeMixin, nn.Sequential):
             self.__filter_lengths = list(repeat(filter_lengths, self.__num_blocks))
         else:
             self.__filter_lengths = list(filter_lengths)
-        assert self.__num_blocks == len(self.__filter_lengths), \
-            f"the exit flow has {self.__num_blocks} blocks, while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        assert self.__num_blocks == len(
+            self.__filter_lengths
+        ), f"the exit flow has {self.__num_blocks} blocks, while `filter_lengths` indicates {len(self.__filter_lengths)}"
         if isinstance(subsample_lengths, int):
-            self.__subsample_lengths = list(repeat(subsample_lengths, self.__num_blocks))
+            self.__subsample_lengths = list(
+                repeat(subsample_lengths, self.__num_blocks)
+            )
         else:
             self.__subsample_lengths = list(subsample_lengths)
-        assert self.__num_blocks == len(self.__subsample_lengths), \
-            f"the exit flow has {self.__num_blocks} blocks, while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
+        assert self.__num_blocks == len(
+            self.__subsample_lengths
+        ), f"the exit flow has {self.__num_blocks} blocks, while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
         if subsample_kernels is None:
             self.__subsample_kernels = deepcopy(self.__subsample_lengths)
         elif isinstance(subsample_kernels, int):
-            self.__subsample_kernels = list(repeat(subsample_kernels, self.__num_blocks))
+            self.__subsample_kernels = list(
+                repeat(subsample_kernels, self.__num_blocks)
+            )
         else:
             self.__subsample_kernels = list(subsample_kernels)
-        assert self.__num_blocks == len(self.__subsample_kernels), \
-            f"the exit flow has {self.__num_blocks} blocks, while `subsample_kernels` indicates {len(self.__subsample_kernels)}"
+        assert self.__num_blocks == len(
+            self.__subsample_kernels
+        ), f"the exit flow has {self.__num_blocks} blocks, while `subsample_kernels` indicates {len(self.__subsample_kernels)}"
         if isinstance(dilations, int):
             self.__dilations = list(repeat(dilations, self.__num_blocks))
         else:
             self.__dilations = list(dilations)
-        assert self.__num_blocks == len(self.__dilations), \
-            f"the exit flow has {self.__num_blocks} blocks, while `dilations` indicates {len(self.__dilations)}"
+        assert self.__num_blocks == len(
+            self.__dilations
+        ), f"the exit flow has {self.__num_blocks} blocks, while `dilations` indicates {len(self.__dilations)}"
         if isinstance(dropouts, Real):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
-        assert self.__num_blocks == len(self.__dropouts), \
-            f"the exit flow has {self.__num_blocks} blocks, while `dropouts` indicates {len(self.__dropouts)}"
+        assert self.__num_blocks == len(
+            self.__dropouts
+        ), f"the exit flow has {self.__num_blocks} blocks, while `dropouts` indicates {len(self.__dropouts)}"
         if isinstance(block_dropouts, Real):
-            self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks + len(final_num_filters)))
+            self.__block_dropouts = list(
+                repeat(block_dropouts, self.__num_blocks + len(final_num_filters))
+            )
         else:
             self.__block_dropouts = list(block_dropouts)
-        assert self.__num_blocks + len(final_num_filters) == len(self.__block_dropouts), \
-            f"the exit flow has {self.__num_blocks + len(final_num_filters)} blocks, including the final convolutions, while `block_dropouts` indicates {len(self.__block_dropouts)}"
+        assert self.__num_blocks + len(final_num_filters) == len(
+            self.__block_dropouts
+        ), f"the exit flow has {self.__num_blocks + len(final_num_filters)} blocks, including the final convolutions, while `block_dropouts` indicates {len(self.__block_dropouts)}"
         self.__groups = groups
         self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
@@ -652,14 +704,13 @@ class XceptionExitFlow(SizeMixin, nn.Sequential):
                     dilations=self.__dilations[idx],
                     groups=self.__groups,
                     dropouts=self.__dropouts[idx],
-                    **self.config
-                )
+                    **self.config,
+                ),
             )
             block_in_channels = block_out_channels[-1]
             if self.__block_dropouts[idx] > 0:
                 self.add_module(
-                    f"exit_flow_dropout_{idx}",
-                    nn.Dropout(self.__block_dropouts[idx])
+                    f"exit_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx])
                 )
 
         self.add_module(
@@ -671,11 +722,11 @@ class XceptionExitFlow(SizeMixin, nn.Sequential):
                 groups=groups,
                 conv_type="separable",
                 activation=self.config.activation,
-            )
+            ),
         )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -690,8 +741,10 @@ class XceptionExitFlow(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -723,11 +776,12 @@ class Xception(SizeMixin, nn.Sequential):
     [2] https://github.com/keras-team/keras-applications/blob/master/keras_applications/xception.py
     [3] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
     """
+
     __DEBUG__ = False
     __name__ = "Xception"
 
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -743,40 +797,33 @@ class Xception(SizeMixin, nn.Sequential):
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         entry_flow_in_channels = self.__in_channels
         entry_flow = XceptionEntryFlow(
-            in_channels=entry_flow_in_channels,
-            **(self.config.entry_flow)
+            in_channels=entry_flow_in_channels, **(self.config.entry_flow)
         )
-        self.add_module(
-            "entry_flow",
-            entry_flow
-        )
+        self.add_module("entry_flow", entry_flow)
 
         _, middle_flow_in_channels, _ = entry_flow.compute_output_shape()
         middle_flow = XceptionMiddleFlow(
-            in_channels=middle_flow_in_channels,
-            **(self.config.middle_flow)
+            in_channels=middle_flow_in_channels, **(self.config.middle_flow)
         )
-        self.add_module(
-            "middle_flow",
-            middle_flow
-        )
+        self.add_module("middle_flow", middle_flow)
 
         _, exit_flow_in_channels, _ = middle_flow.compute_output_shape()
         exit_flow = XceptionExitFlow(
-            in_channels=exit_flow_in_channels,
-            **(self.config.exit_flow)
+            in_channels=exit_flow_in_channels, **(self.config.exit_flow)
         )
         self.add_module(
             "exit_flow",
             exit_flow,
         )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -791,8 +838,10 @@ class Xception(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------

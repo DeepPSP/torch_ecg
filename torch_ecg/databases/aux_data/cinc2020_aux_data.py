@@ -33,7 +33,9 @@ __all__ = [
 ]
 
 
-df_weights = pd.read_csv(StringIO(""",270492004,164889003,164890007,426627000,713427006,713426002,445118002,39732003,164909002,251146004,698252002,10370003,284470004,427172004,164947007,111975006,164917005,47665007,59118001,427393009,426177001,426783006,427084000,63593006,164934002,59931005,17338001
+df_weights = pd.read_csv(
+    StringIO(
+        """,270492004,164889003,164890007,426627000,713427006,713426002,445118002,39732003,164909002,251146004,698252002,10370003,284470004,427172004,164947007,111975006,164917005,47665007,59118001,427393009,426177001,426783006,427084000,63593006,164934002,59931005,17338001
 270492004,1.0,0.3,0.3,0.5,0.4,0.5,0.45,0.45,0.325,0.375,0.45,0.425,0.4625,0.425,0.5,0.35,0.2,0.45,0.4,0.5,0.5,0.45,0.425,0.4625,0.3,0.3,0.425
 164889003,0.3,1.0,0.5,0.3,0.4,0.3,0.35,0.35,0.475,0.425,0.35,0.375,0.3375,0.375,0.3,0.45,0.4,0.35,0.4,0.3,0.3,0.25,0.375,0.3375,0.5,0.5,0.375
 164890007,0.3,0.5,1.0,0.3,0.4,0.3,0.35,0.35,0.475,0.425,0.35,0.375,0.3375,0.375,0.3,0.45,0.4,0.35,0.4,0.3,0.3,0.25,0.375,0.3375,0.5,0.5,0.375
@@ -60,11 +62,16 @@ df_weights = pd.read_csv(StringIO(""",270492004,164889003,164890007,426627000,71
 63593006,0.4625,0.3375,0.3375,0.4625,0.4375,0.4625,0.4875,0.4875,0.3625,0.4125,0.4875,0.4625,1.0,0.4625,0.4625,0.3875,0.2375,0.4875,0.4375,0.4625,0.4625,0.4125,0.4625,1.0,0.3375,0.3375,0.4625
 164934002,0.3,0.5,0.5,0.3,0.4,0.3,0.35,0.35,0.475,0.425,0.35,0.375,0.3375,0.375,0.3,0.45,0.4,0.35,0.4,0.3,0.3,0.25,0.375,0.3375,1.0,0.5,0.375
 59931005,0.3,0.5,0.5,0.3,0.4,0.3,0.35,0.35,0.475,0.425,0.35,0.375,0.3375,0.375,0.3,0.45,0.4,0.35,0.4,0.3,0.3,0.25,0.375,0.3375,0.5,1.0,0.375
-17338001,0.425,0.375,0.375,0.425,0.475,0.425,0.475,0.475,0.4,0.45,0.475,0.5,0.4625,1.0,0.425,0.425,0.275,0.475,0.475,0.425,0.425,0.375,0.5,0.4625,0.375,0.375,1.0"""), index_col=0)
+17338001,0.425,0.375,0.375,0.425,0.475,0.425,0.475,0.475,0.4,0.45,0.475,0.5,0.4625,1.0,0.425,0.425,0.275,0.475,0.475,0.425,0.425,0.375,0.5,0.4625,0.375,0.375,1.0"""
+    ),
+    index_col=0,
+)
 df_weights.index = df_weights.index.map(str)
 
 
-dx_mapping_scored = pd.read_csv(StringIO("""Dx,SNOMED CT Code,Abbreviation,CPSC,CPSC-Extra,StPetersburg,PTB,PTB-XL,Georgia,Total,Notes
+dx_mapping_scored = pd.read_csv(
+    StringIO(
+        """Dx,SNOMED CT Code,Abbreviation,CPSC,CPSC-Extra,StPetersburg,PTB,PTB-XL,Georgia,Total,Notes
 1st degree av block,270492004,IAVB,722,106,0,0,797,769,2394,
 atrial fibrillation,164889003,AF,1221,153,2,15,1514,570,3475,
 atrial flutter,164890007,AFL,0,54,0,1,73,186,314,
@@ -91,12 +98,16 @@ sinus tachycardia,427084000,STach,0,303,11,1,826,1261,2402,
 supraventricular premature beats,63593006,SVPB,0,53,4,0,157,1,215,We score 284470004 and 63593006 as the same diagnosis.
 t wave abnormal,164934002,TAb,0,22,0,0,2345,2306,4673,
 t wave inversion,59931005,TInv,0,5,1,0,294,812,1112,
-ventricular premature beats,17338001,VPB,0,8,0,0,0,357,365,We score 427172004 and 17338001 as the same diagnosis."""))
+ventricular premature beats,17338001,VPB,0,8,0,0,0,357,365,We score 427172004 and 17338001 as the same diagnosis."""
+    )
+)
 dx_mapping_scored = dx_mapping_scored.fillna("")
 dx_mapping_scored["SNOMED CT Code"] = dx_mapping_scored["SNOMED CT Code"].apply(str)
 
 
-dx_mapping_unscored = pd.read_csv(StringIO("""Dx,SNOMED CT Code,Abbreviation,CPSC,CPSC-Extra,StPetersburg,PTB,PTB-XL,Georgia,Total
+dx_mapping_unscored = pd.read_csv(
+    StringIO(
+        """Dx,SNOMED CT Code,Abbreviation,CPSC,CPSC-Extra,StPetersburg,PTB,PTB-XL,Georgia,Total
 2nd degree av block,195042002,IIAVB,0,21,0,0,14,23,58
 abnormal QRS,164951009,abQRS,0,0,0,0,3389,0,3389
 accelerated junctional rhythm,426664006,AJR,0,0,0,0,0,19,19
@@ -180,68 +191,78 @@ ventricular pre excitation,195060002,VPEx,0,6,0,0,0,2,8
 ventricular tachycardia,164895002,VTach,0,1,1,10,0,0,12
 ventricular trigeminy,251180001,VTrig,0,4,4,0,20,1,29
 wandering atrial pacemaker,195101003,WAP,0,0,0,0,0,7,7
-wolff parkinson white pattern,74390002,WPW,0,0,4,2,80,2,88"""))
+wolff parkinson white pattern,74390002,WPW,0,0,4,2,80,2,88"""
+    )
+)
 dx_mapping_unscored["SNOMED CT Code"] = dx_mapping_unscored["SNOMED CT Code"].apply(str)
 
 
 dms = dx_mapping_scored.copy()
-dms['scored'] = True
+dms["scored"] = True
 dmn = dx_mapping_unscored.copy()
-dmn['Notes'] = ''
-dmn['scored'] = False
-dx_mapping_all = pd.concat([dms, dmn], ignore_index=True).fillna('')
+dmn["Notes"] = ""
+dmn["scored"] = False
+dx_mapping_all = pd.concat([dms, dmn], ignore_index=True).fillna("")
 
 
 df_weights_snomed = df_weights  # alias
 
 
-snomed_ct_code_to_abbr = \
-    CFG({row['SNOMED CT Code']:row['Abbreviation'] for _,row in dx_mapping_all.iterrows()})
-abbr_to_snomed_ct_code = CFG({v:k for k,v in snomed_ct_code_to_abbr.items()})
+snomed_ct_code_to_abbr = CFG(
+    {row["SNOMED CT Code"]: row["Abbreviation"] for _, row in dx_mapping_all.iterrows()}
+)
+abbr_to_snomed_ct_code = CFG({v: k for k, v in snomed_ct_code_to_abbr.items()})
 
 df_weights_abbr = df_weights.copy()
 
-df_weights_abbr.columns = \
-    df_weights_abbr.columns.map(lambda i: snomed_ct_code_to_abbr[i])
+df_weights_abbr.columns = df_weights_abbr.columns.map(
+    lambda i: snomed_ct_code_to_abbr[i]
+)
 
-df_weights_abbr.index = \
-    df_weights_abbr.index.map(lambda i: snomed_ct_code_to_abbr[i])
+df_weights_abbr.index = df_weights_abbr.index.map(lambda i: snomed_ct_code_to_abbr[i])
 
 
-snomed_ct_code_to_fullname = \
-    CFG({row['SNOMED CT Code']:row['Dx'] for _,row in dx_mapping_all.iterrows()})
-fullname_to_snomed_ct_code = CFG({v:k for k,v in snomed_ct_code_to_fullname.items()})
+snomed_ct_code_to_fullname = CFG(
+    {row["SNOMED CT Code"]: row["Dx"] for _, row in dx_mapping_all.iterrows()}
+)
+fullname_to_snomed_ct_code = CFG({v: k for k, v in snomed_ct_code_to_fullname.items()})
 
 df_weights_fullname = df_weights.copy()
 
-df_weights_fullname.columns = \
-    df_weights_fullname.columns.map(lambda i: snomed_ct_code_to_fullname[i])
+df_weights_fullname.columns = df_weights_fullname.columns.map(
+    lambda i: snomed_ct_code_to_fullname[i]
+)
 
-df_weights_fullname.index = \
-    df_weights_fullname.index.map(lambda i: snomed_ct_code_to_fullname[i])
-
-
-abbr_to_fullname = \
-    CFG({row['Abbreviation']:row['Dx'] for _,row in dx_mapping_all.iterrows()})
-fullname_to_abbr = CFG({v:k for k,v in abbr_to_fullname.items()})
+df_weights_fullname.index = df_weights_fullname.index.map(
+    lambda i: snomed_ct_code_to_fullname[i]
+)
 
 
-equiv_class_dict = CFG({
-    'CRBBB': 'RBBB',
-    'SVPB': 'PAC',
-    'VPB': 'PVC',
-    '713427006': '59118001',
-    '63593006': '284470004',
-    '17338001': '427172004',
-    'complete right bundle branch block': 'right bundle branch block',
-    'supraventricular premature beats': 'premature atrial contraction',
-    'ventricular premature beats': 'premature ventricular contractions',
-})
+abbr_to_fullname = CFG(
+    {row["Abbreviation"]: row["Dx"] for _, row in dx_mapping_all.iterrows()}
+)
+fullname_to_abbr = CFG({v: k for k, v in abbr_to_fullname.items()})
 
 
+equiv_class_dict = CFG(
+    {
+        "CRBBB": "RBBB",
+        "SVPB": "PAC",
+        "VPB": "PVC",
+        "713427006": "59118001",
+        "63593006": "284470004",
+        "17338001": "427172004",
+        "complete right bundle branch block": "right bundle branch block",
+        "supraventricular premature beats": "premature atrial contraction",
+        "ventricular premature beats": "premature ventricular contractions",
+    }
+)
 
-def load_weights(classes:Sequence[Union[int,str]]=None, return_fmt:str='np') -> Union[np.ndarray, pd.DataFrame]:
-    """ finished, checked,
+
+def load_weights(
+    classes: Sequence[Union[int, str]] = None, return_fmt: str = "np"
+) -> Union[np.ndarray, pd.DataFrame]:
+    """finished, checked,
 
     load the weight matrix of the `classes`
 
@@ -261,24 +282,24 @@ def load_weights(classes:Sequence[Union[int,str]]=None, return_fmt:str='np') -> 
     if classes:
         l_nc = [normalize_class(c, ensure_scored=True) for c in classes]
         assert len(set(l_nc)) == len(classes), "`classes` has duplicates!"
-        mat = df_weights_abbr.loc[l_nc,l_nc]
+        mat = df_weights_abbr.loc[l_nc, l_nc]
     else:
         mat = df_weights_abbr.copy()
-    
-    if return_fmt.lower() == 'np':
+
+    if return_fmt.lower() == "np":
         mat = mat.values
-    elif return_fmt.lower() == 'pd':
+    elif return_fmt.lower() == "pd":
         # columns and indices back to the original input format
         mat.columns = list(map(str, classes))
         mat.index = list(map(str, classes))
     else:
         raise ValueError(f"format of `{return_fmt}` is not supported!")
-    
+
     return mat
 
 
-def normalize_class(c:Union[str,int], ensure_scored:bool=False) -> str:
-    """ finished, checked,
+def normalize_class(c: Union[str, int], ensure_scored: bool = False) -> str:
+    """finished, checked,
 
     normalize the class name to its abbr.,
     facilitating the computation of the `load_weights` function
@@ -302,8 +323,8 @@ def normalize_class(c:Union[str,int], ensure_scored:bool=False) -> str:
     return nc
 
 
-def get_class(snomed_ct_code:Union[str,int]) -> Dict[str,str]:
-    """ finished, checked,
+def get_class(snomed_ct_code: Union[str, int]) -> Dict[str, str]:
+    """finished, checked,
 
     look up the abbreviation and the full name of an ECG arrhythmia,
     given its SNOMED CT Code
@@ -312,7 +333,7 @@ def get_class(snomed_ct_code:Union[str,int]) -> Dict[str,str]:
     -----------
     snomed_ct_code: str or int,
         the SNOMED CT Code of the arrhythmia
-    
+
     Returns:
     --------
     arrhythmia_class: dict,
@@ -325,8 +346,15 @@ def get_class(snomed_ct_code:Union[str,int]) -> Dict[str,str]:
     return arrhythmia_class
 
 
-def get_class_count(tranches:Union[str, Sequence[str]], exclude_classes:Optional[Sequence[str]]=None, scored_only:bool=False, normalize:bool=True, threshold:Optional[Real]=0, fmt:str='a') ->Dict[str, int]:
-    """ finished, checked,
+def get_class_count(
+    tranches: Union[str, Sequence[str]],
+    exclude_classes: Optional[Sequence[str]] = None,
+    scored_only: bool = False,
+    normalize: bool = True,
+    threshold: Optional[Real] = 0,
+    fmt: str = "a",
+) -> Dict[str, int]:
+    """finished, checked,
 
     Parameters:
     -----------
@@ -355,14 +383,16 @@ def get_class_count(tranches:Union[str, Sequence[str]], exclude_classes:Optional
         value: count of a class in `tranches`
     """
     assert threshold >= 0
-    tranche_names = CFG({
-        "A": "CPSC",
-        "B": "CPSC-Extra",
-        "C": "StPetersburg",
-        "D": "PTB",
-        "E": "PTB-XL",
-        "F": "Georgia",
-    })
+    tranche_names = CFG(
+        {
+            "A": "CPSC",
+            "B": "CPSC-Extra",
+            "C": "StPetersburg",
+            "D": "PTB",
+            "E": "PTB-XL",
+            "F": "Georgia",
+        }
+    )
     tranche_names = [tranche_names[t] for t in tranches]
     _exclude_classes = [normalize_class(c) for c in (exclude_classes or [])]
     df = dx_mapping_scored.copy() if scored_only else dx_mapping_all.copy()
@@ -385,26 +415,36 @@ def get_class_count(tranches:Union[str, Sequence[str]], exclude_classes:Optional
     tmp = CFG()
     tot_count = sum(class_count.values())
     _threshold = threshold if threshold >= 1 else threshold * tot_count
-    if fmt.lower() == 's':
+    if fmt.lower() == "s":
         for key, val in class_count.items():
             if val < _threshold:
                 continue
             tmp[abbr_to_snomed_ct_code[key]] = val
         class_count = tmp.copy()
-    elif fmt.lower() == 'f':
+    elif fmt.lower() == "f":
         for key, val in class_count.items():
             if val < _threshold:
                 continue
             tmp[abbr_to_fullname[key]] = val
         class_count = tmp.copy()
     else:
-        class_count = {key: val for key, val in class_count.items() if val >= _threshold}
+        class_count = {
+            key: val for key, val in class_count.items() if val >= _threshold
+        }
     del tmp
     return class_count
 
 
-def get_class_weight(tranches:Union[str, Sequence[str]], exclude_classes:Optional[Sequence[str]]=None, scored_only:bool=False, normalize:bool=True, threshold:Optional[Real]=0, fmt:str='a', min_weight:Real=0.5) ->Dict[str, int]:
-    """ finished, checked,
+def get_class_weight(
+    tranches: Union[str, Sequence[str]],
+    exclude_classes: Optional[Sequence[str]] = None,
+    scored_only: bool = False,
+    normalize: bool = True,
+    threshold: Optional[Real] = 0,
+    fmt: str = "a",
+    min_weight: Real = 0.5,
+) -> Dict[str, int]:
+    """finished, checked,
 
     Parameters:
     -----------
@@ -443,16 +483,21 @@ def get_class_weight(tranches:Union[str, Sequence[str]], exclude_classes:Optiona
         threshold=threshold,
         fmt=fmt,
     )
-    class_weight = CFG({
-        key: sum(class_count.values()) / val for key, val in class_count.items()
-    })
-    class_weight = CFG({
-        key: min_weight * val / min(class_weight.values()) for key, val in class_weight.items()
-    })
+    class_weight = CFG(
+        {key: sum(class_count.values()) / val for key, val in class_count.items()}
+    )
+    class_weight = CFG(
+        {
+            key: min_weight * val / min(class_weight.values())
+            for key, val in class_weight.items()
+        }
+    )
     return class_weight
 
 
-dx_cooccurrence_all = pd.read_csv(StringIO(""",IAVB,AF,AFL,Brady,CRBBB,IRBBB,LAnFB,LAD,LBBB,LQRSV,NSIVCB,PR,PAC,PVC,LPR,LQT,QAb,RAD,RBBB,SA,SB,NSR,STach,SVPB,TAb,TInv,VPB,IIAVB,abQRS,AJR,AMI,AMIs,AnMIs,AnMI,AB,AFAFL,AH,AP,ATach,AVJR,AVB,BPAC,BTS,BBB,CD,CAF,CMI,CHB,CIAHB,CHD,SQT,DIB,ERe,FB,HF,HVD,HTV,IR,ILBBB,ICA,IIs,ISTD,JE,JPC,JTach,LIs,LAA,LAE,LAH,LPFB,LVH,LVS,MoI,MI,MIs,NSSTTA,OldMI,VPVC,PAF,PSVT,PVT,RAb,RAF,RAAb,RAH,RVH,STC,SPRI,SAB,SND,STD,STE,STIAb,SVB,SVT,ALR,TIA,UAb,VBig,VEB,VEsB,VEsR,VF,VFL,VH,VPP,VPEx,VTach,VTrig,WAP,WPW
+dx_cooccurrence_all = pd.read_csv(
+    StringIO(
+        """,IAVB,AF,AFL,Brady,CRBBB,IRBBB,LAnFB,LAD,LBBB,LQRSV,NSIVCB,PR,PAC,PVC,LPR,LQT,QAb,RAD,RBBB,SA,SB,NSR,STach,SVPB,TAb,TInv,VPB,IIAVB,abQRS,AJR,AMI,AMIs,AnMIs,AnMI,AB,AFAFL,AH,AP,ATach,AVJR,AVB,BPAC,BTS,BBB,CD,CAF,CMI,CHB,CIAHB,CHD,SQT,DIB,ERe,FB,HF,HVD,HTV,IR,ILBBB,ICA,IIs,ISTD,JE,JPC,JTach,LIs,LAA,LAE,LAH,LPFB,LVH,LVS,MoI,MI,MIs,NSSTTA,OldMI,VPVC,PAF,PSVT,PVT,RAb,RAF,RAAb,RAH,RVH,STC,SPRI,SAB,SND,STD,STE,STIAb,SVB,SVT,ALR,TIA,UAb,VBig,VEB,VEsB,VEsR,VF,VFL,VH,VPP,VPEx,VTach,VTrig,WAP,WPW
 IAVB,2394,24,7,16,85,77,148,469,158,15,92,0,77,8,125,119,61,32,84,58,251,614,89,17,223,67,43,3,177,0,0,0,22,23,0,0,3,0,4,0,0,2,1,19,0,0,6,0,0,0,0,0,7,0,0,0,0,0,30,5,29,0,0,0,0,87,6,179,2,24,202,0,0,391,121,166,25,0,0,0,0,0,0,0,7,15,18,0,0,0,38,17,88,0,2,3,0,0,4,93,0,1,0,0,13,2,0,0,1,1,0
 AF,24,3475,32,4,104,139,148,528,124,36,102,4,20,19,0,102,68,70,244,2,17,37,13,4,455,110,20,6,313,2,0,0,17,32,0,16,0,3,10,4,9,0,0,11,8,1,10,4,0,3,0,0,3,0,1,0,0,0,29,12,92,0,1,0,1,103,1,7,0,40,355,0,0,606,452,330,79,0,0,1,0,0,0,0,0,10,217,0,0,0,252,10,79,0,1,2,0,0,9,215,0,0,4,0,8,9,0,1,0,1,2
 AFL,7,32,314,0,6,11,5,40,3,13,13,0,7,2,1,26,13,6,12,1,4,5,11,4,69,21,5,2,12,0,0,0,11,0,0,0,0,0,0,1,65,0,0,1,1,0,2,0,0,0,0,0,4,0,0,0,0,0,3,0,23,0,0,0,0,16,0,4,0,1,28,0,0,10,7,64,4,0,0,0,0,0,0,0,0,1,11,0,0,0,4,5,14,0,7,1,0,0,0,1,0,0,7,0,0,1,0,0,0,0,0
@@ -564,12 +609,19 @@ VTach,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
 VTrig,1,0,0,0,0,1,2,4,0,0,0,0,5,0,2,1,1,0,0,0,0,11,6,2,4,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,6,3,2,2,1,0,0,0,0,0,0,0,0,2,0,0,0,1,0,1,0,0,0,0,0,2,10,0,0,0,0,0,0,0,0,29,0,0
 WAP,1,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,2,0,1,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0
 WPW,0,2,0,1,0,3,0,41,0,0,0,0,1,0,0,0,0,3,0,3,3,66,0,6,4,0,0,0,41,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,7,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,88
-"""), index_col=0)
-dx_cooccurrence_scored = dx_cooccurrence_all.loc[dx_mapping_scored.Abbreviation, dx_mapping_scored.Abbreviation]
+"""
+    ),
+    index_col=0,
+)
+dx_cooccurrence_scored = dx_cooccurrence_all.loc[
+    dx_mapping_scored.Abbreviation, dx_mapping_scored.Abbreviation
+]
 
 
-def get_cooccurrence(c1:Union[str,int], c2:Union[str,int], ensure_scored:bool=False) -> int:
-    """ finished, checked,
+def get_cooccurrence(
+    c1: Union[str, int], c2: Union[str, int], ensure_scored: bool = False
+) -> int:
+    """finished, checked,
 
     Parameters:
     -----------

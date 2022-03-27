@@ -13,7 +13,6 @@ __all__ = [
 ]
 
 
-
 RR_AF_VANILLA_CONFIG = CFG()
 
 RR_AF_VANILLA_CONFIG.lstm = CFG()
@@ -32,12 +31,11 @@ RR_AF_VANILLA_CONFIG.clf = CFG()
 RR_AF_VANILLA_CONFIG.clf.name = "linear"  # crf
 RR_AF_VANILLA_CONFIG.clf.linear = CFG()
 RR_AF_VANILLA_CONFIG.clf.linear.out_channels = [
-  50,  # not including the last linear layer, with out channels equals n_classes
+    50,  # not including the last linear layer, with out channels equals n_classes
 ]
 RR_AF_VANILLA_CONFIG.clf.linear.bias = True
 RR_AF_VANILLA_CONFIG.clf.linear.dropouts = 0.1
 RR_AF_VANILLA_CONFIG.clf.linear.activation = "relu"
-
 
 
 RR_AF_CRF_CONFIG = CFG()
@@ -56,7 +54,6 @@ RR_AF_CRF_CONFIG.clf = CFG()
 RR_AF_CRF_CONFIG.clf.name = "crf"  # crf
 RR_AF_CRF_CONFIG.clf.crf = CFG()
 RR_AF_CRF_CONFIG.clf.crf.proj_bias = True
-
 
 
 RR_LSTM_CONFIG = CFG()

@@ -9,7 +9,10 @@ import torch
 from easydict import EasyDict as ED
 
 
-__all__ = ["CFG", "DEFAULTS",]
+__all__ = [
+    "CFG",
+    "DEFAULTS",
+]
 
 
 _PROJECT_ROOT = Path(__file__).parent.absolute()
@@ -26,16 +29,16 @@ class CFG(ED):
     >>> c = CFG(hehe={"a":1,"b":2})
     >>> c.update(hehe={"a":-1})
     >>> c
-    ... {'hehe': {'a': -1, 'b': 2}}
+    {'hehe': {'a': -1, 'b': 2}}
     >>> c.__update__(hehe={"a":-10})
     >>> c
-    ... {'hehe': {'a': -10}}
+    {'hehe': {'a': -10}}
     """
+
     __name__ = "CFG"
 
     def __init__(self, *args, **kwargs) -> NoReturn:
-        """
-        """
+        """ """
         if len(args) > 1:
             raise TypeError(f"expected at most 1 arguments, got {len(args)}")
         elif len(args) == 1:
@@ -52,16 +55,21 @@ class CFG(ED):
                 dict.__setitem__(self, k, v)
         # Class attributes
         for k in self.__class__.__dict__:
-            if not (k.startswith('__') and k.endswith('__')) and not k in ('update', 'pop'):
+            if not (k.startswith("__") and k.endswith("__")) and not k in (
+                "update",
+                "pop",
+            ):
                 setattr(self, k, getattr(self, k))
 
-    def __update__(self, new_cfg:Optional[MutableMapping]=None, **kwargs) -> NoReturn:
+    def __update__(
+        self, new_cfg: Optional[MutableMapping] = None, **kwargs
+    ) -> NoReturn:
         """
         the original normal update method
         """
         super().update(new_cfg, **kwargs)
 
-    def update(self, new_cfg:Optional[MutableMapping]=None, **kwargs) -> NoReturn:
+    def update(self, new_cfg: Optional[MutableMapping] = None, **kwargs) -> NoReturn:
         """
         the new hierarchical update method
         """
@@ -90,6 +98,8 @@ DEFAULTS.torch_dtype = torch.float32  # torch.float64, torch.float16
 DEFAULTS.str_dtype = str(DEFAULTS.torch_dtype).replace("torch.", "")
 DEFAULTS.np_dtype = np.dtype(DEFAULTS.str_dtype)
 
-DEFAULTS.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+DEFAULTS.device = (
+    torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+)
 
 DEFAULTS.eps = 1e-7

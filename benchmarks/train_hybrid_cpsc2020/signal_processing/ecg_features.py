@@ -33,8 +33,14 @@ __all__ = [
 ]
 
 
-def compute_ecg_features(sig:np.ndarray, rpeaks:np.ndarray, config:Optional[ED]=None, save_dir:Optional[str]=None, save_fmt:str="npy") -> np.ndarray:
-    """ finished, checked,
+def compute_ecg_features(
+    sig: np.ndarray,
+    rpeaks: np.ndarray,
+    config: Optional[ED] = None,
+    save_dir: Optional[str] = None,
+    save_fmt: str = "npy",
+) -> np.ndarray:
+    """finished, checked,
 
     Parameters
     ----------
@@ -56,23 +62,25 @@ def compute_ecg_features(sig:np.ndarray, rpeaks:np.ndarray, config:Optional[ED]=
     cfg = deepcopy(FeatureCfg)
     cfg.update(deepcopy(config) or {})
 
-    filtered_rpeaks = rpeaks[np.where( (rpeaks>=cfg.beat_winL) & (rpeaks<len(sig)-cfg.beat_winR) )[0]]
+    filtered_rpeaks = rpeaks[
+        np.where((rpeaks >= cfg.beat_winL) & (rpeaks < len(sig) - cfg.beat_winR))[0]
+    ]
 
     beats = []
     for r in filtered_rpeaks:
-        beats.append(sig[r-cfg.beat_winL:r+cfg.beat_winR])
+        beats.append(sig[r - cfg.beat_winL : r + cfg.beat_winR])
     features = np.empty((len(beats), 0))
 
     # NOTE: ordering keep in accordance with FeatureCfg.features
-    if 'wavelet' in cfg.features:
+    if "wavelet" in cfg.features:
         tmp = []
         for beat in beats:
             tmp.append(np.array(compute_wavelet_descriptor(beat, cfg)))
         features = np.concatenate((features, np.array(tmp)), axis=1)
-    if 'rr' in cfg.features:
+    if "rr" in cfg.features:
         tmp = compute_rr_descriptor(filtered_rpeaks, cfg)
         features = np.concatenate((features, tmp), axis=1)
-    if 'morph' in cfg.features:
+    if "morph" in cfg.features:
         tmp = []
         for beat in beats:
             tmp.append(np.array(compute_morph_descriptor(beat, cfg)))
@@ -80,17 +88,19 @@ def compute_ecg_features(sig:np.ndarray, rpeaks:np.ndarray, config:Optional[ED]=
 
     if save_dir:
         save_suffix = "-".join(cfg.features)
-        save_path = os.path.join(save_dir, f"ecg-features-{save_suffix}.{save_fmt.lower()}")
+        save_path = os.path.join(
+            save_dir, f"ecg-features-{save_suffix}.{save_fmt.lower()}"
+        )
         if save_fmt.lower() == "npy":
             np.save(save_path, features)
         elif save_fmt.lower() == "mat":
-            savemat(save_path, {"features": features}, format='5')
+            savemat(save_path, {"features": features}, format="5")
 
     return features
 
 
-def compute_wavelet_descriptor(beat:np.ndarray, config:ED) -> np.ndarray:
-    """ finished, checked,
+def compute_wavelet_descriptor(beat: np.ndarray, config: ED) -> np.ndarray:
+    """finished, checked,
 
     Parameters
     ----------
@@ -98,7 +108,7 @@ def compute_wavelet_descriptor(beat:np.ndarray, config:ED) -> np.ndarray:
         a window properly covers the qrs complex, perhaps even the q, t waves
     config: dict,
         process configurations,
-    
+
     Returns
     -------
     coeffs: ndarray,
@@ -114,8 +124,10 @@ def compute_wavelet_descriptor(beat:np.ndarray, config:ED) -> np.ndarray:
     return coeffs
 
 
-def compute_rr_descriptor(rpeaks:np.ndarray, config:Optional[ED]=None) -> np.ndarray:
-    """ finished, checked,
+def compute_rr_descriptor(
+    rpeaks: np.ndarray, config: Optional[ED] = None
+) -> np.ndarray:
+    """finished, checked,
 
     Parameters
     ----------
@@ -136,7 +148,7 @@ def compute_rr_descriptor(rpeaks:np.ndarray, config:Optional[ED]=None) -> np.nda
     """
     cfg = deepcopy(FeatureCfg)
     cfg.update(deepcopy(config) or {})
-    
+
     # NOTE that for np.diff:
     # The first difference is given by ``out[n] = a[n+1] - a[n]``
     rr_intervals = np.diff(rpeaks)
@@ -151,16 +163,19 @@ def compute_rr_descriptor(rpeaks:np.ndarray, config:Optional[ED]=None) -> np.nda
         pre_rr = pre_rr / compute_local_average(pre_rr, cfg.rr_normalize_radius)
         post_rr = post_rr / compute_local_average(post_rr, cfg.rr_normalize_radius)
         local_rr = local_rr / compute_local_average(local_rr, cfg.rr_normalize_radius)
-        global_rr = global_rr / compute_local_average(global_rr, cfg.rr_normalize_radius)
+        global_rr = global_rr / compute_local_average(
+            global_rr, cfg.rr_normalize_radius
+        )
         features_rr = np.column_stack((pre_rr, post_rr, local_rr, global_rr))
     else:
         features_rr = np.column_stack((pre_rr, post_rr, local_rr, global_rr))
         features_rr = features_rr / cfg.fs  #  units to sec
-            
+
     return features_rr
 
-def _compute_pre_rr(rr_intervals:np.ndarray) -> np.ndarray:
-    """ finished, checked,
+
+def _compute_pre_rr(rr_intervals: np.ndarray) -> np.ndarray:
+    """finished, checked,
 
     Parameters
     ----------
@@ -178,8 +193,9 @@ def _compute_pre_rr(rr_intervals:np.ndarray) -> np.ndarray:
         pre_rr = np.array([], dtype=int)
     return pre_rr
 
-def _compute_post_rr(rr_intervals:np.ndarray) -> np.ndarray:
-    """ finished, checked,
+
+def _compute_post_rr(rr_intervals: np.ndarray) -> np.ndarray:
+    """finished, checked,
 
     Parameters
     ----------
@@ -198,8 +214,9 @@ def _compute_post_rr(rr_intervals:np.ndarray) -> np.ndarray:
         post_rr = np.array([], dtype=int)
     return post_rr
 
-def _compute_local_rr(prev_rr:np.ndarray, config:ED) -> np.ndarray:
-    """ finished, checked,
+
+def _compute_local_rr(prev_rr: np.ndarray, config: ED) -> np.ndarray:
+    """finished, checked,
 
     Parameters
     ----------
@@ -214,16 +231,31 @@ def _compute_local_rr(prev_rr:np.ndarray, config:ED) -> np.ndarray:
         array of the local mean rr intervals
     """
     local_rr = np.array([], dtype=int)
-    for i in range(config.rr_local_range-1):  # head
-        local_rr = np.append(local_rr, np.mean(prev_rr[:i+1]))
+    for i in range(config.rr_local_range - 1):  # head
+        local_rr = np.append(local_rr, np.mean(prev_rr[: i + 1]))
     local_rr = np.append(
         local_rr,
-        np.mean(np.array([prev_rr[i:len(prev_rr)-(config.rr_local_range-i-1)] for i in range(config.rr_local_range)]), axis=0)
+        np.mean(
+            np.array(
+                [
+                    prev_rr[i : len(prev_rr) - (config.rr_local_range - i - 1)]
+                    for i in range(config.rr_local_range)
+                ]
+            ),
+            axis=0,
+        ),
     )
     return local_rr
 
-def _compute_global_rr_epoch(rpeaks:np.ndarray, prev_rr:np.ndarray, epoch_start:int, epoch_end:int, global_range:int) -> np.ndarray:
-    """ finished, checked,
+
+def _compute_global_rr_epoch(
+    rpeaks: np.ndarray,
+    prev_rr: np.ndarray,
+    epoch_start: int,
+    epoch_end: int,
+    global_range: int,
+) -> np.ndarray:
+    """finished, checked,
 
     Parameters
     ----------
@@ -244,13 +276,16 @@ def _compute_global_rr_epoch(rpeaks:np.ndarray, prev_rr:np.ndarray, epoch_start:
         array of the global mean rr intervals
     """
     global_rr = []
-    for idx in range(epoch_start,epoch_end):
-        nb_samples = len(np.where(rpeaks[idx]-rpeaks[:idx]<global_range)[0])
-        global_rr.append(np.mean(prev_rr[idx-nb_samples:idx+1]))
+    for idx in range(epoch_start, epoch_end):
+        nb_samples = len(np.where(rpeaks[idx] - rpeaks[:idx] < global_range)[0])
+        global_rr.append(np.mean(prev_rr[idx - nb_samples : idx + 1]))
     return global_rr
 
-def _compute_global_rr(rpeaks:np.ndarray, prev_rr:np.ndarray, config:ED) -> np.ndarray:
-    """ finished, checked,
+
+def _compute_global_rr(
+    rpeaks: np.ndarray, prev_rr: np.ndarray, config: ED
+) -> np.ndarray:
+    """finished, checked,
 
     Parameters
     ----------
@@ -269,11 +304,11 @@ def _compute_global_rr(rpeaks:np.ndarray, prev_rr:np.ndarray, config:ED) -> np.n
     split_indices = [0]
     one_hour = config.fs * 3600
     for i in range(1, int(rpeaks[-1]) // one_hour):
-        split_indices.append(len(np.where(rpeaks < i*one_hour)[0])+1)
-    if len(split_indices) == 1 or split_indices[-1] < len(rpeaks): # tail
+        split_indices.append(len(np.where(rpeaks < i * one_hour)[0]) + 1)
+    if len(split_indices) == 1 or split_indices[-1] < len(rpeaks):  # tail
         split_indices.append(len(rpeaks))
-    
-    cpu_num = max(1, mp.cpu_count()-3)
+
+    cpu_num = max(1, mp.cpu_count() - 3)
     with mp.Pool(processes=cpu_num) as pool:
         result = pool.starmap(
             func=_compute_global_rr_epoch,
@@ -282,10 +317,10 @@ def _compute_global_rr(rpeaks:np.ndarray, prev_rr:np.ndarray, config:ED) -> np.n
                     rpeaks,
                     prev_rr,
                     split_indices[idx],
-                    split_indices[idx+1],
-                    config.rr_global_range
-                )\
-                    for idx in range(len(split_indices)-1)
+                    split_indices[idx + 1],
+                    config.rr_global_range,
+                )
+                for idx in range(len(split_indices) - 1)
             ],
         )
     # list_addition = lambda a,b: a+b
@@ -294,8 +329,8 @@ def _compute_global_rr(rpeaks:np.ndarray, prev_rr:np.ndarray, config:ED) -> np.n
     return global_rr
 
 
-def compute_morph_descriptor(beat:np.ndarray, config:ED) -> np.ndarray:
-    """ finished, checked,
+def compute_morph_descriptor(beat: np.ndarray, config: ED) -> np.ndarray:
+    """finished, checked,
 
     Parameters
     ----------
@@ -319,29 +354,30 @@ def compute_morph_descriptor(beat:np.ndarray, config:ED) -> np.ndarray:
     x_values = np.zeros(itv_num)
     # Obtain (max/min) values and index from the intervals
     for n in range(itv_num):
-        [x_values[n], y_values[n]] = \
-            max(enumerate(beat[itv[n][0]:itv[n][1]]), key=operator.itemgetter(1))
-    
+        [x_values[n], y_values[n]] = max(
+            enumerate(beat[itv[n][0] : itv[n][1]]), key=operator.itemgetter(1)
+        )
+
     for n in range(1, itv_num):
         x_values[n] = x_values[n] + itv[n][0]
-    
+
     # Norm data before compute distance
     x_max = max(x_values)
     y_max = max(np.append(y_values, R_value))
     x_min = min(x_values)
     y_min = min(np.append(y_values, R_value))
-    
+
     R_pos = (R_pos - x_min) / (x_max - x_min)
     R_value = (R_value - y_min) / (y_max - y_min)
-                
+
     for n in range(itv_num):
         x_values[n] = (x_values[n] - x_min) / (x_max - x_min)
         y_values[n] = (y_values[n] - y_min) / (y_max - y_min)
-        x_diff = (R_pos - x_values[n]) 
+        x_diff = R_pos - x_values[n]
         y_diff = R_value - y_values[n]
-        morph[n] =  np.linalg.norm([x_diff, y_diff])
+        morph[n] = np.linalg.norm([x_diff, y_diff])
         # TODO test with np.sqrt(np.dot(x_diff, y_diff))
-    
+
     if np.isnan(morph[n]):
         morph[n] = 0.0
 

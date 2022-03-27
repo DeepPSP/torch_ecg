@@ -9,28 +9,33 @@ import torch.nn as nn
 from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
+
 # from easydict import EasyDict as ED
 
 from .trainer import BaseTrainer
 from ..cfg import CFG
 
 
-__all__ = ["NAS",]
+__all__ = [
+    "NAS",
+]
 
 
 class NAS:
-    """
-    """
+    """ """
+
     __name__ = "NAS"
 
-    def __init__(self,
-                 trainer_cls:BaseTrainer,
-                 model_cls:nn.Module,
-                 dataset_cls:Dataset,
-                 train_config:dict,
-                 model_configs:Sequence[dict],
-                 lazy:bool=False,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        trainer_cls: BaseTrainer,
+        model_cls: nn.Module,
+        dataset_cls: Dataset,
+        train_config: dict,
+        model_configs: Sequence[dict],
+        lazy: bool = False,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -65,8 +70,7 @@ class NAS:
             self.ds_val = None
 
     def search(self) -> NoReturn:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         if self.ds_train is None or self.ds_val is None:
             raise ValueError("training dataset or validation dataset is not set")
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -96,8 +100,8 @@ class NAS:
             del trainer
             torch.cuda.empty_cache()
 
-    def _setup_dataset(self, ds_train:Dataset, ds_val:Dataset) -> NoReturn:
-        """ finished, checked,
+    def _setup_dataset(self, ds_train: Dataset, ds_val: Dataset) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------

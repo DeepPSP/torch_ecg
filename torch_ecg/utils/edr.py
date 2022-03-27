@@ -12,15 +12,17 @@ __all__ = [
 ]
 
 
-def phs_edr(sig:Sequence,
-            fs:int,
-            rpeaks:Sequence,
-            winL_t:Real=40,
-            winR_t:Real=40,
-            return_with_time:bool=True,
-            mode:str="complex",
-            verbose:int=0) -> np.ndarray:
-    """ finished, checked,
+def phs_edr(
+    sig: Sequence,
+    fs: int,
+    rpeaks: Sequence,
+    winL_t: Real = 40,
+    winR_t: Real = 40,
+    return_with_time: bool = True,
+    mode: str = "complex",
+    verbose: int = 0,
+) -> np.ndarray:
+    """finished, checked,
 
     computes the respiratory rate from single-lead ECG signals.
 
@@ -52,18 +54,20 @@ def phs_edr(sig:Sequence,
         2d in the form of [idx,val], if `return_with_time` is set True
     """
     ts = np.array(rpeaks) * 1000 // fs
-    winL, winR = int(winL_t*fs/1000), int(winR_t*fs/1000)
+    winL, winR = int(winL_t * fs / 1000), int(winR_t * fs / 1000)
 
     if mode == "simple":
-        ecg_der_rsp = np.vectorize(lambda idx: _getxy(s, idx-winL, idx+winR))(np.array(rpeaks))
+        ecg_der_rsp = np.vectorize(lambda idx: _getxy(s, idx - winL, idx + winR))(
+            np.array(rpeaks)
+        )
     elif mode == "complex":
         ecg_der_rsp = []
-        xm, xc, xd, xdmax = 0,0,0,0
+        xm, xc, xd, xdmax = 0, 0, 0, 0
         for idx in rpeaks:
             if verbose == -1:
-                print("-"*80)
+                print("-" * 80)
                 print(f"idx = {idx}, winL = {winL}, winR = {winR}")
-            x = _getxy(s, idx-winL, idx+winR)
+            x = _getxy(s, idx - winL, idx + winR)
             if verbose == -1:
                 print(f"x = {x}")
 
@@ -97,7 +101,7 @@ def phs_edr(sig:Sequence,
             r = d / xd
             if verbose == -1:
                 print(f"xm = {xm}, xc = {xc}, xd = {xd}, xdmax = {xdmax}, r = {r}")
-            ecg_der_rsp.append(int(r*50))
+            ecg_der_rsp.append(int(r * 50))
             # end of calculation of instantaneous EDR
     else:
         raise ValueError(f"No mode named {mode}!")
@@ -106,15 +110,15 @@ def phs_edr(sig:Sequence,
 
     if verbose >= 2:
         pass  # TODO: some plot
-    
+
     if return_with_time:
         return np.column_stack((ts, ecg_der_rsp))
     else:
         return ecg_der_rsp
 
 
-def _getxy(sig:Sequence, von:int, bis:int) -> Real:
+def _getxy(sig: Sequence, von: int, bis: int) -> Real:
     """
     compute the integrand from `von` to `bis` of the signals with baseline removed
     """
-    return (np.array(s)[von:bis+1]).sum()
+    return (np.array(s)[von : bis + 1]).sum()

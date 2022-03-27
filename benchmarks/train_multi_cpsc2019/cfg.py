@@ -11,6 +11,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
@@ -33,7 +34,9 @@ _BASE_DIR = Path(__file__).absolute().parent
 
 BaseCfg = CFG()
 BaseCfg.fs = 500  # Hz, CPSC2019 data fs
-BaseCfg.classes = ["N",]
+BaseCfg.classes = [
+    "N",
+]
 BaseCfg.n_leads = 1
 BaseCfg.db_dir = None
 BaseCfg.bias_thr = 0.075 * BaseCfg.fs  # keep the same with `THR` in `cpsc2019_score.py`
@@ -41,8 +44,6 @@ BaseCfg.bias_thr = 0.075 * BaseCfg.fs  # keep the same with `THR` in `cpsc2019_s
 # as in the official entry function
 BaseCfg.skip_dist = 0.5 * BaseCfg.fs
 BaseCfg.torch_dtype = DEFAULTS.torch_dtype
-
-
 
 
 _COMMON_MODEL_CONFIGS = CFG()
@@ -60,9 +61,10 @@ _COMMON_MODEL_CONFIGS.skip_dist = BaseCfg.skip_dist
 
 ModelCfg = deepcopy(_COMMON_MODEL_CONFIGS)
 ModelCfg.seq_lab_crnn = adjust_cnn_filter_lengths(
-    deepcopy(ECG_SEQ_LAB_NET_CONFIG), BaseCfg.fs,
+    deepcopy(ECG_SEQ_LAB_NET_CONFIG),
+    BaseCfg.fs,
 )
-ModelCfg.seq_lab_crnn.reduction = 2**3
+ModelCfg.seq_lab_crnn.reduction = 2 ** 3
 ModelCfg.seq_lab_crnn.recover_length = True
 ModelCfg.seq_lab_crnn.update(deepcopy(_COMMON_MODEL_CONFIGS))
 
@@ -76,7 +78,8 @@ ModelCfg.seq_lab_cnn.rnn.name = "none"  # "lstm"
 
 
 ModelCfg.unet = adjust_cnn_filter_lengths(
-    deepcopy(ECG_UNET_VANILLA_CONFIG), BaseCfg.fs,
+    deepcopy(ECG_UNET_VANILLA_CONFIG),
+    BaseCfg.fs,
 )
 ModelCfg.unet.reduction = 1
 ModelCfg.unet.recover_length = True
@@ -85,14 +88,13 @@ ModelCfg.unet.cnn = CFG(name="none")
 
 
 ModelCfg.subtract_unet = adjust_cnn_filter_lengths(
-    deepcopy(ECG_SUBTRACT_UNET_CONFIG), BaseCfg.fs,
+    deepcopy(ECG_SUBTRACT_UNET_CONFIG),
+    BaseCfg.fs,
 )
 ModelCfg.subtract_unet.reduction = 1
 ModelCfg.subtract_unet.recover_length = True
 ModelCfg.subtract_unet.update(deepcopy(_COMMON_MODEL_CONFIGS))
 ModelCfg.subtract_unet.cnn = CFG(name="none")
-
-
 
 
 TrainCfg = CFG()
@@ -151,7 +153,7 @@ TrainCfg.mixup = False
 #     ]),
 # )
 TrainCfg.random_flip = CFG(
-    prob = 0.5,
+    prob=0.5,
 )
 
 # configs of training epochs, batch, etc.
@@ -192,7 +194,7 @@ TrainCfg.cnn_name = "multi_scopic"
 TrainCfg.rnn_name = "lstm"
 TrainCfg.attn_name = "se"
 
-TrainCfg.reduction = 2**3  # TODO: automatic adjust via model config
+TrainCfg.reduction = 2 ** 3  # TODO: automatic adjust via model config
 TrainCfg.recover_length = True
 
 TrainCfg.monitor = "qrs_score"

@@ -61,9 +61,9 @@ from itertools import product, repeat
 from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
+
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
@@ -75,12 +75,14 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2020 as CR
 from torch_ecg.utils.misc import (
-    mask_to_intervals, list_sum,
+    mask_to_intervals,
+    list_sum,
     get_record_list_recursive3,
     ReprMixin,
 )
@@ -111,11 +113,12 @@ class CPSC2020(ReprMixin, Dataset):
     and of overlap length `TrainCfg.overlap_len` around premature beats
     2. do augmentations for premature segments
     """
+
     __DEBUG__ = False
     __name__ = "CPSC2020"
 
-    def __init__(self, config:CFG, training:bool=True) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, config: CFG, training: bool = True) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -166,23 +169,27 @@ class CPSC2020(ReprMixin, Dataset):
             self._ls_segments()
 
             if self.training:
-                self.segments = list_sum([self.__all_segments[rec] for rec in split_res.train])
+                self.segments = list_sum(
+                    [self.__all_segments[rec] for rec in split_res.train]
+                )
                 shuffle(self.segments)
             else:
-                self.segments = list_sum([self.__all_segments[rec] for rec in split_res.test])
+                self.segments = list_sum(
+                    [self.__all_segments[rec] for rec in split_res.test]
+                )
         # elif self.config.model_name.lower() == "od":  # object detection
         #     pass
         else:
-            raise NotImplementedError(f"data generator for model \042{self.config.model_name}\042 not implemented")
+            raise NotImplementedError(
+                f"data generator for model \042{self.config.model_name}\042 not implemented"
+            )
 
         if self.config.bw:
             self._n_bw_choices = len(self.config.bw_ampl_ratio)
             self._n_gn_choices = len(self.config.bw_gaussian)
 
-
     def _ls_segments(self) -> NoReturn:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
             for rec in self.reader.all_records:
@@ -191,23 +198,29 @@ class CPSC2020(ReprMixin, Dataset):
         if self.segments_json.is_file():
             self.__all_segments = json.loads(self.segments_json.read_text())
             return
-        print(f"please allow the reader a few minutes to collect the segments from {self.segments_dir}...")
+        print(
+            f"please allow the reader a few minutes to collect the segments from {self.segments_dir}..."
+        )
         seg_filename_pattern = f"S\d{{2}}_\d{{7}}{self.reader.rec_ext}"
-        self.__all_segments = CFG({
-            rec: get_record_list_recursive3(str(self.segments_dirs.data[rec]), seg_filename_pattern) \
+        self.__all_segments = CFG(
+            {
+                rec: get_record_list_recursive3(
+                    str(self.segments_dirs.data[rec]), seg_filename_pattern
+                )
                 for rec in self.reader.all_records
-        })
-        if all([len(self.__all_segments[rec])>0 for rec in self.reader.all_records]):
-            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
+            }
+        )
+        if all([len(self.__all_segments[rec]) > 0 for rec in self.reader.all_records]):
+            self.segments_json.write_text(
+                json.dumps(self.__all_segments, ensure_ascii=False)
+            )
 
     @property
     def all_segments(self):
         return self.__all_segments
 
-
-    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ finished, checked,
-        """
+    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+        """finished, checked,"""
         seg_name = self.segments[index]
         seg_data = self._load_seg_data(seg_name)
         if self.config.model_name.lower() == "crnn":
@@ -223,8 +236,8 @@ class CPSC2020(ReprMixin, Dataset):
         # pvc_indices = ann["PVC_indices"]
         if self.__data_aug:
             if self.config.bw:
-                ar = self.config.bw_ampl_ratio[randint(0, self._n_bw_choices-1)]
-                gm, gs = self.config.bw_gaussian[randint(0, self._n_gn_choices-1)]
+                ar = self.config.bw_ampl_ratio[randint(0, self._n_bw_choices - 1)]
+                gm, gs = self.config.bw_gaussian[randint(0, self._n_gn_choices - 1)]
                 bw_ampl = ar * seg_ampl
                 g_ampl = gm * seg_ampl
                 bw = gen_baseline_wander(
@@ -248,10 +261,13 @@ class CPSC2020(ReprMixin, Dataset):
                     self.config.random_normalize_std[0],
                     self.config.random_normalize_std[1],
                 )
-                seg_data = (seg_data-np.mean(seg_data)+rn_mean) / np.std(seg_data) * rn_std
+                seg_data = (
+                    (seg_data - np.mean(seg_data) + rn_mean) / np.std(seg_data) * rn_std
+                )
             if self.config.label_smoothing > 0:
-                seg_label = (1 - self.config.label_smoothing) * seg_label \
-                    + self.config.label_smoothing / self.n_classes
+                seg_label = (
+                    1 - self.config.label_smoothing
+                ) * seg_label + self.config.label_smoothing / self.n_classes
 
         if self.__DEBUG__:
             self.reader.plot(
@@ -260,20 +276,17 @@ class CPSC2020(ReprMixin, Dataset):
                 ann=self._load_seg_beat_ann(seg_name),
                 ticks_granularity=2,
             )
-        
+
         seg_data = seg_data.reshape((self.config.n_leads, self.seglen))
 
         return seg_data, seg_label
 
-
     def __len__(self) -> int:
-        """
-        """
+        """ """
         return len(self.segments)
 
-
-    def _get_seg_ampl(self, seg_data:np.ndarray, window:int=80) -> float:
-        """ finished, checked,
+    def _get_seg_ampl(self, seg_data: np.ndarray, window: int = 80) -> float:
+        """finished, checked,
 
         get amplitude of a segment
 
@@ -291,13 +304,13 @@ class CPSC2020(ReprMixin, Dataset):
         """
         half_window = window // 2
         ampl = 0
-        for idx in range(len(seg_data)//half_window-1):
-            s = seg_data[idx*half_window: idx*half_window+window]
-            ampl = max(ampl, np.max(s)-np.min(s))
+        for idx in range(len(seg_data) // half_window - 1):
+            s = seg_data[idx * half_window : idx * half_window + window]
+            ampl = max(ampl, np.max(s) - np.min(s))
         return ampl
 
-    def _get_seg_data_path(self, seg:str) -> Path:
-        """ finished, checked,
+    def _get_seg_data_path(self, seg: str) -> Path:
+        """finished, checked,
 
         Parameters
         ----------
@@ -313,9 +326,8 @@ class CPSC2020(ReprMixin, Dataset):
         fp = self.segments_dir / "data" / rec / f"{seg}{self.reader.rec_ext}"
         return fp
 
-
-    def _get_seg_ann_path(self, seg:str) -> Path:
-        """ finished, checked,
+    def _get_seg_ann_path(self, seg: str) -> Path:
+        """finished, checked,
 
         Parameters
         ----------
@@ -331,9 +343,8 @@ class CPSC2020(ReprMixin, Dataset):
         fp = self.segments_dir / "ann" / rec / f"{seg}{self.reader.rec_ext}"
         return fp
 
-
-    def _load_seg_data(self, seg:str) -> np.ndarray:
-        """ finished, checked,
+    def _load_seg_data(self, seg: str) -> np.ndarray:
+        """finished, checked,
 
         Parameters
         ----------
@@ -349,9 +360,8 @@ class CPSC2020(ReprMixin, Dataset):
         seg_data = loadmat(str(seg_data_fp))["ecg"].squeeze()
         return seg_data
 
-
-    def _load_seg_label(self, seg:str) -> np.ndarray:
-        """ finished, checked,
+    def _load_seg_label(self, seg: str) -> np.ndarray:
+        """finished, checked,
 
         Parameters
         ----------
@@ -367,9 +377,8 @@ class CPSC2020(ReprMixin, Dataset):
         seg_label = loadmat(str(seg_ann_fp))["label"].squeeze()
         return seg_label
 
-
-    def _load_seg_beat_ann(self, seg:str) -> Dict[str, np.ndarray]:
-        """ finished, checked,
+    def _load_seg_beat_ann(self, seg: str) -> Dict[str, np.ndarray]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -384,14 +393,14 @@ class CPSC2020(ReprMixin, Dataset):
         seg_ann_fp = self._get_seg_ann_path(seg)
         seg_beat_ann = loadmat(str(seg_ann_fp))
         seg_beat_ann = {
-            k:v.flatten() for k,v in seg_beat_ann.items() \
-                if k in ["SPB_indices", "PVC_indices"]
+            k: v.flatten()
+            for k, v in seg_beat_ann.items()
+            if k in ["SPB_indices", "PVC_indices"]
         }
         return seg_beat_ann
 
-
-    def _load_seg_seq_lab(self, seg:str, reduction:int=8) -> np.ndarray:
-        """ finished, checked,
+    def _load_seg_seq_lab(self, seg: str, reduction: int = 8) -> np.ndarray:
+        """finished, checked,
 
         Parameters
         ----------
@@ -408,39 +417,35 @@ class CPSC2020(ReprMixin, Dataset):
             of shape (self.seglen//reduction, self.n_classes)
         """
         seg_beat_ann = {
-            k: np.round(v/reduction).astype(int) \
-                for k,v in self._load_seg_beat_ann(seg).items()
+            k: np.round(v / reduction).astype(int)
+            for k, v in self._load_seg_beat_ann(seg).items()
         }
         bias_thr = int(round(self.config.bias_thr / reduction))
         seq_lab = np.zeros(
-            shape=(self.seglen//reduction, self.n_classes),
+            shape=(self.seglen // reduction, self.n_classes),
             dtype=_DTYPE,
         )
         for p in seg_beat_ann["SPB_indices"]:
-            start_idx = max(0, p-bias_thr)
-            end_idx = min(seq_lab.shape[0], p+bias_thr+1)
+            start_idx = max(0, p - bias_thr)
+            end_idx = min(seq_lab.shape[0], p + bias_thr + 1)
             seq_lab[start_idx:end_idx, self.config.classes.index("S")] = 1
         for p in seg_beat_ann["PVC_indices"]:
-            start_idx = max(0, p-bias_thr)
-            end_idx = min(seq_lab.shape[0], p+bias_thr+1)
+            start_idx = max(0, p - bias_thr)
+            end_idx = min(seq_lab.shape[0], p + bias_thr + 1)
             seq_lab[start_idx:end_idx, self.config.classes.index("V")] = 1
 
         return seq_lab
 
-
     def disable_data_augmentation(self) -> NoReturn:
-        """
-        """
+        """ """
         self.__data_aug = False
 
     def enable_data_augmentation(self) -> NoReturn:
-        """
-        """
+        """ """
         self.__data_aug = True
 
-
-    def persistence(self, force_recompute:bool=False, verbose:int=0) -> NoReturn:
-        """ finished, checked,
+    def persistence(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
+        """finished, checked,
 
         make the dataset persistent w.r.t. the ratios in `self.config`
 
@@ -463,9 +468,10 @@ class CPSC2020(ReprMixin, Dataset):
             verbose=verbose,
         )
 
-
-    def _preprocess_data(self, preproc:List[str], force_recompute:bool=False, verbose:int=0) -> NoReturn:
-        """ finished, checked,
+    def _preprocess_data(
+        self, preproc: List[str], force_recompute: bool = False, verbose: int = 0
+    ) -> NoReturn:
+        """finished, checked,
 
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
@@ -493,8 +499,14 @@ class CPSC2020(ReprMixin, Dataset):
             if verbose >= 1:
                 print(f"{idx+1}/{len(self.reader.all_records)} records", end="\r")
 
-    def _preprocess_one_record(self, rec:Union[int,str], config:dict, force_recompute:bool=False, verbose:int=0) -> NoReturn:
-        """ finished, checked,
+    def _preprocess_one_record(
+        self,
+        rec: Union[int, str],
+        config: dict,
+        force_recompute: bool = False,
+        verbose: int = 0,
+    ) -> NoReturn:
+        """finished, checked,
 
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
@@ -517,7 +529,11 @@ class CPSC2020(ReprMixin, Dataset):
         suffix = self._get_rec_suffix(config.preproc)
         save_fp.data = self.preprocess_dir / f"{rec_name}-{suffix}{self.reader.rec_ext}"
         save_fp.rpeaks = self.rpeaks_dir / f"{rec_name}-{suffix}{self.reader.rec_ext}"
-        if (not force_recompute) and save_fp.data.is_file() and save_fp.rpeaks.is_file():
+        if (
+            (not force_recompute)
+            and save_fp.data.is_file()
+            and save_fp.rpeaks.is_file()
+        ):
             return
         # perform pre-process
         pps = SP.parallel_preprocess_signal(
@@ -529,15 +545,17 @@ class CPSC2020(ReprMixin, Dataset):
         # `rpeaks_skip_dist` useless for `seq_lab_detect`, as already set internally
         # pps['rpeaks'] = pps['rpeaks'][np.where( (pps['rpeaks']>=config.rpeaks_skip_dist) & (pps['rpeaks']<len(pps['filtered_ecg'])-config.rpeaks_skip_dist) )[0]]
         # save mat, keep in accordance with original mat files
-        savemat(save_fp.data, {'ecg': np.atleast_2d(pps['filtered_ecg']).T}, format='5')
-        savemat(save_fp.rpeaks, {'rpeaks': np.atleast_2d(pps['rpeaks']).T}, format='5')
+        savemat(save_fp.data, {"ecg": np.atleast_2d(pps["filtered_ecg"]).T}, format="5")
+        savemat(save_fp.rpeaks, {"rpeaks": np.atleast_2d(pps["rpeaks"]).T}, format="5")
 
-    def _normalize_preprocess_names(self, preproc:List[str], ensure_nonempty:bool) -> List[str]:
-        """ finished, checked
+    def _normalize_preprocess_names(
+        self, preproc: List[str], ensure_nonempty: bool
+    ) -> List[str]:
+        """finished, checked
 
         to transform all preproc into lower case,
-        and keep them in a specific ordering 
-        
+        and keep them in a specific ordering
+
         Parameters
         ----------
         preproc: list of str,
@@ -560,8 +578,8 @@ class CPSC2020(ReprMixin, Dataset):
         # assert all([item in self.allowed_preproc for item in _p])
         return _p
 
-    def _get_rec_suffix(self, operations:List[str]) -> str:
-        """ finished, checked,
+    def _get_rec_suffix(self, operations: List[str]) -> str:
+        """finished, checked,
 
         Parameters
         ----------
@@ -574,16 +592,15 @@ class CPSC2020(ReprMixin, Dataset):
         suffix: str,
             suffix of the filename of the preprocessed ecg signal
         """
-        suffix = '-'.join(sorted([item.lower() for item in operations]))
+        suffix = "-".join(sorted([item.lower() for item in operations]))
         return suffix
 
-
-    def _slice_data(self, force_recompute:bool=False, verbose:int=0) -> NoReturn:
-        """ finished, checked,
+    def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
+        """finished, checked,
 
         slice all records into segments of length `self.config.input_len`, i.e. `self.seglen`,
         and perform data augmentations specified in `self.config`
-        
+
         Parameters
         ----------
         force_recompute: bool, default False,
@@ -591,7 +608,7 @@ class CPSC2020(ReprMixin, Dataset):
         verbose: int, default 0,
             print verbosity
         """
-        for idx,rec in enumerate(self.reader.all_records):
+        for idx, rec in enumerate(self.reader.all_records):
             self._slice_one_record(
                 rec=rec,
                 force_recompute=force_recompute,
@@ -601,14 +618,22 @@ class CPSC2020(ReprMixin, Dataset):
             if verbose >= 1:
                 print(f"{idx+1}/{len(self.reader.all_records)} records", end="\r")
         if force_recompute:
-            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
+            self.segments_json.write_text(
+                json.dumps(self.__all_segments, ensure_ascii=False)
+            )
 
-    def _slice_one_record(self, rec:Union[int,str], force_recompute:bool=False, update_segments_json:bool=False, verbose:int=0) -> NoReturn:
-        """ finished, checked,
+    def _slice_one_record(
+        self,
+        rec: Union[int, str],
+        force_recompute: bool = False,
+        update_segments_json: bool = False,
+        verbose: int = 0,
+    ) -> NoReturn:
+        """finished, checked,
 
         slice one record into segments of length `self.config.input_len`, i.e. `self.seglen`,
         and perform data augmentations specified in `self.config`
-        
+
         Parameters
         ----------
         rec: int or str,
@@ -643,24 +668,31 @@ class CPSC2020(ReprMixin, Dataset):
 
         # generate initial segments with no overlap for non premature beats
         n_init_seg = len(data) // self.seglen
-        segments = (data[:self.seglen*n_init_seg]).reshape((n_init_seg, self.seglen))
+        segments = (data[: self.seglen * n_init_seg]).reshape((n_init_seg, self.seglen))
         labels = np.zeros((n_init_seg, self.n_classes))
         labels[..., self.config.class_map["N"]] = 1
         # leave only non premature segments
-        non_premature = np.logical_or(spb_mask, pvc_mask)[:self.seglen*n_init_seg]
+        non_premature = np.logical_or(spb_mask, pvc_mask)[: self.seglen * n_init_seg]
         non_premature = non_premature.reshape((n_init_seg, self.seglen)).sum(axis=1)
         non_premature = np.where(non_premature == 0)[0]
         segments = segments[non_premature, ...]
         labels = labels[non_premature, ...]
-        beat_ann = list(repeat(
-            {"SPB_indices":np.array([],dtype=int), "PVC_indices":np.array([],dtype=int)},
-            len(non_premature)
-        ))
+        beat_ann = list(
+            repeat(
+                {
+                    "SPB_indices": np.array([], dtype=int),
+                    "PVC_indices": np.array([], dtype=int),
+                },
+                len(non_premature),
+            )
+        )
 
         if verbose >= 1:
             print(f"\nn_init_seg = {n_init_seg}")
             print(f"segments.shape = {segments.shape}")
-            print(f"finish extracting non-premature segments, totally {len(non_premature)}")
+            print(
+                f"finish extracting non-premature segments, totally {len(non_premature)}"
+            )
             print("start doing augmentation...")
 
         # do data augmentation for premature beats
@@ -668,9 +700,9 @@ class CPSC2020(ReprMixin, Dataset):
         # mask for segment start indices
         premature_mask = np.zeros((len(data),), dtype=int)
         for idx in np.concatenate((ann["SPB_indices"], ann["PVC_indices"])):
-            start_idx = max(0, idx-self.seglen+border_dist)
-            end_idx = max(start_idx, min(idx-border_dist, len(data)-self.seglen))
-            premature_mask[start_idx: end_idx] = 1
+            start_idx = max(0, idx - self.seglen + border_dist)
+            end_idx = max(start_idx, min(idx - border_dist, len(data) - self.seglen))
+            premature_mask[start_idx:end_idx] = 1
         # intervals for allowed start of augmented segments
         premature_intervals = mask_to_intervals(premature_mask, 1)
         n_original = 0
@@ -681,23 +713,25 @@ class CPSC2020(ReprMixin, Dataset):
             while start_idx < itv[1]:
                 # stretch and compress the signal
                 if self.config.stretch_compress != 0:
-                    sign = sample([-1,1]+[0]*4, 1)[0]
+                    sign = sample([-1, 1] + [0] * 4, 1)[0]
                     if sign != 0:
                         sc_ratio = self.config.stretch_compress
-                        sc_ratio = 1 + (uniform(sc_ratio/4, sc_ratio) * sign) / 100
+                        sc_ratio = 1 + (uniform(sc_ratio / 4, sc_ratio) * sign) / 100
                         sc_len = int(round(sc_ratio * self.seglen))
                         end_idx = start_idx + sc_len
-                        aug_seg = data[start_idx: end_idx]
-                        aug_seg = SS.resample(x=aug_seg, num=self.seglen).reshape((1,-1))
+                        aug_seg = data[start_idx:end_idx]
+                        aug_seg = SS.resample(x=aug_seg, num=self.seglen).reshape(
+                            (1, -1)
+                        )
                     else:
                         end_idx = start_idx + self.seglen
                         # the segment of original signal, with no augmentation
-                        aug_seg = data[start_idx: end_idx]
+                        aug_seg = data[start_idx:end_idx]
                         sc_ratio = 1
 
                     seg_label = np.zeros((self.n_classes,))
-                    seg_spb_inds = np.where(spb_mask[start_idx: end_idx]==1)[0]
-                    seg_pvc_inds = np.where(pvc_mask[start_idx: end_idx]==1)[0]
+                    seg_spb_inds = np.where(spb_mask[start_idx:end_idx] == 1)[0]
+                    seg_pvc_inds = np.where(pvc_mask[start_idx:end_idx] == 1)[0]
                     seg_spb_inds = np.round(seg_spb_inds * sc_ratio).astype(int)
                     seg_pvc_inds = np.round(seg_pvc_inds * sc_ratio).astype(int)
                     seg_beat_ann = {
@@ -709,19 +743,24 @@ class CPSC2020(ReprMixin, Dataset):
                         seg_label[self.config.class_map["S"]] = 1
                     if len(seg_pvc_inds) > 0:
                         seg_label[self.config.class_map["V"]] = 1
-                    seg_label = seg_label.reshape((1,-1))
-                    segments = np.append(segments, aug_seg.reshape((1,-1)), axis=0)
+                    seg_label = seg_label.reshape((1, -1))
+                    segments = np.append(segments, aug_seg.reshape((1, -1)), axis=0)
                     labels = np.append(labels, seg_label.copy(), axis=0)
                     beat_ann.append(seg_beat_ann.copy())
                     n_added += 1
                     if verbose >= 2:
-                        print(f"{n_added} aug seg generated, start_idx at {start_idx}/{len(data)}", end="\r")
+                        print(
+                            f"{n_added} aug seg generated, start_idx at {start_idx}/{len(data)}",
+                            end="\r",
+                        )
 
                 # start_idx += forward_len  # should be randomly forwarded
-                start_idx += randint(forward_len//4, forward_len)
+                start_idx += randint(forward_len // 4, forward_len)
 
         if verbose >= 1:
-            print(f"\ngenerate {n_added} premature segments out from {n_original} in total via data augmentation")
+            print(
+                f"\ngenerate {n_added} premature segments out from {n_original} in total via data augmentation"
+            )
 
         # randomly shuffle the data and save into separate files
         seg_inds = list(range(segments.shape[0]))
@@ -729,12 +768,18 @@ class CPSC2020(ReprMixin, Dataset):
         for i, ind in enumerate(seg_inds):
             save_fp = CFG()
             seg_name = f"{rec_name.replace('A', 'S')}_{i:07d}"
-            save_fp.data = self.segments_dirs.data[rec_name] / f"{seg_name}{self.reader.rec_ext}"
-            save_fp.ann = self.segments_dirs.ann[rec_name] / f"{seg_name}{self.reader.rec_ext}"
+            save_fp.data = (
+                self.segments_dirs.data[rec_name] / f"{seg_name}{self.reader.rec_ext}"
+            )
+            save_fp.ann = (
+                self.segments_dirs.ann[rec_name] / f"{seg_name}{self.reader.rec_ext}"
+            )
             seg = segments[ind, ...]
             # if self._get_seg_ampl(seg) < 0.1:  # drop out flat segments
             #     continue
-            if SP.ecg_denoise(seg, self.reader.fs, config={"ampl_min":0.15}) != [[0, self.seglen]]:
+            if SP.ecg_denoise(seg, self.reader.fs, config={"ampl_min": 0.15}) != [
+                [0, self.seglen]
+            ]:
                 continue
             savemat(str(save_fp.data), {"ecg": seg}, format="5")
             seg_label = labels[ind, ...]
@@ -746,10 +791,17 @@ class CPSC2020(ReprMixin, Dataset):
             if verbose >= 2:
                 print(f"saving {i+1}/{len(seg_inds)}...", end="\r")
         if update_segments_json:
-            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
+            self.segments_json.write_text(
+                json.dumps(self.__all_segments, ensure_ascii=False)
+            )
 
-    def plot_seg(self, seg:str, ticks_granularity:int=0, rpeak_inds:Optional[Union[Sequence[int],np.ndarray]]=None) -> NoReturn:
-        """ finished, checked,
+    def plot_seg(
+        self,
+        seg: str,
+        ticks_granularity: int = 0,
+        rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -773,4 +825,7 @@ class CPSC2020(ReprMixin, Dataset):
         )
 
     def extra_repr_keys(self) -> List[str]:
-        return ["training", "reader",]
+        return [
+            "training",
+            "reader",
+        ]

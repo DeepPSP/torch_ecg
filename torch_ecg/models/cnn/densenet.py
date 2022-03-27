@@ -16,7 +16,6 @@ from itertools import repeat
 from typing import Union, Optional, Sequence, NoReturn
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
@@ -27,7 +26,9 @@ from ...utils.misc import dict_to_str, list_sum
 from ...models._nets import (
     Conv_Bn_Activation,
     DownSample,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
 )
 
 
@@ -45,27 +46,32 @@ __all__ = [
 
 
 class DenseBasicBlock(SizeMixin, nn.Module):
-    """ finished, checked,
+    """finished, checked,
 
     the basic building block for DenseNet,
     consisting of normalization -> activation -> convolution (-> dropout (optional)),
     the output Tensor is the concatenation of old features (input) with new features
     """
+
     __DEBUG__ = True
     __name__ = "DenseBasicBlock"
     __DEFAULT_CONFIG__ = CFG(
-        activation="relu", kw_activation={"inplace": True}, memory_efficient=False,
+        activation="relu",
+        kw_activation={"inplace": True},
+        memory_efficient=False,
     )
 
-    def __init__(self,
-                 in_channels:int,
-                 growth_rate:int,
-                 filter_length:int,
-                 groups:int=1,
-                 bias:bool=False,
-                 dropout:float=0.0,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        growth_rate: int,
+        filter_length: int,
+        groups: int = 1,
+        bias: bool = False,
+        dropout: float = 0.0,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -115,14 +121,14 @@ class DenseBasicBlock(SizeMixin, nn.Module):
         else:
             self.dropout = None
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
-        
+
         Returns
         -------
         output: Tensor,
@@ -142,16 +148,22 @@ class DenseBasicBlock(SizeMixin, nn.Module):
                 list_sum(
                     [
                         [
-                            input[..., iw_per_group*i: iw_per_group*(i+1), ...],
-                            new_features[..., nfw_per_group*i: nfw_per_group*(i+1), ...]
-                        ]  for i in range(self.__groups)
+                            input[..., iw_per_group * i : iw_per_group * (i + 1), ...],
+                            new_features[
+                                ..., nfw_per_group * i : nfw_per_group * (i + 1), ...
+                            ],
+                        ]
+                        for i in range(self.__groups)
                     ]
-                ), 1
+                ),
+                1,
             )
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -171,28 +183,33 @@ class DenseBasicBlock(SizeMixin, nn.Module):
 
 
 class DenseBottleNeck(SizeMixin, nn.Module):
-    """ finished, checked,
+    """finished, checked,
 
     bottleneck modification of `DenseBasicBlock`,
     with an additional prefixed sequence of
     (normalization -> activation -> convolution of kernel size 1)
     """
+
     __DEBUG__ = True
     __name__ = "DenseBottleNeck"
     __DEFAULT_CONFIG__ = CFG(
-        activation="relu", kw_activation={"inplace": True}, memory_efficient=False,
+        activation="relu",
+        kw_activation={"inplace": True},
+        memory_efficient=False,
     )
 
-    def __init__(self,
-                 in_channels:int,
-                 growth_rate:int,
-                 bn_size:int,
-                 filter_length:int,
-                 groups:int=1,
-                 bias:bool=False,
-                 dropout:float=0.0,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        growth_rate: int,
+        bn_size: int,
+        filter_length: int,
+        groups: int = 1,
+        bias: bool = False,
+        dropout: float = 0.0,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -258,8 +275,8 @@ class DenseBottleNeck(SizeMixin, nn.Module):
         else:
             self.dropout = None
 
-    def bn_function(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def bn_function(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         the `not memory_efficient` way
 
@@ -276,8 +293,8 @@ class DenseBottleNeck(SizeMixin, nn.Module):
         bottleneck_output = self.neck_conv(input)
         return bottleneck_output
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -307,16 +324,22 @@ class DenseBottleNeck(SizeMixin, nn.Module):
                 list_sum(
                     [
                         [
-                            input[..., iw_per_group*i: iw_per_group*(i+1), ...],
-                            new_features[..., nfw_per_group*i: nfw_per_group*(i+1), ...]
-                        ]  for i in range(self.__groups)
+                            input[..., iw_per_group * i : iw_per_group * (i + 1), ...],
+                            new_features[
+                                ..., nfw_per_group * i : nfw_per_group * (i + 1), ...
+                            ],
+                        ]
+                        for i in range(self.__groups)
                     ]
-                ), 1
+                ),
+                1,
             )
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -336,26 +359,29 @@ class DenseBottleNeck(SizeMixin, nn.Module):
 
 
 class DenseMacroBlock(SizeMixin, nn.Sequential):
-    """ finished, checked,
+    """finished, checked,
 
     macro blocks for `DenseNet`,
     stacked sequence of builing blocks of similar pattern
     """
+
     __DEBUG__ = True
     __name__ = "DenseMacroBlock"
     building_block = DenseBottleNeck
 
-    def __init__(self,
-                 in_channels:int,
-                 num_layers:int,
-                 growth_rates:Union[Sequence[int],int],
-                 bn_size:int,
-                 filter_lengths:Union[Sequence[int],int],
-                 groups:int=1,
-                 bias:bool=False,
-                 dropout:float=0.0,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        num_layers: int,
+        growth_rates: Union[Sequence[int], int],
+        bn_size: int,
+        filter_lengths: Union[Sequence[int], int],
+        groups: int = 1,
+        bias: bool = False,
+        dropout: float = 0.0,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -400,7 +426,10 @@ class DenseMacroBlock(SizeMixin, nn.Sequential):
         assert len(self.__filter_lengths) == self.__num_layers
         self.__groups = groups
         self.config = deepcopy(config)
-        if self.config.get("building_block", "").lower() in ["basic", "basic_block",]:
+        if self.config.get("building_block", "").lower() in [
+            "basic",
+            "basic_block",
+        ]:
             self.building_block = DenseBasicBlock
 
         for idx in range(self.__num_layers):
@@ -414,17 +443,17 @@ class DenseMacroBlock(SizeMixin, nn.Sequential):
                     bias=bias,
                     dropout=dropout,
                     **(self.config),
-                )
+                ),
             )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
-        
+
         Returns
         -------
         output: Tensor,
@@ -433,8 +462,10 @@ class DenseMacroBlock(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -456,26 +487,31 @@ class DenseMacroBlock(SizeMixin, nn.Sequential):
 
 
 class DenseTransition(SizeMixin, nn.Sequential):
-    """ finished, checked,
+    """finished, checked,
 
     transition blocks between `DenseMacroBlock`s,
     used to perform sub-sampling,
     and compression of channels if specified
     """
+
     __DEBUG__ = True
     __name__ = "DenseTransition"
     __DEFAULT_CONFIG__ = CFG(
-        activation="relu", kw_activation={"inplace": True}, subsample_mode="avg",
+        activation="relu",
+        kw_activation={"inplace": True},
+        subsample_mode="avg",
     )
 
-    def __init__(self,
-                 in_channels:int,
-                 compression:float=1.0,
-                 subsample_length:int=2,
-                 groups:int=1,
-                 bias:bool=False,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        compression: float = 1.0,
+        subsample_length: int = 2,
+        groups: int = 1,
+        bias: bool = False,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -509,7 +545,7 @@ class DenseTransition(SizeMixin, nn.Sequential):
         # new feature widths per group
         nfw_per_group = math.floor(iw_per_group * self.__compression)
         self.__out_channels = nfw_per_group * self.__groups
-        
+
         self.add_module(
             "bac",
             Conv_Bn_Activation(
@@ -524,7 +560,7 @@ class DenseTransition(SizeMixin, nn.Sequential):
                 kw_activation=self.config.kw_activation,
                 bias=bias,
                 ordering="bac",
-            )
+            ),
         )
         self.add_module(
             "down",
@@ -535,8 +571,8 @@ class DenseTransition(SizeMixin, nn.Sequential):
             ),
         )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -551,8 +587,10 @@ class DenseTransition(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -574,7 +612,7 @@ class DenseTransition(SizeMixin, nn.Sequential):
 
 
 class DenseNet(SizeMixin, nn.Sequential):
-    """ finished, checked,
+    """finished, checked,
 
     The core part of the SOTA model (framework) of CPSC2020
 
@@ -596,18 +634,21 @@ class DenseNet(SizeMixin, nn.Sequential):
     1. for `groups` > 1, the concatenated output should be re-organized in the channel dimension?
     2. memory-efficient mode, i.e. storing the `new_features` in a shared memory instead of stacking in newly created `Tensor`s after each mini-block
     """
+
     __DEBUG__ = True
     __name__ = "DenseNet"
     __DEFAULT_CONFIG__ = CFG(
         bias=False,
-        activation="relu", kw_activation={"inplace": True},
-        kernel_initializer="he_normal", kw_initializer={},
+        activation="relu",
+        kw_activation={"inplace": True},
+        kernel_initializer="he_normal",
+        kw_initializer={},
         init_subsample_mode="avg",
     )
 
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """ finished, checked,
-        
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """finished, checked,
+
         Parameters
         ----------
         in_channels: int,
@@ -655,7 +696,9 @@ class DenseNet(SizeMixin, nn.Sequential):
         self.config.update(deepcopy(config))
         self.__num_blocks = len(self.config.num_layers)
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         self.add_module(
             "init_cba",
@@ -670,7 +713,7 @@ class DenseNet(SizeMixin, nn.Sequential):
                 activation=self.config.activation.lower(),
                 kw_activation=self.config.kw_activation,
                 bias=self.config.bias,
-            )
+            ),
         )
         self.add_module(
             "init_pool",
@@ -678,31 +721,38 @@ class DenseNet(SizeMixin, nn.Sequential):
                 down_scale=self.config.init_pool_stride,
                 in_channels=self.config.init_num_filters,
                 kernel_size=self.config.init_pool_size,
-                padding=(self.config.init_pool_size-1)//2,
+                padding=(self.config.init_pool_size - 1) // 2,
                 mode=self.config.init_subsample_mode.lower(),
-            )
+            ),
         )
 
         if isinstance(self.config.growth_rates, int):
-            self.__growth_rates = list(repeat(self.config.growth_rates, self.__num_blocks))
+            self.__growth_rates = list(
+                repeat(self.config.growth_rates, self.__num_blocks)
+            )
         else:
             self.__growth_rates = list(self.config.growth_rates)
-        assert len(self.__growth_rates) == self.__num_blocks, \
-                f"`config.growth_rates` indicates {len(self.__growth_rates)} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
+        assert (
+            len(self.__growth_rates) == self.__num_blocks
+        ), f"`config.growth_rates` indicates {len(self.__growth_rates)} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
         if isinstance(self.config.filter_lengths, int):
-            self.__filter_lengths = \
-                list(repeat(self.config.filter_lengths, self.__num_blocks))
+            self.__filter_lengths = list(
+                repeat(self.config.filter_lengths, self.__num_blocks)
+            )
         else:
             self.__filter_lengths = list(self.config.filter_lengths)
-            assert len(self.__filter_lengths) == self.__num_blocks, \
-                f"`config.filter_lengths` indicates {len(self.__filter_lengths)} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
+            assert (
+                len(self.__filter_lengths) == self.__num_blocks
+            ), f"`config.filter_lengths` indicates {len(self.__filter_lengths)} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
         if isinstance(self.config.subsample_lengths, int):
-            self.__subsample_lengths = \
-                list(repeat(self.config.subsample_lengths, self.__num_blocks-1))
+            self.__subsample_lengths = list(
+                repeat(self.config.subsample_lengths, self.__num_blocks - 1)
+            )
         else:
             self.__subsample_lengths = list(self.config.subsample_lengths)
-            assert len(self.__subsample_lengths) == self.__num_blocks-1, \
-                f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)+1} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
+            assert (
+                len(self.__subsample_lengths) == self.__num_blocks - 1
+            ), f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)+1} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
 
         macro_in_channels = self.config.init_num_filters
         for idx, macro_num_layers in enumerate(self.config.num_layers):
@@ -718,11 +768,8 @@ class DenseNet(SizeMixin, nn.Sequential):
                 **(self.config.block),
             )
             _, transition_in_channels, _ = dmb.compute_output_shape()
-            self.add_module(
-                f"dense_macro_block_{idx}",
-                dmb
-            )
-            if idx < self.__num_blocks-1:
+            self.add_module(f"dense_macro_block_{idx}", dmb)
+            if idx < self.__num_blocks - 1:
                 dt = DenseTransition(
                     in_channels=transition_in_channels,
                     compression=self.config.compression,
@@ -732,13 +779,10 @@ class DenseNet(SizeMixin, nn.Sequential):
                     **(self.config.transition),
                 )
                 _, macro_in_channels, _ = dt.compute_output_shape()
-                self.add_module(
-                    f"transition_{idx}",
-                    dt
-                )
+                self.add_module(f"transition_{idx}", dt)
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -753,8 +797,10 @@ class DenseNet(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------

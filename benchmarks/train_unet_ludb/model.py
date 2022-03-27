@@ -16,6 +16,7 @@ try:
 except ModuleNotFoundError:
     import sys
     from pathlib import Path
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
@@ -34,13 +35,15 @@ __all__ = [
 
 
 class ECG_UNET_LUDB(ECG_UNET):
-    """
-    """
+    """ """
+
     __DEBUG__ = True
     __name__ = "ECG_UNET_LUDB"
-    
-    def __init__(self, n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+
+    def __init__(
+        self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -55,17 +58,18 @@ class ECG_UNET_LUDB(ECG_UNET):
             model_config.update(deepcopy(config[config.model_name]))
             ModelCfg.update(deepcopy(config))
         _inv_class_map = {v: k for k, v in ModelCfg.class_map.items()}
-        self._mask_map = CFG({
-            k: _inv_class_map[v] \
-                for k, v in ModelCfg.mask_class_map.items()
-        })
+        self._mask_map = CFG(
+            {k: _inv_class_map[v] for k, v in ModelCfg.mask_class_map.items()}
+        )
         super().__init__(ModelCfg.mask_classes, n_leads, model_config)
 
     @torch.no_grad()
-    def inference(self,
-                  input:Union[Sequence[float],np.ndarray,Tensor],
-                  bin_pred_thr:float=0.5,) -> WaveDelineationOutput:
-        """ finished, checked,
+    def inference(
+        self,
+        input: Union[Sequence[float], np.ndarray, Tensor],
+        bin_pred_thr: float = 0.5,
+    ) -> WaveDelineationOutput:
+        """finished, checked,
 
         Parameters
         ----------
@@ -106,12 +110,16 @@ class ECG_UNET_LUDB(ECG_UNET):
         # TODO: shoule one add more post-processing to filter out false positives of the waveforms?
 
         return WaveDelineationOutput(
-            classes=self.classes, prob=prob, mask=mask,
+            classes=self.classes,
+            prob=prob,
+            mask=mask,
         )
 
-    def inference_LUDB(self,
-                       input:Union[np.ndarray,Tensor],
-                       bin_pred_thr:float=0.5,) -> WaveDelineationOutput:
+    def inference_LUDB(
+        self,
+        input: Union[np.ndarray, Tensor],
+        bin_pred_thr: float = 0.5,
+    ) -> WaveDelineationOutput:
         """
         alias of `self.inference`
         """

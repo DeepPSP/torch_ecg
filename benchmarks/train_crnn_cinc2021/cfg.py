@@ -16,6 +16,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
@@ -33,8 +34,10 @@ __all__ = [
     "BaseCfg",
     "PlotCfg",
     "SpecialDetectorCfg",
-    "TrainCfg", "TrainCfg_ns",
-    "ModelCfg", "ModelCfg_ns",
+    "TrainCfg",
+    "TrainCfg_ns",
+    "ModelCfg",
+    "ModelCfg_ns",
 ]
 
 
@@ -43,13 +46,25 @@ _ONE_MINUTE_IN_MS = 60 * 1000
 
 
 # settings from official repo
-twelve_leads = ("I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6")
+twelve_leads = (
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6",
+)
 six_leads = ("I", "II", "III", "aVR", "aVL", "aVF")
 four_leads = ("I", "II", "III", "V2")
 three_leads = ("I", "II", "V2")
 two_leads = ("I", "II")
 lead_sets = (twelve_leads, six_leads, four_leads, three_leads, two_leads)
-
 
 
 BaseCfg = CFG()
@@ -62,28 +77,32 @@ BaseCfg.fs = 500
 BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
-
 SpecialDetectorCfg = CFG()
 SpecialDetectorCfg.leads_ordering = deepcopy(EAK.Standard12Leads)
 SpecialDetectorCfg.pr_fs_lower_bound = 47  # Hz
-SpecialDetectorCfg.pr_spike_mph_ratio = 15  # ratio to the average amplitude of the signal
+SpecialDetectorCfg.pr_spike_mph_ratio = (
+    15  # ratio to the average amplitude of the signal
+)
 SpecialDetectorCfg.pr_spike_mpd = 300  # ms
 SpecialDetectorCfg.pr_spike_prominence = 0.3
 SpecialDetectorCfg.pr_spike_prominence_wlen = 120  # ms
-SpecialDetectorCfg.pr_spike_inv_density_threshold = 2500  # inverse density (1/density), one spike per 2000 ms
+SpecialDetectorCfg.pr_spike_inv_density_threshold = (
+    2500  # inverse density (1/density), one spike per 2000 ms
+)
 SpecialDetectorCfg.pr_spike_leads_threshold = 7 / 12  # proportion
 SpecialDetectorCfg.axis_qrs_mask_radius = 70  # ms
 SpecialDetectorCfg.axis_method = "2-lead"  # can also be "3-lead"
 SpecialDetectorCfg.brady_threshold = _ONE_MINUTE_IN_MS / 60  # ms, corr. to 60 bpm
 SpecialDetectorCfg.tachy_threshold = _ONE_MINUTE_IN_MS / 100  # ms, corr. to 100 bpm
 SpecialDetectorCfg.lqrsv_qrs_mask_radius = 60  # ms
-SpecialDetectorCfg.lqrsv_ampl_bias = 0.02  # mV, TODO: should be further determined by resolution, etc.
+SpecialDetectorCfg.lqrsv_ampl_bias = (
+    0.02  # mV, TODO: should be further determined by resolution, etc.
+)
 SpecialDetectorCfg.lqrsv_ratio_threshold = 0.8
 SpecialDetectorCfg.prwp_v3_thr = 0.3  # mV
 
 # special classes using special detectors
 _SPECIAL_CLASSES = ["Brady", "LAD", "RAD", "PR", "LQRSV"]
-
 
 
 # configurations for visualization
@@ -100,24 +119,31 @@ PlotCfg.t_onset = -100
 PlotCfg.t_offset = 60
 
 
-
-def _assign_classes(cfg:CFG, special_classes:List[str]) -> NoReturn:
-    """
-    """
+def _assign_classes(cfg: CFG, special_classes: List[str]) -> NoReturn:
+    """ """
     cfg.special_classes = deepcopy(special_classes)
-    cfg.tranche_class_weights = CFG({
-        t: get_class_weight(
-            t,
-            exclude_classes=cfg.special_classes,
-            scored_only=True,
-            threshold=20,
-            min_weight=cfg.min_class_weight,
-        ) for t in ["A", "B", "AB", "E", "F", "G",]
-    })
-    cfg.tranche_classes = CFG({
-        t: sorted(list(t_cw.keys())) \
-            for t, t_cw in cfg.tranche_class_weights.items()
-    })
+    cfg.tranche_class_weights = CFG(
+        {
+            t: get_class_weight(
+                t,
+                exclude_classes=cfg.special_classes,
+                scored_only=True,
+                threshold=20,
+                min_weight=cfg.min_class_weight,
+            )
+            for t in [
+                "A",
+                "B",
+                "AB",
+                "E",
+                "F",
+                "G",
+            ]
+        }
+    )
+    cfg.tranche_classes = CFG(
+        {t: sorted(list(t_cw.keys())) for t, t_cw in cfg.tranche_class_weights.items()}
+    )
 
     cfg.class_weights = get_class_weight(
         tranches="ABEFG",
@@ -127,7 +153,6 @@ def _assign_classes(cfg:CFG, special_classes:List[str]) -> NoReturn:
         min_weight=cfg.min_class_weight,
     )
     cfg.classes = sorted(list(cfg.class_weights.keys()))
-
 
 
 # training configurations for machine learning and deep learning
@@ -215,7 +240,9 @@ TrainCfg.early_stopping.patience = 10
 # TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
 TrainCfg.loss = "AsymmetricLoss"  # "FocalLoss"
 TrainCfg.loss_kw = CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp")
-TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
+TrainCfg.flooding_level = (
+    0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
+)
 
 TrainCfg.monitor = "challenge_metric"
 
@@ -266,7 +293,7 @@ ModelCfg.fs = BaseCfg.fs
 ModelCfg.spacing = 1000 / ModelCfg.fs
 ModelCfg.bin_pred_thr = _bin_pred_thr
 ModelCfg.bin_pred_look_again_tol = _bin_pred_look_again_tol
-ModelCfg.bin_pred_nsr_thr =_bin_pred_nsr_thr
+ModelCfg.bin_pred_nsr_thr = _bin_pred_nsr_thr
 
 ModelCfg.special_classes = deepcopy(_SPECIAL_CLASSES)
 ModelCfg.dl_classes = deepcopy(TrainCfg.classes)

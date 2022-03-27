@@ -13,7 +13,9 @@ from torch import Tensor
 from .base import Augmenter
 
 
-__all__ = ["Mixup",]
+__all__ = [
+    "Mixup",
+]
 
 
 class Mixup(Augmenter):
@@ -26,16 +28,19 @@ class Mixup(Augmenter):
     2. https://arxiv.org/abs/1710.09412
     3. https://github.com/facebookresearch/mixup-cifar10/blob/master/train.py
     """
+
     __name__ = "Mixup"
 
-    def __init__(self,
-                 fs:Optional[int]=None,
-                 alpha:Real=0.5,
-                 beta:Optional[Real]=None,
-                 prob:float=0.5,
-                 inplace:bool=True,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        fs: Optional[int] = None,
+        alpha: Real = 0.5,
+        beta: Optional[Real] = None,
+        prob: float = 0.5,
+        inplace: bool = True,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -60,8 +65,14 @@ class Mixup(Augmenter):
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.inplace = inplace
 
-    def forward(self, sig:Tensor, label:Tensor, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
-        """ finished, checked,
+    def forward(
+        self,
+        sig: Tensor,
+        label: Tensor,
+        *extra_tensors: Sequence[Tensor],
+        **kwargs: Any
+    ) -> Tuple[Tensor, ...]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -109,6 +120,10 @@ class Mixup(Augmenter):
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        """
-        return ["alpha", "beta", "prob", "inplace",] + super().extra_repr_keys()
+        """ """
+        return [
+            "alpha",
+            "beta",
+            "prob",
+            "inplace",
+        ] + super().extra_repr_keys()

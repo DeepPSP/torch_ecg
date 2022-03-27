@@ -10,9 +10,9 @@ from functools import reduce
 from typing import Optional, List, Tuple, Sequence, NoReturn
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch.utils.data.dataset import Dataset
+
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
@@ -32,16 +32,18 @@ __all__ = [
 
 
 class CPSC2019Dataset(ReprMixin, Dataset):
-    """
-    """
+    """ """
+
     __DEBUG__ = False
     __name__ = "CPSC2019Dataset"
 
-    def __init__(self,
-                 config:CFG,
-                 training:bool=True,
-                 lazy:bool=False,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        config: CFG,
+        training: bool = True,
+        lazy: bool = False,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -84,9 +86,8 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         if not self.lazy:
             self._load_all_data()
 
-    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ finished, checked,
-        """
+    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+        """finished, checked,"""
         if self.lazy:
             signal, label = self.fdr[index]
         else:
@@ -94,13 +95,11 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         return signal, label
 
     def __len__(self) -> int:
-        """
-        """
+        """ """
         return len(self.fdr)
 
     def _load_all_data(self) -> NoReturn:
-        """
-        """
+        """ """
         self._signals, self._labels = [], []
         with tqdm(self.fdr, desc="loading data", unit="records") as pbar:
             for sig, lab in pbar:
@@ -111,17 +110,17 @@ class CPSC2019Dataset(ReprMixin, Dataset):
 
     @property
     def signals(self) -> np.ndarray:
-        """
-        """
+        """ """
         return self._signals
 
     @property
     def labels(self) -> np.ndarray:
-        """
-        """
+        """ """
         return self._labels
-    
-    def _train_test_split(self, train_ratio:float=0.8, force_recompute:bool=False) -> List[str]:
+
+    def _train_test_split(
+        self, train_ratio: float = 0.8, force_recompute: bool = False
+    ) -> List[str]:
         """
 
         do train test split,
@@ -141,7 +140,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
             list of the records split for training or validation
         """
         assert 0 < train_ratio < 100
-        _train_ratio = train_ratio if train_ratio < 1 else train_ratio/100
+        _train_ratio = train_ratio if train_ratio < 1 else train_ratio / 100
         split_fn = self.reader.db_dir / f"train_test_split_{_train_ratio:.2f}.json"
         if split_fn.is_file() and not force_recompute:
             split_res = json.loads(split_fn.read_text())
@@ -153,10 +152,10 @@ class CPSC2019Dataset(ReprMixin, Dataset):
             return
         records = deepcopy(self.reader.all_records)
         shuffle(records)
-        split_num = int(_train_ratio*len(records))
+        split_num = int(_train_ratio * len(records))
         train = sorted(records[:split_num])
         test = sorted(records[split_num:])
-        split_res = {"train":train, "test":test}
+        split_res = {"train": train, "test": test}
         split_fn.write_text(json.dumps(split_res, ensure_ascii=False))
         if self.training:
             self.records = train
@@ -165,30 +164,36 @@ class CPSC2019Dataset(ReprMixin, Dataset):
             self.records = test
 
     def extra_repr_keys(self) -> List[str]:
-        return ["training", "reader",]
+        return [
+            "training",
+            "reader",
+        ]
 
 
 class FastDataReader(ReprMixin, Dataset):
-    """
-    """
-    def __init__(self, reader:CR, records:Sequence[str], config:CFG, ppm:Optional[PreprocManager]=None) -> NoReturn:
-        """
-        """
+    """ """
+
+    def __init__(
+        self,
+        reader: CR,
+        records: Sequence[str],
+        config: CFG,
+        ppm: Optional[PreprocManager] = None,
+    ) -> NoReturn:
+        """ """
         self.reader = reader
         self.records = records
         self.config = config
         self.ppm = ppm
-        
+
         self.siglen = self.config.input_len  # alias, for simplicity
 
     def __len__(self) -> int:
-        """
-        """
+        """ """
         return len(self.records)
 
-    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        """
+    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+        """ """
         rec_name = self.records[index]
         values = self.reader.load_data(rec_name, units="mV", keep_dim=False)
         rpeaks = self.reader.load_ann(rec_name, keep_dim=False)
@@ -201,8 +206,8 @@ class FastDataReader(ReprMixin, Dataset):
         for r in rpeaks:
             if r < self.config.skip_dist or r >= self.siglen - self.config.skip_dist:
                 continue
-            start_idx = math.floor( (r-self.config.bias_thr) / reduction )
-            end_idx = math.ceil( (r+self.config.bias_thr) / reduction )
+            start_idx = math.floor((r - self.config.bias_thr) / reduction)
+            end_idx = math.ceil((r + self.config.bias_thr) / reduction)
             labels[start_idx:end_idx] = 1
 
         values = values.reshape((self.config.n_leads, self.siglen))
@@ -213,4 +218,7 @@ class FastDataReader(ReprMixin, Dataset):
         return values, labels
 
     def extra_repr_keys(self) -> List[str]:
-        return ["reader", "ppm",]
+        return [
+            "reader",
+            "ppm",
+        ]

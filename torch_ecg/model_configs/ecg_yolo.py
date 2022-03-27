@@ -29,7 +29,9 @@ ECG_YOLO_CONFIG.cnn.resnet_gc.gc = CFG()
 ECG_YOLO_CONFIG.cnn.resnet_gc.gc.ratio = 16
 ECG_YOLO_CONFIG.cnn.resnet_gc.gc.reduction = True
 ECG_YOLO_CONFIG.cnn.resnet_gc.gc.pooling_type = "attn"
-ECG_YOLO_CONFIG.cnn.resnet_gc.gc.fusion_types = ["mul",]
+ECG_YOLO_CONFIG.cnn.resnet_gc.gc.fusion_types = [
+    "mul",
+]
 
 
 ECG_YOLO_CONFIG.stage = CFG()
@@ -42,4 +44,6 @@ ECG_YOLO_CONFIG.stage.resnet_gc.gc = CFG()
 ECG_YOLO_CONFIG.stage.resnet_gc.gc.ratio = 16
 ECG_YOLO_CONFIG.stage.resnet_gc.gc.reduction = True
 ECG_YOLO_CONFIG.stage.resnet_gc.gc.pooling_type = "attn"
-ECG_YOLO_CONFIG.stage.resnet_gc.gc.fusion_types = ["mul",]
+ECG_YOLO_CONFIG.stage.resnet_gc.gc.fusion_types = [
+    "mul",
+]

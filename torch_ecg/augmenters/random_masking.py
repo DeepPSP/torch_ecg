@@ -12,23 +12,28 @@ from torch import Tensor
 from .base import Augmenter
 
 
-__all__ = ["RandomMasking",]
+__all__ = [
+    "RandomMasking",
+]
 
 
 class RandomMasking(Augmenter):
     """
     Randomly mask ECGs with a probability.
     """
+
     __name__ = "RandomMasking"
 
-    def __init__(self,
-                 fs:int,
-                 mask_value:Real=0.0,
-                 mask_width:Sequence[Real]=[0.08,0.18],
-                 prob:Union[Sequence[Real],Real]=[0.3,0.15],
-                 inplace:bool=True,
-                 **kwargs: Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        fs: int,
+        mask_value: Real = 0.0,
+        mask_width: Sequence[Real] = [0.08, 0.18],
+        prob: Union[Sequence[Real], Real] = [0.3, 0.15],
+        inplace: bool = True,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -54,18 +59,22 @@ class RandomMasking(Augmenter):
             self.prob = np.array([self.prob, self.prob])
         else:
             self.prob = np.array(self.prob)
-        assert (self.prob >= 0).all() and (self.prob <= 1).all(), \
-            "Probability must be between 0 and 1"
+        assert (self.prob >= 0).all() and (
+            self.prob <= 1
+        ).all(), "Probability must be between 0 and 1"
         self.mask_value = mask_value
         self.mask_width = (np.array(mask_width) * self.fs).round().astype(int)
         self.inplace = inplace
 
-    def forward(self,
-                sig:Tensor,
-                label:Optional[Tensor],
-                *extra_tensors:Sequence[Tensor],
-                critical_points:Optional[Sequence[Sequence[int]]]=None, **kwargs:Any) -> Tuple[Tensor, ...]:
-        """ finished, checked,
+    def forward(
+        self,
+        sig: Tensor,
+        label: Optional[Tensor],
+        *extra_tensors: Sequence[Tensor],
+        critical_points: Optional[Sequence[Sequence[int]]] = None,
+        **kwargs: Any
+    ) -> Tuple[Tensor, ...]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -97,27 +106,38 @@ class RandomMasking(Augmenter):
         if self.prob[0] == 0:
             return (sig, label, *extra_tensors)
         sig_mask_prob = self.prob[1] / self.mask_width[1]
-        sig_mask_scale_ratio = min(self.prob[1]/4, 0.1) / self.mask_width[1]
+        sig_mask_scale_ratio = min(self.prob[1] / 4, 0.1) / self.mask_width[1]
         mask = torch.full_like(sig, 1, dtype=sig.dtype, device=sig.device)
         for batch_idx in self.get_indices(prob=self.prob[0], pop_size=batch):
             if critical_points is not None:
-                indices = self.get_indices(prob=self.prob[1], pop_size=len(critical_points[batch_idx]))
+                indices = self.get_indices(
+                    prob=self.prob[1], pop_size=len(critical_points[batch_idx])
+                )
                 indices = np.arange(siglen)[indices]
             else:
-                indices = np.array(self.get_indices(
-                    prob=sig_mask_prob,
-                    pop_size=siglen-self.mask_width[1],
-                    scale_ratio=sig_mask_scale_ratio,
-                ))
-                indices += self.mask_width[1]//2
+                indices = np.array(
+                    self.get_indices(
+                        prob=sig_mask_prob,
+                        pop_size=siglen - self.mask_width[1],
+                        scale_ratio=sig_mask_scale_ratio,
+                    )
+                )
+                indices += self.mask_width[1] // 2
             for j in indices:
                 masked_radius = randint(self.mask_width[0], self.mask_width[1]) // 2
-                mask[batch_idx, :, j-masked_radius:j+masked_radius] = self.mask_value
+                mask[
+                    batch_idx, :, j - masked_radius : j + masked_radius
+                ] = self.mask_value
             # print(f"batch_idx = {batch_idx}, len(indices) = {len(indices)}")
         sig = sig.mul_(mask)
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        """
-        return ["fs", "mask_value", "mask_width", "prob", "inplace",] + super().extra_repr_keys()
+        """ """
+        return [
+            "fs",
+            "mask_value",
+            "mask_width",
+            "prob",
+            "inplace",
+        ] + super().extra_repr_keys()

@@ -28,8 +28,10 @@ __all__ = [
 ]
 
 
-def load_model(name:str, **kwargs) -> Union[Model, Tuple[Model,...], nn.Module, Tuple[nn.Module,...]]:
-    """ finished, checked,
+def load_model(
+    name: str, **kwargs
+) -> Union[Model, Tuple[Model, ...], nn.Module, Tuple[nn.Module, ...]]:
+    """finished, checked,
 
     Parameters
     ----------
@@ -49,8 +51,10 @@ def load_model(name:str, **kwargs) -> Union[Model, Tuple[Model,...], nn.Module, 
         raise NotImplementedError
 
 
-def _load_keras_ecg_seq_lab_net(which:str="both", **kwargs) -> Union[Tuple[Model,Model],Model]:
-    """ finished, checked,
+def _load_keras_ecg_seq_lab_net(
+    which: str = "both", **kwargs
+) -> Union[Tuple[Model, Model], Model]:
+    """finished, checked,
 
     load the CNN model and CRNN model from the entry 0416 of CPSC2019
 
@@ -85,10 +89,8 @@ def _load_keras_ecg_seq_lab_net(which:str="both", **kwargs) -> Union[Tuple[Model
 
 
 def _load_pytorch_ecg_seq_lab_net():
-    """
-    """
+    """ """
     raise NotImplementedError
-
 
 
 """

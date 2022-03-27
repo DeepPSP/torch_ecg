@@ -9,7 +9,6 @@ from typing import Any, Union, Optional, Tuple, Sequence, NoReturn, Dict, List
 from numbers import Real, Number
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
@@ -24,13 +23,15 @@ from torch_ecg.cfg import CFG
 from torch_ecg.utils.trainer import BaseTrainer
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.misc import (
-    dict_to_str, str2bool,
+    dict_to_str,
+    str2bool,
 )
 from torch_ecg.utils.utils_interval import mask_to_intervals
 
 from model import (
     ECG_SEQ_LAB_NET_CPSC2021,
-    ECG_UNET_CPSC2021, ECG_SUBTRACT_UNET_CPSC2021,
+    ECG_UNET_CPSC2021,
+    ECG_SUBTRACT_UNET_CPSC2021,
     RR_LSTM_CPSC2021,
     _qrs_detection_post_process,
 )
@@ -53,19 +54,21 @@ __all__ = [
 
 
 class CPSC2021Trainer(BaseTrainer):
-    """
-    """
+    """ """
+
     __DEBUG__ = True
     __name__ = "CPSC2021Trainer"
 
-    def __init__(self,
-                 model:nn.Module,
-                 model_config:dict,
-                 train_config:dict,
-                 device:Optional[torch.device]=None,
-                 lazy:bool=True,
-                 **kwargs:Any,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        model: nn.Module,
+        model_config: dict,
+        train_config: dict,
+        device: Optional[torch.device] = None,
+        lazy: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -98,9 +101,13 @@ class CPSC2021Trainer(BaseTrainer):
         """
         super().__init__(model, CPSC2021, model_config, train_config, device, lazy)
 
-    def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
-        """ finished, checked,
-        
+    def _setup_dataloaders(
+        self,
+        train_dataset: Optional[Dataset] = None,
+        val_dataset: Optional[Dataset] = None,
+    ) -> NoReturn:
+        """finished, checked,
+
         setup the dataloaders for training and validation
 
         Parameters
@@ -111,16 +118,26 @@ class CPSC2021Trainer(BaseTrainer):
             the validation dataset
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(config=self.train_config, task=self.train_config.task, training=True, lazy=False)
+            train_dataset = self.dataset_cls(
+                config=self.train_config,
+                task=self.train_config.task,
+                training=True,
+                lazy=False,
+            )
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(config=self.train_config, task=self.train_config.task, training=False, lazy=False)
+            val_dataset = self.dataset_cls(
+                config=self.train_config,
+                task=self.train_config.task,
+                training=False,
+                lazy=False,
+            )
 
-         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+        # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         num_workers = 4
 
         self.train_loader = DataLoader(
@@ -155,7 +172,9 @@ class CPSC2021Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(self, *data:Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(
+        self, *data: Tuple[torch.Tensor, torch.Tensor]
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
 
         Parameters
@@ -175,7 +194,7 @@ class CPSC2021Trainer(BaseTrainer):
         if self.train_config.task == "rr_lstm":
             signals, labels, weight_masks = data
             # (batch_size, seq_len, n_channel) -> (seq_len, batch_size, n_channel)
-            signals = signals.permute(1,0,2)
+            signals = signals.permute(1, 0, 2)
             weight_masks = weight_masks.to(device=self.device, dtype=self.dtype)
         elif self.train_config.task == "qrs_detection":
             signals, labels = data
@@ -193,9 +212,8 @@ class CPSC2021Trainer(BaseTrainer):
             return preds, labels, weight_masks
 
     @torch.no_grad()
-    def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
-        """
-        """
+    def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
+        """ """
         self.model.eval()
 
         if self.train_config.task == "qrs_detection":
@@ -204,17 +222,29 @@ class CPSC2021Trainer(BaseTrainer):
             for signals, labels in data_loader:
                 signals = signals.to(device=self.device, dtype=self.dtype)
                 labels = labels.numpy()
-                labels = [mask_to_intervals(item, 1) for item in labels]  # intervals of qrs complexes
-                labels = [ # to indices of rpeaks in the original signal sequence
-                    (self.train_config.qrs_detection.reduction * np.array([itv[0]+itv[1] for itv in item]) / 2).astype(int) \
-                        for item in labels
+                labels = [
+                    mask_to_intervals(item, 1) for item in labels
+                ]  # intervals of qrs complexes
+                labels = [  # to indices of rpeaks in the original signal sequence
+                    (
+                        self.train_config.qrs_detection.reduction
+                        * np.array([itv[0] + itv[1] for itv in item])
+                        / 2
+                    ).astype(int)
+                    for item in labels
                 ]
                 labels = [
-                    item[np.where((
-                        item>=self.train_config.rpeaks_dist2border) \
-                            & (item<self.train_config.qrs_detection.input_len-self.train_config.rpeaks_dist2border
-                    ))[0]] \
-                        for item in labels
+                    item[
+                        np.where(
+                            (item >= self.train_config.rpeaks_dist2border)
+                            & (
+                                item
+                                < self.train_config.qrs_detection.input_len
+                                - self.train_config.rpeaks_dist2border
+                            )
+                        )[0]
+                    ]
+                    for item in labels
                 ]
                 all_rpeak_labels += labels
 
@@ -226,41 +256,77 @@ class CPSC2021Trainer(BaseTrainer):
                 rpeaks_truths=all_rpeak_labels,
                 rpeaks_preds=all_rpeak_preds,
                 fs=self.train_config.fs,
-                thr=self.train_config.qrs_mask_bias/self.train_config.fs,
+                thr=self.train_config.qrs_mask_bias / self.train_config.fs,
             )
             # in case possible memeory leakage?
             del all_rpeak_preds, all_rpeak_labels
         elif self.train_config.task == "rr_lstm":
-            all_preds = np.array([]).reshape((0, self.train_config[self.train_config.task].input_len))
-            all_labels = np.array([]).reshape((0, self.train_config[self.train_config.task].input_len))
-            all_weight_masks = np.array([]).reshape((0, self.train_config[self.train_config.task].input_len))
+            all_preds = np.array([]).reshape(
+                (0, self.train_config[self.train_config.task].input_len)
+            )
+            all_labels = np.array([]).reshape(
+                (0, self.train_config[self.train_config.task].input_len)
+            )
+            all_weight_masks = np.array([]).reshape(
+                (0, self.train_config[self.train_config.task].input_len)
+            )
             for signals, labels, weight_masks in data_loader:
                 signals = signals.to(device=self.device, dtype=self.dtype)
-                labels = labels.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
-                weight_masks = weight_masks.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                labels = labels.numpy().squeeze(
+                    -1
+                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                weight_masks = weight_masks.numpy().squeeze(
+                    -1
+                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
                 all_labels = np.concatenate((all_labels, labels))
                 all_weight_masks = np.concatenate((all_weight_masks, weight_masks))
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
                 model_output = self._model.inference(signals)
-                all_preds = np.concatenate((all_preds, model_output.af_mask))  # or model_output.prob ?
+                all_preds = np.concatenate(
+                    (all_preds, model_output.af_mask)
+                )  # or model_output.prob ?
             eval_res = compute_rr_metric(all_labels, all_preds, all_weight_masks)
             # in case possible memeory leakage?
             del all_preds, all_labels, all_weight_masks
         elif self.train_config.task == "main":
-            all_preds = np.array([]).reshape((0, self.train_config.main.input_len//self.train_config.main.reduction))
-            all_labels = np.array([]).reshape((0, self.train_config.main.input_len//self.train_config.main.reduction))
-            all_weight_masks = np.array([]).reshape((0, self.train_config.main.input_len//self.train_config.main.reduction))
+            all_preds = np.array([]).reshape(
+                (
+                    0,
+                    self.train_config.main.input_len
+                    // self.train_config.main.reduction,
+                )
+            )
+            all_labels = np.array([]).reshape(
+                (
+                    0,
+                    self.train_config.main.input_len
+                    // self.train_config.main.reduction,
+                )
+            )
+            all_weight_masks = np.array([]).reshape(
+                (
+                    0,
+                    self.train_config.main.input_len
+                    // self.train_config.main.reduction,
+                )
+            )
             for signals, labels, weight_masks in data_loader:
                 signals = signals.to(device=self.device, dtype=self.dtype)
-                labels = labels.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
-                weight_masks = weight_masks.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                labels = labels.numpy().squeeze(
+                    -1
+                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                weight_masks = weight_masks.numpy().squeeze(
+                    -1
+                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
                 all_labels = np.concatenate((all_labels, labels))
                 all_weight_masks = np.concatenate((all_weight_masks, weight_masks))
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
                 model_output = self._model.inference(signals)
-                all_preds = np.concatenate((all_preds, model_output.af_mask))  # or model_output.prob ?
+                all_preds = np.concatenate(
+                    (all_preds, model_output.af_mask)
+                )  # or model_output.prob ?
             eval_res = compute_main_task_metric(
                 mask_truths=all_labels,
                 mask_preds=all_preds,
@@ -286,9 +352,10 @@ class CPSC2021Trainer(BaseTrainer):
 
     @property
     def extra_required_train_config_fields(self) -> List[str]:
-        """
-        """
-        return ["task",]
+        """ """
+        return [
+            "task",
+        ]
 
     @property
     def save_prefix(self) -> str:
@@ -304,18 +371,21 @@ class CPSC2021Trainer(BaseTrainer):
             return f"task-{self.train_config.task}_{super().extra_log_suffix()}_{self.model_config.cnn_name}"
 
 
-def get_args(**kwargs:Any):
-    """ NOT checked,
-    """
+def get_args(**kwargs: Any):
+    """NOT checked,"""
     cfg = deepcopy(kwargs)
     parser = argparse.ArgumentParser(
         description="Train the Model on CPSC2021",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     parser.add_argument(
-        "-b", "--batch-size",
-        type=int, default=128,
+        "-b",
+        "--batch-size",
+        type=int,
+        default=128,
         help="the batch size for training",
-        dest="batch_size")
+        dest="batch_size",
+    )
     # parser.add_argument(
     #     "-c", "--cnn-name",
     #     type=str, default="multi_scopic_leadwise",
@@ -332,22 +402,28 @@ def get_args(**kwargs:Any):
     #     help="choice of attention structures",
     #     dest="attn_name")
     parser.add_argument(
-        "--keep-checkpoint-max", type=int, default=20,
+        "--keep-checkpoint-max",
+        type=int,
+        default=20,
         help="maximum number of checkpoints to keep. If set 0, all checkpoints will be kept",
-        dest="keep_checkpoint_max")
+        dest="keep_checkpoint_max",
+    )
     # parser.add_argument(
     #     "--optimizer", type=str, default="adam",
     #     help="training optimizer",
     #     dest="train_optimizer")
     parser.add_argument(
-        "--debug", type=str2bool, default=False,
+        "--debug",
+        type=str2bool,
+        default=False,
         help="train with more debugging information",
-        dest="debug")
-    
+        dest="debug",
+    )
+
     args = vars(parser.parse_args())
 
     cfg.update(args)
-    
+
     return CFG(cfg)
 
 
@@ -359,13 +435,15 @@ _MODEL_MAP = {
 }
 
 
-def _set_task(task:str, config:CFG) -> NoReturn:
-    """ finished, checked,
-    """
+def _set_task(task: str, config: CFG) -> NoReturn:
+    """finished, checked,"""
     assert task in config.tasks
     config.task = task
     for item in [
-        "classes", "monitor", "final_model_name", "loss",
+        "classes",
+        "monitor",
+        "final_model_name",
+        "loss",
     ]:
         config[item] = config[task][item]
 
@@ -383,7 +461,9 @@ if __name__ == "__main__":
         _set_task(task, train_config)
         model_config = deepcopy(ModelCfg[task])
         model = model_cls(config=model_config)
-        if torch.cuda.device_count() > 1 and task not in ["rr_lstm",]:
+        if torch.cuda.device_count() > 1 and task not in [
+            "rr_lstm",
+        ]:
             model = DP(model)
             # model = DDP(model)
         model.to(device=device)

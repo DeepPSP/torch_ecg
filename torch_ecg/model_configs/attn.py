@@ -18,10 +18,13 @@ __all__ = [
 
 non_local = CFG()
 non_local.filter_lengths = {
-    "g":1, "phi":1, 'theta':1, "W":1,
+    "g": 1,
+    "phi": 1,
+    "theta": 1,
+    "W": 1,
 }
 non_local.subsample_length = 2
-non_local.batch_norm=True
+non_local.batch_norm = True
 
 
 squeeze_excitation = CFG()
@@ -36,7 +39,9 @@ global_context = CFG()
 global_context.ratio = 4
 global_context.reduction = True
 global_context.pooling_type = "attn"
-global_context.fusion_types = ["mul",]
+global_context.fusion_types = [
+    "mul",
+]
 
 
 transformer = CFG()

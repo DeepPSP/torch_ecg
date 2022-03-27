@@ -19,7 +19,7 @@ lstm.bias = True
 lstm.dropouts = 0.2
 lstm.bidirectional = True
 lstm.retseq = True
-lstm.hidden_sizes = [12*16, 12*16]
+lstm.hidden_sizes = [12 * 16, 12 * 16]
 
 
 attention = CFG()
@@ -28,4 +28,4 @@ attention.head_num = 12
 attention.bias = True
 attention.dropouts = 0.2
 attention.bidirectional = True
-attention.hidden_sizes = [12*24, 12*6]
+attention.hidden_sizes = [12 * 24, 12 * 6]

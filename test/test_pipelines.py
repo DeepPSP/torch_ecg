@@ -10,15 +10,22 @@ try:
 except:
     import sys
     from pathlib import Path
+
     sys.path.append(Path(__file__).absolute().parent.parent)
     import torch_ecg
 
 from torch_ecg.databases.datasets.cinc2021 import CINC2021Dataset, CINC2021TrainCfg
 from torch_ecg.databases.datasets.cpsc2019 import CPSC2019Dataset, CPSC2019TrainCfg
 from torch_ecg.databases.datasets.cpsc2021 import CPSC2021Dataset, CPSC2021TrainCfg
-from torch_ecg.databases.physionet_databases.cinc2021 import compute_metrics as compute_cinc2021_metrics
-from torch_ecg.databases.physionet_databases.cpsc2019 import compute_metrics as compute_cpsc2019_metrics
-from torch_ecg.databases.physionet_databases.cpsc2021 import compute_metrics as compute_cpsc2021_metrics
+from torch_ecg.databases.physionet_databases.cinc2021 import (
+    compute_metrics as compute_cinc2021_metrics,
+)
+from torch_ecg.databases.physionet_databases.cpsc2019 import (
+    compute_metrics as compute_cpsc2019_metrics,
+)
+from torch_ecg.databases.physionet_databases.cpsc2021 import (
+    compute_metrics as compute_cpsc2021_metrics,
+)
 from torch_ecg.cfg import CFG
 from torch_ecg.models.ecg_crnn import ECG_CRNN
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
@@ -29,36 +36,35 @@ from torch_ecg.utils.trainer import BaseTrainer
 
 
 def test_cinc2021_pipeline() -> NoReturn:
-    """
-    """
+    """ """
     pass
 
 
 def test_cpsc2019_pipeline() -> NoReturn:
-    """
-    """
+    """ """
     pass
 
 
 def test_cpsc2021_pipeline() -> NoReturn:
-    """
-    """
+    """ """
     pass
 
 
 class CINC2021Trainer(BaseTrainer):
-    """
-    """
+    """ """
+
     __name__ = "CINC2021Trainer"
 
-    def __init__(self,
-                 model:nn.Module,
-                 model_config:dict,
-                 train_config:dict,
-                 device:Optional[torch.device]=None,
-                 lazy:bool=True,
-                 **kwargs:Any,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        model: nn.Module,
+        model_config: dict,
+        train_config: dict,
+        device: Optional[torch.device] = None,
+        lazy: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -89,11 +95,17 @@ class CINC2021Trainer(BaseTrainer):
         lazy: bool, default True,
             whether to initialize the data loader lazily
         """
-        super().__init__(model, CINC2021Dataset, model_config, train_config, device, lazy)
+        super().__init__(
+            model, CINC2021Dataset, model_config, train_config, device, lazy
+        )
 
-    def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
-        """ finished, checked,
-        
+    def _setup_dataloaders(
+        self,
+        train_dataset: Optional[Dataset] = None,
+        val_dataset: Optional[Dataset] = None,
+    ) -> NoReturn:
+        """finished, checked,
+
         setup the dataloaders for training and validation
 
         Parameters
@@ -104,16 +116,20 @@ class CINC2021Trainer(BaseTrainer):
             the validation dataset
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
+            train_dataset = self.dataset_cls(
+                config=self.train_config, training=True, lazy=False
+            )
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
+            val_dataset = self.dataset_cls(
+                config=self.train_config, training=False, lazy=False
+            )
 
-         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+        # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         num_workers = 4
 
         self.train_loader = DataLoader(
@@ -148,7 +164,9 @@ class CINC2021Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(self, *data:Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(
+        self, *data: Tuple[torch.Tensor, torch.Tensor]
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
 
         Parameters
@@ -172,9 +190,8 @@ class CINC2021Trainer(BaseTrainer):
         return preds, labels
 
     @torch.no_grad()
-    def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
-        """
-        """
+    def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
+        """ """
         self.model.eval()
 
         all_scalar_preds = []
@@ -191,7 +208,7 @@ class CINC2021Trainer(BaseTrainer):
             preds, bin_preds = self._model.inference(signals)
             all_scalar_preds.append(preds)
             all_bin_preds.append(bin_preds)
-        
+
         all_scalar_preds = np.concatenate(all_scalar_preds, axis=0)
         all_bin_preds = np.concatenate(all_bin_preds, axis=0)
         all_labels = np.concatenate(all_labels, axis=0)
@@ -201,13 +218,18 @@ class CINC2021Trainer(BaseTrainer):
             msg = f"all_scalar_preds.shape = {all_scalar_preds.shape}, all_labels.shape = {all_labels.shape}"
             self.log_manager.log_message(msg, level=logging.DEBUG)
             head_num = 5
-            head_scalar_preds = all_scalar_preds[:head_num,...]
-            head_bin_preds = all_bin_preds[:head_num,...]
-            head_preds_classes = [np.array(classes)[np.where(row)] for row in head_bin_preds]
-            head_labels = all_labels[:head_num,...]
-            head_labels_classes = [np.array(classes)[np.where(row)] for row in head_labels]
+            head_scalar_preds = all_scalar_preds[:head_num, ...]
+            head_bin_preds = all_bin_preds[:head_num, ...]
+            head_preds_classes = [
+                np.array(classes)[np.where(row)] for row in head_bin_preds
+            ]
+            head_labels = all_labels[:head_num, ...]
+            head_labels_classes = [
+                np.array(classes)[np.where(row)] for row in head_labels
+            ]
             for n in range(head_num):
-                msg = textwrap.dedent(f"""
+                msg = textwrap.dedent(
+                    f"""
                 ----------------------------------------------
                 scalar prediction:    {[round(n, 3) for n in head_scalar_preds[n].tolist()]}
                 binary prediction:    {head_bin_preds[n].tolist()}
@@ -215,16 +237,24 @@ class CINC2021Trainer(BaseTrainer):
                 predicted classes:    {head_preds_classes[n].tolist()}
                 label classes:        {head_labels_classes[n].tolist()}
                 ----------------------------------------------
-                """)
+                """
+                )
                 self.log_manager.log_message(msg)
 
-        auroc, auprc, accuracy, f_measure, f_beta_measure, g_beta_measure, challenge_metric = \
-            compute_cinc2021_metrics(
-                classes=classes,
-                truth=all_labels,
-                scalar_pred=all_scalar_preds,
-                binary_pred=all_bin_preds,
-            )
+        (
+            auroc,
+            auprc,
+            accuracy,
+            f_measure,
+            f_beta_measure,
+            g_beta_measure,
+            challenge_metric,
+        ) = compute_cinc2021_metrics(
+            classes=classes,
+            truth=all_labels,
+            scalar_pred=all_scalar_preds,
+            binary_pred=all_bin_preds,
+        )
         eval_res = dict(
             auroc=auroc,
             auprc=auprc,
@@ -251,8 +281,7 @@ class CINC2021Trainer(BaseTrainer):
 
     @property
     def extra_required_train_config_fields(self) -> List[str]:
-        """
-        """
+        """ """
         return []
 
     @property
@@ -264,18 +293,20 @@ class CINC2021Trainer(BaseTrainer):
 
 
 class CPSC2019Trainer(BaseTrainer):
-    """
-    """
+    """ """
+
     __name__ = "CPSC2019Trainer"
 
-    def __init__(self,
-                 model:nn.Module,
-                 model_config:dict,
-                 train_config:dict,
-                 device:Optional[torch.device]=None,
-                 lazy:bool=True,
-                 **kwargs:Any,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        model: nn.Module,
+        model_config: dict,
+        train_config: dict,
+        device: Optional[torch.device] = None,
+        lazy: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -306,11 +337,17 @@ class CPSC2019Trainer(BaseTrainer):
         lazy: bool, default True,
             whether to initialize the data loader lazily
         """
-        super().__init__(model, CPSC2019Dataset, model_config, train_config, device, lazy)
+        super().__init__(
+            model, CPSC2019Dataset, model_config, train_config, device, lazy
+        )
 
-    def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
-        """ finished, checked,
-        
+    def _setup_dataloaders(
+        self,
+        train_dataset: Optional[Dataset] = None,
+        val_dataset: Optional[Dataset] = None,
+    ) -> NoReturn:
+        """finished, checked,
+
         setup the dataloaders for training and validation
 
         Parameters
@@ -321,16 +358,20 @@ class CPSC2019Trainer(BaseTrainer):
             the validation dataset
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
+            train_dataset = self.dataset_cls(
+                config=self.train_config, training=True, lazy=False
+            )
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
+            val_dataset = self.dataset_cls(
+                config=self.train_config, training=False, lazy=False
+            )
 
-         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+        # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         num_workers = 4
 
         self.train_loader = DataLoader(
@@ -365,7 +406,9 @@ class CPSC2019Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(self, *data:Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(
+        self, *data: Tuple[torch.Tensor, torch.Tensor]
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
 
         Parameters
@@ -389,9 +432,8 @@ class CPSC2019Trainer(BaseTrainer):
         return preds, labels
 
     @torch.no_grad()
-    def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
-        """
-        """
+    def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
+        """ """
         self.model.eval()
 
         if self.train_config.get("recover_length", False):
@@ -405,14 +447,26 @@ class CPSC2019Trainer(BaseTrainer):
         for signals, labels in data_loader:
             signals = signals.to(device=self.device, dtype=self.dtype)
             labels = labels.numpy()
-            labels = [mask_to_intervals(item, 1) for item in labels]  # intervals of qrs complexes
-            labels = [ # to indices of rpeaks in the original signal sequence
-                (reduction * np.array([itv[0]+itv[1] for itv in item]) / 2).astype(int) \
-                    for item in labels
+            labels = [
+                mask_to_intervals(item, 1) for item in labels
+            ]  # intervals of qrs complexes
+            labels = [  # to indices of rpeaks in the original signal sequence
+                (reduction * np.array([itv[0] + itv[1] for itv in item]) / 2).astype(
+                    int
+                )
+                for item in labels
             ]
             labels = [
-                item[np.where((item>=self.train_config.skip_dist) & (item<self.train_config.input_len-self.train_config.skip_dist))[0]] \
-                    for item in labels
+                item[
+                    np.where(
+                        (item >= self.train_config.skip_dist)
+                        & (
+                            item
+                            < self.train_config.input_len - self.train_config.skip_dist
+                        )
+                    )[0]
+                ]
+                for item in labels
             ]
             all_rpeak_labels += labels
 
@@ -421,9 +475,9 @@ class CPSC2019Trainer(BaseTrainer):
             prob, rpeak_preds = self._model.inference(
                 signals,
                 bin_pred_thr=0.5,
-                duration_thr=4*16,
+                duration_thr=4 * 16,
                 dist_thr=200,
-                correction=False
+                correction=False,
             )
             all_rpeak_preds += rpeak_preds
 
@@ -431,7 +485,7 @@ class CPSC2019Trainer(BaseTrainer):
             rpeaks_truths=all_rpeak_labels,
             rpeaks_preds=all_rpeak_preds,
             fs=self.train_config.fs,
-            thr=self.train_config.bias_thr/self.train_config.fs,
+            thr=self.train_config.bias_thr / self.train_config.fs,
         )
         eval_res = dict(
             qrs_score=qrs_score,
@@ -452,8 +506,7 @@ class CPSC2019Trainer(BaseTrainer):
 
     @property
     def extra_required_train_config_fields(self) -> List[str]:
-        """
-        """
+        """ """
         return []
 
     @property
@@ -465,19 +518,21 @@ class CPSC2019Trainer(BaseTrainer):
 
 
 class CPSC2021Trainer(BaseTrainer):
-    """
-    """
+    """ """
+
     __DEBUG__ = True
     __name__ = "CPSC2021Trainer"
 
-    def __init__(self,
-                 model:nn.Module,
-                 model_config:dict,
-                 train_config:dict,
-                 device:Optional[torch.device]=None,
-                 lazy:bool=True,
-                 **kwargs:Any,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        model: nn.Module,
+        model_config: dict,
+        train_config: dict,
+        device: Optional[torch.device] = None,
+        lazy: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -508,11 +563,17 @@ class CPSC2021Trainer(BaseTrainer):
         lazy: bool, default True,
             whether to initialize the data loader lazily
         """
-        super().__init__(model, CPSC2021Dataset, model_config, train_config, device, lazy)
+        super().__init__(
+            model, CPSC2021Dataset, model_config, train_config, device, lazy
+        )
 
-    def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
-        """ finished, checked,
-        
+    def _setup_dataloaders(
+        self,
+        train_dataset: Optional[Dataset] = None,
+        val_dataset: Optional[Dataset] = None,
+    ) -> NoReturn:
+        """finished, checked,
+
         setup the dataloaders for training and validation
 
         Parameters
@@ -523,16 +584,26 @@ class CPSC2021Trainer(BaseTrainer):
             the validation dataset
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(config=self.train_config, task=self.train_config.task, training=True, lazy=False)
+            train_dataset = self.dataset_cls(
+                config=self.train_config,
+                task=self.train_config.task,
+                training=True,
+                lazy=False,
+            )
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(config=self.train_config, task=self.train_config.task, training=False, lazy=False)
+            val_dataset = self.dataset_cls(
+                config=self.train_config,
+                task=self.train_config.task,
+                training=False,
+                lazy=False,
+            )
 
-         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+        # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         num_workers = 4
 
         self.train_loader = DataLoader(
@@ -567,7 +638,9 @@ class CPSC2021Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(self, *data:Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(
+        self, *data: Tuple[torch.Tensor, torch.Tensor]
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
 
         Parameters
@@ -587,7 +660,7 @@ class CPSC2021Trainer(BaseTrainer):
         if self.train_config.task == "rr_lstm":
             signals, labels, weight_masks = data
             # (batch_size, seq_len, n_channel) -> (seq_len, batch_size, n_channel)
-            signals = signals.permute(1,0,2)
+            signals = signals.permute(1, 0, 2)
             weight_masks = weight_masks.to(device=self.device, dtype=self.dtype)
         elif self.train_config.task == "qrs_detection":
             signals, labels = data
@@ -605,9 +678,8 @@ class CPSC2021Trainer(BaseTrainer):
             return preds, labels, weight_masks
 
     @torch.no_grad()
-    def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
-        """
-        """
+    def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
+        """ """
         self.model.eval()
 
         if self.train_config.task == "qrs_detection":
@@ -616,17 +688,29 @@ class CPSC2021Trainer(BaseTrainer):
             for signals, labels in data_loader:
                 signals = signals.to(device=self.device, dtype=self.dtype)
                 labels = labels.numpy()
-                labels = [mask_to_intervals(item, 1) for item in labels]  # intervals of qrs complexes
-                labels = [ # to indices of rpeaks in the original signal sequence
-                    (self.train_config.qrs_detection.reduction * np.array([itv[0]+itv[1] for itv in item]) / 2).astype(int) \
-                        for item in labels
+                labels = [
+                    mask_to_intervals(item, 1) for item in labels
+                ]  # intervals of qrs complexes
+                labels = [  # to indices of rpeaks in the original signal sequence
+                    (
+                        self.train_config.qrs_detection.reduction
+                        * np.array([itv[0] + itv[1] for itv in item])
+                        / 2
+                    ).astype(int)
+                    for item in labels
                 ]
                 labels = [
-                    item[np.where((
-                        item>=self.train_config.rpeaks_dist2border) \
-                            & (item<self.train_config.qrs_detection.input_len-self.train_config.rpeaks_dist2border
-                    ))[0]] \
-                        for item in labels
+                    item[
+                        np.where(
+                            (item >= self.train_config.rpeaks_dist2border)
+                            & (
+                                item
+                                < self.train_config.qrs_detection.input_len
+                                - self.train_config.rpeaks_dist2border
+                            )
+                        )[0]
+                    ]
+                    for item in labels
                 ]
                 all_rpeak_labels += labels
 
@@ -638,18 +722,28 @@ class CPSC2021Trainer(BaseTrainer):
                 rpeaks_truths=all_rpeak_labels,
                 rpeaks_preds=all_rpeak_preds,
                 fs=self.train_config.fs,
-                thr=self.train_config.qrs_mask_bias/self.train_config.fs,
+                thr=self.train_config.qrs_mask_bias / self.train_config.fs,
             )
             # in case possible memeory leakage?
             del all_rpeak_preds, all_rpeak_labels
         elif self.train_config.task == "rr_lstm":
-            all_preds = np.array([]).reshape((0, self.train_config[self.train_config.task].input_len))
-            all_labels = np.array([]).reshape((0, self.train_config[self.train_config.task].input_len))
-            all_weight_masks = np.array([]).reshape((0, self.train_config[self.train_config.task].input_len))
+            all_preds = np.array([]).reshape(
+                (0, self.train_config[self.train_config.task].input_len)
+            )
+            all_labels = np.array([]).reshape(
+                (0, self.train_config[self.train_config.task].input_len)
+            )
+            all_weight_masks = np.array([]).reshape(
+                (0, self.train_config[self.train_config.task].input_len)
+            )
             for signals, labels, weight_masks in data_loader:
                 signals = signals.to(device=self.device, dtype=self.dtype)
-                labels = labels.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
-                weight_masks = weight_masks.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                labels = labels.numpy().squeeze(
+                    -1
+                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                weight_masks = weight_masks.numpy().squeeze(
+                    -1
+                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
                 all_labels = np.concatenate((all_labels, labels))
                 all_weight_masks = np.concatenate((all_weight_masks, weight_masks))
                 if torch.cuda.is_available():
@@ -660,13 +754,35 @@ class CPSC2021Trainer(BaseTrainer):
             # in case possible memeory leakage?
             del all_preds, all_labels, all_weight_masks
         elif self.train_config.task == "main":
-            all_preds = np.array([]).reshape((0, self.train_config.main.input_len//self.train_config.main.reduction))
-            all_labels = np.array([]).reshape((0, self.train_config.main.input_len//self.train_config.main.reduction))
-            all_weight_masks = np.array([]).reshape((0, self.train_config.main.input_len//self.train_config.main.reduction))
+            all_preds = np.array([]).reshape(
+                (
+                    0,
+                    self.train_config.main.input_len
+                    // self.train_config.main.reduction,
+                )
+            )
+            all_labels = np.array([]).reshape(
+                (
+                    0,
+                    self.train_config.main.input_len
+                    // self.train_config.main.reduction,
+                )
+            )
+            all_weight_masks = np.array([]).reshape(
+                (
+                    0,
+                    self.train_config.main.input_len
+                    // self.train_config.main.reduction,
+                )
+            )
             for signals, labels, weight_masks in data_loader:
                 signals = signals.to(device=self.device, dtype=self.dtype)
-                labels = labels.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
-                weight_masks = weight_masks.numpy().squeeze(-1)  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                labels = labels.numpy().squeeze(
+                    -1
+                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
+                weight_masks = weight_masks.numpy().squeeze(
+                    -1
+                )  # (batch_size, seq_len, 1) -> (batch_size, seq_len)
                 all_labels = np.concatenate((all_labels, labels))
                 all_weight_masks = np.concatenate((all_weight_masks, weight_masks))
                 if torch.cuda.is_available():
@@ -698,9 +814,10 @@ class CPSC2021Trainer(BaseTrainer):
 
     @property
     def extra_required_train_config_fields(self) -> List[str]:
-        """
-        """
-        return ["task",]
+        """ """
+        return [
+            "task",
+        ]
 
     @property
     def save_prefix(self) -> str:

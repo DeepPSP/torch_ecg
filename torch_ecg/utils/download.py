@@ -5,17 +5,24 @@ For most PhysioNet databases, the WFDB package already has a method `dl_database
 for downloading the data files.
 """
 
-import os, tempfile, zipfile, tarfile
+import os, re, tempfile, zipfile, tarfile
 from pathlib import Path
 from typing import NoReturn, Union, Optional
 
 import requests, tqdm
 
 
-__all__ = ["http_get",]
+__all__ = [
+    "http_get",
+]
 
 
-def http_get(url:str, dst_dir:Union[str,Path], proxies:Optional[dict]=None, extract:bool=True) -> NoReturn:
+def http_get(
+    url: str,
+    dst_dir: Union[str, Path],
+    proxies: Optional[dict] = None,
+    extract: bool = True,
+) -> NoReturn:
     """Get contents of a URL and save to a file.
 
     Parameters
@@ -33,12 +40,13 @@ def http_get(url:str, dst_dir:Union[str,Path], proxies:Optional[dict]=None, extr
     ----------
     1. https://github.com/huggingface/transformers/blob/master/src/transformers/file_utils.py
     """
+    assert (
+        re.search("(\.zip)|(\.tar)", _suffix(url)) is not None
+    ), "URL must be pointing to a `zip` file or a compressed `tar` file."
     print(f"Downloading {url}.")
     parent_dir = Path(dst_dir).parent
     downloaded_file = tempfile.NamedTemporaryFile(
-        dir=parent_dir,
-        suffix=_suffix(url),
-        delete=False
+        dir=parent_dir, suffix=_suffix(url), delete=False
     )
     req = requests.get(url, stream=True, proxies=proxies)
     content_length = req.headers.get("Content-Length")
@@ -53,16 +61,16 @@ def http_get(url:str, dst_dir:Union[str,Path], proxies:Optional[dict]=None, extr
     progress.close()
     downloaded_file.close()
     if extract:
-        if _suffix(url) == ".zip":
+        if ".zip" in _suffix(url):
             _unzip_file(str(downloaded_file.name), str(dst_dir))
-        else:  # tar files
+        elif ".tar" in _suffix(url):  # tar files
             _untar_file(str(downloaded_file.name), str(dst_dir))
     else:
         shutil.copyfile(downloaded_file.name, Path(dst_dir) / Path(url).name)
     os.remove(downloaded_file.name)
 
 
-def _stem(path:Union[str,Path]) -> str:
+def _stem(path: Union[str, Path]) -> str:
     """
     get filename without extension, especially for .tar.xx files
 
@@ -70,7 +78,7 @@ def _stem(path:Union[str,Path]) -> str:
     ----------
     path: str or Path,
         path to the file
-    
+
     Returns
     -------
     str,
@@ -82,7 +90,7 @@ def _stem(path:Union[str,Path]) -> str:
     return ret
 
 
-def _suffix(path:Union[str,Path]) -> str:
+def _suffix(path: Union[str, Path]) -> str:
     """
     get file extension, including all suffixes
 
@@ -99,10 +107,12 @@ def _suffix(path:Union[str,Path]) -> str:
     return "".join(Path(path).suffixes)
 
 
-def _unzip_file(path_to_zip_file:Union[str, Path], dst_dir:Union[str, Path]) -> NoReturn:
+def _unzip_file(
+    path_to_zip_file: Union[str, Path], dst_dir: Union[str, Path]
+) -> NoReturn:
     """
     Unzips a .zip file to folder path.
-    
+
     Parameters
     ----------
     path_to_zip_file: str or Path,
@@ -115,10 +125,12 @@ def _unzip_file(path_to_zip_file:Union[str, Path], dst_dir:Union[str, Path]) -> 
         zip_ref.extractall(str(dst_dir))
 
 
-def _untar_file(path_to_tar_file:Union[str, Path], dst_dir:Union[str, Path]) -> NoReturn:
+def _untar_file(
+    path_to_tar_file: Union[str, Path], dst_dir: Union[str, Path]
+) -> NoReturn:
     """
     Decompress a .tar.xx file to folder path.
-    
+
     Parameters
     ----------
     path_to_tar_file: str or Path,

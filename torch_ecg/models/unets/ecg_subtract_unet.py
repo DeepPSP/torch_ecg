@@ -21,13 +21,18 @@ import torch.nn.functional as F
 
 from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import (
-    compute_deconv_output_shape, compute_module_size,
-    SizeMixin, CkptMixin,
+    compute_deconv_output_shape,
+    compute_module_size,
+    SizeMixin,
+    CkptMixin,
 )
 from ...utils.misc import dict_to_str
 from ...models._nets import (
-    Conv_Bn_Activation, MultiConv, BranchedConv,
-    DownSample, ZeroPadding,
+    Conv_Bn_Activation,
+    MultiConv,
+    BranchedConv,
+    DownSample,
+    ZeroPadding,
 )
 
 if DEFAULTS.torch_dtype == torch.float64:
@@ -44,19 +49,22 @@ class TripleConv(MultiConv):
 
     CBA --> (Dropout) --> CBA --> (Dropout) --> CBA --> (Dropout)
     """
+
     __DEBUG__ = False
     __name__ = "TripleConv"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:Union[Sequence[int],int],
-                 filter_lengths:Union[Sequence[int],int],
-                 subsample_lengths:Union[Sequence[int],int]=1,
-                 groups:int=1,
-                 dropouts:Union[Sequence[float],float]=0.0,
-                 out_activation:bool=True,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: Union[Sequence[int], int],
+        filter_lengths: Union[Sequence[int], int],
+        subsample_lengths: Union[Sequence[int], int] = 1,
+        groups: int = 1,
+        dropouts: Union[Sequence[float], float] = 0.0,
+        out_activation: bool = True,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -87,7 +95,9 @@ class TripleConv(MultiConv):
             _out_channels = list(out_channels)
             assert _num_convs == len(_out_channels)
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(config)}"
+            )
 
         super().__init__(
             in_channels=in_channels,
@@ -102,22 +112,24 @@ class TripleConv(MultiConv):
 
 
 class DownTripleConv(SizeMixin, nn.Sequential):
-    """
-    """
+    """ """
+
     __DEBUG__ = False
     __name__ = "DownTripleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
-    
-    def __init__(self,
-                 down_scale:int,
-                 in_channels:int,
-                 out_channels:Union[Sequence[int],int],
-                 filter_lengths:Union[Sequence[int],int],
-                 groups:int=1,
-                 dropouts:Union[Sequence[float],float]=0.0,
-                 mode:str="max",
-                 **config) -> NoReturn:
-        """ finished, checked,
+
+    def __init__(
+        self,
+        down_scale: int,
+        in_channels: int,
+        out_channels: Union[Sequence[int], int],
+        filter_lengths: Union[Sequence[int], int],
+        groups: int = 1,
+        dropouts: Union[Sequence[float], float] = 0.0,
+        mode: str = "max",
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -148,7 +160,9 @@ class DownTripleConv(SizeMixin, nn.Sequential):
         self.__out_channels = out_channels
         self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         self.add_module(
             "down_sample",
@@ -157,7 +171,7 @@ class DownTripleConv(SizeMixin, nn.Sequential):
                 in_channels=self.__in_channels,
                 batch_norm=False,
                 mode=mode,
-            )
+            ),
         )
         self.add_module(
             "triple_conv",
@@ -168,12 +182,12 @@ class DownTripleConv(SizeMixin, nn.Sequential):
                 subsample_lengths=1,
                 groups=groups,
                 dropouts=dropouts,
-                **(self.config)
+                **(self.config),
             ),
         )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -188,8 +202,10 @@ class DownTripleConv(SizeMixin, nn.Sequential):
         out = super().forward(input)
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -214,21 +230,24 @@ class DownBranchedDoubleConv(SizeMixin, nn.Module):
     """
     the bottom block of the `subtract_unet`
     """
+
     __DEBUG__ = False
     __name__ = "DownBranchedDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
-    def __init__(self,
-                 down_scale:int,
-                 in_channels:int,
-                 out_channels:Sequence[Sequence[int]],
-                 filter_lengths:Union[Sequence[Sequence[int]],Sequence[int],int],
-                 dilations:Union[Sequence[Sequence[int]],Sequence[int],int]=1,
-                 groups:int=1,
-                 dropouts:Union[Sequence[float],float]=0.0,
-                 mode:str="max",
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        down_scale: int,
+        in_channels: int,
+        out_channels: Sequence[Sequence[int]],
+        filter_lengths: Union[Sequence[Sequence[int]], Sequence[int], int],
+        dilations: Union[Sequence[Sequence[int]], Sequence[int], int] = 1,
+        groups: int = 1,
+        dropouts: Union[Sequence[float], float] = 0.0,
+        mode: str = "max",
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -259,7 +278,9 @@ class DownBranchedDoubleConv(SizeMixin, nn.Module):
         self.__out_channels = out_channels
         self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         self.down_sample = DownSample(
             down_scale=self.__down_scale,
@@ -275,11 +296,11 @@ class DownBranchedDoubleConv(SizeMixin, nn.Module):
             dilations=dilations,
             groups=groups,
             dropouts=dropouts,
-            **(self.config)
+            **(self.config),
         )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -296,12 +317,14 @@ class DownBranchedDoubleConv(SizeMixin, nn.Module):
         # SUBTRACT
         # currently (micro scope) - (macro scope)
         # TODO: consider (macro scope) - (micro scope)
-        out.append(out[0]-out[1])
+        out.append(out[0] - out[1])
         out = torch.cat(out, dim=1)  # concate along the channel axis
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -321,7 +344,11 @@ class DownBranchedDoubleConv(SizeMixin, nn.Module):
         output_shapes = self.branched_conv.compute_output_shape(seq_len=_seq_len)
         # output_shape = output_shapes[0][0], sum([s[1] for s in output_shapes]), output_shapes[0][-1]
         n_branches = len(output_shapes)
-        output_shape = output_shapes[0][0], (n_branches+1)*output_shapes[0][1], output_shapes[0][-1]
+        output_shape = (
+            output_shapes[0][0],
+            (n_branches + 1) * output_shapes[0][1],
+            output_shapes[0][-1],
+        )
         return output_shape
 
 
@@ -335,21 +362,29 @@ class UpTripleConv(SizeMixin, nn.Module):
 
     channels are shrinked after up sampling
     """
+
     __DEBUG__ = False
     __name__ = "UpTripleConv"
-    __MODES__ = ["nearest", "linear", "area", "deconv",]
+    __MODES__ = [
+        "nearest",
+        "linear",
+        "area",
+        "deconv",
+    ]
 
-    def __init__(self,
-                 up_scale:int,
-                 in_channels:int,
-                 out_channels:int,
-                 filter_lengths:Union[Sequence[int],int],
-                 deconv_filter_length:Optional[int]=None,
-                 groups:int=1,
-                 dropouts:Union[Sequence[float],float]=0.0,
-                 mode:str="deconv",
-                 **config) -> NoReturn:
-        """ finished, NOT checked,
+    def __init__(
+        self,
+        up_scale: int,
+        in_channels: int,
+        out_channels: int,
+        filter_lengths: Union[Sequence[int], int],
+        deconv_filter_length: Optional[int] = None,
+        groups: int = 1,
+        dropouts: Union[Sequence[float], float] = 0.0,
+        mode: str = "deconv",
+        **config,
+    ) -> NoReturn:
+        """finished, NOT checked,
 
         Parameters
         ----------
@@ -384,12 +419,16 @@ class UpTripleConv(SizeMixin, nn.Module):
         assert self.__mode in self.__MODES__
         self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         # the following has to be checked
         # if bilinear, use the normal convolutions to reduce the number of channels
         if self.__mode == "deconv":
-            self.__deconv_padding = max(0, (self.__deconv_filter_length - self.__up_scale)//2)
+            self.__deconv_padding = max(
+                0, (self.__deconv_filter_length - self.__up_scale) // 2
+            )
             self.up = nn.ConvTranspose1d(
                 in_channels=self.__in_channels,
                 out_channels=self.__in_channels,
@@ -413,8 +452,8 @@ class UpTripleConv(SizeMixin, nn.Module):
             **(self.config),
         )
 
-    def forward(self, input:Tensor, down_output:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor, down_output: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -424,13 +463,17 @@ class UpTripleConv(SizeMixin, nn.Module):
             input tensor of the last layer of corr. down block
         """
         output = self.up(input)
-        output = torch.cat([down_output, output], dim=1)  # concate along the channel axis
+        output = torch.cat(
+            [down_output, output], dim=1
+        )  # concate along the channel axis
         output = self.conv(output)
 
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -454,22 +497,23 @@ class UpTripleConv(SizeMixin, nn.Module):
                 padding=self.__deconv_padding,
             )
         else:
-            output_shape = [batch_size, self.__in_channels, self.__up_scale*_sep_len]
+            output_shape = [batch_size, self.__in_channels, self.__up_scale * _sep_len]
         _, _, _seq_len = output_shape
         output_shape = self.conv.compute_output_shape(_seq_len, batch_size)
         return output_shape
 
 
 class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
-    """ finished, checked,
+    """finished, checked,
 
     entry 0433 of CPSC2019
     """
+
     __DEBUG__ = False
     __name__ = "ECG_SUBTRACT_UNET"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:dict) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, classes: Sequence[str], n_leads: int, config: dict) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -488,7 +532,9 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
         self.__in_channels = n_leads
         self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
             __debug_seq_len = 5000
 
         # TODO: an init batch normalization?
@@ -514,27 +560,32 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
         )
         if self.__DEBUG__:
             __debug_output_shape = self.init_conv.compute_output_shape(__debug_seq_len)
-            print(f"given seq_len = {__debug_seq_len}, init_conv output shape = {__debug_output_shape}")
+            print(
+                f"given seq_len = {__debug_seq_len}, init_conv output shape = {__debug_output_shape}"
+            )
             _, _, __debug_seq_len = __debug_output_shape
 
         self.down_blocks = nn.ModuleDict()
         in_channels = self.config.init_num_filters
-        for idx in range(self.config.down_up_block_num-1):
-            self.down_blocks[f"down_{idx}"] = \
-                DownTripleConv(
-                    down_scale=self.config.down_scales[idx],
-                    in_channels=in_channels,
-                    out_channels=self.config.down_num_filters[idx],
-                    filter_lengths=self.config.down_filter_lengths[idx],
-                    groups=self.config.groups,
-                    dropouts=self.config.down_dropouts[idx],
-                    mode=self.config.down_mode,
-                    **(self.config.down_block)
-                )
+        for idx in range(self.config.down_up_block_num - 1):
+            self.down_blocks[f"down_{idx}"] = DownTripleConv(
+                down_scale=self.config.down_scales[idx],
+                in_channels=in_channels,
+                out_channels=self.config.down_num_filters[idx],
+                filter_lengths=self.config.down_filter_lengths[idx],
+                groups=self.config.groups,
+                dropouts=self.config.down_dropouts[idx],
+                mode=self.config.down_mode,
+                **(self.config.down_block),
+            )
             in_channels = self.config.down_num_filters[idx][-1]
             if self.__DEBUG__:
-                __debug_output_shape = self.down_blocks[f"down_{idx}"].compute_output_shape(__debug_seq_len)
-                print(f"given seq_len = {__debug_seq_len}, down_{idx} output shape = {__debug_output_shape}")
+                __debug_output_shape = self.down_blocks[
+                    f"down_{idx}"
+                ].compute_output_shape(__debug_seq_len)
+                print(
+                    f"given seq_len = {__debug_seq_len}, down_{idx} output shape = {__debug_output_shape}"
+                )
                 _, _, __debug_seq_len = __debug_output_shape
 
         self.bottom_block = DownBranchedDoubleConv(
@@ -546,33 +597,40 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
             groups=self.config.groups,
             dropouts=self.config.bottom_dropouts,
             mode=self.config.down_mode,
-            **(self.config.down_block)
+            **(self.config.down_block),
         )
         if self.__DEBUG__:
-            __debug_output_shape = self.bottom_block.compute_output_shape(__debug_seq_len)
-            print(f"given seq_len = {__debug_seq_len}, bottom_block output shape = {__debug_output_shape}")
+            __debug_output_shape = self.bottom_block.compute_output_shape(
+                __debug_seq_len
+            )
+            print(
+                f"given seq_len = {__debug_seq_len}, bottom_block output shape = {__debug_output_shape}"
+            )
             _, _, __debug_seq_len = __debug_output_shape
 
         self.up_blocks = nn.ModuleDict()
         # in_channels = sum([branch[-1] for branch in self.config.bottom_num_filters])
-        in_channels = self.bottom_block.compute_output_shape(None,None)[1]
+        in_channels = self.bottom_block.compute_output_shape(None, None)[1]
         for idx in range(self.config.down_up_block_num):
-            self.up_blocks[f"up_{idx}"] = \
-                UpTripleConv(
-                    up_scale=self.config.up_scales[idx],
-                    in_channels=in_channels,
-                    out_channels=self.config.up_num_filters[idx],
-                    filter_lengths=self.config.up_conv_filter_lengths[idx],
-                    deconv_filter_length=self.config.up_deconv_filter_lengths[idx],
-                    groups=self.config.groups,
-                    mode=self.config.up_mode,
-                    dropouts=self.config.up_dropouts[idx],
-                    **(self.config.up_block)
-                )
+            self.up_blocks[f"up_{idx}"] = UpTripleConv(
+                up_scale=self.config.up_scales[idx],
+                in_channels=in_channels,
+                out_channels=self.config.up_num_filters[idx],
+                filter_lengths=self.config.up_conv_filter_lengths[idx],
+                deconv_filter_length=self.config.up_deconv_filter_lengths[idx],
+                groups=self.config.groups,
+                mode=self.config.up_mode,
+                dropouts=self.config.up_dropouts[idx],
+                **(self.config.up_block),
+            )
             in_channels = self.config.up_num_filters[idx][-1]
             if self.__DEBUG__:
-                __debug_output_shape = self.up_blocks[f"up_{idx}"].compute_output_shape(__debug_seq_len)
-                print(f"given seq_len = {__debug_seq_len}, up_{idx} output shape = {__debug_output_shape}")
+                __debug_output_shape = self.up_blocks[f"up_{idx}"].compute_output_shape(
+                    __debug_seq_len
+                )
+                print(
+                    f"given seq_len = {__debug_seq_len}, up_{idx} output shape = {__debug_output_shape}"
+                )
                 _, _, __debug_seq_len = __debug_output_shape
 
         self.out_conv = Conv_Bn_Activation(
@@ -588,7 +646,9 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
         )
         if self.__DEBUG__:
             __debug_output_shape = self.out_conv.compute_output_shape(__debug_seq_len)
-            print(f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}")
+            print(
+                f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}"
+            )
 
         # for inference
         # if background counted in `classes`, use softmax
@@ -596,8 +656,8 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
         self.softmax = nn.Softmax(-1)
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -618,14 +678,14 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
         to_concat = [self.init_conv(x)]
         # if self.__DEBUG__:
         #     print(f"shape of the init conv block output = {to_concat[-1].shape}")
-        for idx in range(self.config.down_up_block_num-1):
+        for idx in range(self.config.down_up_block_num - 1):
             to_concat.append(self.down_blocks[f"down_{idx}"](to_concat[-1]))
             # if self.__DEBUG__:
             #     print(f"shape of the {idx}-th down block output = {to_concat[-1].shape}")
         to_concat.append(self.bottom_block(to_concat[-1]))
         # if self.__DEBUG__:
         #     print(f"shape of the bottom block output = {to_concat[-1].shape}")
-        
+
         # up
         up_input = to_concat[-1]
         to_concat = to_concat[-2::-1]
@@ -634,7 +694,7 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
             up_input = up_output
             # if self.__DEBUG__:
             #     print(f"shape of the {idx}-th up block output = {up_output.shape}")
-        
+
         # output
         output = self.out_conv(up_output)
         # if self.__DEBUG__:
@@ -642,20 +702,23 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
 
         # to keep in accordance with other models
         # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
-        output = output.permute(0,2,1)
+        output = output.permute(0, 2, 1)
 
         # TODO: consider adding CRF at the tail to make final prediction
 
         return output
 
     @torch.no_grad()
-    def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5) -> Tensor:
-        """
-        """
+    def inference(
+        self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5
+    ) -> Tensor:
+        """ """
         NotImplementedError("implement a task specific inference method")
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------

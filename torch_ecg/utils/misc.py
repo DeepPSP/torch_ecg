@@ -7,13 +7,19 @@ from collections import namedtuple
 from glob import glob
 from copy import deepcopy
 from typing import (
-    Union, Optional, NoReturn, Any,
-    List, Dict, Tuple, Sequence, Iterable,
+    Union,
+    Optional,
+    NoReturn,
+    Any,
+    List,
+    Dict,
+    Tuple,
+    Sequence,
+    Iterable,
 )
 from numbers import Real, Number
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 from scipy import interpolate
 from sklearn.utils import compute_class_weight
@@ -38,13 +44,17 @@ __all__ = [
     "init_logger",
     "get_date_str",
     "rdheader",
-    "ensure_lead_fmt", "ensure_siglen",
-    "ECGWaveForm", "masks_to_waveforms",
+    "ensure_lead_fmt",
+    "ensure_siglen",
+    "ECGWaveForm",
+    "masks_to_waveforms",
     "mask_to_intervals",
     "list_sum",
-    "read_log_txt", "read_event_scalars",
+    "read_log_txt",
+    "read_event_scalars",
     "dicts_equal",
-    "default_class_repr", "ReprMixin",
+    "default_class_repr",
+    "ReprMixin",
     "MovingAverage",
     "uniform",
     "nildent",
@@ -53,8 +63,8 @@ __all__ = [
 ]
 
 
-def get_record_list_recursive(db_dir:Union[str,Path], rec_ext:str) -> List[str]:
-    """ finished, checked,
+def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str) -> List[str]:
+    """finished, checked,
 
     get the list of records in `db_dir` recursively,
     for example, there are two folders "patient1", "patient2" in `db_dir`,
@@ -84,16 +94,17 @@ def get_record_list_recursive(db_dir:Union[str,Path], rec_ext:str) -> List[str]:
             new_roots += [item for item in tmp if os.path.isdir(item)]
         roots = deepcopy(new_roots)
     res = [
-        os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep) \
-            for item in res if item.endswith(rec_ext)
-        ]
+        os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep)
+        for item in res
+        if item.endswith(rec_ext)
+    ]
     res = sorted(res)
 
     return res
 
 
-def get_record_list_recursive2(db_dir:Union[str,Path], rec_pattern:str) -> List[str]:
-    """ finished, checked,
+def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> List[str]:
+    """finished, checked,
 
     get the list of records in `db_dir` recursively,
     for example, there are two folders "patient1", "patient2" in `db_dir`,
@@ -123,14 +134,18 @@ def get_record_list_recursive2(db_dir:Union[str,Path], rec_pattern:str) -> List[
             res += glob(os.path.join(r, rec_pattern), recursive=False)
             new_roots += [item for item in tmp if os.path.isdir(item)]
         roots = deepcopy(new_roots)
-    res = [os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep) for item in res]
+    res = [
+        os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep) for item in res
+    ]
     res = sorted(res)
 
     return res
 
 
-def get_record_list_recursive3(db_dir:Union[str,Path], rec_patterns:Union[str,Dict[str,str]]) -> Union[List[str], Dict[str, List[str]]]:
-    """ finished, checked,
+def get_record_list_recursive3(
+    db_dir: Union[str, Path], rec_patterns: Union[str, Dict[str, str]]
+) -> Union[List[str], Dict[str, List[str]]]:
+    """finished, checked,
 
     get the list of records in `db_dir` recursively,
     for example, there are two folders "patient1", "patient2" in `db_dir`,
@@ -154,7 +169,7 @@ def get_record_list_recursive3(db_dir:Union[str,Path], rec_patterns:Union[str,Di
     if isinstance(rec_patterns, str):
         res = []
     elif isinstance(rec_patterns, dict):
-        res = {k:[] for k in rec_patterns.keys()}
+        res = {k: [] for k in rec_patterns.keys()}
     roots = [str(db_dir)]
     while len(roots) > 0:
         new_roots = []
@@ -162,24 +177,39 @@ def get_record_list_recursive3(db_dir:Union[str,Path], rec_patterns:Union[str,Di
             # tmp = [os.path.join(r, item) for item in os.listdir(r)]
             tmp = os.listdir(r)
             if isinstance(rec_patterns, str):
-                res += [os.path.join(r, item) for item in filter(re.compile(rec_patterns).search, tmp)]
+                res += [
+                    os.path.join(r, item)
+                    for item in filter(re.compile(rec_patterns).search, tmp)
+                ]
             elif isinstance(rec_patterns, dict):
                 for k in rec_patterns.keys():
-                    res[k] += [os.path.join(r, item) for item in filter(re.compile(rec_patterns[k]).search, tmp)]
-            new_roots += [os.path.join(r, item) for item in tmp if os.path.isdir(os.path.join(r, item))]
+                    res[k] += [
+                        os.path.join(r, item)
+                        for item in filter(re.compile(rec_patterns[k]).search, tmp)
+                    ]
+            new_roots += [
+                os.path.join(r, item)
+                for item in tmp
+                if os.path.isdir(os.path.join(r, item))
+            ]
         roots = deepcopy(new_roots)
     if isinstance(rec_patterns, str):
         res = [os.path.splitext(item)[0].replace(str(db_dir), "") for item in res]
         res = sorted(res)
     elif isinstance(rec_patterns, dict):
         for k in rec_patterns.keys():
-            res[k] = [os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep) for item in res[k]]
+            res[k] = [
+                os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep)
+                for item in res[k]
+            ]
             res[k] = sorted(res[k])
     return res
 
 
-def dict_to_str(d:Union[dict, list, tuple], current_depth:int=1, indent_spaces:int=4) -> str:
-    """ finished, checked,
+def dict_to_str(
+    d: Union[dict, list, tuple], current_depth: int = 1, indent_spaces: int = 4
+) -> str:
+    """finished, checked,
 
     convert a (possibly) nested dict into a `str` of json-like formatted form,
     this nested dict might also contain lists or tuples of dict (and of str, int, etc.)
@@ -203,15 +233,18 @@ def dict_to_str(d:Union[dict, list, tuple], current_depth:int=1, indent_spaces:i
         s = f"{{}}" if isinstance(d, dict) else f"[]"
         return s
     # flat_types = (Number, bool, str,)
-    flat_types = (Number, bool,)
+    flat_types = (
+        Number,
+        bool,
+    )
     flat_sep = ", "
     s = "\n"
-    unit_indent = " "*indent_spaces
-    prefix = unit_indent*current_depth
+    unit_indent = " " * indent_spaces
+    prefix = unit_indent * current_depth
     if isinstance(d, (list, tuple)):
         if all([isinstance(v, flat_types) for v in d]):
             len_per_line = 110
-            current_len = len(prefix) + 1  # + 1 for a comma 
+            current_len = len(prefix) + 1  # + 1 for a comma
             val = []
             for idx, v in enumerate(d):
                 add_v = f"\042{v}\042" if isinstance(v, str) else str(v)
@@ -250,13 +283,13 @@ def dict_to_str(d:Union[dict, list, tuple], current_depth:int=1, indent_spaces:i
                 s += ",\n"
             else:
                 s += "\n"
-    s += unit_indent*(current_depth-1)
+    s += unit_indent * (current_depth - 1)
     s = f"{{{s}}}" if isinstance(d, dict) else f"[{s}]"
     return s
 
 
-def str2bool(v:Union[str, bool]) -> bool:
-    """ finished, checked,
+def str2bool(v: Union[str, bool]) -> bool:
+    """finished, checked,
 
     converts a "boolean" value possibly in the format of str to bool
 
@@ -275,7 +308,7 @@ def str2bool(v:Union[str, bool]) -> bool:
     https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
     """
     if isinstance(v, bool):
-       b = v
+        b = v
     elif v.lower() in ("yes", "true", "t", "y", "1"):
         b = True
     elif v.lower() in ("no", "false", "f", "n", "0"):
@@ -285,8 +318,8 @@ def str2bool(v:Union[str, bool]) -> bool:
     return b
 
 
-def diff_with_step(a:np.ndarray, step:int=1, **kwargs) -> np.ndarray:
-    """ finished, checked,
+def diff_with_step(a: np.ndarray, step: int = 1, **kwargs) -> np.ndarray:
+    """finished, checked,
 
     compute a[n+step] - a[n] for all valid n
 
@@ -304,13 +337,15 @@ def diff_with_step(a:np.ndarray, step:int=1, **kwargs) -> np.ndarray:
         the difference array
     """
     if step >= len(a):
-        raise ValueError(f"step ({step}) should be less than the length ({len(a)}) of `a`")
+        raise ValueError(
+            f"step ({step}) should be less than the length ({len(a)}) of `a`"
+        )
     d = a[step:] - a[:-step]
     return d
 
 
-def ms2samples(t:Real, fs:Real) -> int:
-    """ finished, checked,
+def ms2samples(t: Real, fs: Real) -> int:
+    """finished, checked,
 
     convert time `t` with units in ms to number of samples
 
@@ -330,8 +365,8 @@ def ms2samples(t:Real, fs:Real) -> int:
     return n_samples
 
 
-def samples2ms(n_samples:int, fs:Real) -> Real:
-    """ finished, checked,
+def samples2ms(n_samples: int, fs: Real) -> Real:
+    """finished, checked,
 
     inverse function of `ms2samples`
 
@@ -351,8 +386,14 @@ def samples2ms(n_samples:int, fs:Real) -> Real:
     return t
 
 
-def get_mask(shape:Union[int, Sequence[int]], critical_points:np.ndarray, left_bias:int, right_bias:int, return_fmt:str="mask") -> Union[np.ndarray,list]:
-    """ finished, checked,
+def get_mask(
+    shape: Union[int, Sequence[int]],
+    critical_points: np.ndarray,
+    left_bias: int,
+    right_bias: int,
+    return_fmt: str = "mask",
+) -> Union[np.ndarray, list]:
+    """finished, checked,
 
     get the mask around the `critical_points`
 
@@ -377,18 +418,23 @@ def get_mask(shape:Union[int, Sequence[int]], critical_points:np.ndarray, left_b
     """
     if isinstance(shape, int):
         shape = (shape,)
-    l_itv = [[max(0,cp-left_bias),min(shape[-1],cp+right_bias)] for cp in critical_points]
+    l_itv = [
+        [max(0, cp - left_bias), min(shape[-1], cp + right_bias)]
+        for cp in critical_points
+    ]
     if return_fmt.lower() == "mask":
         mask = np.zeros(shape=shape, dtype=int)
         for itv in l_itv:
-            mask[..., itv[0]:itv[1]] = 1
+            mask[..., itv[0] : itv[1]] = 1
     elif return_fmt.lower() == "intervals":
         mask = l_itv
     return mask
 
 
-def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[float],np.ndarray,dict]="balanced") -> np.ndarray:
-    """ finished, checked,
+def class_weight_to_sample_weight(
+    y: np.ndarray, class_weight: Union[str, List[float], np.ndarray, dict] = "balanced"
+) -> np.ndarray:
+    """finished, checked,
 
     transform class weight to sample weight
 
@@ -398,11 +444,11 @@ def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[floa
         the label (class) of each sample
     class_weight: str, or list, or ndarray, or dict, default "balanced",
         the weight for each sample class,
-        if is "balanced", the class weight will automatically be given by 
+        if is "balanced", the class weight will automatically be given by
         if `y` is of string type, then `class_weight` should be a dict,
         if `y` is of numeric type, and `class_weight` is array_like,
         then the labels (`y`) should be continuous and start from 0
-    
+
     Returns
     -------
     sample_weight: ndarray,
@@ -411,14 +457,15 @@ def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[floa
     if not class_weight:
         sample_weight = np.ones_like(y, dtype=float)
         return sample_weight
-    
+
     try:
         sample_weight = y.copy().astype(int)
     except:
         sample_weight = y.copy()
-        assert isinstance(class_weight, dict) or class_weight.lower()=="balanced", \
-            "if `y` are of type str, then class_weight should be \042balanced\042 or a dict"
-    
+        assert (
+            isinstance(class_weight, dict) or class_weight.lower() == "balanced"
+        ), "if `y` are of type str, then class_weight should be \042balanced\042 or a dict"
+
     if isinstance(class_weight, str) and class_weight.lower() == "balanced":
         classes = np.unique(y).tolist()
         cw = compute_class_weight("balanced", classes=classes, y=y)
@@ -430,8 +477,14 @@ def class_weight_to_sample_weight(y:np.ndarray, class_weight:Union[str,List[floa
     return sample_weight
 
 
-def plot_single_lead(t:np.ndarray, sig:np.ndarray, ax:Optional[Any]=None, ticks_granularity:int=0, **kwargs) -> NoReturn:
-    """ finished, NOT checked,
+def plot_single_lead(
+    t: np.ndarray,
+    sig: np.ndarray,
+    ax: Optional[Any] = None,
+    ticks_granularity: int = 0,
+    **kwargs,
+) -> NoReturn:
+    """finished, NOT checked,
 
     Parameters
     ----------
@@ -447,11 +500,15 @@ def plot_single_lead(t:np.ndarray, sig:np.ndarray, ax:Optional[Any]=None, ticks_
     """
     if "plt" not in dir():
         import matplotlib.pyplot as plt
-    palette = {"p_waves": "green", "qrs": "red", "t_waves": "pink",}
+    palette = {
+        "p_waves": "green",
+        "qrs": "red",
+        "t_waves": "pink",
+    }
     plot_alpha = 0.4
     y_range = np.max(np.abs(sig)) + 100
     if ax is None:
-        fig_sz_w = int(round(4.8 * (t[-1]-t[0])))
+        fig_sz_w = int(round(4.8 * (t[-1] - t[0])))
         fig_sz_h = 6 * y_range / 1500
         fig, ax = plt.subplots(figsize=(fig_sz_w, fig_sz_h))
     label = kwargs.get("label", None)
@@ -469,8 +526,8 @@ def plot_single_lead(t:np.ndarray, sig:np.ndarray, ax:Optional[Any]=None, ticks_
         ax.xaxis.set_minor_locator(plt.MultipleLocator(0.04))
         ax.yaxis.set_minor_locator(plt.MultipleLocator(100))
         ax.grid(which="minor", linestyle=":", linewidth="0.5", color="black")
-    
-    waves = kwargs.get("waves", {"p_waves":[], "qrs":[], "t_waves":[]})
+
+    waves = kwargs.get("waves", {"p_waves": [], "qrs": [], "t_waves": []})
     for w, l_itv in waves.items():
         for itv in l_itv:
             ax.axvspan(itv[0], itv[1], color=palette[w], alpha=plot_alpha)
@@ -482,12 +539,14 @@ def plot_single_lead(t:np.ndarray, sig:np.ndarray, ax:Optional[Any]=None, ticks_
     ax.set_ylabel("Voltage [μV]")
 
 
-def init_logger(log_dir:Union[str,Path],
-                log_file:Optional[str]=None,
-                log_name:Optional[str]=None,
-                mode:str="a",
-                verbose:int=0,) -> logging.Logger:
-    """ finished, checked,
+def init_logger(
+    log_dir: Union[str, Path],
+    log_file: Optional[str] = None,
+    log_name: Optional[str] = None,
+    mode: str = "a",
+    verbose: int = 0,
+) -> logging.Logger:
+    """finished, checked,
 
     Parameters
     ----------
@@ -513,7 +572,9 @@ def init_logger(log_dir:Union[str,Path],
     log_file = log_dir / log_file
     print(f"log file path: {str(log_file)}")
 
-    logger = logging.getLogger(log_name or DEFAULTS.prefix)  # "ECG" to prevent from using the root logger
+    logger = logging.getLogger(
+        log_name or DEFAULTS.prefix
+    )  # "ECG" to prevent from using the root logger
 
     c_handler = logging.StreamHandler(sys.stdout)
     f_handler = logging.FileHandler(str(log_file))
@@ -545,8 +606,8 @@ def init_logger(log_dir:Union[str,Path],
     return logger
 
 
-def get_date_str(fmt:Optional[str]=None):
-    """ finished, checked,
+def get_date_str(fmt: Optional[str] = None):
+    """finished, checked,
 
     Parameters
     ----------
@@ -563,9 +624,9 @@ def get_date_str(fmt:Optional[str]=None):
     return date_str
 
 
-def rdheader(header_data:Union[str, Sequence[str]]) -> Union[Record, MultiRecord]:
-    """ finished, checked,
-    
+def rdheader(header_data: Union[str, Sequence[str]]) -> Union[Record, MultiRecord]:
+    """finished, checked,
+
     modified from `wfdb.rdheader`
 
     Parameters
@@ -585,7 +646,9 @@ def rdheader(header_data:Union[str, Sequence[str]]) -> Union[Record, MultiRecord
     elif isinstance(header_data, Sequence):
         _header_data = header_data
     else:
-        raise TypeError(f"header_data must be str or sequence of str, but got {type(header_data)}")
+        raise TypeError(
+            f"header_data must be str or sequence of str, but got {type(header_data)}"
+        )
     # Read the header file. Separate comment and non-comment lines
     header_lines, comment_lines = [], []
     for line in _header_data:
@@ -613,7 +676,7 @@ def rdheader(header_data:Union[str, Sequence[str]]) -> Union[Record, MultiRecord
         record = Record()
 
         # There are signals
-        if len(header_lines)>1:
+        if len(header_lines) > 1:
             # Read the fields from the signal lines
             signal_fields = _header._parse_signal_lines(header_lines[1:])
             # Set the object's signal fields
@@ -650,8 +713,10 @@ def rdheader(header_data:Union[str, Sequence[str]]) -> Union[Record, MultiRecord
     return record
 
 
-def ensure_lead_fmt(values:Sequence[Real], n_leads:int=12, fmt:str="lead_first") -> np.ndarray:
-    """ finished, checked,
+def ensure_lead_fmt(
+    values: Sequence[Real], n_leads: int = 12, fmt: str = "lead_first"
+) -> np.ndarray:
+    """finished, checked,
 
     ensure the `n_leads`-lead (ECG) signal to be of the format of `fmt`
 
@@ -675,18 +740,21 @@ def ensure_lead_fmt(values:Sequence[Real], n_leads:int=12, fmt:str="lead_first")
     if not any([[0] == lead_dim or [1] == lead_dim]):
         raise ValueError(f"not valid {n_leads}-lead signal")
     lead_dim = lead_dim[0]
-    if (lead_dim == 1 and fmt.lower() in ["lead_first", "channel_first"]) \
-        or (lead_dim == 0 and fmt.lower() in ["lead_last", "channel_last"]):
+    if (lead_dim == 1 and fmt.lower() in ["lead_first", "channel_first"]) or (
+        lead_dim == 0 and fmt.lower() in ["lead_last", "channel_last"]
+    ):
         out_values = out_values.T
         return out_values
     return out_values
 
 
-def ensure_siglen(values:Sequence[Real],
-                  siglen:int,
-                  fmt:str="lead_first",
-                  tolerance:Optional[float]=None,) -> np.ndarray:
-    """ finished, checked,
+def ensure_siglen(
+    values: Sequence[Real],
+    siglen: int,
+    fmt: str = "lead_first",
+    tolerance: Optional[float] = None,
+) -> np.ndarray:
+    """finished, checked,
 
     ensure the (ECG) signal to be of length `siglen`,
     strategy:
@@ -720,7 +788,7 @@ def ensure_siglen(values:Sequence[Real],
     original_siglen = _values.shape[1]
     n_leads = _values.shape[0]
 
-    if tolerance is None or original_siglen <= siglen * (1+tolerance):
+    if tolerance is None or original_siglen <= siglen * (1 + tolerance):
         if original_siglen >= siglen:
             start = (original_siglen - siglen) // 2
             end = start + siglen
@@ -729,20 +797,29 @@ def ensure_siglen(values:Sequence[Real],
             pad_len = siglen - original_siglen
             pad_left = pad_len // 2
             pad_right = pad_len - pad_left
-            out_values = np.concatenate([np.zeros((n_leads, pad_left)), _values, np.zeros((n_leads, pad_right))], axis=1)
+            out_values = np.concatenate(
+                [
+                    np.zeros((n_leads, pad_left)),
+                    _values,
+                    np.zeros((n_leads, pad_right)),
+                ],
+                axis=1,
+            )
 
         if fmt.lower() in ["channel_last", "lead_last"]:
             out_values = out_values.T
         if tolerance is not None:
             out_values = out_values[np.newaxis, ...]
-        
+
         return out_values
 
     forward_len = int(round(siglen * tolerance))
-    out_values = np.array([
-        _values[..., idx*forward_len: idx*forward_len+siglen] \
-            for idx in range((original_siglen-siglen) // forward_len + 1)
-    ])
+    out_values = np.array(
+        [
+            _values[..., idx * forward_len : idx * forward_len + siglen]
+            for idx in range((original_siglen - siglen) // forward_len + 1)
+        ]
+    )
     if fmt.lower() in ["channel_last", "lead_last"]:
         out_values = np.moveaxis(out_values, 1, -1)
     return out_values
@@ -754,12 +831,14 @@ ECGWaveForm = namedtuple(
 )
 
 
-def masks_to_waveforms(masks:np.ndarray,
-                       class_map:Dict[str, int],
-                       fs:Real,
-                       mask_format:str="channel_first",
-                       leads:Optional[Sequence[str]]=None) -> Dict[str, List[ECGWaveForm]]:
-    """ finished, checked,
+def masks_to_waveforms(
+    masks: np.ndarray,
+    class_map: Dict[str, int],
+    fs: Real,
+    mask_format: str = "channel_first",
+    leads: Optional[Sequence[str]] = None,
+) -> Dict[str, List[ECGWaveForm]]:
+    """finished, checked,
 
     convert masks into lists of waveforms
 
@@ -789,52 +868,65 @@ def masks_to_waveforms(masks:np.ndarray,
         otherwise would be "lead_1", "lead_2", ..., "lead_n"
     """
     if masks.ndim == 1:
-        _masks = masks[np.newaxis,...]
+        _masks = masks[np.newaxis, ...]
     elif masks.ndim == 2:
-        if mask_format.lower() not in ["channel_first", "lead_first",]:
+        if mask_format.lower() not in [
+            "channel_first",
+            "lead_first",
+        ]:
             _masks = masks.T
         else:
             _masks = masks.copy()
     else:
-        raise ValueError(f"masks should be of dim 1 or 2, but got a {masks.ndim}d array")
+        raise ValueError(
+            f"masks should be of dim 1 or 2, but got a {masks.ndim}d array"
+        )
 
-    _leads = [f"lead_{idx+1}" for idx in range(_masks.shape[0])] if leads is None else leads
+    _leads = (
+        [f"lead_{idx+1}" for idx in range(_masks.shape[0])] if leads is None else leads
+    )
     assert len(_leads) == _masks.shape[0]
 
     _class_map = CFG(deepcopy(class_map))
 
-    waves = CFG({lead_name:[] for lead_name in _leads})
+    waves = CFG({lead_name: [] for lead_name in _leads})
     for channel_idx, lead_name in enumerate(_leads):
-        current_mask = _masks[channel_idx,...]
+        current_mask = _masks[channel_idx, ...]
         for wave_name, wave_number in _class_map.items():
-            if wave_name.lower() not in ["pwave", "qrs", "twave",]:
+            if wave_name.lower() not in [
+                "pwave",
+                "qrs",
+                "twave",
+            ]:
                 continue
-            current_wave_inds = np.where(current_mask==wave_number)[0]
+            current_wave_inds = np.where(current_mask == wave_number)[0]
             if len(current_wave_inds) == 0:
                 continue
-            np.where(np.diff(current_wave_inds)>1)
-            split_inds = np.where(np.diff(current_wave_inds)>1)[0].tolist()
-            split_inds = sorted(split_inds+[i+1 for i in split_inds])
-            split_inds = [0] + split_inds + [len(current_wave_inds)-1]
-            for i in range(len(split_inds)//2):
-                itv_start = current_wave_inds[split_inds[2*i]]
-                itv_end = current_wave_inds[split_inds[2*i+1]]+1
+            np.where(np.diff(current_wave_inds) > 1)
+            split_inds = np.where(np.diff(current_wave_inds) > 1)[0].tolist()
+            split_inds = sorted(split_inds + [i + 1 for i in split_inds])
+            split_inds = [0] + split_inds + [len(current_wave_inds) - 1]
+            for i in range(len(split_inds) // 2):
+                itv_start = current_wave_inds[split_inds[2 * i]]
+                itv_end = current_wave_inds[split_inds[2 * i + 1]] + 1
                 w = ECGWaveForm(
                     name=wave_name.lower(),
                     onset=itv_start,
                     offset=itv_end,
                     peak=np.nan,
-                    duration=1000*(itv_end-itv_start)/fs,  # ms
+                    duration=1000 * (itv_end - itv_start) / fs,  # ms
                 )
                 waves[lead_name].append(w)
         waves[lead_name].sort(key=lambda w: w.onset)
     return waves
 
 
-def mask_to_intervals(mask:np.ndarray,
-                      vals:Optional[Union[int,Sequence[int]]]=None,
-                      right_inclusive:bool=False) -> Union[list, dict]:
-    """ finished, checked,
+def mask_to_intervals(
+    mask: np.ndarray,
+    vals: Optional[Union[int, Sequence[int]]] = None,
+    right_inclusive: bool = False,
+) -> Union[list, dict]:
+    """finished, checked,
 
     Parameters
     ----------
@@ -862,27 +954,30 @@ def mask_to_intervals(mask:np.ndarray,
     # assert set(_vals) & set(mask) == set(_vals)
     bias = 0 if right_inclusive else 1
 
-    intervals = {v:[] for v in _vals}
+    intervals = {v: [] for v in _vals}
     for v in _vals:
-        valid_inds = np.where(np.array(mask)==v)[0]
+        valid_inds = np.where(np.array(mask) == v)[0]
         if len(valid_inds) == 0:
             continue
-        split_indices = np.where(np.diff(valid_inds)>1)[0]
-        split_indices = split_indices.tolist() + (split_indices+1).tolist()
-        split_indices = sorted([0] + split_indices + [len(valid_inds)-1])
-        for idx in range(len(split_indices)//2):
+        split_indices = np.where(np.diff(valid_inds) > 1)[0]
+        split_indices = split_indices.tolist() + (split_indices + 1).tolist()
+        split_indices = sorted([0] + split_indices + [len(valid_inds) - 1])
+        for idx in range(len(split_indices) // 2):
             intervals[v].append(
-                [valid_inds[split_indices[2*idx]], valid_inds[split_indices[2*idx+1]]+bias]
+                [
+                    valid_inds[split_indices[2 * idx]],
+                    valid_inds[split_indices[2 * idx + 1]] + bias,
+                ]
             )
-    
+
     if isinstance(vals, int):
         intervals = intervals[vals]
 
     return intervals
 
 
-def list_sum(l:Sequence[list]) -> list:
-    """ finished, checked,
+def list_sum(l: Sequence[list]) -> list:
+    """finished, checked,
 
     Parameters
     ----------
@@ -895,14 +990,16 @@ def list_sum(l:Sequence[list]) -> list:
         sum of `l`,
         i.e. if l = [list1, list2, ...], then l_sum = list1 + list2 + ...
     """
-    l_sum = reduce(lambda a,b: a+b, l, [])
+    l_sum = reduce(lambda a, b: a + b, l, [])
     return l_sum
 
 
-def read_log_txt(fp:str,
-                 epoch_startswith:str="Train epoch_",
-                 scalar_startswith:Union[str,Iterable[str]]="train/|test/") -> pd.DataFrame:
-    """ finished, checked,
+def read_log_txt(
+    fp: str,
+    epoch_startswith: str = "Train epoch_",
+    scalar_startswith: Union[str, Iterable[str]] = "train/|test/",
+) -> pd.DataFrame:
+    """finished, checked,
 
     read from log txt file, in case tensorboard not working
 
@@ -915,7 +1012,7 @@ def read_log_txt(fp:str,
     scalar_startswith: str or iterable of str,
         indicators of the scalar recordings,
         if is str, should be indicators separated by "|"
-    
+
 
     Returns
     -------
@@ -946,8 +1043,10 @@ def read_log_txt(fp:str,
     return summary
 
 
-def read_event_scalars(fp:str, keys:Optional[Union[str,Iterable[str]]]=None) -> Union[pd.DataFrame,Dict[str,pd.DataFrame]]:
-    """ finished, checked,
+def read_event_scalars(
+    fp: str, keys: Optional[Union[str, Iterable[str]]] = None
+) -> Union[pd.DataFrame, Dict[str, pd.DataFrame]]:
+    """finished, checked,
 
     read scalars from event file, in case tensorboard not working
 
@@ -967,7 +1066,9 @@ def read_event_scalars(fp:str, keys:Optional[Union[str,Iterable[str]]]=None) -> 
     try:
         from tensorflow.python.summary.event_accumulator import EventAccumulator
     except:
-        from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+        from tensorboard.backend.event_processing.event_accumulator import (
+            EventAccumulator,
+        )
     event_acc = EventAccumulator(fp)
     event_acc.Reload()
     if keys:
@@ -979,7 +1080,12 @@ def read_event_scalars(fp:str, keys:Optional[Union[str,Iterable[str]]]=None) -> 
         _keys = event_acc.scalars.Keys()
     summary = {}
     for k in _keys:
-        df = pd.DataFrame([[item.wall_time, item.step, item.value] for item in event_acc.scalars.Items(k)])
+        df = pd.DataFrame(
+            [
+                [item.wall_time, item.step, item.value]
+                for item in event_acc.scalars.Items(k)
+            ]
+        )
         df.columns = ["wall_time", "step", "value"]
         summary[k] = df
     if isinstance(keys, str):
@@ -987,8 +1093,8 @@ def read_event_scalars(fp:str, keys:Optional[Union[str,Iterable[str]]]=None) -> 
     return summary
 
 
-def dicts_equal(d1:dict, d2:dict) -> bool:
-    """ finished, checked,
+def dicts_equal(d1: dict, d2: dict) -> bool:
+    """finished, checked,
 
     Parameters
     ----------
@@ -1013,22 +1119,23 @@ def dicts_equal(d1:dict, d2:dict) -> bool:
     >>> d1 = {"a": pd.DataFrame([{"hehe":1,"haha":2}])[["haha","hehe"]]}
     >>> d2 = {"a": pd.DataFrame([{"hehe":1,"haha":2}])[["hehe","haha"]]}
     >>> dicts_equal(d1, d2)
-    ... True
+    True
     """
     import torch
+
     if len(d1) != len(d2):
         return False
-    for k,v in d1.items():
+    for k, v in d1.items():
         if k not in d2 or not isinstance(d2[k], type(v)):
             return False
         if isinstance(v, dict):
             if not dicts_equal(v, d2[k]):
                 return False
         elif isinstance(v, np.ndarray):
-            if v.shape != d2[k].shape or not (v==d2[k]).all():
+            if v.shape != d2[k].shape or not (v == d2[k]).all():
                 return False
         elif isinstance(v, torch.Tensor):
-            if v.shape != d2[k].shape or not (v==d2[k]).all().item():
+            if v.shape != d2[k].shape or not (v == d2[k]).all().item():
                 return False
         elif isinstance(v, pd.DataFrame):
             if v.shape != d2[k].shape or set(v.columns) != set(d2[k].columns):
@@ -1042,7 +1149,7 @@ def dicts_equal(d1:dict, d2:dict) -> bool:
         elif isinstance(v, pd.Series):
             if v.shape != d2[k].shape or v.name != d2[k].name:
                 return False
-            if not (v==d2[k]).all():
+            if not (v == d2[k]).all():
                 return False
         # TODO: consider whether there are any other dtypes that should be treated similarly
         else:  # other dtypes whose equality can be checked directly
@@ -1051,8 +1158,8 @@ def dicts_equal(d1:dict, d2:dict) -> bool:
     return True
 
 
-def default_class_repr(c:object, align:str="center", depth:int=1) -> str:
-    """ finished, checked,
+def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
+    """finished, checked,
 
     Parameters
     ----------
@@ -1068,18 +1175,23 @@ def default_class_repr(c:object, align:str="center", depth:int=1) -> str:
     str,
         the representation of the class
     """
-    indent = 4*depth*" "
-    closing_indent = 4*(depth-1)*" "
+    indent = 4 * depth * " "
+    closing_indent = 4 * (depth - 1) * " "
     if not hasattr(c, "extra_repr_keys"):
         return repr(c)
     elif len(c.extra_repr_keys()) > 0:
         max_len = max([len(k) for k in c.extra_repr_keys()])
-        extra_str = "(\n" + \
-            ",\n".join([
-                f"""{indent}{k.ljust(max_len, " ") if align.lower() in ["center", "c"] else k} = {default_class_repr(eval(f"c.{k}"),align,depth+1)}""" \
-                    for k in c.__dir__() if k in c.extra_repr_keys()
-                ]) + \
-            f"{closing_indent}\n)"
+        extra_str = (
+            "(\n"
+            + ",\n".join(
+                [
+                    f"""{indent}{k.ljust(max_len, " ") if align.lower() in ["center", "c"] else k} = {default_class_repr(eval(f"c.{k}"),align,depth+1)}"""
+                    for k in c.__dir__()
+                    if k in c.extra_repr_keys()
+                ]
+            )
+            + f"{closing_indent}\n)"
+        )
     else:
         extra_str = ""
     return f"{c.__class__.__name__}{extra_str}"
@@ -1096,13 +1208,12 @@ class ReprMixin(object):
     __str__ = __repr__
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        """
+        """ """
         return []
 
 
 class MovingAverage(object):
-    """ finished, checked, to be improved,
+    """finished, checked, to be improved,
 
     moving average
 
@@ -1110,7 +1221,8 @@ class MovingAverage(object):
     ----------
     [1] https://en.wikipedia.org/wiki/Moving_average
     """
-    def __init__(self, data:Optional[Sequence]=None, **kwargs:Any) -> NoReturn:
+
+    def __init__(self, data: Optional[Sequence] = None, **kwargs: Any) -> NoReturn:
         """
         Parameters
         ----------
@@ -1124,7 +1236,9 @@ class MovingAverage(object):
             self.data = np.array(data)
         self.verbose = kwargs.get("verbose", 0)
 
-    def __call__(self, data:Optional[Sequence]=None, method:str="ema", **kwargs:Any) -> np.ndarray:
+    def __call__(
+        self, data: Optional[Sequence] = None, method: str = "ema", **kwargs: Any
+    ) -> np.ndarray:
         """
         Parameters
         ----------
@@ -1138,7 +1252,14 @@ class MovingAverage(object):
         m = method.lower().replace("_", " ")
         if m in ["sma", "simple", "simple moving average"]:
             func = self._sma
-        elif m in ["ema", "ewma", "exponential", "exponential weighted", "exponential moving average", "exponential weighted moving average"]:
+        elif m in [
+            "ema",
+            "ewma",
+            "exponential",
+            "exponential weighted",
+            "exponential moving average",
+            "exponential weighted moving average",
+        ]:
             func = self._ema
         elif m in ["cma", "cumulative", "cumulative moving average"]:
             func = self._cma
@@ -1150,7 +1271,7 @@ class MovingAverage(object):
             self.data = np.array(data)
         return func(**kwargs)
 
-    def _sma(self, window:int=5, center:bool=False, **kwargs:Any) -> np.ndarray:
+    def _sma(self, window: int = 5, center: bool = False, **kwargs: Any) -> np.ndarray:
         """
         simple moving average
 
@@ -1164,10 +1285,10 @@ class MovingAverage(object):
         """
         smoothed = []
         if center:
-            hw = window//2
-            window = hw*2+1
+            hw = window // 2
+            window = hw * 2 + 1
         for n in range(window):
-            smoothed.append(np.mean(self.data[:n+1]))
+            smoothed.append(np.mean(self.data[: n + 1]))
         prev = smoothed[-1]
         for n, d in enumerate(self.data[window:]):
             s = prev + (d - self.data[n]) / window
@@ -1175,13 +1296,13 @@ class MovingAverage(object):
             smoothed.append(s)
         smoothed = np.array(smoothed)
         if center:
-            smoothed[hw:-hw] = smoothed[window-1:]
+            smoothed[hw:-hw] = smoothed[window - 1 :]
             for n in range(hw):
-                smoothed[n] = np.mean(self.data[:n+hw+1])
-                smoothed[-n-1] = np.mean(self.data[-n-hw-1:])
+                smoothed[n] = np.mean(self.data[: n + hw + 1])
+                smoothed[-n - 1] = np.mean(self.data[-n - hw - 1 :])
         return smoothed
 
-    def _ema(self, weight:float=0.6, **kwargs:Any) -> np.ndarray:
+    def _ema(self, weight: float = 0.6, **kwargs: Any) -> np.ndarray:
         """
         exponential moving average,
         which is also the function used in Tensorboard Scalar panel,
@@ -1208,13 +1329,13 @@ class MovingAverage(object):
         smoothed = []
         prev = 0
         for n, d in enumerate(self.data):
-            s = prev + (d - prev) / (n+1)
+            s = prev + (d - prev) / (n + 1)
             prev = s
             smoothed.append(s)
         smoothed = np.array(smoothed)
         return smoothed
 
-    def _wma(self, window:int=5, **kwargs:Any) -> np.ndarray:
+    def _wma(self, window: int = 5, **kwargs: Any) -> np.ndarray:
         """
         weighted moving average
 
@@ -1223,14 +1344,14 @@ class MovingAverage(object):
         window: int, default 5,
             window length of the moving average
         """
-        conv = np.arange(1, window+1)[::-1]
+        conv = np.arange(1, window + 1)[::-1]
         deno = np.sum(conv)
         smoothed = np.convolve(conv, self.data, mode="same") / deno
         return smoothed
 
 
-def uniform(low:Real, high:Real, num:int) -> List[float]:
-    """ finished, checked,
+def uniform(low: Real, high: Real, num: int) -> List[float]:
+    """finished, checked,
 
     Parameters
     ----------
@@ -1246,23 +1367,24 @@ def uniform(low:Real, high:Real, num:int) -> List[float]:
     arr: list of float,
         array of randomly generated numbers with uniform distribution
     """
-    arr = [random.uniform(low,high) for _ in range(num)]
+    arr = [random.uniform(low, high) for _ in range(num)]
     return arr
 
 
-def nildent(text:str) -> str:
-    """ finished, checked,
+def nildent(text: str) -> str:
+    """finished, checked,
 
     kill all leading white spaces in each line of `text`,
     while keeping all lines (including empty)
     """
-    new_text = "\n".join([l.lstrip() for l in text.splitlines()]) \
-        + ("\n" if text.endswith("\n") else "")
+    new_text = "\n".join([l.lstrip() for l in text.splitlines()]) + (
+        "\n" if text.endswith("\n") else ""
+    )
     return new_text
 
 
-def isclass(obj:Any) -> bool:
-    """ finished, checked,
+def isclass(obj: Any) -> bool:
+    """finished, checked,
 
     Parameters
     ----------
@@ -1280,9 +1402,9 @@ def isclass(obj:Any) -> bool:
         return False
 
 
-def strafified_train_test_split(df:pd.DataFrame,
-                                strafified_cols:Sequence[str],
-                                test_ratio:float=0.2) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def strafified_train_test_split(
+    df: pd.DataFrame, strafified_cols: Sequence[str], test_ratio: float = 0.2
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Do stratified train-test split on the dataframe,
 
@@ -1292,7 +1414,7 @@ def strafified_train_test_split(df:pd.DataFrame,
         dataframe to be split
     strafified_cols: sequence of str,
         columns to be strafified, assuming each column is a categorical variable
-        each class in any of the columns will be 
+        each class in any of the columns will be
         split into train and test sets with an approximate ratio of `test_ratio`
     test_ratio: float, default 0.2,
         ratio of test set to the whole dataframe
@@ -1317,23 +1439,26 @@ def strafified_train_test_split(df:pd.DataFrame,
     for item in strafified_cols:
         all_entities = df_inspection[item].unique().tolist()
         entities_dict = {e: str(i) for i, e in enumerate(all_entities)}
-        df_inspection[item] = df_inspection[item].apply(lambda e:entities_dict[e])
+        df_inspection[item] = df_inspection[item].apply(lambda e: entities_dict[e])
 
-    inspection_col_name = "Inspection" * (max([len(c) for c in strafified_cols])//10+1)
-    df_inspection[inspection_col_name] = ''
+    inspection_col_name = "Inspection" * (
+        max([len(c) for c in strafified_cols]) // 10 + 1
+    )
+    df_inspection[inspection_col_name] = ""
     for idx, row in df_inspection.iterrows():
         cn = "-".join([row[sc] for sc in strafified_cols])
         df_inspection.loc[idx, inspection_col_name] = cn
     item_names = df_inspection[inspection_col_name].unique().tolist()
     item_indices = {
-        n: df_inspection.index[df_inspection[inspection_col_name]==n].tolist() for n in item_names
+        n: df_inspection.index[df_inspection[inspection_col_name] == n].tolist()
+        for n in item_names
     }
     for n in item_names:
         random.shuffle(item_indices[n])
 
     test_indices = []
     for n in item_names:
-        item_test_indices = item_indices[n][:round(test_ratio*len(item_indices[n]))]
+        item_test_indices = item_indices[n][: round(test_ratio * len(item_indices[n]))]
         test_indices += item_test_indices
     df_test = df.loc[df.index.isin(test_indices)].reset_index(drop=True)
     df_train = df.loc[~df.index.isin(test_indices)].reset_index(drop=True)

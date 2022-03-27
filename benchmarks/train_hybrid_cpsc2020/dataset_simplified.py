@@ -18,9 +18,9 @@ from itertools import product, repeat
 from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
+
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
@@ -32,12 +32,14 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2020 as CR
 from torch_ecg.utils.misc import (
-    mask_to_intervals, list_sum,
+    mask_to_intervals,
+    list_sum,
     get_record_list_recursive3,
 )
 from torch_ecg._preprocessors import PreprocManager
@@ -67,11 +69,12 @@ class CPSC2020(Dataset):
     and of overlap length `TrainCfg.overlap_len` around premature beats
     2. do augmentations for premature segments
     """
+
     __DEBUG__ = False
     __name__ = "CPSC2020"
 
-    def __init__(self, config:CFG, training:bool=True) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, config: CFG, training: bool = True) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -115,22 +118,27 @@ class CPSC2020(Dataset):
             self._ls_segments()
 
             if self.training:
-                self.segments = list_sum([self.__all_segments[rec] for rec in split_res.train])
+                self.segments = list_sum(
+                    [self.__all_segments[rec] for rec in split_res.train]
+                )
                 shuffle(self.segments)
             else:
-                self.segments = list_sum([self.__all_segments[rec] for rec in split_res.test])
+                self.segments = list_sum(
+                    [self.__all_segments[rec] for rec in split_res.test]
+                )
         # elif self.config.model_name.lower() == "od":  # object detection
         #     pass
         else:
-            raise NotImplementedError(f"data generator for model \042{self.config.model_name}\042 not implemented")
+            raise NotImplementedError(
+                f"data generator for model \042{self.config.model_name}\042 not implemented"
+            )
 
         if self.config.bw:
             self._n_bw_choices = len(self.config.bw_ampl_ratio)
             self._n_gn_choices = len(self.config.bw_gaussian)
 
     def _ls_segments(self) -> NoReturn:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
             for rec in self.reader.all_records:
@@ -139,22 +147,29 @@ class CPSC2020(Dataset):
         if self.segments_json.is_file():
             self.__all_segments = json.loads(self.segments_json.read_text())
             return
-        print(f"please allow the reader a few minutes to collect the segments from {self.segments_dir}...")
+        print(
+            f"please allow the reader a few minutes to collect the segments from {self.segments_dir}..."
+        )
         seg_filename_pattern = f"S\d{{2}}_\d{{7}}{self.reader.rec_ext}"
-        self.__all_segments = CFG({
-            rec: get_record_list_recursive3(str(self.segments_dirs.data[rec]), seg_filename_pattern) \
+        self.__all_segments = CFG(
+            {
+                rec: get_record_list_recursive3(
+                    str(self.segments_dirs.data[rec]), seg_filename_pattern
+                )
                 for rec in self.reader.all_records
-        })
-        if all([len(self.__all_segments[rec])>0 for rec in self.reader.all_records]):
-            self.segments_json.write_text(json.dumps(self.__all_segments, ensure_ascii=False))
+            }
+        )
+        if all([len(self.__all_segments[rec]) > 0 for rec in self.reader.all_records]):
+            self.segments_json.write_text(
+                json.dumps(self.__all_segments, ensure_ascii=False)
+            )
 
     @property
     def all_segments(self):
         return self.__all_segments
 
-    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ finished, checked,
-        """
+    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+        """finished, checked,"""
         seg_name = self.segments[index]
         seg_data = self._load_seg_data(seg_name)
         if self.config.model_name.lower() == "crnn":
@@ -170,8 +185,8 @@ class CPSC2020(Dataset):
         # pvc_indices = ann["PVC_indices"]
         if self.__data_aug:
             if self.config.bw:
-                ar = self.config.bw_ampl_ratio[randint(0, self._n_bw_choices-1)]
-                gm, gs = self.config.bw_gaussian[randint(0, self._n_gn_choices-1)]
+                ar = self.config.bw_ampl_ratio[randint(0, self._n_bw_choices - 1)]
+                gm, gs = self.config.bw_gaussian[randint(0, self._n_gn_choices - 1)]
                 bw_ampl = ar * seg_ampl
                 g_ampl = gm * seg_ampl
                 bw = gen_baseline_wander(
@@ -195,10 +210,13 @@ class CPSC2020(Dataset):
                     self.config.random_normalize_std[0],
                     self.config.random_normalize_std[1],
                 )
-                seg_data = (seg_data-np.mean(seg_data)+rn_mean) / np.std(seg_data) * rn_std
+                seg_data = (
+                    (seg_data - np.mean(seg_data) + rn_mean) / np.std(seg_data) * rn_std
+                )
             if self.config.label_smoothing > 0:
-                seg_label = (1 - self.config.label_smoothing) * seg_label \
-                    + self.config.label_smoothing / self.n_classes
+                seg_label = (
+                    1 - self.config.label_smoothing
+                ) * seg_label + self.config.label_smoothing / self.n_classes
 
         if self.__DEBUG__:
             self.reader.plot(
@@ -207,18 +225,17 @@ class CPSC2020(Dataset):
                 ann=self._load_seg_beat_ann(seg_name),
                 ticks_granularity=2,
             )
-        
+
         seg_data = seg_data.reshape((self.config.n_leads, self.seglen))
 
         return seg_data, seg_label
 
     def __len__(self) -> int:
-        """
-        """
+        """ """
         return len(self.segments)
 
-    def _get_seg_ampl(self, seg_data:np.ndarray, window:int=80) -> float:
-        """ finished, checked,
+    def _get_seg_ampl(self, seg_data: np.ndarray, window: int = 80) -> float:
+        """finished, checked,
 
         get amplitude of a segment
 
@@ -236,13 +253,13 @@ class CPSC2020(Dataset):
         """
         half_window = window // 2
         ampl = 0
-        for idx in range(len(seg_data)//half_window-1):
-            s = seg_data[idx*half_window: idx*half_window+window]
-            ampl = max(ampl, np.max(s)-np.min(s))
+        for idx in range(len(seg_data) // half_window - 1):
+            s = seg_data[idx * half_window : idx * half_window + window]
+            ampl = max(ampl, np.max(s) - np.min(s))
         return ampl
 
-    def _get_seg_data_path(self, seg:str) -> Path:
-        """ finished, checked,
+    def _get_seg_data_path(self, seg: str) -> Path:
+        """finished, checked,
 
         Parameters
         ----------
@@ -258,8 +275,8 @@ class CPSC2020(Dataset):
         fp = self.segments_dir / "data" / rec / f"{seg}{self.reader.rec_ext}"
         return fp
 
-    def _get_seg_ann_path(self, seg:str) -> Path:
-        """ finished, checked,
+    def _get_seg_ann_path(self, seg: str) -> Path:
+        """finished, checked,
 
         Parameters
         ----------
@@ -275,8 +292,8 @@ class CPSC2020(Dataset):
         fp = self.segments_dir / "ann" / rec / f"{seg}{self.reader.rec_ext}"
         return fp
 
-    def _load_seg_data(self, seg:str) -> np.ndarray:
-        """ finished, checked,
+    def _load_seg_data(self, seg: str) -> np.ndarray:
+        """finished, checked,
 
         Parameters
         ----------
@@ -292,8 +309,8 @@ class CPSC2020(Dataset):
         seg_data = loadmat(str(seg_data_fp))["ecg"].squeeze()
         return seg_data
 
-    def _load_seg_label(self, seg:str) -> np.ndarray:
-        """ finished, checked,
+    def _load_seg_label(self, seg: str) -> np.ndarray:
+        """finished, checked,
 
         Parameters
         ----------
@@ -309,8 +326,8 @@ class CPSC2020(Dataset):
         seg_label = loadmat(str(seg_ann_fp))["label"].squeeze()
         return seg_label
 
-    def _load_seg_beat_ann(self, seg:str) -> Dict[str, np.ndarray]:
-        """ finished, checked,
+    def _load_seg_beat_ann(self, seg: str) -> Dict[str, np.ndarray]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -325,12 +342,14 @@ class CPSC2020(Dataset):
         seg_ann_fp = self._get_seg_ann_path(seg)
         seg_beat_ann = loadmat(str(seg_ann_fp))
         seg_beat_ann = {
-            k:v.flatten() for k,v in seg_beat_ann.items() if k in ["SPB_indices", "PVC_indices"]
+            k: v.flatten()
+            for k, v in seg_beat_ann.items()
+            if k in ["SPB_indices", "PVC_indices"]
         }
         return seg_beat_ann
 
-    def _load_seg_seq_lab(self, seg:str, reduction:int=8) -> np.ndarray:
-        """ finished, checked,
+    def _load_seg_seq_lab(self, seg: str, reduction: int = 8) -> np.ndarray:
+        """finished, checked,
 
         Parameters
         ----------
@@ -347,21 +366,21 @@ class CPSC2020(Dataset):
             of shape (self.seglen//reduction, self.n_classes)
         """
         seg_beat_ann = {
-            k: np.round(v/reduction).astype(int) \
-                for k,v in self._load_seg_beat_ann(seg).items()
+            k: np.round(v / reduction).astype(int)
+            for k, v in self._load_seg_beat_ann(seg).items()
         }
         bias_thr = int(round(self.config.bias_thr / reduction))
         seq_lab = np.zeros(
-            shape=(self.seglen//reduction, self.n_classes),
+            shape=(self.seglen // reduction, self.n_classes),
             dtype=_DTYPE,
         )
         for p in seg_beat_ann["SPB_indices"]:
-            start_idx = max(0, p-bias_thr)
-            end_idx = min(seq_lab.shape[0], p+bias_thr+1)
+            start_idx = max(0, p - bias_thr)
+            end_idx = min(seq_lab.shape[0], p + bias_thr + 1)
             seq_lab[start_idx:end_idx, self.config.classes.index("S")] = 1
         for p in seg_beat_ann["PVC_indices"]:
-            start_idx = max(0, p-bias_thr)
-            end_idx = min(seq_lab.shape[0], p+bias_thr+1)
+            start_idx = max(0, p - bias_thr)
+            end_idx = min(seq_lab.shape[0], p + bias_thr + 1)
             seq_lab[start_idx:end_idx, self.config.classes.index("V")] = 1
 
         return seq_lab

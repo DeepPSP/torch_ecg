@@ -11,7 +11,6 @@ from itertools import repeat
 from typing import Union, Optional, Sequence, NoReturn
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
@@ -24,7 +23,9 @@ from ...models._nets import (
     Conv_Bn_Activation,
     DownSample,
     ZeroPadding,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
 )
 
 if DEFAULTS.torch_dtype == torch.float64:
@@ -39,27 +40,24 @@ __all__ = [
 
 
 class MidPointResNet(SizeMixin, nn.Module):
-    """
-    """
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """
-        """
+    """ """
+
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """ """
         raise NotImplementedError
 
 
 class RK4ResNet(SizeMixin, nn.Module):
-    """
-    """
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """
-        """
+    """ """
+
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """ """
         raise NotImplementedError
 
 
 class RK8ResNet(SizeMixin, nn.Module):
-    """
-    """
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """
-        """
+    """ """
+
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """ """
         raise NotImplementedError

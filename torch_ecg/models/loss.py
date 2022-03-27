@@ -10,20 +10,23 @@ import torch.nn.functional as F
 
 
 __all__ = [
-    "WeightedBCELoss", "BCEWithLogitsWithClassWeightLoss",
+    "WeightedBCELoss",
+    "BCEWithLogitsWithClassWeightLoss",
     "MaskedBCEWithLogitsLoss",
     "FocalLoss",
     "AsymmetricLoss",
 ]
 
 
-def weighted_binary_cross_entropy(sigmoid_x:Tensor,
-                                  targets:Tensor,
-                                  pos_weight:Tensor,
-                                  weight:Optional[Tensor]=None,
-                                  size_average:bool=True,
-                                  reduce:bool=True) -> Tensor:
-    """ finished, checked,
+def weighted_binary_cross_entropy(
+    sigmoid_x: Tensor,
+    targets: Tensor,
+    pos_weight: Tensor,
+    weight: Optional[Tensor] = None,
+    size_average: bool = True,
+    reduce: bool = True,
+) -> Tensor:
+    """finished, checked,
 
     Parameters
     ----------
@@ -43,9 +46,15 @@ def weighted_binary_cross_entropy(sigmoid_x:Tensor,
     https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
     """
     if not (targets.size() == sigmoid_x.size()):
-        raise ValueError("Target size ({}) must be the same as input size ({})".format(targets.size(), sigmoid_x.size()))
+        raise ValueError(
+            "Target size ({}) must be the same as input size ({})".format(
+                targets.size(), sigmoid_x.size()
+            )
+        )
 
-    loss = -pos_weight * targets * sigmoid_x.log() - (1-targets) * (1-sigmoid_x).log()
+    loss = (
+        -pos_weight * targets * sigmoid_x.log() - (1 - targets) * (1 - sigmoid_x).log()
+    )
 
     if weight is not None:
         loss = loss * weight
@@ -59,21 +68,24 @@ def weighted_binary_cross_entropy(sigmoid_x:Tensor,
 
 
 class WeightedBCELoss(nn.Module):
-    """ finished, checked,
+    """finished, checked,
 
     Reference (original source):
     https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
     """
+
     __name__ = "WeightedBCELoss"
 
-    def __init__(self,
-                 pos_weight:Tensor=1,
-                 weight:Optional[Tensor]=None,
-                 PosWeightIsDynamic:bool=False,
-                 WeightIsDynamic:bool=False,
-                 size_average:bool=True,
-                 reduce:bool=True) -> NoReturn:
-        """ checked,
+    def __init__(
+        self,
+        pos_weight: Tensor = 1,
+        weight: Optional[Tensor] = None,
+        PosWeightIsDynamic: bool = False,
+        WeightIsDynamic: bool = False,
+        size_average: bool = True,
+        reduce: bool = True,
+    ) -> NoReturn:
+        """checked,
 
         Parameters
         ----------
@@ -98,7 +110,7 @@ class WeightedBCELoss(nn.Module):
         self.reduce = reduce
         self.PosWeightIsDynamic = PosWeightIsDynamic
 
-    def forward(self, input:Tensor, target:Tensor) -> Tensor:
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
         """
 
         Parameters
@@ -118,20 +130,23 @@ class WeightedBCELoss(nn.Module):
             nBatch = len(target)
             self.pos_weight = (nBatch - positive_counts) / (positive_counts + 1e-5)
 
-        return weighted_binary_cross_entropy(input, target,
-                                             pos_weight=self.pos_weight,
-                                             weight=self.weight,
-                                             size_average=self.size_average,
-                                             reduce=self.reduce)
+        return weighted_binary_cross_entropy(
+            input,
+            target,
+            pos_weight=self.pos_weight,
+            weight=self.weight,
+            size_average=self.size_average,
+            reduce=self.reduce,
+        )
 
 
 class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
-    """ finished, checked,
-    """
+    """finished, checked,"""
+
     __name__ = "BCEWithLogitsWithClassWeightsLoss"
 
-    def __init__(self, class_weight:Tensor) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, class_weight: Tensor) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -141,7 +156,7 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
         super().__init__(reduction="none")
         self.class_weight = class_weight
 
-    def forward(self, input:Tensor, target:Tensor) -> Tensor:
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
         """
 
         Parameters
@@ -162,17 +177,16 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
 
 
 class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
-    """ finished, checked,
-    """
+    """finished, checked,"""
+
     __name__ = "MaskedBCEWithLogitsLoss"
 
     def __init__(self) -> NoReturn:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         super().__init__(reduction="none")
 
-    def forward(self, input:Tensor, target:Tensor, weight_mask:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor, target: Tensor, weight_mask: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -215,16 +229,18 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
     """
     __name__ = "FocalLoss"
 
-    def __init__(self,
-                 gamma:float=2.0,
-                 weight:Optional[Tensor]=None,
-                 class_weight:Optional[Tensor]=None,  # alpha
-                 size_average:Optional[bool]=None,
-                 reduce:Optional[bool]=None,
-                 reduction:str="mean",
-                 multi_label:bool=True,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        gamma: float = 2.0,
+        weight: Optional[Tensor] = None,
+        class_weight: Optional[Tensor] = None,  # alpha
+        size_average: Optional[bool] = None,
+        reduce: Optional[bool] = None,
+        reduction: str = "mean",
+        multi_label: bool = True,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -251,7 +267,9 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
             w = class_weight
         if not multi_label and w.ndim == 2:
             w = w.squeeze(0)
-        super().__init__(weight=w, size_average=size_average, reduce=reduce, reduction=reduction)
+        super().__init__(
+            weight=w, size_average=size_average, reduce=reduce, reduction=reduction
+        )
         # In practice `alpha` may be set by inverse class frequency or treated as a hyperparameter
         # the `class_weight` are usually inverse class frequencies
         # self.alpha = alpha
@@ -271,8 +289,8 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
     def alpha(self) -> Tensor:
         return self.class_weight
 
-    def forward(self, input:Tensor, target:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -288,8 +306,10 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
             the focal loss w.r.t. `input` and `target`
         """
         entropy = self.entropy_func(
-            input, target,
-            weight=self.weight, reduction="none",
+            input,
+            target,
+            weight=self.weight,
+            reduction="none",
         )
         p_t = torch.exp(-entropy)
         fl = torch.pow(1 - p_t, self.gamma) * entropy
@@ -303,7 +323,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
 
 class AsymmetricLoss(nn.Module):
-    """ finished, checked,
+    """finished, checked,
 
     The asymmetric loss is defined as
 
@@ -321,16 +341,19 @@ class AsymmetricLoss(nn.Module):
     1. Ridnik, Tal, et al. "Asymmetric Loss for Multi-Label Classification." Proceedings of the IEEE/CVF International Conference on Computer Vision. 2021.
     2. https://github.com/Alibaba-MIIL/ASL/
     """
+
     __name__ = "AsymmetricLoss"
 
-    def __init__(self,
-                 gamma_neg:Union[Real,torch.Tensor]=4,
-                 gamma_pos:Union[Real,torch.Tensor]=1,
-                 prob_margin:float=0.05, 
-                 disable_torch_grad_focal_loss:bool=False,
-                 reduction:str="mean",
-                 implementation:str="alibaba-miil") -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        gamma_neg: Union[Real, torch.Tensor] = 4,
+        gamma_pos: Union[Real, torch.Tensor] = 1,
+        prob_margin: float = 0.05,
+        disable_torch_grad_focal_loss: bool = False,
+        reduction: str = "mean",
+        implementation: str = "alibaba-miil",
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -361,7 +384,11 @@ class AsymmetricLoss(nn.Module):
         """
         super().__init__()
         self.implementation = implementation.lower()
-        assert self.implementation in ["alibaba-miil", "deep-psp", "deeppsp",]
+        assert self.implementation in [
+            "alibaba-miil",
+            "deep-psp",
+            "deeppsp",
+        ]
         self.gamma_neg = gamma_neg
         self.gamma_pos = gamma_pos
         self.prob_margin = prob_margin
@@ -372,12 +399,21 @@ class AsymmetricLoss(nn.Module):
         self.reduction = reduction.lower()
 
         if self.implementation == "alibaba-miil":
-            self.targets = self.anti_targets = self.xs_pos = self.xs_neg = self.asymmetric_w = self.loss = None
-        elif self.implementation in ["deep-psp", "deeppsp",]:
-            self.targets = self.anti_targets = self.xs_pos = self.xs_neg = self.loss = self.loss_pos = self.loss_neg = None
+            self.targets = (
+                self.anti_targets
+            ) = self.xs_pos = self.xs_neg = self.asymmetric_w = self.loss = None
+        elif self.implementation in [
+            "deep-psp",
+            "deeppsp",
+        ]:
+            self.targets = (
+                self.anti_targets
+            ) = (
+                self.xs_pos
+            ) = self.xs_neg = self.loss = self.loss_pos = self.loss_neg = None
 
-    def forward(self, input:Tensor, target:Tensor) -> Tensor:
-        """" finished, checked,
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
+        """ " finished, checked,
 
         Parameters
         ----------
@@ -396,8 +432,8 @@ class AsymmetricLoss(nn.Module):
         else:
             return self._forward_deep_psp(input, target)
 
-    def _forward_deep_psp(self, input:Tensor, target:Tensor) -> Tensor:
-        """" finished, checked,
+    def _forward_deep_psp(self, input: Tensor, target: Tensor) -> Tensor:
+        """ " finished, checked,
 
         Parameters
         ----------
@@ -431,7 +467,7 @@ class AsymmetricLoss(nn.Module):
             if self.disable_torch_grad_focal_loss:
                 prev = torch.is_grad_enabled()
                 torch.set_grad_enabled(False)
-            self.loss_pos *= torch.pow(1-self.xs_pos, self.gamma_pos)
+            self.loss_pos *= torch.pow(1 - self.xs_pos, self.gamma_pos)
             self.loss_neg *= torch.pow(self.xs_pos, self.gamma_neg)
             if self.disable_torch_grad_focal_loss:
                 torch.set_grad_enabled(prev)
@@ -443,8 +479,8 @@ class AsymmetricLoss(nn.Module):
             self.loss = self.loss.sum()
         return self.loss
 
-    def _forward_alibaba_miil(self, input:Tensor, target:Tensor) -> Tensor:
-        """" finished, checked,
+    def _forward_alibaba_miil(self, input: Tensor, target: Tensor) -> Tensor:
+        """ " finished, checked,
 
         Parameters
         ----------
@@ -481,8 +517,10 @@ class AsymmetricLoss(nn.Module):
                 torch.set_grad_enabled(False)
             self.xs_pos = self.xs_pos * self.targets  # p * y
             self.xs_neg = self.xs_neg * self.anti_targets  # (1-p) * (1-y)
-            self.asymmetric_w = torch.pow(1 - self.xs_pos - self.xs_neg,
-                                          self.gamma_pos * self.targets + self.gamma_neg * self.anti_targets)
+            self.asymmetric_w = torch.pow(
+                1 - self.xs_pos - self.xs_neg,
+                self.gamma_pos * self.targets + self.gamma_neg * self.anti_targets,
+            )
             if self.disable_torch_grad_focal_loss:
                 torch.set_grad_enabled(prev)
             self.loss *= self.asymmetric_w

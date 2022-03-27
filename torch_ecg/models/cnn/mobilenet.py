@@ -14,7 +14,6 @@ from collections import OrderedDict
 from typing import Union, Optional, Sequence, NoReturn, Any
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
@@ -23,9 +22,12 @@ from ...cfg import CFG, DEFAULTS
 from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...utils.misc import dict_to_str
 from ...models._nets import (
-    Conv_Bn_Activation, MultiConv,
+    Conv_Bn_Activation,
+    MultiConv,
     DownSample,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
 )
 
 
@@ -57,25 +59,28 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
     similar to `_nets.SeparableConv`,
     the difference is that there are normalization and activation between depthwise conv and pointwise conv
     """
+
     __DEBUG__ = True
     __name__ = "MobileNetSeparableConv"
-    
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:int,
-                 kernel_size:int,
-                 stride:int,
-                 padding:Optional[int]=None,
-                 dilation:int=1,
-                 groups:int=1,
-                 batch_norm:Union[bool,str,nn.Module]=True,
-                 activation:Optional[Union[str,nn.Module]]="relu6",
-                 kernel_initializer:Optional[Union[str,callable]]=None,
-                 bias:bool=True,
-                 depth_multiplier:int=1,
-                 width_multiplier:float=1.0,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int,
+        stride: int,
+        padding: Optional[int] = None,
+        dilation: int = 1,
+        groups: int = 1,
+        batch_norm: Union[bool, str, nn.Module] = True,
+        activation: Optional[Union[str, nn.Module]] = "relu6",
+        kernel_initializer: Optional[Union[str, callable]] = None,
+        bias: bool = True,
+        depth_multiplier: int = 1,
+        width_multiplier: float = 1.0,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -130,12 +135,14 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
         kw_initializer = kwargs.get("kw_initializer", {})
         self.__depth_multiplier = depth_multiplier
         dc_out_channels = int(self.__in_channels * self.__depth_multiplier)
-        assert dc_out_channels % self.__in_channels == 0, \
-            f"depth_multiplier (input is {self.__depth_multiplier}) should be positive integers"
+        assert (
+            dc_out_channels % self.__in_channels == 0
+        ), f"depth_multiplier (input is {self.__depth_multiplier}) should be positive integers"
         self.__width_multiplier = width_multiplier
         self.__out_channels = int(self.__width_multiplier * self.__out_channels)
-        assert self.__out_channels % self.__groups == 0, \
-            f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` not divisible by `groups` (= {self.__groups})"
+        assert (
+            self.__out_channels % self.__groups == 0
+        ), f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` not divisible by `groups` (= {self.__groups})"
 
         self.add_module(
             "depthwise_conv",
@@ -151,7 +158,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
                 batch_norm=batch_norm,
                 activation=activation,
                 ordering=ordering,
-            )
+            ),
         )
         self.add_module(
             "pointwise_conv",
@@ -160,25 +167,33 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
                 out_channels=self.__out_channels,
                 groups=self.__groups,
                 bias=self.__bias,
-                kernel_size=1, stride=1, padding=0, dilation=1,
+                kernel_size=1,
+                stride=1,
+                padding=0,
+                dilation=1,
                 batch_norm=batch_norm,
                 activation=activation,
                 ordering=ordering,
-            )
+            ),
         )
 
         if kernel_initializer:
             if callable(kernel_initializer):
                 for module in self:
                     kernel_initializer(module.weight)
-            elif isinstance(kernel_initializer, str) and kernel_initializer.lower() in Initializers.keys():
+            elif (
+                isinstance(kernel_initializer, str)
+                and kernel_initializer.lower() in Initializers.keys()
+            ):
                 for module in self:
-                    Initializers[kernel_initializer.lower()](module.weight, **kw_initializer)
+                    Initializers[kernel_initializer.lower()](
+                        module.weight, **kw_initializer
+                    )
             else:  # TODO: add more initializers
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
-    
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -193,8 +208,10 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -231,11 +248,12 @@ class MobileNetV1(SizeMixin, nn.Sequential):
     1. Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017). Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
     2. https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/keras/applications/mobilenet.py
     """
+
     __DEBUG__ = True
     __name__ = "MobileNetV1"
 
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -296,50 +314,46 @@ class MobileNetV1(SizeMixin, nn.Sequential):
             in_channels=entry_flow_in_channels,
             depth_multiplier=self.config.depth_multiplier,
             width_multiplier=self.config.width_multiplier,
-            **self.config.entry_flow
+            **self.config.entry_flow,
         )
-        self.add_module(
-            "entry_flow",
-            entry_flow
-        )
+        self.add_module("entry_flow", entry_flow)
 
         _, middle_flow_in_channels, _ = entry_flow[-1].compute_output_shape()
         middle_flow = self._generate_flow(
             in_channels=middle_flow_in_channels,
             depth_multiplier=self.config.depth_multiplier,
             width_multiplier=self.config.width_multiplier,
-            **self.config.middle_flow
+            **self.config.middle_flow,
         )
-        self.add_module(
-            "middle_flow",
-            middle_flow
-        )
+        self.add_module("middle_flow", middle_flow)
 
         _, exit_flow_in_channels, _ = middle_flow[-1].compute_output_shape()
         exit_flow = self._generate_flow(
             in_channels=exit_flow_in_channels,
             depth_multiplier=self.config.depth_multiplier,
             width_multiplier=self.config.width_multiplier,
-            **self.config.exit_flow
+            **self.config.exit_flow,
         )
         self.add_module(
             "exit_flow",
             exit_flow,
         )
 
-    def _generate_flow(self,
-                       in_channels:int, 
-                       out_channels:Sequence[int],
-                       filter_lengths:Union[Sequence[int], int],
-                       subsample_lengths:Union[Sequence[int],int]=1,
-                       dilations:Union[Sequence[int],int]=1,
-                       groups:int=1,
-                       batch_norm:Union[bool,str,nn.Module]=True,
-                       activation:Optional[Union[str,nn.Module]]="relu6",
-                       depth_multiplier:int=1,
-                       width_multiplier:float=1.0,
-                       ordering:str="cba") -> nn.Sequential:
-        """ finished, checked,
+    def _generate_flow(
+        self,
+        in_channels: int,
+        out_channels: Sequence[int],
+        filter_lengths: Union[Sequence[int], int],
+        subsample_lengths: Union[Sequence[int], int] = 1,
+        dilations: Union[Sequence[int], int] = 1,
+        groups: int = 1,
+        batch_norm: Union[bool, str, nn.Module] = True,
+        activation: Optional[Union[str, nn.Module]] = "relu6",
+        depth_multiplier: int = 1,
+        width_multiplier: float = 1.0,
+        ordering: str = "cba",
+    ) -> nn.Sequential:
+        """finished, checked,
 
         Parameters
         ----------
@@ -371,13 +385,32 @@ class MobileNetV1(SizeMixin, nn.Sequential):
             the sequential flow of consecutive separable convolutions, each followed by bn and relu6
         """
         n_convs = len(out_channels)
-        _filter_lengths = list(repeat(filter_lengths, n_convs)) if isinstance(filter_lengths, int) else filter_lengths
-        _subsample_lengths = list(repeat(subsample_lengths, n_convs)) if isinstance(subsample_lengths, int) else subsample_lengths
-        _dilations = list(repeat(dilations, n_convs)) if isinstance(dilations, int) else dilations
-        assert n_convs == len(_filter_lengths) == len(_subsample_lengths) == len(_dilations)
+        _filter_lengths = (
+            list(repeat(filter_lengths, n_convs))
+            if isinstance(filter_lengths, int)
+            else filter_lengths
+        )
+        _subsample_lengths = (
+            list(repeat(subsample_lengths, n_convs))
+            if isinstance(subsample_lengths, int)
+            else subsample_lengths
+        )
+        _dilations = (
+            list(repeat(dilations, n_convs))
+            if isinstance(dilations, int)
+            else dilations
+        )
+        assert (
+            n_convs
+            == len(_filter_lengths)
+            == len(_subsample_lengths)
+            == len(_dilations)
+        )
         ic = in_channels
         flow = nn.Sequential()
-        for idx, (oc, fl, sl, dl) in enumerate(zip(out_channels, _filter_lengths, _subsample_lengths, _dilations)):
+        for idx, (oc, fl, sl, dl) in enumerate(
+            zip(out_channels, _filter_lengths, _subsample_lengths, _dilations)
+        ):
             sc_layer = MobileNetSeparableConv(
                 in_channels=ic,
                 out_channels=oc,
@@ -398,8 +431,8 @@ class MobileNetV1(SizeMixin, nn.Sequential):
             _, ic, _ = sc_layer.compute_output_shape()
         return flow
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -414,8 +447,10 @@ class MobileNetV1(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -452,21 +487,24 @@ class InvertedResidual(SizeMixin, nn.Module):
         |                                                                                      |
         |----------------------- shortcut (only under certain condition) ----------------------|
     """
+
     __DEBUG__ = True
     __name__ = "InvertedResidual"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:int,
-                 expansion:float,
-                 filter_length:int,
-                 stride:int,
-                 groups:int,
-                 batch_norm:Union[bool,str,nn.Module]=True,
-                 activation:Optional[Union[str,nn.Module]]="relu6",
-                 width_multiplier:float=1.0,
-                 use_se:bool=True) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        expansion: float,
+        filter_length: int,
+        stride: int,
+        groups: int,
+        batch_norm: Union[bool, str, nn.Module] = True,
+        activation: Optional[Union[str, nn.Module]] = "relu6",
+        width_multiplier: float = 1.0,
+        use_se: bool = True,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -496,8 +534,9 @@ class InvertedResidual(SizeMixin, nn.Module):
         self.__filter_length = filter_length
         self.__stride = stride
         self.__groups = groups
-        assert self.__mid_channels % self.__groups == 0, \
-            f"expansion ratio (input is {self.__expansion}) makes mid-channels (= {self.__mid_channels}) not divisible by `groups` (={self.__groups})"
+        assert (
+            self.__mid_channels % self.__groups == 0
+        ), f"expansion ratio (input is {self.__expansion}) makes mid-channels (= {self.__mid_channels}) not divisible by `groups` (={self.__groups})"
         self.__width_multiplier = width_multiplier
 
         self.main_stream = nn.Sequential()
@@ -553,8 +592,8 @@ class InvertedResidual(SizeMixin, nn.Module):
         )
         _, self.__out_channels, _ = pw_linear.compute_output_shape()
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -575,8 +614,10 @@ class InvertedResidual(SizeMixin, nn.Module):
 
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -606,11 +647,12 @@ class MobileNetV2(SizeMixin, nn.Sequential):
     2. https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv2.py
     3. https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet_v2.py
     """
+
     __DEBUG__ = True
     __name__ = "MobileNetV2"
 
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """ NOT finished, NOT checked,
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """NOT finished, NOT checked,
 
         Parameters
         ----------
@@ -619,7 +661,9 @@ class MobileNetV2(SizeMixin, nn.Sequential):
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         # init conv(s)
         if isinstance(self.config.init_num_filters, int):
@@ -712,8 +756,8 @@ class MobileNetV2(SizeMixin, nn.Sequential):
             final_convs,
         )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ NOT finished, NOT checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """NOT finished, NOT checked,
 
         Parameters
         ----------
@@ -728,8 +772,10 @@ class MobileNetV2(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ NOT finished, NOT checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """NOT finished, NOT checked,
 
         Parameters
         ----------
@@ -758,21 +804,21 @@ class MobileNetV3(SizeMixin, nn.Module):
     1. Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019). Searching for mobilenetv3. In Proceedings of the IEEE International Conference on Computer Vision (pp. 1314-1324).
     2. https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv3.py
     """
+
     __DEBUG__ = True
     __name__ = "MobileNetV3"
 
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """
-        """
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """ """
         super().__init__()
         raise NotImplementedError
 
-    def forward(self,):
-        """
-        """
+    def forward(
+        self,
+    ):
+        """ """
         raise NotImplementedError
 
     def compute_output_shape(self):
-        """
-        """
+        """ """
         raise NotImplementedError

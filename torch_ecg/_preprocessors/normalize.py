@@ -34,15 +34,18 @@ class Normalize(PreProcessor):
             \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
             \end{align*}
     """
+
     __name__ = "Normalize"
 
-    def __init__(self,
-                 method:str="z-score",
-                 mean:Union[Real,np.ndarray]=0.0,
-                 std:Union[Real,np.ndarray]=1.0,
-                 per_channel:bool=False,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        method: str = "z-score",
+        mean: Union[Real, np.ndarray] = 0.0,
+        std: Union[Real, np.ndarray] = 1.0,
+        per_channel: bool = False,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -61,7 +64,11 @@ class Normalize(PreProcessor):
             if True, normalization will be done per channel
         """
         self.method = method.lower()
-        assert self.method in ["z-score", "naive", "min-max",]
+        assert self.method in [
+            "z-score",
+            "naive",
+            "min-max",
+        ]
         self.mean = mean
         self.std = std
         self.per_channel = per_channel
@@ -70,11 +77,12 @@ class Normalize(PreProcessor):
         else:
             assert (std > 0).all(), "standard deviations should all be positive"
         if not per_channel:
-            assert isinstance(mean, Real) and isinstance(std, Real), \
-                f"mean and std should be real numbers in the non per-channel setting"
+            assert isinstance(mean, Real) and isinstance(
+                std, Real
+            ), f"mean and std should be real numbers in the non per-channel setting"
 
-    def apply(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
-        """ finished, checked,
+    def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
+        """finished, checked,
 
         apply the preprocessor to `sig`
 
@@ -111,7 +119,12 @@ class Normalize(PreProcessor):
         """
         return the extra keys for `__repr__`
         """
-        return ["method", "mean", "std", "per_channel",] + super().extra_repr_keys()
+        return [
+            "method",
+            "mean",
+            "std",
+            "per_channel",
+        ] + super().extra_repr_keys()
 
 
 class MinMaxNormalize(Normalize):
@@ -121,10 +134,14 @@ class MinMaxNormalize(Normalize):
         .. math::
             \frac{sig - \min(sig)}{\max(sig) - \min(sig)}
     """
+
     __name__ = "MinMaxNormalize"
 
-    def __init__(self, per_channel:bool=False,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        per_channel: bool = False,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -137,7 +154,9 @@ class MinMaxNormalize(Normalize):
         """
         return the extra keys for `__repr__`
         """
-        return ["per_channel",] + super(PreProcessor, self).extra_repr_keys()
+        return [
+            "per_channel",
+        ] + super(PreProcessor, self).extra_repr_keys()
 
 
 class NaiveNormalize(Normalize):
@@ -147,14 +166,17 @@ class NaiveNormalize(Normalize):
         .. math::
             \frac{sig - m}{s}
     """
+
     __name__ = "NaiveNormalize"
 
-    def __init__(self,
-                 mean:Union[Real,np.ndarray]=0.0,
-                 std:Union[Real,np.ndarray]=1.0,
-                 per_channel:bool=False,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        mean: Union[Real, np.ndarray] = 0.0,
+        std: Union[Real, np.ndarray] = 1.0,
+        per_channel: bool = False,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -176,7 +198,11 @@ class NaiveNormalize(Normalize):
         """
         return the extra keys for `__repr__`
         """
-        return ["mean", "std", "per_channel",] + super(PreProcessor, self).extra_repr_keys()
+        return [
+            "mean",
+            "std",
+            "per_channel",
+        ] + super(PreProcessor, self).extra_repr_keys()
 
 
 class ZScoreNormalize(Normalize):
@@ -186,14 +212,17 @@ class ZScoreNormalize(Normalize):
         .. math::
             \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
     """
+
     __name__ = "ZScoreNormalize"
 
-    def __init__(self,
-                 mean:Union[Real,np.ndarray]=0.0,
-                 std:Union[Real,np.ndarray]=1.0,
-                 per_channel:bool=False,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        mean: Union[Real, np.ndarray] = 0.0,
+        std: Union[Real, np.ndarray] = 1.0,
+        per_channel: bool = False,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -217,4 +246,8 @@ class ZScoreNormalize(Normalize):
         """
         return the extra keys for `__repr__`
         """
-        return ["mean", "std", "per_channel",] + super(PreProcessor, self).extra_repr_keys()
+        return [
+            "mean",
+            "std",
+            "per_channel",
+        ] + super(PreProcessor, self).extra_repr_keys()

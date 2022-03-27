@@ -8,7 +8,9 @@ import torch
 from ..utils.utils_signal_t import resample as resample_t
 
 
-__all__ = ["Resample",]
+__all__ = [
+    "Resample",
+]
 
 
 class Resample(torch.nn.Module):
@@ -17,15 +19,18 @@ class Resample(torch.nn.Module):
 
     TODO: consider vectorized `scipy.signal.resample`?
     """
+
     __name__ = "Resample"
 
-    def __init__(self,
-                 fs:Optional[int]=None,
-                 dst_fs:Optional[int]=None,
-                 siglen:Optional[int]=None,
-                 inplace:bool=False,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        fs: Optional[int] = None,
+        dst_fs: Optional[int] = None,
+        siglen: Optional[int] = None,
+        inplace: bool = False,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -46,15 +51,15 @@ class Resample(torch.nn.Module):
         self.fs = fs
         self.siglen = siglen
         self.inplace = inplace
-        assert sum([bool(self.fs), bool(self.siglen)]) == 1, \
-            "one and only one of `fs` and `siglen` should be set"
+        assert (
+            sum([bool(self.fs), bool(self.siglen)]) == 1
+        ), "one and only one of `fs` and `siglen` should be set"
         if self.dst_fs is not None:
-            assert self.fs is not None, \
-                "if `dst_fs` is set, `fs` should also be set"
+            assert self.fs is not None, "if `dst_fs` is set, `fs` should also be set"
             self.scale_factor = self.dst_fs / self.fs
 
-    def forward(self, sig:torch.Tensor) -> torch.Tensor:
-        """ finished, checked,
+    def forward(self, sig: torch.Tensor) -> torch.Tensor:
+        """finished, checked,
 
         Parameters
         ----------

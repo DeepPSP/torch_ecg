@@ -8,7 +8,6 @@ from numbers import Real
 
 import wfdb
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 
 from ..base import PhysioNetDataBase
@@ -20,7 +19,7 @@ __all__ = [
 
 
 class CINC2018(PhysioNetDataBase):
-    """ NOT Finished,
+    """NOT Finished,
 
     You Snooze You Win - The PhysioNet Computing in Cardiology Challenge 2018
 
@@ -74,13 +73,15 @@ class CINC2018(PhysioNetDataBase):
     [1] https://physionet.org/content/challenge-2018/1.0.0/
     """
 
-    def __init__(self,
-                 db_dir:Union[str,Path],
-                 working_dir:Optional[str]=None,
-                 verbose:int=2,
-                 **kwargs:Any) -> NoReturn:
-        """ NOT finished, NOT checked,
-        
+    def __init__(
+        self,
+        db_dir: Union[str, Path],
+        working_dir: Optional[str] = None,
+        verbose: int = 2,
+        **kwargs: Any
+    ) -> NoReturn:
+        """NOT finished, NOT checked,
+
         Parameters
         ----------
         db_dir: str, optional,
@@ -91,7 +92,13 @@ class CINC2018(PhysioNetDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="challenge-2018", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(
+            db_name="challenge-2018",
+            db_dir=db_dir,
+            working_dir=working_dir,
+            verbose=verbose,
+            **kwargs
+        )
         self.fs = None
         self.training_dir = self.db_dir / "training"
         self.test_dir = self.db_dir / "test"
@@ -99,8 +106,8 @@ class CINC2018(PhysioNetDataBase):
         self.test_records = []
         self._all_records = []
 
-    def get_subject_id(self, rec:str) -> int:
-        """ finished, checked,
+    def get_subject_id(self, rec: str) -> int:
+        """finished, checked,
 
         Parameters
         ----------
@@ -115,20 +122,17 @@ class CINC2018(PhysioNetDataBase):
         head = "2018"
         mid = rec[2:4]
         tail = rec[-4:]
-        pid = int(head+mid+tail)
+        pid = int(head + mid + tail)
         return pid
 
     def load_data(self) -> np.ndarray:
-        """
-        """
+        """ """
         raise NotImplementedError
 
     def load_ann(self):
-        """
-        """
+        """ """
         raise NotImplementedError
 
     def plot(self) -> NoReturn:
-        """
-        """
+        """ """
         raise NotImplementedError

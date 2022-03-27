@@ -11,12 +11,14 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
 from torch_ecg.model_configs import (
-    ECG_SUBTRACT_UNET_CONFIG, ECG_UNET_VANILLA_CONFIG,
+    ECG_SUBTRACT_UNET_CONFIG,
+    ECG_UNET_VANILLA_CONFIG,
 )
 
 
@@ -52,7 +54,6 @@ BaseCfg.skip_dist = int(0.5 * BaseCfg.fs)
 BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
-
 TrainCfg = CFG()
 
 # configs of files
@@ -73,8 +74,12 @@ TrainCfg.mask_class_map = deepcopy(BaseCfg.mask_class_map)
 
 TrainCfg.skip_dist = BaseCfg.skip_dist
 
-TrainCfg.leads = EAK.Standard12Leads # ["II",]  # the lead to tain model, None --> all leads
-TrainCfg.use_single_lead = False  # use single lead as input or use all leads in `TrainCfg.leads`
+TrainCfg.leads = (
+    EAK.Standard12Leads
+)  # ["II",]  # the lead to tain model, None --> all leads
+TrainCfg.use_single_lead = (
+    False  # use single lead as input or use all leads in `TrainCfg.leads`
+)
 
 if TrainCfg.use_single_lead:
     TrainCfg.n_leads = 1
@@ -123,7 +128,6 @@ TrainCfg.log_every = 1
 TrainCfg.monitor = "f1_score"
 
 TrainCfg.model_name = "unet"
-
 
 
 ModelCfg = CFG()

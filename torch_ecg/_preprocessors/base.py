@@ -8,9 +8,9 @@ from numbers import Real
 from typing import Optional, List, NoReturn, Tuple, List
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 from scipy.ndimage.filters import median_filter
 from scipy.signal.signaltools import resample
+
 # from scipy.signal import medfilt
 # https://github.com/scipy/scipy/issues/9680
 from biosppy.signals.tools import filter_signal
@@ -30,10 +30,11 @@ class PreProcessor(ReprMixin, ABC):
     """
     a preprocessor do preprocessing for ECGs
     """
+
     __name__ = "PreProcessor"
 
     @abstractmethod
-    def apply(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
+    def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """
         apply the preprocessor to `sig`
 
@@ -49,13 +50,13 @@ class PreProcessor(ReprMixin, ABC):
         """
         raise NotImplementedError
 
-    def __call__(self, sig:np.ndarray, fs:Real) -> Tuple[np.ndarray, int]:
+    def __call__(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """
         alias of `self.apply`
         """
         return self.apply(sig, fs)
 
-    def _check_sig(self, sig:np.ndarray) -> NoReturn:
+    def _check_sig(self, sig: np.ndarray) -> NoReturn:
         """
         check validity of the signal
 
@@ -67,7 +68,7 @@ class PreProcessor(ReprMixin, ABC):
             2d array, which is a multi-lead ECG of "lead_first" format
             3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)
         """
-        if sig.ndim not in [1,2,3]:
+        if sig.ndim not in [1, 2, 3]:
             raise ValueError(
                 "Invalid input ECG signal. Should be"
                 "1d array, which is a single-lead ECG;"
@@ -76,14 +77,16 @@ class PreProcessor(ReprMixin, ABC):
             )
 
 
-def preprocess_multi_lead_signal(raw_sig:np.ndarray,
-                                 fs:Real,
-                                 sig_fmt:str="channel_first",
-                                 bl_win:Optional[List[Real]]=None,
-                                 band_fs:Optional[List[Real]]=None,
-                                 filter_type:str="butter",
-                                 filter_order:Optional[int]=None) -> np.ndarray:
-    """ finished, checked,
+def preprocess_multi_lead_signal(
+    raw_sig: np.ndarray,
+    fs: Real,
+    sig_fmt: str = "channel_first",
+    bl_win: Optional[List[Real]] = None,
+    band_fs: Optional[List[Real]] = None,
+    filter_type: str = "butter",
+    filter_order: Optional[int] = None,
+) -> np.ndarray:
+    """finished, checked,
 
     perform preprocessing for multi-lead ecg signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
@@ -120,7 +123,12 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
         the array of the processed ecg signal,
         the format of the signal is kept the same with the original signal, i.e. `sig_fmt`
     """
-    assert sig_fmt.lower() in ["channel_first", "lead_first", "channel_last", "lead_last"]
+    assert sig_fmt.lower() in [
+        "channel_first",
+        "lead_first",
+        "channel_last",
+        "lead_last",
+    ]
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
         filtered_ecg = raw_sig.T
     else:
@@ -128,13 +136,15 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
 
     # remove baseline
     if bl_win:
-        window1, window2 = list(repeat(1, filtered_ecg.ndim)), list(repeat(1, filtered_ecg.ndim))
+        window1, window2 = list(repeat(1, filtered_ecg.ndim)), list(
+            repeat(1, filtered_ecg.ndim)
+        )
         window1[-1] = 2 * (int(bl_win[0] * fs) // 2) + 1  # window size must be odd
         window2[-1] = 2 * (int(bl_win[1] * fs) // 2) + 1
         baseline = median_filter(filtered_ecg, size=window1, mode="nearest")
         baseline = median_filter(baseline, size=window2, mode="nearest")
         filtered_ecg = filtered_ecg - baseline
-    
+
     # filter signal
     if band_fs:
         assert band_fs[0] < band_fs[1]
@@ -166,7 +176,8 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
                 lowcut=band_fs[0],
                 highcut=band_fs[1],
                 fs=fs,
-                order=filter_order or round(0.01 * fs),  # better be determined by the `buttord`
+                order=filter_order
+                or round(0.01 * fs),  # better be determined by the `buttord`
             )
         else:
             raise ValueError("Unsupported filter type")
@@ -177,11 +188,13 @@ def preprocess_multi_lead_signal(raw_sig:np.ndarray,
     return filtered_ecg
 
 
-def preprocess_single_lead_signal(raw_sig:np.ndarray,
-                                  fs:Real,
-                                  bl_win:Optional[List[Real]]=None,
-                                  band_fs:Optional[List[Real]]=None,) -> np.ndarray:
-    """ finished, checked,
+def preprocess_single_lead_signal(
+    raw_sig: np.ndarray,
+    fs: Real,
+    bl_win: Optional[List[Real]] = None,
+    band_fs: Optional[List[Real]] = None,
+) -> np.ndarray:
+    """finished, checked,
 
     perform preprocessing for single lead ecg signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
@@ -222,7 +235,7 @@ def preprocess_single_lead_signal(raw_sig:np.ndarray,
         baseline = median_filter(filtered_ecg, size=window1, mode="nearest")
         baseline = median_filter(baseline, size=window2, mode="nearest")
         filtered_ecg = filtered_ecg - baseline
-    
+
     # filter signal
     if band_fs:
         assert band_fs[0] < band_fs[1]
@@ -247,5 +260,5 @@ def preprocess_single_lead_signal(raw_sig:np.ndarray,
             sampling_rate=fs,
             frequency=frequency,
         )["signal"]
-    
+
     return filtered_ecg

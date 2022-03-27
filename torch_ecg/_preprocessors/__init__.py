@@ -29,7 +29,6 @@ __all__ = [
     "NaiveNormalize",
     "ZScoreNormalize",
     "Resample",
-
     "preprocess_multi_lead_signal",
     "preprocess_single_lead_signal",
 ]

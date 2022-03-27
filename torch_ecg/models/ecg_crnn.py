@@ -10,7 +10,6 @@ from typing import Union, Optional, Tuple, Sequence, NoReturn, Any
 from numbers import Real, Number
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 import torch
 from torch import nn
@@ -20,21 +19,29 @@ import torch.nn.functional as F
 from ..cfg import CFG, DEFAULTS
 from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
 from ..utils.utils_nn import (
-    compute_conv_output_shape, compute_module_size,
-    SizeMixin, CkptMixin,
+    compute_conv_output_shape,
+    compute_module_size,
+    SizeMixin,
+    CkptMixin,
 )
 from ..utils.misc import dict_to_str
 from ..utils.outputs import BaseOutput
 from ._nets import (
-    Mish, Swish, Activations,
-    Bn_Activation, Conv_Bn_Activation,
+    Mish,
+    Swish,
+    Activations,
+    Bn_Activation,
+    Conv_Bn_Activation,
     DownSample,
     ZeroPadding,
     StackedLSTM,
     AttentionWithContext,
-    SelfAttention, MultiHeadAttention,
+    SelfAttention,
+    MultiHeadAttention,
     AttentivePooling,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
     SeqLin,
 )
 from .cnn.vgg import VGG16
@@ -54,7 +61,7 @@ __all__ = [
 
 
 class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
-    """ finished, continuously improving,
+    """finished, continuously improving,
 
     C(R)NN models modified from the following refs.
 
@@ -68,11 +75,18 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
     [6] CPSC2018 entry 0236
     [7] CPSC2019 entry 0416
     """
+
     __DEBUG__ = False
     __name__ = "ECG_CRNN"
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        classes: Sequence[str],
+        n_leads: int,
+        config: Optional[CFG] = None,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -92,9 +106,11 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
             debug_input_len = 4000
-        
+
         cnn_choice = self.config.cnn.name.lower()
         if "vgg16" in cnn_choice:
             self.cnn = VGG16(self.n_leads, **(self.config.cnn[self.config.cnn.name]))
@@ -104,17 +120,23 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             # rnn_input_size = \
             #     2**len(self.config.cnn[cnn_choice].num_blocks) * self.config.cnn[cnn_choice].init_num_filters
         elif "multi_scopic" in cnn_choice:
-            self.cnn = MultiScopicCNN(self.n_leads, **(self.config.cnn[self.config.cnn.name]))
+            self.cnn = MultiScopicCNN(
+                self.n_leads, **(self.config.cnn[self.config.cnn.name])
+            )
             # rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
         elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
             self.cnn = DenseNet(self.n_leads, **(self.config.cnn[self.config.cnn.name]))
         else:
-            raise NotImplementedError(f"the CNN \042{cnn_choice}\042 not implemented yet")
+            raise NotImplementedError(
+                f"the CNN \042{cnn_choice}\042 not implemented yet"
+            )
         rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
 
         if self.__DEBUG__:
             cnn_output_shape = self.cnn.compute_output_shape(debug_input_len, None)
-            print(f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}, given input_len = {debug_input_len}")
+            print(
+                f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}, given input_len = {debug_input_len}"
+            )
 
         if self.config.rnn.name.lower() == "none":
             self.rnn = None
@@ -150,7 +172,9 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             self.attn = None
             clf_input_size = attn_input_size
             if self.config.attn.name.lower() != "none":
-                print(f"since `retseq` of rnn is False, hence attention `{self.config.attn.name}` is ignored")
+                print(
+                    f"since `retseq` of rnn is False, hence attention `{self.config.attn.name}` is ignored"
+                )
         elif self.config.attn.name.lower() == "none":
             self.attn = None
             clf_input_size = attn_input_size
@@ -208,7 +232,9 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:
             self.pool = None
             if self.config.global_pool.lower() != "none":
-                print(f"since `retseq` of rnn is False, hence global pooling `{self.config.global_pool}` is ignored")
+                print(
+                    f"since `retseq` of rnn is False, hence global pooling `{self.config.global_pool}` is ignored"
+                )
         elif self.config.global_pool.lower() == "max":
             self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
         elif self.config.global_pool.lower() == "avg":
@@ -218,7 +244,9 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         elif self.config.global_pool.lower() == "none":
             self.pool = None
         else:
-            raise NotImplementedError(f"pooling method {self.config.global_pool} not implemented yet!")
+            raise NotImplementedError(
+                f"pooling method {self.config.global_pool} not implemented yet!"
+            )
 
         # input of `self.clf` has shape: batch_size, channels
         self.clf = SeqLin(
@@ -236,8 +264,8 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.softmax = nn.Softmax(-1)
 
-    def extract_features(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def extract_features(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         extract feature map before the dense (linear) classifying layer(s)
 
@@ -245,7 +273,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         ----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
-        
+
         Returns
         -------
         features: Tensor,
@@ -258,44 +286,46 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         # RNN (optional)
         if self.config.rnn.name.lower() in ["lstm"]:
             # (batch_size, channels, seq_len) --> (seq_len, batch_size, channels)
-            features = features.permute(2,0,1)
-            features = self.rnn(features)  # (seq_len, batch_size, channels) or (batch_size, channels)
+            features = features.permute(2, 0, 1)
+            features = self.rnn(
+                features
+            )  # (seq_len, batch_size, channels) or (batch_size, channels)
         elif self.config.rnn.name.lower() in ["linear"]:
             # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
-            features = features.permute(0,2,1)
+            features = features.permute(0, 2, 1)
             features = self.rnn(features)  # (batch_size, seq_len, channels)
             # (batch_size, seq_len, channels) --> (seq_len, batch_size, channels)
-            features = features.permute(1,0,2)
+            features = features.permute(1, 0, 2)
         else:
             # (batch_size, channels, seq_len) --> (seq_len, batch_size, channels)
-            features = features.permute(2,0,1)
+            features = features.permute(2, 0, 1)
 
         # Attention (optional)
         if self.attn is None and features.ndim == 3:
             # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
-            features = features.permute(1,2,0)
+            features = features.permute(1, 2, 0)
         elif self.config.attn.name.lower() in ["nl", "se", "gc"]:
             # (seq_len, batch_size, channels) --> (batch_size, channels, seq_len)
-            features = features.permute(1,2,0)
+            features = features.permute(1, 2, 0)
             features = self.attn(features)  # (batch_size, channels, seq_len)
         elif self.config.attn.name.lower() in ["sa"]:
             features = self.attn(features)  # (seq_len, batch_size, channels)
             # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
-            features = features.permute(1,2,0)
+            features = features.permute(1, 2, 0)
         elif self.config.attn.name.lower() in ["transformer"]:
             features = self.attn(features)
             # (seq_len, batch_size, channels) -> (batch_size, channels, seq_len)
-            features = features.permute(1,2,0)
+            features = features.permute(1, 2, 0)
         return features
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, partly checked (rnn part might have bugs),
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, partly checked (rnn part might have bugs),
 
         Parameters
         ----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
-        
+
         Returns
         -------
         pred: Tensor,
@@ -316,11 +346,13 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         return pred
 
     @torch.no_grad()
-    def inference(self,
-                  input:Union[np.ndarray,Tensor],
-                  class_names:bool=False,
-                  bin_pred_thr:float=0.5) -> BaseOutput:
-        """ finished, checked,
+    def inference(
+        self,
+        input: Union[np.ndarray, Tensor],
+        class_names: bool = False,
+        bin_pred_thr: float = 0.5,
+    ) -> BaseOutput:
+        """finished, checked,
 
         Parameters
         ----------
@@ -342,8 +374,10 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         """
         raise NotImplementedError(f"implement a task specific inference method")
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------

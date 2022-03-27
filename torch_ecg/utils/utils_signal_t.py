@@ -14,12 +14,14 @@ __all__ = [
 ]
 
 
-def normalize(sig:torch.Tensor,
-              method:str="z-score",
-              mean:Union[Real,Iterable[Real]]=0.0,
-              std:Union[Real,Iterable[Real]]=1.0,
-              per_channel:bool=False,
-              inplace:bool=True,) -> torch.Tensor:
+def normalize(
+    sig: torch.Tensor,
+    method: str = "z-score",
+    mean: Union[Real, Iterable[Real]] = 0.0,
+    std: Union[Real, Iterable[Real]] = 1.0,
+    per_channel: bool = False,
+    inplace: bool = True,
+) -> torch.Tensor:
     """ finished, checked,
     
     perform z-score normalization on `sig`,
@@ -86,7 +88,11 @@ def normalize(sig:torch.Tensor,
     ```
     """
     _method = method.lower()
-    assert _method in ["z-score", "naive", "min-max",]
+    assert _method in [
+        "z-score",
+        "naive",
+        "min-max",
+    ]
     ori_shape = sig.shape
     if not inplace:
         sig = sig.clone()
@@ -107,7 +113,9 @@ def normalize(sig:torch.Tensor,
             # of shape (n_leads, 1) or (n_leads,) or (1, n_leads) or (1, n_leads, 1)
             _std = _std.view((-1, sig.shape[1], 1))
         else:
-            raise ValueError(f"shape of `sig` = {sig.shape} and `std` = {_std.shape} mismatch")
+            raise ValueError(
+                f"shape of `sig` = {sig.shape} and `std` = {_std.shape} mismatch"
+            )
     if isinstance(mean, Real):
         _mean = torch.full((sig.shape[0], 1, 1), mean, dtype=dtype, device=device)
     else:
@@ -122,9 +130,10 @@ def normalize(sig:torch.Tensor,
             raise ValueError("shape of `sig` and `mean` mismatch")
 
     if not per_channel:
-        assert _std.shape[1] == 1 and _mean.shape[1] == 1, \
-            f"if `per_channel` is False, `std` and `mean` should be scalars, " \
-                "or of shape (batch, 1), or (batch, 1, 1), or (1,)"
+        assert _std.shape[1] == 1 and _mean.shape[1] == 1, (
+            f"if `per_channel` is False, `std` and `mean` should be scalars, "
+            "or of shape (batch, 1), or (batch, 1, 1), or (1,)"
+        )
 
     # print(f"sig.shape = {sig.shape}, _mean.shape = {_mean.shape}, _std.shape = {_std.shape}")
 
@@ -134,7 +143,7 @@ def normalize(sig:torch.Tensor,
 
     eps = 1e-7  # to avoid dividing by zero
     if not per_channel:
-        options = dict(dim=(-1,-2), keepdims=True)
+        options = dict(dim=(-1, -2), keepdims=True)
     else:
         options = dict(dim=-1, keepdims=True)
 
@@ -147,12 +156,14 @@ def normalize(sig:torch.Tensor,
     return sig
 
 
-def resample(sig:torch.Tensor,
-             fs:Optional[int]=None,
-             dst_fs:Optional[int]=None,
-             siglen:Optional[int]=None,
-             inplace:bool=False,) -> torch.Tensor:
-    """ finished, checked,
+def resample(
+    sig: torch.Tensor,
+    fs: Optional[int] = None,
+    dst_fs: Optional[int] = None,
+    siglen: Optional[int] = None,
+    inplace: bool = False,
+) -> torch.Tensor:
+    """finished, checked,
 
     resample signal tensors to a new sampling frequency or a new signal length,
 
@@ -170,11 +181,11 @@ def resample(sig:torch.Tensor,
     inplace: bool, default False,
         if True, normalization will be done inplace (on the signal)
     """
-    assert sum([bool(dst_fs), bool(siglen)]) == 1, \
-        "one and only one of `fs` and `siglen` should be set"
+    assert (
+        sum([bool(dst_fs), bool(siglen)]) == 1
+    ), "one and only one of `fs` and `siglen` should be set"
     if dst_fs is not None:
-        assert fs is not None, \
-            "if `dst_fs` is set, `fs` should also be set"
+        assert fs is not None, "if `dst_fs` is set, `fs` should also be set"
         scale_factor = dst_fs / fs
     if not inplace:
         sig = sig.clone()

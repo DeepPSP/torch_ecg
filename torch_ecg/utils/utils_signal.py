@@ -11,8 +11,6 @@ import numpy as np
 from scipy import interpolate
 from scipy.signal import peak_prominences, butter, filtfilt
 
-np.set_printoptions(precision=5, suppress=True)
-
 
 __all__ = [
     "smooth",
@@ -26,20 +24,26 @@ __all__ = [
 ]
 
 
-def smooth(x:np.ndarray, window_len:int=11, window:str='hanning', mode:str='valid', keep_dtype:bool=True) -> np.ndarray:
-    """ finished, checked
-    
+def smooth(
+    x: np.ndarray,
+    window_len: int = 11,
+    window: str = "hanning",
+    mode: str = "valid",
+    keep_dtype: bool = True,
+) -> np.ndarray:
+    """finished, checked
+
     smooth the 1d data using a window with requested size.
-    
+
     This method is based on the convolution of a scaled window with the signal.
-    The signal is prepared by introducing reflected copies of the signal 
+    The signal is prepared by introducing reflected copies of the signal
     (with the window size) in both ends so that transient parts are minimized
     in the begining and end part of the output signal.
-    
+
     Parameters
     ----------
     x: ndarray,
-        the input signal 
+        the input signal
     window_len: int, default 11,
         the length of the smoothing window,
         (previously should be an odd integer, currently can be any (positive) integer)
@@ -55,18 +59,18 @@ def smooth(x:np.ndarray, window_len:int=11, window:str='hanning', mode:str='vali
     -------
     y: ndarray,
         the smoothed signal
-        
+
     Examples
     --------
     >>> t = linspace(-2, 2, 0.1)
     >>> x = sin(t) + randn(len(t)) * 0.1
     >>> y = smooth(x)
-    
-    See also: 
+
+    See also:
     ---------
     np.hanning, np.hamming, np.bartlett, np.blackman, np.convolve
     scipy.signal.lfilter
- 
+
     TODO: the window parameter could be the window itself if an array instead of a string
 
     NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
@@ -76,7 +80,7 @@ def smooth(x:np.ndarray, window_len:int=11, window:str='hanning', mode:str='vali
     [1] https://scipy-cookbook.readthedocs.io/items/SignalSmooth.html
     """
     radius = min(len(x), window_len)
-    radius = radius if radius%2 == 1 else radius-1
+    radius = radius if radius % 2 == 1 else radius - 1
 
     if x.ndim != 1:
         raise ValueError("smooth only accepts 1 dimension arrays.")
@@ -86,24 +90,26 @@ def smooth(x:np.ndarray, window_len:int=11, window:str='hanning', mode:str='vali
 
     if radius < 3:
         return x
-    
-    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman']:
-        raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
 
-    s = np.r_[x[radius-1:0:-1], x, x[-2:-radius-1:-1]]
-    #print(len(s))
-    if window == 'flat': #moving average
-        w = np.ones(radius,'d')
+    if not window in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
+        raise ValueError(
+            "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+        )
+
+    s = np.r_[x[radius - 1 : 0 : -1], x, x[-2 : -radius - 1 : -1]]
+    # print(len(s))
+    if window == "flat":  # moving average
+        w = np.ones(radius, "d")
     else:
-        w = eval('np.'+window+'(radius)')
+        w = eval("np." + window + "(radius)")
 
-    y = np.convolve(w/w.sum(), s, mode=mode)
-    y = y[(radius//2-1):-(radius//2)-1]
+    y = np.convolve(w / w.sum(), s, mode=mode)
+    y = y[(radius // 2 - 1) : -(radius // 2) - 1]
     assert len(x) == len(y)
 
     if keep_dtype:
         y = y.astype(x.dtype)
-    
+
     return y
 
 
@@ -116,7 +122,8 @@ class MovingAverage(object):
     ----------
     [1] https://en.wikipedia.org/wiki/Moving_average
     """
-    def __init__(self, data:Sequence, **kwargs):
+
+    def __init__(self, data: Sequence, **kwargs):
         """
         Parameters
         ----------
@@ -126,7 +133,7 @@ class MovingAverage(object):
         self.data = np.array(data)
         self.verbose = kwargs.get("verbose", 0)
 
-    def cal(self, method:str, **kwargs) -> np.ndarray:
+    def cal(self, method: str, **kwargs) -> np.ndarray:
         """
         Parameters
         ----------
@@ -137,20 +144,27 @@ class MovingAverage(object):
             - 'cma', 'cumulative', 'cumulative moving average'
             - 'wma', 'weighted', 'weighted moving average'
         """
-        m = method.lower().replace('_', ' ')
-        if m in ['sma', 'simple', 'simple moving average']:
+        m = method.lower().replace("_", " ")
+        if m in ["sma", "simple", "simple moving average"]:
             func = self._sma
-        elif m in ['ema', 'ewma', 'exponential', 'exponential weighted', 'exponential moving average', 'exponential weighted moving average']:
+        elif m in [
+            "ema",
+            "ewma",
+            "exponential",
+            "exponential weighted",
+            "exponential moving average",
+            "exponential weighted moving average",
+        ]:
             func = self._ema
-        elif m in ['cma', 'cumulative', 'cumulative moving average']:
+        elif m in ["cma", "cumulative", "cumulative moving average"]:
             func = self._cma
-        elif m in ['wma', 'weighted', 'weighted moving average']:
+        elif m in ["wma", "weighted", "weighted moving average"]:
             func = self._wma
         else:
             raise NotImplementedError
         return func(**kwargs)
 
-    def _sma(self, window:int=5, center:bool=False, **kwargs) -> np.ndarray:
+    def _sma(self, window: int = 5, center: bool = False, **kwargs) -> np.ndarray:
         """
         simple moving average
 
@@ -164,10 +178,10 @@ class MovingAverage(object):
         """
         smoothed = []
         if center:
-            hw = window//2
-            window = hw*2+1
+            hw = window // 2
+            window = hw * 2 + 1
         for n in range(window):
-            smoothed.append(np.mean(self.data[:n+1]))
+            smoothed.append(np.mean(self.data[: n + 1]))
         prev = smoothed[-1]
         for n, d in enumerate(self.data[window:]):
             s = prev + (d - self.data[n]) / window
@@ -175,13 +189,13 @@ class MovingAverage(object):
             smoothed.append(s)
         smoothed = np.array(smoothed)
         if center:
-            smoothed[hw:-hw] = smoothed[window-1:]
+            smoothed[hw:-hw] = smoothed[window - 1 :]
             for n in range(hw):
-                smoothed[n] = np.mean(self.data[:n+hw+1])
-                smoothed[-n-1] = np.mean(self.data[-n-hw-1:])
+                smoothed[n] = np.mean(self.data[: n + hw + 1])
+                smoothed[-n - 1] = np.mean(self.data[-n - hw - 1 :])
         return smoothed
 
-    def _ema(self, weight:float=0.6, **kwargs) -> np.ndarray:
+    def _ema(self, weight: float = 0.6, **kwargs) -> np.ndarray:
         """
         exponential moving average,
         which is also the function used in Tensorboard Scalar panel,
@@ -208,13 +222,13 @@ class MovingAverage(object):
         smoothed = []
         prev = 0
         for n, d in enumerate(self.data):
-            s = prev + (d - prev) / (n+1)
+            s = prev + (d - prev) / (n + 1)
             prev = s
             smoothed.append(s)
         smoothed = np.array(smoothed)
         return smoothed
 
-    def _wma(self, window:int=5, **kwargs) -> np.ndarray:
+    def _wma(self, window: int = 5, **kwargs) -> np.ndarray:
         """
         weighted moving average
 
@@ -226,14 +240,22 @@ class MovingAverage(object):
         # smoothed = []
         # total = []
         # numerator = []
-        conv = np.arange(1, window+1)[::-1]
+        conv = np.arange(1, window + 1)[::-1]
         deno = np.sum(conv)
-        smoothed = np.convolve(conv, self.data, mode='same') / deno
+        smoothed = np.convolve(conv, self.data, mode="same") / deno
         return smoothed
 
 
-def resample_irregular_timeseries(s:np.ndarray, output_fs:Real=2, method:str="spline", return_with_time:bool=False, tnew:Optional[np.ndarray]=None, interp_kw:dict={}, verbose:int=0) -> np.ndarray:
-    """ finished, checked,
+def resample_irregular_timeseries(
+    s: np.ndarray,
+    output_fs: Real = 2,
+    method: str = "spline",
+    return_with_time: bool = False,
+    tnew: Optional[np.ndarray] = None,
+    interp_kw: dict = {},
+    verbose: int = 0,
+) -> np.ndarray:
+    """finished, checked,
 
     resample the 2d irregular timeseries `s` into a 1d or 2d regular time series with frequency `output_fs`,
     elements of `s` are in the form [time, value], where the unit of `time` is ms
@@ -268,48 +290,59 @@ def resample_irregular_timeseries(s:np.ndarray, output_fs:Real=2, method:str="sp
 
     if len(s) == 0:
         return np.array([])
-    
+
     time_series = np.atleast_2d(s)
     step_ts = 1000 / output_fs
-    tot_len = int((time_series[-1][0]-time_series[0][0]) / step_ts) + 1
+    tot_len = int((time_series[-1][0] - time_series[0][0]) / step_ts) + 1
     if tnew is None:
-        xnew = time_series[0][0] + np.arange(0, tot_len*step_ts, step_ts)
+        xnew = time_series[0][0] + np.arange(0, tot_len * step_ts, step_ts)
     else:
         xnew = np.array(tnew)
 
     if verbose >= 1:
-        print(f'time_series start ts = {time_series[0][0]}, end ts = {time_series[-1][0]}')
-        print(f'tot_len = {tot_len}')
-        print(f'xnew start = {xnew[0]}, end = {xnew[-1]}')
+        print(
+            f"time_series start ts = {time_series[0][0]}, end ts = {time_series[-1][0]}"
+        )
+        print(f"tot_len = {tot_len}")
+        print(f"xnew start = {xnew[0]}, end = {xnew[-1]}")
 
     if method.lower() == "spline":
         m = len(time_series)
         w = interp_kw.get("w", np.ones(shape=(m,)))
         # s = interp_kw.get("s", np.random.uniform(m-np.sqrt(2*m),m+np.sqrt(2*m)))
-        s = interp_kw.get("s", m-np.sqrt(2*m))
+        s = interp_kw.get("s", m - np.sqrt(2 * m))
         interp_kw.update(w=w, s=s)
 
-        tck = interpolate.splrep(time_series[:,0],time_series[:,1],**interp_kw)
+        tck = interpolate.splrep(time_series[:, 0], time_series[:, 1], **interp_kw)
 
         regular_timeseries = interpolate.splev(xnew, tck)
     elif method.lower() == "interp1d":
-        f = interpolate.interp1d(time_series[:,0],time_series[:,1],**interp_kw)
+        f = interpolate.interp1d(time_series[:, 0], time_series[:, 1], **interp_kw)
 
         regular_timeseries = f(xnew)
-    
+
     if return_with_time:
         return np.column_stack((xnew, regular_timeseries))
     else:
         return regular_timeseries
 
 
-def detect_peaks(x:Sequence,
-                 mph:Optional[Real]=None, mpd:int=1,
-                 threshold:Real=0, left_threshold:Real=0, right_threshold:Real=0,
-                 prominence:Optional[Real]=None, prominence_wlen:Optional[int]=None,
-                 edge:Union[str,None]='rising', kpsh:bool=False, valley:bool=False,
-                 show:bool=False, ax=None,
-                 verbose:int=0) -> np.ndarray:
+def detect_peaks(
+    x: Sequence,
+    mph: Optional[Real] = None,
+    mpd: int = 1,
+    threshold: Real = 0,
+    left_threshold: Real = 0,
+    right_threshold: Real = 0,
+    prominence: Optional[Real] = None,
+    prominence_wlen: Optional[int] = None,
+    edge: Union[str, None] = "rising",
+    kpsh: bool = False,
+    valley: bool = False,
+    show: bool = False,
+    ax=None,
+    verbose: int = 0,
+) -> np.ndarray:
     """
     Detect peaks in data based on their amplitude and other features.
 
@@ -356,8 +389,8 @@ def detect_peaks(x:Sequence,
     ----
     The detection of valleys instead of peaks is performed internally by simply
     negating the data: `ind_valleys = detect_peaks(-x)`
-    
-    The function can handle NaN's 
+
+    The function can handle NaN's
 
     See this IPython Notebook [1]_.
 
@@ -400,10 +433,10 @@ def detect_peaks(x:Sequence,
         The sign of `mph` is inverted if parameter `valley` is True
     """
     data = deepcopy(x)
-    data = np.atleast_1d(data).astype('float64')
+    data = np.atleast_1d(data).astype("float64")
     if data.size < 3:
         return np.array([], dtype=int)
-    
+
     if valley:
         data = -data
         if mph is not None:
@@ -417,34 +450,44 @@ def detect_peaks(x:Sequence,
     if indnan.size:
         data[indnan] = np.inf
         dx[np.where(np.isnan(dx))[0]] = np.inf
-    
+
     ine, ire, ife = np.array([[], [], []], dtype=int)
     if not edge:
         ine = np.where((np.hstack((dx, 0)) < 0) & (np.hstack((0, dx)) > 0))[0]
     else:
-        if edge.lower() in ['rising', 'both']:
+        if edge.lower() in ["rising", "both"]:
             ire = np.where((np.hstack((dx, 0)) <= 0) & (np.hstack((0, dx)) > 0))[0]
-        if edge.lower() in ['falling', 'both']:
+        if edge.lower() in ["falling", "both"]:
             ife = np.where((np.hstack((dx, 0)) < 0) & (np.hstack((0, dx)) >= 0))[0]
     ind = np.unique(np.hstack((ine, ire, ife)))
 
     if verbose >= 1:
-        print(f'before filtering by mpd = {mpd}, and threshold = {threshold}, ind = {ind.tolist()}')
-        print(f'additionally, left_threshold = {left_threshold}, right_threshold = {right_threshold}, length of data = {len(data)}')
-    
+        print(
+            f"before filtering by mpd = {mpd}, and threshold = {threshold}, ind = {ind.tolist()}"
+        )
+        print(
+            f"additionally, left_threshold = {left_threshold}, right_threshold = {right_threshold}, length of data = {len(data)}"
+        )
+
     # handle NaN's
     if ind.size and indnan.size:
         # NaN's and values close to NaN's cannot be peaks
-        ind = ind[np.in1d(ind, np.unique(np.hstack((indnan, indnan-1, indnan+1))), invert=True)]
+        ind = ind[
+            np.in1d(
+                ind, np.unique(np.hstack((indnan, indnan - 1, indnan + 1))), invert=True
+            )
+        ]
 
     if verbose >= 1:
-        print(f'after handling nan values, ind = {ind.tolist()}')
-    
+        print(f"after handling nan values, ind = {ind.tolist()}")
+
     # peaks are only valid within [mpb, len(data)-mpb[
-    ind = np.array([pos for pos in ind if mpd<=pos<len(data)-mpd])
-    
+    ind = np.array([pos for pos in ind if mpd <= pos < len(data) - mpd])
+
     if verbose >= 1:
-        print(f'after fitering out elements too close to border by mpd = {mpd}, ind = {ind.tolist()}')
+        print(
+            f"after fitering out elements too close to border by mpd = {mpd}, ind = {ind.tolist()}"
+        )
 
     # first and last values of data cannot be peaks
     # if ind.size and ind[0] == 0:
@@ -454,27 +497,36 @@ def detect_peaks(x:Sequence,
     # remove peaks < minimum peak height
     if ind.size and mph is not None:
         ind = ind[data[ind] >= mph]
-    
+
     if verbose >= 1:
-        print(f'after filtering by mph = {mph}, ind = {ind.tolist()}')
-    
+        print(f"after filtering by mph = {mph}, ind = {ind.tolist()}")
+
     # remove peaks - neighbors < threshold
     _left_threshold = left_threshold if left_threshold > 0 else threshold
     _right_threshold = right_threshold if right_threshold > 0 else threshold
     if ind.size and (_left_threshold > 0 and _right_threshold > 0):
         # dx = np.min(np.vstack([data[ind]-data[ind-1], data[ind]-data[ind+1]]), axis=0)
-        dx = np.max(np.vstack([data[ind]-data[ind+idx] for idx in range(-mpd, 0)]), axis=0)
+        dx = np.max(
+            np.vstack([data[ind] - data[ind + idx] for idx in range(-mpd, 0)]), axis=0
+        )
         ind = np.delete(ind, np.where(dx < _left_threshold)[0])
         if verbose >= 2:
-            print(f'from left, dx = {dx.tolist()}')
-            print(f'after deleting those dx < _left_threshold = {_left_threshold}, ind = {ind.tolist()}')
-        dx = np.max(np.vstack([data[ind]-data[ind+idx] for idx in range(1, mpd+1)]), axis=0)
+            print(f"from left, dx = {dx.tolist()}")
+            print(
+                f"after deleting those dx < _left_threshold = {_left_threshold}, ind = {ind.tolist()}"
+            )
+        dx = np.max(
+            np.vstack([data[ind] - data[ind + idx] for idx in range(1, mpd + 1)]),
+            axis=0,
+        )
         ind = np.delete(ind, np.where(dx < _right_threshold)[0])
         if verbose >= 2:
-            print(f'from right, dx = {dx.tolist()}')
-            print(f'after deleting those dx < _right_threshold = {_right_threshold}, ind = {ind.tolist()}')
+            print(f"from right, dx = {dx.tolist()}")
+            print(
+                f"after deleting those dx < _right_threshold = {_right_threshold}, ind = {ind.tolist()}"
+            )
     if verbose >= 1:
-        print(f'after filtering by threshold, ind = {ind.tolist()}')
+        print(f"after filtering by threshold, ind = {ind.tolist()}")
     # detect small peaks closer than minimum peak distance
     if ind.size and mpd > 1:
         ind = ind[np.argsort(data[ind])][::-1]  # sort ind by peak height
@@ -482,24 +534,31 @@ def detect_peaks(x:Sequence,
         for i in range(ind.size):
             if not idel[i]:
                 # keep peaks with the same height if kpsh is True
-                idel = idel | (ind >= ind[i] - mpd) & (ind <= ind[i] + mpd) \
-                    & (data[ind[i]] > data[ind] if kpsh else True)
+                idel = idel | (ind >= ind[i] - mpd) & (ind <= ind[i] + mpd) & (
+                    data[ind[i]] > data[ind] if kpsh else True
+                )
                 idel[i] = 0  # Keep current peak
         # remove the small peaks and sort back the indices by their occurrence
         ind = np.sort(ind[~idel])
-    
-    ind = np.array([item for item in ind if data[item]==np.max(data[item-mpd:item+mpd+1])])
+
+    ind = np.array(
+        [
+            item
+            for item in ind
+            if data[item] == np.max(data[item - mpd : item + mpd + 1])
+        ]
+    )
 
     if verbose >= 1:
-        print(f'after filtering by mpd, ind = {ind.tolist()}')
+        print(f"after filtering by mpd, ind = {ind.tolist()}")
 
     if prominence:
         _p = peak_prominences(data, ind, prominence_wlen)[0]
         ind = ind[np.where(_p >= prominence)[0]]
         if verbose >= 1:
-            print(f'after filtering by prominence, ind = {ind.tolist()}')
+            print(f"after filtering by prominence, ind = {ind.tolist()}")
             if verbose >= 2:
-                print(f'with detailed prominence = {_p.tolist()}')
+                print(f"with detailed prominence = {_p.tolist()}")
 
     if show:
         if indnan.size:
@@ -519,34 +578,46 @@ def _plot(x, mph, mpd, threshold, edge, valley, ax, ind):
 
     Parameters: ref. the function `detect_peaks`
     """
-    if 'plt' not in dir():
+    if "plt" not in dir():
         import matplotlib.pyplot as plt
-    
+
     if ax is None:
         _, ax = plt.subplots(1, 1, figsize=(8, 4))
 
-    ax.plot(x, 'b', lw=1)
+    ax.plot(x, "b", lw=1)
     if ind.size:
-        label = 'valley' if valley else 'peak'
-        label = label + 's' if ind.size > 1 else label
-        ax.plot(ind, x[ind], '+', mfc=None, mec='r', mew=2, ms=8,
-                label='%d %s' % (ind.size, label))
-        ax.legend(loc='best', framealpha=.5, numpoints=1)
-    ax.set_xlim(-.02*x.size, x.size*1.02-1)
+        label = "valley" if valley else "peak"
+        label = label + "s" if ind.size > 1 else label
+        ax.plot(
+            ind,
+            x[ind],
+            "+",
+            mfc=None,
+            mec="r",
+            mew=2,
+            ms=8,
+            label="%d %s" % (ind.size, label),
+        )
+        ax.legend(loc="best", framealpha=0.5, numpoints=1)
+    ax.set_xlim(-0.02 * x.size, x.size * 1.02 - 1)
     ymin, ymax = x[np.isfinite(x)].min(), x[np.isfinite(x)].max()
     yrange = ymax - ymin if ymax > ymin else 1
-    ax.set_ylim(ymin - 0.1*yrange, ymax + 0.1*yrange)
-    ax.set_xlabel('Data #', fontsize=14)
-    ax.set_ylabel('Amplitude', fontsize=14)
-    mode = 'Valley detection' if valley else 'Peak detection'
-    ax.set_title("%s (mph=%s, mpd=%d, threshold=%s, edge='%s')"
-                    % (mode, str(mph), mpd, str(threshold), edge))
+    ax.set_ylim(ymin - 0.1 * yrange, ymax + 0.1 * yrange)
+    ax.set_xlabel("Data #", fontsize=14)
+    ax.set_ylabel("Amplitude", fontsize=14)
+    mode = "Valley detection" if valley else "Peak detection"
+    ax.set_title(
+        "%s (mph=%s, mpd=%d, threshold=%s, edge='%s')"
+        % (mode, str(mph), mpd, str(threshold), edge)
+    )
     # plt.grid()
     plt.show()
 
 
-def remove_spikes_naive(sig:np.ndarray, threshold:Real=20, inplace:bool=True) -> np.ndarray:
-    """ finished, checked,
+def remove_spikes_naive(
+    sig: np.ndarray, threshold: Real = 20, inplace: bool = True
+) -> np.ndarray:
+    """finished, checked,
 
     remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
 
@@ -566,18 +637,24 @@ def remove_spikes_naive(sig:np.ndarray, threshold:Real=20, inplace:bool=True) ->
     sig: ndarray,
         signal with `spikes` removed
     """
-    b = list(filter(
-        lambda k: k > 0,
-        np.argwhere(np.logical_or(np.abs(sig)>threshold, np.isnan(sig))).squeeze(-1)
-    ))
+    b = list(
+        filter(
+            lambda k: k > 0,
+            np.argwhere(np.logical_or(np.abs(sig) > threshold, np.isnan(sig))).squeeze(
+                -1
+            ),
+        )
+    )
     if not inplace:
         sig = sig.copy()
     for k in b:
-        sig[k] = sig[k-1]
+        sig[k] = sig[k - 1]
     return sig
 
 
-def butter_bandpass(lowcut:Real, highcut:Real, fs:Real, order:int, verbose:int=0) -> Tuple[np.ndarray, np.ndarray]:
+def butter_bandpass(
+    lowcut: Real, highcut: Real, fs: Real, order: int, verbose: int = 0
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Butterworth Bandpass Filter Design
 
@@ -623,7 +700,7 @@ def butter_bandpass(lowcut:Real, highcut:Real, fs:Real, order:int, verbose:int=0
     elif high >= 1:
         Wn = low
         btype = "high"
-    elif lowcut==highcut:
+    elif lowcut == highcut:
         Wn = high
         btype = "low"
     else:
@@ -631,19 +708,23 @@ def butter_bandpass(lowcut:Real, highcut:Real, fs:Real, order:int, verbose:int=0
         btype = "band"
 
     if verbose >= 1:
-        print(f"by the setup of lowcut and highcut, the filter type falls to {btype}, with Wn = {Wn}")
-    
+        print(
+            f"by the setup of lowcut and highcut, the filter type falls to {btype}, with Wn = {Wn}"
+        )
+
     b, a = butter(order, Wn, btype=btype)
     return b, a
 
 
-def butter_bandpass_filter(data:np.ndarray,
-                           lowcut:Real,
-                           highcut:Real,
-                           fs:Real,
-                           order:int,
-                           btype:Optional[str]=None,
-                           verbose:int=0,) -> np.ndarray:
+def butter_bandpass_filter(
+    data: np.ndarray,
+    lowcut: Real,
+    highcut: Real,
+    fs: Real,
+    order: int,
+    btype: Optional[str] = None,
+    verbose: int = 0,
+) -> np.ndarray:
     """
     Butterworth Bandpass
 
@@ -693,12 +774,14 @@ def butter_bandpass_filter(data:np.ndarray,
     return y
 
 
-def get_ampl(sig:np.ndarray,
-             fs:Real,
-             fmt:str="lead_first",
-             window:Real=0.2,
-             critical_points:Optional[Sequence]=None) -> Union[float, np.ndarray]:
-    """ finished, checked,
+def get_ampl(
+    sig: np.ndarray,
+    fs: Real,
+    fmt: str = "lead_first",
+    window: Real = 0.2,
+    critical_points: Optional[Sequence] = None,
+) -> Union[float, np.ndarray]:
+    """finished, checked,
 
     get amplitude of a signal (near critical points if given)
 
@@ -739,12 +822,16 @@ def get_ampl(sig:np.ndarray,
         s = np.stack(
             [
                 ensure_siglen(
-                    _sig[...,max(0,p-half_window):min(_sig.shape[-1],p+half_window)],
+                    _sig[
+                        ...,
+                        max(0, p - half_window) : min(_sig.shape[-1], p + half_window),
+                    ],
                     siglen=_window,
-                    fmt="lead_first") \
+                    fmt="lead_first",
+                )
                 for p in critical_points
             ],
-            axis=-1
+            axis=-1,
         )
         # the following is much slower
         # for p in critical_points:
@@ -752,23 +839,28 @@ def get_ampl(sig:np.ndarray,
         #     ampl = np.max(np.array([ampl, np.max(s,axis=-1) - np.min(s,axis=-1)]), axis=0)
     else:
         s = np.stack(
-            [_sig[..., idx*half_window: idx*half_window+_window] for idx in range(_sig.shape[-1]//half_window-1)],
-            axis=-1
+            [
+                _sig[..., idx * half_window : idx * half_window + _window]
+                for idx in range(_sig.shape[-1] // half_window - 1)
+            ],
+            axis=-1,
         )
         # the following is much slower
         # for idx in range(_sig.shape[-1]//half_window-1):
         #     s = _sig[..., idx*half_window: idx*half_window+_window]
         #     ampl = np.max(np.array([ampl, np.max(s,axis=-1) - np.min(s,axis=-1)]), axis=0)
-    ampl = np.max(np.max(s,axis=-2) - np.min(s,axis=-2), axis=-1)
+    ampl = np.max(np.max(s, axis=-2) - np.min(s, axis=-2), axis=-1)
     return ampl
 
 
-def normalize(sig:np.ndarray,
-              method:str,
-              mean:Union[Real,Iterable[Real]]=0.0,
-              std:Union[Real,Iterable[Real]]=1.0,
-              sig_fmt:str="channel_first",
-              per_channel:bool=False,) -> np.ndarray:
+def normalize(
+    sig: np.ndarray,
+    method: str,
+    mean: Union[Real, Iterable[Real]] = 0.0,
+    std: Union[Real, Iterable[Real]] = 1.0,
+    sig_fmt: str = "channel_first",
+    per_channel: bool = False,
+) -> np.ndarray:
     """ finished, checked,
     
     perform z-score normalization on `sig`,
@@ -817,26 +909,41 @@ def normalize(sig:np.ndarray,
     only the mean value will be shifted
     """
     _method = method.lower()
-    assert _method in ["z-score", "naive", "min-max",]
+    assert _method in [
+        "z-score",
+        "naive",
+        "min-max",
+    ]
     if isinstance(std, Real):
         assert std > 0, "standard deviation should be positive"
     else:
         assert (np.array(std) > 0).all(), "standard deviations should all be positive"
     if not per_channel:
-        assert isinstance(mean, Real) and isinstance(std, Real), \
-            f"mean and std should be real numbers in the non per-channel setting"
-    assert sig_fmt.lower() in ["channel_first", "lead_first", "channel_last", "lead_last",], \
-        f"format {sig_fmt} of the signal not supported!"
+        assert isinstance(mean, Real) and isinstance(
+            std, Real
+        ), f"mean and std should be real numbers in the non per-channel setting"
+    assert sig_fmt.lower() in [
+        "channel_first",
+        "lead_first",
+        "channel_last",
+        "lead_last",
+    ], f"format {sig_fmt} of the signal not supported!"
 
     if isinstance(mean, Iterable):
-        if sig_fmt.lower() in ["channel_first", "lead_first",]:
+        if sig_fmt.lower() in [
+            "channel_first",
+            "lead_first",
+        ]:
             _mean = np.array(mean)[..., np.newaxis]
         else:
             _mean = np.array(mean)[np.newaxis, ...]
     else:
         _mean = mean
     if isinstance(std, Iterable):
-        if sig_fmt.lower() in ["channel_first", "lead_first",]:
+        if sig_fmt.lower() in [
+            "channel_first",
+            "lead_first",
+        ]:
             _std = np.array(std)[..., np.newaxis]
         else:
             _std = np.array(std)[np.newaxis, ...]
@@ -850,21 +957,31 @@ def normalize(sig:np.ndarray,
     eps = 1e-7  # to avoid dividing by zero
     if sig.ndim == 3:  # the first dimension is the batch dimension
         if not per_channel:
-            options = dict(axis=(1,2), keepdims=True)
-        elif sig_fmt.lower() in ["channel_first", "lead_first",]:
+            options = dict(axis=(1, 2), keepdims=True)
+        elif sig_fmt.lower() in [
+            "channel_first",
+            "lead_first",
+        ]:
             options = dict(axis=2, keepdims=True)
         else:
             options = dict(axis=1, keepdims=True)
     else:
         if not per_channel:
             options = dict(axis=None)
-        elif sig_fmt.lower() in ["channel_first", "lead_first",]:
+        elif sig_fmt.lower() in [
+            "channel_first",
+            "lead_first",
+        ]:
             options = dict(axis=1, keepdims=True)
         else:
             options = dict(axis=0, keepdims=True)
 
     if _method == "z-score":
-        nm_sig = ( (sig - np.mean(sig, **options)) / (np.std(sig, **options) + eps) ) * _std + _mean
+        nm_sig = (
+            (sig - np.mean(sig, **options)) / (np.std(sig, **options) + eps)
+        ) * _std + _mean
     elif _method == "min-max":
-        nm_sig = ( sig - np.amin(sig, **options) ) / ( np.amax(sig, **options) - np.amin(sig, **options) + eps )
+        nm_sig = (sig - np.amin(sig, **options)) / (
+            np.amax(sig, **options) - np.amin(sig, **options) + eps
+        )
     return nm_sig

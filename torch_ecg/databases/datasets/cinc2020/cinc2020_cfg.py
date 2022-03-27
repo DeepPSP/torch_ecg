@@ -30,23 +30,30 @@ _SPECIAL_CLASSES = []
 _NAME = "cinc2020"
 
 
-def _assign_classes(cfg:CFG, special_classes:List[str]) -> NoReturn:
-    """
-    """
+def _assign_classes(cfg: CFG, special_classes: List[str]) -> NoReturn:
+    """ """
     cfg.special_classes = deepcopy(special_classes)
-    cfg.tranche_class_weights = CFG({
-        t: get_class_weight(
-            t,
-            exclude_classes=cfg.special_classes,
-            scored_only=True,
-            threshold=20,
-            min_weight=cfg.min_class_weight,
-        ) for t in ["A", "B", "AB", "E", "F",]
-    })
-    cfg.tranche_classes = CFG({
-        t: sorted(list(t_cw.keys())) \
-            for t, t_cw in cfg.tranche_class_weights.items()
-    })
+    cfg.tranche_class_weights = CFG(
+        {
+            t: get_class_weight(
+                t,
+                exclude_classes=cfg.special_classes,
+                scored_only=True,
+                threshold=20,
+                min_weight=cfg.min_class_weight,
+            )
+            for t in [
+                "A",
+                "B",
+                "AB",
+                "E",
+                "F",
+            ]
+        }
+    )
+    cfg.tranche_classes = CFG(
+        {t: sorted(list(t_cw.keys())) for t, t_cw in cfg.tranche_class_weights.items()}
+    )
 
     cfg.class_weights = get_class_weight(
         tranches="ABEF",
@@ -56,7 +63,6 @@ def _assign_classes(cfg:CFG, special_classes:List[str]) -> NoReturn:
         min_weight=cfg.min_class_weight,
     )
     cfg.classes = sorted(list(cfg.class_weights.keys()))
-
 
 
 # training configurations for machine learning and deep learning
@@ -124,13 +130,18 @@ CINC2020TrainCfg.batch_size = 64
 # configs of optimizers and lr_schedulers
 CINC2020TrainCfg.optimizer = "adamw_amsgrad"  # "sgd", "adam", "adamw"
 CINC2020TrainCfg.momentum = 0.949  # default values for corresponding PyTorch optimizers
-CINC2020TrainCfg.betas = (0.9, 0.999)  # default values for corresponding PyTorch optimizers
+CINC2020TrainCfg.betas = (
+    0.9,
+    0.999,
+)  # default values for corresponding PyTorch optimizers
 CINC2020TrainCfg.decay = 1e-2  # default values for corresponding PyTorch optimizers
 
 CINC2020TrainCfg.learning_rate = 1e-4  # 1e-3
 CINC2020TrainCfg.lr = CINC2020TrainCfg.learning_rate
 
-CINC2020TrainCfg.lr_scheduler = "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
+CINC2020TrainCfg.lr_scheduler = (
+    "one_cycle"  # "one_cycle", "plateau", "burn_in", "step", None
+)
 CINC2020TrainCfg.lr_step_size = 50
 CINC2020TrainCfg.lr_gamma = 0.1
 CINC2020TrainCfg.max_lr = 2e-3  # for "one_cycle" scheduler, to adjust via expriments
@@ -147,7 +158,9 @@ CINC2020TrainCfg.early_stopping.patience = 10
 # CINC2020TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
 CINC2020TrainCfg.loss = "AsymmetricLoss"  # "FocalLoss"
 CINC2020TrainCfg.loss_kw = CFG(gamma_pos=0, gamma_neg=0.2, implementation="deep-psp")
-CINC2020TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2020?
+CINC2020TrainCfg.flooding_level = (
+    0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2020?
+)
 
 CINC2020TrainCfg.monitor = "challenge_metric"
 

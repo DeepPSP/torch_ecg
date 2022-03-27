@@ -11,7 +11,7 @@ from collections import deque, OrderedDict
 from typing import NoReturn, Optional, Union, Tuple, Dict, List
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
+
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
@@ -26,7 +26,11 @@ import torch_optimizer as extra_optim
 
 from .utils_nn import default_collate_fn as collate_fn
 from .misc import (
-    dicts_equal, init_logger, get_date_str, dict_to_str, str2bool,
+    dicts_equal,
+    init_logger,
+    get_date_str,
+    dict_to_str,
+    str2bool,
     ReprMixin,
 )
 from .loggers import LoggerManager
@@ -34,17 +38,20 @@ from ..augmenters import AugmenterManager
 from ..models.loss import (
     BCEWithLogitsWithClassWeightLoss,
     MaskedBCEWithLogitsLoss,
-    FocalLoss, AsymmetricLoss,
+    FocalLoss,
+    AsymmetricLoss,
 )
 from ..cfg import CFG, DEFAULTS
 
 
-__all__ = ["BaseTrainer",]
+__all__ = [
+    "BaseTrainer",
+]
 
 
 class BaseTrainer(ReprMixin, ABC):
-    """
-    """
+    """ """
+
     __name__ = "BaseTrainer"
     __DEFATULT_CONFIGS__ = {
         "debug": True,
@@ -55,14 +62,16 @@ class BaseTrainer(ReprMixin, ABC):
     }
     __DEFATULT_CONFIGS__.update(deepcopy(DEFAULTS))
 
-    def __init__(self,
-                 model:nn.Module,
-                 dataset_cls:Dataset,
-                 model_config:dict,
-                 train_config:dict,
-                 device:Optional[torch.device]=None,
-                 lazy:bool=False,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        model: nn.Module,
+        dataset_cls: Dataset,
+        model_config: dict,
+        train_config: dict,
+        device: Optional[torch.device] = None,
+        lazy: bool = False,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -98,7 +107,9 @@ class BaseTrainer(ReprMixin, ABC):
             whether to initialize the data loader lazily
         """
         self.model = model
-        if type(self.model).__name__ in ["DataParallel",]:
+        if type(self.model).__name__ in [
+            "DataParallel",
+        ]:
             # TODO: further consider "DistributedDataParallel"
             self._model = self.model.module
         else:
@@ -133,15 +144,15 @@ class BaseTrainer(ReprMixin, ABC):
         self.epoch_loss = 0
 
     def train(self) -> OrderedDict:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         self._setup_optimizer()
 
         self._setup_scheduler()
 
         self._setup_criterion()
 
-        msg = textwrap.dedent(f"""
+        msg = textwrap.dedent(
+            f"""
             Starting training:
             ------------------
             Epochs:          {self.n_epochs}
@@ -153,7 +164,8 @@ class BaseTrainer(ReprMixin, ABC):
             Optimizer:       {self.train_config.optimizer}
             Dataset classes: {self.train_config.classes}
             -----------------------------------------
-            """)
+            """
+        )
         self.log_manager.log_message(msg)
 
         start_epoch = self.epoch
@@ -161,7 +173,11 @@ class BaseTrainer(ReprMixin, ABC):
             # train one epoch
             self.model.train()
             self.epoch_loss = 0
-            with tqdm(total=self.n_train, desc=f"Epoch {self.epoch}/{self.n_epochs}", unit="signals") as pbar:
+            with tqdm(
+                total=self.n_train,
+                desc=f"Epoch {self.epoch}/{self.n_epochs}",
+                unit="signals",
+            ) as pbar:
                 self.log_manager.epoch_start(self.epoch)
                 # train one epoch
                 self.train_one_epoch(pbar)
@@ -192,17 +208,25 @@ class BaseTrainer(ReprMixin, ABC):
                     self.best_epoch = self.epoch
                     self.pseudo_best_epoch = self.epoch
                 elif self.train_config.early_stopping:
-                    if eval_res[self.train_config.monitor] >= self.best_metric - self.train_config.early_stopping.min_delta:
+                    if (
+                        eval_res[self.train_config.monitor]
+                        >= self.best_metric - self.train_config.early_stopping.min_delta
+                    ):
                         self.pseudo_best_epoch = self.epoch
-                    elif self.epoch - self.pseudo_best_epoch >= self.train_config.early_stopping.patience:
+                    elif (
+                        self.epoch - self.pseudo_best_epoch
+                        >= self.train_config.early_stopping.patience
+                    ):
                         msg = f"early stopping is triggered at epoch {self.epoch}"
                         self.log_manager.log_message(msg)
                         break
 
-                msg = textwrap.dedent(f"""
+                msg = textwrap.dedent(
+                    f"""
                     best metric = {self.best_metric},
                     obtained at epoch {self.best_epoch}
-                """)
+                """
+                )
                 self.log_manager.log_message(msg)
 
                 # save checkpoint
@@ -224,7 +248,9 @@ class BaseTrainer(ReprMixin, ABC):
             if self.train_config.final_model_name:
                 save_filename = self.train_config.final_model_name
             else:
-                save_suffix = f"metric_{self.best_eval_res[self.train_config.monitor]:.2f}"
+                save_suffix = (
+                    f"metric_{self.best_eval_res[self.train_config.monitor]:.2f}"
+                )
                 save_filename = f"BestModel_{self.save_prefix}{self.best_epoch}_{get_date_str()}_{save_suffix}.pth.tar"
             save_path = self.train_config.model_dir / save_filename
             self.save_checkpoint(path=str(save_path))
@@ -236,8 +262,8 @@ class BaseTrainer(ReprMixin, ABC):
 
         return self.best_state_dict
 
-    def train_one_epoch(self, pbar:tqdm) -> NoReturn:
-        """ finished, checked,
+    def train_one_epoch(self, pbar: tqdm) -> NoReturn:
+        """finished, checked,
 
         train one epoch, and update the progress bar
 
@@ -255,7 +281,9 @@ class BaseTrainer(ReprMixin, ABC):
 
             loss = self.criterion(*out_tensors).to(self.dtype)
             if self.train_config.flooding_level > 0:
-                flood = (loss - self.train_config.flooding_level).abs() + self.train_config.flooding_level
+                flood = (
+                    loss - self.train_config.flooding_level
+                ).abs() + self.train_config.flooding_level
                 self.epoch_loss += loss.item()
                 self.optimizer.zero_grad()
                 flood.backward()
@@ -270,14 +298,18 @@ class BaseTrainer(ReprMixin, ABC):
                 train_step_metrics = {"loss": loss.item()}
                 if self.scheduler:
                     train_step_metrics.update({"lr": self.scheduler.get_last_lr()[0]})
-                    pbar.set_postfix(**{
-                        "loss (batch)": loss.item(),
-                        "lr": self.scheduler.get_last_lr()[0],
-                    })
+                    pbar.set_postfix(
+                        **{
+                            "loss (batch)": loss.item(),
+                            "lr": self.scheduler.get_last_lr()[0],
+                        }
+                    )
                 else:
-                    pbar.set_postfix(**{
-                        "loss (batch)": loss.item(),
-                    })
+                    pbar.set_postfix(
+                        **{
+                            "loss (batch)": loss.item(),
+                        }
+                    )
                 if self.train_config.flooding_level > 0:
                     train_step_metrics.update({"flood": flood.item()})
                 self.log_manager.log_metrics(
@@ -300,22 +332,25 @@ class BaseTrainer(ReprMixin, ABC):
     @property
     @abstractmethod
     def extra_required_train_config_fields(self) -> List[str]:
-        """
-        """
+        """ """
         raise NotImplementedError
 
     @property
     def required_train_config_fields(self) -> List[str]:
-        """
-        """
+        """ """
         return [
-            "classes", "monitor", "n_epochs", "batch_size", "log_step",
-            "optimizer", "lr_scheduler", "learning_rate",
+            "classes",
+            "monitor",
+            "n_epochs",
+            "batch_size",
+            "log_step",
+            "optimizer",
+            "lr_scheduler",
+            "learning_rate",
         ] + self.extra_required_train_config_fields
 
     def _validate_train_config(self) -> NoReturn:
-        """
-        """
+        """ """
         for field in self.required_train_config_fields:
             if field not in self.train_config:
                 raise ValueError(f"{field} is missing in train_config!")
@@ -326,12 +361,11 @@ class BaseTrainer(ReprMixin, ABC):
 
     @property
     def train_config(self) -> CFG:
-        """
-        """
+        """ """
         return self._train_config
 
     @abstractmethod
-    def run_one_step(self, *data:Tuple[torch.Tensor, ...]) -> Tuple[torch.Tensor, ...]:
+    def run_one_step(self, *data: Tuple[torch.Tensor, ...]) -> Tuple[torch.Tensor, ...]:
         """
         run one step of training on one batch of data,
 
@@ -356,7 +390,7 @@ class BaseTrainer(ReprMixin, ABC):
 
     @torch.no_grad()
     @abstractmethod
-    def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
+    def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
         """
         do evaluation on the given data loader
 
@@ -372,8 +406,8 @@ class BaseTrainer(ReprMixin, ABC):
         """
         raise NotImplementedError
 
-    def _update_lr(self, eval_res:Optional[dict]=None) -> NoReturn:
-        """ finished, NOT checked,
+    def _update_lr(self, eval_res: Optional[dict] = None) -> NoReturn:
+        """finished, NOT checked,
 
         update learning rate using lr_scheduler, perhaps based on the eval_res
 
@@ -393,11 +427,14 @@ class BaseTrainer(ReprMixin, ABC):
             self.scheduler.step(metrics)
         elif self.train_config.lr_scheduler.lower() == "step":
             self.scheduler.step()
-        elif self.train_config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
+        elif self.train_config.lr_scheduler.lower() in [
+            "one_cycle",
+            "onecycle",
+        ]:
             self.scheduler.step()
 
-    def _setup_from_config(self, train_config:dict) -> NoReturn:
-        """ finished, checked,
+    def _setup_from_config(self, train_config: dict) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -421,7 +458,9 @@ class BaseTrainer(ReprMixin, ABC):
 
         self._setup_log_manager()
 
-        msg = f"training configurations are as follows:\n{dict_to_str(self.train_config)}"
+        msg = (
+            f"training configurations are as follows:\n{dict_to_str(self.train_config)}"
+        )
         self.log_manager.log_message(msg)
 
         self._setup_augmenter_manager()
@@ -430,25 +469,26 @@ class BaseTrainer(ReprMixin, ABC):
         self.train_config.model_dir.mkdir(parents=True, exist_ok=True)
 
     def extra_log_suffix(self) -> str:
-        """
-        """
+        """ """
         return f"{self._model.__name__}_{self.train_config.optimizer}_LR_{self.lr}_BS_{self.batch_size}"
 
     def _setup_log_manager(self) -> NoReturn:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         config = {"log_suffix": self.extra_log_suffix()}
         config.update(self.train_config)
         self.log_manager = LoggerManager.from_config(config=config)
 
     def _setup_augmenter_manager(self) -> NoReturn:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         self.augmenter_manager = AugmenterManager.from_config(config=self.train_config)
 
     @abstractmethod
-    def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
-        """ finished, checked,
+    def _setup_dataloaders(
+        self,
+        train_dataset: Optional[Dataset] = None,
+        val_dataset: Optional[Dataset] = None,
+    ) -> NoReturn:
+        """finished, checked,
 
         setup the dataloaders for training and validation
 
@@ -502,8 +542,7 @@ class BaseTrainer(ReprMixin, ABC):
         return 0
 
     def _setup_optimizer(self) -> NoReturn:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         if self.train_config.optimizer.lower() == "adam":
             self.optimizer = optim.Adam(
                 params=self.model.parameters(),
@@ -525,25 +564,36 @@ class BaseTrainer(ReprMixin, ABC):
                 weight_decay=self.train_config.decay,
             )
         else:
-            raise NotImplementedError(f"optimizer `{self.train_config.optimizer}` not implemented!")
+            raise NotImplementedError(
+                f"optimizer `{self.train_config.optimizer}` not implemented!"
+            )
 
     def _setup_scheduler(self) -> NoReturn:
-        """ finished, checked,
-        """
-        if self.train_config.lr_scheduler is None or self.train_config.lr_scheduler.lower() == "none":
+        """finished, checked,"""
+        if (
+            self.train_config.lr_scheduler is None
+            or self.train_config.lr_scheduler.lower() == "none"
+        ):
             self.train_config.lr_scheduler = "none"
             self.scheduler = None
         elif self.train_config.lr_scheduler.lower() == "plateau":
             self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-                self.optimizer, "max", patience=2, verbose=False,
+                self.optimizer,
+                "max",
+                patience=2,
+                verbose=False,
             )
         elif self.train_config.lr_scheduler.lower() == "step":
             self.scheduler = optim.lr_scheduler.StepLR(
                 self.optimizer,
-                self.train_config.lr_step_size, self.train_config.lr_gamma,
+                self.train_config.lr_step_size,
+                self.train_config.lr_gamma,
                 # verbose=False,
             )
-        elif self.train_config.lr_scheduler.lower() in ["one_cycle", "onecycle",]:
+        elif self.train_config.lr_scheduler.lower() in [
+            "one_cycle",
+            "onecycle",
+        ]:
             self.scheduler = optim.lr_scheduler.OneCycleLR(
                 optimizer=self.optimizer,
                 max_lr=self.train_config.max_lr,
@@ -552,11 +602,12 @@ class BaseTrainer(ReprMixin, ABC):
                 # verbose=False,
             )
         else:
-            raise NotImplementedError(f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training")
+            raise NotImplementedError(
+                f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training"
+            )
 
     def _setup_criterion(self) -> NoReturn:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         loss_kw = self.train_config.get("loss_kw", {})
         for k, v in loss_kw.items():
             if isinstance(v, torch.Tensor):
@@ -578,10 +629,12 @@ class BaseTrainer(ReprMixin, ABC):
         elif self.train_config.loss == "CrossEntropyLoss":
             self.criterion = nn.CrossEntropyLoss(**loss_kw)
         else:
-            raise NotImplementedError(f"loss `{self.train_config.loss}` not implemented!")
+            raise NotImplementedError(
+                f"loss `{self.train_config.loss}` not implemented!"
+            )
 
-    def _check_model_config_compatability(self, model_config:dict) -> bool:
-        """ finished, checked,
+    def _check_model_config_compatability(self, model_config: dict) -> bool:
+        """finished, checked,
 
         Parameters
         ----------
@@ -595,8 +648,8 @@ class BaseTrainer(ReprMixin, ABC):
         """
         return dicts_equal(self.model_config, model_config)
 
-    def resume_from_checkpoint(self, checkpoint:Union[str,dict]) -> NoReturn:
-        """ NOT finished, NOT checked,
+    def resume_from_checkpoint(self, checkpoint: Union[str, dict]) -> NoReturn:
+        """NOT finished, NOT checked,
 
         resume a training process from a checkpoint
 
@@ -613,37 +666,51 @@ class BaseTrainer(ReprMixin, ABC):
             ckpt = checkpoint
         insufficient_msg = "this checkpoint has no sufficient data to resume training"
         assert isinstance(ckpt, dict), insufficient_msg
-        assert set(["model_state_dict", "optimizer_state_dict", "model_config", "train_config", "epoch",]).issubset(ckpt.keys()), \
-            insufficient_msg
+        assert set(
+            [
+                "model_state_dict",
+                "optimizer_state_dict",
+                "model_config",
+                "train_config",
+                "epoch",
+            ]
+        ).issubset(ckpt.keys()), insufficient_msg
         if not self._check_model_config_compatability(self, ckpt["model_config"]):
-            raise ValueError("model config of the checkpoint is not compatible with the config of the current model")
+            raise ValueError(
+                "model config of the checkpoint is not compatible with the config of the current model"
+            )
         self._model.load_state_dict(ckpt["model_state_dict"])
         self.epoch = ckpt["epoch"]
         self._setup_from_config(ckpt["train_config"])
         # TODO: resume optimizer, etc.
 
-    def save_checkpoint(self, path:str) -> NoReturn:
-        """ finished, checked,
+    def save_checkpoint(self, path: str) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
         path: str,
             path to save the checkpoint
         """
-        torch.save({
-            "model_state_dict": self._model.state_dict(),
-            "optimizer_state_dict": self.optimizer.state_dict(),
-            "model_config": self.model_config,
-            "train_config": self.train_config,
-            "epoch": self.epoch,
-        }, path)
+        torch.save(
+            {
+                "model_state_dict": self._model.state_dict(),
+                "optimizer_state_dict": self.optimizer.state_dict(),
+                "model_config": self.model_config,
+                "train_config": self.train_config,
+                "epoch": self.epoch,
+            },
+            path,
+        )
 
     def extra_repr_keys(self) -> List[str]:
-        """ finished, checked,
+        """finished, checked,
 
         Returns
         -------
         list of str,
             extra keys to display in the string representation of the trainer
         """
-        return ["train_config",]
+        return [
+            "train_config",
+        ]

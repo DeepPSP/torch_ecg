@@ -11,27 +11,47 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.model_configs import (
     ECG_SEQ_LAB_NET_CONFIG,
     RR_LSTM_CONFIG,
-    RR_AF_CRF_CONFIG, RR_AF_VANILLA_CONFIG,
+    RR_AF_CRF_CONFIG,
+    RR_AF_VANILLA_CONFIG,
     ECG_UNET_VANILLA_CONFIG,
     ECG_SUBTRACT_UNET_CONFIG,
     # cnn
-    vgg_block_basic, vgg_block_mish, vgg_block_swish,
-    vgg16, vgg16_leadwise,
-    resnet_block_basic, resnet_bottle_neck_B, resnet_bottle_neck_D,
-    resnet_block_basic_se, resnet_block_basic_gc,
-    resnet_bottle_neck_se, resnet_bottle_neck_gc,
-    resnet_nature_comm, resnet_nature_comm_se, resnet_nature_comm_gc,
-    resnet_nature_comm_bottle_neck, resnet_nature_comm_bottle_neck_se,
-    resnetN, resnetNB, resnetNS, resnetNBS,
-    tresnetF, tresnetP, tresnetN, tresnetS, tresnetM,
+    vgg_block_basic,
+    vgg_block_mish,
+    vgg_block_swish,
+    vgg16,
+    vgg16_leadwise,
+    resnet_block_basic,
+    resnet_bottle_neck_B,
+    resnet_bottle_neck_D,
+    resnet_block_basic_se,
+    resnet_block_basic_gc,
+    resnet_bottle_neck_se,
+    resnet_bottle_neck_gc,
+    resnet_nature_comm,
+    resnet_nature_comm_se,
+    resnet_nature_comm_gc,
+    resnet_nature_comm_bottle_neck,
+    resnet_nature_comm_bottle_neck_se,
+    resnetN,
+    resnetNB,
+    resnetNS,
+    resnetNBS,
+    tresnetF,
+    tresnetP,
+    tresnetN,
+    tresnetS,
+    tresnetM,
     multi_scopic_block,
-    multi_scopic, multi_scopic_leadwise,
+    multi_scopic,
+    multi_scopic_leadwise,
     densenet_leadwise,
     xception_leadwise,
     # lstm
@@ -68,25 +88,27 @@ BaseCfg.fs = 200
 BaseCfg.n_leads = 2
 BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
-BaseCfg.class_fn2abbr = { # fullname to abbreviation
+BaseCfg.class_fn2abbr = {  # fullname to abbreviation
     "non atrial fibrillation": "N",
     "paroxysmal atrial fibrillation": "AFp",
     "persistent atrial fibrillation": "AFf",
 }
-BaseCfg.class_abbr2fn = {v:k for k,v in BaseCfg.class_fn2abbr.items()}
-BaseCfg.class_fn_map = { # fullname to number
+BaseCfg.class_abbr2fn = {v: k for k, v in BaseCfg.class_fn2abbr.items()}
+BaseCfg.class_fn_map = {  # fullname to number
     "non atrial fibrillation": 0,
     "paroxysmal atrial fibrillation": 2,
     "persistent atrial fibrillation": 1,
 }
-BaseCfg.class_abbr_map = {k: BaseCfg.class_fn_map[v] for k,v in BaseCfg.class_abbr2fn.items()}
+BaseCfg.class_abbr_map = {
+    k: BaseCfg.class_fn_map[v] for k, v in BaseCfg.class_abbr2fn.items()
+}
 
-BaseCfg.bias_thr = 0.15 * BaseCfg.fs  # rhythm change annotations onsets or offset of corresponding R peaks
+BaseCfg.bias_thr = (
+    0.15 * BaseCfg.fs
+)  # rhythm change annotations onsets or offset of corresponding R peaks
 BaseCfg.beat_ann_bias_thr = 0.1 * BaseCfg.fs  # half width of broad qrs complex
 BaseCfg.beat_winL = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
 BaseCfg.beat_winR = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
-
-
 
 
 TrainCfg = CFG()
@@ -123,7 +145,7 @@ TrainCfg.bandpass = CFG(
     lowcut=0.5,
     highcut=45,
     filter_type="fir",
-    filter_order=int(0.3*TrainCfg.fs),
+    filter_order=int(0.3 * TrainCfg.fs),
 )
 
 # configs of data aumentation
@@ -197,10 +219,12 @@ TrainCfg.qrs_detection.reduction = 1
 TrainCfg.qrs_detection.cnn_name = "multi_scopic"
 TrainCfg.qrs_detection.rnn_name = "lstm"  # "none", "lstm"
 TrainCfg.qrs_detection.attn_name = "se"  # "none", "se", "gc", "nl"
-TrainCfg.qrs_detection.input_len = int(30*TrainCfg.fs)
-TrainCfg.qrs_detection.overlap_len = int(15*TrainCfg.fs)
-TrainCfg.qrs_detection.critical_overlap_len = int(25*TrainCfg.fs)
-TrainCfg.qrs_detection.classes = ["N",]
+TrainCfg.qrs_detection.input_len = int(30 * TrainCfg.fs)
+TrainCfg.qrs_detection.overlap_len = int(15 * TrainCfg.fs)
+TrainCfg.qrs_detection.critical_overlap_len = int(25 * TrainCfg.fs)
+TrainCfg.qrs_detection.classes = [
+    "N",
+]
 TrainCfg.qrs_detection.monitor = "qrs_score"  # monitor for determining the best model
 TrainCfg.qrs_detection.loss = "BCEWithLogitsLoss"  # "AsymmetricLoss"
 TrainCfg.qrs_detection.loss_kw = CFG()
@@ -209,8 +233,12 @@ TrainCfg.rr_lstm.final_model_name = None
 TrainCfg.rr_lstm.model_name = "lstm"  # "lstm", "lstm_crf"
 TrainCfg.rr_lstm.input_len = 30  # number of rr intervals ( number of rpeaks - 1)
 TrainCfg.rr_lstm.overlap_len = 15  # number of rr intervals ( number of rpeaks - 1)
-TrainCfg.rr_lstm.critical_overlap_len = 25  # number of rr intervals ( number of rpeaks - 1)
-TrainCfg.rr_lstm.classes = ["af",]
+TrainCfg.rr_lstm.critical_overlap_len = (
+    25  # number of rr intervals ( number of rpeaks - 1)
+)
+TrainCfg.rr_lstm.classes = [
+    "af",
+]
 TrainCfg.rr_lstm.monitor = "neg_masked_bce"  # "rr_score", "neg_masked_bce"  # monitor for determining the best model
 TrainCfg.rr_lstm.loss = "MaskedBCEWithLogitsLoss"
 TrainCfg.rr_lstm.loss_kw = CFG()
@@ -221,14 +249,16 @@ TrainCfg.main.reduction = 1
 TrainCfg.main.cnn_name = "multi_scopic"
 TrainCfg.main.rnn_name = "lstm"  # "none", "lstm"
 TrainCfg.main.attn_name = "se"  # "none", "se", "gc", "nl"
-TrainCfg.main.input_len = int(30*TrainCfg.fs)
-TrainCfg.main.overlap_len = int(15*TrainCfg.fs)
-TrainCfg.main.critical_overlap_len = int(25*TrainCfg.fs)
-TrainCfg.main.classes = ["af",]
+TrainCfg.main.input_len = int(30 * TrainCfg.fs)
+TrainCfg.main.overlap_len = int(15 * TrainCfg.fs)
+TrainCfg.main.critical_overlap_len = int(25 * TrainCfg.fs)
+TrainCfg.main.classes = [
+    "af",
+]
 TrainCfg.main.monitor = "neg_masked_bce"  # "main_score", "neg_masked_bce"  # monitor for determining the best model
 # TrainCfg.main.loss = "AsymmetricLoss" # "MaskedBCEWithLogitsLoss"
 # TrainCfg.main.loss_kw = CFG(gamma_pos=0, gamma_neg=1, implementation="deep-psp")
-TrainCfg.main.loss = "MaskedBCEWithLogitsLoss" # "MaskedBCEWithLogitsLoss"
+TrainCfg.main.loss = "MaskedBCEWithLogitsLoss"  # "MaskedBCEWithLogitsLoss"
 TrainCfg.main.loss_kw = CFG()
 
 
@@ -265,7 +295,9 @@ ModelCfg.qrs_detection.seq_lab.rnn.name = ModelCfg.qrs_detection.rnn_name
 ModelCfg.qrs_detection.seq_lab.attn.name = ModelCfg.qrs_detection.attn_name
 
 ModelCfg.qrs_detection.seq_lab.cnn.multi_scopic.filter_lengths = [
-    [5, 5, 3], [7, 5, 3], [7, 5, 3],
+    [5, 5, 3],
+    [7, 5, 3],
+    [7, 5, 3],
 ]
 
 ModelCfg.qrs_detection.unet = deepcopy(ECG_UNET_VANILLA_CONFIG)
@@ -319,7 +351,9 @@ ModelCfg.main.seq_lab.rnn.name = ModelCfg.main.rnn_name
 ModelCfg.main.seq_lab.attn.name = ModelCfg.main.attn_name
 
 ModelCfg.main.seq_lab.cnn.multi_scopic.filter_lengths = [
-    [3, 3, 3], [5, 5, 3], [9, 7, 5],
+    [3, 3, 3],
+    [5, 5, 3],
+    [9, 7, 5],
 ]
 
 ModelCfg.main.unet = deepcopy(ECG_UNET_VANILLA_CONFIG)
@@ -327,12 +361,12 @@ ModelCfg.main.unet.fs = BaseCfg.fs
 ModelCfg.main.unet.reduction = 1
 ModelCfg.main.unet.init_num_filters = 16  # keep the same with n_classes
 ModelCfg.main.unet.down_num_filters = [
-    ModelCfg.main.unet.init_num_filters * (2**idx) \
-        for idx in range(1, ModelCfg.main.unet.down_up_block_num+1)
+    ModelCfg.main.unet.init_num_filters * (2 ** idx)
+    for idx in range(1, ModelCfg.main.unet.down_up_block_num + 1)
 ]
 ModelCfg.main.unet.up_num_filters = [
-    ModelCfg.main.unet.init_num_filters * (2**idx) \
-        for idx in range(ModelCfg.main.unet.down_up_block_num-1,-1,-1)
+    ModelCfg.main.unet.init_num_filters * (2 ** idx)
+    for idx in range(ModelCfg.main.unet.down_up_block_num - 1, -1, -1)
 ]
 ModelCfg.main.unet.up_mode = "interp"  # "deconv"
 

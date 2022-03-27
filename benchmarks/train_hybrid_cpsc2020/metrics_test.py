@@ -10,6 +10,7 @@ try:
 except ModuleNotFoundError:
     import sys
     from os.path import dirname, abspath
+
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
 from torch_ecg.cfg import CFG
@@ -26,7 +27,9 @@ __all__ = [
 ]
 
 
-def CPSC2020_loss_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray, dtype:type=str) -> int:
+def CPSC2020_loss_test(
+    y_true: np.ndarray, y_pred: np.ndarray, y_indices: np.ndarray, dtype: type = str
+) -> int:
     """
 
     Parameters
@@ -48,24 +51,24 @@ def CPSC2020_loss_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarra
         - false_positive: number of false positives of each ectopic beat type
         - false_negative: number of false negatives of each ectopic beat type
     """
-    classes = ['S', 'V']
+    classes = ["S", "V"]
 
     truth_arr = {}
     pred_arr = {}
     if dtype == str:
         for c in classes:
-            truth_arr[c] = y_indices[np.where(y_true==c)[0]]
-            pred_arr[c] = y_indices[np.where(y_pred==c)[0]]
+            truth_arr[c] = y_indices[np.where(y_true == c)[0]]
+            pred_arr[c] = y_indices[np.where(y_pred == c)[0]]
     elif dtype == int:
         for c in classes:
-            truth_arr[c] = y_indices[np.where(y_true==BaseCfg.class_map[c])[0]]
-            pred_arr[c] = y_indices[np.where(y_pred==BaseCfg.class_map[c])[0]]
+            truth_arr[c] = y_indices[np.where(y_true == BaseCfg.class_map[c])[0]]
+            pred_arr[c] = y_indices[np.where(y_pred == BaseCfg.class_map[c])[0]]
 
     true_positive = {c: 0 for c in classes}
 
     for c in classes:
         for tc in truth_arr[c]:
-            pc = np.where(abs(pred_arr[c]-tc) <= BaseCfg.bias_thr)[0]
+            pc = np.where(abs(pred_arr[c] - tc) <= BaseCfg.bias_thr)[0]
             if pc.size > 0:
                 true_positive[c] += 1
 
@@ -73,12 +76,8 @@ def CPSC2020_loss_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarra
     #     c: np.array([in_generalized_interval(idx, pred_intervals[c]) for idx in truth_arr[c]]).astype(int).sum() \
     #         for c in classes
     # }
-    false_positive = {
-        c: len(pred_arr[c]) - true_positive[c] for c in classes
-    }
-    false_negative = {
-        c: len(truth_arr[c]) - true_positive[c] for c in classes
-    }
+    false_positive = {c: len(pred_arr[c]) - true_positive[c] for c in classes}
+    false_negative = {c: len(truth_arr[c]) - true_positive[c] for c in classes}
 
     false_positive_loss = {c: 1 for c in classes}
     false_negative_loss = {c: 5 for c in classes}
@@ -88,8 +87,9 @@ def CPSC2020_loss_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarra
     print(f"false_negative = {dict_to_str(false_negative)}")
 
     class_loss = {
-        c: false_positive[c] * false_positive_loss[c] + false_negative[c] * false_negative_loss[c] \
-            for c in classes
+        c: false_positive[c] * false_positive_loss[c]
+        + false_negative[c] * false_negative_loss[c]
+        for c in classes
     }
 
     total_loss = sum(class_loss.values())
@@ -105,7 +105,9 @@ def CPSC2020_loss_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarra
     return retval
 
 
-def CPSC2020_score_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray, dtype:type=str) -> int:
+def CPSC2020_score_test(
+    y_true: np.ndarray, y_pred: np.ndarray, y_indices: np.ndarray, dtype: type = str
+) -> int:
     """
 
     Parameters
@@ -127,21 +129,24 @@ def CPSC2020_score_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarr
         - false_positive: number of false positives of each ectopic beat type
         - false_negative: number of false negatives of each ectopic beat type
     """
-    classes = ['S', 'V']
+    classes = ["S", "V"]
 
     truth_arr = {}
     pred_arr = {}
     if dtype == str:
         for c in classes:
-            truth_arr[c] = y_indices[np.where(y_true==c)[0]]
-            pred_arr[c] = y_indices[np.where(y_pred==c)[0]]
+            truth_arr[c] = y_indices[np.where(y_true == c)[0]]
+            pred_arr[c] = y_indices[np.where(y_pred == c)[0]]
     elif dtype == int:
         for c in classes:
-            truth_arr[c] = y_indices[np.where(y_true==BaseCfg.class_map[c])[0]]
-            pred_arr[c] = y_indices[np.where(y_pred==BaseCfg.class_map[c])[0]]
+            truth_arr[c] = y_indices[np.where(y_true == BaseCfg.class_map[c])[0]]
+            pred_arr[c] = y_indices[np.where(y_pred == BaseCfg.class_map[c])[0]]
 
     retval = CPSC2020_score(
-        [truth_arr['S']],[truth_arr['V']],[pred_arr['S']],[pred_arr['V']],
+        [truth_arr["S"]],
+        [truth_arr["V"]],
+        [pred_arr["S"]],
+        [pred_arr["V"]],
         verbose=1,
     )
 
@@ -149,8 +154,10 @@ def CPSC2020_score_test(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarr
 
 
 @DeprecationWarning
-def CPSC2020_loss_v0(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray, dtype:type=str) -> int:
-    """ finished, too slow!
+def CPSC2020_loss_v0(
+    y_true: np.ndarray, y_pred: np.ndarray, y_indices: np.ndarray, dtype: type = str
+) -> int:
+    """finished, too slow!
 
     Parameters
     ----------
@@ -172,41 +179,42 @@ def CPSC2020_loss_v0(y_true:np.ndarray, y_pred:np.ndarray, y_indices:np.ndarray,
         - false_positive: number of false positives of each ectopic beat type
         - false_negative: number of false negatives of each ectopic beat type
     """
-    classes = ['S', 'V']
+    classes = ["S", "V"]
 
     truth_arr = {}
     pred_arr = {}
     if dtype == str:
         for c in classes:
-            truth_arr[c] = y_indices[np.where(y_true==c)[0]]
-            pred_arr[c] = y_indices[np.where(y_pred==c)[0]]
+            truth_arr[c] = y_indices[np.where(y_true == c)[0]]
+            pred_arr[c] = y_indices[np.where(y_pred == c)[0]]
     elif dtype == int:
         for c in classes:
-            truth_arr[c] = y_indices[np.where(y_true==BaseCfg.class_map[c])[0]]
-            pred_arr[c] = y_indices[np.where(y_pred==BaseCfg.class_map[c])[0]]
+            truth_arr[c] = y_indices[np.where(y_true == BaseCfg.class_map[c])[0]]
+            pred_arr[c] = y_indices[np.where(y_pred == BaseCfg.class_map[c])[0]]
 
     pred_intervals = {
-        c: [[idx-BaseCfg.bias_thr, idx+BaseCfg.bias_thr] for idx in pred_arr[c]] \
-            for c in classes
+        c: [[idx - BaseCfg.bias_thr, idx + BaseCfg.bias_thr] for idx in pred_arr[c]]
+        for c in classes
     }
 
     true_positive = {
-        c: np.array([in_generalized_interval(idx, pred_intervals[c]) for idx in truth_arr[c]]).astype(int).sum() \
-            for c in classes
+        c: np.array(
+            [in_generalized_interval(idx, pred_intervals[c]) for idx in truth_arr[c]]
+        )
+        .astype(int)
+        .sum()
+        for c in classes
     }
-    false_positive = {
-        c: len(pred_arr[c]) - true_positive[c] for c in classes
-    }
-    false_negative = {
-        c: len(truth_arr[c]) - true_positive[c] for c in classes
-    }
+    false_positive = {c: len(pred_arr[c]) - true_positive[c] for c in classes}
+    false_negative = {c: len(truth_arr[c]) - true_positive[c] for c in classes}
 
     false_positive_loss = {c: 1 for c in classes}
     false_negative_loss = {c: 5 for c in classes}
 
     class_loss = {
-        false_positive[c] * false_positive_loss[c] + false_negative[c] * false_negative_loss[c] \
-            for c in classes
+        false_positive[c] * false_positive_loss[c]
+        + false_negative[c] * false_negative_loss[c]
+        for c in classes
     }
 
     total_loss = sum(class_loss.values())

@@ -31,24 +31,40 @@ from ..cfg import CFG
 
 
 __all__ = [
-    "Mish", "Swish", "Hardswish",
-    "Initializers", "Activations",
-    "Bn_Activation", "Conv_Bn_Activation", "CBA",
-    "MultiConv", "BranchedConv",
+    "Mish",
+    "Swish",
+    "Hardswish",
+    "Initializers",
+    "Activations",
+    "Bn_Activation",
+    "Conv_Bn_Activation",
+    "CBA",
+    "MultiConv",
+    "BranchedConv",
     "SeparableConv",
     "DeformConv",
     "AntiAliasConv",
-    "DownSample", "BlurPool",
-    "BidirectionalLSTM", "StackedLSTM",
+    "DownSample",
+    "BlurPool",
+    "BidirectionalLSTM",
+    "StackedLSTM",
     # "AML_Attention", "AML_GatedAttention",
     "AttentionWithContext",
-    "MultiHeadAttention", "SelfAttention",
+    "MultiHeadAttention",
+    "SelfAttention",
     "AttentivePooling",
-    "ZeroPadding", "ZeroPad1d",
-    "SeqLin", "MLP",
-    "NonLocalBlock", "SEBlock", "GlobalContextBlock",
-    "CBAMBlock", "BAMBlock", "CoordAttention",
-    "CRF", "ExtendedCRF",
+    "ZeroPadding",
+    "ZeroPad1d",
+    "SeqLin",
+    "MLP",
+    "NonLocalBlock",
+    "SEBlock",
+    "GlobalContextBlock",
+    "CBAMBlock",
+    "BAMBlock",
+    "CoordAttention",
+    "CRF",
+    "ExtendedCRF",
     "SpaceToDepth",
     "MLDecoder",
     "DropPath",
@@ -57,9 +73,13 @@ __all__ = [
 
 
 if version.parse(torch.__version__) >= version.parse("1.5.0"):
+
     def _true_divide(dividend, divisor):
         return torch.true_divide(dividend, divisor)
+
+
 else:
+
     def _true_divide(dividend, divisor):
         return dividend / divisor
 
@@ -70,17 +90,18 @@ try:
     Mish = nn.Mish  # pytorch added in version 1.9
     Mish.__name__ = "Mish"
 except:
+
     class Mish(nn.Module):
-        """ The Mish activation """
+        """The Mish activation"""
+
         __name__ = "Mish"
+
         def __init__(self):
-            """
-            """
+            """ """
             super().__init__()
 
-        def forward(self, input:Tensor) -> Tensor:
-            """
-            """
+        def forward(self, input: Tensor) -> Tensor:
+            """ """
             return input * (torch.tanh(F.softplus(input)))
 
 
@@ -88,17 +109,18 @@ try:
     Swish = nn.SiLU  # pytorch added in version 1.7
     Swish.__name__ = "Swish"
 except:
+
     class Swish(nn.Module):
-        """ The Swish activation """
+        """The Swish activation"""
+
         __name__ = "Swish"
+
         def __init__(self):
-            """
-            """
+            """ """
             super().__init__()
 
-        def forward(self, input:Tensor) -> Tensor:
-            """
-            """
+        def forward(self, input: Tensor) -> Tensor:
+            """ """
             return input * F.sigmoid(input)
 
 
@@ -106,6 +128,7 @@ try:
     Hardswish = nn.Hardswish  # pytorch added in version 1.6
     Swish.__name__ = "Hardswish"
 except:
+
     class Hardswish(nn.Module):
         r"""Applies the hardswish function, element-wise, as described in the paper:
         `Searching for MobileNetV3`_.
@@ -119,14 +142,13 @@ except:
             https://arxiv.org/abs/1905.02244
         """
         __name__ = "Hardswish"
+
         def __init__(self):
-            """
-            """
+            """ """
             super().__init__()
 
-        def forward(self, input:Tensor) -> Tensor:
-            """
-            """
+        def forward(self, input: Tensor) -> Tensor:
+            """ """
             return torch.clamp(input * (3 + input) / 6, min=0, max=input)
 
 
@@ -175,8 +197,10 @@ Activations.softmax = nn.Softmax
 # Activations.linear = None
 
 
-def get_activation(act:Union[str,nn.Module,type(None)], kw_act:Optional[dict]=None) -> Optional[nn.Module]:
-    """ finished, checked,
+def get_activation(
+    act: Union[str, nn.Module, type(None)], kw_act: Optional[dict] = None
+) -> Optional[nn.Module]:
+    """finished, checked,
 
     Parameters
     ----------
@@ -233,8 +257,10 @@ Normalizations.local_response_normalization = Normalizations.local_response_norm
 # problem: parameters of different normalizations are different
 
 
-def get_normalization(norm:Union[str,nn.Module,type(None)], kw_norm:Optional[dict]=None) -> Optional[nn.Module]:
-    """ finished, checked,
+def get_normalization(
+    norm: Union[str, nn.Module, type(None)], kw_norm: Optional[dict] = None
+) -> Optional[nn.Module]:
+    """finished, checked,
 
     Parameters
     ----------
@@ -282,19 +308,22 @@ _DEFAULT_CONV_CONFIGS = CFG(
 # ---------------------------------------------
 # basic building blocks of CNN
 class Bn_Activation(SizeMixin, nn.Sequential):
-    """ finished, checked,
+    """finished, checked,
 
     batch normalization --> activation
     """
+
     __name__ = "Bn_Activation"
 
-    def __init__(self, 
-                 num_features:int,
-                 batch_norm:Union[bool,str,nn.Module],
-                 activation:Union[str,nn.Module],
-                 kw_activation:Optional[dict]=None, 
-                 dropout:float=0.0) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        num_features: int,
+        batch_norm: Union[bool, str, nn.Module],
+        activation: Union[str, nn.Module],
+        kw_activation: Optional[dict] = None,
+        dropout: float = 0.0,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -330,11 +359,11 @@ class Bn_Activation(SizeMixin, nn.Sequential):
                 "dropout",
                 nn.Dropout(self.__dropout),
             )
-    
-    def forward(self, input:Tensor) -> Tensor:
+
+    def forward(self, input: Tensor) -> Tensor:
         """
         use the forward method of `nn.Sequential`
-        
+
         Parameters
         ----------
         input: Tensor,
@@ -343,8 +372,10 @@ class Bn_Activation(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -363,29 +394,32 @@ class Bn_Activation(SizeMixin, nn.Sequential):
 
 
 class Conv_Bn_Activation(SizeMixin, nn.Sequential):
-    """ finished, checked,
+    """finished, checked,
 
     1d convolution --> batch normalization (optional) -- > activation (optional),
     orderings can be adjusted,
     with "same" padding as default padding
     """
+
     __name__ = "Conv_Bn_Activation"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:int,
-                 kernel_size:int,
-                 stride:int,
-                 padding:Optional[int]=None,
-                 dilation:int=1,
-                 groups:int=1,
-                 batch_norm:Union[bool,str,nn.Module]=True,
-                 activation:Optional[Union[str,nn.Module]]=None,
-                 kernel_initializer:Optional[Union[str,callable]]=None,
-                 bias:bool=True,
-                 ordering:str="cba",
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int,
+        stride: int,
+        padding: Optional[int] = None,
+        dilation: int = 1,
+        groups: int = 1,
+        batch_norm: Union[bool, str, nn.Module] = True,
+        activation: Optional[Union[str, nn.Module]] = None,
+        kernel_initializer: Optional[Union[str, callable]] = None,
+        bias: bool = True,
+        ordering: str = "cba",
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -452,24 +486,39 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
         self.__conv_type = kwargs.get("conv_type", None)
         if isinstance(self.__conv_type, str):
             self.__conv_type = self.__conv_type.lower()
-        self.__width_multiplier = kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1.0
+        self.__width_multiplier = (
+            kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1.0
+        )
         self.__out_channels = int(self.__width_multiplier * self.__out_channels)
-        assert self.__out_channels % self.__groups == 0, \
-            f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` (= {self.__out_channels}) not divisible by `groups` (= {self.__groups})"
+        assert (
+            self.__out_channels % self.__groups == 0
+        ), f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` (= {self.__out_channels}) not divisible by `groups` (= {self.__groups})"
 
         if self.__conv_type is None:
             conv_layer = nn.Conv1d(
-                self.__in_channels, self.__out_channels,
-                self.__kernel_size, self.__stride, self.__padding, self.__dilation, self.__groups,
+                self.__in_channels,
+                self.__out_channels,
+                self.__kernel_size,
+                self.__stride,
+                self.__padding,
+                self.__dilation,
+                self.__groups,
                 bias=self.__bias,
             )
             if kernel_initializer:
                 if callable(kernel_initializer):
                     kernel_initializer(conv_layer.weight)
-                elif isinstance(kernel_initializer, str) and kernel_initializer.lower() in Initializers.keys():
-                    Initializers[kernel_initializer.lower()](conv_layer.weight, **kw_initializer)
+                elif (
+                    isinstance(kernel_initializer, str)
+                    and kernel_initializer.lower() in Initializers.keys()
+                ):
+                    Initializers[kernel_initializer.lower()](
+                        conv_layer.weight, **kw_initializer
+                    )
                 else:  # TODO: add more initializers
-                    raise ValueError(f"initializer `{kernel_initializer}` not supported")
+                    raise ValueError(
+                        f"initializer `{kernel_initializer}` not supported"
+                    )
         elif self.__conv_type == "separable":
             conv_layer = SeparableConv(
                 in_channels=self.__in_channels,
@@ -482,18 +531,31 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
                 groups=self.__groups,
                 kernel_initializer=kernel_initializer,
                 bias=self.__bias,
-                **kwargs
+                **kwargs,
             )
-        elif self.__conv_type in ["anti_alias", "aa",]:
+        elif self.__conv_type in [
+            "anti_alias",
+            "aa",
+        ]:
             conv_layer = AntiAliasConv(
-                self.__in_channels, self.__out_channels,
-                self.__kernel_size, self.__stride, self.__padding, self.__dilation, self.__groups,
-                bias=self.__bias, **kwargs
+                self.__in_channels,
+                self.__out_channels,
+                self.__kernel_size,
+                self.__stride,
+                self.__padding,
+                self.__dilation,
+                self.__groups,
+                bias=self.__bias,
+                **kwargs,
             )
         else:
-            raise NotImplementedError(f"convolution of type {self.__conv_type} not implemented yet!")
-        
-        if "b" in self.__ordering and self.__ordering.index("c") < self.__ordering.index("b"):
+            raise NotImplementedError(
+                f"convolution of type {self.__conv_type} not implemented yet!"
+            )
+
+        if "b" in self.__ordering and self.__ordering.index(
+            "c"
+        ) < self.__ordering.index("b"):
             bn_in_channels = self.__out_channels
         else:
             bn_in_channels = self.__in_channels
@@ -501,16 +563,30 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
             if isinstance(batch_norm, bool):
                 bn_layer = nn.BatchNorm1d(bn_in_channels, **kw_bn)
             elif isinstance(batch_norm, str):
-                if batch_norm.lower() in ["batch_norm", "batch_normalization",]:
+                if batch_norm.lower() in [
+                    "batch_norm",
+                    "batch_normalization",
+                ]:
                     bn_layer = nn.BatchNorm1d(bn_in_channels, **kw_bn)
-                elif batch_norm.lower() in ["instance_norm", "instance_normalization",]:
+                elif batch_norm.lower() in [
+                    "instance_norm",
+                    "instance_normalization",
+                ]:
                     bn_layer = nn.InstanceNorm1d(bn_in_channels, **kw_bn)
-                elif batch_norm.lower() in ["group_norm", "group_normalization",]:
+                elif batch_norm.lower() in [
+                    "group_norm",
+                    "group_normalization",
+                ]:
                     bn_layer = nn.GroupNorm(self.__groups, bn_in_channels, **kw_bn)
-                elif batch_norm.lower() in ["layer_norm", "layer_normalization",]:
+                elif batch_norm.lower() in [
+                    "layer_norm",
+                    "layer_normalization",
+                ]:
                     bn_layer = nn.LayerNorm(**kw_bn)
                 else:
-                    raise ValueError(f"normalization method {batch_norm} not supported yet!")
+                    raise ValueError(
+                        f"normalization method {batch_norm} not supported yet!"
+                    )
             else:
                 bn_layer = batch_norm
         else:
@@ -551,7 +627,7 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
         else:
             raise ValueError(f"ordering \042{self.__ordering}\042 not supported!")
 
-    def forward(self, input:Tensor) -> Tensor:
+    def forward(self, input: Tensor) -> Tensor:
         """
         use the forward method of `nn.Sequential`
 
@@ -563,8 +639,10 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
         out = super().forward(input)
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -589,31 +667,38 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
                 padding=self.__padding,
                 channel_last=False,
             )
-        elif self.__conv_type in ["separable", "anti_alias", "aa",]:
+        elif self.__conv_type in [
+            "separable",
+            "anti_alias",
+            "aa",
+        ]:
             output_shape = self.conv1d.compute_output_shape(seq_len, batch_size)
         return output_shape
 
 
 class MultiConv(SizeMixin, nn.Sequential):
-    """ finished, checked,
+    """finished, checked,
 
     a sequence (stack) of `Conv_Bn_Activation` blocks,
     perhaps with `Dropout` between
     """
+
     __DEBUG__ = False
     __name__ = "MultiConv"
-    
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:Sequence[int],
-                 filter_lengths:Union[Sequence[int],int],
-                 subsample_lengths:Union[Sequence[int],int]=1,
-                 dilations:Union[Sequence[int],int]=1,
-                 groups:int=1,
-                 dropouts:Union[Sequence[float], float]=0.0,
-                 out_activation:bool=True,
-                 **config) -> NoReturn:
-        """ finished, checked,
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: Sequence[int],
+        filter_lengths: Union[Sequence[int], int],
+        subsample_lengths: Union[Sequence[int], int] = 1,
+        dilations: Union[Sequence[int], int] = 1,
+        groups: int = 1,
+        dropouts: Union[Sequence[float], float] = 0.0,
+        out_activation: bool = True,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -650,7 +735,9 @@ class MultiConv(SizeMixin, nn.Sequential):
         self.config = deepcopy(_DEFAULT_CONV_CONFIGS)
         self.config.update(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         if isinstance(filter_lengths, int):
             kernel_sizes = list(repeat(filter_lengths, self.__num_convs))
@@ -684,8 +771,9 @@ class MultiConv(SizeMixin, nn.Sequential):
             in_activation = True
 
         conv_in_channels = self.__in_channels
-        for idx, (oc, ks, sd, dl, dp) in \
-            enumerate(zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)):
+        for idx, (oc, ks, sd, dl, dp) in enumerate(
+            zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)
+        ):
             activation = self.config.activation
             if idx == 0 and not in_activation:
                 activation = None
@@ -716,8 +804,8 @@ class MultiConv(SizeMixin, nn.Sequential):
                     f"dropout_{idx}",
                     nn.Dropout(dp),
                 )
-    
-    def forward(self, input:Tensor) -> Tensor:
+
+    def forward(self, input: Tensor) -> Tensor:
         """
         use the forward method of `nn.Sequential`
         input: of shape (batch_size, n_channels, seq_len)
@@ -725,8 +813,10 @@ class MultiConv(SizeMixin, nn.Sequential):
         out = super().forward(input)
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -742,10 +832,14 @@ class MultiConv(SizeMixin, nn.Sequential):
         """
         _seq_len = seq_len
         for module in self:
-            if hasattr(module, "__name__") and module.__name__ == Conv_Bn_Activation.__name__:
+            if (
+                hasattr(module, "__name__")
+                and module.__name__ == Conv_Bn_Activation.__name__
+            ):
                 output_shape = module.compute_output_shape(_seq_len, batch_size)
                 _, _, _seq_len = output_shape
         return output_shape
+
 
 # alias
 CBA = Conv_Bn_Activation
@@ -756,19 +850,22 @@ class BranchedConv(SizeMixin, nn.Module):
 
     branched `MultiConv` blocks
     """
+
     __DEBUG__ = False
     __name__ = "BranchedConv"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:Sequence[Sequence[int]],
-                 filter_lengths:Union[Sequence[Sequence[int]],Sequence[int],int],
-                 subsample_lengths:Union[Sequence[Sequence[int]],Sequence[int],int]=1,
-                 dilations:Union[Sequence[Sequence[int]],Sequence[int],int]=1,
-                 groups:int=1,
-                 dropouts:Union[Sequence[Sequence[float]],Sequence[float],float]=0.0,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: Sequence[Sequence[int]],
+        filter_lengths: Union[Sequence[Sequence[int]], Sequence[int], int],
+        subsample_lengths: Union[Sequence[Sequence[int]], Sequence[int], int] = 1,
+        dilations: Union[Sequence[Sequence[int]], Sequence[int], int] = 1,
+        groups: int = 1,
+        dropouts: Union[Sequence[Sequence[float]], Sequence[float], float] = 0.0,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -794,12 +891,16 @@ class BranchedConv(SizeMixin, nn.Module):
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = list(out_channels)
-        assert all([isinstance(item, (Sequence,np.ndarray)) for item in self.__out_channels])
+        assert all(
+            [isinstance(item, (Sequence, np.ndarray)) for item in self.__out_channels]
+        )
         self.__num_branches = len(self.__out_channels)
         self.config = deepcopy(_DEFAULT_CONV_CONFIGS)
         self.config.update(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         if isinstance(filter_lengths, int):
             kernel_sizes = list(repeat(filter_lengths, self.__num_branches))
@@ -826,21 +927,21 @@ class BranchedConv(SizeMixin, nn.Module):
         assert len(_dilations) == self.__num_branches
 
         self.branches = nn.ModuleDict()
-        for idx, (oc, ks, sd, dl, dp) in \
-            enumerate(zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)):
-            self.branches[f"multi_conv_{idx}"] = \
-                MultiConv(
-                    in_channels=self.__in_channels,
-                    out_channels=oc,
-                    filter_lengths=ks,
-                    subsample_lengths=sd,
-                    dilations=dl,
-                    groups=groups,
-                    dropouts=dp,
-                    **(self.config),
-                )
-    
-    def forward(self, input:Tensor) -> List[Tensor]:
+        for idx, (oc, ks, sd, dl, dp) in enumerate(
+            zip(self.__out_channels, kernel_sizes, strides, _dilations, _dropouts)
+        ):
+            self.branches[f"multi_conv_{idx}"] = MultiConv(
+                in_channels=self.__in_channels,
+                out_channels=oc,
+                filter_lengths=ks,
+                subsample_lengths=sd,
+                dilations=dl,
+                groups=groups,
+                dropouts=dp,
+                **(self.config),
+            )
+
+    def forward(self, input: Tensor) -> List[Tensor]:
         """
         input: of shape (batch_size, n_channels, seq_len)
         """
@@ -849,8 +950,10 @@ class BranchedConv(SizeMixin, nn.Module):
             out.append(self.branches[f"multi_conv_{idx}"](input))
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> List[Sequence[Union[int, None]]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> List[Sequence[Union[int, None]]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -867,8 +970,9 @@ class BranchedConv(SizeMixin, nn.Module):
         """
         output_shapes = []
         for idx in range(self.__num_branches):
-            branch_output_shape = \
-                self.branches[f"multi_conv_{idx}"].compute_output_shape(seq_len, batch_size)
+            branch_output_shape = self.branches[
+                f"multi_conv_{idx}"
+            ].compute_output_shape(seq_len, batch_size)
             output_shapes.append(branch_output_shape)
         return output_shapes
 
@@ -883,21 +987,24 @@ class SeparableConv(SizeMixin, nn.Sequential):
     [1] Kaiser, Lukasz, Aidan N. Gomez, and Francois Chollet. "Depthwise separable convolutions for neural machine translation." arXiv preprint arXiv:1706.03059 (2017).
     [2] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
     """
+
     __DEBUG__ = False
     __name__ = "SeparableConv"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:int,
-                 kernel_size:int,
-                 stride:int,
-                 padding:Optional[int]=None,
-                 dilation:int=1,
-                 groups:int=1,
-                 kernel_initializer:Optional[Union[str,callable]]=None,
-                 bias:bool=True,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int,
+        stride: int,
+        padding: Optional[int] = None,
+        dilation: int = 1,
+        groups: int = 1,
+        kernel_initializer: Optional[Union[str, callable]] = None,
+        bias: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -939,12 +1046,16 @@ class SeparableConv(SizeMixin, nn.Sequential):
         kw_initializer = kwargs.get("kw_initializer", {})
         self.__depth_multiplier = kwargs.get("depth_multiplier", 1)
         dc_out_channels = int(self.__in_channels * self.__depth_multiplier)
-        assert dc_out_channels % self.__in_channels == 0, \
-            f"depth_multiplier (input is {self.__depth_multiplier}) should be positive integers"
-        self.__width_multiplier = kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1
+        assert (
+            dc_out_channels % self.__in_channels == 0
+        ), f"depth_multiplier (input is {self.__depth_multiplier}) should be positive integers"
+        self.__width_multiplier = (
+            kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1
+        )
         self.__out_channels = int(self.__width_multiplier * self.__out_channels)
-        assert self.__out_channels % self.__groups == 0, \
-            f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` not divisible by `groups` (= {self.__groups})"
+        assert (
+            self.__out_channels % self.__groups == 0
+        ), f"width_multiplier (input is {self.__width_multiplier}) makes `out_channels` not divisible by `groups` (= {self.__groups})"
 
         self.add_module(
             "depthwise_conv",
@@ -957,7 +1068,7 @@ class SeparableConv(SizeMixin, nn.Sequential):
                 dilation=self.__dilation,
                 groups=self.__in_channels,
                 bias=self.__bias,
-            )
+            ),
         )
         self.add_module(
             "pointwise_conv",
@@ -966,22 +1077,30 @@ class SeparableConv(SizeMixin, nn.Sequential):
                 out_channels=self.__out_channels,
                 groups=self.__groups,
                 bias=self.__bias,
-                kernel_size=1, stride=1, padding=0, dilation=1,
-            )
+                kernel_size=1,
+                stride=1,
+                padding=0,
+                dilation=1,
+            ),
         )
 
         if kernel_initializer:
             if callable(kernel_initializer):
                 for module in self:
                     kernel_initializer(module.weight)
-            elif isinstance(kernel_initializer, str) and kernel_initializer.lower() in Initializers.keys():
+            elif (
+                isinstance(kernel_initializer, str)
+                and kernel_initializer.lower() in Initializers.keys()
+            ):
                 for module in self:
-                    Initializers[kernel_initializer.lower()](module.weight, **kw_initializer)
+                    Initializers[kernel_initializer.lower()](
+                        module.weight, **kw_initializer
+                    )
             else:  # TODO: add more initializers
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -996,8 +1115,10 @@ class SeparableConv(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1024,14 +1145,17 @@ class SeparableConv(SizeMixin, nn.Sequential):
         output_shape = compute_conv_output_shape(
             input_shape=output_shape,
             num_filters=self.__out_channels,
-            kernel_size=1, stride=1, padding=0, dilation=1,
+            kernel_size=1,
+            stride=1,
+            padding=0,
+            dilation=1,
         )
         return output_shape
 
 
 class DeformConv(SizeMixin, nn.Module):
     """
-    
+
     Deformable Convolution
 
     References
@@ -1040,30 +1164,35 @@ class DeformConv(SizeMixin, nn.Module):
     [2] Zhu, X., Hu, H., Lin, S., & Dai, J. (2019). Deformable convnets v2: More deformable, better results. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 9308-9316).
     [3] https://github.com/open-mmlab/mmcv/blob/master/mmcv/ops/deform_conv.py
     """
+
     __name__ = "DeformConv"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:int,
-                 kernel_size:Union[int, Tuple[int, ...]],
-                 stride:Union[int, Tuple[int, ...]] = 1,
-                 padding:Union[int, Tuple[int, ...]] = 0,
-                 dilation:Union[int, Tuple[int, ...]] = 1,
-                 groups:int=1,
-                 deform_groups:int = 1,
-                 bias:bool=False) -> NoReturn:
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: Union[int, Tuple[int, ...]],
+        stride: Union[int, Tuple[int, ...]] = 1,
+        padding: Union[int, Tuple[int, ...]] = 0,
+        dilation: Union[int, Tuple[int, ...]] = 1,
+        groups: int = 1,
+        deform_groups: int = 1,
+        bias: bool = False,
+    ) -> NoReturn:
         """
         docstring, to write
         """
         raise NotImplementedError
 
-    def forward(self, input:Tensor, offset:Tensor) -> Tensor:
+    def forward(self, input: Tensor, offset: Tensor) -> Tensor:
         """
         docstring, to write
         """
         raise NotImplementedError
 
-    def compute_output_shape(self,) -> Sequence[Union[int, None]]:
+    def compute_output_shape(
+        self,
+    ) -> Sequence[Union[int, None]]:
         """
         docstring, to write
         """
@@ -1078,20 +1207,33 @@ class DownSample(SizeMixin, nn.Sequential):
 
     the "conv" mode is not simply down "sampling" if `group` != `in_channels`
     """
-    __name__ = "DownSample"
-    __MODES__ = ["max", "avg", "lp", "lse", "conv", "nearest", "area", "linear", "blur",]
 
-    def __init__(self,
-                 down_scale:int,
-                 in_channels:int,
-                 out_channels:Optional[int]=None,
-                 kernel_size:Optional[int]=None,
-                 groups:Optional[int]=None,
-                 padding:int=0,
-                 batch_norm:Union[bool,nn.Module]=False,
-                 mode:str="max",
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    __name__ = "DownSample"
+    __MODES__ = [
+        "max",
+        "avg",
+        "lp",
+        "lse",
+        "conv",
+        "nearest",
+        "area",
+        "linear",
+        "blur",
+    ]
+
+    def __init__(
+        self,
+        down_scale: int,
+        in_channels: int,
+        out_channels: Optional[int] = None,
+        kernel_size: Optional[int] = None,
+        groups: Optional[int] = None,
+        padding: int = 0,
+        batch_norm: Union[bool, nn.Module] = False,
+        mode: str = "max",
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1139,8 +1281,11 @@ class DownSample(SizeMixin, nn.Sequential):
                         padding=self.__padding,
                     ),
                     nn.Conv1d(
-                        self.__in_channels, self.__out_channels, 
-                        kernel_size=1, groups=self.__groups, bias=False
+                        self.__in_channels,
+                        self.__out_channels,
+                        kernel_size=1,
+                        groups=self.__groups,
+                        bias=False,
                     ),
                 )
         elif self.__mode == "avg":
@@ -1159,8 +1304,11 @@ class DownSample(SizeMixin, nn.Sequential):
                             padding=self.__padding,
                         ),
                         nn.Conv1d(
-                            self.__in_channels,self.__out_channels,
-                            kernel_size=1, groups=self.__groups, bias=False,
+                            self.__in_channels,
+                            self.__out_channels,
+                            kernel_size=1,
+                            groups=self.__groups,
+                            bias=False,
                         ),
                     )
                 )
@@ -1194,8 +1342,11 @@ class DownSample(SizeMixin, nn.Sequential):
                         **kwargs,
                     ),
                     nn.Conv1d(
-                        self.__in_channels,self.__out_channels,
-                        kernel_size=1, groups=self.__groups, bias=False,
+                        self.__in_channels,
+                        self.__out_channels,
+                        kernel_size=1,
+                        groups=self.__groups,
+                        bias=False,
                     ),
                 )
         else:
@@ -1207,14 +1358,17 @@ class DownSample(SizeMixin, nn.Sequential):
             )
 
         if batch_norm:
-            bn_layer = nn.BatchNorm1d(self.__out_channels) if isinstance(batch_norm, bool) \
+            bn_layer = (
+                nn.BatchNorm1d(self.__out_channels)
+                if isinstance(batch_norm, bool)
                 else batch_norm(self.__out_channels)
+            )
             self.add_module(
                 "batch_normalization",
                 bn_layer,
             )
 
-    def forward(self, input:Tensor) -> Tensor:
+    def forward(self, input: Tensor) -> Tensor:
         """
         use the forward method of `nn.Sequential`
 
@@ -1223,20 +1377,27 @@ class DownSample(SizeMixin, nn.Sequential):
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
         """
-        if self.__mode in ["max", "avg", "conv", "blur",]:
+        if self.__mode in [
+            "max",
+            "avg",
+            "conv",
+            "blur",
+        ]:
             output = super().forward(input)
         else:
             # align_corners = False if mode in ["nearest", "area"] else True
             output = F.interpolate(
                 input=input,
-                scale_factor=1/self.__down_scale,
+                scale_factor=1 / self.__down_scale,
                 mode=self.__mode,
                 # align_corners=align_corners,
             )
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1259,18 +1420,29 @@ class DownSample(SizeMixin, nn.Sequential):
         elif self.__mode == "max":
             out_seq_len = compute_maxpool_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
-                kernel_size=self.__kernel_size, stride=self.__down_scale,
+                kernel_size=self.__kernel_size,
+                stride=self.__down_scale,
                 padding=self.__padding,
             )[-1]
         elif self.__mode == "blur":
             if self.__in_channels == self.__out_channels:
-                out_seq_len = self.down_sample.compute_output_shape(seq_len, batch_size)[-1]
+                out_seq_len = self.down_sample.compute_output_shape(
+                    seq_len, batch_size
+                )[-1]
             else:
-                out_seq_len = self.down_sample[0].compute_output_shape(seq_len, batch_size)[-1]
-        elif self.__mode in ["avg", "nearest", "area", "linear",]:
+                out_seq_len = self.down_sample[0].compute_output_shape(
+                    seq_len, batch_size
+                )[-1]
+        elif self.__mode in [
+            "avg",
+            "nearest",
+            "area",
+            "linear",
+        ]:
             out_seq_len = compute_avgpool_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
-                kernel_size=self.__kernel_size, stride=self.__down_scale,
+                kernel_size=self.__kernel_size,
+                stride=self.__down_scale,
                 padding=self.__padding,
             )[-1]
         output_shape = (batch_size, self.__out_channels, out_seq_len)
@@ -1281,6 +1453,7 @@ class ZeroPad1d(SizeMixin, nn.ConstantPad1d):
     """Pads the input tensor boundaries with zero.
     do NOT be confused with `ZeroPadding`, which pads along the channel dimension
     """
+
     __name__ = "ZeroPad1d"
 
     def __init__(self, padding: Sequence[int]) -> NoReturn:
@@ -1291,9 +1464,10 @@ class ZeroPad1d(SizeMixin, nn.ConstantPad1d):
         padding: 2-sequence of int,
             the padding to be applied to the input tensor
         """
-        assert len(padding) == 2 and all([isinstance(i, int) for i in padding]), \
-            "padding must be a 2-sequence of int"
-        super().__init__(padding, 0.)
+        assert len(padding) == 2 and all(
+            [isinstance(i, int) for i in padding]
+        ), "padding must be a 2-sequence of int"
+        super().__init__(padding, 0.0)
 
 
 class BlurPool(SizeMixin, nn.Module):
@@ -1308,17 +1482,20 @@ class BlurPool(SizeMixin, nn.Module):
     3. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py
     4. https://github.com/kornia/kornia/blob/master/kornia/filters/blur_pool.py
     """
+
     __DEBUG__ = False
     __name__ = "BlurPool"
 
-    def __init__(self,
-                 down_scale:int,
-                 in_channels:int,
-                 filt_size:int=3,
-                 pad_type:str="reflect",
-                 pad_off:int=0,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        down_scale: int,
+        in_channels: int,
+        filt_size: int = 3,
+        pad_type: str = "reflect",
+        pad_off: int = 0,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1340,33 +1517,42 @@ class BlurPool(SizeMixin, nn.Module):
         self.__filt_size = filt_size
         self.__pad_type = pad_type.lower()
         self.__pad_off = pad_off
-        self.__pad_sizes = [int(1. * (filt_size - 1) / 2), int(np.ceil(1. * (filt_size - 1) / 2))]
+        self.__pad_sizes = [
+            int(1.0 * (filt_size - 1) / 2),
+            int(np.ceil(1.0 * (filt_size - 1) / 2)),
+        ]
         self.__pad_sizes = [pad_size + pad_off for pad_size in self.__pad_sizes]
-        self.__off = int((self.__down_scale - 1) / 2.)
-        if(self.__filt_size == 1):
-            a = np.array([1., ])
-        elif(self.__filt_size == 2):
-            a = np.array([1., 1.])
-        elif(self.__filt_size == 3):
-            a = np.array([1., 2., 1.])
-        elif(self.__filt_size == 4):
-            a = np.array([1., 3., 3., 1.])
-        elif(self.__filt_size == 5):
-            a = np.array([1., 4., 6., 4., 1.])
-        elif(self.__filt_size == 6):
-            a = np.array([1., 5., 10., 10., 5., 1.])
-        elif(self.__filt_size == 7):
-            a = np.array([1., 6., 15., 20., 15., 6., 1.])
+        self.__off = int((self.__down_scale - 1) / 2.0)
+        if self.__filt_size == 1:
+            a = np.array(
+                [
+                    1.0,
+                ]
+            )
+        elif self.__filt_size == 2:
+            a = np.array([1.0, 1.0])
+        elif self.__filt_size == 3:
+            a = np.array([1.0, 2.0, 1.0])
+        elif self.__filt_size == 4:
+            a = np.array([1.0, 3.0, 3.0, 1.0])
+        elif self.__filt_size == 5:
+            a = np.array([1.0, 4.0, 6.0, 4.0, 1.0])
+        elif self.__filt_size == 6:
+            a = np.array([1.0, 5.0, 10.0, 10.0, 5.0, 1.0])
+        elif self.__filt_size == 7:
+            a = np.array([1.0, 6.0, 15.0, 20.0, 15.0, 6.0, 1.0])
 
         # saved and restored in the state_dict, but not trained by the optimizer
         filt = Tensor(a)
         filt = filt / torch.sum(filt)
-        self.register_buffer("filt", filt.unsqueeze(0).unsqueeze(0).repeat((self.__in_channels, 1, 1)))
+        self.register_buffer(
+            "filt", filt.unsqueeze(0).unsqueeze(0).repeat((self.__in_channels, 1, 1))
+        )
 
         self.pad = self._get_pad_layer()
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1381,28 +1567,41 @@ class BlurPool(SizeMixin, nn.Module):
         """
         if self.__filt_size == 1:
             if self.__pad_off == 0:
-                return input[..., ::self.__down_scale]
+                return input[..., :: self.__down_scale]
             else:
-                return self.pad(input)[..., ::self.__down_scale]
+                return self.pad(input)[..., :: self.__down_scale]
         else:
-            return F.conv1d(self.pad(input), self.filt, stride=self.__down_scale, groups=self.__in_channels)
-        
+            return F.conv1d(
+                self.pad(input),
+                self.filt,
+                stride=self.__down_scale,
+                groups=self.__in_channels,
+            )
+
     def _get_pad_layer(self) -> nn.Module:
         """
         get the padding layer by `self.__pad_type` and `self.__pad_sizes`
         """
-        if(self.__pad_type in ["refl", "reflect",]):
+        if self.__pad_type in [
+            "refl",
+            "reflect",
+        ]:
             PadLayer = nn.ReflectionPad1d
-        elif(pad_type in ["repl", "replicate",]):
+        elif pad_type in [
+            "repl",
+            "replicate",
+        ]:
             PadLayer = nn.ReplicationPad1d
-        elif(pad_type == "zero"):
+        elif pad_type == "zero":
             PadLayer = ZeroPad1d
         else:
             print(f"Pad type [{pad_type}] not recognized")
         return PadLayer(self.__pad_sizes)
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1441,27 +1640,33 @@ class BlurPool(SizeMixin, nn.Module):
 
     def extra_repr(self):
         return "down_scale={}, in_channels={}, filt_size={}, pad_type={}, pad_off={},".format(
-            self.__down_scale, self.__in_channels, self.__filt_size, self.__pad_type, self.__pad_off
+            self.__down_scale,
+            self.__in_channels,
+            self.__filt_size,
+            self.__pad_type,
+            self.__pad_off,
         )
 
 
 class AntiAliasConv(SizeMixin, nn.Sequential):
-    """
-    """
+    """ """
+
     __DEBUG__ = False
     __name__ = "AntiAliasConv"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:int,
-                 kernel_size:int,
-                 stride:int,
-                 padding:Optional[int]=None,
-                 dilation:int=1,
-                 groups:int=1,
-                 bias:bool=True,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int,
+        stride: int,
+        padding: Optional[int] = None,
+        dilation: int = 1,
+        groups: int = 1,
+        bias: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1488,31 +1693,38 @@ class AntiAliasConv(SizeMixin, nn.Sequential):
         self.__out_channels = out_channels
         self.__kernel_size = kernel_size
         self.__stride = stride
-        self.__padding = dilation * (kernel_size - 1) // 2 if padding is None else padding
+        self.__padding = (
+            dilation * (kernel_size - 1) // 2 if padding is None else padding
+        )
         self.__dilation = dilation
         self.__groups = groups
         self.add_module(
-            "conv", 
+            "conv",
             nn.Conv1d(
-                self.__in_channels, self.__out_channels, self.__kernel_size,
+                self.__in_channels,
+                self.__out_channels,
+                self.__kernel_size,
                 stride=1,
                 padding=self.__padding,
                 dilation=self.__dilation,
                 groups=self.__groups,
                 bias=bias,
-            )
+            ),
         )
         if self.__stride > 1:
             self.add_module(
                 "aa",
                 BlurPool(
-                    self.__stride, self.__out_channels,
+                    self.__stride,
+                    self.__out_channels,
                     **kwargs,
-                )
+                ),
             )
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1544,17 +1756,20 @@ class BidirectionalLSTM(SizeMixin, nn.Module):
     """
     from crnn_torch of references.ati_cnn
     """
+
     __name__ = "BidirectionalLSTM"
 
-    def __init__(self,
-                 input_size:int,
-                 hidden_size:int,
-                 num_layers:int=1,
-                 bias:bool=True,
-                 dropout:float=0.0,
-                 return_sequences:bool=True,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        num_layers: int = 1,
+        bias: bool = True,
+        dropout: float = 0.0,
+        return_sequences: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1589,7 +1804,7 @@ class BidirectionalLSTM(SizeMixin, nn.Module):
             bidirectional=True,
         )
 
-    def forward(self, input:Tensor) -> Tensor:
+    def forward(self, input: Tensor) -> Tensor:
         """
         Parameters
         ----------
@@ -1598,11 +1813,13 @@ class BidirectionalLSTM(SizeMixin, nn.Module):
         """
         output, _ = self.lstm(input)  #  seq_len, batch_size, 2 * hidden_size
         if not self.return_sequence:
-            output = output[-1,...]
+            output = output[-1, ...]
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1621,7 +1838,7 @@ class BidirectionalLSTM(SizeMixin, nn.Module):
 
 
 class StackedLSTM(SizeMixin, nn.Sequential):
-    """ finished, checked (no bugs, but correctness is left further to check),
+    """finished, checked (no bugs, but correctness is left further to check),
 
     stacked LSTM, which allows different hidden sizes for each LSTM layer
 
@@ -1630,18 +1847,21 @@ class StackedLSTM(SizeMixin, nn.Sequential):
     1. `batch_first` is fixed `False`
     2. currently, how to correctly pass the argument `hx` between LSTM layers is not known to me, hence should be careful (and not recommended, use `nn.LSTM` and set `num_layers` instead) to use
     """
+
     __DEBUG__ = False
     __name__ = "StackedLSTM"
 
-    def __init__(self,
-                 input_size:int,
-                 hidden_sizes:Sequence[int],
-                 bias:Union[Sequence[bool],bool]=True,
-                 dropouts:Union[float,Sequence[float]]=0.0,
-                 bidirectional:bool=True,
-                 return_sequences:bool=True,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        input_size: int,
+        hidden_sizes: Sequence[int],
+        bias: Union[Sequence[bool], bool] = True,
+        dropouts: Union[float, Sequence[float]] = 0.0,
+        bidirectional: bool = True,
+        return_sequences: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1666,8 +1886,16 @@ class StackedLSTM(SizeMixin, nn.Sequential):
         super().__init__()
         self.__hidden_sizes = hidden_sizes
         self.num_lstm_layers = len(hidden_sizes)
-        l_bias = bias if isinstance(bias, Sequence) else list(repeat(bias, self.num_lstm_layers))
-        self.__dropouts = dropouts if isinstance(dropouts, Sequence) else list(repeat(dropouts, self.num_lstm_layers))
+        l_bias = (
+            bias
+            if isinstance(bias, Sequence)
+            else list(repeat(bias, self.num_lstm_layers))
+        )
+        self.__dropouts = (
+            dropouts
+            if isinstance(dropouts, Sequence)
+            else list(repeat(dropouts, self.num_lstm_layers))
+        )
         self.bidirectional = bidirectional
         self.batch_first = False
         self.return_sequences = return_sequences
@@ -1678,9 +1906,9 @@ class StackedLSTM(SizeMixin, nn.Sequential):
             if idx == 0:
                 _input_size = input_size
             else:
-                _input_size = hidden_sizes[idx-1]
+                _input_size = hidden_sizes[idx - 1]
                 if self.bidirectional:
-                    _input_size = 2*_input_size
+                    _input_size = 2 * _input_size
             self.add_module(
                 name=f"{module_name_prefix}_{idx+1}",
                 module=nn.LSTM(
@@ -1690,17 +1918,21 @@ class StackedLSTM(SizeMixin, nn.Sequential):
                     bias=b,
                     batch_first=self.batch_first,
                     bidirectional=self.bidirectional,
-                )
+                ),
             )
             self.__module_names.append("lstm")
-            if self.__dropouts[idx] > 0 and idx < self.num_lstm_layers-1:
+            if self.__dropouts[idx] > 0 and idx < self.num_lstm_layers - 1:
                 self.add_module(
                     name=f"dropout_{idx+1}",
                     module=nn.Dropout(self.__dropouts[idx]),
                 )
                 self.__module_names.append("dp")
-    
-    def forward(self, input:Union[Tensor, PackedSequence], hx:Optional[Tuple[Tensor, Tensor]]=None) -> Tensor:
+
+    def forward(
+        self,
+        input: Union[Tensor, PackedSequence],
+        hx: Optional[Tuple[Tensor, Tensor]] = None,
+    ) -> Tensor:
         """
         keep up with `nn.LSTM.forward`, parameters ref. `nn.LSTM.forward`
 
@@ -1728,11 +1960,13 @@ class StackedLSTM(SizeMixin, nn.Sequential):
         if self.return_sequences:
             final_output = output  # seq_len, batch_size, n_direction*hidden_size
         else:
-            final_output = output[-1,...]  # batch_size, n_direction*hidden_size
+            final_output = output[-1, ...]  # batch_size, n_direction*hidden_size
         return final_output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1760,7 +1994,7 @@ class StackedLSTM(SizeMixin, nn.Sequential):
 # attention mechanisms, from various sources
 @deprecated(reason="not checked yet")
 class AML_Attention(SizeMixin, nn.Module):
-    """ NOT checked,
+    """NOT checked,
 
     the feature extraction part is eliminated,
     with only the attention left,
@@ -1769,32 +2003,29 @@ class AML_Attention(SizeMixin, nn.Module):
     ----------
     [1] https://github.com/AMLab-Amsterdam/AttentionDeepMIL/blob/master/model.py#L6
     """
+
     __name__ = "AML_Attention"
 
-    def __init__(self, L:int, D:int, K:int):
-        """ NOT checked,
-        """
+    def __init__(self, L: int, D: int, K: int):
+        """NOT checked,"""
         super().__init__()
         self.L = L
         self.D = D
         self.K = K
 
         self.attention = nn.Sequential(
-            nn.Linear(self.L, self.D),
-            nn.Tanh(),
-            nn.Linear(self.D, self.K)
+            nn.Linear(self.L, self.D), nn.Tanh(), nn.Linear(self.D, self.K)
         )
 
     def forward(self, input):
-        """
-        """
+        """ """
         A = self.attention(input)  # NxK
         return A
 
 
 @deprecated(reason="not checked yet")
 class AML_GatedAttention(SizeMixin, nn.Module):
-    """ NOT checked,
+    """NOT checked,
 
     the feature extraction part is eliminated,
     with only the attention left,
@@ -1805,45 +2036,41 @@ class AML_GatedAttention(SizeMixin, nn.Module):
     ----------
     [1] https://github.com/AMLab-Amsterdam/AttentionDeepMIL/blob/master/model.py#L72
     """
+
     __name__ = "AML_GatedAttention"
 
-    def __init__(self, L:int, D:int, K:int):
-        """ NOT checked,
-        """
+    def __init__(self, L: int, D: int, K: int):
+        """NOT checked,"""
         super().__init__()
         self.L = L
         self.D = D
         self.K = K
 
-        self.attention_V = nn.Sequential(
-            nn.Linear(self.L, self.D),
-            nn.Tanh()
-        )
-        self.attention_U = nn.Sequential(
-            nn.Linear(self.L, self.D),
-            nn.Sigmoid()
-        )
+        self.attention_V = nn.Sequential(nn.Linear(self.L, self.D), nn.Tanh())
+        self.attention_U = nn.Sequential(nn.Linear(self.L, self.D), nn.Sigmoid())
         self.attention_weights = nn.Linear(self.D, self.K)
 
     def forward(self, input):
-        """
-        """
+        """ """
         A_V = self.attention_V(input)  # NxD
         A_U = self.attention_U(input)  # NxD
-        A = self.attention_weights(A_V * A_U) # element wise multiplication # NxK
+        A = self.attention_weights(A_V * A_U)  # element wise multiplication # NxK
         return A
 
 
 class AttentionWithContext(SizeMixin, nn.Module):
-    """ finished, checked (might have bugs),
+    """finished, checked (might have bugs),
 
     from 0236 of CPSC2018 challenge
     """
+
     __DEBUG__ = False
     __name__ = "AttentionWithContext"
 
-    def __init__(self, in_channels:int, bias:bool=True, initializer:str="glorot_uniform"):
-        """ finished, checked (might have bugs),
+    def __init__(
+        self, in_channels: int, bias: bool = True, initializer: str = "glorot_uniform"
+    ):
+        """finished, checked (might have bugs),
 
         Parameters
         ----------
@@ -1871,7 +2098,7 @@ class AttentionWithContext(SizeMixin, nn.Module):
                 print(f"AttentionWithContext b.shape = {self.b.shape}")
             # Initializers["zeros"](self.b)
             self.u = Parameter(torch.Tensor(in_channels))
-            Initializers.constant(self.u, 1/in_channels)
+            Initializers.constant(self.u, 1 / in_channels)
             if self.__DEBUG__:
                 print(f"AttentionWithContext u.shape = {self.u.shape}")
             # self.init(self.u)
@@ -1879,7 +2106,7 @@ class AttentionWithContext(SizeMixin, nn.Module):
             self.register_parameter("b", None)
             self.register_parameter("u", None)
 
-    def compute_mask(self, input:Tensor, input_mask:Optional[Tensor]=None):
+    def compute_mask(self, input: Tensor, input_mask: Optional[Tensor] = None):
         """
 
         Parameters
@@ -1888,7 +2115,7 @@ class AttentionWithContext(SizeMixin, nn.Module):
         """
         return None
 
-    def forward(self, input:Tensor, mask:Optional[Tensor]=None) -> Tensor:
+    def forward(self, input: Tensor, mask: Optional[Tensor] = None) -> Tensor:
         """
         Parameters
         ----------
@@ -1897,7 +2124,9 @@ class AttentionWithContext(SizeMixin, nn.Module):
         mask: Tensor, optional,
         """
         if self.__DEBUG__:
-            print(f"AttentionWithContext forward: input.shape = {input.shape}, W.shape = {self.W.shape}")
+            print(
+                f"AttentionWithContext forward: input.shape = {input.shape}, W.shape = {self.W.shape}"
+            )
 
         # linear + activation
         # (batch_size, seq_len, n_channels) x (n_channels, n_channels)
@@ -1915,7 +2144,7 @@ class AttentionWithContext(SizeMixin, nn.Module):
         ait = torch.tensordot(uit, self.u, dims=1)  # the same as torch.matmul
         if self.__DEBUG__:
             print(f"AttentionWithContext forward: ait.shape = {ait.shape}")
-        
+
         # softmax along seq_len
         # (batch_size, seq_len)
         a = torch.exp(ait)
@@ -1923,7 +2152,10 @@ class AttentionWithContext(SizeMixin, nn.Module):
             a_masked = a * mask
         else:
             a_masked = a
-        a_masked = _true_divide(a_masked, torch.sum(a_masked, dim=-1, keepdim=True) + torch.finfo(torch.float32).eps)
+        a_masked = _true_divide(
+            a_masked,
+            torch.sum(a_masked, dim=-1, keepdim=True) + torch.finfo(torch.float32).eps,
+        )
         if self.__DEBUG__:
             print(f"AttentionWithContext forward: a_masked.shape = {a_masked.shape}")
 
@@ -1932,14 +2164,18 @@ class AttentionWithContext(SizeMixin, nn.Module):
         # -> (batch_size, seq_len, n_channels)
         weighted_input = input * a[..., np.newaxis]
         if self.__DEBUG__:
-            print(f"AttentionWithContext forward: weighted_input.shape = {weighted_input.shape}")
+            print(
+                f"AttentionWithContext forward: weighted_input.shape = {weighted_input.shape}"
+            )
         output = torch.sum(weighted_input, dim=-1)
         if self.__DEBUG__:
             print(f"AttentionWithContext forward: output.shape = {output.shape}")
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -1963,17 +2199,22 @@ class _ScaledDotProductAttention(SizeMixin, nn.Module):
     ----------
     [1] https://github.com/CyberZHG/torch-multi-head-attention
     """
+
     __DEBUG__ = False
     __name__ = "_ScaledDotProductAttention"
 
-    def forward(self, query:Tensor, key:Tensor, value:Tensor, mask:Optional[Tensor]=None) -> Tensor:
+    def forward(
+        self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[Tensor] = None
+    ) -> Tensor:
         """
         all tensors of shape (batch_size, seq_len, features)
         """
         # if self.__DEBUG__:
         #     print(f"query.shape = {query.shape}, key.shape = {key.shape}, value.shape = {value.shape}")
         dk = query.shape[-1]
-        scores = query.matmul(key.transpose(-2, -1)) / sqrt(dk)  # -> (batch_size, seq_len, seq_len)
+        scores = query.matmul(key.transpose(-2, -1)) / sqrt(
+            dk
+        )  # -> (batch_size, seq_len, seq_len)
         if mask is not None:
             scores = scores.masked_fill(mask == 0, -1e9)
         attention = F.softmax(scores, dim=-1)
@@ -1992,16 +2233,19 @@ class MultiHeadAttention(SizeMixin, nn.Module):
     ----------
     [1] https://github.com/CyberZHG/torch-multi-head-attention
     """
+
     __DEBUG__ = False
     __name__ = "MultiHeadAttention"
 
-    def __init__(self,
-                 in_features:int,
-                 head_num:int,
-                 bias:bool=True,
-                 activation:Optional[Union[str,nn.Module]]="relu",
-                 **kwargs:Any):
-        """ finished, checked,
+    def __init__(
+        self,
+        in_features: int,
+        head_num: int,
+        bias: bool = True,
+        activation: Optional[Union[str, nn.Module]] = "relu",
+        **kwargs: Any,
+    ):
+        """finished, checked,
 
         Parameters
         ----------
@@ -2018,7 +2262,9 @@ class MultiHeadAttention(SizeMixin, nn.Module):
         """
         super().__init__()
         if in_features % head_num != 0:
-            raise ValueError(f"`in_features`({in_features}) should be divisible by `head_num`({head_num})")
+            raise ValueError(
+                f"`in_features`({in_features}) should be divisible by `head_num`({head_num})"
+            )
         self.in_features = in_features
         self.head_num = head_num
         self.activation = get_activation(activation, kwargs.get("kw_activation", {}))
@@ -2028,15 +2274,17 @@ class MultiHeadAttention(SizeMixin, nn.Module):
         self.linear_v = nn.Linear(in_features, in_features, bias)
         self.linear_o = nn.Linear(in_features, in_features, bias)
 
-    def forward(self, q:Tensor, k:Tensor, v:Tensor, mask:Optional[Tensor]=None) -> Tensor:
+    def forward(
+        self, q: Tensor, k: Tensor, v: Tensor, mask: Optional[Tensor] = None
+    ) -> Tensor:
         """
         q, k, v are of shape (seq_len, batch_size, features)
         in order to keep accordance with `nn.MultiheadAttention`
         """
         # all (seq_len, batch_size, features) -> (batch_size, seq_len, features)
-        q = self.linear_q(q.permute(1,0,2))
-        k = self.linear_k(k.permute(1,0,2))
-        v = self.linear_v(v.permute(1,0,2))
+        q = self.linear_q(q.permute(1, 0, 2))
+        k = self.linear_k(k.permute(1, 0, 2))
+        v = self.linear_v(v.permute(1, 0, 2))
         if self.activation is not None:
             q = self.activation(q)
             k = self.activation(k)
@@ -2054,36 +2302,40 @@ class MultiHeadAttention(SizeMixin, nn.Module):
         if self.activation is not None:
             y = self.activation(y)
         # shape back from (batch_size, seq_len, features) -> (seq_len, batch_size, features)
-        y = y.permute(1,0,2)
+        y = y.permute(1, 0, 2)
         return y
 
-    def _reshape_to_batches(self, x:Tensor) -> Tensor:
-        """
-        """
+    def _reshape_to_batches(self, x: Tensor) -> Tensor:
+        """ """
         batch_size, seq_len, in_features = x.shape
         sub_dim = in_features // self.head_num
         # if self.__DEBUG__:
         #     print(f"batch_size = {batch_size}, seq_len = {seq_len}, in_features = {in_features}, sub_dim = {sub_dim}")
-        reshaped = x.reshape(batch_size, seq_len, self.head_num, sub_dim)\
-                    .permute(0, 2, 1, 3)\
-                    .reshape(batch_size * self.head_num, seq_len, sub_dim)
+        reshaped = (
+            x.reshape(batch_size, seq_len, self.head_num, sub_dim)
+            .permute(0, 2, 1, 3)
+            .reshape(batch_size * self.head_num, seq_len, sub_dim)
+        )
         return reshaped
 
-    def _reshape_from_batches(self, x:Tensor) -> Tensor:
-        """
-        """
+    def _reshape_from_batches(self, x: Tensor) -> Tensor:
+        """ """
         batch_size, seq_len, in_features = x.shape
         batch_size //= self.head_num
         out_dim = in_features * self.head_num
         # if self.__DEBUG__:
         #     print(f"batch_size = {batch_size}, seq_len = {seq_len}, in_features = {in_features}, out_dim = {out_dim}")
-        reshaped = x.reshape(batch_size, self.head_num, seq_len, in_features)\
-                    .permute(0, 2, 1, 3)\
-                    .reshape(batch_size, seq_len, out_dim)
+        reshaped = (
+            x.reshape(batch_size, self.head_num, seq_len, in_features)
+            .permute(0, 2, 1, 3)
+            .reshape(batch_size, seq_len, out_dim)
+        )
         return reshaped
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2097,29 +2349,34 @@ class MultiHeadAttention(SizeMixin, nn.Module):
         output_shape: sequence,
             the output shape of this `MHA` layer, given `seq_len` and `batch_size`
         """
-        output_shape = (seq_len, batch_size, self.in_features*self.head_num)
+        output_shape = (seq_len, batch_size, self.in_features * self.head_num)
         return output_shape
 
     def extra_repr(self):
         return "in_features={}, head_num={}, bias={}, activation={}".format(
-            self.in_features, self.head_num, self.bias, type(self.activation).__name__,
+            self.in_features,
+            self.head_num,
+            self.bias,
+            type(self.activation).__name__,
         )
 
 
 class SelfAttention(SizeMixin, nn.Module):
-    """
-    """
+    """ """
+
     __DEBUG__ = False
     __name__ = "SelfAttention"
 
-    def __init__(self,
-                 in_features:int, 
-                 head_num:int,
-                 dropout:float=0.0,
-                 bias:bool=True,
-                 activation:Optional[Union[str,nn.Module]]="relu",
-                 **kwargs:Any):
-        """ finished, checked,
+    def __init__(
+        self,
+        in_features: int,
+        head_num: int,
+        dropout: float = 0.0,
+        bias: bool = True,
+        activation: Optional[Union[str, nn.Module]] = "relu",
+        **kwargs: Any,
+    ):
+        """finished, checked,
 
         Parameters
         ----------
@@ -2138,19 +2395,24 @@ class SelfAttention(SizeMixin, nn.Module):
         """
         super().__init__()
         if in_features % head_num != 0:
-            raise ValueError(f"`in_features`({in_features}) should be divisible by `head_num`({head_num})")
+            raise ValueError(
+                f"`in_features`({in_features}) should be divisible by `head_num`({head_num})"
+            )
         self.in_features = in_features
         self.head_num = head_num
         self.dropout = dropout
         self.bias = bias
         self.mha = nn.MultiheadAttention(
-            in_features, head_num, dropout=dropout, bias=bias,
+            in_features,
+            head_num,
+            dropout=dropout,
+            bias=bias,
         )
         # self.mha = MultiHeadAttention(
         #     in_features, head_num, bias=bias,
         # )
 
-    def forward(self, input:Tensor) -> Tensor:
+    def forward(self, input: Tensor) -> Tensor:
         """
         input of shape (seq_len, batch_size, features)
         output of shape (seq_len, batch_size, features)
@@ -2159,8 +2421,10 @@ class SelfAttention(SizeMixin, nn.Module):
         # output = self.mha(input, input, input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2179,18 +2443,20 @@ class SelfAttention(SizeMixin, nn.Module):
 
 
 class AttentivePooling(SizeMixin, nn.Module):
-    """
-    """
+    """ """
+
     __DEBUG__ = False
     __name__ = "AttentivePooling"
 
-    def __init__(self,
-                 in_channels:int,
-                 mid_channels:Optional[int]=None,
-                 activation:Optional[Union[str,nn.Module]]="tanh",
-                 dropout:float=0.2,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        mid_channels: Optional[int] = None,
+        activation: Optional[Union[str, nn.Module]] = "tanh",
+        dropout: float = 0.2,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2207,7 +2473,7 @@ class AttentivePooling(SizeMixin, nn.Module):
         """
         super().__init__()
         self.__in_channels = in_channels
-        self.__mid_channels = (mid_channels or self.__in_channels//2) or 1
+        self.__mid_channels = (mid_channels or self.__in_channels // 2) or 1
         self.__dropout = dropout
         self.activation = get_activation(activation, kwargs.get("kw_activation", {}))
 
@@ -2216,7 +2482,7 @@ class AttentivePooling(SizeMixin, nn.Module):
         self.contraction = nn.Linear(self.__mid_channels, 1)
         self.softmax = nn.Softmax(-1)
 
-    def forward(self, input:Tensor) -> Tensor:
+    def forward(self, input: Tensor) -> Tensor:
         """
         Parameters
         ----------
@@ -2229,13 +2495,16 @@ class AttentivePooling(SizeMixin, nn.Module):
         scores = self.contraction(scores)  # -> (batch_size, seq_len, 1)
         scores = scores.squeeze(-1)  # -> (batch_size, seq_len)
         scores = self.softmax(scores)  # -> (batch_size, seq_len)
-        weighted_input = \
-            input * (scores[..., np.newaxis]) # -> (batch_size, seq_len, n_channels)
+        weighted_input = input * (
+            scores[..., np.newaxis]
+        )  # -> (batch_size, seq_len, n_channels)
         output = weighted_input.sum(1)  # -> (batch_size, n_channels)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2258,11 +2527,17 @@ class ZeroPadding(SizeMixin, nn.Module):
     zero padding for increasing channels,
     degenerates to `identity` if in and out channels are equal
     """
-    __name__ = "ZeroPadding"
-    __LOC__ = ["head", "tail",]
 
-    def __init__(self, in_channels:int, out_channels:int, loc:str="head") -> NoReturn:
-        """ finished, checked,
+    __name__ = "ZeroPadding"
+    __LOC__ = [
+        "head",
+        "tail",
+    ]
+
+    def __init__(
+        self, in_channels: int, out_channels: int, loc: str = "head"
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2282,7 +2557,7 @@ class ZeroPadding(SizeMixin, nn.Module):
         assert self.__loc in self.__LOC__
         # self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    def forward(self, input:Tensor) -> Tensor:
+    def forward(self, input: Tensor) -> Tensor:
         """
         Parameters
         ----------
@@ -2302,8 +2577,10 @@ class ZeroPadding(SizeMixin, nn.Module):
             output = input
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2326,18 +2603,21 @@ class SeqLin(SizeMixin, nn.Sequential):
     Sequential linear,
     might be useful in learning non-linear classifying hyper-surfaces
     """
+
     __DEBUG__ = False
     __name__ = "SeqLin"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:Sequence[int],
-                 activation:Union[str,nn.Module]="relu",
-                 kernel_initializer:Optional[str]=None,
-                 bias:bool=True,
-                 dropouts:Union[float,Sequence[float]]=0.0,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: Sequence[int],
+        activation: Union[str, nn.Module] = "relu",
+        kernel_initializer: Optional[str] = None,
+        bias: bool = True,
+        dropouts: Union[float, Sequence[float]] = 0.0,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2380,15 +2660,16 @@ class SeqLin(SizeMixin, nn.Sequential):
         self.__bias = bias
         if isinstance(dropouts, Real):
             if self.__num_layers > 1:
-                self.__dropouts = list(repeat(dropouts, self.__num_layers-1)) + [0.0]
+                self.__dropouts = list(repeat(dropouts, self.__num_layers - 1)) + [0.0]
             else:
                 self.__dropouts = [dropouts]
         else:
             self.__dropouts = dropouts
-            assert len(self.__dropouts) == self.__num_layers, \
-                f"`out_channels` indicates {self.__num_layers} linear layers, while `dropouts` indicates {len(self.__dropouts)}"
+            assert (
+                len(self.__dropouts) == self.__num_layers
+            ), f"`out_channels` indicates {self.__num_layers} linear layers, while `dropouts` indicates {len(self.__dropouts)}"
         self.__skip_last_activation = kwargs.get("skip_last_activation", False)
-        
+
         lin_in_channels = self.__in_channels
         for idx in range(self.__num_layers):
             lin_layer = nn.Linear(
@@ -2402,7 +2683,7 @@ class SeqLin(SizeMixin, nn.Sequential):
                 f"lin_{idx}",
                 lin_layer,
             )
-            if idx < self.__num_layers-1 or not self.__skip_last_activation:
+            if idx < self.__num_layers - 1 or not self.__skip_last_activation:
                 self.add_module(
                     f"act_{idx}",
                     act_layer(**kw_activation),
@@ -2414,13 +2695,13 @@ class SeqLin(SizeMixin, nn.Sequential):
                 )
             lin_in_channels = self.__out_channels[idx]
 
-    def forward(self, input:Tensor) -> Tensor:
+    def forward(self, input: Tensor) -> Tensor:
         """
         Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels) or (batch_size, seq_len, n_channels)
-        
+
         Returns
         -------
         output: Tensor,
@@ -2430,8 +2711,13 @@ class SeqLin(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None, input_seq:bool=True) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self,
+        seq_len: Optional[int] = None,
+        batch_size: Optional[int] = None,
+        input_seq: bool = True,
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2460,18 +2746,21 @@ class MLP(SeqLin):
     multi-layer perceptron,
     alias for sequential linear block
     """
+
     __DEBUG__ = False
     __name__ = "MLP"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:Sequence[int],
-                 activation:str="relu",
-                 kernel_initializer:Optional[str]=None,
-                 bias:bool=True,
-                 dropouts:Union[float,Sequence[float]]=0.0,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: Sequence[int],
+        activation: str = "relu",
+        kernel_initializer: Optional[str] = None,
+        bias: bool = True,
+        dropouts: Union[float, Sequence[float]] = 0.0,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2490,7 +2779,15 @@ class MLP(SeqLin):
         kwargs: dict, optional,
             extra parameters
         """
-        super().__init__(in_channels, out_channels, activation, kernel_initializer, bias, dropouts, **kwargs)
+        super().__init__(
+            in_channels,
+            out_channels,
+            activation,
+            kernel_initializer,
+            bias,
+            dropouts,
+            **kwargs,
+        )
 
 
 class NonLocalBlock(SizeMixin, nn.Module):
@@ -2503,17 +2800,20 @@ class NonLocalBlock(SizeMixin, nn.Module):
     [1] Wang, Xiaolong, et al. "Non-local neural networks." Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.
     [2] https://github.com/AlexHex7/Non-local_pytorch
     """
+
     __DEBUG__ = False
     __name__ = "NonLocalBlock"
     __MID_LAYERS__ = ["g", "theta", "phi", "W"]
 
-    def __init__(self,
-                 in_channels:int,
-                 mid_channels:Optional[int]=None,
-                 filter_lengths:Union[CFG,int]=1,
-                 subsample_length:int=2,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        mid_channels: Optional[int] = None,
+        filter_lengths: Union[CFG, int] = 1,
+        subsample_length: int = 2,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2531,13 +2831,13 @@ class NonLocalBlock(SizeMixin, nn.Module):
         """
         super().__init__()
         self.__in_channels = in_channels
-        self.__mid_channels = (mid_channels or self.__in_channels//2) or 1
+        self.__mid_channels = (mid_channels or self.__in_channels // 2) or 1
         self.__out_channels = self.__in_channels
         if isinstance(filter_lengths, dict):
             assert set(filter_lengths.keys()) == set(self.__MID_LAYERS__)
-            self.__kernel_sizes = CFG({k:v for k,v in filter_lengths.items()})
+            self.__kernel_sizes = CFG({k: v for k, v in filter_lengths.items()})
         else:
-            self.__kernel_sizes = CFG({k:filter_lengths for k in self.__MID_LAYERS__})
+            self.__kernel_sizes = CFG({k: filter_lengths for k in self.__MID_LAYERS__})
         self.__subsample_length = subsample_length
         self.config = CFG(deepcopy(config))
 
@@ -2553,12 +2853,11 @@ class NonLocalBlock(SizeMixin, nn.Module):
                     stride=1,
                     batch_norm=False,
                     activation=None,
-                )
+                ),
             )
             if self.__subsample_length > 1 and k != "theta":
                 self.mid_layers[k].add_module(
-                    "max_pool",
-                    nn.MaxPool1d(kernel_size=self.__subsample_length)
+                    "max_pool", nn.MaxPool1d(kernel_size=self.__subsample_length)
                 )
 
         self.W = Conv_Bn_Activation(
@@ -2570,8 +2869,8 @@ class NonLocalBlock(SizeMixin, nn.Module):
             activation=None,
         )
 
-    def forward(self, x:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, x: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2600,8 +2899,10 @@ class NonLocalBlock(SizeMixin, nn.Module):
         y += x
         return y
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2620,7 +2921,7 @@ class NonLocalBlock(SizeMixin, nn.Module):
 
 
 class SEBlock(SizeMixin, nn.Module):
-    """ finished, checked,
+    """finished, checked,
 
     Squeeze-and-Excitation Block
 
@@ -2631,14 +2932,15 @@ class SEBlock(SizeMixin, nn.Module):
     [3] https://github.com/hujie-frank/SENet
     [4] https://github.com/moskomule/senet.pytorch/blob/master/senet/se_module.py
     """
+
     __DEBUG__ = False
     __name__ = "SEBlock"
     __DEFAULT_CONFIG__ = CFG(
         bias=False, activation="relu", kw_activation={"inplace": True}, dropouts=0.0
     )
 
-    def __init__(self, in_channels:int, reduction:int=16, **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, in_channels: int, reduction: int = 16, **config) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2667,19 +2969,19 @@ class SEBlock(SizeMixin, nn.Module):
                 kw_activation=self.config.kw_activation,
                 bias=self.config.bias,
                 dropouts=self.config.dropouts,
-                skip_last_activation=True
+                skip_last_activation=True,
             ),
             nn.Sigmoid(),
         )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
-        
+
         Returns
         -------
         output: Tensor,
@@ -2693,8 +2995,10 @@ class SEBlock(SizeMixin, nn.Module):
         output = input * y  # --> (batch_size, n_channels, seq_len)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2724,12 +3028,12 @@ class GEBlock(SizeMixin, nn.Module):
     [3] https://github.com/BayesWatch/pytorch-GENet
     [4] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/gather_excite.py
     """
+
     __DEBUG__ = True
     __name__ = "GEBlock"
 
     def __init__(self) -> NoReturn:
-        """
-        """
+        """ """
         super().__init__()
         raise NotImplementedError
 
@@ -2744,18 +3048,18 @@ class SKBlock(SizeMixin, nn.Module):
     [1] Li, X., Wang, W., Hu, X., & Yang, J. (2019). Selective kernel networks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 510-519).
     [2] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/sknet.py
     """
+
     __DEBUG__ = True
     __name__ = "SKBlock"
 
     def __init__(self) -> NoReturn:
-        """
-        """
+        """ """
         super().__init__()
         raise NotImplementedError
 
 
 class GlobalContextBlock(SizeMixin, nn.Module):
-    """ finished, checked,
+    """finished, checked,
 
     Global Context Block
 
@@ -2765,19 +3069,30 @@ class GlobalContextBlock(SizeMixin, nn.Module):
     [2] https://github.com/xvjiarui/GCNet/blob/master/mmdet/ops/gcb/context_block.py
     [3] entry 0436 of CPSC2019
     """
+
     __DEBUG__ = False
     __name__ = "GlobalContextBlock"
-    __POOLING_TYPES__ = ["attn", "avg",]
-    __FUSION_TYPES__ = ["add", "mul",]
+    __POOLING_TYPES__ = [
+        "attn",
+        "avg",
+    ]
+    __FUSION_TYPES__ = [
+        "add",
+        "mul",
+    ]
 
-    def __init__(self,
-                 in_channels:int,
-                 ratio:int,
-                 reduction:bool=True,
-                 pooling_type:str="attn",
-                 fusion_types:Sequence[str]=["add",],
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        ratio: int,
+        reduction: bool = True,
+        pooling_type: str = "attn",
+        fusion_types: Sequence[str] = [
+            "add",
+        ],
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2831,8 +3146,8 @@ class GlobalContextBlock(SizeMixin, nn.Module):
         else:
             self.channel_mul_conv = None
 
-    def spatial_pool(self, x:Tensor) -> Tensor:
-        """ finished, checked,
+    def spatial_pool(self, x: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2850,15 +3165,17 @@ class GlobalContextBlock(SizeMixin, nn.Module):
             context = self.softmax(context)  # --> (batch_size, 1, seq_len)
             context = context.unsqueeze(3)  # --> (batch_size, 1, seq_len, 1)
             # matmul: (batch_size, 1, n_channels, seq_len) x (batch_size, 1, seq_len, 1)
-            context = torch.matmul(input_x, context)  # --> (batch_size, 1, n_channels, 1)
+            context = torch.matmul(
+                input_x, context
+            )  # --> (batch_size, 1, n_channels, 1)
             context = context.squeeze(1)  # --> (batch_size, n_channels, 1)
         elif self.__pooling_type == "avg":
             context = self.avg_pool(x)  # --> (batch_size, n_channels, 1)
         return context
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
-        
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
+
         Parameters
         ----------
         input: Tensor,
@@ -2872,17 +3189,25 @@ class GlobalContextBlock(SizeMixin, nn.Module):
         context = self.spatial_pool(input)  # --> (batch_size, n_channels, 1)
         output = input
         if self.channel_mul_conv is not None:
-            channel_mul_term = self.channel_mul_conv(context)  # --> (batch_size, n_channels, 1)
-            channel_mul_term = torch.sigmoid(channel_mul_term)  # --> (batch_size, n_channels, 1)
+            channel_mul_term = self.channel_mul_conv(
+                context
+            )  # --> (batch_size, n_channels, 1)
+            channel_mul_term = torch.sigmoid(
+                channel_mul_term
+            )  # --> (batch_size, n_channels, 1)
             # (batch_size, n_channels, seq_len) x (batch_size, n_channels, 1)
             output = output * channel_mul_term  # --> (batch_size, n_channels, seq_len)
         if self.channel_add_conv is not None:
-            channel_add_term = self.channel_add_conv(context)  # --> (batch_size, n_channels, 1)
+            channel_add_term = self.channel_add_conv(
+                context
+            )  # --> (batch_size, n_channels, 1)
             output = output + channel_add_term  # --> (batch_size, n_channels, seq_len)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2910,12 +3235,14 @@ class BAMBlock(SizeMixin, nn.Module):
     1. Park, Jongchan, et al. "Bam: Bottleneck attention module." arXiv preprint arXiv:1807.06514 (2018).
     2. https://github.com/Jongchan/attention-module/blob/master/MODELS/bam.py
     """
+
     __DEBUG__ = True
     __name__ = "BAMBlock"
 
-    def __init__(self,):
-        """
-        """
+    def __init__(
+        self,
+    ):
+        """ """
         raise NotImplementedError
 
 
@@ -2929,20 +3256,31 @@ class CBAMBlock(SizeMixin, nn.Module):
     1. Woo, Sanghyun, et al. "Cbam: Convolutional block attention module." Proceedings of the European conference on computer vision (ECCV). 2018.
     2. https://github.com/Jongchan/attention-module/blob/master/MODELS/cbam.py
     """
+
     __DEBUG__ = False
     __name__ = "CBAMBlock"
-    __POOL_TYPES__ = ["avg", "max", "lp", "lse",]
+    __POOL_TYPES__ = [
+        "avg",
+        "max",
+        "lp",
+        "lse",
+    ]
 
-    def __init__(self,
-                 gate_channels:int,
-                 reduction:int=16,
-                 groups:int=1,
-                 activation:Union[str,nn.Module]="relu",
-                 gate:Union[str,nn.Module]="sigmoid",
-                 pool_types:Sequence[str]=["avg", "max",],
-                 no_spatial:bool=False,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        gate_channels: int,
+        reduction: int = 16,
+        groups: int = 1,
+        activation: Union[str, nn.Module] = "relu",
+        gate: Union[str, nn.Module] = "sigmoid",
+        pool_types: Sequence[str] = [
+            "avg",
+            "max",
+        ],
+        no_spatial: bool = False,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -2987,7 +3325,10 @@ class CBAMBlock(SizeMixin, nn.Module):
         # channel gate
         self.channel_gate_mlp = MLP(
             in_channels=self.__gate_channels,
-            out_channels=[self.__gate_channels//reduction, self.__gate_channels,],
+            out_channels=[
+                self.__gate_channels // reduction,
+                self.__gate_channels,
+            ],
             activation=activation,
             skip_last_activation=True,
         )
@@ -3013,8 +3354,8 @@ class CBAMBlock(SizeMixin, nn.Module):
                 activation="sigmoid",
             )
 
-    def _fwd_channel_gate(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def _fwd_channel_gate(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         forward function of the channel gate
 
@@ -3041,8 +3382,8 @@ class CBAMBlock(SizeMixin, nn.Module):
         output = scale.unsqueeze(-1) * input
         return output
 
-    def _fwd_spatial_gate(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def _fwd_spatial_gate(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         forward function of the spatial gate
 
@@ -3059,13 +3400,15 @@ class CBAMBlock(SizeMixin, nn.Module):
         if self.spatial_gate_conv is None:
             return input
         # channel pool, `scale` has n_channels = 2
-        scale = torch.cat( (input.max(dim=1,keepdim=True)[0], input.mean(dim=1,keepdim=True) ), dim=1)
+        scale = torch.cat(
+            (input.max(dim=1, keepdim=True)[0], input.mean(dim=1, keepdim=True)), dim=1
+        )
         scale = self.spatial_gate_conv(scale)
         output = scale * input
         return output
 
-    def _lp_pool(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def _lp_pool(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         global power-average pooling over `input`
 
@@ -3079,10 +3422,12 @@ class CBAMBlock(SizeMixin, nn.Module):
         Tensor,
             of shape (batch_size, n_channels, 1)
         """
-        return F.lp_pool1d(input, norm_type=self.__lp_norm_type, kernel_size=x.shape[-1])
+        return F.lp_pool1d(
+            input, norm_type=self.__lp_norm_type, kernel_size=x.shape[-1]
+        )
 
-    def _lse_pool(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def _lse_pool(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         global logsumexp pooling over `input`
 
@@ -3098,8 +3443,8 @@ class CBAMBlock(SizeMixin, nn.Module):
         """
         return torch.logsumexp(input, dim=-1)
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         forward function of the `CBAMBlock`,
         first channel gate, then (optional) spatial gate
@@ -3117,8 +3462,10 @@ class CBAMBlock(SizeMixin, nn.Module):
         output = self._fwd_spatial_gate(self._fwd_channel_gate(input))
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -3146,12 +3493,14 @@ class CoordAttention(SizeMixin, nn.Module):
     1. Hou, Qibin, Daquan Zhou, and Jiashi Feng. "Coordinate attention for efficient mobile network design." Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021.
     2. https://github.com/Andrew-Qibin/CoordAttention
     """
+
     __DEBUG__ = True
     __name__ = "CoordAttention"
 
-    def __init__(self,):
-        """
-        """
+    def __init__(
+        self,
+    ):
+        """ """
         raise NotImplementedError
 
 
@@ -3187,10 +3536,11 @@ class CRF(SizeMixin, nn.Module):
     [6] https://github.com/allenai/allennlp/blob/master/allennlp/modules/conditional_random_field.py
     [7] https://pytorch.org/tutorials/beginner/nlp/advanced_tutorial.html
     """
+
     __DEBUG__ = True
     __name__ = "CRF"
 
-    def __init__(self, num_tags:int, batch_first:bool=False) -> NoReturn:
+    def __init__(self, num_tags: int, batch_first: bool = False) -> NoReturn:
         """
 
         Parameters
@@ -3226,7 +3576,13 @@ class CRF(SizeMixin, nn.Module):
     def __repr__(self) -> str:
         return f"{self.__name__}(num_tags={self.num_tags})"
 
-    def neg_log_likelihood(self, emissions:Tensor, tags:torch.LongTensor, mask:Optional[torch.ByteTensor]=None, reduction:str="sum") -> Tensor:
+    def neg_log_likelihood(
+        self,
+        emissions: Tensor,
+        tags: torch.LongTensor,
+        mask: Optional[torch.ByteTensor] = None,
+        reduction: str = "sum",
+    ) -> Tensor:
         """
         Compute the negative conditional log likelihood (the loss function)
         of a sequence of tags given emission scores.
@@ -3273,7 +3629,7 @@ class CRF(SizeMixin, nn.Module):
         denominator = self._compute_normalizer(emissions, mask)
         # shape: (batch_size,)
         llh = numerator - denominator  # log likelihood
-        nll = - llh  # negative log likelihood
+        nll = -llh  # negative log likelihood
 
         if _reduction == "none":
             pass
@@ -3286,7 +3642,9 @@ class CRF(SizeMixin, nn.Module):
             nll = nll.sum() / mask.float().sum()
         return nll
 
-    def forward(self, emissions:Tensor, mask:Optional[torch.ByteTensor]=None) -> Tensor:
+    def forward(
+        self, emissions: Tensor, mask: Optional[torch.ByteTensor] = None
+    ) -> Tensor:
         """
         Find the most likely tag sequence using Viterbi algorithm.
 
@@ -3305,42 +3663,58 @@ class CRF(SizeMixin, nn.Module):
         self._validate(emissions, mask=mask)
         _device = next(self.parameters()).device
         if mask is None:
-            mask = emissions.new_ones(emissions.shape[:2], dtype=torch.uint8, device=_device)
+            mask = emissions.new_ones(
+                emissions.shape[:2], dtype=torch.uint8, device=_device
+            )
         if self.batch_first:
             emissions = emissions.transpose(0, 1)
             mask = mask.transpose(0, 1)
         best_tags = Tensor(self._viterbi_decode(emissions, mask)).to(torch.int64)
-        output = F.one_hot(best_tags.to(_device), num_classes=self.num_tags).permute(1,0,2)
+        output = F.one_hot(best_tags.to(_device), num_classes=self.num_tags).permute(
+            1, 0, 2
+        )
         return output
 
-    def _validate(self, emissions:Tensor, tags:Optional[torch.LongTensor]=None, mask:Optional[torch.ByteTensor]=None) -> NoReturn:
+    def _validate(
+        self,
+        emissions: Tensor,
+        tags: Optional[torch.LongTensor] = None,
+        mask: Optional[torch.ByteTensor] = None,
+    ) -> NoReturn:
         """
         check validity of input `Tensor`s
         """
         if emissions.dim() != 3:
-            raise ValueError(f"emissions must have dimension of 3, got {emissions.dim()}")
+            raise ValueError(
+                f"emissions must have dimension of 3, got {emissions.dim()}"
+            )
         if emissions.shape[2] != self.num_tags:
             raise ValueError(
                 f"expected last dimension of emissions is {self.num_tags}, "
-                f"got {emissions.shape[2]}")
+                f"got {emissions.shape[2]}"
+            )
 
         if tags is not None:
             if emissions.shape[:2] != tags.shape:
                 raise ValueError(
                     "the first two dimensions of emissions and tags must match, "
-                    f"got {tuple(emissions.shape[:2])} and {tuple(tags.shape)}")
+                    f"got {tuple(emissions.shape[:2])} and {tuple(tags.shape)}"
+                )
 
         if mask is not None:
             if emissions.shape[:2] != mask.shape:
                 raise ValueError(
                     "the first two dimensions of emissions and mask must match, "
-                    f"got {tuple(emissions.shape[:2])} and {tuple(mask.shape)}")
+                    f"got {tuple(emissions.shape[:2])} and {tuple(mask.shape)}"
+                )
             no_empty_seq = not self.batch_first and mask[0].all()
             no_empty_seq_bf = self.batch_first and mask[:, 0].all()
             if not no_empty_seq and not no_empty_seq_bf:
                 raise ValueError("mask of the first timestep must all be on")
 
-    def _compute_score(self, emissions:Tensor, tags:torch.LongTensor, mask:torch.ByteTensor) -> Tensor:
+    def _compute_score(
+        self, emissions: Tensor, tags: torch.LongTensor, mask: torch.ByteTensor
+    ) -> Tensor:
         """
         # emissions: (seq_len, batch_size, num_tags)
         # tags: (seq_len, batch_size)
@@ -3380,7 +3754,9 @@ class CRF(SizeMixin, nn.Module):
 
         return score
 
-    def _compute_normalizer(self, emissions:torch.Tensor, mask:torch.ByteTensor) -> Tensor:
+    def _compute_normalizer(
+        self, emissions: torch.Tensor, mask: torch.ByteTensor
+    ) -> Tensor:
         """
         # emissions: (seq_len, batch_size, num_tags)
         # mask: (seq_len, batch_size)
@@ -3432,7 +3808,9 @@ class CRF(SizeMixin, nn.Module):
         # shape: (batch_size,)
         return torch.logsumexp(score, dim=1)
 
-    def _viterbi_decode(self, emissions:torch.FloatTensor, mask:torch.ByteTensor) -> List[List[int]]:
+    def _viterbi_decode(
+        self, emissions: torch.FloatTensor, mask: torch.ByteTensor
+    ) -> List[List[int]]:
         """
         # emissions: (seq_len, batch_size, num_tags)
         # mask: (seq_len, batch_size)
@@ -3500,7 +3878,7 @@ class CRF(SizeMixin, nn.Module):
 
             # We trace back where the best last tag comes from, append that to our best tag
             # sequence, and trace it back again, and so on
-            for hist in reversed(history[:seq_ends[idx]]):
+            for hist in reversed(history[: seq_ends[idx]]):
                 best_last_tag = hist[idx][best_tags[-1]]
                 best_tags.append(best_last_tag.item())
 
@@ -3510,8 +3888,10 @@ class CRF(SizeMixin, nn.Module):
 
         return best_tags_list
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -3537,7 +3917,7 @@ class ExtendedCRF(SizeMixin, nn.Sequential):
     """
     (possibly) combination of a linear (projection) layer and a `CRF` layer,
     which allows the input size to be unequal to (usually greater than) num_tags,
-    as in ref. 
+    as in ref.
 
     References
     ----------
@@ -3545,10 +3925,12 @@ class ExtendedCRF(SizeMixin, nn.Sequential):
     [2] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/text/crf.py
     [3] https://github.com/keras-team/keras-contrib/blob/master/keras_contrib/layers/crf.py
     """
+
     __DEBUG__ = False
     __name__ = "ExtendedCRF"
-    def __init__(self, in_channels:int, num_tags:int, bias:bool=True) -> NoReturn:
-        """ finished, checked,
+
+    def __init__(self, in_channels: int, num_tags: int, bias: bool = True) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -3570,18 +3952,18 @@ class ExtendedCRF(SizeMixin, nn.Sequential):
                     in_features=self.__in_channels,
                     out_features=self.__num_tags,
                     bias=self.__bias,
-                )
+                ),
             )
         self.add_module(
             name="crf",
             module=CRF(
                 num_tags=self.__num_tags,
                 batch_first=True,
-            )
+            ),
         )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -3597,12 +3979,16 @@ class ExtendedCRF(SizeMixin, nn.Sequential):
             output = self.proj(input)
         else:
             output = input
-        output = output.permute(1,0,2)  # (batch_size, seq_len, n_channels) --> (seq_len, batch_size, n_channels)
+        output = output.permute(
+            1, 0, 2
+        )  # (batch_size, seq_len, n_channels) --> (seq_len, batch_size, n_channels)
         output = self.crf(output)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -3627,11 +4013,14 @@ class SpaceToDepth(SizeMixin, nn.Module):
     ----------
     1. https://github.com/Alibaba-MIIL/TResNet/blob/master/src/models/tresnet_v2/layers/space_to_depth.py
     """
+
     __DEBUG__ = False
     __name__ = "SpaceToDepth"
 
-    def __init__(self, in_channels:int, out_channels:int, block_size:int=4) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self, in_channels: int, out_channels: int, block_size: int = 4
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -3656,14 +4045,14 @@ class SpaceToDepth(SizeMixin, nn.Module):
         else:
             self.out_conv = None
 
-    def forward(self, x:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, x: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
         x: Tensor,
             of shape (batch, channel, seqlen)
-        
+
         Returns
         -------
         Tensor,
@@ -3677,8 +4066,10 @@ class SpaceToDepth(SizeMixin, nn.Module):
             x = self.out_conv(x)
         return x
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -3704,10 +4095,12 @@ class _GroupFC(object):
     def __init__(self, embed_len_decoder: int):
         self.embed_len_decoder = embed_len_decoder
 
-    def __call__(self, h: torch.Tensor, duplicate_pooling: torch.Tensor, out_extrap: torch.Tensor):
+    def __call__(
+        self, h: torch.Tensor, duplicate_pooling: torch.Tensor, out_extrap: torch.Tensor
+    ):
         for i in range(h.shape[1]):
             h_i = h[:, i, :]
-            if len(duplicate_pooling.shape)==3:
+            if len(duplicate_pooling.shape) == 3:
                 w_i = duplicate_pooling[i, :, :]
             else:
                 w_i = duplicate_pooling
@@ -3721,15 +4114,18 @@ class MLDecoder(SizeMixin, nn.Module):
     ----------
     1. https://github.com/Alibaba-MIIL/ML_Decoder/blob/main/src_files/ml_decoder/ml_decoder.py
     """
+
     __DEBUG__ = False
     __name__ = "MLDecoder"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:Sequence[int],
-                 num_of_groups:int=-1,
-                 decoder_embedding:int=768,
-                 zsl:bool=False) -> NoReturn:
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: Sequence[int],
+        num_of_groups: int = -1,
+        decoder_embedding: int = 768,
+        zsl: bool = False,
+    ) -> NoReturn:
         """
 
         Parameters
@@ -3774,7 +4170,9 @@ class MLDecoder(SizeMixin, nn.Module):
             dim_feedforward=dim_feedforward,
             dropout=decoder_dropout,
         )
-        self.decoder = nn.TransformerDecoder(layer_decode, num_layers=num_layers_decoder)
+        self.decoder = nn.TransformerDecoder(
+            layer_decode, num_layers=num_layers_decoder
+        )
         self.decoder.embed_standart = embed_standart
         self.decoder.query_embed = query_embed
         self.zsl = zsl
@@ -3790,9 +4188,13 @@ class MLDecoder(SizeMixin, nn.Module):
         else:
             # group fully-connected
             self.decoder.out_channels = out_channels
-            self.decoder.duplicate_factor = int(out_channels / embed_len_decoder + 0.999)
+            self.decoder.duplicate_factor = int(
+                out_channels / embed_len_decoder + 0.999
+            )
             self.decoder.duplicate_pooling = Parameter(
-                Tensor(embed_len_decoder, decoder_embedding, self.decoder.duplicate_factor)
+                Tensor(
+                    embed_len_decoder, decoder_embedding, self.decoder.duplicate_factor
+                )
             )
             self.decoder.duplicate_pooling_bias = Parameter(Tensor(out_channels))
         nn.init.xavier_normal_(self.decoder.duplicate_pooling)
@@ -3801,20 +4203,22 @@ class MLDecoder(SizeMixin, nn.Module):
         self.train_wordvecs = None
         self.test_wordvecs = None
 
-    def forward(self, x:Tensor) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         """
 
         Parameters
         ----------
         x: Tensor,
             of shape (batch, channel, seqlen)
-        
+
         Returns
         -------
         Tensor,
             of shape (batch, out_channels)
         """
-        embedding_spatial = x.permute(0, 2, 1)  # (batch, channel, seqlen) -> (batch, seqlen, channel)
+        embedding_spatial = x.permute(
+            0, 2, 1
+        )  # (batch, channel, seqlen) -> (batch, seqlen, channel)
         embedding_spatial = self.decoder.embed_standart(embedding_spatial)
         embedding_spatial = F.relu(embedding_spatial, inplace=True)
 
@@ -3824,22 +4228,34 @@ class MLDecoder(SizeMixin, nn.Module):
         else:
             query_embed = self.decoder.query_embed.weight
         # tgt = query_embed.unsqueeze(1).repeat(1, batch_size, 1)
-        tgt = query_embed.unsqueeze(1).expand(-1, batch_size, -1)  # no allocation of memory with expand
-        h = self.decoder(tgt, embedding_spatial.transpose(0, 1))  # (embed_len_decoder, batch, decoder_embedding)
+        tgt = query_embed.unsqueeze(1).expand(
+            -1, batch_size, -1
+        )  # no allocation of memory with expand
+        h = self.decoder(
+            tgt, embedding_spatial.transpose(0, 1)
+        )  # (embed_len_decoder, batch, decoder_embedding)
         h = h.transpose(0, 1)
 
-        out_extrap = torch.zeros(h.shape[0], h.shape[1], self.decoder.duplicate_factor, device=h.device, dtype=h.dtype)
+        out_extrap = torch.zeros(
+            h.shape[0],
+            h.shape[1],
+            self.decoder.duplicate_factor,
+            device=h.device,
+            dtype=h.dtype,
+        )
         self.decoder.group_fc(h, self.decoder.duplicate_pooling, out_extrap)
         if not self.zsl:
-            h_out = out_extrap.flatten(1)[:, :self.decoder.out_channels]
+            h_out = out_extrap.flatten(1)[:, : self.decoder.out_channels]
         else:
             h_out = out_extrap.flatten(1)
         h_out += self.decoder.duplicate_pooling_bias
         logits = h_out
         return logits
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -3856,17 +4272,19 @@ class MLDecoder(SizeMixin, nn.Module):
         """
         return (batch_size, self.decoder.out_channels)
 
+
 class DropPath(SizeMixin, nn.Module):
     """
-    
+
     References
     ----------
     1. Huang, Gao, et al. "Deep networks with stochastic depth." European conference on computer vision. Springer, Cham, 2016.
     2. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/drop.py
     """
+
     __name__ = "DropPath"
 
-    def __init__(self, p:float=0.2, inplace:bool=False) -> NoReturn:
+    def __init__(self, p: float = 0.2, inplace: bool = False) -> NoReturn:
         """
         Parameters
         ----------
@@ -3879,16 +4297,17 @@ class DropPath(SizeMixin, nn.Module):
         self.p = p
         self.inplace = inplace
 
-    def forward(self, x:Tensor) -> Tensor:
-        """
-        """
+    def forward(self, x: Tensor) -> Tensor:
+        """ """
         return drop_path(x, self.p, self.training, self.inplace)
 
     def extra_repr(self) -> str:
         return f"p={self.p}, inplace={self.inplace}"
 
 
-def drop_path(x:Tensor, p:float=0.2, training:bool=False, inplace:bool=False) -> Tensor:
+def drop_path(
+    x: Tensor, p: float = 0.2, training: bool = False, inplace: bool = False
+) -> Tensor:
     """
     modified from timm.models.layers.drop_path
 
@@ -3908,7 +4327,7 @@ def drop_path(x:Tensor, p:float=0.2, training:bool=False, inplace:bool=False) ->
     Tensor,
         of shape (batch, *)
     """
-    if p == 0. or not training:
+    if p == 0.0 or not training:
         return x
     if not inplace:
         x = x.clone()
@@ -3920,8 +4339,8 @@ def drop_path(x:Tensor, p:float=0.2, training:bool=False, inplace:bool=False) ->
     return x
 
 
-def make_attention_layer(in_channels:int, **config:dict) -> nn.Module:
-    """ finished, checked,
+def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
+    """finished, checked,
 
     make attention layer by config
 
@@ -3953,15 +4372,25 @@ def make_attention_layer(in_channels:int, **config:dict) -> nn.Module:
         return GlobalContextBlock(in_channels, **config)
     elif name in ["nl", "non-local", "nonlocal", "non_local"]:
         return NonLocalBlock(in_channels, **config)
-    elif name in ["ca",]:
+    elif name in [
+        "ca",
+    ]:
         return CoordAttention(in_channels, **config)
-    elif name in ["sk",]:
+    elif name in [
+        "sk",
+    ]:
         return SKBlock(in_channels, **config)
-    elif name in ["ge",]:
+    elif name in [
+        "ge",
+    ]:
         return GEBlock(in_channels, **config)
-    elif name in ["cbam",]:
+    elif name in [
+        "cbam",
+    ]:
         return CBAMBlock(in_channels, **config)
-    elif name in ["bam",]:
+    elif name in [
+        "bam",
+    ]:
         return BAMBlock(in_channels, **config)
     else:
         try:

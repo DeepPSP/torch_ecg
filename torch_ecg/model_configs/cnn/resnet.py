@@ -25,30 +25,54 @@ from ...cfg import CFG
 
 __all__ = [
     # building blocks
-    "resnet_block_basic", "resnet_bottle_neck",
-    "resnet_bottle_neck_B", "resnet_bottle_neck_D",
-    "resnet_block_basic_se", "resnet_bottle_neck_se",
-    "resnet_block_basic_nl", "resnet_bottle_neck_nl",
-    "resnet_block_basic_gc", "resnet_bottle_neck_gc",
+    "resnet_block_basic",
+    "resnet_bottle_neck",
+    "resnet_bottle_neck_B",
+    "resnet_bottle_neck_D",
+    "resnet_block_basic_se",
+    "resnet_bottle_neck_se",
+    "resnet_block_basic_nl",
+    "resnet_bottle_neck_nl",
+    "resnet_block_basic_gc",
+    "resnet_bottle_neck_gc",
     # smaller resnets
-    "resnetN", "resnetNB", "resnetNS", "resnetNBS",
+    "resnetN",
+    "resnetNB",
+    "resnetNS",
+    "resnetNBS",
     # vanilla resnet
-    "resnet_vanilla_18", "resnet_vanilla_34",
-    "resnet_vanilla_50", "resnet_vanilla_101", "resnet_vanilla_152",
-    "resnext_vanilla_50_32x4d", "resnext_vanilla_101_32x8d",
-    "resnet_vanilla_wide_50_2", "resnet_vanilla_wide_101_2",
+    "resnet_vanilla_18",
+    "resnet_vanilla_34",
+    "resnet_vanilla_50",
+    "resnet_vanilla_101",
+    "resnet_vanilla_152",
+    "resnext_vanilla_50_32x4d",
+    "resnext_vanilla_101_32x8d",
+    "resnet_vanilla_wide_50_2",
+    "resnet_vanilla_wide_101_2",
     # cpsc2018 resnet
-    "resnet_cpsc2018", "resnet_cpsc2018_leadwise",
+    "resnet_cpsc2018",
+    "resnet_cpsc2018_leadwise",
     # stanford resnet
-    "resnet_block_stanford", "resnet_stanford",
+    "resnet_block_stanford",
+    "resnet_stanford",
     # ResNet Nature Communications
     "resnet_nature_comm",
-    "resnet_nature_comm_se", "resnet_nature_comm_nl", "resnet_nature_comm_gc",
-    "resnet_nature_comm_bottle_neck", "resnet_nature_comm_bottle_neck_se",
-    "resnet_nature_comm_bottle_neck_gc", "resnet_nature_comm_bottle_neck_nl",
+    "resnet_nature_comm_se",
+    "resnet_nature_comm_nl",
+    "resnet_nature_comm_gc",
+    "resnet_nature_comm_bottle_neck",
+    "resnet_nature_comm_bottle_neck_se",
+    "resnet_nature_comm_bottle_neck_gc",
+    "resnet_nature_comm_bottle_neck_nl",
     # TresNet
-    "tresnetF", "tresnetP", "tresnetN", "tresnetS",
-    "tresnetM", "tresnetL", "tresnetXL",
+    "tresnetF",
+    "tresnetP",
+    "tresnetN",
+    "tresnetS",
+    "tresnetM",
+    "tresnetL",
+    "tresnetXL",
     "tresnetM_V2",
 ]
 
@@ -57,7 +81,9 @@ __all__ = [
 
 resnet_block_basic = CFG()
 resnet_block_basic.increase_channels_method = "conv"  # or "zero_padding"
-resnet_block_basic.subsample_mode = "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
+resnet_block_basic.subsample_mode = (
+    "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
+)
 resnet_block_basic.kernel_initializer = "he_normal"
 resnet_block_basic.kw_initializer = {}
 resnet_block_basic.activation = "relu"  # "mish", "swish"
@@ -67,8 +93,12 @@ resnet_block_basic.bias = False
 resnet_bottle_neck = CFG()
 resnet_bottle_neck.expansion = 4
 resnet_bottle_neck.increase_channels_method = "conv"  # or "zero_padding"
-resnet_bottle_neck.subsample_mode = "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
-resnet_bottle_neck.subsample_at = 0  # or 0  # 0 is for the original paper, 1 for ResNet-B
+resnet_bottle_neck.subsample_mode = (
+    "conv"  # or "max", "avg", "nearest", "linear", "bilinear"
+)
+resnet_bottle_neck.subsample_at = (
+    0  # or 0  # 0 is for the original paper, 1 for ResNet-B
+)
 resnet_bottle_neck.kernel_initializer = "he_normal"
 resnet_bottle_neck.kw_initializer = {}
 resnet_bottle_neck.activation = "relu"  # "mish", "swish"
@@ -121,15 +151,26 @@ resnet_stem.pool_size = 3
 resnet_stem.pool_stride = 2
 
 resnet_stem_C = deepcopy(resnet_stem)
-resnet_stem_C.num_filters = [32, 32, 64,]
-resnet_stem_C.filter_lengths = [15, 15, 15,]
+resnet_stem_C.num_filters = [
+    32,
+    32,
+    64,
+]
+resnet_stem_C.filter_lengths = [
+    15,
+    15,
+    15,
+]
 
 
 # vanilla ResNets
 resnet_vanilla_common = CFG()
 resnet_vanilla_common.fs = 500
 resnet_vanilla_common.subsample_lengths = [
-    1, 2, 2, 2,
+    1,
+    2,
+    2,
+    2,
 ]
 resnet_vanilla_common.filter_lengths = 15
 resnet_vanilla_common.groups = 1
@@ -144,7 +185,10 @@ resnet_vanilla_common.stem = deepcopy(resnet_stem)
 
 resnet_vanilla_18 = CFG()
 resnet_vanilla_18.num_blocks = [
-    2, 2, 2, 2,
+    2,
+    2,
+    2,
+    2,
 ]
 resnet_vanilla_18.update(deepcopy(resnet_vanilla_common))
 resnet_vanilla_18.building_block = "basic"
@@ -157,12 +201,18 @@ resnet_vanilla_18.block.bias = resnet_vanilla_18.bias
 
 resnet_vanilla_34 = deepcopy(resnet_vanilla_18)
 resnet_vanilla_34.num_blocks = [
-    3, 4, 6, 3,
+    3,
+    4,
+    6,
+    3,
 ]
 
 resnet_vanilla_50 = CFG()  # uses bottleneck
 resnet_vanilla_50.num_blocks = [
-    3, 4, 6, 3,
+    3,
+    4,
+    6,
+    3,
 ]
 resnet_vanilla_50.update(deepcopy(resnet_vanilla_common))
 resnet_vanilla_50.base_groups = 1
@@ -177,18 +227,27 @@ resnet_vanilla_50.block.bias = resnet_vanilla_50.bias
 
 resnet_vanilla_101 = deepcopy(resnet_vanilla_50)  # uses bottleneck
 resnet_vanilla_101.num_blocks = [
-    3, 4, 23, 3,
+    3,
+    4,
+    23,
+    3,
 ]
 resnet_vanilla_101.filter_lengths = 11
 
 resnet_vanilla_152 = deepcopy(resnet_vanilla_101)  # uses bottleneck
 resnet_vanilla_152.num_blocks = [
-    3, 8, 36, 3,
+    3,
+    8,
+    36,
+    3,
 ]
 
 resnext_vanilla_50_32x4d = deepcopy(resnet_vanilla_152)  # uses bottleneck
 resnext_vanilla_50_32x4d.num_blocks = [
-    3, 4, 6, 3,
+    3,
+    4,
+    6,
+    3,
 ]
 resnext_vanilla_50_32x4d.groups = 32
 resnext_vanilla_50_32x4d.base_groups = 1
@@ -196,7 +255,10 @@ resnext_vanilla_50_32x4d.base_width = 4
 
 resnext_vanilla_101_32x8d = deepcopy(resnext_vanilla_50_32x4d)  # uses bottleneck
 resnext_vanilla_101_32x8d.num_blocks = [
-    3, 4, 23, 3,
+    3,
+    4,
+    23,
+    3,
 ]
 resnext_vanilla_101_32x8d.base_width = 8
 
@@ -212,10 +274,16 @@ resnet_vanilla_wide_101_2.base_width = 64 * 2
 # smaller ResNets
 resnetN = deepcopy(resnet_vanilla_18)
 resnetN.num_blocks = [
-    1, 1, 1, 1,
+    1,
+    1,
+    1,
+    1,
 ]
 resnetN.filter_lengths = [
-    19, 15, 11, 7,
+    19,
+    15,
+    11,
+    7,
 ]
 
 resnetNB = deepcopy(resnetN)
@@ -235,7 +303,10 @@ resnet_cpsc2018.fs = 500
 resnet_cpsc2018.building_block = "basic"  # "bottleneck"
 resnet_cpsc2018.expansion = 1
 resnet_cpsc2018.subsample_lengths = [
-    1, 2, 2, 2,
+    1,
+    2,
+    2,
+    2,
 ]
 # resnet_cpsc2018.num_blocks = [
 #     2, 2, 2, 2, 2,
@@ -251,7 +322,10 @@ resnet_cpsc2018.subsample_lengths = [
 #     [5, 5, 25],
 # ]
 resnet_cpsc2018.num_blocks = [
-    3, 4, 6, 3,
+    3,
+    4,
+    6,
+    3,
 ]
 resnet_cpsc2018.filter_lengths = [
     [5, 5, 25],
@@ -283,19 +357,21 @@ resnet_cpsc2018_leadwise.building_block = "basic"
 resnet_cpsc2018_leadwise.block = deepcopy(resnet_block_basic)
 
 
-
 # ResNet Stanford
 resnet_stanford = CFG()
 resnet_stanford.fs = 500
 resnet_stanford.groups = 1
 resnet_stanford.num_blocks = [
-    2, 2, 2, 2,
+    2,
+    2,
+    2,
+    2,
 ]
 resnet_stanford.subsample_lengths = 2
 resnet_stanford.filter_lengths = 17
 _base_num_filters = 36
 resnet_stanford.stem = deepcopy(resnet_stem)
-resnet_stanford.stem.num_filters = _base_num_filters*2
+resnet_stanford.stem.num_filters = _base_num_filters * 2
 resnet_stanford.stem.filter_lengths = 17
 resnet_stanford.kernel_initializer = "he_normal"
 resnet_stanford.kw_initializer = {}
@@ -324,7 +400,10 @@ resnet_stanford.block = deepcopy(resnet_block_stanford)
 # a modified version of resnet [1,1,1,1]
 resnet_nature_comm = deepcopy(resnet_vanilla_18)
 resnet_nature_comm.num_blocks = [
-    1, 1, 1, 1,
+    1,
+    1,
+    1,
+    1,
 ]
 resnet_nature_comm.stem.filter_lengths = 17  # originally 16, we make it odd
 resnet_nature_comm.filter_lengths = 17
@@ -332,7 +411,10 @@ resnet_nature_comm.stem.conv_stride = 1
 resnet_nature_comm.stem.pool_stride = 1  # if < 2, init pool will not be added
 resnet_nature_comm.dropouts = 0.2
 resnet_nature_comm.subsample_lengths = [
-    4, 4, 4, 4,
+    4,
+    4,
+    4,
+    4,
 ]
 resnet_nature_comm.num_filters = [
     2 * resnet_nature_comm.stem.num_filters,
@@ -367,12 +449,14 @@ resnet_nature_comm_bottle_neck_nl = deepcopy(resnet_nature_comm_bottle_neck)
 resnet_nature_comm_bottle_neck_nl.block = deepcopy(resnet_bottle_neck_nl)
 
 
-
 # TResNet
 tresnet_common = CFG()
 tresnet_common.fs = 500
 tresnet_common.subsample_lengths = [
-    1, 2, 2, 2,
+    1,
+    2,
+    2,
+    2,
 ]
 tresnet_common.filter_lengths = 11
 tresnet_common.groups = 1
@@ -414,7 +498,10 @@ for b in tresnet_common.block:
 tresnetF = deepcopy(tresnet_common)
 tresnetF.filter_lengths = 17
 tresnetF.num_blocks = [
-    1, 1, 1, 1,
+    1,
+    1,
+    1,
+    1,
 ]
 tresnetF.stem.num_filters = 32
 for b in tresnetF.block:
@@ -424,7 +511,10 @@ for b in tresnetF.block:
 tresnetP = deepcopy(tresnet_common)
 tresnetP.filter_lengths = 17
 tresnetP.num_blocks = [
-    1, 1, 1, 1,
+    1,
+    1,
+    1,
+    1,
 ]
 tresnetP.stem.num_filters = 56
 
@@ -432,7 +522,10 @@ tresnetP.stem.num_filters = 56
 tresnetN = deepcopy(tresnet_common)
 tresnetN.filter_lengths = 15
 tresnetN.num_blocks = [
-    2, 2, 2, 2,
+    2,
+    2,
+    2,
+    2,
 ]
 tresnetN.stem.num_filters = 56
 
@@ -440,34 +533,52 @@ tresnetN.stem.num_filters = 56
 tresnetS = deepcopy(tresnet_common)
 tresnetS.filter_lengths = 13
 tresnetS.num_blocks = [
-    3, 4, 6, 3,
+    3,
+    4,
+    6,
+    3,
 ]
 tresnetS.stem.num_filters = 56
 
 # TResNet-M
 tresnetM = deepcopy(tresnet_common)
 tresnetM.num_blocks = [
-    3, 4, 11, 3,
+    3,
+    4,
+    11,
+    3,
 ]
 tresnetM.stem.num_filters = 64
 
 # TResNet-L
 tresnetL = deepcopy(tresnet_common)
 tresnetL.filter_lengths = [
-    11, 11, 9, 7,
+    11,
+    11,
+    9,
+    7,
 ]
 tresnetL.num_blocks = [
-    4, 5, 18, 3,
+    4,
+    5,
+    18,
+    3,
 ]
 tresnetL.stem.num_filters = 76
 
 # TResNet-XL
 tresnetXL = deepcopy(tresnet_common)
 tresnetXL.filter_lengths = [
-    11, 9, 9, 7,
+    11,
+    9,
+    9,
+    7,
 ]
 tresnetXL.num_blocks = [
-    4, 5, 24, 3,
+    4,
+    5,
+    24,
+    3,
 ]
 tresnetXL.stem.num_filters = 84
 

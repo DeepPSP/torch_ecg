@@ -9,7 +9,6 @@ from collections import OrderedDict
 from typing import Union, Optional, Sequence, NoReturn
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
@@ -20,7 +19,9 @@ from ...utils.misc import dict_to_str
 from ...models._nets import (
     Conv_Bn_Activation,
     DownSample,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
 )
 
 
@@ -36,25 +37,28 @@ __all__ = [
 
 
 class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
-    """ finished, checked,
+    """finished, checked,
 
     basic building block of the CNN part of the SOTA model
     from CPSC2019 challenge (entry 0416)
 
     (conv -> activation) * N --> bn --> down_sample
     """
+
     __DEBUG__ = False
     __name__ = "MultiScopicBasicBlock"
 
-    def __init__(self,
-                 in_channels:int,
-                 scopes:Sequence[int],
-                 num_filters:Union[int,Sequence[int]],
-                 filter_lengths:Union[int,Sequence[int]],
-                 subsample_length:int,
-                 groups:int=1,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        scopes: Sequence[int],
+        num_filters: Union[int, Sequence[int]],
+        filter_lengths: Union[int, Sequence[int]],
+        subsample_length: int,
+        groups: int = 1,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -77,14 +81,16 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
             self.__out_channels = list(repeat(num_filters, self.__num_convs))
         else:
             self.__out_channels = num_filters
-            assert len(self.__out_channels) == self.__num_convs, \
-                f"`scopes` indicates {self.__num_convs} convolutional layers, while `num_filters` indicates {len(self.__out_channels)}"
+            assert (
+                len(self.__out_channels) == self.__num_convs
+            ), f"`scopes` indicates {self.__num_convs} convolutional layers, while `num_filters` indicates {len(self.__out_channels)}"
         if isinstance(filter_lengths, int):
             self.__filter_lengths = list(repeat(filter_lengths, self.__num_convs))
         else:
             self.__filter_lengths = filter_lengths
-            assert len(self.__filter_lengths) == self.__num_convs, \
-                f"`scopes` indicates {self.__num_convs} convolutional layers, while `filter_lengths` indicates {len(self.__filter_lengths)}"
+            assert (
+                len(self.__filter_lengths) == self.__num_convs
+            ), f"`scopes` indicates {self.__num_convs} convolutional layers, while `filter_lengths` indicates {len(self.__filter_lengths)}"
         self.__subsample_length = subsample_length
         self.__groups = groups
         self.config = CFG(deepcopy(config))
@@ -107,13 +113,10 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
                     kernel_initializer=self.config.kernel_initializer,
                     kw_initializer=self.config.kw_initializer,
                     bias=self.config.bias,
-                )
+                ),
             )
             conv_in_channels = self.__out_channels[idx]
-        self.add_module(
-            "bn",
-            nn.BatchNorm1d(self.__out_channels[-1])
-        )
+        self.add_module("bn", nn.BatchNorm1d(self.__out_channels[-1]))
         self.add_module(
             "down",
             DownSample(
@@ -123,16 +126,13 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
                 # padding=
                 batch_norm=False,
                 mode=self.config.subsample_mode,
-            )
+            ),
         )
         if self.config.dropout > 0:
-            self.add_module(
-                "dropout",
-                nn.Dropout(self.config.dropout, inplace=False)
-            )
+            self.add_module("dropout", nn.Dropout(self.config.dropout, inplace=False))
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -147,8 +147,10 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -166,7 +168,7 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
         for idx, module in enumerate(self):
             if idx == self.__num_convs:  # bn layer
                 continue
-            elif self.config.dropout > 0 and idx == len(self)-1:  # dropout layer
+            elif self.config.dropout > 0 and idx == len(self) - 1:  # dropout layer
                 continue
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
@@ -174,23 +176,26 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
 
 
 class MultiScopicBranch(SizeMixin, nn.Sequential):
-    """ finished, checked,
-    
+    """finished, checked,
+
     branch path of the CNN part of the SOTA model
     from CPSC2019 challenge (entry 0416)
     """
+
     __DEBUG__ = False
     __name__ = "MultiScopicBranch"
 
-    def __init__(self,
-                 in_channels:int,
-                 scopes:Sequence[Sequence[int]],
-                 num_filters:Union[Sequence[int],Sequence[Sequence[int]]],
-                 filter_lengths:Union[Sequence[int],Sequence[Sequence[int]]],
-                 subsample_lengths:Union[int,Sequence[int]],
-                 groups:int=1,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        scopes: Sequence[Sequence[int]],
+        num_filters: Union[Sequence[int], Sequence[Sequence[int]]],
+        filter_lengths: Union[Sequence[int], Sequence[Sequence[int]]],
+        subsample_lengths: Union[int, Sequence[int]],
+        groups: int = 1,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -222,17 +227,22 @@ class MultiScopicBranch(SizeMixin, nn.Sequential):
         self.__scopes = scopes
         self.__num_blocks = len(self.__scopes)
         self.__num_filters = num_filters
-        assert len(self.__num_filters) == self.__num_blocks, \
-            f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `num_filters` indicates {len(self.__num_filters)}"
+        assert (
+            len(self.__num_filters) == self.__num_blocks
+        ), f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `num_filters` indicates {len(self.__num_filters)}"
         self.__filter_lengths = filter_lengths
-        assert len(self.__filter_lengths) == self.__num_blocks, \
-            f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        assert (
+            len(self.__filter_lengths) == self.__num_blocks
+        ), f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `filter_lengths` indicates {len(self.__filter_lengths)}"
         if isinstance(subsample_lengths, int):
-            self.__subsample_lengths = list(repeat(subsample_lengths, self.__num_blocks))
+            self.__subsample_lengths = list(
+                repeat(subsample_lengths, self.__num_blocks)
+            )
         else:
             self.__subsample_lengths = filter_lengths
-            assert len(self.__subsample_lengths) == self.__num_blocks, \
-            f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
+            assert (
+                len(self.__subsample_lengths) == self.__num_blocks
+            ), f"`scopes` indicates {self.__num_blocks} `MultiScopicBasicBlock`s, while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
         self.__groups = groups
         self.config = CFG(deepcopy(config))
 
@@ -248,13 +258,13 @@ class MultiScopicBranch(SizeMixin, nn.Sequential):
                     subsample_length=self.__subsample_lengths[idx],
                     groups=self.__groups,
                     dropout=self.config.dropouts[idx],
-                    **(self.config.block)
-                )
+                    **(self.config.block),
+                ),
             )
             block_in_channels = self.__num_filters[idx]
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -269,8 +279,10 @@ class MultiScopicBranch(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -292,15 +304,16 @@ class MultiScopicBranch(SizeMixin, nn.Sequential):
 
 
 class MultiScopicCNN(SizeMixin, nn.Module):
-    """ finished, checked,
+    """finished, checked,
 
     CNN part of the SOTA model from CPSC2019 challenge (entry 0416)
     """
+
     __DEBUG__ = False
     __name__ = "MultiScopicCNN"
 
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -340,25 +353,26 @@ class MultiScopicCNN(SizeMixin, nn.Module):
         self.__num_branches = len(self.__scopes)
 
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         self.branches = nn.ModuleDict()
         for idx in range(self.__num_branches):
-            self.branches[f"branch_{idx}"] = \
-                MultiScopicBranch(
-                    in_channels=self.__in_channels,
-                    scopes=self.__scopes[idx],
-                    num_filters=self.config.num_filters[idx],
-                    filter_lengths=self.config.filter_lengths[idx],
-                    subsample_lengths=self.config.subsample_lengths[idx],
-                    groups=self.config.groups,
-                    dropouts=self.config.dropouts[idx],
-                    block=self.config.block,  # a dict
-                )
+            self.branches[f"branch_{idx}"] = MultiScopicBranch(
+                in_channels=self.__in_channels,
+                scopes=self.__scopes[idx],
+                num_filters=self.config.num_filters[idx],
+                filter_lengths=self.config.filter_lengths[idx],
+                subsample_lengths=self.config.subsample_lengths[idx],
+                groups=self.config.groups,
+                dropouts=self.config.dropouts[idx],
+                block=self.config.block,  # a dict
+            )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
-        
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
+
         Parameters
         ----------
         input: Tensor,
@@ -378,9 +392,11 @@ class MultiScopicCNN(SizeMixin, nn.Module):
             dim=1,  # along channels
         )
         return output
-    
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -397,8 +413,9 @@ class MultiScopicCNN(SizeMixin, nn.Module):
         out_channels = 0
         for idx in range(self.__num_branches):
             key = f"branch_{idx}"
-            _, _branch_oc, _seq_len = \
-                self.branches[key].compute_output_shape(seq_len, batch_size)
+            _, _branch_oc, _seq_len = self.branches[key].compute_output_shape(
+                seq_len, batch_size
+            )
             out_channels += _branch_oc
         output_shape = (batch_size, out_channels, _seq_len)
         return output_shape

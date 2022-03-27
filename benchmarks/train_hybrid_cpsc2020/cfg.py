@@ -12,6 +12,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
@@ -44,14 +45,15 @@ BaseCfg.beat_winR = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
 BaseCfg.torch_dtype = DEFAULTS.torch_dtype
 
 
-
 PreprocCfg = CFG()
 PreprocCfg.fs = BaseCfg.fs
 # sequential, keep correct ordering, to add "motion_artefact"
-PreprocCfg.preproc = ["bandpass",]  # "baseline",
+PreprocCfg.preproc = [
+    "bandpass",
+]  # "baseline",
 # for 200 ms and 600 ms, ref. (`ecg_classification` in `reference`)
-PreprocCfg.baseline_window1 = int(0.2*PreprocCfg.fs)  # 200 ms window
-PreprocCfg.baseline_window2 = int(0.6*PreprocCfg.fs)  # 600 ms window
+PreprocCfg.baseline_window1 = int(0.2 * PreprocCfg.fs)  # 200 ms window
+PreprocCfg.baseline_window2 = int(0.6 * PreprocCfg.fs)  # 600 ms window
 PreprocCfg.filter_band = [0.5, 45]
 PreprocCfg.parallel_epoch_len = 600  # second
 PreprocCfg.parallel_epoch_overlap = 10  # second
@@ -71,24 +73,27 @@ PreprocCfg.rpeaks_skip_dist = int(0.5 * PreprocCfg.fs)  # 0.5s
 # FeatureCfg only for ML models, deprecated
 FeatureCfg = CFG()
 FeatureCfg.fs = BaseCfg.fs
-FeatureCfg.features = ["wavelet", "rr", "morph",]
+FeatureCfg.features = [
+    "wavelet",
+    "rr",
+    "morph",
+]
 
 FeatureCfg.wt_family = "db1"
 FeatureCfg.wt_level = 3
 FeatureCfg.beat_winL = BaseCfg.beat_winL
 FeatureCfg.beat_winR = BaseCfg.beat_winR
 FeatureCfg.wt_feature_len = pywt.wavedecn_shapes(
-    shape=(1+FeatureCfg.beat_winL+FeatureCfg.beat_winR,), 
+    shape=(1 + FeatureCfg.beat_winL + FeatureCfg.beat_winR,),
     wavelet=FeatureCfg.wt_family,
-    level=FeatureCfg.wt_level
+    level=FeatureCfg.wt_level,
 )[0][0]
 
 FeatureCfg.rr_local_range = 10  # 10 r peaks
 FeatureCfg.rr_global_range = 5 * 60 * FeatureCfg.fs  # 5min, units in number of points
 FeatureCfg.rr_normalize_radius = 30  # number of beats (rpeaks)
 
-FeatureCfg.morph_intervals = [[0,45], [85,95], [110,120], [170,200]]
-
+FeatureCfg.morph_intervals = [[0, 45], [85, 95], [110, 120], [170, 200]]
 
 
 ModelCfg = CFG()
@@ -108,20 +113,47 @@ ModelCfg.crnn.cnn.name = "multi_scopic"  # resnet, resnet_gc, vgg, cpsc2018, etc
 ModelCfg.crnn.cnn.multi_scopic = CFG()
 ModelCfg.crnn.cnn.multi_scopic.groups = 1
 ModelCfg.crnn.cnn.multi_scopic.scopes = [
-    [ # branch 0
-        [1,],
-        [1,1,],
-        [1,1,1,],
+    [  # branch 0
+        [
+            1,
+        ],
+        [
+            1,
+            1,
+        ],
+        [
+            1,
+            1,
+            1,
+        ],
     ],
-    [ # branch 1
-        [2,],
-        [2,4,],
-        [8,8,8,],
+    [  # branch 1
+        [
+            2,
+        ],
+        [
+            2,
+            4,
+        ],
+        [
+            8,
+            8,
+            8,
+        ],
     ],
-    [ # branch 2
-        [4,],
-        [4,8,],
-        [16,32,64,],
+    [  # branch 2
+        [
+            4,
+        ],
+        [
+            4,
+            8,
+        ],
+        [
+            16,
+            32,
+            64,
+        ],
     ],
 ]
 # TODO:
@@ -129,28 +161,41 @@ ModelCfg.crnn.cnn.multi_scopic.scopes = [
 # while CPSC2020 is 400 Hz
 # should the filter_lengths be adjusted?
 ModelCfg.crnn.cnn.multi_scopic.filter_lengths = [
-    [11, 7, 5,],  # branch 0
-    [11, 7, 5,],  # branch 1
-    [11, 7, 5,],  # branch 2
+    [
+        11,
+        7,
+        5,
+    ],  # branch 0
+    [
+        11,
+        7,
+        5,
+    ],  # branch 1
+    [
+        11,
+        7,
+        5,
+    ],  # branch 2
 ]
-ModelCfg.crnn.cnn.multi_scopic.subsample_lengths = \
-    list(repeat(2, len(ModelCfg.crnn.cnn.multi_scopic.scopes)))
+ModelCfg.crnn.cnn.multi_scopic.subsample_lengths = list(
+    repeat(2, len(ModelCfg.crnn.cnn.multi_scopic.scopes))
+)
 _base_num_filters = 8
 ModelCfg.crnn.cnn.multi_scopic.num_filters = [
-    [ # branch 0
-        _base_num_filters*4,
-        _base_num_filters*8,
-        _base_num_filters*16,
+    [  # branch 0
+        _base_num_filters * 4,
+        _base_num_filters * 8,
+        _base_num_filters * 16,
     ],
-    [ # branch 1
-        _base_num_filters*4,
-        _base_num_filters*8,
-        _base_num_filters*16,
+    [  # branch 1
+        _base_num_filters * 4,
+        _base_num_filters * 8,
+        _base_num_filters * 16,
     ],
-    [ # branch 2
-        _base_num_filters*4,
-        _base_num_filters*8,
-        _base_num_filters*16,
+    [  # branch 2
+        _base_num_filters * 4,
+        _base_num_filters * 8,
+        _base_num_filters * 16,
     ],
 ]
 ModelCfg.crnn.cnn.multi_scopic.dropouts = [
@@ -164,17 +209,22 @@ ModelCfg.crnn.cnn.multi_scopic.kw_initializer = {}
 ModelCfg.crnn.cnn.multi_scopic.activation = "relu"
 ModelCfg.crnn.cnn.multi_scopic.kw_activation = {"inplace": True}
 ModelCfg.crnn.cnn.multi_scopic.block = CFG()
-ModelCfg.crnn.cnn.multi_scopic.block.subsample_mode = "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
-ModelCfg.crnn.cnn.multi_scopic.block.bias = \
-    ModelCfg.crnn.cnn.multi_scopic.bias
-ModelCfg.crnn.cnn.multi_scopic.block.kernel_initializer = \
+ModelCfg.crnn.cnn.multi_scopic.block.subsample_mode = (
+    "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
+)
+ModelCfg.crnn.cnn.multi_scopic.block.bias = ModelCfg.crnn.cnn.multi_scopic.bias
+ModelCfg.crnn.cnn.multi_scopic.block.kernel_initializer = (
     ModelCfg.crnn.cnn.multi_scopic.kernel_initializer
-ModelCfg.crnn.cnn.multi_scopic.block.kw_initializer = \
-    deepcopy(ModelCfg.crnn.cnn.multi_scopic.kw_initializer)
-ModelCfg.crnn.cnn.multi_scopic.block.activation = \
+)
+ModelCfg.crnn.cnn.multi_scopic.block.kw_initializer = deepcopy(
+    ModelCfg.crnn.cnn.multi_scopic.kw_initializer
+)
+ModelCfg.crnn.cnn.multi_scopic.block.activation = (
     ModelCfg.crnn.cnn.multi_scopic.activation
-ModelCfg.crnn.cnn.multi_scopic.block.kw_activation = \
-    deepcopy(ModelCfg.crnn.cnn.multi_scopic.kw_activation)
+)
+ModelCfg.crnn.cnn.multi_scopic.block.kw_activation = deepcopy(
+    ModelCfg.crnn.cnn.multi_scopic.kw_activation
+)
 
 # rnn part
 # abuse of notation
@@ -182,7 +232,8 @@ ModelCfg.crnn.rnn = CFG()
 ModelCfg.crnn.rnn.name = "linear"  # "none", "lstm", "attention"
 ModelCfg.crnn.rnn.linear = CFG()
 ModelCfg.crnn.rnn.linear.out_channels = [
-    256, 64,
+    256,
+    64,
 ]
 ModelCfg.crnn.rnn.linear.bias = True
 ModelCfg.crnn.rnn.linear.dropouts = 0.2
@@ -202,7 +253,7 @@ ModelCfg.seq_lab.fs = BaseCfg.fs
 ModelCfg.seq_lab.n_leads = 1
 ModelCfg.seq_lab.torch_dtype = BaseCfg.torch_dtype
 ModelCfg.seq_lab.classes = [c for c in BaseCfg.classes if c != "N"]
-ModelCfg.seq_lab.class_map = {c:v for c,v in BaseCfg.class_map.items() if c != "N"}
+ModelCfg.seq_lab.class_map = {c: v for c, v in BaseCfg.class_map.items() if c != "N"}
 
 ModelCfg.seq_lab.cnn = ModelCfg.crnn.cnn.copy()
 
@@ -231,7 +282,6 @@ ModelCfg.seq_lab.clf.kernel_initializer = "he_normal"
 ModelCfg.seq_lab.clf.dropouts = [0.2, 0.2, 0.0]
 
 
-
 TrainCfg = CFG()
 TrainCfg.fs = ModelCfg.fs
 TrainCfg.n_leads = 1
@@ -254,7 +304,9 @@ TrainCfg.normalize_data = True
 # data augmentation
 TrainCfg.label_smoothing = 0.1
 TrainCfg.random_mask = int(TrainCfg.fs * 0.0)  # 1.0s, 0 for no masking
-TrainCfg.stretch_compress = 5  # stretch or compress in time axis, units in percentage (0 - inf)
+TrainCfg.stretch_compress = (
+    5  # stretch or compress in time axis, units in percentage (0 - inf)
+)
 TrainCfg.random_normalize = True  # (re-)normalize to random mean and std
 # valid segments has
 # median of mean appr. 0, mean of mean 0.038
@@ -264,26 +316,32 @@ TrainCfg.random_normalize_std = [0.08, 0.32]
 TrainCfg.baseline_wander = True  # randomly shifting the baseline
 TrainCfg.bw = TrainCfg.baseline_wander  # alias
 TrainCfg.bw_fs = np.array([0.33, 0.1, 0.05, 0.01])
-TrainCfg.bw_ampl_ratio = np.array([
-    [0.01, 0.01, 0.02, 0.03],  # low
-    [0.01, 0.02, 0.04, 0.05],  # low
-    [0.1, 0.06, 0.04, 0.02],  # low
-    [0.02, 0.04, 0.07, 0.1],  # low
-    [0.05, 0.1, 0.16, 0.25],  # medium
-    [0.1, 0.15, 0.25, 0.3],  # high
-    [0.25, 0.25, 0.3, 0.35],  # extremely high
-])
-TrainCfg.bw_gaussian = np.array([  # mean and std, ratio
-    [0.0, 0.0],
-    [0.0, 0.0],
-    [0.0, 0.0],  # ensure at least one with no gaussian noise
-    [0.0, 0.003],
-    [0.0, 0.01],
-])
-TrainCfg.flip = [-1] + [1]*4  # making the signal upside down, with probability 1/(1+4)
+TrainCfg.bw_ampl_ratio = np.array(
+    [
+        [0.01, 0.01, 0.02, 0.03],  # low
+        [0.01, 0.02, 0.04, 0.05],  # low
+        [0.1, 0.06, 0.04, 0.02],  # low
+        [0.02, 0.04, 0.07, 0.1],  # low
+        [0.05, 0.1, 0.16, 0.25],  # medium
+        [0.1, 0.15, 0.25, 0.3],  # high
+        [0.25, 0.25, 0.3, 0.35],  # extremely high
+    ]
+)
+TrainCfg.bw_gaussian = np.array(
+    [  # mean and std, ratio
+        [0.0, 0.0],
+        [0.0, 0.0],
+        [0.0, 0.0],  # ensure at least one with no gaussian noise
+        [0.0, 0.003],
+        [0.0, 0.01],
+    ]
+)
+TrainCfg.flip = [-1] + [
+    1
+] * 4  # making the signal upside down, with probability 1/(1+4)
 # TODO: explore and add more data augmentations
 
-TrainCfg.seq_lab_reduction = 2**3  # TODO: automatic adjust via model config
+TrainCfg.seq_lab_reduction = 2 ** 3  # TODO: automatic adjust via model config
 
 # configs of training epochs, batch, etc.
 TrainCfg.n_epochs = 300
@@ -319,11 +377,12 @@ TrainCfg.class_map = deepcopy(ModelCfg[TrainCfg.model_name].class_map)
 # configs of loss function
 TrainCfg.loss = "BCEWithLogitsLoss"
 # TrainCfg.loss = "BCEWithLogitsWithClassWeightLoss"
-TrainCfg.flooding_level = 0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
+TrainCfg.flooding_level = (
+    0.0  # flooding performed if positive, typically 0.45-0.55 for cinc2021?
+)
 
 TrainCfg.log_step = 20
 TrainCfg.eval_every = 20
-
 
 
 PlotCfg = CFG()

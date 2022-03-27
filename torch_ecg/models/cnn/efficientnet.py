@@ -14,7 +14,6 @@ from collections import OrderedDict
 from typing import Union, Optional, Sequence, NoReturn
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
@@ -25,7 +24,9 @@ from ...utils.misc import dict_to_str
 from ...models._nets import (
     Conv_Bn_Activation,
     DownSample,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
 )
 
 
@@ -48,23 +49,23 @@ class EfficientNet(SizeMixin, nn.Module):
     3. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/efficientnet.py
     3. https://github.com/google/automl
     """
+
     __DEBUG__ = True
     __name__ = "EfficientNet"
 
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """
-        """
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """ """
         super().__init__()
         raise NotImplementedError
 
-    def forward(self,):
-        """
-        """
+    def forward(
+        self,
+    ):
+        """ """
         raise NotImplementedError
 
     def compute_output_shape(self):
-        """
-        """
+        """ """
         raise NotImplementedError
 
 
@@ -79,21 +80,21 @@ class EfficientNetV2(SizeMixin, nn.Module):
     4. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/efficientnet.py
     5. https://github.com/google/automl
     """
+
     __DEBUG__ = True
     __name__ = "EfficientNetV2"
 
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """
-        """
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """ """
         super().__init__()
         raise NotImplementedError
 
-    def forward(self,):
-        """
-        """
+    def forward(
+        self,
+    ):
+        """ """
         raise NotImplementedError
 
     def compute_output_shape(self):
-        """
-        """
+        """ """
         raise NotImplementedError

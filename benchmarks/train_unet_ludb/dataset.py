@@ -9,7 +9,7 @@ from functools import reduce
 from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
+
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
@@ -21,6 +21,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     import sys
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
@@ -43,16 +44,18 @@ __all__ = [
 
 
 class LUDB(ReprMixin, Dataset):
-    """
-    """
+    """ """
+
     __DEBUG__ = False
     __name__ = "LUDB"
 
-    def __init__(self,
-                 config:CFG,
-                 training:bool=True,
-                 lazy:bool=False,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        config: CFG,
+        training: bool = True,
+        lazy: bool = False,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -82,7 +85,12 @@ class LUDB(ReprMixin, Dataset):
         self.ppm = PreprocManager.from_config(self.config)
         self.records = self._train_test_split(self.config.train_ratio)
         self.fdr = FastDataReader(self.reader, self.records, self.config)
-        self.waveform_priority = ["N", "t", "p", "i",]
+        self.waveform_priority = [
+            "N",
+            "t",
+            "p",
+            "i",
+        ]
 
         self._signals = None
         self._labels = None
@@ -90,15 +98,13 @@ class LUDB(ReprMixin, Dataset):
             self._load_all_data()
 
     def __len__(self) -> int:
-        """
-        """
+        """ """
         if self.config.use_single_lead:
             return len(self.leads) * len(self.records)
         return len(self.records)
 
-    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ finished, checked,
-        """
+    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+        """finished, checked,"""
         if self.config.use_single_lead:
             rec_idx, lead_idx = divmod(index, len(self.leads))
         else:
@@ -117,8 +123,7 @@ class LUDB(ReprMixin, Dataset):
             # TODO: map via self.waveform_priority
             labels = np.max(labels, axis=0)
         sampfrom = randint(
-            self.config.start_from,
-            signals.shape[1] - self.config.end_at - self.siglen
+            self.config.start_from, signals.shape[1] - self.config.end_at - self.siglen
         )
         sampto = sampfrom + self.siglen
         signals = signals[..., sampfrom:sampto]
@@ -127,8 +132,7 @@ class LUDB(ReprMixin, Dataset):
         return signals, labels
 
     def _load_all_data(self) -> NoReturn:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         self._signals, self._labels = [], []
 
         with tqdm(self.fdr, total=len(self.fdr)) as bar:
@@ -141,18 +145,18 @@ class LUDB(ReprMixin, Dataset):
 
     @property
     def signals(self) -> np.ndarray:
-        """
-        """
+        """ """
         return self._signals
 
     @property
     def labels(self) -> np.ndarray:
-        """
-        """
+        """ """
         return self._labels
 
-    def _train_test_split(self, train_ratio:float=0.8, force_recompute:bool=False) -> List[str]:
-        """ finished, checked,
+    def _train_test_split(
+        self, train_ratio: float = 0.8, force_recompute: bool = False
+    ) -> List[str]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -167,7 +171,7 @@ class LUDB(ReprMixin, Dataset):
         records: list of str,
             list of the records split for training or validation
         """
-        _train_ratio = int(train_ratio*100)
+        _train_ratio = int(train_ratio * 100)
         _test_ratio = 100 - _train_ratio
         assert _train_ratio * _test_ratio > 0
         train_file = self.reader.db_dir / f"train_ratio_{_train_ratio}.json"
@@ -194,16 +198,23 @@ class LUDB(ReprMixin, Dataset):
         return records
 
     def extra_repr_keys(self) -> List[str]:
-        return ["training", "reader",]
+        return [
+            "training",
+            "reader",
+        ]
 
 
 class FastDataReader(ReprMixin, Dataset):
-    """
-    """
-    
-    def __init__(self, reader:LR, records:Sequence[str], config:CFG, ppm:Optional[PreprocManager]=None) -> NoReturn:
-        """
-        """
+    """ """
+
+    def __init__(
+        self,
+        reader: LR,
+        records: Sequence[str],
+        config: CFG,
+        ppm: Optional[PreprocManager] = None,
+    ) -> NoReturn:
+        """ """
         self.reader = reader
         self.records = records
         self.config = config
@@ -217,21 +228,23 @@ class FastDataReader(ReprMixin, Dataset):
             self.leads = list(self.config.leads)
 
     def __len__(self) -> int:
-        """
-        """
+        """ """
         return len(self.records)
 
-    def __getitem__(self, index:int) -> Tuple[np.ndarray, np.ndarray]:
-        """ finished, checked,
-        """
+    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
+        """finished, checked,"""
         rec = self.records[index]
         signals = self.reader.load_data(
-            rec, data_format="channel_first", units="mV",
+            rec,
+            data_format="channel_first",
+            units="mV",
         ).astype(_DTYPE)
         if self.ppm:
             signals, _ = self.ppm(signals, self.config.fs)
         masks = self.reader.load_masks(
-            rec, leads=self.leads, mask_format="channel_first",
+            rec,
+            leads=self.leads,
+            mask_format="channel_first",
             class_map=self.config.class_map,
         ).astype(_DTYPE)
         if self.config.loss == "CrossEntropyLoss":
@@ -240,8 +253,13 @@ class FastDataReader(ReprMixin, Dataset):
         labels = np.ones((*masks.shape, len(self.config.mask_class_map)), dtype=_DTYPE)
         for i in range(len(self.leads)):
             for key, val in self.config.mask_class_map.items():
-                labels[i, ..., val] = (masks[i, ...] == self.config.class_map[key]).astype(_DTYPE)
+                labels[i, ..., val] = (
+                    masks[i, ...] == self.config.class_map[key]
+                ).astype(_DTYPE)
         return signals, labels
 
     def extra_repr_keys(self) -> List[str]:
-        return ["reader", "ppm",]
+        return [
+            "reader",
+            "ppm",
+        ]

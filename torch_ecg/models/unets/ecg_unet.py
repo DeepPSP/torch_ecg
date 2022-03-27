@@ -23,13 +23,17 @@ from easydict import EasyDict as ED
 
 from ...cfg import DEFAULTS
 from ...utils.utils_nn import (
-    compute_deconv_output_shape, compute_module_size,
-    SizeMixin, CkptMixin,
+    compute_deconv_output_shape,
+    compute_module_size,
+    SizeMixin,
+    CkptMixin,
 )
 from ...utils.misc import dict_to_str
 from ...models._nets import (
-    Conv_Bn_Activation, MultiConv,
-    DownSample, ZeroPadding,
+    Conv_Bn_Activation,
+    MultiConv,
+    DownSample,
+    ZeroPadding,
 )
 
 if DEFAULTS.torch_dtype == torch.float64:
@@ -45,25 +49,28 @@ class DoubleConv(MultiConv):
     """
 
     building blocks of UNet
-    
+
     References
     ----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
     """
+
     __DEBUG__ = False
     __name__ = "DoubleConv"
 
-    def __init__(self,
-                 in_channels:int,
-                 out_channels:int,
-                 filter_lengths:Union[Sequence[int],int],
-                 subsample_lengths:Union[Sequence[int],int]=1,
-                 groups:int=1,
-                 dropouts:Union[Sequence[float],float]=0.0,
-                 out_activation:bool=True,
-                 mid_channels:Optional[int]=None,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        filter_lengths: Union[Sequence[int], int],
+        subsample_lengths: Union[Sequence[int], int] = 1,
+        groups: int = 1,
+        dropouts: Union[Sequence[float], float] = 0.0,
+        out_activation: bool = True,
+        mid_channels: Optional[int] = None,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -92,7 +99,7 @@ class DoubleConv(MultiConv):
         """
         _mid_channels = mid_channels if mid_channels is not None else out_channels
         _out_channels = [_mid_channels, out_channels]
-        
+
         super().__init__(
             in_channels=in_channels,
             out_channels=_out_channels,
@@ -101,7 +108,7 @@ class DoubleConv(MultiConv):
             groups=groups,
             dropouts=dropouts,
             out_activation=out_activation,
-            **config
+            **config,
         )
 
 
@@ -111,26 +118,29 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
     down sample (maxpool) --> double conv (conv --> conv)
 
     channels are increased after down sampling
-    
+
     References
     ----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
     """
+
     __DEBUG__ = False
     __name__ = "DownDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
-    def __init__(self,
-                 down_scale:int,
-                 in_channels:int,
-                 out_channels:int,
-                 filter_lengths:Union[Sequence[int],int],
-                 groups:int=1,
-                 dropouts:Union[Sequence[float],float]=0.0,
-                 mid_channels:Optional[int]=None,
-                 mode:str="max",
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        down_scale: int,
+        in_channels: int,
+        out_channels: int,
+        filter_lengths: Union[Sequence[int], int],
+        groups: int = 1,
+        dropouts: Union[Sequence[float], float] = 0.0,
+        mid_channels: Optional[int] = None,
+        mode: str = "max",
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -166,7 +176,9 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
         self.__out_channels = out_channels
         self.config = ED(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         self.add_module(
             "down_sample",
@@ -175,7 +187,7 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
                 in_channels=self.__in_channels,
                 batch_norm=False,
                 mode=mode,
-            )
+            ),
         )
         self.add_module(
             "double_conv",
@@ -187,13 +199,13 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
                 groups=groups,
                 dropouts=dropouts,
                 mid_channels=self.__mid_channels,
-                **(self.config)
+                **(self.config),
             ),
         )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
-        
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
+
         Parameters
         ----------
         input: Tensor,
@@ -207,8 +219,10 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
         out = super().forward(input)
         return out
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -239,23 +253,31 @@ class UpDoubleConv(SizeMixin, nn.Module):
 
     channels are shrinked after up sampling
     """
+
     __DEBUG__ = False
     __name__ = "UpDoubleConv"
-    __MODES__ = ["nearest", "linear", "area", "deconv",]
+    __MODES__ = [
+        "nearest",
+        "linear",
+        "area",
+        "deconv",
+    ]
 
-    def __init__(self,
-                 up_scale:int,
-                 in_channels:int,
-                 out_channels:int,
-                 filter_lengths:Union[Sequence[int],int],
-                 deconv_filter_length:Optional[int]=None,
-                 groups:int=1,
-                 deconv_groups:int=1,
-                 dropouts:Union[Sequence[float],float]=0.0,
-                 mode:str="deconv",
-                 mid_channels:Optional[int]=None,
-                 **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        up_scale: int,
+        in_channels: int,
+        out_channels: int,
+        filter_lengths: Union[Sequence[int], int],
+        deconv_filter_length: Optional[int] = None,
+        groups: int = 1,
+        deconv_groups: int = 1,
+        dropouts: Union[Sequence[float], float] = 0.0,
+        mode: str = "deconv",
+        mid_channels: Optional[int] = None,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -290,19 +312,25 @@ class UpDoubleConv(SizeMixin, nn.Module):
         super().__init__()
         self.__up_scale = up_scale
         self.__in_channels = in_channels
-        self.__mid_channels = mid_channels if mid_channels is not None else in_channels // 2
+        self.__mid_channels = (
+            mid_channels if mid_channels is not None else in_channels // 2
+        )
         self.__out_channels = out_channels
         self.__deconv_filter_length = deconv_filter_length
         self.__mode = mode.lower()
         assert self.__mode in self.__MODES__
         self.config = ED(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         # the following has to be checked
         # if bilinear, use the normal convolutions to reduce the number of channels
         if self.__mode == "deconv":
-            self.__deconv_padding = max(0, (self.__deconv_filter_length - self.__up_scale)//2)
+            self.__deconv_padding = max(
+                0, (self.__deconv_filter_length - self.__up_scale) // 2
+            )
             self.up = nn.ConvTranspose1d(
                 in_channels=self.__in_channels,
                 out_channels=self.__in_channels,
@@ -318,11 +346,11 @@ class UpDoubleConv(SizeMixin, nn.Module):
             )
         self.zero_pad = ZeroPadding(
             in_channels=self.__in_channels,
-            out_channels=self.__in_channels+self.__in_channels//2,
+            out_channels=self.__in_channels + self.__in_channels // 2,
             loc="head",
         )
         self.conv = DoubleConv(
-            in_channels=2*self.__in_channels,
+            in_channels=2 * self.__in_channels,
             out_channels=self.__out_channels,
             filter_lengths=filter_lengths,
             subsample_lengths=1,
@@ -331,8 +359,8 @@ class UpDoubleConv(SizeMixin, nn.Module):
             **(self.config),
         )
 
-    def forward(self, input:Tensor, down_output:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor, down_output: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -355,13 +383,17 @@ class UpDoubleConv(SizeMixin, nn.Module):
 
         output = F.pad(output, [diff_sig_len // 2, diff_sig_len - diff_sig_len // 2])
         # TODO: consider the case `groups` > 1 when concatenating
-        output = torch.cat([down_output, output], dim=1)  # concate along the channel axis
+        output = torch.cat(
+            [down_output, output], dim=1
+        )  # concate along the channel axis
         output = self.conv(output)
 
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -385,7 +417,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
                 padding=self.__deconv_padding,
             )
         else:
-            output_shape = [batch_size, self.__in_channels, self.__up_scale*_sep_len]
+            output_shape = [batch_size, self.__in_channels, self.__up_scale * _sep_len]
         _, _, _seq_len = output_shape
         output_shape = self.zero_pad.compute_output_shape(_seq_len, batch_size)
         _, _, _seq_len = output_shape
@@ -394,7 +426,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
 
 
 class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
-    """ finished, checked,
+    """finished, checked,
 
     UNet for (multi-lead) ECG wave delineation
 
@@ -403,11 +435,12 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
     [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
     [2] https://github.com/milesial/Pytorch-UNet/
     """
+
     __DEBUG__ = False
     __name__ = "ECG_UNET"
-    
-    def __init__(self, classes:Sequence[str], n_leads:int, config:dict) -> NoReturn:
-        """ finished, checked,
+
+    def __init__(self, classes: Sequence[str], n_leads: int, config: dict) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -426,7 +459,9 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
         self.__in_channels = n_leads
         self.config = ED(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
             __debug_seq_len = 4000
 
         self.init_conv = DoubleConv(
@@ -443,46 +478,54 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
         )
         if self.__DEBUG__:
             __debug_output_shape = self.init_conv.compute_output_shape(__debug_seq_len)
-            print(f"given seq_len = {__debug_seq_len}, init_conv output shape = {__debug_output_shape}")
+            print(
+                f"given seq_len = {__debug_seq_len}, init_conv output shape = {__debug_output_shape}"
+            )
             _, _, __debug_seq_len = __debug_output_shape
 
         self.down_blocks = nn.ModuleDict()
         in_channels = self.config.init_num_filters
         for idx in range(self.config.down_up_block_num):
-            self.down_blocks[f"down_{idx}"] = \
-                DownDoubleConv(
-                    down_scale=self.config.down_scales[idx],
-                    in_channels=in_channels,
-                    out_channels=self.config.down_num_filters[idx],
-                    filter_lengths=self.config.down_filter_lengths[idx],
-                    groups=self.config.groups,
-                    mode=self.config.down_mode,
-                    **(self.config.down_block)
-                )
+            self.down_blocks[f"down_{idx}"] = DownDoubleConv(
+                down_scale=self.config.down_scales[idx],
+                in_channels=in_channels,
+                out_channels=self.config.down_num_filters[idx],
+                filter_lengths=self.config.down_filter_lengths[idx],
+                groups=self.config.groups,
+                mode=self.config.down_mode,
+                **(self.config.down_block),
+            )
             in_channels = self.config.down_num_filters[idx]
             if self.__DEBUG__:
-                __debug_output_shape = self.down_blocks[f"down_{idx}"].compute_output_shape(__debug_seq_len)
-                print(f"given seq_len = {__debug_seq_len}, down_{idx} output shape = {__debug_output_shape}")
+                __debug_output_shape = self.down_blocks[
+                    f"down_{idx}"
+                ].compute_output_shape(__debug_seq_len)
+                print(
+                    f"given seq_len = {__debug_seq_len}, down_{idx} output shape = {__debug_output_shape}"
+                )
                 _, _, __debug_seq_len = __debug_output_shape
 
         self.up_blocks = nn.ModuleDict()
         in_channels = self.config.down_num_filters[-1]
         for idx in range(self.config.down_up_block_num):
-            self.up_blocks[f"up_{idx}"] = \
-                UpDoubleConv(
-                    up_scale=self.config.up_scales[idx],
-                    in_channels=in_channels,
-                    out_channels=self.config.up_num_filters[idx],
-                    filter_lengths=self.config.up_conv_filter_lengths[idx],
-                    deconv_filter_length=self.config.up_deconv_filter_lengths[idx],
-                    groups=self.config.groups,
-                    mode=self.config.up_mode,
-                    **(self.config.up_block)
-                )
+            self.up_blocks[f"up_{idx}"] = UpDoubleConv(
+                up_scale=self.config.up_scales[idx],
+                in_channels=in_channels,
+                out_channels=self.config.up_num_filters[idx],
+                filter_lengths=self.config.up_conv_filter_lengths[idx],
+                deconv_filter_length=self.config.up_deconv_filter_lengths[idx],
+                groups=self.config.groups,
+                mode=self.config.up_mode,
+                **(self.config.up_block),
+            )
             in_channels = self.config.up_num_filters[idx]
             if self.__DEBUG__:
-                __debug_output_shape = self.up_blocks[f"up_{idx}"].compute_output_shape(__debug_seq_len)
-                print(f"given seq_len = {__debug_seq_len}, up_{idx} output shape = {__debug_output_shape}")
+                __debug_output_shape = self.up_blocks[f"up_{idx}"].compute_output_shape(
+                    __debug_seq_len
+                )
+                print(
+                    f"given seq_len = {__debug_seq_len}, up_{idx} output shape = {__debug_output_shape}"
+                )
                 _, _, __debug_seq_len = __debug_output_shape
 
         self.out_conv = Conv_Bn_Activation(
@@ -498,7 +541,9 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
         )
         if self.__DEBUG__:
             __debug_output_shape = self.out_conv.compute_output_shape(__debug_seq_len)
-            print(f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}")
+            print(
+                f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}"
+            )
 
         # for inference
         # if background counted in `classes`, use softmax
@@ -506,8 +551,8 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
         self.softmax = nn.Softmax(-1)
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -542,20 +587,21 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
 
         # to keep in accordance with other models
         # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
-        output = output.permute(0,2,1)
+        output = output.permute(0, 2, 1)
 
         # TODO: consider adding CRF at the tail to make final prediction
 
         return output
 
     @torch.no_grad()
-    def inference(self, input:Tensor, bin_pred_thr:float=0.5) -> Tensor:
-        """
-        """
+    def inference(self, input: Tensor, bin_pred_thr: float = 0.5) -> Tensor:
+        """ """
         raise NotImplementedError("implement a task specific inference method")
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------

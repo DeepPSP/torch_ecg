@@ -13,21 +13,25 @@ from .base import (
 )
 
 
-__all__ = ["BandPass",]
+__all__ = [
+    "BandPass",
+]
 
 
 class BandPass(PreProcessor):
-    """
-    """
+    """ """
+
     __name__ = "BandPass"
 
-    def __init__(self,
-                 lowcut:Optional[Real]=0.5,
-                 highcut:Optional[Real]=45,
-                 filter_type:str="butter",
-                 filter_order:Optional[int]=None,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        lowcut: Optional[Real] = 0.5,
+        highcut: Optional[Real] = 45,
+        filter_type: str = "butter",
+        filter_order: Optional[int] = None,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -42,8 +46,9 @@ class BandPass(PreProcessor):
         """
         self.lowcut = lowcut
         self.highcut = highcut
-        assert any([self.lowcut is not None, self.highcut is not None]), \
-            "At least one of lowcut and highcut should be set"
+        assert any(
+            [self.lowcut is not None, self.highcut is not None]
+        ), "At least one of lowcut and highcut should be set"
         if not self.lowcut:
             self.lowcut = 0
         if not self.highcut:
@@ -51,8 +56,8 @@ class BandPass(PreProcessor):
         self.filter_type = filter_type
         self.filter_order = filter_order
 
-    def apply(self, sig:np.ndarray, fs:int) -> Tuple[np.ndarray, int]:
-        """ finished, checked,
+    def apply(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
+        """finished, checked,
 
         apply the preprocessor to `sig`
 
@@ -87,4 +92,9 @@ class BandPass(PreProcessor):
         """
         return the extra keys for `__repr__`
         """
-        return ["lowcut", "highcut", "filter_type", "filter_order",] + super().extra_repr_keys()
+        return [
+            "lowcut",
+            "highcut",
+            "filter_type",
+            "filter_order",
+        ] + super().extra_repr_keys()

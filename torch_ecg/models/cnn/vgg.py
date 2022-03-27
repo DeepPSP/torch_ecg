@@ -7,7 +7,6 @@ from typing import Union, Optional, Tuple, Sequence, NoReturn
 from numbers import Real, Number
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 import torch
 from torch import nn
@@ -22,7 +21,9 @@ from ...utils.utils_nn import (
 from ...utils.misc import dict_to_str
 from ...models._nets import (
     Conv_Bn_Activation,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
 )
 
 
@@ -31,20 +32,29 @@ if DEFAULTS.torch_dtype == torch.float64:
 
 
 __all__ = [
-    "VGGBlock", "VGG16",
+    "VGGBlock",
+    "VGG16",
 ]
 
 
 class VGGBlock(SizeMixin, nn.Sequential):
-    """ finished, checked,
+    """finished, checked,
 
     building blocks of the CNN feature extractor `VGG16`
     """
+
     __DEBUG__ = False
     __name__ = "VGGBlock"
 
-    def __init__(self, num_convs:int, in_channels:int, out_channels:int, groups:int=1, **config) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        num_convs: int,
+        in_channels: int,
+        out_channels: int,
+        groups: int = 1,
+        **config,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -69,12 +79,15 @@ class VGGBlock(SizeMixin, nn.Sequential):
         self.__groups = groups
         self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         self.add_module(
             "cba_1",
             Conv_Bn_Activation(
-                in_channels, out_channels,
+                in_channels,
+                out_channels,
                 kernel_size=self.config.filter_length,
                 stride=self.config.subsample_length,
                 groups=self.__groups,
@@ -83,13 +96,14 @@ class VGGBlock(SizeMixin, nn.Sequential):
                 kernel_initializer=self.config.kernel_initializer,
                 kw_initializer=self.config.kw_initializer,
                 batch_norm=self.config.batch_norm,
-            )
+            ),
         )
-        for idx in range(num_convs-1):
+        for idx in range(num_convs - 1):
             self.add_module(
                 f"cba_{idx+2}",
                 Conv_Bn_Activation(
-                    out_channels, out_channels,
+                    out_channels,
+                    out_channels,
                     kernel_size=self.config.filter_length,
                     stride=self.config.subsample_length,
                     groups=self.__groups,
@@ -98,15 +112,14 @@ class VGGBlock(SizeMixin, nn.Sequential):
                     kernel_initializer=self.config.kernel_initializer,
                     kw_initializer=self.config.kw_initializer,
                     batch_norm=self.config.batch_norm,
-                )
+                ),
             )
         self.add_module(
-            "max_pool",
-            nn.MaxPool1d(self.config.pool_size, self.config.pool_stride)
+            "max_pool", nn.MaxPool1d(self.config.pool_size, self.config.pool_stride)
         )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -121,8 +134,10 @@ class VGGBlock(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -153,16 +168,17 @@ class VGGBlock(SizeMixin, nn.Sequential):
 
 
 class VGG16(SizeMixin, nn.Sequential):
-    """ finished, checked,
+    """finished, checked,
 
     CNN feature extractor of the CRNN models proposed in refs of `ECG_CRNN`
     """
+
     __DEBUG__ = False
     __name__ = "VGG16"
 
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """ finished, checked,
-        
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """finished, checked,
+
         Parameters
         ----------
         in_channels: int,
@@ -187,10 +203,14 @@ class VGG16(SizeMixin, nn.Sequential):
         # self.config = deepcopy(ECG_CRNN_CONFIG.cnn.vgg16)
         self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
 
         module_in_channels = in_channels
-        for idx, (nc, nf) in enumerate(zip(self.config.num_convs, self.config.num_filters)):
+        for idx, (nc, nf) in enumerate(
+            zip(self.config.num_convs, self.config.num_filters)
+        ):
             module_name = f"vgg_block_{idx+1}"
             self.add_module(
                 name=module_name,
@@ -200,12 +220,12 @@ class VGG16(SizeMixin, nn.Sequential):
                     out_channels=nf,
                     groups=self.config.groups,
                     **(self.config.block),
-                )
+                ),
             )
             module_in_channels = nf
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -220,8 +240,10 @@ class VGG16(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------

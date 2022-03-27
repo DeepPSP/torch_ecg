@@ -7,7 +7,6 @@ from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
 from numbers import Real
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 import wfdb
 
@@ -21,7 +20,7 @@ __all__ = [
 
 
 class LUDB(PhysioNetDataBase):
-    """ finished, to be improved,
+    """finished, to be improved,
 
     Lobachevsky University Electrocardiography Database
 
@@ -128,7 +127,7 @@ class LUDB(PhysioNetDataBase):
         4.9. there are also 9 records with early repolarization syndrome
         there might well be records with multiple conditions.
     5. ludb.csv stores information about the subjects (gender, age, rhythm type, direction of the electrical axis of the heart, the presence of a cardiac pacemaker, etc.)
-    
+
 
     NOTE
     ----
@@ -148,13 +147,15 @@ class LUDB(PhysioNetDataBase):
     [2] Kalyakulina, A., Yusipov, I., Moskalenko, V., Nikolskiy, A., Kozlov, A., Kosonogov, K., Zolotykh, N., & Ivanchenko, M. (2020). Lobachevsky University Electrocardiography Database (version 1.0.0).
     """
 
-    def __init__(self,
-                 db_dir:Union[str,Path],
-                 working_dir:Optional[Union[str,Path]]=None,
-                 verbose:int=2,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
-        
+    def __init__(
+        self,
+        db_dir: Union[str, Path],
+        working_dir: Optional[Union[str, Path]] = None,
+        verbose: int = 2,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
+
         Parameters
         ----------
         db_dir: str or Path,
@@ -165,12 +166,33 @@ class LUDB(PhysioNetDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="ludb", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
-        print("Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used")
+        super().__init__(
+            db_name="ludb",
+            db_dir=db_dir,
+            working_dir=working_dir,
+            verbose=verbose,
+            **kwargs,
+        )
+        print(
+            "Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used"
+        )
         self.fs = 500
         self.spacing = 1000 / self.fs
         self.data_ext = "dat"
-        self.all_leads = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6",]
+        self.all_leads = [
+            "I",
+            "II",
+            "III",
+            "aVR",
+            "aVL",
+            "aVF",
+            "V1",
+            "V2",
+            "V3",
+            "V4",
+            "V5",
+            "V6",
+        ]
         self.all_leads_lower = [l.lower() for l in self.all_leads]
         # Version 1.0.0 has different beat_ann_ext: [f"atr_{item}" for item in self.all_leads_lower]
         self.beat_ann_ext = [f"{item}" for item in self.all_leads_lower]
@@ -186,35 +208,47 @@ class LUDB(PhysioNetDataBase):
         ...         all_symbols.update(ann.symbol)
         """
         self._symbol_to_wavename = CFG(N="qrs", p="pwave", t="twave")
-        self._wavename_to_symbol = CFG({v:k for k,v in self._symbol_to_wavename.items()})
-        self.class_map = CFG(
-            p=1, N=2, t=3, i=0  # an extra isoelectric
+        self._wavename_to_symbol = CFG(
+            {v: k for k, v in self._symbol_to_wavename.items()}
         )
+        self.class_map = CFG(p=1, N=2, t=3, i=0)  # an extra isoelectric
 
         if (self.db_dir / "ludb.csv").is_file():
             # newly added in version 1.0.1
             self._df_subject_info = pd.read_csv(self.db_dir / "ludb.csv")
             self._df_subject_info.ID = self._df_subject_info.ID.apply(str)
-            self._df_subject_info.Sex = self._df_subject_info.Sex.apply(lambda s: s.strip())
-            self._df_subject_info.Age = self._df_subject_info.Age.apply(lambda s: s.strip())
+            self._df_subject_info.Sex = self._df_subject_info.Sex.apply(
+                lambda s: s.strip()
+            )
+            self._df_subject_info.Age = self._df_subject_info.Age.apply(
+                lambda s: s.strip()
+            )
         else:
-            self._df_subject_info = pd.DataFrame(columns=[
-                "ID", "Sex", "Age", "Rhythms", "Electric axis of the heart",
-                "Conduction abnormalities", "Extrasystolies", "Hypertrophies",
-                "Cardiac pacing", "Ischemia", "Non-specific repolarization abnormalities",
-                "Other states",
-            ])
+            self._df_subject_info = pd.DataFrame(
+                columns=[
+                    "ID",
+                    "Sex",
+                    "Age",
+                    "Rhythms",
+                    "Electric axis of the heart",
+                    "Conduction abnormalities",
+                    "Extrasystolies",
+                    "Hypertrophies",
+                    "Cardiac pacing",
+                    "Ischemia",
+                    "Non-specific repolarization abnormalities",
+                    "Other states",
+                ]
+            )
 
         self._ls_rec()
 
-    def get_subject_id(self, rec:str) -> int:
-        """
-
-        """
+    def get_subject_id(self, rec: str) -> int:
+        """ """
         raise NotImplementedError
 
-    def _get_path(self, rec:str) -> str:
-        """ finished, checked,
+    def _get_path(self, rec: str) -> str:
+        """finished, checked,
 
         get the path of a record, without file extension
 
@@ -231,13 +265,15 @@ class LUDB(PhysioNetDataBase):
         rec_fp = str(self.db_dir / "data" / rec)
         return rec_fp
 
-    def load_data(self,
-                  rec:str,
-                  leads:Optional[Union[str, List[str]]]=None,
-                  data_format="channel_first",
-                  units:str="mV",
-                  fs:Optional[Real]=None) -> np.ndarray:
-        """ finished, checked,
+    def load_data(
+        self,
+        rec: str,
+        leads: Optional[Union[str, List[str]]] = None,
+        data_format="channel_first",
+        units: str = "mV",
+        fs: Optional[Real] = None,
+    ) -> np.ndarray:
+        """finished, checked,
 
         load physical (converted from digital) ecg data,
         which is more understandable for humans
@@ -256,13 +292,18 @@ class LUDB(PhysioNetDataBase):
             units of the output signal, can also be "μV", with an alias of "uV"
         fs: real number, optional,
             if not None, the loaded data will be resampled to this frequency
-        
+
         Returns
         -------
         data: ndarray,
             the ecg data
         """
-        assert data_format.lower() in ["channel_first", "lead_first", "channel_last", "lead_last"]
+        assert data_format.lower() in [
+            "channel_first",
+            "lead_first",
+            "channel_last",
+            "lead_last",
+        ]
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=True)
 
         rec_fp = self._get_path(rec)
@@ -283,8 +324,10 @@ class LUDB(PhysioNetDataBase):
 
         return data
 
-    def load_ann(self, rec:str, leads:Optional[Sequence[str]]=None, metadata:bool=False) -> dict:
-        """ finished, checked,
+    def load_ann(
+        self, rec: str, leads: Optional[Sequence[str]] = None, metadata: bool = False
+    ) -> dict:
+        """finished, checked,
 
         load the wave delineation, along with metadata if specified
 
@@ -306,8 +349,10 @@ class LUDB(PhysioNetDataBase):
 
         # wave delineation annotations
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
-        _ann_ext = [f"{l.lower()}" for l in _leads]  # for Version 1.0.0, it is f"{l.lower()}"
-        ann_dict["waves"] = CFG({l:[] for l in _leads})
+        _ann_ext = [
+            f"{l.lower()}" for l in _leads
+        ]  # for Version 1.0.0, it is f"{l.lower()}"
+        ann_dict["waves"] = CFG({l: [] for l in _leads})
         for l, e in zip(_leads, _ann_ext):
             ann = wfdb.rdann(rec_fp, extension=e)
             df_lead_ann = pd.DataFrame()
@@ -320,35 +365,37 @@ class LUDB(PhysioNetDataBase):
                 peak_idx = peak_inds[i]
                 if peak_idx == 0:
                     df_lead_ann.loc[i, "onset"] = row["peak"]
-                    if symbols[peak_idx+1] == ")":
-                        df_lead_ann.loc[i, "offset"] = ann.sample[peak_idx+1]
+                    if symbols[peak_idx + 1] == ")":
+                        df_lead_ann.loc[i, "offset"] = ann.sample[peak_idx + 1]
                     else:
                         df_lead_ann.loc[i, "offset"] = row["peak"]
                 elif peak_idx == len(symbols) - 1:
                     df_lead_ann.loc[i, "offset"] = row["peak"]
-                    if symbols[peak_idx-1] == "(":
-                        df_lead_ann.loc[i, "onset"] = ann.sample[peak_idx-1]
+                    if symbols[peak_idx - 1] == "(":
+                        df_lead_ann.loc[i, "onset"] = ann.sample[peak_idx - 1]
                     else:
                         df_lead_ann.loc[i, "onset"] = row["peak"]
                 else:
-                    if symbols[peak_idx-1] == "(":
-                        df_lead_ann.loc[i, "onset"] = ann.sample[peak_idx-1]
+                    if symbols[peak_idx - 1] == "(":
+                        df_lead_ann.loc[i, "onset"] = ann.sample[peak_idx - 1]
                     else:
                         df_lead_ann.loc[i, "onset"] = row["peak"]
-                    if symbols[peak_idx+1] == ")":
-                        df_lead_ann.loc[i, "offset"] = ann.sample[peak_idx+1]
+                    if symbols[peak_idx + 1] == ")":
+                        df_lead_ann.loc[i, "offset"] = ann.sample[peak_idx + 1]
                     else:
                         df_lead_ann.loc[i, "offset"] = row["peak"]
             # df_lead_ann["onset"] = ann.sample[np.where(symbols=="(")[0]]
             # df_lead_ann["offset"] = ann.sample[np.where(symbols==")")[0]]
 
-            df_lead_ann["duration"] = (df_lead_ann["offset"] - df_lead_ann["onset"]) * self.spacing
-            
+            df_lead_ann["duration"] = (
+                df_lead_ann["offset"] - df_lead_ann["onset"]
+            ) * self.spacing
+
             df_lead_ann.index = symbols[peak_inds]
 
             for c in ["peak", "onset", "offset"]:
                 df_lead_ann[c] = df_lead_ann[c].values.astype(int)
-            
+
             for _, row in df_lead_ann.iterrows():
                 w = ECGWaveForm(
                     name=self._symbol_to_wavename[row.name],
@@ -362,11 +409,11 @@ class LUDB(PhysioNetDataBase):
         if metadata:
             header_dict = self._load_header(rec)
             ann_dict.update(header_dict)
-        
+
         return ann_dict
 
-    def load_diagnoses(self, rec:str) -> List[str]:
-        """ finished, checked,
+    def load_diagnoses(self, rec: str) -> List[str]:
+        """finished, checked,
 
         load diagnoses of the `rec`
 
@@ -382,12 +429,14 @@ class LUDB(PhysioNetDataBase):
         diagnoses = self._load_header(rec)["diagnoses"]
         return diagnoses
 
-    def load_masks(self,
-                   rec:str,
-                   leads:Optional[Sequence[str]]=None,
-                   mask_format:str="channel_first",
-                   class_map:Optional[Dict[str, int]]=None,) -> np.ndarray:
-        """ finished, checked,
+    def load_masks(
+        self,
+        rec: str,
+        leads: Optional[Sequence[str]] = None,
+        mask_format: str = "channel_first",
+        class_map: Optional[Dict[str, int]] = None,
+    ) -> np.ndarray:
+        """finished, checked,
 
         load the wave delineation in the form of masks
 
@@ -417,18 +466,25 @@ class LUDB(PhysioNetDataBase):
         waves = self.load_ann(rec, leads=_leads, metadata=False)["waves"]
         for idx, (l, l_w) in enumerate(waves.items()):
             for w in l_w:
-                masks[idx, w.onset: w.offset] = _class_map[self._wavename_to_symbol[w.name]]
-        if mask_format.lower() not in ["channel_first", "lead_first",]:
+                masks[idx, w.onset : w.offset] = _class_map[
+                    self._wavename_to_symbol[w.name]
+                ]
+        if mask_format.lower() not in [
+            "channel_first",
+            "lead_first",
+        ]:
             masks = masks.T
         return masks
 
-    def from_masks(self,
-                   masks:np.ndarray,
-                   mask_format:str="channel_first",
-                   leads:Optional[Sequence[str]]=None,
-                   class_map:Optional[Dict[str, int]]=None,
-                   fs:Optional[Real]=None) -> Dict[str, List[ECGWaveForm]]:
-        """ finished, checked,
+    def from_masks(
+        self,
+        masks: np.ndarray,
+        mask_format: str = "channel_first",
+        leads: Optional[Sequence[str]] = None,
+        class_map: Optional[Dict[str, int]] = None,
+        fs: Optional[Real] = None,
+    ) -> Dict[str, List[ECGWaveForm]]:
+        """finished, checked,
 
         convert masks into lists of waveforms
 
@@ -456,17 +512,24 @@ class LUDB(PhysioNetDataBase):
             each item value is a list containing the `ECGWaveForm`s corr. to the lead (item key)
         """
         if masks.ndim == 1:
-            _masks = masks[np.newaxis,...]
+            _masks = masks[np.newaxis, ...]
         elif masks.ndim == 2:
-            if mask_format.lower() not in ["channel_first", "lead_first",]:
+            if mask_format.lower() not in [
+                "channel_first",
+                "lead_first",
+            ]:
                 _masks = masks.T
             else:
                 _masks = masks.copy()
         else:
-            raise ValueError(f"masks should be of dim 1 or 2, but got a {masks.ndim}d array")
+            raise ValueError(
+                f"masks should be of dim 1 or 2, but got a {masks.ndim}d array"
+            )
 
         if leads is not None:
-            _leads = self._normalize_leads(leads, standard_ordering=False, lower_cases=False)
+            _leads = self._normalize_leads(
+                leads, standard_ordering=False, lower_cases=False
+            )
         else:
             _leads = [f"lead_{idx+1}" for idx in range(_masks.shape[0])]
         assert len(_leads) == _masks.shape[0]
@@ -475,36 +538,40 @@ class LUDB(PhysioNetDataBase):
 
         _fs = fs if fs is not None else self.fs
 
-        waves = CFG({lead_name:[] for lead_name in _leads})
+        waves = CFG({lead_name: [] for lead_name in _leads})
         for channel_idx, lead_name in enumerate(_leads):
-            current_mask = _masks[channel_idx,...]
+            current_mask = _masks[channel_idx, ...]
             for wave_symbol, wave_number in _class_map.items():
-                if wave_symbol not in ["p", "N", "t",]:
+                if wave_symbol not in [
+                    "p",
+                    "N",
+                    "t",
+                ]:
                     continue
                 wave_name = self._symbol_to_wavename[wave_symbol]
-                current_wave_inds = np.where(current_mask==wave_number)[0]
+                current_wave_inds = np.where(current_mask == wave_number)[0]
                 if len(current_wave_inds) == 0:
                     continue
-                np.where(np.diff(current_wave_inds)>1)
-                split_inds = np.where(np.diff(current_wave_inds)>1)[0].tolist()
-                split_inds = sorted(split_inds+[i+1 for i in split_inds])
-                split_inds = [0] + split_inds + [len(current_wave_inds)-1]
-                for i in range(len(split_inds)//2):
-                    itv_start = current_wave_inds[split_inds[2*i]]
-                    itv_end = current_wave_inds[split_inds[2*i+1]]+1
+                np.where(np.diff(current_wave_inds) > 1)
+                split_inds = np.where(np.diff(current_wave_inds) > 1)[0].tolist()
+                split_inds = sorted(split_inds + [i + 1 for i in split_inds])
+                split_inds = [0] + split_inds + [len(current_wave_inds) - 1]
+                for i in range(len(split_inds) // 2):
+                    itv_start = current_wave_inds[split_inds[2 * i]]
+                    itv_end = current_wave_inds[split_inds[2 * i + 1]] + 1
                     w = ECGWaveForm(
                         name=wave_name,
                         onset=itv_start,
                         offset=itv_end,
                         peak=np.nan,
-                        duration=1000*(itv_end-itv_start)/_fs,  # ms
+                        duration=1000 * (itv_end - itv_start) / _fs,  # ms
                     )
                     waves[lead_name].append(w)
             waves[lead_name].sort(key=lambda w: w.onset)
         return waves
 
-    def _load_header(self, rec:str) -> dict:
-        """ finished, checked,
+    def _load_header(self, rec: str) -> dict:
+        """finished, checked,
 
         load header data into a dict
 
@@ -525,22 +592,30 @@ class LUDB(PhysioNetDataBase):
         header_dict["adc_gain"] = header_reader.adc_gain
         header_dict["record_fmt"] = header_reader.fmt
         try:
-            header_dict["age"] = int([l for l in header_reader.comments if "<age>" in l][0].split(": ")[-1])
+            header_dict["age"] = int(
+                [l for l in header_reader.comments if "<age>" in l][0].split(": ")[-1]
+            )
         except:
             header_dict["age"] = np.nan
         try:
-            header_dict["sex"] = [l for l in header_reader.comments if "<sex>" in l][0].split(": ")[-1]
+            header_dict["sex"] = [l for l in header_reader.comments if "<sex>" in l][
+                0
+            ].split(": ")[-1]
         except:
             header_dict["sex"] = ""
-        d_start = [idx for idx, l in enumerate(header_reader.comments) if "<diagnoses>" in l][0] + 1
+        d_start = [
+            idx for idx, l in enumerate(header_reader.comments) if "<diagnoses>" in l
+        ][0] + 1
         header_dict["diagnoses"] = header_reader.comments[d_start:]
         return header_dict
 
-    def _normalize_leads(self,
-                         leads:Optional[Sequence[str]]=None,
-                         standard_ordering:bool=True,
-                         lower_cases:bool=False,) -> List[str]:
-        """ finished, checked,
+    def _normalize_leads(
+        self,
+        leads: Optional[Sequence[str]] = None,
+        standard_ordering: bool = True,
+        lower_cases: bool = False,
+    ) -> List[str]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -560,15 +635,19 @@ class LUDB(PhysioNetDataBase):
 
         if standard_ordering:
             _leads = [l for l in self.all_leads_lower if l in _leads]
-        
+
         if not lower_cases:
-            _lead_indices = [idx for idx, l in enumerate(self.all_leads_lower) if l in _leads]
+            _lead_indices = [
+                idx for idx, l in enumerate(self.all_leads_lower) if l in _leads
+            ]
             _leads = [self.all_leads[idx] for idx in _lead_indices]
-        
+
         return _leads
 
-    def load_subject_info(self, rec:str, fields:Optional[Union[str,Sequence[str]]]=None) -> Union[dict,str]:
-        """ finished, checked,
+    def load_subject_info(
+        self, rec: str, fields: Optional[Union[str, Sequence[str]]] = None
+    ) -> Union[dict, str]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -583,31 +662,32 @@ class LUDB(PhysioNetDataBase):
         info: dict or str,
             subject info of the given fields of the record
         """
-        row = self._df_subject_info[self._df_subject_info.ID==rec]
+        row = self._df_subject_info[self._df_subject_info.ID == rec]
         if row.empty:
             return {}
         row = row.iloc[0]
         info = row.to_dict()
         if fields is not None:
-            assert fields in self._df_subject_info.columns or \
-                set(fields).issubset(set(self._df_subject_info.columns)), \
-                    "No such field(s)!"
+            assert fields in self._df_subject_info.columns or set(fields).issubset(
+                set(self._df_subject_info.columns)
+            ), "No such field(s)!"
             if isinstance(fields, str):
                 info = info[fields]
             else:
-                info = {k:v for k,v in info.items() if k in fields}
+                info = {k: v for k, v in info.items() if k in fields}
         return info
 
-
-    def plot(self,
-             rec:str,
-             data:Optional[np.ndarray]=None,
-             ticks_granularity:int=0,
-             leads:Optional[Union[str, List[str]]]=None,
-             same_range:bool=False,
-             waves:Optional[ECGWaveForm]=None,
-             **kwargs:Any,) -> NoReturn:
-        """ finished, checked, to improve,
+    def plot(
+        self,
+        rec: str,
+        data: Optional[np.ndarray] = None,
+        ticks_granularity: int = 0,
+        leads: Optional[Union[str, List[str]]] = None,
+        same_range: bool = False,
+        waves: Optional[ECGWaveForm] = None,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked, to improve,
 
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
@@ -646,6 +726,7 @@ class LUDB(PhysioNetDataBase):
         """
         if "plt" not in dir():
             import matplotlib.pyplot as plt
+
             plt.MultipleLocator.MAXTICKS = 3000
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
 
@@ -653,7 +734,9 @@ class LUDB(PhysioNetDataBase):
         # _lead_indices = [lead_list.index(l) for l in leads]
         _lead_indices = [self.all_leads.index(l) for l in _leads]
         if data is None:
-            _data = self.load_data(rec, data_format="channel_first", units="μV")[_lead_indices]
+            _data = self.load_data(rec, data_format="channel_first", units="μV")[
+                _lead_indices
+            ]
         else:
             units = self._auto_infer_units(data)
             print(f"input data is auto detected to have units in {units}")
@@ -661,7 +744,7 @@ class LUDB(PhysioNetDataBase):
                 _data = 1000 * data
             else:
                 _data = data
-        
+
         if same_range:
             y_ranges = np.ones((_data.shape[0],)) * np.max(np.abs(_data)) + 100
         else:
@@ -671,9 +754,9 @@ class LUDB(PhysioNetDataBase):
             waves = self.load_ann(rec, leads=_leads)["waves"]
 
         if waves is not None:
-            pwaves = {l:[] for l in _leads}
-            qrs = {l:[] for l in _leads}
-            twaves = {l:[] for l in _leads}
+            pwaves = {l: [] for l in _leads}
+            qrs = {l: [] for l in _leads}
+            twaves = {l: [] for l in _leads}
             for l, l_w in waves.items():
                 for w in l_w:
                     itv = [w.onset, w.offset]
@@ -683,8 +766,12 @@ class LUDB(PhysioNetDataBase):
                         qrs[l].append(itv)
                     elif w.name == self._symbol_to_wavename["t"]:
                         twaves[l].append(itv)
-        
-        palette = {"pwaves": "green", "qrs": "red", "twaves": "yellow",}
+
+        palette = {
+            "pwaves": "green",
+            "qrs": "red",
+            "twaves": "yellow",
+        }
         plot_alpha = 0.4
 
         diagnoses = self.load_diagnoses(rec)
@@ -698,22 +785,34 @@ class LUDB(PhysioNetDataBase):
         duration = len(t) / self.fs
         fig_sz_w = int(round(4.8 * duration))
         fig_sz_h = 6 * y_ranges / 1500
-        fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
+        fig, axes = plt.subplots(
+            nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h))
+        )
         if nb_leads == 1:
             axes = [axes]
         for idx in range(nb_leads):
             lead_name = self.all_leads[_lead_indices[idx]]
-            axes[idx].plot(t, _data[idx], color="black", linewidth="2.0", label=f"lead - {lead_name}")
+            axes[idx].plot(
+                t,
+                _data[idx],
+                color="black",
+                linewidth="2.0",
+                label=f"lead - {lead_name}",
+            )
             axes[idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
             # NOTE that `Locator` has default `MAXTICKS` equal to 1000
             if ticks_granularity >= 1:
                 axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                 axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
+                axes[idx].grid(
+                    which="major", linestyle="-", linewidth="0.5", color="red"
+                )
             if ticks_granularity >= 2:
                 axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                 axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
+                axes[idx].grid(
+                    which="minor", linestyle=":", linewidth="0.5", color="black"
+                )
             # add extra info. to legend
             # https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib
             for d in diagnoses:
@@ -721,8 +820,10 @@ class LUDB(PhysioNetDataBase):
             for w in ["pwaves", "qrs", "twaves"]:
                 for itv in eval(f"{w}['{lead_name}']"):
                     axes[idx].axvspan(
-                        itv[0]/self.fs, itv[1]/self.fs,
-                        color=palette[w], alpha=plot_alpha,
+                        itv[0] / self.fs,
+                        itv[1] / self.fs,
+                        color=palette[w],
+                        alpha=plot_alpha,
                     )
             axes[idx].legend(loc="upper left")
             axes[idx].set_xlim(t[0], t[-1])

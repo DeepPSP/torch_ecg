@@ -22,13 +22,14 @@ from string import punctuation
 
 import wfdb, requests
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 from pyedflib import EdfReader
 
 from ..utils import ecg_arrhythmia_knowledge as EAK
 from ..utils.misc import (
-    get_record_list_recursive3, dict_to_str, ReprMixin,
+    get_record_list_recursive3,
+    dict_to_str,
+    ReprMixin,
     list_sum,
 )
 from ..utils.download import http_get
@@ -116,18 +117,20 @@ WFDB_Rhythm_Annotations = {
 }
 
 
-
 class _DataBase(ReprMixin, ABC):
     """
 
     universal abstract base class for all databases
     """
-    def __init__(self,
-                 db_name:str,
-                 db_dir:Optional[Union[str,Path]]=None,
-                 working_dir:Optional[Union[str,Path]]=None,
-                 verbose:int=2,
-                 **kwargs:Any,) -> NoReturn:
+
+    def __init__(
+        self,
+        db_name: str,
+        db_dir: Optional[Union[str, Path]] = None,
+        working_dir: Optional[Union[str, Path]] = None,
+        verbose: int = 2,
+        **kwargs: Any,
+    ) -> NoReturn:
         """
         Parameters
         ----------
@@ -154,19 +157,18 @@ class _DataBase(ReprMixin, ABC):
 
     @abstractmethod
     def _ls_rec(self) -> NoReturn:
-        """
-        """
+        """ """
         raise NotImplementedError
 
     @abstractmethod
-    def load_data(self, rec:str, **kwargs) -> Any:
+    def load_data(self, rec: str, **kwargs) -> Any:
         """
         load data from the record `rec`
         """
         raise NotImplementedError
 
     @abstractmethod
-    def load_ann(self, rec:str, **kwargs) -> Any:
+    def load_ann(self, rec: str, **kwargs) -> Any:
         """
         load annotations of the record `rec`
 
@@ -174,8 +176,8 @@ class _DataBase(ReprMixin, ABC):
         """
         raise NotImplementedError
 
-    def _auto_infer_units(self, sig:np.ndarray, sig_type:str="ECG") -> str:
-        """ finished, checked,
+    def _auto_infer_units(self, sig: np.ndarray, sig_type: str = "ECG") -> str:
+        """finished, checked,
 
         automatically infer the units of `sig`,
         under the assumption that `sig` not being raw signal, with baseline removed
@@ -205,8 +207,7 @@ class _DataBase(ReprMixin, ABC):
 
     @property
     def all_records(self):
-        """
-        """
+        """ """
         if self._all_records is None:
             self._ls_rec()
         return self._all_records
@@ -219,15 +220,15 @@ class _DataBase(ReprMixin, ABC):
 
     @property
     def database_info(self) -> NoReturn:
-        """
-
-        """
+        """ """
         info = "\n".join(self.__doc__.split("\n")[1:])
         print(info)
 
     @classmethod
-    def get_arrhythmia_knowledge(cls, arrhythmias:Union[str,List[str]], **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def get_arrhythmia_knowledge(
+        cls, arrhythmias: Union[str, List[str]], **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         knowledge about ECG features of specific arrhythmias,
 
@@ -242,13 +243,15 @@ class _DataBase(ReprMixin, ABC):
             d = arrhythmias
         for idx, item in enumerate(d):
             print(dict_to_str(eval(f"EAK.{item}")))
-            if idx < len(d)-1:
-                print("*"*110)
+            if idx < len(d) - 1:
+                print("*" * 110)
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        """
-        return ["db_name", "db_dir",]
+        """ """
+        return [
+            "db_name",
+            "db_dir",
+        ]
 
     @property
     @abstractmethod
@@ -263,12 +266,15 @@ class PhysioNetDataBase(_DataBase):
     """
     https://www.physionet.org/
     """
-    def __init__(self,
-                 db_name:str,
-                 db_dir:Optional[Union[str,Path]]=None,
-                 working_dir:Optional[Union[str,Path]]=None,
-                 verbose:int=2,
-                 **kwargs:Any,) -> NoReturn:
+
+    def __init__(
+        self,
+        db_name: str,
+        db_dir: Optional[Union[str, Path]] = None,
+        working_dir: Optional[Union[str, Path]] = None,
+        verbose: int = 2,
+        **kwargs: Any,
+    ) -> NoReturn:
         """
         Parameters
         ----------
@@ -283,7 +289,13 @@ class PhysioNetDataBase(_DataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name=db_name, db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(
+            db_name=db_name,
+            db_dir=db_dir,
+            working_dir=working_dir,
+            verbose=verbose,
+            **kwargs,
+        )
         # `self.fs` for those with single signal source, e.g. ECG,
         # for those with multiple signal sources like PSG,
         # self.fs is default to the frequency of ECG if ECG applicable
@@ -294,12 +306,20 @@ class PhysioNetDataBase(_DataBase):
         self.df_all_db_info = get_physionet_dbs()
 
         if self.verbose > 2:
-            self.df_all_db_info = pd.DataFrame(
-                wfdb.get_dbs(), columns=["db_name", "db_description",]
-            ).drop_duplicates().reset_index(drop=True)
+            self.df_all_db_info = (
+                pd.DataFrame(
+                    wfdb.get_dbs(),
+                    columns=[
+                        "db_name",
+                        "db_description",
+                    ],
+                )
+                .drop_duplicates()
+                .reset_index(drop=True)
+            )
 
-    def _ls_rec(self, db_name:Optional[str]=None, local:bool=True) -> NoReturn:
-        """ finished, checked,
+    def _ls_rec(self, db_name: Optional[str] = None, local: bool = True) -> NoReturn:
+        """finished, checked,
 
         find all records (relative path without file extension),
         and save into `self._all_records` for further use
@@ -320,24 +340,30 @@ class PhysioNetDataBase(_DataBase):
             self._all_records = [Path(item).name for item in self._all_records]
         except:
             self._ls_rec_local()
-            
-    def _ls_rec_local(self,) -> NoReturn:
-        """ finished, checked,
+
+    def _ls_rec_local(
+        self,
+    ) -> NoReturn:
+        """finished, checked,
 
         find all records in `self.db_dir`
         """
         record_list_fp = self.db_dir / "RECORDS"
         if record_list_fp.is_file():
             self._all_records = record_list_fp.read_text().splitlines()
-            self._all_records = [Path(item).name for item in self._all_records if len(item) > 0]
+            self._all_records = [
+                Path(item).name for item in self._all_records if len(item) > 0
+            ]
             return
-        print("Please wait patiently to let the reader find all records of the database from local storage...")
+        print(
+            "Please wait patiently to let the reader find all records of the database from local storage..."
+        )
         start = time.time()
         self._all_records = get_record_list_recursive3(self.db_dir, self.data_ext)
         print(f"Done in {time.time() - start:.3f} seconds!")
         record_list_fp.write_text("\n".join(self._all_records) + "\n")
 
-    def get_subject_id(self, rec:str) -> int:
+    def get_subject_id(self, rec: str) -> int:
         """
         Attach a `subject_id` to the record, in order to facilitate further uses
 
@@ -353,7 +379,7 @@ class PhysioNetDataBase(_DataBase):
         raise NotImplementedError
 
     @property
-    def database_info(self, detailed:bool=False) -> NoReturn:
+    def database_info(self, detailed: bool = False) -> NoReturn:
         """
         print the information about the database
 
@@ -363,7 +389,9 @@ class PhysioNetDataBase(_DataBase):
         """
         if not detailed:
             try:
-                short_description = self.df_all_db_info[self.df_all_db_info["db_name"]==self.db_name]["db_description"].values[0]
+                short_description = self.df_all_db_info[
+                    self.df_all_db_info["db_name"] == self.db_name
+                ]["db_description"].values[0]
                 print(short_description)
                 return
             except:
@@ -371,8 +399,10 @@ class PhysioNetDataBase(_DataBase):
         info = "\n".join(self.__doc__.split("\n")[1:])
         print(info)
 
-    def helper(self, items:Union[List[str],str,type(None)]=None, **kwargs) -> NoReturn:
-        """ finished, checked, to be improved,
+    def helper(
+        self, items: Union[List[str], str, type(None)] = None, **kwargs
+    ) -> NoReturn:
+        """finished, checked, to be improved,
 
         print corr. meanings of symbols belonging to `items`
 
@@ -387,7 +417,12 @@ class PhysioNetDataBase(_DataBase):
         [1] https://archive.physionet.org/physiobank/annotations.shtml
         """
         attrs = vars(self)
-        methods = [func for func in dir(self) if callable(getattr(self, func)) and not (func.startswith("__") and func.endswith("__"))]
+        methods = [
+            func
+            for func in dir(self)
+            if callable(getattr(self, func))
+            and not (func.startswith("__") and func.endswith("__"))
+        ]
 
         beat_annotations = deepcopy(WFDB_Beat_Annotations)
         non_beat_annotations = deepcopy(WFDB_Non_Beat_Annotations)
@@ -406,7 +441,13 @@ class PhysioNetDataBase(_DataBase):
         ]
 
         if items is None:
-            _items = ["attributes", "methods", "beat", "non-beat", "rhythm",]
+            _items = [
+                "attributes",
+                "methods",
+                "beat",
+                "non-beat",
+                "rhythm",
+            ]
         elif isinstance(items, str):
             _items = [items]
         else:
@@ -434,7 +475,7 @@ class PhysioNetDataBase(_DataBase):
             if k in summary_items:
                 continue
             for a in all_annotations:
-                if k in a.keys() or "("+k in a.keys():
+                if k in a.keys() or "(" + k in a.keys():
                     try:
                         print(f"{k.split('(')[1]} stands for {a[k]}")
                     except:
@@ -447,7 +488,9 @@ class PhysioNetDataBase(_DataBase):
         try:
             self._version = wfdb.io.record.get_version(self.db_name)
         except:
-            warnings.warn("Cannot get the version number from PhysioNet! Defaults to '1.0.0'")
+            warnings.warn(
+                "Cannot get the version number from PhysioNet! Defaults to '1.0.0'"
+            )
             self._version = "1.0.0"
         return self._version
 
@@ -465,21 +508,25 @@ class PhysioNetDataBase(_DataBase):
 
     @property
     def url_(self) -> str:
-        """ URL of the compressed database file """
+        """URL of the compressed database file"""
         domain = "https://physionet.org/static/published-projects/"
         punct = re.sub("[-]", "", punctuation)
-        db_desc = self.df_all_db_info[self.df_all_db_info["db_name"]==self.db_name].iloc[0]["db_description"]
+        db_desc = self.df_all_db_info[
+            self.df_all_db_info["db_name"] == self.db_name
+        ].iloc[0]["db_description"]
         db_desc = re.sub(f"[{punct}]+", "", db_desc).lower()
         db_desc = re.sub("[\s]+", "-", db_desc)
         url = posixpath.join(domain, f"{self.db_name}/{db_desc}-{self.version}.zip")
         if requests.head(url).headers.get("Content-Type") == "application/zip":
             return url
         else:
-            new_url = posixpath.join(wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/get-zip/{self.version}")
+            new_url = posixpath.join(
+                wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/get-zip/{self.version}"
+            )
             print(f"{url} is not available, try {new_url} instead")
             return None
 
-    def download(self, compressed:bool=False) -> NoReturn:
+    def download(self, compressed: bool = False) -> NoReturn:
         """
         download the database from Physionet
         """
@@ -488,7 +535,9 @@ class PhysioNetDataBase(_DataBase):
                 http_get(self.url_, self.db_dir, extract=True)
                 return
             else:
-                print("No compressed database available! Downloading the uncompressed version...")
+                print(
+                    "No compressed database available! Downloading the uncompressed version..."
+                )
         wfdb.dl_database(
             self.db_name,
             self.db_dir,
@@ -501,12 +550,15 @@ class NSRRDataBase(_DataBase):
     """
     https://sleepdata.org/
     """
-    def __init__(self,
-                 db_name:str,
-                 db_dir:str,
-                 working_dir:Optional[str]=None,
-                 verbose:int=2,
-                 **kwargs:Any) -> NoReturn:
+
+    def __init__(
+        self,
+        db_name: str,
+        db_dir: str,
+        working_dir: Optional[str] = None,
+        verbose: int = 2,
+        **kwargs: Any,
+    ) -> NoReturn:
         """
         Parameters
         ----------
@@ -520,29 +572,48 @@ class NSRRDataBase(_DataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name=db_name, db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(
+            db_name=db_name,
+            db_dir=db_dir,
+            working_dir=working_dir,
+            verbose=verbose,
+            **kwargs,
+        )
         self.fs = None
         self._all_records = None
         self.file_opened = None
-        
+
         all_dbs = [
-            ["shhs", "Multi-cohort study focused on sleep-disordered breathing and cardiovascular outcomes"],
+            [
+                "shhs",
+                "Multi-cohort study focused on sleep-disordered breathing and cardiovascular outcomes",
+            ],
             ["mesa", ""],
             ["oya", ""],
-            ["chat", "Multi-center randomized trial comparing early adenotonsillectomy to watchful waiting plus supportive care"],
-            ["heartbeat", "Multi-center Phase II randomized controlled trial that evaluates the effects of supplemental nocturnal oxygen or Positive Airway Pressure (PAP) therapy"],
+            [
+                "chat",
+                "Multi-center randomized trial comparing early adenotonsillectomy to watchful waiting plus supportive care",
+            ],
+            [
+                "heartbeat",
+                "Multi-center Phase II randomized controlled trial that evaluates the effects of supplemental nocturnal oxygen or Positive Airway Pressure (PAP) therapy",
+            ],
             # more to be added
         ]
         self.df_all_db_info = pd.DataFrame(
             {
                 "db_name": [item[0] for item in all_dbs],
-                "db_description": [item[1] for item in all_dbs]
+                "db_description": [item[1] for item in all_dbs],
             }
         )
         self.kwargs = kwargs
 
-    def safe_edf_file_operation(self, operation:str="close", full_file_path:Optional[Union[str,Path]]=None) -> NoReturn:
-        """ finished, checked,
+    def safe_edf_file_operation(
+        self,
+        operation: str = "close",
+        full_file_path: Optional[Union[str, Path]] = None,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -556,14 +627,14 @@ class NSRRDataBase(_DataBase):
             if self.file_opened is not None:
                 self.file_opened._close()
             self.file_opened = EdfReader(str(full_file_path))
-        elif operation =="close":
+        elif operation == "close":
             if self.file_opened is not None:
                 self.file_opened._close()
                 self.file_opened = None
         else:
             raise ValueError("Illegal operation")
 
-    def get_subject_id(self, rec:str) -> int:
+    def get_subject_id(self, rec: str) -> int:
         """
         Attach a `subject_id` to the record, in order to facilitate further uses
 
@@ -578,7 +649,7 @@ class NSRRDataBase(_DataBase):
         """
         raise NotImplementedError
 
-    def show_rec_stats(self, rec:str) -> NoReturn:
+    def show_rec_stats(self, rec: str) -> NoReturn:
         """
         print the statistics about the record `rec`
 
@@ -590,7 +661,7 @@ class NSRRDataBase(_DataBase):
         raise NotImplementedError
 
     @property
-    def database_info(self, detailed:bool=False) -> NoReturn:
+    def database_info(self, detailed: bool = False) -> NoReturn:
         """
         print the information about the database
 
@@ -605,21 +676,32 @@ class NSRRDataBase(_DataBase):
             #     "When": "",
             #     "Funding": ""
             # }
-            raw_info = self.df_all_db_info[self.df_all_db_info.db_name == self.db_name.lower()].db_description.values[0]
+            raw_info = self.df_all_db_info[
+                self.df_all_db_info.db_name == self.db_name.lower()
+            ].db_description.values[0]
             print(raw_info)
             return
         print(self.__doc__)
 
-    def helper(self, items:Union[List[str],str,type(None)]=None, **kwargs) -> NoReturn:
-        """
-        """
+    def helper(
+        self, items: Union[List[str], str, type(None)] = None, **kwargs
+    ) -> NoReturn:
+        """ """
         pp = pprint.PrettyPrinter(indent=4)
 
         attrs = vars(self)
-        methods = [func for func in dir(self) if callable(getattr(self, func)) and not (func.startswith("__") and func.endswith("__"))]
+        methods = [
+            func
+            for func in dir(self)
+            if callable(getattr(self, func))
+            and not (func.startswith("__") and func.endswith("__"))
+        ]
 
         if items is None:
-            _items = ["attributes", "methods", ]
+            _items = [
+                "attributes",
+                "methods",
+            ]
         elif isinstance(items, str):
             _items = [items]
         else:
@@ -636,15 +718,16 @@ class NSRRDataBase(_DataBase):
 
 
 class CPSCDataBase(_DataBase):
-    """
+    """ """
 
-    """
-    def __init__(self,
-                 db_name:str,
-                 db_dir:str,
-                 working_dir:Optional[str]=None,
-                 verbose:int=2,
-                 **kwargs:Any,) -> NoReturn:
+    def __init__(
+        self,
+        db_name: str,
+        db_dir: str,
+        working_dir: Optional[str] = None,
+        verbose: int = 2,
+        **kwargs: Any,
+    ) -> NoReturn:
         r"""
         Parameters
         ----------
@@ -658,14 +741,20 @@ class CPSCDataBase(_DataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name=db_name, db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(
+            db_name=db_name,
+            db_dir=db_dir,
+            working_dir=working_dir,
+            verbose=verbose,
+            **kwargs,
+        )
 
         self.fs = None
         self._all_records = None
-        
+
         self.kwargs = kwargs
 
-    def get_subject_id(self, rec:str) -> int:
+    def get_subject_id(self, rec: str) -> int:
         """
         Attach a `subject_id` to the record, in order to facilitate further uses
 
@@ -680,16 +769,25 @@ class CPSCDataBase(_DataBase):
         """
         raise NotImplementedError
 
-    def helper(self, items:Union[List[str],str,type(None)]=None, **kwargs) -> NoReturn:
-        """
-        """
+    def helper(
+        self, items: Union[List[str], str, type(None)] = None, **kwargs
+    ) -> NoReturn:
+        """ """
         pp = pprint.PrettyPrinter(indent=4)
-        
+
         attrs = vars(self)
-        methods = [func for func in dir(self) if callable(getattr(self, func)) and not (func.startswith("__") and func.endswith("__"))]
+        methods = [
+            func
+            for func in dir(self)
+            if callable(getattr(self, func))
+            and not (func.startswith("__") and func.endswith("__"))
+        ]
 
         if items is None:
-            _items = ["attributes", "methods", ]
+            _items = [
+                "attributes",
+                "methods",
+            ]
         elif isinstance(items, str):
             _items = [items]
         else:
@@ -715,10 +813,10 @@ DEFAULT_FIG_SIZE_PER_SEC = 4.8
 
 @dataclass
 class BeatAnn:
-    """
-    """
-    index : int
-    symbol : str
+    """ """
+
+    index: int
+    symbol: str
 
     @property
     def name(self) -> str:

@@ -9,13 +9,15 @@ from typing import Union, Optional, Any, List, Dict, Tuple, NoReturn
 from numbers import Real
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 from scipy.io import loadmat
 
 from ..aux_data.cinc2020_aux_data import (
-    dx_mapping_all, dx_mapping_scored, dx_mapping_unscored,
-    normalize_class, abbr_to_snomed_ct_code,
+    dx_mapping_all,
+    dx_mapping_scored,
+    dx_mapping_unscored,
+    normalize_class,
+    abbr_to_snomed_ct_code,
 )
 from ..base import CPSCDataBase, DEFAULT_FIG_SIZE_PER_SEC
 
@@ -76,12 +78,14 @@ class CPSC2018(CPSCDataBase):
     [2] https://physionetchallenges.github.io/2020/
     """
 
-    def __init__(self,
-                 db_dir:Union[str,Path],
-                 working_dir:Optional[Union[str,Path]]=None,
-                 verbose:int=2,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, to be improved,
+    def __init__(
+        self,
+        db_dir: Union[str, Path],
+        working_dir: Optional[Union[str, Path]] = None,
+        verbose: int = 2,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, to be improved,
 
         Parameters
         ----------
@@ -93,7 +97,13 @@ class CPSC2018(CPSCDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="cpsc2018", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(
+            db_name="cpsc2018",
+            db_dir=db_dir,
+            working_dir=working_dir,
+            verbose=verbose,
+            **kwargs,
+        )
 
         self.fs = 500
         self.spacing = 1000 / self.fs
@@ -103,9 +113,44 @@ class CPSC2018(CPSCDataBase):
         self._ls_rec()
 
         self.nb_records = 6877
-        self.all_leads = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6",]
-        self.all_diagnosis = ["N", "AF", "I-AVB", "LBBB", "RBBB", "PAC", "PVC", "STD", "STE",]
-        self.all_diagnosis_original = sorted(["Normal", "AF", "I-AVB", "LBBB", "RBBB", "PAC", "PVC", "STD", "STE",])
+        self.all_leads = [
+            "I",
+            "II",
+            "III",
+            "aVR",
+            "aVL",
+            "aVF",
+            "V1",
+            "V2",
+            "V3",
+            "V4",
+            "V5",
+            "V6",
+        ]
+        self.all_diagnosis = [
+            "N",
+            "AF",
+            "I-AVB",
+            "LBBB",
+            "RBBB",
+            "PAC",
+            "PVC",
+            "STD",
+            "STE",
+        ]
+        self.all_diagnosis_original = sorted(
+            [
+                "Normal",
+                "AF",
+                "I-AVB",
+                "LBBB",
+                "RBBB",
+                "PAC",
+                "PVC",
+                "STD",
+                "STE",
+            ]
+        )
         self.diagnosis_abbr_to_full = {
             "N": "Normal",
             "AF": "Atrial fibrillation",
@@ -134,15 +179,13 @@ class CPSC2018(CPSCDataBase):
         ]
 
     def _ls_rec(self) -> NoReturn:
-        """
-        """
+        """ """
         self._all_records = [
-            item.with_suffix("").name \
-                for item in self.db_dir.glob(f"*.{self.rec_ext}")
+            item.with_suffix("").name for item in self.db_dir.glob(f"*.{self.rec_ext}")
         ]
 
-    def get_subject_id(self, rec_no:Union[int,str]) -> int:
-        """ not finished,
+    def get_subject_id(self, rec_no: Union[int, str]) -> int:
+        """not finished,
 
         Parameters
         ----------
@@ -156,8 +199,13 @@ class CPSC2018(CPSCDataBase):
         """
         raise NotImplementedError
 
-    def load_data(self, rec_no:Union[int,str], data_format="channel_first", units:str="mV",) -> np.ndarray:
-        """ finished, checked,
+    def load_data(
+        self,
+        rec_no: Union[int, str],
+        data_format="channel_first",
+        units: str = "mV",
+    ) -> np.ndarray:
+        """finished, checked,
 
         Parameters
         ----------
@@ -168,14 +216,16 @@ class CPSC2018(CPSCDataBase):
             format of the ecg data, "channels_last" or "channels_first" (original)
         units: str, default "mV",
             units of the output signal, can also be "μV", with an alias of "uV"
-        
+
         Returns
         -------
         data: ndarray,
             the ecg data
         """
         if isinstance(rec_no, int):
-            assert rec_no in range(1, self.nb_records+1), f"rec_no should be in range(1,{self.nb_records+1})"
+            assert rec_no in range(
+                1, self.nb_records + 1
+            ), f"rec_no should be in range(1,{self.nb_records+1})"
             rec_no = f"A{rec_no:04d}"
         rec_fp = self.db_dir / f"{rec_no}.{self.rec_ext}"
         data = loadmat(str(rec_fp))
@@ -185,14 +235,21 @@ class CPSC2018(CPSCDataBase):
 
         if units.lower() == "mv" and self._auto_infer_units(data) != "mV":
             data /= 1000
-        elif units.lower() in ["uv", "μv",] and self._auto_infer_units(data) != "μV":
+        elif (
+            units.lower()
+            in [
+                "uv",
+                "μv",
+            ]
+            and self._auto_infer_units(data) != "μV"
+        ):
             data *= 1000
-        
+
         return data
 
-    def load_ann(self, rec_no:Union[int,str], keep_original:bool=True) -> dict:
-        """ finished, checked,
-        
+    def load_ann(self, rec_no: Union[int, str], keep_original: bool = True) -> dict:
+        """finished, checked,
+
         Parameters
         ----------
         rec_no: int or str,
@@ -201,56 +258,82 @@ class CPSC2018(CPSCDataBase):
         keep_original: bool, default True,
             keep the original annotations or not,
             mainly concerning "N" and "Normal" ("SNR" for the newer version)
-        
+
         Returns
         -------
         ann_dict, dict,
             the annotations with items: ref. self.ann_items
         """
         if isinstance(rec_no, int):
-            assert rec_no in range(1, self.nb_records+1), f"rec_no should be in range(1, {self.nb_records+1})"
+            assert rec_no in range(
+                1, self.nb_records + 1
+            ), f"rec_no should be in range(1, {self.nb_records+1})"
             rec_no = f"A{rec_no:04d}"
         ann_fp = self.db_dir / f"{rec_no}.{self.ann_ext}"
         header_data = ann_fp.read_text().splitlines()
 
         ann_dict = {}
-        ann_dict["rec_name"], ann_dict["nb_leads"], ann_dict["fs"], ann_dict["nb_samples"], ann_dict["datetime"], daytime \
-            = header_data[0].split(" ")
+        (
+            ann_dict["rec_name"],
+            ann_dict["nb_leads"],
+            ann_dict["fs"],
+            ann_dict["nb_samples"],
+            ann_dict["datetime"],
+            daytime,
+        ) = header_data[0].split(" ")
 
         ann_dict["nb_leads"] = int(ann_dict["nb_leads"])
         ann_dict["fs"] = int(ann_dict["fs"])
         ann_dict["nb_samples"] = int(ann_dict["nb_samples"])
-        ann_dict["datetime"] = datetime.strptime(" ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S")
-        try: # see NOTE. 1.
-            ann_dict["age"] = int([l for l in header_data if l.startswith("#Age")][0].split(": ")[-1])
+        ann_dict["datetime"] = datetime.strptime(
+            " ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S"
+        )
+        try:  # see NOTE. 1.
+            ann_dict["age"] = int(
+                [l for l in header_data if l.startswith("#Age")][0].split(": ")[-1]
+            )
         except:
             ann_dict["age"] = np.nan
         try:
-            ann_dict["sex"] = [l for l in header_data if l.startswith("#Sex")][0].split(": ")[-1]
+            ann_dict["sex"] = [l for l in header_data if l.startswith("#Sex")][0].split(
+                ": "
+            )[-1]
         except:
             ann_dict["sex"] = "Unknown"
         try:
-            ann_dict["medical_prescription"] = [l for l in header_data if l.startswith("#Rx")][0].split(": ")[-1]
+            ann_dict["medical_prescription"] = [
+                l for l in header_data if l.startswith("#Rx")
+            ][0].split(": ")[-1]
         except:
             ann_dict["medical_prescription"] = "Unknown"
         try:
-            ann_dict["history"] = [l for l in header_data if l.startswith("#Hx")][0].split(": ")[-1]
+            ann_dict["history"] = [l for l in header_data if l.startswith("#Hx")][
+                0
+            ].split(": ")[-1]
         except:
             ann_dict["history"] = "Unknown"
         try:
-            ann_dict["symptom_or_surgery"] = [l for l in header_data if l.startswith("#Sx")][0].split(": ")[-1]
+            ann_dict["symptom_or_surgery"] = [
+                l for l in header_data if l.startswith("#Sx")
+            ][0].split(": ")[-1]
         except:
             ann_dict["symptom_or_surgery"] = "Unknown"
 
-        l_Dx = [l for l in header_data if l.startswith("#Dx")][0].split(": ")[-1].split(",")
-        ann_dict["diagnosis"], ann_dict["diagnosis_scored"] = self._parse_diagnosis(l_Dx)
+        l_Dx = (
+            [l for l in header_data if l.startswith("#Dx")][0]
+            .split(": ")[-1]
+            .split(",")
+        )
+        ann_dict["diagnosis"], ann_dict["diagnosis_scored"] = self._parse_diagnosis(
+            l_Dx
+        )
 
         ann_dict["df_leads"] = self._parse_leads(header_data[1:13])
 
         return ann_dict
 
-    def _parse_diagnosis(self, l_Dx:List[str]) -> Tuple[dict, dict]:
-        """ finished, checked,
+    def _parse_diagnosis(self, l_Dx: List[str]) -> Tuple[dict, dict]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -270,22 +353,34 @@ class CPSC2018(CPSCDataBase):
             # selection = dx_mapping_all["SNOMED CT Code"].isin(diag_dict["diagnosis_code"])
             # diag_dict["diagnosis_abbr"] = dx_mapping_all[selection]["Abbreviation"].tolist()
             # diag_dict["diagnosis_fullname"] = dx_mapping_all[selection]["Dx"].tolist()
-            diag_dict["diagnosis_abbr"] = \
-                [ dx_mapping_all[dx_mapping_all["SNOMED CT Code"]==dc]["Abbreviation"].values[0] \
-                    for dc in diag_dict["diagnosis_code"] ]
-            diag_dict["diagnosis_fullname"] = \
-                [ dx_mapping_all[dx_mapping_all["SNOMED CT Code"]==dc]["Dx"].values[0] \
-                    for dc in diag_dict["diagnosis_code"] ]
-            scored_indices = np.isin(diag_dict["diagnosis_code"], dx_mapping_scored["SNOMED CT Code"].values)
-            diag_scored_dict["diagnosis_code"] = \
-                [ item for idx, item in enumerate(diag_dict["diagnosis_code"]) \
-                    if scored_indices[idx] ]
-            diag_scored_dict["diagnosis_abbr"] = \
-                [ item for idx, item in enumerate(diag_dict["diagnosis_abbr"]) \
-                    if scored_indices[idx] ]
-            diag_scored_dict["diagnosis_fullname"] = \
-                [ item for idx, item in enumerate(diag_dict["diagnosis_fullname"]) \
-                    if scored_indices[idx] ]
+            diag_dict["diagnosis_abbr"] = [
+                dx_mapping_all[dx_mapping_all["SNOMED CT Code"] == dc][
+                    "Abbreviation"
+                ].values[0]
+                for dc in diag_dict["diagnosis_code"]
+            ]
+            diag_dict["diagnosis_fullname"] = [
+                dx_mapping_all[dx_mapping_all["SNOMED CT Code"] == dc]["Dx"].values[0]
+                for dc in diag_dict["diagnosis_code"]
+            ]
+            scored_indices = np.isin(
+                diag_dict["diagnosis_code"], dx_mapping_scored["SNOMED CT Code"].values
+            )
+            diag_scored_dict["diagnosis_code"] = [
+                item
+                for idx, item in enumerate(diag_dict["diagnosis_code"])
+                if scored_indices[idx]
+            ]
+            diag_scored_dict["diagnosis_abbr"] = [
+                item
+                for idx, item in enumerate(diag_dict["diagnosis_abbr"])
+                if scored_indices[idx]
+            ]
+            diag_scored_dict["diagnosis_fullname"] = [
+                item
+                for idx, item in enumerate(diag_dict["diagnosis_fullname"])
+                if scored_indices[idx]
+            ]
         except:  # the old version, the Dx"s are abbreviations
             diag_dict["diagnosis_abbr"] = diag_dict["diagnosis_code"]
             selection = dx_mapping_all["Abbreviation"].isin(diag_dict["diagnosis_abbr"])
@@ -296,8 +391,8 @@ class CPSC2018(CPSCDataBase):
         #             ann_dict["diagnosis_abbr"] = ["N"]
         return diag_dict, diag_scored_dict
 
-    def _parse_leads(self, l_leads_data:List[str]) -> pd.DataFrame:
-        """ finished, checked,
+    def _parse_leads(self, l_leads_data: List[str]) -> pd.DataFrame:
+        """finished, checked,
 
         Parameters
         ----------
@@ -309,29 +404,65 @@ class CPSC2018(CPSCDataBase):
         df_leads: DataFrame,
             infomation of each leads in the format of DataFrame
         """
-        df_leads = pd.read_csv(io.StringIO("\n".join(l_leads_data)), delim_whitespace=True, header=None)
+        df_leads = pd.read_csv(
+            io.StringIO("\n".join(l_leads_data)), delim_whitespace=True, header=None
+        )
         df_leads.columns = [
-            "filename", "fmt+byte_offset", "adc_gain+units", "adc_res", "adc_zero",
-            "init_value", "checksum", "block_size", "lead_name",
+            "filename",
+            "fmt+byte_offset",
+            "adc_gain+units",
+            "adc_res",
+            "adc_zero",
+            "init_value",
+            "checksum",
+            "block_size",
+            "lead_name",
         ]
         df_leads["fmt"] = df_leads["fmt+byte_offset"].apply(lambda s: s.split("+")[0])
-        df_leads["byte_offset"] = df_leads["fmt+byte_offset"].apply(lambda s: s.split("+")[1])
-        df_leads["adc_gain"] = df_leads["adc_gain+units"].apply(lambda s: s.split("/")[0])
-        df_leads["adc_units"] = df_leads["adc_gain+units"].apply(lambda s: s.split("/")[1])
-        for k in ["byte_offset", "adc_gain", "adc_res", "adc_zero", "init_value", "checksum",]:
+        df_leads["byte_offset"] = df_leads["fmt+byte_offset"].apply(
+            lambda s: s.split("+")[1]
+        )
+        df_leads["adc_gain"] = df_leads["adc_gain+units"].apply(
+            lambda s: s.split("/")[0]
+        )
+        df_leads["adc_units"] = df_leads["adc_gain+units"].apply(
+            lambda s: s.split("/")[1]
+        )
+        for k in [
+            "byte_offset",
+            "adc_gain",
+            "adc_res",
+            "adc_zero",
+            "init_value",
+            "checksum",
+        ]:
             df_leads[k] = df_leads[k].apply(lambda s: int(s))
         df_leads["baseline"] = df_leads["adc_zero"]
-        df_leads = df_leads[[
-            "filename", "fmt", "byte_offset", "adc_gain", "adc_units", "adc_res", "adc_zero", "baseline",
-            "init_value", "checksum", "block_size", "lead_name",
-        ]]
+        df_leads = df_leads[
+            [
+                "filename",
+                "fmt",
+                "byte_offset",
+                "adc_gain",
+                "adc_units",
+                "adc_res",
+                "adc_zero",
+                "baseline",
+                "init_value",
+                "checksum",
+                "block_size",
+                "lead_name",
+            ]
+        ]
         df_leads.index = df_leads["lead_name"]
         df_leads.index.name = None
         return df_leads
 
-    def get_labels(self, rec_no:Union[int,str], keep_original:bool=False) -> List[str]:
-        """ finished, checked,
-        
+    def get_labels(
+        self, rec_no: Union[int, str], keep_original: bool = False
+    ) -> List[str]:
+        """finished, checked,
+
         Parameters
         ----------
         rec_no: int or str,
@@ -340,7 +471,7 @@ class CPSC2018(CPSCDataBase):
         keep_original: bool, default False,
             keep the original annotations or not,
             mainly concerning "N" and "Normal"
-        
+
         Returns
         -------
         labels, list,
@@ -350,9 +481,11 @@ class CPSC2018(CPSCDataBase):
         labels = ann_dict["diagnosis"]
         return labels
 
-    def get_diagnosis(self, rec_no:Union[int,str], full_name:bool=True) -> List[str]:
-        """ finished, checked,
-        
+    def get_diagnosis(
+        self, rec_no: Union[int, str], full_name: bool = True
+    ) -> List[str]:
+        """finished, checked,
+
         Parameters
         ----------
         rec_no: int or str,
@@ -360,7 +493,7 @@ class CPSC2018(CPSCDataBase):
             int only supported for the original CPSC2018 dataset
         full_name: bool, default True,
             full name of the diagnosis or short name of it (ref. self.diagnosis_abbr_to_full)
-        
+
         Returns
         -------
         diagonosis, list,
@@ -373,8 +506,10 @@ class CPSC2018(CPSCDataBase):
             diagonosis = diagonosis["diagnosis_abbr"]
         return diagonosis
 
-    def get_subject_info(self, rec_no:Union[int,str], items:Optional[List[str]]=None) -> dict:
-        """ finished, checked,
+    def get_subject_info(
+        self, rec_no: Union[int, str], items: Optional[List[str]] = None
+    ) -> dict:
+        """finished, checked,
 
         Parameters
         ----------
@@ -383,14 +518,18 @@ class CPSC2018(CPSCDataBase):
             int only supported for the original CPSC2018 dataset
         items: list of str, optional,
             items of the subject information (e.g. sex, age, etc.)
-        
+
         Returns
         -------
         subject_info, dict,
         """
         if items is None or len(items) == 0:
             info_items = [
-                "age", "sex", "medical_prescription", "history", "symptom_or_surgery",
+                "age",
+                "sex",
+                "medical_prescription",
+                "history",
+                "symptom_or_surgery",
             ]
         else:
             info_items = items
@@ -399,13 +538,15 @@ class CPSC2018(CPSCDataBase):
 
         return subject_info
 
-    def save_challenge_predictions(self,
-                                   rec_no:Union[int,str],
-                                   output_dir:Union[str,Path],
-                                   scores:List[Real],
-                                   labels:List[int],
-                                   classes:List[str],) -> NoReturn:
-        """ finished, checked,
+    def save_challenge_predictions(
+        self,
+        rec_no: Union[int, str],
+        output_dir: Union[str, Path],
+        scores: List[Real],
+        labels: List[int],
+        classes: List[str],
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -423,7 +564,9 @@ class CPSC2018(CPSCDataBase):
         """
         if isinstance(rec_no, str):
             rec_no = int(rec_no[1:])
-        assert rec_no in range(1, self.nb_records+1), f"rec_no should be in range(1, {self.nb_records+1})"
+        assert rec_no in range(
+            1, self.nb_records + 1
+        ), f"rec_no should be in range(1, {self.nb_records+1})"
         recording = self._all_records[rec_no]
         new_file = recording + ".csv"
         output_file = Path(output_dir) / new_file
@@ -434,10 +577,18 @@ class CPSC2018(CPSCDataBase):
         label_string = ",".join(str(i) for i in labels)
         score_string = ",".join(str(i) for i in scores)
 
-        output_file.write_text("\n".join([recording_string, class_string, label_string, score_string, ""]))
+        output_file.write_text(
+            "\n".join([recording_string, class_string, label_string, score_string, ""])
+        )
 
-    def plot(self, rec_no:Union[int,str], ticks_granularity:int=0, leads:Optional[Union[str, List[str]]]=None, **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def plot(
+        self,
+        rec_no: Union[int, str],
+        ticks_granularity: int = 0,
+        leads: Optional[Union[str, List[str]]] = None,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -453,7 +604,9 @@ class CPSC2018(CPSCDataBase):
         """
         if isinstance(rec_no, str):
             rec_no = int(rec_no[1:])
-        assert rec_no in range(1, self.nb_records+1), f"rec_no should be in range(1, {self.nb_records+1})"
+        assert rec_no in range(
+            1, self.nb_records + 1
+        ), f"rec_no should be in range(1, {self.nb_records+1})"
         if "plt" not in dir():
             import matplotlib.pyplot as plt
         if leads is None or leads == "all":
@@ -462,7 +615,9 @@ class CPSC2018(CPSCDataBase):
 
         lead_list = self.load_ann(rec_no)["df_leads"]["lead_name"].tolist()
         lead_indices = [lead_list.index(l) for l in leads]
-        data = self.load_data(rec_no, data_format="channel_first", units="μV")[lead_indices]
+        data = self.load_data(rec_no, data_format="channel_first", units="μV")[
+            lead_indices
+        ]
         y_ranges = np.max(np.abs(data), axis=1) + 100
 
         diag = self.get_diagnosis(rec_no, full_name=False)
@@ -473,18 +628,30 @@ class CPSC2018(CPSCDataBase):
         duration = len(t) / self.fs
         fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * duration))
         fig_sz_h = 6 * y_ranges / 1500
-        fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
+        fig, axes = plt.subplots(
+            nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h))
+        )
         for idx in range(nb_leads):
-            axes[idx].plot(t, data[idx], color="black", linewidth="2.0", label=f"lead - {leads[idx]}")
+            axes[idx].plot(
+                t,
+                data[idx],
+                color="black",
+                linewidth="2.0",
+                label=f"lead - {leads[idx]}",
+            )
             axes[idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
             if ticks_granularity >= 1:
                 axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                 axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
+                axes[idx].grid(
+                    which="major", linestyle="-", linewidth="0.5", color="red"
+                )
             if ticks_granularity >= 2:
                 axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                 axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
+                axes[idx].grid(
+                    which="minor", linestyle=":", linewidth="0.5", color="black"
+                )
             axes[idx].plot([], [], " ", label=f"labels - {','.join(diag)}")
             axes[idx].legend(loc="upper left")
             axes[idx].set_xlim(t[0], t[-1])
@@ -507,6 +674,5 @@ class CPSC2018(CPSCDataBase):
 
 
 def compute_metrics():
-    """
-    """
+    """ """
     raise NotImplementedError

@@ -8,7 +8,7 @@ from typing import Union, Optional, Tuple, Sequence, Dict, List, NoReturn, Any
 from numbers import Real, Number
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
+
 # try:
 #     from tqdm.auto import tqdm
 # except ModuleNotFoundError:
@@ -28,13 +28,17 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     from pathlib import Path
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.trainer import BaseTrainer
 from torch_ecg.utils.misc import (
-    init_logger, get_date_str, dict_to_str, str2bool,
+    init_logger,
+    get_date_str,
+    dict_to_str,
+    str2bool,
     mask_to_intervals,
 )
 
@@ -62,19 +66,21 @@ __all__ = [
 
 
 class CPSC2019Trainer(BaseTrainer):
-    """
-    """
+    """ """
+
     __DEBUG__ = True
     __name__ = "CPSC2019Trainer"
 
-    def __init__(self,
-                 model:nn.Module,
-                 model_config:dict,
-                 train_config:dict,
-                 device:Optional[torch.device]=None,
-                 lazy:bool=True,
-                 **kwargs:Any,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        model: nn.Module,
+        model_config: dict,
+        train_config: dict,
+        device: Optional[torch.device] = None,
+        lazy: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -107,9 +113,13 @@ class CPSC2019Trainer(BaseTrainer):
         """
         super().__init__(model, CPSC2019, model_config, train_config, device, lazy)
 
-    def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
-        """ finished, checked,
-        
+    def _setup_dataloaders(
+        self,
+        train_dataset: Optional[Dataset] = None,
+        val_dataset: Optional[Dataset] = None,
+    ) -> NoReturn:
+        """finished, checked,
+
         setup the dataloaders for training and validation
 
         Parameters
@@ -120,16 +130,20 @@ class CPSC2019Trainer(BaseTrainer):
             the validation dataset
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
+            train_dataset = self.dataset_cls(
+                config=self.train_config, training=True, lazy=False
+            )
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
+            val_dataset = self.dataset_cls(
+                config=self.train_config, training=False, lazy=False
+            )
 
-         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+        # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         num_workers = 4
 
         self.train_loader = DataLoader(
@@ -164,7 +178,9 @@ class CPSC2019Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(self, *data:Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(
+        self, *data: Tuple[torch.Tensor, torch.Tensor]
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
 
         Parameters
@@ -188,9 +204,8 @@ class CPSC2019Trainer(BaseTrainer):
         return preds, labels
 
     @torch.no_grad()
-    def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
-        """
-        """
+    def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
+        """ """
         self.model.eval()
 
         if self.train_config.get("recover_length", False):
@@ -204,14 +219,26 @@ class CPSC2019Trainer(BaseTrainer):
         for signals, labels in data_loader:
             signals = signals.to(device=self.device, dtype=self.dtype)
             labels = labels.numpy()
-            labels = [mask_to_intervals(item, 1) for item in labels]  # intervals of qrs complexes
-            labels = [ # to indices of rpeaks in the original signal sequence
-                (reduction * np.array([itv[0]+itv[1] for itv in item]) / 2).astype(int) \
-                    for item in labels
+            labels = [
+                mask_to_intervals(item, 1) for item in labels
+            ]  # intervals of qrs complexes
+            labels = [  # to indices of rpeaks in the original signal sequence
+                (reduction * np.array([itv[0] + itv[1] for itv in item]) / 2).astype(
+                    int
+                )
+                for item in labels
             ]
             labels = [
-                item[np.where((item>=self.train_config.skip_dist) & (item<self.train_config.input_len-self.train_config.skip_dist))[0]] \
-                    for item in labels
+                item[
+                    np.where(
+                        (item >= self.train_config.skip_dist)
+                        & (
+                            item
+                            < self.train_config.input_len - self.train_config.skip_dist
+                        )
+                    )[0]
+                ]
+                for item in labels
             ]
             all_rpeak_labels += labels
 
@@ -220,9 +247,9 @@ class CPSC2019Trainer(BaseTrainer):
             model_output = self._model.inference(
                 signals,
                 bin_pred_thr=0.5,
-                duration_thr=4*16,
+                duration_thr=4 * 16,
                 dist_thr=200,
-                correction=False
+                correction=False,
             )
             all_rpeak_preds += model_output.rpeak_indices
 
@@ -230,7 +257,7 @@ class CPSC2019Trainer(BaseTrainer):
             rpeaks_truths=all_rpeak_labels,
             rpeaks_preds=all_rpeak_preds,
             fs=self.train_config.fs,
-            thr=self.train_config.bias_thr/self.train_config.fs,
+            thr=self.train_config.bias_thr / self.train_config.fs,
         )
         eval_res = dict(
             qrs_score=qrs_score,
@@ -251,8 +278,7 @@ class CPSC2019Trainer(BaseTrainer):
 
     @property
     def extra_required_train_config_fields(self) -> List[str]:
-        """
-        """
+        """ """
         return []
 
     @property
@@ -263,61 +289,84 @@ class CPSC2019Trainer(BaseTrainer):
         return super().extra_log_suffix() + f"_{self.model_config.cnn.name}"
 
 
-
 def get_args(**kwargs):
-    """
-    """
+    """ """
     cfg = deepcopy(kwargs)
     parser = argparse.ArgumentParser(
         description="Train the Model on CINC2019",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     # parser.add_argument(
     #     "-l", "--learning-rate",
     #     metavar="LR", type=float, nargs="?", default=0.001,
     #     help="Learning rate",
     #     dest="learning_rate")
     parser.add_argument(
-        "-b", "--batch-size",
-        type=int, default=128,
+        "-b",
+        "--batch-size",
+        type=int,
+        default=128,
         help="the batch size for training",
-        dest="batch_size")
+        dest="batch_size",
+    )
     parser.add_argument(
-        "-m", "--model-name",
-        type=str, default="crnn",
+        "-m",
+        "--model-name",
+        type=str,
+        default="crnn",
         help="name of the model to train, `cnn` or `crnn`",
-        dest="model_name")
+        dest="model_name",
+    )
     parser.add_argument(
-        "-c", "--cnn-name",
-        type=str, default="multi_scopic",
+        "-c",
+        "--cnn-name",
+        type=str,
+        default="multi_scopic",
         help="choice of cnn feature extractor",
-        dest="cnn_name")
+        dest="cnn_name",
+    )
     parser.add_argument(
-        "-r", "--rnn-name",
-        type=str, default="lstm",
+        "-r",
+        "--rnn-name",
+        type=str,
+        default="lstm",
         help="choice of rnn structures",
-        dest="rnn_name")
+        dest="rnn_name",
+    )
     parser.add_argument(
-        "-a", "--attn-name",
-        type=str, default="se",
+        "-a",
+        "--attn-name",
+        type=str,
+        default="se",
         help="choice of attention block",
-        dest="attn_name")
+        dest="attn_name",
+    )
     parser.add_argument(
-        "--keep-checkpoint-max", type=int, default=50,
+        "--keep-checkpoint-max",
+        type=int,
+        default=50,
         help="maximum number of checkpoints to keep. If set 0, all checkpoints will be kept",
-        dest="keep_checkpoint_max")
+        dest="keep_checkpoint_max",
+    )
     parser.add_argument(
-        "--optimizer", type=str, default="adam",
+        "--optimizer",
+        type=str,
+        default="adam",
         help="training optimizer",
-        dest="train_optimizer")
+        dest="train_optimizer",
+    )
     parser.add_argument(
-        "--debug", type=str2bool, default=False,
+        "--debug",
+        type=str2bool,
+        default=False,
         help="train with more debugging information",
-        dest="debug")
-    
+        dest="debug",
+    )
+
     args = vars(parser.parse_args())
 
     cfg.update(args)
-    
+
     return CFG(cfg)
 
 

@@ -16,7 +16,10 @@ from .base import Augmenter
 from ..utils.misc import ReprMixin
 
 
-__all__ = ["StretchCompress", "StretchCompressOffline",]
+__all__ = [
+    "StretchCompress",
+    "StretchCompressOffline",
+]
 
 
 class StretchCompress(Augmenter):
@@ -33,10 +36,13 @@ class StretchCompress(Augmenter):
     sig, lb, mask = sc(sig, lb, mask)
     ```
     """
+
     __name__ = "StretchCompress"
 
-    def __init__(self, ratio:Real=6, prob:float=0.5, inplace:bool=True, **kwargs: Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self, ratio: Real = 6, prob: float = 0.5, inplace: bool = True, **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -57,10 +63,14 @@ class StretchCompress(Augmenter):
         self.ratio = ratio
         if self.ratio > 1:
             self.ratio = self.ratio / 100
-        assert 0<= self.ratio <= 1, "Ratio must be between 0 and 1, or between 0 and 100"
+        assert (
+            0 <= self.ratio <= 1
+        ), "Ratio must be between 0 and 1, or between 0 and 100"
 
-    def forward(self, sig:Tensor, *labels:Optional[Sequence[Tensor]], **kwargs:Any) -> Tuple[Tensor, ...]:
-        """ finished, checked,
+    def forward(
+        self, sig: Tensor, *labels: Optional[Sequence[Tensor]], **kwargs: Any
+    ) -> Tuple[Tensor, ...]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -92,16 +102,20 @@ class StretchCompress(Augmenter):
             if labels[idx].ndim < 3:
                 label_len.append(None)
                 continue
-            labels[idx] = labels[idx].permute(0, 2, 1)  # (batch, label_len, n_classes) -> (batch, n_classes, label_len)
+            labels[idx] = labels[idx].permute(
+                0, 2, 1
+            )  # (batch, label_len, n_classes) -> (batch, n_classes, label_len)
             ll = labels[idx].shape[-1]
             if ll != siglen:
-                labels[idx] = F.interpolate(labels[idx], size=(siglen,), mode="linear", align_corners=True)
+                labels[idx] = F.interpolate(
+                    labels[idx], size=(siglen,), mode="linear", align_corners=True
+                )
             label_len.append(ll)
         for batch_idx in self.get_indices(prob=self.prob, pop_size=batch):
-            sign = choice([-1,1])
+            sign = choice([-1, 1])
             ratio = self._sample_ratio()
             # print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")
-            new_len = int(round((1+sign*ratio) * siglen))
+            new_len = int(round((1 + sign * ratio) * siglen))
             diff_len = abs(new_len - siglen)
             half_diff_len = diff_len // 2
             if sign > 0:  # stretch and cut
@@ -110,7 +124,7 @@ class StretchCompress(Augmenter):
                     size=new_len,
                     mode="linear",
                     align_corners=True,
-                )[..., half_diff_len: siglen+half_diff_len].squeeze(0)
+                )[..., half_diff_len : siglen + half_diff_len].squeeze(0)
                 for idx in range(n_labels):
                     if labels[idx].ndim < 3:
                         continue
@@ -119,7 +133,7 @@ class StretchCompress(Augmenter):
                         size=new_len,
                         mode="linear",
                         align_corners=True,
-                    )[..., half_diff_len: siglen+half_diff_len].squeeze(0)
+                    )[..., half_diff_len : siglen + half_diff_len].squeeze(0)
             else:  # compress and pad
                 sig[batch_idx, ...] = F.pad(
                     F.interpolate(
@@ -128,7 +142,7 @@ class StretchCompress(Augmenter):
                         mode="linear",
                         align_corners=True,
                     ),
-                    pad=(half_diff_len, diff_len-half_diff_len),
+                    pad=(half_diff_len, diff_len - half_diff_len),
                     mode="constant",
                     value=0.0,
                 ).squeeze(0)
@@ -142,7 +156,7 @@ class StretchCompress(Augmenter):
                             mode="linear",
                             align_corners=True,
                         ),
-                        pad=(half_diff_len, diff_len-half_diff_len),
+                        pad=(half_diff_len, diff_len - half_diff_len),
                         mode="constant",
                         value=0.0,
                     ).squeeze(0)
@@ -150,17 +164,24 @@ class StretchCompress(Augmenter):
             if labels[idx].ndim < 3:
                 continue
             if ll != siglen:
-                labels[idx] = F.interpolate(label, size=(ll,), mode="linear", align_corners=True)
-            labels[idx] = labels[idx].permute(0, 2, 1)  # (batch, n_classes, label_len) -> (batch, label_len, n_classes)
+                labels[idx] = F.interpolate(
+                    label, size=(ll,), mode="linear", align_corners=True
+                )
+            labels[idx] = labels[idx].permute(
+                0, 2, 1
+            )  # (batch, n_classes, label_len) -> (batch, label_len, n_classes)
         return (sig, *labels)
 
     def _sample_ratio(self) -> float:
-        """
-        """
-        return np.clip(np.random.normal(self.ratio, 0.382*self.ratio), 0, 2*self.ratio)
+        """ """
+        return np.clip(
+            np.random.normal(self.ratio, 0.382 * self.ratio), 0, 2 * self.ratio
+        )
 
-    def _generate(self, sig:Tensor, *labels:Optional[Sequence[Tensor]]) -> Union[Tuple[Tensor,...],Tensor]:
-        """ NOT finished, NOT checked,
+    def _generate(
+        self, sig: Tensor, *labels: Optional[Sequence[Tensor]]
+    ) -> Union[Tuple[Tensor, ...], Tensor]:
+        """NOT finished, NOT checked,
 
         parallel version of `self.generate`, NOT tested yet!
 
@@ -191,8 +212,11 @@ class StretchCompress(Augmenter):
                 pool.starmap(
                     func=_stretch_compress_one_batch_element,
                     iterable=[
-                        (self.ratio, sig[batch_idx, ...].unsqueeze(0),) \
-                            for batch_idx in indices
+                        (
+                            self.ratio,
+                            sig[batch_idx, ...].unsqueeze(0),
+                        )
+                        for batch_idx in indices
                     ],
                 ),
                 dtype=sig.dtype,
@@ -201,13 +225,18 @@ class StretchCompress(Augmenter):
         return sig
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        """
-        return ["ratio", "prob", "inplace",] + super().extra_repr_keys()
+        """ """
+        return [
+            "ratio",
+            "prob",
+            "inplace",
+        ] + super().extra_repr_keys()
 
 
-def _stretch_compress_one_batch_element(ratio:Real, sig:Tensor, *labels:Sequence[Tensor]) -> Tensor:
-    """ finished, NOT checked,
+def _stretch_compress_one_batch_element(
+    ratio: Real, sig: Tensor, *labels: Sequence[Tensor]
+) -> Tensor:
+    """finished, NOT checked,
 
     Parameters
     ----------
@@ -231,31 +260,32 @@ def _stretch_compress_one_batch_element(ratio:Real, sig:Tensor, *labels:Sequence
     label_len = []
     n_labels = len(labels)
     for idx in range(n_labels):
-        labels[idx] = labels[idx].permute(0, 2, 1)  # (1, label_len, n_classes) -> (1, n_classes, label_len)
+        labels[idx] = labels[idx].permute(
+            0, 2, 1
+        )  # (1, label_len, n_classes) -> (1, n_classes, label_len)
         ll = labels[idx].shape[-1]
         if ll != siglen:
-            labels[idx] = F.interpolate(labels[idx], size=(siglen,), mode="linear", align_corners=True)
+            labels[idx] = F.interpolate(
+                labels[idx], size=(siglen,), mode="linear", align_corners=True
+            )
         label_len.append(ll)
-    sign = choice([-1,1])
-    ratio = np.clip(np.random.normal(ratio, 0.382*ratio), 0, 2*ratio)
+    sign = choice([-1, 1])
+    ratio = np.clip(np.random.normal(ratio, 0.382 * ratio), 0, 2 * ratio)
     # print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")
-    new_len = int(round((1+sign*ratio) * siglen))
+    new_len = int(round((1 + sign * ratio) * siglen))
     diff_len = abs(new_len - siglen)
     half_diff_len = diff_len // 2
     if sign > 0:  # stretch and cut
-        sig = F.interpolate(
-            sig,
-            size=new_len,
-            mode="linear",
-            align_corners=True,
-        )[..., half_diff_len: siglen+half_diff_len].squeeze(0)
+        sig = F.interpolate(sig, size=new_len, mode="linear", align_corners=True,)[
+            ..., half_diff_len : siglen + half_diff_len
+        ].squeeze(0)
         for idx in range(n_labels):
             labels[idx] = F.interpolate(
                 labels[idx],
                 size=new_len,
                 mode="linear",
                 align_corners=True,
-            )[..., half_diff_len: siglen+half_diff_len].squeeze(0)
+            )[..., half_diff_len : siglen + half_diff_len].squeeze(0)
     else:  # compress and pad
         sig = F.pad(
             F.interpolate(
@@ -264,7 +294,7 @@ def _stretch_compress_one_batch_element(ratio:Real, sig:Tensor, *labels:Sequence
                 mode="linear",
                 align_corners=True,
             ),
-            pad=(half_diff_len, diff_len-half_diff_len),
+            pad=(half_diff_len, diff_len - half_diff_len),
             mode="constant",
             value=0.0,
         ).squeeze(0)
@@ -276,14 +306,18 @@ def _stretch_compress_one_batch_element(ratio:Real, sig:Tensor, *labels:Sequence
                     mode="linear",
                     align_corners=True,
                 ),
-                pad=(half_diff_len, diff_len-half_diff_len),
+                pad=(half_diff_len, diff_len - half_diff_len),
                 mode="constant",
                 value=0.0,
             ).squeeze(0)
     for idx, (label, ll) in enumerate(zip(labels, label_len)):
         if ll != siglen:
-            labels[idx] = F.interpolate(label, size=(ll,), mode="linear", align_corners=True)
-        labels[idx] = labels[idx].permute(1, 0)  # (n_classes, label_len) -> (label_len, n_classes)
+            labels[idx] = F.interpolate(
+                label, size=(ll,), mode="linear", align_corners=True
+            )
+        labels[idx] = labels[idx].permute(
+            1, 0
+        )  # (n_classes, label_len) -> (label_len, n_classes)
     if len(labels) > 0:
         return (sig,) + tuple(labels)
     return sig
@@ -305,14 +339,17 @@ class StretchCompressOffline(ReprMixin):
     segments = sco(600, sig, labels, masks, critical_points=[10000,30000])
     ```
     """
+
     __name__ = "StretchCompressOffline"
 
-    def __init__(self,
-                 ratio:Real=6,
-                 prob:float=0.5,
-                 overlap:float=0.5,
-                 critical_overlap:float=0.85) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        ratio: Real = 6,
+        prob: float = 0.5,
+        overlap: float = 0.5,
+        critical_overlap: float = 0.85,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -332,18 +369,26 @@ class StretchCompressOffline(ReprMixin):
         self.ratio = ratio
         if self.ratio > 1:
             self.ratio = self.ratio / 100
-        assert 0<= self.ratio <= 1, "Ratio must be between 0 and 1, or between 0 and 100"
+        assert (
+            0 <= self.ratio <= 1
+        ), "Ratio must be between 0 and 1, or between 0 and 100"
         self.overlap = overlap
-        assert 0<= self.overlap < 1, "Overlap ratio must be between 0 and 1 (1 not included)"
+        assert (
+            0 <= self.overlap < 1
+        ), "Overlap ratio must be between 0 and 1 (1 not included)"
         self.critical_overlap = critical_overlap
-        assert 0<= self.critical_overlap < 1, "Critical overlap ratio must be between 0 and 1 (1 not included)"
+        assert (
+            0 <= self.critical_overlap < 1
+        ), "Critical overlap ratio must be between 0 and 1 (1 not included)"
 
-    def generate(self,
-                 seglen:int,
-                 sig:np.ndarray,
-                 *labels:Sequence[np.ndarray],
-                 critical_points:Optional[Sequence[int]]=None) -> List[Tuple[Union[np.ndarray,int],...]]:
-        """ finished, checked,
+    def generate(
+        self,
+        seglen: int,
+        sig: np.ndarray,
+        *labels: Sequence[np.ndarray],
+        critical_points: Optional[Sequence[int]] = None,
+    ) -> List[Tuple[Union[np.ndarray, int], ...]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -368,7 +413,7 @@ class StretchCompressOffline(ReprMixin):
         siglen = sig.shape[1]
         forward_len = int(round(seglen - seglen * self.overlap))
         critical_forward_len = int(round(seglen - seglen * self.critical_overlap))
-        critical_forward_len = [critical_forward_len//4, critical_forward_len]
+        critical_forward_len = [critical_forward_len // 4, critical_forward_len]
         # print(forward_len, critical_forward_len)
 
         # skip those records that are too short
@@ -378,37 +423,51 @@ class StretchCompressOffline(ReprMixin):
         segments = []
 
         # ordinary segments with constant forward_len
-        for idx in range((siglen-seglen)//forward_len + 1):
+        for idx in range((siglen - seglen) // forward_len + 1):
             start_idx = idx * forward_len
             new_seg = self.__generate_segment(
-                seglen, sig, *labels, start_idx=start_idx,
+                seglen,
+                sig,
+                *labels,
+                start_idx=start_idx,
             )
             segments.append(new_seg)
         # the tail segment
-        if (siglen-seglen)%forward_len != 0:
+        if (siglen - seglen) % forward_len != 0:
             new_seg = self.__generate_segment(
-                seglen, sig, *labels, end_idx=siglen,
+                seglen,
+                sig,
+                *labels,
+                end_idx=siglen,
             )
             segments.append(new_seg)
 
         # special segments around critical_points with random forward_len in critical_forward_len
         for cp in critical_points or []:
-            start_idx = max(0, cp - seglen + randint(critical_forward_len[0], critical_forward_len[1]))
+            start_idx = max(
+                0,
+                cp - seglen + randint(critical_forward_len[0], critical_forward_len[1]),
+            )
             while start_idx <= min(cp - critical_forward_len[1], siglen - seglen):
                 new_seg = self.__generate_segment(
-                    seglen, sig, *labels, start_idx=start_idx,
+                    seglen,
+                    sig,
+                    *labels,
+                    start_idx=start_idx,
                 )
                 segments.append(new_seg)
                 start_idx += randint(critical_forward_len[0], critical_forward_len[1])
         return segments
 
-    def __generate_segment(self,
-                           seglen:int,
-                           sig:np.ndarray,
-                           *labels:Sequence[np.ndarray],
-                           start_idx:Optional[int]=None,
-                           end_idx:Optional[int]=None,) -> Tuple[Union[np.ndarray,int], ...]:
-        """ finished, checked,
+    def __generate_segment(
+        self,
+        seglen: int,
+        sig: np.ndarray,
+        *labels: Sequence[np.ndarray],
+        start_idx: Optional[int] = None,
+        end_idx: Optional[int] = None,
+    ) -> Tuple[Union[np.ndarray, int], ...]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -433,15 +492,16 @@ class StretchCompressOffline(ReprMixin):
         tuple of generated segment,
         consists of (seg, label1, label2, ..., start_idx, end_idx)
         """
-        assert not all([start_idx is None, end_idx is None]), \
-            "at least one of `start_idx` and `end_idx` should be set"
+        assert not all(
+            [start_idx is None, end_idx is None]
+        ), "at least one of `start_idx` and `end_idx` should be set"
 
         siglen = sig.shape[1]
         ratio = self._sample_ratio()
         aug_labels = []
         if ratio != 0:
-            sign = choice([-1,1])
-            new_len = int(round((1+sign*ratio) * seglen))
+            sign = choice([-1, 1])
+            new_len = int(round((1 + sign * ratio) * seglen))
             if start_idx is not None:
                 end_idx = start_idx + new_len
             else:
@@ -456,10 +516,15 @@ class StretchCompressOffline(ReprMixin):
                 dtype = lb.dtype
                 aug_labels.append(
                     F.interpolate(
-                        torch.from_numpy(lb[start_idx:end_idx, ...].T.astype(np.float32)).unsqueeze(0),
+                        torch.from_numpy(
+                            lb[start_idx:end_idx, ...].T.astype(np.float32)
+                        ).unsqueeze(0),
                         size=seglen,
                         mode="nearest",
-                    ).squeeze(0).numpy().T.astype(dtype)
+                    )
+                    .squeeze(0)
+                    .numpy()
+                    .T.astype(dtype)
                 )
         else:
             if start_idx is not None:
@@ -478,24 +543,33 @@ class StretchCompressOffline(ReprMixin):
         return (aug_seg,) + tuple(aug_labels) + (start_idx, end_idx)
 
     def _sample_ratio(self) -> float:
-        """ finished, checked,
-        """
+        """finished, checked,"""
         if np.random.uniform() >= self.prob:
             return 0
         else:
-            return np.clip(np.random.normal(self.ratio, 0.382*self.ratio), 0.01*self.ratio, 2*self.ratio)
+            return np.clip(
+                np.random.normal(self.ratio, 0.382 * self.ratio),
+                0.01 * self.ratio,
+                2 * self.ratio,
+            )
 
-    def __call__(self,
-                 seglen:int,
-                 sig:np.ndarray,
-                 *labels:Sequence[np.ndarray],
-                 critical_points:Optional[Sequence[int]]=None) -> List[Tuple[np.ndarray,...]]:
+    def __call__(
+        self,
+        seglen: int,
+        sig: np.ndarray,
+        *labels: Sequence[np.ndarray],
+        critical_points: Optional[Sequence[int]] = None,
+    ) -> List[Tuple[np.ndarray, ...]]:
         """
         alias of `self.generate`
         """
         return self.generate(seglen, sig, *labels, critical_points=critical_points)
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        """
-        return super().extra_repr_keys() + ["ratio", "prob", "overlap", "critical_overlap",]
+        """ """
+        return super().extra_repr_keys() + [
+            "ratio",
+            "prob",
+            "overlap",
+            "critical_overlap",
+        ]

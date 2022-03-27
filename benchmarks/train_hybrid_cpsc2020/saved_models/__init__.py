@@ -7,7 +7,8 @@ import torch
 from torch import nn
 
 from train.train_crnn_cpsc2020.model import (
-    ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020,
+    ECG_CRNN_CPSC2020,
+    ECG_SEQ_LAB_NET_CPSC2020,
 )
 from train.train_crnn_cpsc2020.cfg import ModelCfg
 
@@ -20,8 +21,8 @@ __all__ = [
 ]
 
 
-def load_model(which:str="both") -> Union[nn.Module, Tuple[nn.Module,...]]:
-    """ finished, checked,
+def load_model(which: str = "both") -> Union[nn.Module, Tuple[nn.Module, ...]]:
+    """finished, checked,
 
     Parameters
     ----------
@@ -39,8 +40,7 @@ def load_model(which:str="both") -> Union[nn.Module, Tuple[nn.Module,...]]:
     _which = which.lower()
     if _which in ["both", "crnn"]:
         ckpt = torch.load(
-            os.path.join(_BASE_DIR, "crnn_10s.pth.tar"),
-            map_location=device
+            os.path.join(_BASE_DIR, "crnn_10s.pth.tar"), map_location=device
         )
         # crnn_cfg = ModelCfg.crnn
         crnn_cfg = ckpt["model_config"]
@@ -57,8 +57,7 @@ def load_model(which:str="both") -> Union[nn.Module, Tuple[nn.Module,...]]:
             return crnn_model
     if _which in ["both", "seq_lab"]:
         ckpt = torch.load(
-            os.path.join(_BASE_DIR, "seq_lab_10s.pth.tar"),
-            map_location=device
+            os.path.join(_BASE_DIR, "seq_lab_10s.pth.tar"), map_location=device
         )
         # seq_lab_cfg = ModelCfg.seq_lab
         seq_lab_cfg = ckpt["model_config"]

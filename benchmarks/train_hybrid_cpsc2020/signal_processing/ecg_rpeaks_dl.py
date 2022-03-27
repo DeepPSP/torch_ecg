@@ -27,8 +27,10 @@ __all__ = [
 CNN_MODEL, CRNN_MODEL = load_model("keras_ecg_seq_lab_net")
 
 
-def seq_lab_net_detect(sig:np.ndarray, fs:Real, correction:bool=False, **kwargs) -> np.ndarray:
-    """ finished, checked,
+def seq_lab_net_detect(
+    sig: np.ndarray, fs: Real, correction: bool = False, **kwargs
+) -> np.ndarray:
+    """finished, checked,
 
     use model of entry 0416 of CPSC2019,
     to detect R peaks in single-lead ECGs of arbitrary length
@@ -83,17 +85,21 @@ def seq_lab_net_detect(sig:np.ndarray, fs:Real, correction:bool=False, **kwargs)
         if batch_size is None:
             batch_size = 64
         if verbose >= 1:
-            print(f"the signal is too long, hence split into segments for parallel computing of batch size {batch_size}")
+            print(
+                f"the signal is too long, hence split into segments for parallel computing of batch size {batch_size}"
+            )
     if batch_size is not None:
         model_input_len = 5000
-        half_overlap_len = 256  # approximately 0.5s, should be divisible by `model_granularity`
+        half_overlap_len = (
+            256  # approximately 0.5s, should be divisible by `model_granularity`
+        )
         half_overlap_len_prob = half_overlap_len // model_granularity
         overlap_len = 2 * half_overlap_len
         forward_len = model_input_len - overlap_len
 
-        n_segs, residue = divmod(len(sig_rsmp)-overlap_len, forward_len)
+        n_segs, residue = divmod(len(sig_rsmp) - overlap_len, forward_len)
         if residue != 0:
-            sig_rsmp = np.append(sig_rsmp, np.zeros((forward_len-residue,)))
+            sig_rsmp = np.append(sig_rsmp, np.zeros((forward_len - residue,)))
             n_segs += 1
 
         n_batches = math.ceil(n_segs / batch_size)
@@ -105,14 +111,17 @@ def seq_lab_net_detect(sig:np.ndarray, fs:Real, correction:bool=False, **kwargs)
         for b_idx in range(n_batches):
             # b_start = b_idx * batch_size * forward_len
             b_start = b_idx * batch_size
-            b_segs = segs[b_start: b_start + batch_size]
+            b_segs = segs[b_start : b_start + batch_size]
             b_input = np.vstack(
-                [sig_rsmp[idx*forward_len: idx*forward_len+model_input_len] for idx in b_segs]
+                [
+                    sig_rsmp[idx * forward_len : idx * forward_len + model_input_len]
+                    for idx in b_segs
+                ]
             ).reshape((-1, model_input_len, 1))
             prob_cnn = CNN_MODEL.predict(b_input)
             prob_crnn = CRNN_MODEL.predict(b_input)
-            b_prob = (prob_cnn[...,0] + prob_crnn[...,0]) / 2
-            b_prob = b_prob[..., half_overlap_len_prob: -half_overlap_len_prob]
+            b_prob = (prob_cnn[..., 0] + prob_crnn[..., 0]) / 2
+            b_prob = b_prob[..., half_overlap_len_prob:-half_overlap_len_prob]
             prob += b_prob.flatten().tolist()
             if b_idx == 0:
                 head_prob = (b_prob[0, :half_overlap_len_prob]).tolist()
@@ -122,25 +131,29 @@ def seq_lab_net_detect(sig:np.ndarray, fs:Real, correction:bool=False, **kwargs)
                 print(f"{b_idx+1}/{n_batches} batches", end="\r")
         # prob, output from the for loop,
         # is the array of probabilities for sig_rsmp[half_overlap_len: -half_overlap_len]
-        prob = list(repeat(0,half_overlap_len_prob)) + prob + list(repeat(0,half_overlap_len_prob))
+        prob = (
+            list(repeat(0, half_overlap_len_prob))
+            + prob
+            + list(repeat(0, half_overlap_len_prob))
+        )
         # prob = head_prob + prob + tail_prob  # NOTE: head and tail might not be trustable
         prob = np.array(prob)
     else:
-        prob_cnn = CNN_MODEL.predict(sig_rsmp.reshape((1,len(sig_rsmp),1)))
-        prob_crnn = CRNN_MODEL.predict(sig_rsmp.reshape((1,len(sig_rsmp),1)))
+        prob_cnn = CNN_MODEL.predict(sig_rsmp.reshape((1, len(sig_rsmp), 1)))
+        prob_crnn = CRNN_MODEL.predict(sig_rsmp.reshape((1, len(sig_rsmp), 1)))
         prob = ((prob_cnn + prob_crnn) / 2).squeeze()
 
     # prob --> qrs mask --> qrs intervals --> rpeaks
     rpeaks = _seq_lab_net_post_process(prob, 0.5, verbose=verbose)
 
     # convert from resampled positions to original positions
-    rpeaks = (np.round((fs/model_fs) * rpeaks)).astype(int)
+    rpeaks = (np.round((fs / model_fs) * rpeaks)).astype(int)
     rpeaks = rpeaks[np.where(rpeaks < len(sig))[0]]
 
-    # adjust to the "true" rpeaks, 
+    # adjust to the "true" rpeaks,
     # i.e. the max in a small nbh of each element in `rpeaks`
     if correction:
-        rpeaks, = BSE.correct_rpeaks(
+        (rpeaks,) = BSE.correct_rpeaks(
             signal=sig,
             rpeaks=rpeaks,
             sampling_rate=fs,
@@ -149,8 +162,8 @@ def seq_lab_net_detect(sig:np.ndarray, fs:Real, correction:bool=False, **kwargs)
     return rpeaks
 
 
-def _seq_lab_net_pre_process(sig:np.ndarray, verbose:int=0) -> np.ndarray:
-    """ partly finished, partly checked,
+def _seq_lab_net_pre_process(sig: np.ndarray, verbose: int = 0) -> np.ndarray:
+    """partly finished, partly checked,
 
     Parameters
     ----------
@@ -164,7 +177,7 @@ def _seq_lab_net_pre_process(sig:np.ndarray, verbose:int=0) -> np.ndarray:
     sig_processed: ndarray,
         the processed ECG signal
     """
-    # Single towering spike whose voltage is more than 20 mV is examined 
+    # Single towering spike whose voltage is more than 20 mV is examined
     # and replaced by the normal sample immediately before it
     sig_processed = _remove_spikes_naive(sig)
     # TODO:
@@ -173,8 +186,14 @@ def _seq_lab_net_pre_process(sig:np.ndarray, verbose:int=0) -> np.ndarray:
     return sig_processed
 
 
-def _seq_lab_net_post_process(prob:np.ndarray, prob_thr:float=0.5, duration_thr:int=4*16, dist_thr:Union[int,Sequence[int]]=200, verbose:int=0) -> np.ndarray:
-    """ finished, checked,
+def _seq_lab_net_post_process(
+    prob: np.ndarray,
+    prob_thr: float = 0.5,
+    duration_thr: int = 4 * 16,
+    dist_thr: Union[int, Sequence[int]] = 200,
+    verbose: int = 0,
+) -> np.ndarray:
+    """finished, checked,
 
     convert the array of probability predictions into the array of indices of rpeaks
 
@@ -204,8 +223,9 @@ def _seq_lab_net_post_process(prob:np.ndarray, prob_thr:float=0.5, duration_thr:
     model_spacing = 1000 / model_fs  # units in ms
     model_granularity = 8  # 1/8 times of model_fs
     _prob = prob.squeeze()
-    assert _prob.ndim == 1, \
-        "only support single record processing, batch processing not supported!"
+    assert (
+        _prob.ndim == 1
+    ), "only support single record processing, batch processing not supported!"
     # prob --> qrs mask --> qrs intervals --> rpeaks
     mask = (_prob >= prob_thr).astype(int)
     qrs_intervals = mask_to_intervals(mask, 1)
@@ -213,7 +233,9 @@ def _seq_lab_net_post_process(prob:np.ndarray, prob_thr:float=0.5, duration_thr:
     # is set to eliminate some wrong predictions
     _duration_thr = duration_thr / model_spacing / model_granularity
     # should be 8 * (itv[0]+itv[1]) / 2
-    rpeaks = (model_granularity//2) * np.array([itv[0]+itv[1] for itv in qrs_intervals if itv[1]-itv[0] >= _duration_thr])
+    rpeaks = (model_granularity // 2) * np.array(
+        [itv[0] + itv[1] for itv in qrs_intervals if itv[1] - itv[0] >= _duration_thr]
+    )
 
     if verbose >= 3:
         print(f"raw rpeak predictions = {rpeaks.tolist()}")
@@ -229,28 +251,30 @@ def _seq_lab_net_post_process(prob:np.ndarray, prob_thr:float=0.5, duration_thr:
         rpeaks_diff = np.diff(rpeaks)
         for r in range(len(rpeaks_diff)):
             if rpeaks_diff[r] < dist_thr_inds:  # 200 ms
-                prev_r_ind = int(rpeaks[r]/model_granularity)  # ind in _prob
-                next_r_ind = int(rpeaks[r+1]/model_granularity)  # ind in _prob
+                prev_r_ind = int(rpeaks[r] / model_granularity)  # ind in _prob
+                next_r_ind = int(rpeaks[r + 1] / model_granularity)  # ind in _prob
                 if _prob[prev_r_ind] > _prob[next_r_ind]:
-                    del_ind = r+1
+                    del_ind = r + 1
                 else:
                     del_ind = r
                 rpeaks = np.delete(rpeaks, del_ind)
                 check = True
                 if verbose >= 2:
-                    print(f"the {del_ind}-th R peak was removed since too close to another R peak")
+                    print(
+                        f"the {del_ind}-th R peak was removed since too close to another R peak"
+                    )
                 break
     if len(_dist_thr) == 1:
         return rpeaks
     # further search should be performed to locate where the
     # distances are greater than 1200 ms between adjacent QRS complexes
-    # if there exists at least one point that is great than 0.5, 
-    # the threshold of the duration of clustering positive samples is reduced by 16 ms 
-    # and this process will continue until a new QRS candidate is found 
+    # if there exists at least one point that is great than 0.5,
+    # the threshold of the duration of clustering positive samples is reduced by 16 ms
+    # and this process will continue until a new QRS candidate is found
     # or the threshold decreases to zero
     check = True
     # TODO: parallel the following block
-    # CAUTION !!! 
+    # CAUTION !!!
     # this part is extremely slow in some cases (long duration and low SNR)
     dist_thr_inds = _dist_thr[1] / model_spacing
     while check:
@@ -258,23 +282,32 @@ def _seq_lab_net_post_process(prob:np.ndarray, prob_thr:float=0.5, duration_thr:
         rpeaks_diff = np.diff(rpeaks)
         for r in range(len(rpeaks_diff)):
             if rpeaks_diff[r] >= dist_thr_inds:  # 1200 ms
-                prev_r_ind = int(rpeaks[r]/model_granularity)  # ind in _prob
-                next_r_ind = int(rpeaks[r+1]/model_granularity)  # ind in _prob
-                prev_qrs = [itv for itv in qrs_intervals if itv[0]<=prev_r_ind<=itv[1]][0]
-                next_qrs = [itv for itv in qrs_intervals if itv[0]<=next_r_ind<=itv[1]][0]
+                prev_r_ind = int(rpeaks[r] / model_granularity)  # ind in _prob
+                next_r_ind = int(rpeaks[r + 1] / model_granularity)  # ind in _prob
+                prev_qrs = [
+                    itv for itv in qrs_intervals if itv[0] <= prev_r_ind <= itv[1]
+                ][0]
+                next_qrs = [
+                    itv for itv in qrs_intervals if itv[0] <= next_r_ind <= itv[1]
+                ][0]
                 check_itv = [prev_qrs[1], next_qrs[0]]
-                l_new_itv = mask_to_intervals(mask[check_itv[0]: check_itv[1]], 1)
+                l_new_itv = mask_to_intervals(mask[check_itv[0] : check_itv[1]], 1)
                 if len(l_new_itv) == 0:
                     continue
-                l_new_itv = [[itv[0]+check_itv[0], itv[1]+check_itv[0]] for itv in l_new_itv]
-                new_itv = max(l_new_itv, key=lambda itv: itv[1]-itv[0])
-                new_max_prob = (_prob[new_itv[0]:new_itv[1]]).max()
+                l_new_itv = [
+                    [itv[0] + check_itv[0], itv[1] + check_itv[0]] for itv in l_new_itv
+                ]
+                new_itv = max(l_new_itv, key=lambda itv: itv[1] - itv[0])
+                new_max_prob = (_prob[new_itv[0] : new_itv[1]]).max()
                 for itv in l_new_itv:
-                    itv_prob = (_prob[itv[0]:itv[1]]).max()
-                    if itv[1] - itv[0] == new_itv[1] - new_itv[0] and itv_prob > new_max_prob:
+                    itv_prob = (_prob[itv[0] : itv[1]]).max()
+                    if (
+                        itv[1] - itv[0] == new_itv[1] - new_itv[0]
+                        and itv_prob > new_max_prob
+                    ):
                         new_itv = itv
                         new_max_prob = itv_prob
-                rpeaks = np.insert(rpeaks, r+1, 4*(new_itv[0]+new_itv[1]))
+                rpeaks = np.insert(rpeaks, r + 1, 4 * (new_itv[0] + new_itv[1]))
                 check = True
                 if verbose >= 2:
                     print(f"found back an rpeak inside the {r}-th RR interval")
@@ -282,8 +315,8 @@ def _seq_lab_net_post_process(prob:np.ndarray, prob_thr:float=0.5, duration_thr:
     return rpeaks
 
 
-def _remove_spikes_naive(sig:np.ndarray) -> np.ndarray:
-    """ finished, checked,
+def _remove_spikes_naive(sig: np.ndarray) -> np.ndarray:
+    """finished, checked,
 
     remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
 
@@ -294,14 +327,14 @@ def _remove_spikes_naive(sig:np.ndarray) -> np.ndarray:
     ----------
     sig: ndarray,
         single-lead ECG signal with potential spikes
-    
+
     Returns
     -------
     filtered_sig: ndarray,
         ECG signal with `spikes` removed
     """
-    b = list(filter(lambda k: k > 0, np.argwhere(np.abs(sig)>20).squeeze(-1)))
+    b = list(filter(lambda k: k > 0, np.argwhere(np.abs(sig) > 20).squeeze(-1)))
     filtered_sig = sig.copy()
     for k in b:
-        filtered_sig[k] = filtered_sig[k-1]
+        filtered_sig[k] = filtered_sig[k - 1]
     return filtered_sig

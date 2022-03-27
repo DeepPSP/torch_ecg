@@ -11,7 +11,8 @@ from ...cfg import CFG
 
 __all__ = [
     "multi_scopic_block",
-    "multi_scopic", "multi_scopic_leadwise",
+    "multi_scopic",
+    "multi_scopic_leadwise",
 ]
 
 
@@ -21,44 +22,83 @@ multi_scopic.fs = 500
 multi_scopic.groups = 1
 multi_scopic.scopes = [
     [
-        [1,],
-        [1,1,],
-        [1,1,1,],
+        [
+            1,
+        ],
+        [
+            1,
+            1,
+        ],
+        [
+            1,
+            1,
+            1,
+        ],
     ],
     [
-        [2,],
-        [2,4,],
-        [8,8,8,],
+        [
+            2,
+        ],
+        [
+            2,
+            4,
+        ],
+        [
+            8,
+            8,
+            8,
+        ],
     ],
     [
-        [4,],
-        [4,8,],
-        [16,32,64,],
+        [
+            4,
+        ],
+        [
+            4,
+            8,
+        ],
+        [
+            16,
+            32,
+            64,
+        ],
     ],
 ]
 multi_scopic.filter_lengths = [
-    [11, 7, 5,],
-    [11, 7, 5,],
-    [11, 7, 5,],
+    [
+        11,
+        7,
+        5,
+    ],
+    [
+        11,
+        7,
+        5,
+    ],
+    [
+        11,
+        7,
+        5,
+    ],
 ]
 # subsample_lengths for each branch
 multi_scopic.subsample_lengths = list(repeat(2, len(multi_scopic.scopes)))
 _base_num_filters = 12 * 2
 multi_scopic.num_filters = [
     [
-        _base_num_filters*4,
-        _base_num_filters*8,
-        _base_num_filters*16,
+        _base_num_filters * 4,
+        _base_num_filters * 8,
+        _base_num_filters * 16,
     ],
     [
-        _base_num_filters*4,
-        _base_num_filters*8,
-        _base_num_filters*16,
+        _base_num_filters * 4,
+        _base_num_filters * 8,
+        _base_num_filters * 16,
     ],
     [
-        _base_num_filters*4,
-        _base_num_filters*8,
-        _base_num_filters*16,
+        _base_num_filters * 4,
+        _base_num_filters * 8,
+        _base_num_filters * 16,
     ],
 ]
 multi_scopic.dropouts = [
@@ -80,25 +120,27 @@ multi_scopic_leadwise.groups = 12
 _base_num_filters = 12 * 4
 multi_scopic_leadwise.num_filters = [
     [
-        _base_num_filters*4,
-        _base_num_filters*8,
-        _base_num_filters*16,
+        _base_num_filters * 4,
+        _base_num_filters * 8,
+        _base_num_filters * 16,
     ],
     [
-        _base_num_filters*4,
-        _base_num_filters*8,
-        _base_num_filters*16,
+        _base_num_filters * 4,
+        _base_num_filters * 8,
+        _base_num_filters * 16,
     ],
     [
-        _base_num_filters*4,
-        _base_num_filters*8,
-        _base_num_filters*16,
+        _base_num_filters * 4,
+        _base_num_filters * 8,
+        _base_num_filters * 16,
     ],
 ]
 
 
 multi_scopic_block = CFG()
-multi_scopic_block.subsample_mode = "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
+multi_scopic_block.subsample_mode = (
+    "max"  # or "conv", "avg", "nearest", "linear", "bilinear"
+)
 multi_scopic_block.bias = multi_scopic.bias
 multi_scopic_block.kernel_initializer = multi_scopic.kernel_initializer
 multi_scopic_block.kw_initializer = deepcopy(multi_scopic.kw_initializer)

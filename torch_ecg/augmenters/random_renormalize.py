@@ -13,7 +13,9 @@ from .base import Augmenter
 from ..utils.utils_signal_t import normalize as normalize_t
 
 
-__all__ = ["RandomRenormalize",]
+__all__ = [
+    "RandomRenormalize",
+]
 
 
 class RandomRenormalize(Augmenter):
@@ -21,16 +23,19 @@ class RandomRenormalize(Augmenter):
     Randomly re-normalize the ECG tensor,
     using the Z-score normalization method.
     """
+
     __name__ = "RandomRenormalize"
 
-    def __init__(self,
-                 mean:Iterable[Real]=[-0.05,0.1],
-                 std:Iterable[Real]=[0.08,0.32],
-                 per_channel:bool=False,
-                 prob:float=0.5,
-                 inplace:bool=True,
-                 **kwargs: Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        mean: Iterable[Real] = [-0.05, 0.1],
+        std: Iterable[Real] = [0.08, 0.32],
+        per_channel: bool = False,
+        prob: float = 0.5,
+        inplace: bool = True,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -51,18 +56,24 @@ class RandomRenormalize(Augmenter):
         super().__init__()
         self.mean = np.array(mean)
         self.mean_mean = self.mean.mean(axis=-1, keepdims=True)
-        self.mean_scale = (self.mean[...,-1] - self.mean_mean) * 0.3
+        self.mean_scale = (self.mean[..., -1] - self.mean_mean) * 0.3
         self.std = np.array(std)
         self.std_mean = self.std.mean(axis=-1, keepdims=True)
-        self.std_scale = (self.std[...,-1] - self.std_mean) * 0.3
+        self.std_scale = (self.std[..., -1] - self.std_mean) * 0.3
         self.per_channel = per_channel
         if not self.per_channel:
             assert self.mean.ndim == 1 and self.std.ndim == 1
         self.prob = prob
         self.inplace = inplace
 
-    def forward(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
-        """ finished, checked,
+    def forward(
+        self,
+        sig: Tensor,
+        label: Optional[Tensor],
+        *extra_tensors: Sequence[Tensor],
+        **kwargs: Any
+    ) -> Tuple[Tensor, ...]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -94,13 +105,21 @@ class RandomRenormalize(Augmenter):
             sig = sig.clone()
         indices = self.get_indices(self.prob, pop_size=batch)
         if self.per_channel:
-            mean = np.random.normal(self.mean_mean, self.mean_scale, size=(len(indices), lead, 1))
-            std = np.random.normal(self.std_mean, self.std_scale, size=(len(indices), lead, 1))
+            mean = np.random.normal(
+                self.mean_mean, self.mean_scale, size=(len(indices), lead, 1)
+            )
+            std = np.random.normal(
+                self.std_mean, self.std_scale, size=(len(indices), lead, 1)
+            )
         else:
-            mean = np.random.normal(self.mean_mean, self.mean_scale, size=(len(indices), 1, 1))
-            std = np.random.normal(self.std_mean, self.std_scale, size=(len(indices), 1, 1))
-        sig[indices,...] = normalize_t(
-            sig[indices,...],
+            mean = np.random.normal(
+                self.mean_mean, self.mean_scale, size=(len(indices), 1, 1)
+            )
+            std = np.random.normal(
+                self.std_mean, self.std_scale, size=(len(indices), 1, 1)
+            )
+        sig[indices, ...] = normalize_t(
+            sig[indices, ...],
             method="z-score",
             mean=mean,
             std=std,
@@ -110,6 +129,11 @@ class RandomRenormalize(Augmenter):
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        """
-        return ["mean", "std", "per_channel", "prob", "inplace",] + super().extra_repr_keys()
+        """ """
+        return [
+            "mean",
+            "std",
+            "per_channel",
+            "prob",
+            "inplace",
+        ] + super().extra_repr_keys()

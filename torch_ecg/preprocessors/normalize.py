@@ -32,16 +32,19 @@ class Normalize(torch.nn.Module):
             \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
             \end{align*}
     """
+
     __name__ = "Normalize"
 
-    def __init__(self,
-                 method:str="z-score",
-                 mean:Union[Real,Iterable[Real]]=0.0,
-                 std:Union[Real,Iterable[Real]]=1.0,
-                 per_channel:bool=False,
-                 inplace:bool=True,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        method: str = "z-score",
+        mean: Union[Real, Iterable[Real]] = 0.0,
+        std: Union[Real, Iterable[Real]] = 1.0,
+        per_channel: bool = False,
+        inplace: bool = True,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -65,14 +68,18 @@ class Normalize(torch.nn.Module):
         """
         super().__init__()
         self.method = method.lower()
-        assert self.method in ["z-score", "naive", "min-max",]
+        assert self.method in [
+            "z-score",
+            "naive",
+            "min-max",
+        ]
         self.mean = mean
         self.std = std
         self.per_channel = per_channel
         self.inplace = inplace
 
-    def forward(self, sig:torch.Tensor) -> torch.Tensor:
-        """ finished, checked,
+    def forward(self, sig: torch.Tensor) -> torch.Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -88,8 +95,10 @@ class Normalize(torch.nn.Module):
         sig = normalize_t(
             sig=sig,
             method=self.method,
-            mean=self.mean, std=self.std,
-            per_channel=self.per_channel, inplace=self.inplace,
+            mean=self.mean,
+            std=self.std,
+            per_channel=self.per_channel,
+            inplace=self.inplace,
         )
         return sig
 
@@ -101,10 +110,14 @@ class MinMaxNormalize(Normalize):
         .. math::
             \frac{sig - \min(sig)}{\max(sig) - \min(sig)}
     """
+
     __name__ = "MinMaxNormalize"
 
-    def __init__(self, per_channel:bool=False,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        per_channel: bool = False,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -121,14 +134,17 @@ class NaiveNormalize(Normalize):
         .. math::
             \frac{sig - m}{s}
     """
+
     __name__ = "NaiveNormalize"
 
-    def __init__(self,
-                 mean:Union[Real,Iterable[Real]]=0.0,
-                 std:Union[Real,Iterable[Real]]=1.0,
-                 per_channel:bool=False,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        mean: Union[Real, Iterable[Real]] = 0.0,
+        std: Union[Real, Iterable[Real]] = 1.0,
+        per_channel: bool = False,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -154,14 +170,17 @@ class ZScoreNormalize(Normalize):
         .. math::
             \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
     """
+
     __name__ = "ZScoreNormalize"
 
-    def __init__(self,
-                 mean:Union[Real,Iterable[Real]]=0.0,
-                 std:Union[Real,Iterable[Real]]=1.0,
-                 per_channel:bool=False,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        mean: Union[Real, Iterable[Real]] = 0.0,
+        std: Union[Real, Iterable[Real]] = 1.0,
+        per_channel: bool = False,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------

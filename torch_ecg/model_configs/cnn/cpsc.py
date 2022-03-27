@@ -10,8 +10,11 @@ from ...cfg import CFG
 
 
 __all__ = [
-    "cpsc_block_basic", "cpsc_block_mish", "cpsc_block_swish",
-    "cpsc_2018", "cpsc_2018_leadwise",
+    "cpsc_block_basic",
+    "cpsc_block_mish",
+    "cpsc_block_swish",
+    "cpsc_2018",
+    "cpsc_2018_leadwise",
 ]
 
 
@@ -26,11 +29,11 @@ cpsc_2018.fs = 500
 # ]
 _base_num_filters = 36
 cpsc_2018.num_filters = [
-    list(repeat(_base_num_filters*2, 3)),
-    list(repeat(_base_num_filters*4, 3)),
-    list(repeat(_base_num_filters*8, 3)),
-    list(repeat(_base_num_filters*16, 3)),
-    list(repeat(_base_num_filters*32, 3)),
+    list(repeat(_base_num_filters * 2, 3)),
+    list(repeat(_base_num_filters * 4, 3)),
+    list(repeat(_base_num_filters * 8, 3)),
+    list(repeat(_base_num_filters * 16, 3)),
+    list(repeat(_base_num_filters * 32, 3)),
 ]
 cpsc_2018.filter_lengths = [
     [3, 3, 24],

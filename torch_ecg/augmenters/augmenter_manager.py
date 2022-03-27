@@ -20,7 +20,9 @@ from .stretch_compress import StretchCompress
 from ..utils.misc import default_class_repr, ReprMixin
 
 
-__all__ = ["AugmenterManager",]
+__all__ = [
+    "AugmenterManager",
+]
 
 
 class AugmenterManager(torch.nn.Module):
@@ -51,10 +53,13 @@ class AugmenterManager(torch.nn.Module):
     sig, label, mask = am(sig, label, mask)
     ```
     """
+
     __name__ = "AugmenterManager"
 
-    def __init__(self, *augs:Optional[Tuple[Augmenter,...]], random:bool=False) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self, *augs: Optional[Tuple[Augmenter, ...]], random: bool = False
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -67,29 +72,35 @@ class AugmenterManager(torch.nn.Module):
         self.random = random
         self._augmenters = list(augs)
 
-    def _add_baseline_wander(self, **config:dict) -> NoReturn:
+    def _add_baseline_wander(self, **config: dict) -> NoReturn:
         self._augmenters.append(BaselineWanderAugmenter(**config))
 
-    def _add_label_smooth(self, **config:dict) -> NoReturn:
+    def _add_label_smooth(self, **config: dict) -> NoReturn:
         self._augmenters.append(LabelSmooth(**config))
 
-    def _add_mixup(self, **config:dict) -> NoReturn:
+    def _add_mixup(self, **config: dict) -> NoReturn:
         self._augmenters.append(Mixup(**config))
 
-    def _add_random_flip(self, **config:dict) -> NoReturn:
+    def _add_random_flip(self, **config: dict) -> NoReturn:
         self._augmenters.append(RandomFlip(**config))
 
-    def _add_random_masking(self, **config:dict) -> NoReturn:
+    def _add_random_masking(self, **config: dict) -> NoReturn:
         self._augmenters.append(RandomMasking(**config))
 
-    def _add_random_renormalize(self, **config:dict) -> NoReturn:
+    def _add_random_renormalize(self, **config: dict) -> NoReturn:
         self._augmenters.append(RandomRenormalize(**config))
 
-    def _add_stretch_compress(self, **config:dict) -> NoReturn:
+    def _add_stretch_compress(self, **config: dict) -> NoReturn:
         self._augmenters.append(StretchCompress(**config))
 
-    def forward(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Union[Tensor,Tuple[Tensor]]:
-        """ finished, checked,
+    def forward(
+        self,
+        sig: Tensor,
+        label: Optional[Tensor],
+        *extra_tensors: Sequence[Tensor],
+        **kwargs: Any,
+    ) -> Union[Tensor, Tuple[Tensor]]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -112,7 +123,9 @@ class AugmenterManager(torch.nn.Module):
         if self.random:
             ordering = sample(ordering, len(ordering))
         for idx in ordering:
-            sig, label, *extra_tensors = self.augmenters[idx](sig, label, *extra_tensors, **kwargs)
+            sig, label, *extra_tensors = self.augmenters[idx](
+                sig, label, *extra_tensors, **kwargs
+            )
         return (sig, label, *extra_tensors)
 
     @property
@@ -120,15 +133,19 @@ class AugmenterManager(torch.nn.Module):
         return self._augmenters
 
     def extra_repr(self) -> str:
-        indent = 4*" "
-        s = f"augmenters = [\n{indent}" + \
-            f",\n{2*indent}".join(default_class_repr(aug, depth=2) for aug in self.augmenters) + \
-            f"{indent}\n]"
+        indent = 4 * " "
+        s = (
+            f"augmenters = [\n{indent}"
+            + f",\n{2*indent}".join(
+                default_class_repr(aug, depth=2) for aug in self.augmenters
+            )
+            + f"{indent}\n]"
+        )
         return s
 
     @classmethod
-    def from_config(cls, config:dict) -> "AugmenterManager":
-        """ finished, checked,
+    def from_config(cls, config: dict) -> "AugmenterManager":
+        """finished, checked,
 
         Parameters
         ----------
@@ -152,7 +169,10 @@ class AugmenterManager(torch.nn.Module):
             "stretch_compress": am._add_stretch_compress,
         }
         for aug_name, aug_config in config.items():
-            if aug_name in ["fs", "random",]:
+            if aug_name in [
+                "fs",
+                "random",
+            ]:
                 continue
             elif aug_name in _mapping and isinstance(aug_config, dict):
                 _mapping[aug_name](fs=config["fs"], **aug_config)
@@ -162,8 +182,8 @@ class AugmenterManager(torch.nn.Module):
                 # raise ValueError(f"Unknown augmenter name: {aug_name}")
         return am
 
-    def rearrange(self, new_ordering:List[str]) -> NoReturn:
-        """ finished, checked,
+    def rearrange(self, new_ordering: List[str]) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -171,11 +191,15 @@ class AugmenterManager(torch.nn.Module):
             the list of augmenter names in the new order
         """
         _mapping = {
-            "".join([w.capitalize() for w in k.split("_")]): k \
-                for k in "label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress".split(",")
+            "".join([w.capitalize() for w in k.split("_")]): k
+            for k in "label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress".split(
+                ","
+            )
         }
         _mapping.update({"BaselineWanderAugmenter": "baseline_wander"})
         for k in new_ordering:
             if k not in _mapping:
                 _mapping.update({k: k})
-        self._augmenters.sort(key=lambda aug: new_ordering.index(_mapping[aug.__name__]))
+        self._augmenters.sort(
+            key=lambda aug: new_ordering.index(_mapping[aug.__name__])
+        )

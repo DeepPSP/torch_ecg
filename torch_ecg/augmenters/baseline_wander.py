@@ -15,23 +15,27 @@ from .base import Augmenter
 from ..utils.utils_signal import get_ampl
 
 
-__all__ = ["BaselineWanderAugmenter",]
+__all__ = [
+    "BaselineWanderAugmenter",
+]
 
 
 class BaselineWanderAugmenter(Augmenter):
-    """
-    """
+    """ """
+
     __name__ = "BaselineWanderAugmenter"
 
-    def __init__(self,
-                 fs:int,
-                 bw_fs:Optional[np.ndarray]=None,
-                 ampl_ratio:Optional[np.ndarray]=None,
-                 gaussian:Optional[np.ndarray]=None,
-                 prob:float=0.5,
-                 inplace:bool=True,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked
+    def __init__(
+        self,
+        fs: int,
+        bw_fs: Optional[np.ndarray] = None,
+        ampl_ratio: Optional[np.ndarray] = None,
+        gaussian: Optional[np.ndarray] = None,
+        prob: float = 0.5,
+        inplace: bool = True,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked
 
         Parameters
         ----------
@@ -57,40 +61,74 @@ class BaselineWanderAugmenter(Augmenter):
         self.bw_fs = bw_fs if bw_fs is not None else np.array([0.33, 0.1, 0.05, 0.01])
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
-        self.ampl_ratio = ampl_ratio if ampl_ratio is not None \
-            else np.array([  # default ampl_ratio
-            [0.01, 0.01, 0.02, 0.03],  # low
-            [0.01, 0.02, 0.04, 0.05],  # low
-            [0.1, 0.06, 0.04, 0.02],  # low
-            [0.02, 0.04, 0.07, 0.1],  # low
-            [0.05, 0.1, 0.16, 0.25],  # medium
-            [0.1, 0.15, 0.25, 0.3],  # high
-            [0.25, 0.25, 0.3, 0.35],  # extremely high
-        ])
+        self.ampl_ratio = (
+            ampl_ratio
+            if ampl_ratio is not None
+            else np.array(
+                [  # default ampl_ratio
+                    [0.01, 0.01, 0.02, 0.03],  # low
+                    [0.01, 0.02, 0.04, 0.05],  # low
+                    [0.1, 0.06, 0.04, 0.02],  # low
+                    [0.02, 0.04, 0.07, 0.1],  # low
+                    [0.05, 0.1, 0.16, 0.25],  # medium
+                    [0.1, 0.15, 0.25, 0.3],  # high
+                    [0.25, 0.25, 0.3, 0.35],  # extremely high
+                ]
+            )
+        )
         if self.prob > 0:
-            self.ampl_ratio = np.concatenate((
-                np.zeros((int((1-self.prob)*self.ampl_ratio.shape[0]/self.prob), self.ampl_ratio.shape[1])),
-                self.ampl_ratio
-            ))
-        self.gaussian = gaussian if gaussian is not None \
-            else np.array([  # default gaussian, mean and std, in terms of ratio
-            [0.0, 0.001],
-            [0.0, 0.003],
-            [0.0, 0.01],
-        ])
+            self.ampl_ratio = np.concatenate(
+                (
+                    np.zeros(
+                        (
+                            int((1 - self.prob) * self.ampl_ratio.shape[0] / self.prob),
+                            self.ampl_ratio.shape[1],
+                        )
+                    ),
+                    self.ampl_ratio,
+                )
+            )
+        self.gaussian = (
+            gaussian
+            if gaussian is not None
+            else np.array(
+                [  # default gaussian, mean and std, in terms of ratio
+                    [0.0, 0.001],
+                    [0.0, 0.003],
+                    [0.0, 0.01],
+                ]
+            )
+        )
         if self.prob > 0:
-            self.gaussian = np.concatenate((
-                np.zeros((int((1-self.prob)*self.gaussian.shape[0]/self.prob), self.gaussian.shape[1])),
-                self.gaussian
-            ))
-        assert self.bw_fs.ndim == 1 and self.ampl_ratio.ndim == 2 and self.bw_fs.shape[0] == self.ampl_ratio.shape[1]
+            self.gaussian = np.concatenate(
+                (
+                    np.zeros(
+                        (
+                            int((1 - self.prob) * self.gaussian.shape[0] / self.prob),
+                            self.gaussian.shape[1],
+                        )
+                    ),
+                    self.gaussian,
+                )
+            )
+        assert (
+            self.bw_fs.ndim == 1
+            and self.ampl_ratio.ndim == 2
+            and self.bw_fs.shape[0] == self.ampl_ratio.shape[1]
+        )
         self.inplace = inplace
 
         self._n_bw_choices = len(self.ampl_ratio)
         self._n_gn_choices = len(self.gaussian)
 
-    def forward(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
-        """ finished, checked,
+    def forward(
+        self,
+        sig: Tensor,
+        label: Optional[Tensor],
+        *extra_tensors: Sequence[Tensor],
+        **kwargs: Any
+    ) -> Tuple[Tensor, ...]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -116,17 +154,25 @@ class BaselineWanderAugmenter(Augmenter):
         if not self.inplace:
             sig = sig.clone()
         if self.prob > 0:
-            sig.add_(gen_baseline_wander(sig, self.fs, self.bw_fs, self.ampl_ratio, self.gaussian))
+            sig.add_(
+                gen_baseline_wander(
+                    sig, self.fs, self.bw_fs, self.ampl_ratio, self.gaussian
+                )
+            )
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        """
-        return ["fs", "bw_fs", "prob", "inplace",] + super().extra_repr_keys()
+        """ """
+        return [
+            "fs",
+            "bw_fs",
+            "prob",
+            "inplace",
+        ] + super().extra_repr_keys()
 
 
-def _get_ampl(sig:Tensor, fs:int) -> Tensor:
-    """ finished, checked
+def _get_ampl(sig: Tensor, fs: int) -> Tensor:
+    """finished, checked
 
     Parameters
     ----------
@@ -140,7 +186,7 @@ def _get_ampl(sig:Tensor, fs:int) -> Tensor:
     ampl: Tensor,
         amplitude of each lead, of shape (batch, lead, 1)
     """
-    with mp.Pool(processes=max(1, mp.cpu_count()-2)) as pool:
+    with mp.Pool(processes=max(1, mp.cpu_count() - 2)) as pool:
         ampl = pool.starmap(
             get_ampl,
             iterable=[(sig[i].cpu().numpy(), fs) for i in range(sig.shape[0])],
@@ -149,8 +195,8 @@ def _get_ampl(sig:Tensor, fs:int) -> Tensor:
     return ampl
 
 
-def _gen_gaussian_noise(siglen:int, mean:Real=0, std:Real=0) -> np.ndarray:
-    """ finished, checked,
+def _gen_gaussian_noise(siglen: int, mean: Real = 0, std: Real = 0) -> np.ndarray:
+    """finished, checked,
 
     generate 1d Gaussian noise of given length, mean, and standard deviation
 
@@ -172,13 +218,15 @@ def _gen_gaussian_noise(siglen:int, mean:Real=0, std:Real=0) -> np.ndarray:
     return gn
 
 
-def _gen_sinusoidal_noise(siglen:int,
-                          start_phase:Real,
-                          end_phase:Real,
-                          amplitude:Real,
-                          amplitude_mean:Real=0,
-                          amplitude_std:Real=0) -> np.ndarray:
-    """ finished, checked,
+def _gen_sinusoidal_noise(
+    siglen: int,
+    start_phase: Real,
+    end_phase: Real,
+    amplitude: Real,
+    amplitude_mean: Real = 0,
+    amplitude_std: Real = 0,
+) -> np.ndarray:
+    """finished, checked,
 
     generate 1d sinusoidal noise of given length, amplitude, start phase, and end phase
 
@@ -208,12 +256,14 @@ def _gen_sinusoidal_noise(siglen:int,
     return sn
 
 
-def _gen_baseline_wander(siglen:int,
-                         fs:Real,
-                         bw_fs:Union[Real,Sequence[Real]],
-                         amplitude:Union[Real,Sequence[Real]],
-                         amplitude_gaussian:Sequence[Real]=[0,0],) -> np.ndarray:
-    """ finished, checked,
+def _gen_baseline_wander(
+    siglen: int,
+    fs: Real,
+    bw_fs: Union[Real, Sequence[Real]],
+    amplitude: Union[Real, Sequence[Real]],
+    amplitude_gaussian: Sequence[Real] = [0, 0],
+) -> np.ndarray:
+    """finished, checked,
 
     generate 1d baseline wander of given length, amplitude, and frequency
 
@@ -249,20 +299,22 @@ def _gen_baseline_wander(siglen:int,
     else:
         _amplitude = amplitude
     assert len(_bw_fs) == len(_amplitude)
-    duration = (siglen / fs)
+    duration = siglen / fs
     for bf, a in zip(_bw_fs, _amplitude):
-        start_phase = np.random.randint(0,360)
+        start_phase = np.random.randint(0, 360)
         end_phase = duration * bf * 360 + start_phase
         bw += _gen_sinusoidal_noise(siglen, start_phase, end_phase, a, 0, 0)
     return bw
 
 
-def gen_baseline_wander(sig:Tensor,
-                        fs:Real,
-                        bw_fs:Union[Real,Sequence[Real]],
-                        ampl_ratio:np.ndarray,
-                        gaussian:np.ndarray,) -> np.ndarray:
-    """ finished, checked,
+def gen_baseline_wander(
+    sig: Tensor,
+    fs: Real,
+    bw_fs: Union[Real, Sequence[Real]],
+    ampl_ratio: np.ndarray,
+    gaussian: np.ndarray,
+) -> np.ndarray:
+    """finished, checked,
 
     generate 1d baseline wander of given length, amplitude, and frequency
 
@@ -291,8 +343,8 @@ def gen_baseline_wander(sig:Tensor,
     sig_ampl = _get_ampl(sig, fs)
     _n_bw_choices = len(ampl_ratio)
     _n_gn_choices = len(gaussian)
-    
-    with mp.Pool(processes=max(1, mp.cpu_count()-2)) as pool:
+
+    with mp.Pool(processes=max(1, mp.cpu_count() - 2)) as pool:
         bw = pool.starmap(
             _gen_baseline_wander,
             iterable=[
@@ -300,11 +352,14 @@ def gen_baseline_wander(sig:Tensor,
                     siglen,
                     fs,
                     bw_fs,
-                    ampl_ratio[randint(0, _n_bw_choices-1)],
-                    gaussian[randint(0, _n_gn_choices-1)],
+                    ampl_ratio[randint(0, _n_bw_choices - 1)],
+                    gaussian[randint(0, _n_gn_choices - 1)],
                 )
-                for i in range(sig.shape[0]) for j in range(sig.shape[1])
-            ]
+                for i in range(sig.shape[0])
+                for j in range(sig.shape[1])
+            ],
         )
-    bw = torch.as_tensor(bw, dtype=sig.dtype, device=sig.device).reshape(batch, lead, siglen)
+    bw = torch.as_tensor(bw, dtype=sig.dtype, device=sig.device).reshape(
+        batch, lead, siglen
+    )
     return bw

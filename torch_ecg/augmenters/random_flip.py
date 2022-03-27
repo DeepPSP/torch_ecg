@@ -11,21 +11,25 @@ from torch import Tensor
 from .base import Augmenter
 
 
-__all__ = ["RandomFlip",]
+__all__ = [
+    "RandomFlip",
+]
 
 
 class RandomFlip(Augmenter):
-    """
-    """
+    """ """
+
     __name__ = "RandomFlip"
 
-    def __init__(self,
-                 fs:Optional[int]=None,
-                 per_channel:bool=True,
-                 prob:Union[Sequence[float],float]=[0.4,0.2],
-                 inplace:bool=True,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        fs: Optional[int] = None,
+        per_channel: bool = True,
+        prob: Union[Sequence[float], float] = [0.4, 0.2],
+        inplace: bool = True,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -50,11 +54,18 @@ class RandomFlip(Augmenter):
             self.prob = np.array([self.prob, self.prob])
         else:
             self.prob = np.array(self.prob)
-        assert (self.prob >= 0).all() and (self.prob <= 1).all(), \
-            "Probability must be between 0 and 1"
+        assert (self.prob >= 0).all() and (
+            self.prob <= 1
+        ).all(), "Probability must be between 0 and 1"
 
-    def forward(self, sig:Tensor, label:Optional[Tensor], *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
-        """ finished, checked,
+    def forward(
+        self,
+        sig: Tensor,
+        label: Optional[Tensor],
+        *extra_tensors: Sequence[Tensor],
+        **kwargs: Any
+    ) -> Tuple[Tensor, ...]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -83,17 +94,20 @@ class RandomFlip(Augmenter):
         if self.prob[0] == 0:
             return (sig, label, *extra_tensors)
         if self.per_channel:
-            flip = torch.ones((batch,lead,1), dtype=sig.dtype, device=sig.device)
+            flip = torch.ones((batch, lead, 1), dtype=sig.dtype, device=sig.device)
             for i in self.get_indices(prob=self.prob[0], pop_size=batch):
                 flip[i, self.get_indices(prob=self.prob[1], pop_size=lead), ...] = -1
             sig = sig.mul_(flip)
         else:
-            flip = torch.ones((batch,1,1), dtype=sig.dtype, device=sig.device)
+            flip = torch.ones((batch, 1, 1), dtype=sig.dtype, device=sig.device)
             flip[self.get_indices(prob=self.prob[0], pop_size=batch), ...] = -1
             sig = sig.mul_(flip)
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        """
-        return ["per_channel", "prob", "inplace",] + super().extra_repr_keys()
+        """ """
+        return [
+            "per_channel",
+            "prob",
+            "inplace",
+        ] + super().extra_repr_keys()

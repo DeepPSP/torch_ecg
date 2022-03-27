@@ -9,7 +9,6 @@ from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
 from numbers import Real
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 import wfdb
 
@@ -27,7 +26,7 @@ __all__ = [
 
 
 class AFDB(PhysioNetDataBase):
-    """ finished, checked,
+    """finished, checked,
 
     MIT-BIH Atrial Fibrillation Database
 
@@ -61,12 +60,15 @@ class AFDB(PhysioNetDataBase):
     [1] https://physionet.org/content/afdb/1.0.0/
     [2] Moody GB, Mark RG. A new method for detecting atrial fibrillation using R-R intervals. Computers in Cardiology. 10:227-230 (1983).
     """
-    def __init__(self,
-                 db_dir:Optional[Union[str,Path]]=None,
-                 working_dir:Optional[str]=None,
-                 verbose:int=2,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+
+    def __init__(
+        self,
+        db_dir: Optional[Union[str, Path]] = None,
+        working_dir: Optional[str] = None,
+        verbose: int = 2,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -79,39 +81,52 @@ class AFDB(PhysioNetDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="afdb", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(
+            db_name="afdb",
+            db_dir=db_dir,
+            working_dir=working_dir,
+            verbose=verbose,
+            **kwargs,
+        )
         self.fs = 250
         self.data_ext = "dat"
         self.ann_ext = "atr"
         self.auto_beat_ann_ext = "qrs"
         self.manual_beat_ann_ext = "qrsc"
 
-        self.all_leads = ["ECG1", "ECG2",]
+        self.all_leads = [
+            "ECG1",
+            "ECG2",
+        ]
 
         self._ls_rec()
         self.special_records = ["00735", "03665"]
-        self.qrsc_records = get_record_list_recursive(self.db_dir, self.manual_beat_ann_ext)
-
-        self.class_map = CFG(
-            AFIB=1, AFL=2, J=3, N=0  # an extra isoelectric
+        self.qrsc_records = get_record_list_recursive(
+            self.db_dir, self.manual_beat_ann_ext
         )
+
+        self.class_map = CFG(AFIB=1, AFL=2, J=3, N=0)  # an extra isoelectric
         self.palette = kwargs.get("palette", None)
         if self.palette is None:
             self.palette = CFG(
-                AFIB="blue", AFL="red", J="yellow",
+                AFIB="blue",
+                AFL="red",
+                J="yellow",
                 # N="green",
                 qrs="green",
             )
 
-    def load_data(self,
-                  rec:str,
-                  leads:Optional[Union[str, List[str]]]=None,
-                  sampfrom:Optional[int]=None,
-                  sampto:Optional[int]=None,
-                  data_format:str="channel_first",
-                  units:str="mV",
-                  fs:Optional[Real]=None,) -> np.ndarray:
-        """ finished, checked,
+    def load_data(
+        self,
+        rec: str,
+        leads: Optional[Union[str, List[str]]] = None,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        data_format: str = "channel_first",
+        units: str = "mV",
+        fs: Optional[Real] = None,
+    ) -> np.ndarray:
+        """finished, checked,
 
         load physical (converted from digital) ecg data,
         which is more understandable for humans
@@ -134,7 +149,7 @@ class AFDB(PhysioNetDataBase):
             units of the output signal, can also be "μV", with an alias of "uV"
         fs: real number, optional,
             if not None, the loaded data will be resampled to this frequency
-        
+
         Returns
         -------
         data: ndarray,
@@ -164,16 +179,18 @@ class AFDB(PhysioNetDataBase):
             data = data.T
         return data
 
-    def load_ann(self,
-                 rec:str,
-                 sampfrom:Optional[int]=None,
-                 sampto:Optional[int]=None,
-                 fmt:str="interval",
-                 keep_original:bool=False) -> Union[Dict[str, list], np.ndarray]:
-        """ finished, checked,
+    def load_ann(
+        self,
+        rec: str,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        fmt: str = "interval",
+        keep_original: bool = False,
+    ) -> Union[Dict[str, list], np.ndarray]:
+        """finished, checked,
 
         load annotations (header) stored in the .hea files
-        
+
         Parameters
         ----------
         rec: str,
@@ -188,7 +205,7 @@ class AFDB(PhysioNetDataBase):
             if True, in the "interval" `fmt`,
             intervals (in the form [a,b]) will keep the same with the annotation file
             otherwise subtract `sampfrom` if specified
-        
+
         Returns
         -------
         ann, dict or ndarray,
@@ -202,7 +219,7 @@ class AFDB(PhysioNetDataBase):
         st = sampto or sig_len
         assert st > sf, "`sampto` should be greater than `sampfrom`!"
 
-        ann = CFG({k:[] for k in self.class_map.keys()})
+        ann = CFG({k: [] for k in self.class_map.keys()})
         critical_points = wfdb_ann.sample.tolist() + [sig_len]
         aux_note = wfdb_ann.aux_note
         if aux_note[0] == "(N":
@@ -213,34 +230,40 @@ class AFDB(PhysioNetDataBase):
             aux_note.insert(0, "(N")
 
         for idx, rhythm in enumerate(aux_note):
-            ann[rhythm.replace("(", "")].append([critical_points[idx], critical_points[idx+1]])
-        ann = CFG({
-            k: generalized_intervals_intersection(l_itv, [[sf,st]]) \
+            ann[rhythm.replace("(", "")].append(
+                [critical_points[idx], critical_points[idx + 1]]
+            )
+        ann = CFG(
+            {
+                k: generalized_intervals_intersection(l_itv, [[sf, st]])
                 for k, l_itv in ann.items()
-        })
+            }
+        )
 
         if fmt.lower() == "mask":
             tmp = deepcopy(ann)
-            ann = np.full(shape=(st-sf,), fill_value=self.class_map.N, dtype=int)
+            ann = np.full(shape=(st - sf,), fill_value=self.class_map.N, dtype=int)
             for rhythm, l_itv in tmp.items():
                 for itv in l_itv:
-                    ann[itv[0]-sf: itv[1]-sf] = self.class_map[rhythm]
+                    ann[itv[0] - sf : itv[1] - sf] = self.class_map[rhythm]
         elif not keep_original:
             for k, l_itv in ann.items():
-                ann[k] = [[itv[0]-sf, itv[1]-sf] for itv in l_itv]
+                ann[k] = [[itv[0] - sf, itv[1] - sf] for itv in l_itv]
 
         return ann
 
-    def load_beat_ann(self,
-                      rec:str,
-                      sampfrom:Optional[int]=None,
-                      sampto:Optional[int]=None,
-                      use_manual:bool=True,
-                      keep_original:bool=False,) -> np.ndarray:
-        """ finished, checked,
+    def load_beat_ann(
+        self,
+        rec: str,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        use_manual: bool = True,
+        keep_original: bool = False,
+    ) -> np.ndarray:
+        """finished, checked,
 
         load beat annotations stored in corresponding annotation files
-        
+
         Parameters
         ----------
         rec: str,
@@ -255,7 +278,7 @@ class AFDB(PhysioNetDataBase):
         keep_original: bool, default False,
             if True, indices will keep the same with the annotation file
             otherwise subtract `sampfrom` if specified
-        
+
         Returns
         -------
         ann, ndarray,
@@ -277,29 +300,33 @@ class AFDB(PhysioNetDataBase):
             ann -= sampfrom
         return ann
 
-    def load_rpeak_indices(self,
-                           rec:str,
-                           sampfrom:Optional[int]=None,
-                           sampto:Optional[int]=None,
-                           use_manual:bool=True,
-                           keep_original:bool=False,) -> np.ndarray:
+    def load_rpeak_indices(
+        self,
+        rec: str,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        use_manual: bool = True,
+        keep_original: bool = False,
+    ) -> np.ndarray:
         """
         alias of `self.load_beat_ann`
         """
         return self.load_beat_ann(rec, sampfrom, sampto, use_manual, keep_original)
 
-
-    def plot(self,
-             rec:str,
-             data:Optional[np.ndarray]=None,
-             ann:Optional[Dict[str, np.ndarray]]=None,
-             rpeak_inds:Optional[Union[Sequence[int],np.ndarray]]=None,
-             ticks_granularity:int=0, leads:Optional[Union[str, List[str]]]=None,
-             sampfrom:Optional[int]=None,
-             sampto:Optional[int]=None,
-             same_range:bool=False,
-             **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def plot(
+        self,
+        rec: str,
+        data: Optional[np.ndarray] = None,
+        ann: Optional[Dict[str, np.ndarray]] = None,
+        rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
+        ticks_granularity: int = 0,
+        leads: Optional[Union[str, List[str]]] = None,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        same_range: bool = False,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
@@ -337,6 +364,7 @@ class AFDB(PhysioNetDataBase):
         """
         if "plt" not in dir():
             import matplotlib.pyplot as plt
+
             plt.MultipleLocator.MAXTICKS = 3000
         if leads is None or leads == "all":
             _leads = self.all_leads
@@ -373,11 +401,11 @@ class AFDB(PhysioNetDataBase):
                 keep_original=False,
             )
         else:
-            _ann = ann or CFG({k:[] for k in self.class_map.keys()})
+            _ann = ann or CFG({k: [] for k in self.class_map.keys()})
         # indices to time
         _ann = {
-            k: [[itv[0]/self.fs, itv[1]/self.fs] for itv in l_itv] \
-                for k, l_itv in _ann.items()
+            k: [[itv[0] / self.fs, itv[1] / self.fs] for itv in l_itv]
+            for k, l_itv in _ann.items()
         }
         if rpeak_inds is None and data is None:
             _rpeak = self.load_rpeak_indices(
@@ -397,54 +425,72 @@ class AFDB(PhysioNetDataBase):
         nb_leads = len(_leads)
 
         line_len = self.fs * 25  # 25 seconds
-        nb_lines = math.ceil(_data.shape[1]/line_len)
+        nb_lines = math.ceil(_data.shape[1] / line_len)
 
         for seg_idx in range(nb_lines):
-            seg_data = _data[...,seg_idx*line_len: (seg_idx+1)*line_len]
-            secs = (np.arange(seg_data.shape[1]) + seg_idx*line_len) / self.fs
+            seg_data = _data[..., seg_idx * line_len : (seg_idx + 1) * line_len]
+            secs = (np.arange(seg_data.shape[1]) + seg_idx * line_len) / self.fs
             seg_ann = {
-                k: generalized_intervals_intersection(l_itv, [[secs[0], secs[-1]]]) \
-                    for k, l_itv in _ann.items()
+                k: generalized_intervals_intersection(l_itv, [[secs[0], secs[-1]]])
+                for k, l_itv in _ann.items()
             }
-            seg_rpeaks = _rpeak[np.where((_rpeak>=secs[0]) & (_rpeak<secs[-1]))[0]]
-            fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * seg_data.shape[1] / self.fs))
+            seg_rpeaks = _rpeak[np.where((_rpeak >= secs[0]) & (_rpeak < secs[-1]))[0]]
+            fig_sz_w = int(
+                round(DEFAULT_FIG_SIZE_PER_SEC * seg_data.shape[1] / self.fs)
+            )
             if same_range:
-                y_ranges = np.ones((seg_data.shape[0],)) * np.max(np.abs(seg_data)) + 100
+                y_ranges = (
+                    np.ones((seg_data.shape[0],)) * np.max(np.abs(seg_data)) + 100
+                )
             else:
                 y_ranges = np.max(np.abs(seg_data), axis=1) + 100
             fig_sz_h = 6 * y_ranges / 1500
-            fig, axes = plt.subplots(nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h)))
+            fig, axes = plt.subplots(
+                nb_leads, 1, sharex=True, figsize=(fig_sz_w, np.sum(fig_sz_h))
+            )
             if nb_leads == 1:
                 axes = [axes]
             for idx in range(nb_leads):
-                axes[idx].plot(secs, seg_data[idx], color="black", label=f"lead - {_leads[idx]}")
+                axes[idx].plot(
+                    secs, seg_data[idx], color="black", label=f"lead - {_leads[idx]}"
+                )
                 axes[idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
                 # NOTE that `Locator` has default `MAXTICKS` equal to 1000
                 if ticks_granularity >= 1:
                     axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
                     axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
-                    axes[idx].grid(which="major", linestyle="-", linewidth="0.5", color="red")
+                    axes[idx].grid(
+                        which="major", linestyle="-", linewidth="0.5", color="red"
+                    )
                 if ticks_granularity >= 2:
                     axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                     axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
-                    axes[idx].grid(which="minor", linestyle=":", linewidth="0.5", color="black")
+                    axes[idx].grid(
+                        which="minor", linestyle=":", linewidth="0.5", color="black"
+                    )
                 for k, l_itv in seg_ann.items():
                     if k == "N":
                         continue
                     for itv in l_itv:
                         axes[idx].axvspan(
-                            itv[0], itv[1],
-                            color=self.palette[k], alpha=ann_plot_alpha,
+                            itv[0],
+                            itv[1],
+                            color=self.palette[k],
+                            alpha=ann_plot_alpha,
                             label=k,
                         )
                 for ri in seg_rpeaks:
                     axes[idx].axvspan(
-                        ri-0.01, ri+0.01,
-                        color=self.palette["qrs"], alpha=rpeaks_plot_alpha,
+                        ri - 0.01,
+                        ri + 0.01,
+                        color=self.palette["qrs"],
+                        alpha=rpeaks_plot_alpha,
                     )
                     axes[idx].axvspan(
-                        ri-0.075, ri+0.075,
-                        color=self.palette["qrs"], alpha=ann_plot_alpha
+                        ri - 0.075,
+                        ri + 0.075,
+                        color=self.palette["qrs"],
+                        alpha=ann_plot_alpha,
                     )
                 axes[idx].legend(loc="upper left")
                 axes[idx].set_xlim(secs[0], secs[-1])

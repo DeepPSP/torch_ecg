@@ -10,7 +10,6 @@ from typing import Union, Sequence, List, Tuple, Optional, NoReturn
 from numbers import Real
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import Tensor
 from torch import nn
@@ -33,12 +32,15 @@ __all__ = [
     "default_collate_fn",
     "compute_receptive_field",
     "adjust_cnn_filter_lengths",
-    "SizeMixin", "CkptMixin",
+    "SizeMixin",
+    "CkptMixin",
 ]
 
 
-def extend_predictions(preds:Sequence, classes:List[str], extended_classes:List[str]) -> np.ndarray:
-    """ finished, checked,
+def extend_predictions(
+    preds: Sequence, classes: List[str], extended_classes: List[str]
+) -> np.ndarray:
+    """finished, checked,
 
     extend the prediction arrays to prediction arrays in larger range of classes
 
@@ -60,10 +62,12 @@ def extend_predictions(preds:Sequence, classes:List[str], extended_classes:List[
         of shape (n_records, n_classes), or (n_classes,)
     """
     _preds = np.atleast_2d(preds)
-    assert _preds.shape[1] == len(classes), \
-        f"`pred` indicates {_preds.shape[1]} classes, while `classes` has {len(classes)}"
-    assert len(set(classes) - set(extended_classes)) == 0, \
-        f"`extended_classes` is not a superset of `classes`, with {set(classes)-set(extended_classes)} in `classes` but not in `extended_classes`"
+    assert _preds.shape[1] == len(
+        classes
+    ), f"`pred` indicates {_preds.shape[1]} classes, while `classes` has {len(classes)}"
+    assert (
+        len(set(classes) - set(extended_classes)) == 0
+    ), f"`extended_classes` is not a superset of `classes`, with {set(classes)-set(extended_classes)} in `classes` but not in `extended_classes`"
 
     extended_preds = np.zeros((_preds.shape[0], len(extended_classes)))
 
@@ -78,19 +82,21 @@ def extend_predictions(preds:Sequence, classes:List[str], extended_classes:List[
 
 
 # utils for computing output shape
-def compute_output_shape(layer_type:str,
-                         input_shape:Sequence[Union[int, None]],
-                         num_filters:Optional[int]=None,
-                         kernel_size:Union[Sequence[int], int]=1,
-                         stride:Union[Sequence[int], int]=1,
-                         padding:Union[Sequence[int], int]=0,
-                         output_padding:Union[Sequence[int], int]=0,
-                         dilation:Union[Sequence[int], int]=1,
-                         channel_last:bool=False) -> Tuple[Union[int, None]]:
-    """ finished, checked,
+def compute_output_shape(
+    layer_type: str,
+    input_shape: Sequence[Union[int, None]],
+    num_filters: Optional[int] = None,
+    kernel_size: Union[Sequence[int], int] = 1,
+    stride: Union[Sequence[int], int] = 1,
+    padding: Union[Sequence[int], int] = 0,
+    output_padding: Union[Sequence[int], int] = 0,
+    dilation: Union[Sequence[int], int] = 1,
+    channel_last: bool = False,
+) -> Tuple[Union[int, None]]:
+    """finished, checked,
 
     compute the output shape of a (transpose) convolution/maxpool/avgpool layer
-    
+
     Parameters
     ----------
     layer_type: str,
@@ -125,27 +131,53 @@ def compute_output_shape(layer_type:str,
     [1] https://discuss.pytorch.org/t/utility-function-for-calculating-the-shape-of-a-conv-output/11173/5
     """
     __TYPES__ = [
-        'conv', 'convolution',
-        'deconv', 'deconvolution', 'transposeconv', 'transposeconvolution',
-        'maxpool', 'maxpooling',
-        'avgpool', 'avgpooling', 'averagepool', 'averagepooling',
+        "conv",
+        "convolution",
+        "deconv",
+        "deconvolution",
+        "transposeconv",
+        "transposeconvolution",
+        "maxpool",
+        "maxpooling",
+        "avgpool",
+        "avgpooling",
+        "averagepool",
+        "averagepooling",
     ]
     lt = "".join(layer_type.lower().split("_"))
     assert lt in __TYPES__
-    if lt in ['conv', 'convolution',]:
+    if lt in [
+        "conv",
+        "convolution",
+    ]:
         # as function of dilation, kernel_size
         minus_term = lambda d, k: d * (k - 1) + 1
         out_channels = num_filters
-    elif lt in ['maxpool', 'maxpooling',]:
+    elif lt in [
+        "maxpool",
+        "maxpooling",
+    ]:
         minus_term = lambda d, k: d * (k - 1) + 1
         out_channels = input_shape[-1] if channel_last else input_shape[1]
-    elif lt in ['avgpool', 'avgpooling', 'averagepool', 'averagepooling',]:
+    elif lt in [
+        "avgpool",
+        "avgpooling",
+        "averagepool",
+        "averagepooling",
+    ]:
         minus_term = lambda d, k: k
         out_channels = input_shape[-1] if channel_last else input_shape[1]
-    elif lt in ['deconv', 'deconvolution', 'transposeconv', 'transposeconvolution',]:
+    elif lt in [
+        "deconv",
+        "deconvolution",
+        "transposeconv",
+        "transposeconvolution",
+    ]:
         out_channels = num_filters
     dim = len(input_shape) - 2
-    assert dim > 0, "input_shape should be a sequence of length at least 3, to be a valid (with batch and channel) shape of a non-degenerate Tensor"
+    assert (
+        dim > 0
+    ), "input_shape should be a sequence of length at least 3, to be a valid (with batch and channel) shape of a non-degenerate Tensor"
 
     # none_dim_msg = "only batch and channel dimension can be `None`"
     # if channel_last:
@@ -156,7 +188,9 @@ def compute_output_shape(layer_type:str,
     if channel_last:
         if all([n is None for n in input_shape[1:-1]]):
             if out_channels is None:
-                raise ValueError("out channel dimension and spatial dimensions are all `None`")
+                raise ValueError(
+                    "out channel dimension and spatial dimensions are all `None`"
+                )
             output_shape = tuple(list(input_shape[:-1]) + [out_channels])
             return output_shape
         elif any([n is None for n in input_shape[1:-1]]):
@@ -164,7 +198,9 @@ def compute_output_shape(layer_type:str,
     else:
         if all([n is None for n in input_shape[2:]]):
             if out_channels is None:
-                raise ValueError("out channel dimension and spatial dimensions are all `None`")
+                raise ValueError(
+                    "out channel dimension and spatial dimensions are all `None`"
+                )
             output_shape = tuple([input_shape[0], out_channels] + list(input_shape[2:]))
             return output_shape
         elif any([n is None for n in input_shape[2:]]):
@@ -175,52 +211,74 @@ def compute_output_shape(layer_type:str,
     elif len(kernel_size) == dim:
         _kernel_size = kernel_size
     else:
-        raise ValueError(f"input has {dim} dimensions, while kernel has {len(kernel_size)} dimensions, both not including the channel dimension")
-    
+        raise ValueError(
+            f"input has {dim} dimensions, while kernel has {len(kernel_size)} dimensions, both not including the channel dimension"
+        )
+
     if isinstance(stride, int):
         _stride = list(repeat(stride, dim))
     elif len(stride) == dim:
         _stride = stride
     else:
-        raise ValueError(f"input has {dim} dimensions, while kernel has {len(stride)} dimensions, both not including the channel dimension")
+        raise ValueError(
+            f"input has {dim} dimensions, while kernel has {len(stride)} dimensions, both not including the channel dimension"
+        )
 
     if isinstance(padding, int):
         _padding = list(repeat(padding, dim))
     elif len(padding) == dim:
         _padding = padding
     else:
-        raise ValueError(f"input has {dim} dimensions, while kernel has {len(padding)} dimensions, both not including the channel dimension")
+        raise ValueError(
+            f"input has {dim} dimensions, while kernel has {len(padding)} dimensions, both not including the channel dimension"
+        )
 
     if isinstance(output_padding, int):
         _output_padding = list(repeat(output_padding, dim))
     elif len(output_padding) == dim:
         _output_padding = output_padding
     else:
-        raise ValueError(f"input has {dim} dimensions, while kernel has {len(output_padding)} dimensions, both not including the channel dimension")
+        raise ValueError(
+            f"input has {dim} dimensions, while kernel has {len(output_padding)} dimensions, both not including the channel dimension"
+        )
 
     if isinstance(dilation, int):
         _dilation = list(repeat(dilation, dim))
     elif len(dilation) == dim:
         _dilation = dilation
     else:
-        raise ValueError(f"input has {dim} dimensions, while kernel has {len(dilation)} dimensions, both not including the channel dimension")
-    
+        raise ValueError(
+            f"input has {dim} dimensions, while kernel has {len(dilation)} dimensions, both not including the channel dimension"
+        )
+
     if channel_last:
         _input_shape = list(input_shape[1:-1])
     else:
         _input_shape = list(input_shape[2:])
-    
-    if lt in ['deconv', 'deconvolution', 'transposeconv', 'transposeconvolution',]:
+
+    if lt in [
+        "deconv",
+        "deconvolution",
+        "transposeconv",
+        "transposeconvolution",
+    ]:
         output_shape = [
-            (i-1) * s - 2 * p + d * (k-1) + o + 1 \
-                for i, p, o, d, k, s in \
-                    zip(_input_shape, _padding, _output_padding, _dilation, _kernel_size, _stride)
-        ]    
+            (i - 1) * s - 2 * p + d * (k - 1) + o + 1
+            for i, p, o, d, k, s in zip(
+                _input_shape,
+                _padding,
+                _output_padding,
+                _dilation,
+                _kernel_size,
+                _stride,
+            )
+        ]
     else:
         output_shape = [
-            floor( ( ( i + 2*p - minus_term(d, k) ) / s ) + 1 ) \
-                for i, p, d, k, s in \
-                    zip(_input_shape, _padding, _dilation, _kernel_size, _stride)
+            floor(((i + 2 * p - minus_term(d, k)) / s) + 1)
+            for i, p, d, k, s in zip(
+                _input_shape, _padding, _dilation, _kernel_size, _stride
+            )
         ]
     if channel_last:
         output_shape = tuple([input_shape[0]] + output_shape + [out_channels])
@@ -230,14 +288,16 @@ def compute_output_shape(layer_type:str,
     return output_shape
 
 
-def compute_conv_output_shape(input_shape:Sequence[Union[int, None]],
-                              num_filters:Optional[int]=None,
-                              kernel_size:Union[Sequence[int], int]=1,
-                              stride:Union[Sequence[int], int]=1,
-                              padding:Union[Sequence[int], int]=0,
-                              dilation:Union[Sequence[int], int]=1,
-                              channel_last:bool=False) -> Tuple[Union[int, None]]:
-    """ finished, cheched,
+def compute_conv_output_shape(
+    input_shape: Sequence[Union[int, None]],
+    num_filters: Optional[int] = None,
+    kernel_size: Union[Sequence[int], int] = 1,
+    stride: Union[Sequence[int], int] = 1,
+    padding: Union[Sequence[int], int] = 0,
+    dilation: Union[Sequence[int], int] = 1,
+    channel_last: bool = False,
+) -> Tuple[Union[int, None]]:
+    """finished, cheched,
 
     compute the output shape of a convolution/maxpool/avgpool layer
 
@@ -264,20 +324,28 @@ def compute_conv_output_shape(input_shape:Sequence[Union[int, None]],
         shape of the output Tensor
     """
     output_shape = compute_output_shape(
-        'conv',
-        input_shape, num_filters, kernel_size, stride, padding, 0, dilation,
+        "conv",
+        input_shape,
+        num_filters,
+        kernel_size,
+        stride,
+        padding,
+        0,
+        dilation,
         channel_last,
     )
     return output_shape
 
 
-def compute_maxpool_output_shape(input_shape:Sequence[Union[int, None]],
-                                 kernel_size:Union[Sequence[int], int]=1,
-                                 stride:Union[Sequence[int], int]=1,
-                                 padding:Union[Sequence[int], int]=0,
-                                 dilation:Union[Sequence[int], int]=1,
-                                 channel_last:bool=False) -> Tuple[Union[int, None]]:
-    """ finished, cheched,
+def compute_maxpool_output_shape(
+    input_shape: Sequence[Union[int, None]],
+    kernel_size: Union[Sequence[int], int] = 1,
+    stride: Union[Sequence[int], int] = 1,
+    padding: Union[Sequence[int], int] = 0,
+    dilation: Union[Sequence[int], int] = 1,
+    channel_last: bool = False,
+) -> Tuple[Union[int, None]]:
+    """finished, cheched,
 
     compute the output shape of a maxpool layer
 
@@ -302,19 +370,27 @@ def compute_maxpool_output_shape(input_shape:Sequence[Union[int, None]],
         shape of the output Tensor
     """
     output_shape = compute_output_shape(
-        'maxpool',
-        input_shape, 1, kernel_size, stride, padding, 0, dilation,
+        "maxpool",
+        input_shape,
+        1,
+        kernel_size,
+        stride,
+        padding,
+        0,
+        dilation,
         channel_last,
     )
     return output_shape
 
 
-def compute_avgpool_output_shape(input_shape:Sequence[Union[int, None]],
-                                 kernel_size:Union[Sequence[int], int]=1,
-                                 stride:Union[Sequence[int], int]=1,
-                                 padding:Union[Sequence[int], int]=0,
-                                 channel_last:bool=False) -> Tuple[Union[int, None]]:
-    """ finished, cheched,
+def compute_avgpool_output_shape(
+    input_shape: Sequence[Union[int, None]],
+    kernel_size: Union[Sequence[int], int] = 1,
+    stride: Union[Sequence[int], int] = 1,
+    padding: Union[Sequence[int], int] = 0,
+    channel_last: bool = False,
+) -> Tuple[Union[int, None]]:
+    """finished, cheched,
 
     compute the output shape of a avgpool layer
 
@@ -337,25 +413,33 @@ def compute_avgpool_output_shape(input_shape:Sequence[Union[int, None]],
         shape of the output Tensor
     """
     output_shape = compute_output_shape(
-        'avgpool',
-        input_shape, 1, kernel_size, stride, padding, 0, 1,
+        "avgpool",
+        input_shape,
+        1,
+        kernel_size,
+        stride,
+        padding,
+        0,
+        1,
         channel_last,
     )
     return output_shape
 
 
-def compute_deconv_output_shape(input_shape:Sequence[Union[int, None]],
-                                num_filters:Optional[int]=None,
-                                kernel_size:Union[Sequence[int], int]=1,
-                                stride:Union[Sequence[int], int]=1,
-                                padding:Union[Sequence[int], int]=0,
-                                output_padding:Union[Sequence[int], int]=0,
-                                dilation:Union[Sequence[int], int]=1,
-                                channel_last:bool=False) -> Tuple[Union[int, None]]:
-    """ finished, checked,
+def compute_deconv_output_shape(
+    input_shape: Sequence[Union[int, None]],
+    num_filters: Optional[int] = None,
+    kernel_size: Union[Sequence[int], int] = 1,
+    stride: Union[Sequence[int], int] = 1,
+    padding: Union[Sequence[int], int] = 0,
+    output_padding: Union[Sequence[int], int] = 0,
+    dilation: Union[Sequence[int], int] = 1,
+    channel_last: bool = False,
+) -> Tuple[Union[int, None]]:
+    """finished, checked,
 
     compute the output shape of a transpose convolution layer
-    
+
     Parameters
     ----------
     input_shape: sequence of int or None,
@@ -384,15 +468,23 @@ def compute_deconv_output_shape(input_shape:Sequence[Union[int, None]],
         shape of the output Tensor
     """
     output_shape = compute_output_shape(
-        'deconv',
-        input_shape, num_filters, kernel_size, stride, padding, output_padding, dilation,
+        "deconv",
+        input_shape,
+        num_filters,
+        kernel_size,
+        stride,
+        padding,
+        output_padding,
+        dilation,
         channel_last,
     )
     return output_shape
 
 
-def compute_module_size(module:nn.Module, human:bool=False, dtype:str="float32") -> Union[int, str]:
-    """ finished, checked,
+def compute_module_size(
+    module: nn.Module, human: bool = False, dtype: str = "float32"
+) -> Union[int, str]:
+    """finished, checked,
 
     compute the size (number of parameters) of a module
 
@@ -405,7 +497,7 @@ def compute_module_size(module:nn.Module, human:bool=False, dtype:str="float32")
         by appending a suffix corresponding to the unit (K, M, G, T, P)
     dtype: str, default "float32",
         data type of the module parameters, one of "float16", "float32", "float64"
-    
+
     Returns
     -------
     n_params: int,
@@ -414,21 +506,25 @@ def compute_module_size(module:nn.Module, human:bool=False, dtype:str="float32")
     module_parameters = filter(lambda p: p.requires_grad, module.parameters())
     n_params = sum([np.prod(p.size()) for p in module_parameters])
     if human:
-        n_params = n_params * {"float16":2, "float32":4, "float64":8}[dtype.lower()] / 1024
+        n_params = (
+            n_params * {"float16": 2, "float32": 4, "float64": 8}[dtype.lower()] / 1024
+        )
         div_count = 0
         while n_params >= 1024:
             n_params /= 1024
             div_count += 1
         # cvt_dict = {0:"K", 1:"M", 2:"G", 3:"T", 4:"P"}
-        cvt_dict = {c:u for c,u in enumerate(list("KMGTP"))}
+        cvt_dict = {c: u for c, u in enumerate(list("KMGTP"))}
         n_params = f"""{n_params:.1f}{cvt_dict[div_count]}"""
     return n_params
 
 
-def compute_receptive_field(kernel_sizes:Union[Sequence[int], int]=1,
-                            strides:Union[Sequence[int], int]=1,
-                            dilations:Union[Sequence[int], int]=1,
-                            input_len:Optional[int]=None) -> Union[int, float]:
+def compute_receptive_field(
+    kernel_sizes: Union[Sequence[int], int] = 1,
+    strides: Union[Sequence[int], int] = 1,
+    dilations: Union[Sequence[int], int] = 1,
+    input_len: Optional[int] = None,
+) -> Union[int, float]:
     r""" finished, checked,
 
     computes the (generic) receptive field of feature map of certain channel,
@@ -472,31 +568,39 @@ def compute_receptive_field(kernel_sizes:Union[Sequence[int], int]=1,
     Examples
     --------
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2])
-    ... 90
+    90
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[2,1,2,4,1,8,8,8,1])
-    ... 484
+    484
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[4,1,4,8,1,16,32,64,1])
-    ... 1984
+    1984
     this is the receptive fields of the output feature maps
     of the 3 branches of the multi-scopic net, using its original hyper-parameters,
     (note the 3 max pooling layers)
     """
-    _kernel_sizes = [kernel_sizes] if isinstance(kernel_sizes, int) else list(kernel_sizes)
+    _kernel_sizes = (
+        [kernel_sizes] if isinstance(kernel_sizes, int) else list(kernel_sizes)
+    )
     num_layers = len(_kernel_sizes)
-    _strides = list(repeat(strides, num_layers)) if isinstance(strides, int) else list(strides)
-    _dilations = list(repeat(dilations, num_layers)) if isinstance(dilations, int) else list(dilations)
+    _strides = (
+        list(repeat(strides, num_layers)) if isinstance(strides, int) else list(strides)
+    )
+    _dilations = (
+        list(repeat(dilations, num_layers))
+        if isinstance(dilations, int)
+        else list(dilations)
+    )
     assert num_layers == len(_strides) == len(_dilations)
     receptive_field = 1
     for idx, (k, d) in enumerate(zip(_kernel_sizes, _dilations)):
         s = np.prod(_strides[:idx]) if idx > 0 else 1
-        receptive_field += d * (k-1) * s
+        receptive_field += d * (k - 1) * s
     if input_len is not None:
         receptive_field = min(receptive_field, input_len)
     return receptive_field
 
 
-def default_collate_fn(batch:Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, ...]:
-    """ finished, checked,
+def default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, ...]:
+    """finished, checked,
 
     collate functions for model training
 
@@ -507,7 +611,7 @@ def default_collate_fn(batch:Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, 
     batch: sequence,
         sequence of n-tuples,
         in which the first element is the signal, the second is the label, ...
-    
+
     Returns
     -------
     tuple of Tensor,
@@ -526,8 +630,8 @@ def default_collate_fn(batch:Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, 
     return tuple(ret)
 
 
-def intervals_iou(itv_a:Tensor, itv_b:Tensor, iou_type="iou") -> Tensor:
-    """ NOT finished, NOT checked,
+def intervals_iou(itv_a: Tensor, itv_b: Tensor, iou_type="iou") -> Tensor:
+    """NOT finished, NOT checked,
 
     1d analogue of the 2d bounding boxes IoU,
     for 1d "object detection" models
@@ -540,15 +644,23 @@ def intervals_iou(itv_a:Tensor, itv_b:Tensor, iou_type="iou") -> Tensor:
         type of IoU
     """
     raise NotImplementedError
-    left_intersect = torch.max(itv_a[:,np.newaxis,:1], itvb[...,:1]).squeeze(-1)  # shape (N,K)
-    right_intersect = torch.min(itv_a[:,np.newaxis,1:], itvb[...,1:]).squeeze(-1)  # shape (N,K)
+    left_intersect = torch.max(itv_a[:, np.newaxis, :1], itvb[..., :1]).squeeze(
+        -1
+    )  # shape (N,K)
+    right_intersect = torch.min(itv_a[:, np.newaxis, 1:], itvb[..., 1:]).squeeze(
+        -1
+    )  # shape (N,K)
 
-    left_union = torch.min(itv_a[:,np.newaxis,:1], itvb[...,:1]).squeeze(-1)  # shape (N,K)
-    right_union = torch.max(itv_a[:,np.newaxis,1:], itvb[...,1:]).squeeze(-1)  # shape (N,K)
+    left_union = torch.min(itv_a[:, np.newaxis, :1], itvb[..., :1]).squeeze(
+        -1
+    )  # shape (N,K)
+    right_union = torch.max(itv_a[:, np.newaxis, 1:], itvb[..., 1:]).squeeze(
+        -1
+    )  # shape (N,K)
 
     en = (left_intersect < right_intersect).type(left_intersect.type())
-    len_intersect = (right_intersect-left_intersect) * en
-    len_union = (right_union-left_union)
+    len_intersect = (right_intersect - left_intersect) * en
+    len_union = right_union - left_union
 
     iou = _true_divide(len_intersect, len_union)
 
@@ -564,15 +676,20 @@ def intervals_iou(itv_a:Tensor, itv_b:Tensor, iou_type="iou") -> Tensor:
     if iou_type.lower() == "diou":
         return diou
 
-    len_a = a[...,1] - a[...,0]
-    len_b = b[...,1] - b[...,0]
+    len_a = a[..., 1] - a[..., 0]
+    len_b = b[..., 1] - b[..., 0]
 
     if iou_type.lower() == "ciou":
         raise NotImplementedError
 
 
-def _adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True, pattern:str="filter_length|filt_size") -> dict:
-    """ finished, checked,
+def _adjust_cnn_filter_lengths(
+    config: dict,
+    fs: int,
+    ensure_odd: bool = True,
+    pattern: str = "filter_length|filt_size",
+) -> dict:
+    """finished, checked,
 
     adjust the filter lengths (kernel sizes) in the config for convolutional neural networks,
     according to the new sampling frequency
@@ -606,7 +723,8 @@ def _adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True, patter
                 config[k] = [
                     _adjust_cnn_filter_lengths(
                         {"filter_length": l, "fs": config["fs"]}, fs, ensure_odd
-                    )["filter_length"] for l in v
+                    )["filter_length"]
+                    for l in v
                 ]
             elif isinstance(v, Real):
                 # DO NOT use `int`, which might not work for numpy array elements
@@ -616,14 +734,22 @@ def _adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True, patter
                         config[k] = config[k] - config[k] % 2 + 1
         elif isinstance(v, Sequence) and not isinstance(v, (str, bytes)):
             tmp_configs = [
-                _adjust_cnn_filter_lengths({k:item, "fs":config["fs"]}, fs, ensure_odd, pattern) \
-                    for item in v
+                _adjust_cnn_filter_lengths(
+                    {k: item, "fs": config["fs"]}, fs, ensure_odd, pattern
+                )
+                for item in v
             ]
             config[k] = [item[k] for item in tmp_configs]
     return config
 
-def adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True, pattern:str="filter_length|filt_size") -> dict:
-    """ finished, checked,
+
+def adjust_cnn_filter_lengths(
+    config: dict,
+    fs: int,
+    ensure_odd: bool = True,
+    pattern: str = "filter_length|filt_size",
+) -> dict:
+    """finished, checked,
 
     adjust the filter lengths in the config for convolutional neural networks,
     according to the new sampling frequency
@@ -650,19 +776,24 @@ def adjust_cnn_filter_lengths(config:dict, fs:int, ensure_odd:bool=True, pattern
 
 
 class SizeMixin(object):
-    """ finished, checked,
+    """finished, checked,
 
     mixin class for size related methods
     """
 
     @property
     def module_size(self) -> int:
-        return compute_module_size(self, dtype=self.dtype_,)
+        return compute_module_size(
+            self,
+            dtype=self.dtype_,
+        )
 
     @property
     def module_size_(self) -> str:
         return compute_module_size(
-            self, human=True, dtype=self.dtype_,
+            self,
+            human=True,
+            dtype=self.dtype_,
         )
 
     @property
@@ -693,14 +824,16 @@ class SizeMixin(object):
 
 
 class CkptMixin(object):
-    """ finished, checked,
+    """finished, checked,
 
     mixin class for loading from checkpoint class methods
     """
 
     @classmethod
-    def from_checkpoint(cls, path:str, device:Optional[torch.device]=None) -> Tuple[nn.Module, dict]:
-        """ finished, checked,
+    def from_checkpoint(
+        cls, path: str, device: Optional[torch.device] = None
+    ) -> Tuple[nn.Module, dict]:
+        """finished, checked,
 
         load a model from a checkpoint
 
@@ -722,7 +855,9 @@ class CkptMixin(object):
         _device = device or DEFAULTS.device
         ckpt = torch.load(path, map_location=_device)
         aux_config = ckpt.get("train_config", None) or ckpt.get("config", None)
-        assert aux_config is not None, "input checkpoint has no sufficient data to recover a model"
+        assert (
+            aux_config is not None
+        ), "input checkpoint has no sufficient data to recover a model"
         kwargs = dict(
             classes=aux_config["classes"],
             config=ckpt["model_config"],

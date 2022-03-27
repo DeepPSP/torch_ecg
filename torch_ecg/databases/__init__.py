@@ -42,18 +42,14 @@ __all__ = [
     "LTAFDB",
     "LUDB",
     "MITDB",
-
     # from CPSC
     "CPSC2018",
     "CPSC2019",
     "CPSC2020",
     "CPSC2021",
-
     # from NSRR
     "SHHS",
-
     "aux_data",
-
     "WFDB_Beat_Annotations",
     "WFDB_Non_Beat_Annotations",
     "WFDB_Rhythm_Annotations",

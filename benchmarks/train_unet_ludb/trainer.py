@@ -11,7 +11,7 @@ from typing import Union, Optional, Tuple, Sequence, NoReturn, Any, Dict, List
 from numbers import Real, Number
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
+
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
@@ -27,6 +27,7 @@ try:
     import torch_ecg
 except ModuleNotFoundError:
     from pathlib import Path
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
@@ -51,19 +52,21 @@ __all__ = [
 
 
 class LUDBTrainer(BaseTrainer):
-    """
-    """
+    """ """
+
     __DEBUG__ = True
     __name__ = "LUDBTrainer"
 
-    def __init__(self,
-                 model:nn.Module,
-                 model_config:dict,
-                 train_config:dict,
-                 device:Optional[torch.device]=None,
-                 lazy:bool=True,
-                 **kwargs:Any,) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        model: nn.Module,
+        model_config: dict,
+        train_config: dict,
+        device: Optional[torch.device] = None,
+        lazy: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -96,9 +99,13 @@ class LUDBTrainer(BaseTrainer):
         """
         super().__init__(model, LUDB, model_config, train_config, device, lazy)
 
-    def _setup_dataloaders(self, train_dataset:Optional[Dataset]=None, val_dataset:Optional[Dataset]=None) -> NoReturn:
-        """ finished, checked,
-        
+    def _setup_dataloaders(
+        self,
+        train_dataset: Optional[Dataset] = None,
+        val_dataset: Optional[Dataset] = None,
+    ) -> NoReturn:
+        """finished, checked,
+
         setup the dataloaders for training and validation
 
         Parameters
@@ -109,16 +116,20 @@ class LUDBTrainer(BaseTrainer):
             the validation dataset
         """
         if train_dataset is None:
-            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
+            train_dataset = self.dataset_cls(
+                config=self.train_config, training=True, lazy=False
+            )
 
         if self.train_config.debug:
             val_train_dataset = train_dataset
         else:
             val_train_dataset = None
         if val_dataset is None:
-            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
+            val_dataset = self.dataset_cls(
+                config=self.train_config, training=False, lazy=False
+            )
 
-         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+        # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
         num_workers = 4
 
         self.train_loader = DataLoader(
@@ -153,7 +164,9 @@ class LUDBTrainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def run_one_step(self, *data:Tuple[torch.Tensor, torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
+    def run_one_step(
+        self, *data: Tuple[torch.Tensor, torch.Tensor]
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
 
         Parameters
@@ -184,9 +197,8 @@ class LUDBTrainer(BaseTrainer):
         return preds, labels
 
     @torch.no_grad()
-    def evaluate(self, data_loader:DataLoader) -> Dict[str, float]:
-        """
-        """
+    def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
+        """ """
         self.model.eval()
 
         all_scalar_preds = []
@@ -203,7 +215,7 @@ class LUDBTrainer(BaseTrainer):
             model_output = self._model.inference(signals)
             all_scalar_preds.append(model_output.prob)
             all_mask_preds.append(model_output.mask)
-        
+
         # all_scalar_preds of shape (n_samples, seq_len, n_classes)
         all_scalar_preds = np.concatenate(all_scalar_preds, axis=0)
         # all_scalar_preds of shape (n_samples, seq_len)
@@ -213,7 +225,9 @@ class LUDBTrainer(BaseTrainer):
         all_labels = np.concatenate(all_labels, axis=0)
 
         if self.train_config.loss != "CrossEntropyLoss":
-            all_labels = all_labels.argmax(axis=-1)  # (n_samples, seq_len, n_classes) -> (n_samples, seq_len)
+            all_labels = all_labels.argmax(
+                axis=-1
+            )  # (n_samples, seq_len, n_classes) -> (n_samples, seq_len)
 
         # print(f"all_labels.shape: {all_labels.shape}, nan: {np.isnan(all_labels).any()}, inf: {np.isinf(all_labels).any()}")
         # print(f"all_scalar_preds.shape: {all_scalar_preds.shape}, nan: {np.isnan(all_scalar_preds).any()}, inf: {np.isinf(all_scalar_preds).any()}")
@@ -223,18 +237,29 @@ class LUDBTrainer(BaseTrainer):
         # each scoring is a dict consisting of the following metrics:
         # sensitivity, precision, f1_score, mean_error, standard_deviation
         eval_res_split = compute_metrics(
-            np.repeat(all_labels[:,np.newaxis,:], self.model_config.n_leads, axis=1),
-            np.repeat(all_mask_preds[:,np.newaxis,:], self.model_config.n_leads, axis=1),
+            np.repeat(all_labels[:, np.newaxis, :], self.model_config.n_leads, axis=1),
+            np.repeat(
+                all_mask_preds[:, np.newaxis, :], self.model_config.n_leads, axis=1
+            ),
             self._cm,
             self.train_config.fs,
         )
 
         # TODO: provide numerical values for the metrics from all of the dicts of eval_res
         eval_res = {
-            metric: np.mean([eval_res_split[f"{wf}_{pos}"][metric]]) \
-                for metric in ["sensitivity", "precision", "f1_score", "mean_error", "standard_deviation",] \
-                    for wf in self._cm \
-                        for pos in ["onset", "offset",]
+            metric: np.mean([eval_res_split[f"{wf}_{pos}"][metric]])
+            for metric in [
+                "sensitivity",
+                "precision",
+                "f1_score",
+                "mean_error",
+                "standard_deviation",
+            ]
+            for wf in self._cm
+            for pos in [
+                "onset",
+                "offset",
+            ]
         }
 
         self.model.train()
@@ -243,8 +268,7 @@ class LUDBTrainer(BaseTrainer):
 
     @property
     def _cm(self) -> Dict[str, str]:
-        """
-        """
+        """ """
         return {
             "pwave": self.train_config.class_map["p"],
             "qrs": self.train_config.class_map["N"],
@@ -260,8 +284,7 @@ class LUDBTrainer(BaseTrainer):
 
     @property
     def extra_required_train_config_fields(self) -> List[str]:
-        """
-        """
+        """ """
         return []
 
     # @property
@@ -273,46 +296,60 @@ class LUDBTrainer(BaseTrainer):
 
 
 def get_args(**kwargs):
-    """
-    """
+    """ """
     cfg = deepcopy(kwargs)
     parser = argparse.ArgumentParser(
         description="Train the Model on LUDB",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     # parser.add_argument(
     #     "-l", "--learning-rate",
     #     metavar="LR", type=float, nargs="?", default=0.001,
     #     help="Learning rate",
     #     dest="learning_rate")
     parser.add_argument(
-        "-b", "--batch-size",
-        type=int, default=32,
+        "-b",
+        "--batch-size",
+        type=int,
+        default=32,
         help="the batch size for training",
-        dest="batch_size")
+        dest="batch_size",
+    )
     parser.add_argument(
-        "-m", "--model-name",
-        type=str, default="unet",
+        "-m",
+        "--model-name",
+        type=str,
+        default="unet",
         help="name of the model to train, `unet` or `subtract_unet`",
-        dest="model_name")
+        dest="model_name",
+    )
     parser.add_argument(
-        "--keep-checkpoint-max", type=int, default=50,
+        "--keep-checkpoint-max",
+        type=int,
+        default=50,
         help="maximum number of checkpoints to keep. If set 0, all checkpoints will be kept",
-        dest="keep_checkpoint_max")
+        dest="keep_checkpoint_max",
+    )
     parser.add_argument(
-        "--optimizer", type=str, default="adamw_amsgrad",
+        "--optimizer",
+        type=str,
+        default="adamw_amsgrad",
         help="training optimizer",
-        dest="train_optimizer")
+        dest="train_optimizer",
+    )
     parser.add_argument(
-        "--debug", type=str2bool, default=False,
+        "--debug",
+        type=str2bool,
+        default=False,
         help="train with more debugging information",
-        dest="debug")
-    
+        dest="debug",
+    )
+
     args = vars(parser.parse_args())
 
     cfg.update(args)
-    
-    return CFG(cfg)
 
+    return CFG(cfg)
 
 
 if __name__ == "__main__":

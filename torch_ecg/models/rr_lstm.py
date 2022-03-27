@@ -14,7 +14,6 @@ from typing import Union, Optional, Tuple, Sequence, NoReturn, Any
 from numbers import Real, Number
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 import torch
 from torch import nn
@@ -27,14 +26,20 @@ from ..utils.misc import dict_to_str
 from ..utils.utils_nn import compute_module_size, SizeMixin, CkptMixin
 from ..utils.outputs import BaseOutput
 from ..models._nets import (
-    Mish, Swish, Activations,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
+    Mish,
+    Swish,
+    Activations,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
     StackedLSTM,
     AttentionWithContext,
-    SelfAttention, MultiHeadAttention,
+    SelfAttention,
+    MultiHeadAttention,
     AttentivePooling,
     SeqLin,
-    CRF, ExtendedCRF,
+    CRF,
+    ExtendedCRF,
 )
 
 if DEFAULTS.torch_dtype == torch.float64:
@@ -50,11 +55,14 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
     """
     classification or sequence labeling using LSTM and using RR intervals as input
     """
+
     __DEBUG__ = True
     __name__ = "RR_LSTM"
 
-    def __init__(self, classes:Sequence[str], config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self, classes: Sequence[str], config: Optional[CFG] = None, **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -71,8 +79,10 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
         self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
-        
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
+
         self.lstm = StackedLSTM(
             input_size=1,
             hidden_sizes=self.config.lstm.hidden_sizes,
@@ -131,7 +141,9 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
             raise NotImplementedError
 
         if self.__DEBUG__ and self.attn:
-            print(f"attn module \042{self.config.attn.name}\042 has size {self.attn.module_size}")
+            print(
+                f"attn module \042{self.config.attn.name}\042 has size {self.attn.module_size}"
+            )
 
         if not self.config.lstm.retseq:
             self.pool = None
@@ -154,18 +166,20 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
             self.clf = ExtendedCRF(
                 in_channels=clf_input_size,
                 num_tags=self.n_classes,
-                bias=self.config.clf.crf.proj_bias
+                bias=self.config.clf.crf.proj_bias,
             )
 
         if self.__DEBUG__ and self.clf:
-            print(f"clf module \042{self.config.clf.name}\042 has size {self.clf.module_size}")
+            print(
+                f"clf module \042{self.config.clf.name}\042 has size {self.clf.module_size}"
+            )
 
         # for inference, except for crf
         self.softmax = nn.Softmax(dim=-1)
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
@@ -179,25 +193,31 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
         """
         # (batch_size, n_channels, seq_len) --> (seq_len, batch_size, n_channels)
         # x = input.permute(1,2,0)
-        x = self.lstm(input)  # (seq_len, batch_size, n_channels) or (batch_size, n_channels)
+        x = self.lstm(
+            input
+        )  # (seq_len, batch_size, n_channels) or (batch_size, n_channels)
         if self.attn:
             # (seq_len, batch_size, n_channels) --> (batch_size, n_channels, seq_len)
-            x = x.permute(1,2,0)
+            x = x.permute(1, 2, 0)
             x = self.attn(x)  # (batch_size, n_channels, seq_len)
         elif x.ndim == 3:
             # (seq_len, batch_size, n_channels) --> (batch_size, n_channels, seq_len)
-            x = x.permute(1,2,0)
+            x = x.permute(1, 2, 0)
         if self.pool:
             x = self.pool(x)  # (batch_size, n_channels, 1)
             x = x.squeeze(dim=-1)  # (batch_size, n_channels)
         elif x.ndim == 3:
-            x = x.permute(0,2,1)  # (batch_size, n_channels, seq_len) --> (batch_size, seq_len, n_channels)
+            x = x.permute(
+                0, 2, 1
+            )  # (batch_size, n_channels, seq_len) --> (batch_size, seq_len, n_channels)
         else:
-            # x of shape (batch_size, n_channels), 
+            # x of shape (batch_size, n_channels),
             # in the case where config.lstm.retseq = False
             pass
         if self.config.clf.name.lower() == "linear":
-            x = self.clf(x)  # (batch_size, seq_len, n_classes) or (batch_size, n_classes)
+            x = self.clf(
+                x
+            )  # (batch_size, seq_len, n_classes) or (batch_size, n_classes)
         elif self.config.clf.name.lower() == "crf":
             x = self.clf(x)  # (batch_size, seq_len, n_classes)
         output = x
@@ -205,13 +225,14 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
         return output
 
     @torch.no_grad()
-    def inference(self, input:Tensor, bin_pred_thr:float=0.5) -> BaseOutput:
-        """
-        """
+    def inference(self, input: Tensor, bin_pred_thr: float = 0.5) -> BaseOutput:
+        """ """
         raise NotImplementedError("implement a task specific inference method")
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------

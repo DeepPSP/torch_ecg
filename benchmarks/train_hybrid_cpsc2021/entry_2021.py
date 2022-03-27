@@ -80,16 +80,18 @@ def challenge_entry(sample_path):
     """
     This is a baseline method.
     """
-    assert any([
-        _ENTRY_CONFIG.use_rr_lstm_model,
-        _ENTRY_CONFIG.use_main_seq_lab_model,
-        _ENTRY_CONFIG.use_main_unet_model
-    ]), "NO model is used, please check `_ENTRY_CONFIG`"
+    assert any(
+        [
+            _ENTRY_CONFIG.use_rr_lstm_model,
+            _ENTRY_CONFIG.use_main_seq_lab_model,
+            _ENTRY_CONFIG.use_main_unet_model,
+        ]
+    ), "NO model is used, please check `_ENTRY_CONFIG`"
 
-    print("\n" + "*"*100)
+    print("\n" + "*" * 100)
     msg = "   CPSC2021 challenge entry starts   ".center(100, "#")
     print(msg)
-    print("*"*100 + "\n")
+    print("*" * 100 + "\n")
     print(f"processing {sample_path} under config\n{_ENTRY_CONFIG}")
     start_time = time.time()
     timer = time.time()
@@ -179,30 +181,57 @@ def challenge_entry(sample_path):
 
     # the last few sample points are dropped
     if sig.shape[1] > seglen:
-        sig = sig[..., :sig.shape[1] // main_task_cfg[main_task_cfg.task].reduction * main_task_cfg[main_task_cfg.task].reduction]
+        sig = sig[
+            ...,
+            : sig.shape[1]
+            // main_task_cfg[main_task_cfg.task].reduction
+            * main_task_cfg[main_task_cfg.task].reduction,
+        ]
 
     if _VERBOSE >= 2:
-        print(f"seglen = {seglen}, overlap_len = {overlap_len}, forward_len = {forward_len}")
+        print(
+            f"seglen = {seglen}, overlap_len = {overlap_len}, forward_len = {forward_len}"
+        )
 
-    for idx in range((sig.shape[1]-seglen) // forward_len + 1):
-        seg_data = sig[..., forward_len*idx: forward_len*idx+seglen]
+    for idx in range((sig.shape[1] - seglen) // forward_len + 1):
+        seg_data = sig[..., forward_len * idx : forward_len * idx + seglen]
         if main_task_cfg.random_normalize:  # to keep consistency of data distribution
             seg_data = normalize(
                 sig=seg_data,
-                mean=list(repeat(np.mean(main_task_cfg.random_normalize_mean), main_task_cfg.n_leads)),
-                std=list(repeat(np.mean(main_task_cfg.random_normalize_std), main_task_cfg.n_leads)),
+                mean=list(
+                    repeat(
+                        np.mean(main_task_cfg.random_normalize_mean),
+                        main_task_cfg.n_leads,
+                    )
+                ),
+                std=list(
+                    repeat(
+                        np.mean(main_task_cfg.random_normalize_std),
+                        main_task_cfg.n_leads,
+                    )
+                ),
                 # std=list(repeat(1*main_task_cfg.random_normalize_std[0], main_task_cfg.n_leads)),
                 per_channel=True,
             )
         dl_input = np.concatenate((dl_input, seg_data[np.newaxis, ...]))
     # add tail
     if sig.shape[1] > seglen:
-        seg_data = sig[..., max(0,sig.shape[1]-seglen):sig.shape[1]]
+        seg_data = sig[..., max(0, sig.shape[1] - seglen) : sig.shape[1]]
         if main_task_cfg.random_normalize:  # to keep consistency of data distribution
             seg_data = normalize(
                 sig=seg_data,
-                mean=list(repeat(np.mean(main_task_cfg.random_normalize_mean), main_task_cfg.n_leads)),
-                std=list(repeat(np.mean(main_task_cfg.random_normalize_std), main_task_cfg.n_leads)),
+                mean=list(
+                    repeat(
+                        np.mean(main_task_cfg.random_normalize_mean),
+                        main_task_cfg.n_leads,
+                    )
+                ),
+                std=list(
+                    repeat(
+                        np.mean(main_task_cfg.random_normalize_std),
+                        main_task_cfg.n_leads,
+                    )
+                ),
                 per_channel=True,
             )
         dl_input = np.concatenate((dl_input, seg_data[np.newaxis, ...]))
@@ -211,11 +240,21 @@ def challenge_entry(sample_path):
         if main_task_cfg.random_normalize:  # to keep consistency of data distribution
             seg_data = normalize(
                 sig=seg_data,
-                mean=list(repeat(np.mean(main_task_cfg.random_normalize_mean), main_task_cfg.n_leads)),
-                std=list(repeat(np.mean(main_task_cfg.random_normalize_std), main_task_cfg.n_leads)),
+                mean=list(
+                    repeat(
+                        np.mean(main_task_cfg.random_normalize_mean),
+                        main_task_cfg.n_leads,
+                    )
+                ),
+                std=list(
+                    repeat(
+                        np.mean(main_task_cfg.random_normalize_std),
+                        main_task_cfg.n_leads,
+                    )
+                ),
                 per_channel=True,
             )
-        dl_input = seg_data[np.newaxis,...]
+        dl_input = seg_data[np.newaxis, ...]
 
     if _VERBOSE >= 1:
         print(f"data sliced in {time.time()-timer:.2f} seconds...")
@@ -244,7 +283,7 @@ def challenge_entry(sample_path):
         )
         if len(rr_pred) == 0:
             rr_pred_cls = "N"
-        elif len(rr_pred) == 1 and np.diff(rr_pred[0])[0] == original_siglen-1:
+        elif len(rr_pred) == 1 and np.diff(rr_pred[0])[0] == original_siglen - 1:
             rr_pred_cls = "AFf"
         else:
             rr_pred_cls = "AFp"
@@ -257,7 +296,9 @@ def challenge_entry(sample_path):
 
     # main_task
     # finished, checked,
-    if any([_ENTRY_CONFIG.use_main_seq_lab_model, _ENTRY_CONFIG.use_main_seq_lab_model]):
+    if any(
+        [_ENTRY_CONFIG.use_main_seq_lab_model, _ENTRY_CONFIG.use_main_seq_lab_model]
+    ):
         main_pred = _main_task(
             model=main_task_model,
             sig=dl_input,
@@ -268,7 +309,7 @@ def challenge_entry(sample_path):
         )
         if len(main_pred) == 0:
             main_pred_cls = "N"
-        elif len(main_pred) == 1 and np.diff(main_pred[0])[0] == original_siglen-1:
+        elif len(main_pred) == 1 and np.diff(main_pred[0])[0] == original_siglen - 1:
             main_pred_cls = "AFf"
         else:
             main_pred_cls = "AFp"
@@ -289,7 +330,8 @@ def challenge_entry(sample_path):
         final_pred = _merge_rule_union(rr_pred, rr_pred_cls, main_pred, main_pred_cls)
     else:  # intersection
         final_pred = generalized_intervals_intersection(
-            rr_pred, main_pred,
+            rr_pred,
+            main_pred,
         )
 
     # TODO: need further filtering to filter out normal episodes shorter than 5 beats?
@@ -309,27 +351,27 @@ def challenge_entry(sample_path):
         except:
             pass
 
-    pred_dict = {
-        "predict_endpoints": final_pred
-    }
+    pred_dict = {"predict_endpoints": final_pred}
 
     if _VERBOSE >= 1:
-        print(f"processing of {sample_path} totally cost {time.time()-start_time:.2f} seconds")
+        print(
+            f"processing of {sample_path} totally cost {time.time()-start_time:.2f} seconds"
+        )
 
     del rpeak_model
     del rr_lstm_model
     del main_task_model
 
-    print("\n" + "*"*100)
+    print("\n" + "*" * 100)
     msg = "   CPSC2021 challenge entry ends   ".center(100, "#")
     print(msg)
-    print("*"*100 + "\n\n")
+    print("*" * 100 + "\n\n")
 
     return pred_dict
 
 
 def _detect_rpeaks(model, sig, siglen, overlap_len, config):
-    """ finished, checked,
+    """finished, checked,
 
     NOTE: sig are sliced data with overlap,
     hence DO NOT directly use model's inference method
@@ -346,13 +388,13 @@ def _detect_rpeaks(model, sig, siglen, overlap_len, config):
     batch_size, channels, seq_len = sig.shape
 
     l_pred = []
-    for idx in range(batch_size//_BATCH_SIZE):
-        pred = model.forward(sig[_BATCH_SIZE*idx:_BATCH_SIZE*(idx+1), ...])
+    for idx in range(batch_size // _BATCH_SIZE):
+        pred = model.forward(sig[_BATCH_SIZE * idx : _BATCH_SIZE * (idx + 1), ...])
         pred = model.sigmoid(pred)
         pred = pred.cpu().detach().numpy().squeeze(-1)
         l_pred.append(pred)
     if batch_size % _BATCH_SIZE != 0:
-        pred = model.forward(sig[batch_size//_BATCH_SIZE * _BATCH_SIZE:, ...])
+        pred = model.forward(sig[batch_size // _BATCH_SIZE * _BATCH_SIZE :, ...])
         pred = model.sigmoid(pred)
         pred = pred.cpu().detach().numpy().squeeze(-1)
         l_pred.append(pred)
@@ -367,29 +409,36 @@ def _detect_rpeaks(model, sig, siglen, overlap_len, config):
     if _VERBOSE >= 2:
         print("\nin function _detect_rpeaks...")
         print(f"pred.shape = {pred.shape}")
-        print(f"seglen = {seglen}, qua_overlap_len = {qua_overlap_len}, forward_len = {forward_len}")
+        print(
+            f"seglen = {seglen}, qua_overlap_len = {qua_overlap_len}, forward_len = {forward_len}"
+        )
 
     merged_pred = np.zeros((_siglen,))
     if pred.shape[0] > 1:
-        merged_pred[:seglen-qua_overlap_len] = pred[0, :seglen-qua_overlap_len]
-        merged_pred[_siglen-(seglen-qua_overlap_len):] = pred[-1,qua_overlap_len:]
-        for idx in range(1,pred.shape[0]-1):
+        merged_pred[: seglen - qua_overlap_len] = pred[0, : seglen - qua_overlap_len]
+        merged_pred[_siglen - (seglen - qua_overlap_len) :] = pred[-1, qua_overlap_len:]
+        for idx in range(1, pred.shape[0] - 1):
             to_compare = np.zeros((_siglen,))
-            start_idx = forward_len*idx + qua_overlap_len
-            end_idx = forward_len*idx + seglen - qua_overlap_len
-            to_compare[start_idx: end_idx] = pred[idx,qua_overlap_len: seglen-qua_overlap_len]
+            start_idx = forward_len * idx + qua_overlap_len
+            end_idx = forward_len * idx + seglen - qua_overlap_len
+            to_compare[start_idx:end_idx] = pred[
+                idx, qua_overlap_len : seglen - qua_overlap_len
+            ]
             merged_pred = np.maximum(merged_pred, to_compare)
         # tail
         to_compare = np.zeros((_siglen,))
-        to_compare[_siglen-seglen+qua_overlap_len:] = pred[-1, qua_overlap_len:]
-        merged_pred = np.maximum(merged_pred, to_compare,)
+        to_compare[_siglen - seglen + qua_overlap_len :] = pred[-1, qua_overlap_len:]
+        merged_pred = np.maximum(
+            merged_pred,
+            to_compare,
+        )
     else:  # too short to form one slice
         merged_pred = pred[0, ...]
     merged_pred = merged_pred[np.newaxis, ...]
-    
+
     rpeaks = _qrs_detection_post_process(
         pred=merged_pred,
-        fs=config.fs, 
+        fs=config.fs,
         reduction=config[config.task].reduction,
         bin_pred_thr=0.5,
     )[0]
@@ -398,8 +447,7 @@ def _detect_rpeaks(model, sig, siglen, overlap_len, config):
 
 
 def _rr_lstm(model, rpeaks, siglen, config):
-    """ finished, checked,
-    """
+    """finished, checked,"""
     try:
         model = model.to(_CUDA)
     except:
@@ -420,13 +468,12 @@ def _rr_lstm(model, rpeaks, siglen, config):
         if af_episodes[0][0] == rpeaks[0]:
             af_episodes[0][0] = 0
         if af_episodes[-1][-1] == rpeaks[-1]:
-            af_episodes[-1][-1] = siglen-1
+            af_episodes[-1][-1] = siglen - 1
     return af_episodes
 
 
 def _main_task(model, sig, siglen, overlap_len, rpeaks, config):
-    """ finished, checked,
-    """
+    """finished, checked,"""
     try:
         model = model.to(_CUDA)
     except:
@@ -437,15 +484,15 @@ def _main_task(model, sig, siglen, overlap_len, rpeaks, config):
     if sig.ndim == 2:
         sig = sig.unsqueeze(0)  # add a batch dimension
     batch_size, channels, seq_len = sig.shape
-    
+
     l_pred = []
-    for idx in range(batch_size//_BATCH_SIZE):
-        pred = model.forward(sig[_BATCH_SIZE*idx:_BATCH_SIZE*(idx+1), ...])
+    for idx in range(batch_size // _BATCH_SIZE):
+        pred = model.forward(sig[_BATCH_SIZE * idx : _BATCH_SIZE * (idx + 1), ...])
         pred = model.sigmoid(pred)
         pred = pred.cpu().detach().numpy().squeeze(-1)
         l_pred.append(pred)
     if batch_size % _BATCH_SIZE != 0:
-        pred = model.forward(sig[batch_size//_BATCH_SIZE * _BATCH_SIZE:, ...])
+        pred = model.forward(sig[batch_size // _BATCH_SIZE * _BATCH_SIZE :, ...])
         pred = model.sigmoid(pred)
         pred = pred.cpu().detach().numpy().squeeze(-1)
         l_pred.append(pred)
@@ -460,29 +507,36 @@ def _main_task(model, sig, siglen, overlap_len, rpeaks, config):
     if _VERBOSE >= 2:
         print("\nin function _main_task...")
         print(f"pred.shape = {pred.shape}")
-        print(f"seglen = {seglen}, qua_overlap_len = {qua_overlap_len}, forward_len = {forward_len}")
+        print(
+            f"seglen = {seglen}, qua_overlap_len = {qua_overlap_len}, forward_len = {forward_len}"
+        )
 
     merged_pred = np.zeros((_siglen,))
     if pred.shape[0] > 1:
-        merged_pred[:seglen-qua_overlap_len] = pred[0, :seglen-qua_overlap_len]
-        merged_pred[_siglen-(seglen-qua_overlap_len):] = pred[-1,qua_overlap_len:]
-        for idx in range(1,pred.shape[0]-1):
+        merged_pred[: seglen - qua_overlap_len] = pred[0, : seglen - qua_overlap_len]
+        merged_pred[_siglen - (seglen - qua_overlap_len) :] = pred[-1, qua_overlap_len:]
+        for idx in range(1, pred.shape[0] - 1):
             to_compare = np.zeros((_siglen,))
-            start_idx = forward_len*idx + qua_overlap_len
-            end_idx = forward_len*idx + seglen - qua_overlap_len
-            to_compare[start_idx: end_idx] = pred[idx,qua_overlap_len: seglen-qua_overlap_len]
+            start_idx = forward_len * idx + qua_overlap_len
+            end_idx = forward_len * idx + seglen - qua_overlap_len
+            to_compare[start_idx:end_idx] = pred[
+                idx, qua_overlap_len : seglen - qua_overlap_len
+            ]
             merged_pred = np.maximum(merged_pred, to_compare)
         # tail
         to_compare = np.zeros((_siglen,))
-        to_compare[_siglen-seglen+qua_overlap_len:] = pred[-1, qua_overlap_len:]
-        merged_pred = np.maximum(merged_pred, to_compare,)
+        to_compare[_siglen - seglen + qua_overlap_len :] = pred[-1, qua_overlap_len:]
+        merged_pred = np.maximum(
+            merged_pred,
+            to_compare,
+        )
     else:  # too short to form one slice
         merged_pred = pred[0, ...]
     merged_pred = merged_pred[np.newaxis, ...]
 
     af_episodes = _main_task_post_process(
         pred=merged_pred,
-        fs=config.fs, 
+        fs=config.fs,
         reduction=config[config.task].reduction,
         bin_pred_thr=0.5,
         rpeaks=[rpeaks],
@@ -498,30 +552,35 @@ def _merge_rule_union(rr_pred, rr_pred_cls, main_pred, main_pred_cls):
     RR_LSTM model and SeqLab model both seldom have false positives on the classes "N" and "AFf".
     Anlyzing the false positives on the class "AFp", we find that
     the RR_LSTM tends to mistake "N" for "AFp",
-    while the SeqLab model tends to mistake "AFf" for "AFp". 
+    while the SeqLab model tends to mistake "AFf" for "AFp".
     """
     if rr_pred_cls is None:
         return main_pred
     if main_pred_cls is None:
         return rr_pred
-    if (rr_pred_cls == "N" and main_pred_cls != "AFf") or (main_pred_cls == "N" and rr_pred_cls != "AFf"):
+    if (rr_pred_cls == "N" and main_pred_cls != "AFf") or (
+        main_pred_cls == "N" and rr_pred_cls != "AFf"
+    ):
         return []
     final_pred = generalized_intervals_union(
-            [rr_pred, main_pred,]
-        )
+        [
+            rr_pred,
+            main_pred,
+        ]
+    )
     return final_pred
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     DATA_PATH = Path(sys.argv[1])
     RESULT_PATH = Path(sys.argv[2])
     if not RESULT_PATH.exists():
         RESULT_PATH.mkdir(parents=True)
-        
-    test_set = (DATA_PATH / 'RECORDS').read_text().splitlines()
+
+    test_set = (DATA_PATH / "RECORDS").read_text().splitlines()
     for i, sample in enumerate(test_set):
         print(sample)
         sample_path = DATA_PATH / sample
         pred_dict = challenge_entry(str(sample_path))
 
-        save_dict(str(RESULT_PATH / sample+'.json'), pred_dict)
+        save_dict(str(RESULT_PATH / sample + ".json"), pred_dict)

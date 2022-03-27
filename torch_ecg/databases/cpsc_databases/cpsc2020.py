@@ -8,7 +8,6 @@ from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
 from numbers import Real
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 from scipy.io import loadmat
 
@@ -64,11 +63,11 @@ class CPSC2020(CPSCDataBase):
     the situation becomes more complicated.
     >>> from utils.scoring_aux_data import dx_cooccurrence_all
     >>> dx_cooccurrence_all.loc["AF", ["PAC","PVC","SVPB","VPB"]]
-    ... PAC     20
-    ... PVC     19
-    ... SVPB     4
-    ... VPB     20
-    ... Name: AF, dtype: int64
+    PAC     20
+    PVC     19
+    SVPB     4
+    VPB     20
+    Name: AF, dtype: int64
     this could also be seen from this dataset, via the following code as an example:
     >>> from data_reader import CPSC2020Reader as CR
     >>> db_dir = "/media/cfs/wenhao71/data/CPSC2020/TrainingSet/"
@@ -78,9 +77,9 @@ class CPSC2020(CPSCDataBase):
     3. PVC and SPB can also co-exist, as illustrated via the following code (from CINC2020):
     >>> from utils.scoring_aux_data import dx_cooccurrence_all
     >>> dx_cooccurrence_all.loc[["PVC","VPB"], ["PAC","SVPB",]]
-    ... 	PAC	SVPB
-    ... PVC	14	1
-    ... VPB	27	0
+    PAC	SVPB
+    PVC	14	1
+    VPB	27	0
     and also from the following code:
     >>> for rec in dr.all_records:
     >>>     ann = dr.load_ann(rec)
@@ -93,31 +92,31 @@ class CPSC2020(CPSCDataBase):
     >>>     diff = [s-p for s,p in product(spb, pvc)]
     >>>     if len(diff) > 0:
     >>>         print(f"{rec}: min dist between SPB and PVC = {np.min(np.abs(diff))}")
-    ... A01: min dist among SPB = 630
-    ... A02: min dist among SPB = 696
-    ... A02: min dist among PVC = 87
-    ... A02: min dist between SPB and PVC = 562
-    ... A03: min dist among SPB = 7044
-    ... A03: min dist among PVC = 151
-    ... A03: min dist between SPB and PVC = 3750
-    ... A04: min dist among SPB = 175
-    ... A04: min dist among PVC = 156
-    ... A04: min dist between SPB and PVC = 178
-    ... A05: min dist among SPB = 182
-    ... A05: min dist between SPB and PVC = 22320
-    ... A06: min dist among SPB = 455158
-    ... A07: min dist among SPB = 603
-    ... A07: min dist among PVC = 153
-    ... A07: min dist between SPB and PVC = 257
-    ... A08: min dist among SPB = 2903029
-    ... A08: min dist among PVC = 106
-    ... A08: min dist between SPB and PVC = 350
-    ... A09: min dist among SPB = 180
-    ... A09: min dist among PVC = 7719290
-    ... A09: min dist between SPB and PVC = 1271
-    ... A10: min dist among SPB = 148
-    ... A10: min dist among PVC = 708
-    ... A10: min dist between SPB and PVC = 177
+    A01: min dist among SPB = 630
+    A02: min dist among SPB = 696
+    A02: min dist among PVC = 87
+    A02: min dist between SPB and PVC = 562
+    A03: min dist among SPB = 7044
+    A03: min dist among PVC = 151
+    A03: min dist between SPB and PVC = 3750
+    A04: min dist among SPB = 175
+    A04: min dist among PVC = 156
+    A04: min dist between SPB and PVC = 178
+    A05: min dist among SPB = 182
+    A05: min dist between SPB and PVC = 22320
+    A06: min dist among SPB = 455158
+    A07: min dist among SPB = 603
+    A07: min dist among PVC = 153
+    A07: min dist between SPB and PVC = 257
+    A08: min dist among SPB = 2903029
+    A08: min dist among PVC = 106
+    A08: min dist between SPB and PVC = 350
+    A09: min dist among SPB = 180
+    A09: min dist among PVC = 7719290
+    A09: min dist between SPB and PVC = 1271
+    A10: min dist among SPB = 148
+    A10: min dist among PVC = 708
+    A10: min dist between SPB and PVC = 177
 
     ISSUES
     ------
@@ -170,12 +169,14 @@ class CPSC2020(CPSCDataBase):
     [2] https://github.com/PIA-Group/BioSPPy
     """
 
-    def __init__(self,
-                 db_dir:Union[str,Path],
-                 working_dir:Optional[Union[str,Path]]=None,
-                 verbose:int=2,
-                 **kwargs:Any,) -> NoReturn:
-        """ finished, to be improved,
+    def __init__(
+        self,
+        db_dir: Union[str, Path],
+        working_dir: Optional[Union[str, Path]] = None,
+        verbose: int = 2,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, to be improved,
 
         Parameters
         ----------
@@ -187,10 +188,16 @@ class CPSC2020(CPSCDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="cpsc2020", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(
+            db_name="cpsc2020",
+            db_dir=db_dir,
+            working_dir=working_dir,
+            verbose=verbose,
+            **kwargs,
+        )
 
         self.fs = 400
-        self.spacing = 1000/self.fs
+        self.spacing = 1000 / self.fs
         self.rec_ext = "mat"
         self.ann_ext = "mat"
 
@@ -204,35 +211,42 @@ class CPSC2020(CPSCDataBase):
         self.data_dir = self.rec_dir
         self.ref_dir = self.ann_dir
 
-        self.subgroups = CFG({
-            "N":  ["A01", "A03", "A05", "A06",],
-            "V":  ["A02", "A08"],
-            "S":  ["A09", "A10"],
-            "VS": ["A04", "A07"],
-        })
+        self.subgroups = CFG(
+            {
+                "N": [
+                    "A01",
+                    "A03",
+                    "A05",
+                    "A06",
+                ],
+                "V": ["A02", "A08"],
+                "S": ["A09", "A10"],
+                "VS": ["A04", "A07"],
+            }
+        )
 
-        self.palette = {"spb": "yellow", "pvc": "red",}
+        self.palette = {
+            "spb": "yellow",
+            "pvc": "red",
+        }
 
     def _ls_rec(self) -> NoReturn:
-        """
-        """
-        self._all_records = [f"A{i:02d}" for i in range(1,1+self.n_records)]
-        self._all_annotations = [f"R{i:02d}" for i in range(1,1+self.n_records)]
+        """ """
+        self._all_records = [f"A{i:02d}" for i in range(1, 1 + self.n_records)]
+        self._all_annotations = [f"R{i:02d}" for i in range(1, 1 + self.n_records)]
 
     @property
     def all_annotations(self):
-        """
-        """
+        """ """
         return self._all_annotations
 
     @property
     def all_references(self):
-        """
-        """
+        """ """
         return self._all_annotations
 
-    def get_subject_id(self, rec:Union[int,str]) -> int:
-        """ not finished,
+    def get_subject_id(self, rec: Union[int, str]) -> int:
+        """not finished,
 
         Parameters
         ----------
@@ -248,13 +262,15 @@ class CPSC2020(CPSCDataBase):
         pid = 0
         raise NotImplementedError
 
-    def load_data(self,
-                  rec:Union[int,str],
-                  units:str="mV",
-                  sampfrom:Optional[int]=None,
-                  sampto:Optional[int]=None,
-                  keep_dim:bool=True) -> np.ndarray:
-        """ finished, checked,
+    def load_data(
+        self,
+        rec: Union[int, str],
+        units: str = "mV",
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        keep_dim: bool = True,
+    ) -> np.ndarray:
+        """finished, checked,
 
         Parameters
         ----------
@@ -269,7 +285,7 @@ class CPSC2020(CPSCDataBase):
             end index of the data to be loaded
         keep_dim: bool, default True,
             whether or not to flatten the data of shape (n,1)
-        
+
         Returns
         -------
         data: ndarray,
@@ -286,8 +302,13 @@ class CPSC2020(CPSCDataBase):
             data = data.flatten()
         return data
 
-    def load_ann(self, rec:Union[int,str], sampfrom:Optional[int]=None, sampto:Optional[int]=None) -> Dict[str, np.ndarray]:
-        """ finished, checked,
+    def load_ann(
+        self,
+        rec: Union[int, str],
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+    ) -> Dict[str, np.ndarray]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -298,7 +319,7 @@ class CPSC2020(CPSCDataBase):
             start index of the data to be loaded
         sampto: int, optional,
             end index of the data to be loaded
-        
+
         Returns
         -------
         ann: dict,
@@ -309,22 +330,22 @@ class CPSC2020(CPSCDataBase):
         ann_fp = self.ann_dir / f"{ann_name}.{self.ann_ext}"
         ann = loadmat(str(ann_fp))["ref"]
         sf, st = (sampfrom or 0), (sampto or np.inf)
-        spb_indices = ann["S_ref"][0,0].flatten().astype(int)
+        spb_indices = ann["S_ref"][0, 0].flatten().astype(int)
         # drop duplicates
         spb_indices = np.array(sorted(list(set(spb_indices))), dtype=int)
-        spb_indices = spb_indices[np.where( (spb_indices>=sf) & (spb_indices<st) )[0]]
-        pvc_indices = ann["V_ref"][0,0].flatten().astype(int)
+        spb_indices = spb_indices[np.where((spb_indices >= sf) & (spb_indices < st))[0]]
+        pvc_indices = ann["V_ref"][0, 0].flatten().astype(int)
         # drop duplicates
         pvc_indices = np.array(sorted(list(set(pvc_indices))), dtype=int)
-        pvc_indices = pvc_indices[np.where( (pvc_indices>=sf) & (pvc_indices<st) )[0]]
+        pvc_indices = pvc_indices[np.where((pvc_indices >= sf) & (pvc_indices < st))[0]]
         ann = {
             "SPB_indices": spb_indices,
             "PVC_indices": pvc_indices,
         }
         return ann
 
-    def _get_ann_name(self, rec:Union[int,str]) -> str:
-        """ finished, checked,
+    def _get_ann_name(self, rec: Union[int, str]) -> str:
+        """finished, checked,
 
         Parameters
         ----------
@@ -338,15 +359,19 @@ class CPSC2020(CPSCDataBase):
             filename of the annotation file
         """
         if isinstance(rec, int):
-            assert rec in range(1, self.n_records+1), f"rec should be in range(1,{self.n_records+1})"
-            ann_name = self.all_annotations[rec-1]
+            assert rec in range(
+                1, self.n_records + 1
+            ), f"rec should be in range(1,{self.n_records+1})"
+            ann_name = self.all_annotations[rec - 1]
         elif isinstance(rec, str):
-            assert rec in self.all_annotations+self.all_records, f"rec should be one of {self.all_records} or one of {self.all_annotations}"
+            assert (
+                rec in self.all_annotations + self.all_records
+            ), f"rec should be one of {self.all_records} or one of {self.all_annotations}"
             ann_name = rec.replace("A", "R")
         return ann_name
 
-    def _get_rec_name(self, rec:Union[int,str]) -> str:
-        """ finished, checked,
+    def _get_rec_name(self, rec: Union[int, str]) -> str:
+        """finished, checked,
 
         Parameters
         ----------
@@ -360,15 +385,17 @@ class CPSC2020(CPSCDataBase):
             filename of the record
         """
         if isinstance(rec, int):
-            assert rec in range(1, self.n_records+1), f"rec should be in range(1,{self.n_records+1})"
-            rec_name = self.all_records[rec-1]
+            assert rec in range(
+                1, self.n_records + 1
+            ), f"rec should be in range(1,{self.n_records+1})"
+            rec_name = self.all_records[rec - 1]
         elif isinstance(rec, str):
             assert rec in self.all_records, f"rec should be one of {self.all_records}"
             rec_name = rec
         return rec_name
 
-    def train_test_split_rec(self, test_rec_num:int=2) -> Dict[str, List[str]]:
-        """ finished, checked,
+    def train_test_split_rec(self, test_rec_num: int = 2) -> Dict[str, List[str]]:
+        """finished, checked,
 
         split the records into train set and test set
 
@@ -385,9 +412,13 @@ class CPSC2020(CPSCDataBase):
         if test_rec_num == 1:
             test_records = random.sample(self.subgroups.VS, 1)
         elif test_rec_num == 2:
-            test_records = random.sample(self.subgroups.VS, 1) + random.sample(self.subgroups.N, 1)
+            test_records = random.sample(self.subgroups.VS, 1) + random.sample(
+                self.subgroups.N, 1
+            )
         elif test_rec_num == 3:
-            test_records = random.sample(self.subgroups.VS, 1) + random.sample(self.subgroups.N, 2)
+            test_records = random.sample(self.subgroups.VS, 1) + random.sample(
+                self.subgroups.N, 2
+            )
         elif test_rec_num == 4:
             test_records = []
             for k in self.subgroups.keys():
@@ -395,16 +426,25 @@ class CPSC2020(CPSCDataBase):
         else:
             raise ValueError("test data ratio too high")
         train_records = [r for r in self.all_records if r not in test_records]
-        
-        split_res = CFG({
-            "train": train_records,
-            "test": test_records,
-        })
-        
+
+        split_res = CFG(
+            {
+                "train": train_records,
+                "test": test_records,
+            }
+        )
+
         return split_res
 
-    def locate_premature_beats(self, rec:Union[int,str], premature_type:Optional[str]=None, window:int=10000, sampfrom:Optional[int]=None, sampto:Optional[int]=None) -> List[List[int]]:
-        """ finished, checked,
+    def locate_premature_beats(
+        self,
+        rec: Union[int, str],
+        premature_type: Optional[str] = None,
+        window: int = 10000,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+    ) -> List[List[int]]:
+        """finished, checked,
 
         locate the sample indices of premature beats in a record,
         in the form of a list of lists,
@@ -436,7 +476,7 @@ class CPSC2020(CPSCDataBase):
             premature_inds = np.append(ann["SPB_indices"], ann["PVC_indices"])
             premature_inds = np.sort(premature_inds)
         try:  # premature_inds empty?
-            sf, st = (sampfrom or 0), (sampto or premature_inds[-1]+1)
+            sf, st = (sampfrom or 0), (sampto or premature_inds[-1] + 1)
         except:
             premature_intervals = []
             return premature_intervals
@@ -445,21 +485,23 @@ class CPSC2020(CPSCDataBase):
         premature_intervals, _ = get_optimal_covering(
             total_interval=tot_interval,
             to_cover=premature_inds,
-            min_len=window*self.fs//1000,
-            split_threshold=window*self.fs//1000,
+            min_len=window * self.fs // 1000,
+            split_threshold=window * self.fs // 1000,
             traceback=False,
         )
         return premature_intervals
 
-    def plot(self,
-             rec:Union[int,str],
-             data:Optional[np.ndarray]=None,
-             ann:Optional[Dict[str, np.ndarray]]=None,
-             ticks_granularity:int=0,
-             sampfrom:Optional[int]=None,
-             sampto:Optional[int]=None,
-             rpeak_inds:Optional[Union[Sequence[int],np.ndarray]]=None,) -> NoReturn:
-        """ finished, checked,
+    def plot(
+        self,
+        rec: Union[int, str],
+        data: Optional[np.ndarray] = None,
+        ann: Optional[Dict[str, np.ndarray]] = None,
+        ticks_granularity: int = 0,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -515,24 +557,31 @@ class CPSC2020(CPSCDataBase):
                 rpeak_secs = np.array(rpeak_inds) / self.fs
             else:
                 rpeak_secs = np.array(rpeak_inds)
-                rpeak_secs = rpeak_secs[np.where( (rpeak_secs>=sf) & (rpeak_secs<st))[0]]
+                rpeak_secs = rpeak_secs[
+                    np.where((rpeak_secs >= sf) & (rpeak_secs < st))[0]
+                ]
                 rpeak_secs = (rpeak_secs - sf) / self.fs
 
         line_len = self.fs * 25  # 25 seconds
-        nb_lines = math.ceil(len(_data)/line_len)
+        nb_lines = math.ceil(len(_data) / line_len)
 
         bias_thr = 0.15
         winL = 0.06
         winR = 0.08
 
         for idx in range(nb_lines):
-            seg = _data[idx*line_len: (idx+1)*line_len]
-            secs = (np.arange(len(seg)) + idx*line_len) / self.fs
+            seg = _data[idx * line_len : (idx + 1) * line_len]
+            secs = (np.arange(len(seg)) + idx * line_len) / self.fs
             fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * len(seg) / self.fs))
             y_range = np.max(np.abs(seg)) + 100
             fig_sz_h = 6 * y_range / 1500
             fig, ax = plt.subplots(figsize=(fig_sz_w, fig_sz_h))
-            ax.plot(secs, seg, color="black", linewidth="2.0",)
+            ax.plot(
+                secs,
+                seg,
+                color="black",
+                linewidth="2.0",
+            )
             ax.axhline(y=0, linestyle="-", linewidth="1.0", color="red")
             if ticks_granularity >= 1:
                 ax.xaxis.set_major_locator(plt.MultipleLocator(0.2))
@@ -542,45 +591,58 @@ class CPSC2020(CPSCDataBase):
                 ax.xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                 ax.yaxis.set_minor_locator(plt.MultipleLocator(100))
                 ax.grid(which="minor", linestyle=":", linewidth="0.5", color="black")
-            seg_spb = np.where( (spb_indices>=idx*line_len) & (spb_indices<(idx+1)*line_len) )[0]
+            seg_spb = np.where(
+                (spb_indices >= idx * line_len) & (spb_indices < (idx + 1) * line_len)
+            )[0]
             # print(f"spb_indices = {spb_indices}, seg_spb = {seg_spb}")
             if len(seg_spb) > 0:
                 seg_spb = spb_indices[seg_spb] / self.fs
                 patches["SPB"] = mpatches.Patch(color=self.palette["spb"], label="SPB")
-            seg_pvc = np.where( (pvc_indices>=idx*line_len) & (pvc_indices<(idx+1)*line_len) )[0]
+            seg_pvc = np.where(
+                (pvc_indices >= idx * line_len) & (pvc_indices < (idx + 1) * line_len)
+            )[0]
             # print(f"pvc_indices = {pvc_indices}, seg_pvc = {seg_pvc}")
             if len(seg_pvc) > 0:
                 seg_pvc = pvc_indices[seg_pvc] / self.fs
                 patches["PVC"] = mpatches.Patch(color=self.palette["pvc"], label="PVC")
             for t in seg_spb:
                 ax.axvspan(
-                    max(secs[0], t-bias_thr), min(secs[-1], t+bias_thr),
-                    color=self.palette["spb"], alpha=0.3
+                    max(secs[0], t - bias_thr),
+                    min(secs[-1], t + bias_thr),
+                    color=self.palette["spb"],
+                    alpha=0.3,
                 )
                 ax.axvspan(
-                    max(secs[0], t-winL), min(secs[-1], t+winR),
-                    color=self.palette["spb"], alpha=0.9
+                    max(secs[0], t - winL),
+                    min(secs[-1], t + winR),
+                    color=self.palette["spb"],
+                    alpha=0.9,
                 )
             for t in seg_pvc:
                 ax.axvspan(
-                    max(secs[0], t-bias_thr), min(secs[-1], t+bias_thr),
-                    color=self.palette["pvc"], alpha=0.3
+                    max(secs[0], t - bias_thr),
+                    min(secs[-1], t + bias_thr),
+                    color=self.palette["pvc"],
+                    alpha=0.3,
                 )
                 ax.axvspan(
-                    max(secs[0], t-winL), min(secs[-1], t+winR),
-                    color=self.palette["pvc"], alpha=0.9
+                    max(secs[0], t - winL),
+                    min(secs[-1], t + winR),
+                    color=self.palette["pvc"],
+                    alpha=0.9,
                 )
             if len(patches) > 0:
                 ax.legend(
-                    handles=[v for _,v in patches.items()],
+                    handles=[v for _, v in patches.items()],
                     loc="lower left",
-                    prop={"size": 16}
+                    prop={"size": 16},
                 )
             if rpeak_inds is not None:
-                seg_rpeak_secs = \
-                    rpeak_secs[np.where( (rpeak_secs>=secs[0]) & (rpeak_secs<secs[-1]))[0]]
+                seg_rpeak_secs = rpeak_secs[
+                    np.where((rpeak_secs >= secs[0]) & (rpeak_secs < secs[-1]))[0]
+                ]
                 for r in seg_rpeak_secs:
-                    ax.axvspan(r-0.01, r+0.01, color="green", alpha=0.7)
+                    ax.axvspan(r - 0.01, r + 0.01, color="green", alpha=0.7)
             ax.set_xlim(secs[0], secs[-1])
             ax.set_ylim(-y_range, y_range)
             ax.set_xlabel("Time [s]")
@@ -588,11 +650,13 @@ class CPSC2020(CPSCDataBase):
             plt.show()
 
 
-def _ann_to_beat_ann_epoch_v1(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias_thr:Real) -> dict:
-    """ finished, checked,
+def _ann_to_beat_ann_epoch_v1(
+    rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
+) -> dict:
+    """finished, checked,
 
     the naive method to label beat types using annotations provided by the dataset
-    
+
     Parameters
     ----------
     rpeaks: ndarray,
@@ -616,17 +680,19 @@ def _ann_to_beat_ann_epoch_v1(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
     """
     beat_ann = np.array(["N" for _ in range(len(rpeaks))])
     for idx, r in enumerate(rpeaks):
-        if any([abs(r-p) < bias_thr for p in ann["SPB_indices"]]):
+        if any([abs(r - p) < bias_thr for p in ann["SPB_indices"]]):
             beat_ann[idx] = "S"
-        elif any([abs(r-p) < bias_thr for p in ann["PVC_indices"]]):
+        elif any([abs(r - p) < bias_thr for p in ann["PVC_indices"]]):
             beat_ann[idx] = "V"
     ann_matched = ann.copy()
     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
     return retval
 
 
-def _ann_to_beat_ann_epoch_v2(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias_thr:Real) -> dict:
-    """ finished, checked, has flaws, deprecated,
+def _ann_to_beat_ann_epoch_v2(
+    rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
+) -> dict:
+    """finished, checked, has flaws, deprecated,
 
     similar to `_ann_to_beat_ann_epoch_v1`, but records those matched annotations,
     for further post-process, adding those beats that are in annotation,
@@ -634,7 +700,7 @@ def _ann_to_beat_ann_epoch_v2(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
 
     however, the comparison process (the block inside the outer `for` loop)
     is not quite correct
-    
+
     Parameters
     ----------
     rpeaks: ndarray,
@@ -657,11 +723,11 @@ def _ann_to_beat_ann_epoch_v2(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
     """
     beat_ann = np.array(["N" for _ in range(len(rpeaks))], dtype="<U1")
     # used to add back those beat that is not detected via proprocess algorithm
-    _ann = {k: v.astype(int).tolist() for k,v in ann.items()}
+    _ann = {k: v.astype(int).tolist() for k, v in ann.items()}
     for idx_r, r in enumerate(rpeaks):
         found = False
         for idx_a, a in enumerate(_ann["SPB_indices"]):
-            if abs(r-a) < bias_thr:
+            if abs(r - a) < bias_thr:
                 found = True
                 beat_ann[idx_r] = "S"
                 del _ann["SPB_indices"][idx_a]
@@ -669,13 +735,14 @@ def _ann_to_beat_ann_epoch_v2(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
         if found:
             continue
         for idx_a, a in enumerate(_ann["PVC_indices"]):
-            if abs(r-a) < bias_thr:
+            if abs(r - a) < bias_thr:
                 found = True
                 beat_ann[idx_r] = "V"
                 del _ann["PVC_indices"][idx_a]
                 break
     ann_matched = {
-        k: np.array([a for a in v if a not in _ann[k]], dtype=int) for k,v in ann.items()
+        k: np.array([a for a in v if a not in _ann[k]], dtype=int)
+        for k, v in ann.items()
     }
     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
     return retval
@@ -691,11 +758,13 @@ def _ann_to_beat_ann_epoch_v2(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
     # return retval
 
 
-def _ann_to_beat_ann_epoch_v3(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias_thr:Real) -> dict:
-    """ finished, checked,
-    
+def _ann_to_beat_ann_epoch_v3(
+    rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
+) -> dict:
+    """finished, checked,
+
     similar to `_ann_to_beat_ann_epoch_v2`, but more reasonable
-    
+
     Parameters
     ----------
     rpeaks: ndarray,
@@ -717,10 +786,10 @@ def _ann_to_beat_ann_epoch_v3(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
             label for each beat from `rpeaks`
     """
     beat_ann = np.array(["N" for _ in range(len(rpeaks))], dtype="<U1")
-    ann_matched = {k: [] for k,v in ann.items()}
+    ann_matched = {k: [] for k, v in ann.items()}
     for idx_r, r in enumerate(rpeaks):
-        dist_to_spb = np.abs(r-ann["SPB_indices"])
-        dist_to_pvc = np.abs(r-ann["PVC_indices"])
+        dist_to_spb = np.abs(r - ann["SPB_indices"])
+        dist_to_pvc = np.abs(r - ann["PVC_indices"])
         if len(dist_to_spb) == 0:
             dist_to_spb = np.array([np.inf])
         if len(dist_to_pvc) == 0:
@@ -730,25 +799,33 @@ def _ann_to_beat_ann_epoch_v3(rpeaks:np.ndarray, ann:Dict[str, np.ndarray], bias
             pass
         elif argmin == 1:
             beat_ann[idx_r] = "V"
-            ann_matched["PVC_indices"].append(ann["PVC_indices"][np.argmin(dist_to_pvc)])
+            ann_matched["PVC_indices"].append(
+                ann["PVC_indices"][np.argmin(dist_to_pvc)]
+            )
         elif argmin == 0:
             beat_ann[idx_r] = "S"
-            ann_matched["SPB_indices"].append(ann["SPB_indices"][np.argmin(dist_to_spb)])
-    ann_matched = {k: np.array(v) for k,v in ann_matched.items()}
+            ann_matched["SPB_indices"].append(
+                ann["SPB_indices"][np.argmin(dist_to_spb)]
+            )
+    ann_matched = {k: np.array(v) for k, v in ann_matched.items()}
     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
     return retval
 
     @property
     def url(self) -> str:
-        return "https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/TrainingSet.zip"
+        return (
+            "https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/TrainingSet.zip"
+        )
 
 
-def compute_metrics(sbp_true:List[np.ndarray],
-                    pvc_true:List[np.ndarray],
-                    sbp_pred:List[np.ndarray],
-                    pvc_pred:List[np.ndarray],
-                    verbose:int=0) -> Union[Tuple[int],dict]:
-    """ finished, checked,
+def compute_metrics(
+    sbp_true: List[np.ndarray],
+    pvc_true: List[np.ndarray],
+    sbp_pred: List[np.ndarray],
+    pvc_pred: List[np.ndarray],
+    verbose: int = 0,
+) -> Union[Tuple[int], dict]:
+    """finished, checked,
 
     Score Function for all (test) records
 
@@ -770,10 +847,22 @@ def compute_metrics(sbp_true:List[np.ndarray],
     BaseCfg = CFG()
     BaseCfg.fs = 400
     BaseCfg.bias_thr = 0.15 * BaseCfg.fs
-    s_score = np.zeros([len(sbp_true), ], dtype=int)
-    v_score = np.zeros([len(sbp_true), ], dtype=int)
+    s_score = np.zeros(
+        [
+            len(sbp_true),
+        ],
+        dtype=int,
+    )
+    v_score = np.zeros(
+        [
+            len(sbp_true),
+        ],
+        dtype=int,
+    )
     ## Scoring ##
-    for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(zip(sbp_true, pvc_true, sbp_pred, pvc_pred)):
+    for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(
+        zip(sbp_true, pvc_true, sbp_pred, pvc_pred)
+    ):
         s_tp = 0
         s_fp = 0
         s_fn = 0
@@ -785,7 +874,7 @@ def compute_metrics(sbp_true:List[np.ndarray],
             s_fp = len(s_pos)
         else:
             for m, ans in enumerate(s_ref):
-                s_pos_cand = np.where(abs(s_pos-ans) <= BaseCfg.bias_thr)[0]
+                s_pos_cand = np.where(abs(s_pos - ans) <= BaseCfg.bias_thr)[0]
                 if s_pos_cand.size == 0:
                     s_fn += 1
                 else:
@@ -796,7 +885,7 @@ def compute_metrics(sbp_true:List[np.ndarray],
             v_fp = len(v_pos)
         else:
             for m, ans in enumerate(v_ref):
-                v_pos_cand = np.where(abs(v_pos-ans) <= BaseCfg.bias_thr)[0]
+                v_pos_cand = np.where(abs(v_pos - ans) <= BaseCfg.bias_thr)[0]
                 if v_pos_cand.size == 0:
                     v_fn += 1
                 else:
@@ -817,11 +906,11 @@ def compute_metrics(sbp_true:List[np.ndarray],
 
     if verbose >= 1:
         retval = CFG(
-            total_loss=-(Score1+Score2),
-            class_loss={"S":-Score1, "V":-Score2},
-            true_positive={"S":s_tp, "V":v_tp},
-            false_positive={"S":s_fp, "V":v_fp},
-            false_negative={"S":s_fn, "V":v_fn},
+            total_loss=-(Score1 + Score2),
+            class_loss={"S": -Score1, "V": -Score2},
+            true_positive={"S": s_tp, "V": v_tp},
+            false_positive={"S": s_fp, "V": v_fp},
+            false_negative={"S": s_fn, "V": v_fn},
         )
     else:
         retval = Score1, Score2

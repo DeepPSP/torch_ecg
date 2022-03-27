@@ -16,7 +16,6 @@ from itertools import repeat
 from typing import Union, Optional, Sequence, NoReturn
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import torch
 from torch import nn
 from torch import Tensor
@@ -27,24 +26,27 @@ from ...utils.misc import dict_to_str, list_sum
 from ...models._nets import (
     Conv_Bn_Activation,
     DownSample,
-    NonLocalBlock, SEBlock, GlobalContextBlock,
+    NonLocalBlock,
+    SEBlock,
+    GlobalContextBlock,
 )
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 
-__all__ = ["Darknet",]
+__all__ = [
+    "Darknet",
+]
 
 
 class DarkNet(SizeMixin, nn.Sequential):
-    """
-    """
+    """ """
+
     __DEBUG__ = True
     __name__ = "DarkNet"
 
-    def __init__(self, in_channels:int, **config) -> NoReturn:
-        """
-        """
+    def __init__(self, in_channels: int, **config) -> NoReturn:
+        """ """
         super().__init__()
         raise NotImplementedError

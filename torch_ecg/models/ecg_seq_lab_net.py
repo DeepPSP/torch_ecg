@@ -19,7 +19,6 @@ from typing import Union, Optional, Tuple, List, Sequence, NoReturn, Any
 from numbers import Real, Number
 
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 import torch
 from torch import nn
@@ -28,15 +27,20 @@ import torch.nn.functional as F
 
 from ..cfg import CFG, DEFAULTS
 from ..utils.utils_nn import (
-    compute_conv_output_shape, compute_module_size,
-    SizeMixin, CkptMixin,
+    compute_conv_output_shape,
+    compute_module_size,
+    SizeMixin,
+    CkptMixin,
 )
 from ..utils.misc import dict_to_str
 from ..utils.outputs import SequenceLabelingOutput
 from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
 from ._nets import (
-    Mish, Swish, Activations,
-    Bn_Activation, Conv_Bn_Activation,
+    Mish,
+    Swish,
+    Activations,
+    Bn_Activation,
+    Conv_Bn_Activation,
     SEBlock,
     StackedLSTM,
     AttentivePooling,
@@ -55,7 +59,7 @@ __all__ = [
 
 
 class ECG_SEQ_LAB_NET(ECG_CRNN):
-    """ finished, checked,
+    """finished, checked,
 
     SOTA model from CPSC2019 challenge (entry 0416)
 
@@ -67,13 +71,16 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
     ----------
     [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
     """
+
     __DEBUG__ = False
     __name__ = "ECG_SEQ_LAB_NET"
     __DEFAULT_CONFIG__ = {"recover_length": False}
     __DEFAULT_CONFIG__.update(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -90,8 +97,8 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         _config.global_pool = "none"
         super().__init__(classes, n_leads, _config)
 
-    def extract_features(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def extract_features(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         extract feature map before the dense (linear) classifying layer(s)
 
@@ -99,7 +106,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         ----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
-        
+
         Returns
         -------
         features: Tensor,
@@ -110,25 +117,25 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
         # rnn or none
         if self.rnn:
-            rnn_output = cnn_output.permute(2,0,1)  # (seq_len, batch_size, channels)
+            rnn_output = cnn_output.permute(2, 0, 1)  # (seq_len, batch_size, channels)
             rnn_output = self.rnn(rnn_output)  # (seq_len, batch_size, channels)
-            rnn_output = rnn_output.permute(1,2,0)  # (batch_size, channels, seq_len)
+            rnn_output = rnn_output.permute(1, 2, 0)  # (batch_size, channels, seq_len)
         else:
             rnn_output = cnn_output
 
         # attention
         features = self.attn(rnn_output)  # (batch_size, channels, seq_len)
-        features = features.permute(0,2,1)  # (batch_size, seq_len, channels)
+        features = features.permute(0, 2, 1)  # (batch_size, seq_len, channels)
         return features
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
-        
+
         Returns
         -------
         pred: Tensor,
@@ -140,14 +147,16 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
         if self.config.recover_length:
             pred = F.interpolate(
-                pred.permute(0,2,1),
-                size=seq_len, mode="linear", align_corners=True,
-            ).permute(0,2,1)
+                pred.permute(0, 2, 1),
+                size=seq_len,
+                mode="linear",
+                align_corners=True,
+            ).permute(0, 2, 1)
 
         return pred
 
-    def _recover_length(self, pred:Tensor, seq_len:int) -> Tensor:
-        """ finished, checked,
+    def _recover_length(self, pred: Tensor, seq_len: int) -> Tensor:
+        """finished, checked,
 
         recover the length of `pred` to `seq_len`
 
@@ -164,13 +173,15 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
             of shape (batch_size, seq_len, n_classes)
         """
         return F.interpolate(
-            pred.permute(0,2,1),
-            size=seq_len, mode="linear", align_corners=True,
-        ).permute(0,2,1)
+            pred.permute(0, 2, 1),
+            size=seq_len,
+            mode="linear",
+            align_corners=True,
+        ).permute(0, 2, 1)
 
 
 class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
-    """ finished, checked,
+    """finished, checked,
 
     SOTA model from CPSC2019 challenge (entry 0416), legacy version
 
@@ -182,13 +193,16 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
     ----------
     [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
     """
+
     __DEBUG__ = False
     __name__ = "ECG_SEQ_LAB_NET"
     __DEFAULT_CONFIG__ = {"recover_length": False}
     __DEFAULT_CONFIG__.update(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
 
-    def __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -210,9 +224,11 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
-            print(f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}")
+            print(
+                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
+            )
         __debug_seq_len = 4000
-        
+
         # currently, the CNN part only uses `MultiScopicCNN`
         # can be "multi_scopic" or "multi_scopic_leadwise"
         cnn_choice = self.config.cnn.name.lower()
@@ -220,8 +236,12 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         rnn_input_size = self.cnn.compute_output_shape(seq_len=None, batch_size=None)[1]
 
         if self.__DEBUG__:
-            cnn_output_shape = self.cnn.compute_output_shape(__debug_seq_len, batch_size=None)
-            print(f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}, given input seq_len = {__debug_seq_len}")
+            cnn_output_shape = self.cnn.compute_output_shape(
+                __debug_seq_len, batch_size=None
+            )
+            print(
+                f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}, given input seq_len = {__debug_seq_len}"
+            )
             __debug_seq_len = cnn_output_shape[-1]
 
         if self.config.rnn.name.lower() == "none":
@@ -238,14 +258,18 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
                 # nonlinearity=self.config.rnn.lstm.nonlinearity,
             )
             # rnn output shape (seq_len, batch_size, n_channels)
-            attn_input_size = self.rnn.compute_output_shape(None,None)[-1]
+            attn_input_size = self.rnn.compute_output_shape(None, None)[-1]
         else:
             raise NotImplementedError
 
         if self.__DEBUG__:
             if self.rnn:
-                rnn_output_shape = self.rnn.compute_output_shape(__debug_seq_len, batch_size=None)
-                print(f"rnn output shape (seq_len, batch_size, features) = {rnn_output_shape}, given input seq_len = {__debug_seq_len}")
+                rnn_output_shape = self.rnn.compute_output_shape(
+                    __debug_seq_len, batch_size=None
+                )
+                print(
+                    f"rnn output shape (seq_len, batch_size, features) = {rnn_output_shape}, given input seq_len = {__debug_seq_len}"
+                )
 
         # SEBlock already has `AdaptiveAvgPool1d`
         # self.pool = nn.AdaptiveAvgPool1d((1,))
@@ -260,8 +284,10 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
             )
             clf_input_size = attn_input_size
         else:
-            raise NotImplementedError(f"attention of {self.config.attn.name} not implemented yet")
-        
+            raise NotImplementedError(
+                f"attention of {self.config.attn.name} not implemented yet"
+            )
+
         if self.__DEBUG__:
             print(f"configs of attn are {dict_to_str(self.config.attn)}")
 
@@ -275,15 +301,15 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
             dropouts=self.config.clf.dropouts,
             skip_last_activation=True,
         )
-        
+
         # for inference
         # if background counted in `classes`, use softmax
         # otherwise use sigmoid
         self.softmax = nn.Softmax(-1)
         self.sigmoid = nn.Sigmoid()
 
-    def extract_features(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def extract_features(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         extract feature map before the dense (linear) classifying layer(s)
 
@@ -291,7 +317,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         ----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
-        
+
         Returns
         -------
         features: Tensor,
@@ -302,25 +328,25 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
 
         # rnn or none
         if self.rnn:
-            rnn_output = cnn_output.permute(2,0,1)  # (seq_len, batch_size, channels)
+            rnn_output = cnn_output.permute(2, 0, 1)  # (seq_len, batch_size, channels)
             rnn_output = self.rnn(rnn_output)  # (seq_len, batch_size, channels)
-            rnn_output = rnn_output.permute(1,2,0)  # (batch_size, channels, seq_len)
+            rnn_output = rnn_output.permute(1, 2, 0)  # (batch_size, channels, seq_len)
         else:
             rnn_output = cnn_output
 
         # attention
         features = self.attn(rnn_output)  # (batch_size, channels, seq_len)
-        features = features.permute(0,2,1)  # (batch_size, seq_len, channels)
+        features = features.permute(0, 2, 1)  # (batch_size, seq_len, channels)
         return features
 
-    def forward(self, input:Tensor) -> Tensor:
-        """ finished, checked,
+    def forward(self, input: Tensor) -> Tensor:
+        """finished, checked,
 
         Parameters
         ----------
         input: Tensor,
             of shape (batch_size, channels, seq_len)
-        
+
         Returns
         -------
         pred: Tensor,
@@ -335,14 +361,16 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
 
         if self.config.recover_length:
             pred = F.interpolate(
-                pred.permute(0,2,1),
-                size=seq_len, mode="linear", align_corners=True,
-            ).permute(0,2,1)
+                pred.permute(0, 2, 1),
+                size=seq_len,
+                mode="linear",
+                align_corners=True,
+            ).permute(0, 2, 1)
 
         return pred
 
-    def _recover_length(self, pred:Tensor, seq_len:int) -> Tensor:
-        """ finished, checked,
+    def _recover_length(self, pred: Tensor, seq_len: int) -> Tensor:
+        """finished, checked,
 
         recover the length of `pred` to `seq_len`
 
@@ -359,20 +387,25 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
             of shape (batch_size, seq_len, n_classes)
         """
         return F.interpolate(
-            pred.permute(0,2,1),
-            size=seq_len, mode="linear", align_corners=True,
-        ).permute(0,2,1)
+            pred.permute(0, 2, 1),
+            size=seq_len,
+            mode="linear",
+            align_corners=True,
+        ).permute(0, 2, 1)
 
     # inference will not be included in the model itself
     # as it is strongly related to the usage scenario
     @torch.no_grad()
-    def inference(self, input:Union[np.ndarray,Tensor], bin_pred_thr:float=0.5) -> SequenceLabelingOutput:
-        """
-        """
+    def inference(
+        self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5
+    ) -> SequenceLabelingOutput:
+        """ """
         raise NotImplementedError("implement a task specific inference method")
 
-    def compute_output_shape(self, seq_len:Optional[int]=None, batch_size:Optional[int]=None) -> Sequence[Union[int, None]]:
-        """ finished, checked,
+    def compute_output_shape(
+        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
+    ) -> Sequence[Union[int, None]]:
+        """finished, checked,
 
         Parameters
         ----------

@@ -17,6 +17,7 @@ try:
 except ModuleNotFoundError:
     import sys
     from pathlib import Path
+
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
@@ -40,13 +41,15 @@ __all__ = [
 
 # class ECG_SEQ_LAB_NET_CPSC2019(_ECG_SEQ_LAB_NET):
 class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
-    """
-    """
+    """ """
+
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2019"
-    
-    def __init__(self, n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+
+    def __init__(
+        self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -62,13 +65,15 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         super().__init__(model_config.classes, n_leads, model_config, **kwargs)
 
     @torch.no_grad()
-    def inference(self,
-                  input:Union[Sequence[float],np.ndarray,Tensor],
-                  bin_pred_thr:float=0.5,
-                  duration_thr:int=4*16,
-                  dist_thr:Union[int,Sequence[int]]=200,
-                  correction:bool=False) -> RPeaksDetectionOutput:
-        """ finished, checked,
+    def inference(
+        self,
+        input: Union[Sequence[float], np.ndarray, Tensor],
+        bin_pred_thr: float = 0.5,
+        duration_thr: int = 4 * 16,
+        dist_thr: Union[int, Sequence[int]] = 200,
+        correction: bool = False,
+    ) -> RPeaksDetectionOutput:
+        """finished, checked,
 
         auxiliary function to `forward`, for CPSC2019,
 
@@ -118,7 +123,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
             skip_dist=self.config.skip_dist,
             bin_pred_thr=bin_pred_thr,
             duration_thr=duration_thr,
-            dist_thr=dist_thr
+            dist_thr=dist_thr,
         )
 
         if correction:
@@ -128,20 +133,24 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
                     rpeaks=b_rpeaks,
                     sampling_rate=self.config.fs,
                     tol=0.05,
-                )[0] for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
+                )[0]
+                for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
             ]
 
         return RPeaksDetectionOutput(
-            rpeak_indices=rpeaks, prob=prob,
+            rpeak_indices=rpeaks,
+            prob=prob,
         )
 
     @torch.no_grad()
-    def inference_CPSC2019(self,
-                           input:Union[np.ndarray,Tensor],
-                           bin_pred_thr:float=0.5,
-                           duration_thr:int=4*16,
-                           dist_thr:Union[int,Sequence[int]]=200,
-                           correction:bool=False) -> Tuple[np.ndarray, List[np.ndarray]]:
+    def inference_CPSC2019(
+        self,
+        input: Union[np.ndarray, Tensor],
+        bin_pred_thr: float = 0.5,
+        duration_thr: int = 4 * 16,
+        dist_thr: Union[int, Sequence[int]] = 200,
+        correction: bool = False,
+    ) -> Tuple[np.ndarray, List[np.ndarray]]:
         """
         alias of `self.inference`
         """
@@ -149,13 +158,15 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
 
 
 class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
-    """
-    """
+    """ """
+
     __DEBUG__ = True
     __name__ = "ECG_SUBTRACT_UNET_CPSC2019"
-    
-    def __init__(self, n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+
+    def __init__(
+        self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -170,13 +181,15 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
         super().__init__(model_config.classes, n_leads, model_config, **kwargs)
 
     @torch.no_grad()
-    def inference(self,
-                  input:Union[Sequence[float],np.ndarray,Tensor],
-                  bin_pred_thr:float=0.5,
-                  duration_thr:int=4*16,
-                  dist_thr:Union[int,Sequence[int]]=200,
-                  correction:bool=False) -> RPeaksDetectionOutput:
-        """ finished, checked,
+    def inference(
+        self,
+        input: Union[Sequence[float], np.ndarray, Tensor],
+        bin_pred_thr: float = 0.5,
+        duration_thr: int = 4 * 16,
+        dist_thr: Union[int, Sequence[int]] = 200,
+        correction: bool = False,
+    ) -> RPeaksDetectionOutput:
+        """finished, checked,
 
         auxiliary function to `forward`, for CPSC2019,
 
@@ -224,7 +237,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
             skip_dist=self.config.skip_dist,
             bin_pred_thr=bin_pred_thr,
             duration_thr=duration_thr,
-            dist_thr=dist_thr
+            dist_thr=dist_thr,
         )
 
         if correction:
@@ -234,20 +247,24 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
                     rpeaks=b_rpeaks,
                     sampling_rate=self.config.fs,
                     tol=0.05,
-                )[0] for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
+                )[0]
+                for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
             ]
 
         return RPeaksDetectionOutput(
-            rpeak_indices=rpeaks, prob=prob,
+            rpeak_indices=rpeaks,
+            prob=prob,
         )
 
     @torch.no_grad()
-    def inference_CPSC2019(self,
-                           input:Union[np.ndarray,Tensor],
-                           bin_pred_thr:float=0.5,
-                           duration_thr:int=4*16,
-                           dist_thr:Union[int,Sequence[int]]=200,
-                           correction:bool=False) -> RPeaksDetectionOutput:
+    def inference_CPSC2019(
+        self,
+        input: Union[np.ndarray, Tensor],
+        bin_pred_thr: float = 0.5,
+        duration_thr: int = 4 * 16,
+        dist_thr: Union[int, Sequence[int]] = 200,
+        correction: bool = False,
+    ) -> RPeaksDetectionOutput:
         """
         alias of `self.inference`
         """
@@ -255,13 +272,15 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
 
 
 class ECG_UNET_CPSC2019(ECG_UNET):
-    """
-    """
+    """ """
+
     __DEBUG__ = True
     __name__ = "ECG_UNET_CPSC2019"
-    
-    def __init__(self, n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+
+    def __init__(
+        self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -276,13 +295,15 @@ class ECG_UNET_CPSC2019(ECG_UNET):
         super().__init__(model_config.classes, n_leads, model_config)
 
     @torch.no_grad()
-    def inference(self,
-                  input:Union[Sequence[float],np.ndarray,Tensor],
-                  bin_pred_thr:float=0.5,
-                  duration_thr:int=4*16,
-                  dist_thr:Union[int,Sequence[int]]=200,
-                  correction:bool=False) -> RPeaksDetectionOutput:
-        """ finished, checked,
+    def inference(
+        self,
+        input: Union[Sequence[float], np.ndarray, Tensor],
+        bin_pred_thr: float = 0.5,
+        duration_thr: int = 4 * 16,
+        dist_thr: Union[int, Sequence[int]] = 200,
+        correction: bool = False,
+    ) -> RPeaksDetectionOutput:
+        """finished, checked,
 
         auxiliary function to `forward`, for CPSC2019,
 
@@ -330,7 +351,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
             skip_dist=self.config.skip_dist,
             bin_pred_thr=bin_pred_thr,
             duration_thr=duration_thr,
-            dist_thr=dist_thr
+            dist_thr=dist_thr,
         )
 
         if correction:
@@ -340,33 +361,39 @@ class ECG_UNET_CPSC2019(ECG_UNET):
                     rpeaks=b_rpeaks,
                     sampling_rate=self.config.fs,
                     tol=0.05,
-                )[0] for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
+                )[0]
+                for b_input, b_rpeaks in zip(_input.detach().numpy().squeeze(1), rpeaks)
             ]
 
         return RPeaksDetectionOutput(
-            rpeak_indices=rpeaks, prob=prob,
+            rpeak_indices=rpeaks,
+            prob=prob,
         )
 
     @torch.no_grad()
-    def inference_CPSC2019(self,
-                           input:Union[np.ndarray,Tensor],
-                           bin_pred_thr:float=0.5,
-                           duration_thr:int=4*16,
-                           dist_thr:Union[int,Sequence[int]]=200,
-                           correction:bool=False) -> RPeaksDetectionOutput:
+    def inference_CPSC2019(
+        self,
+        input: Union[np.ndarray, Tensor],
+        bin_pred_thr: float = 0.5,
+        duration_thr: int = 4 * 16,
+        dist_thr: Union[int, Sequence[int]] = 200,
+        correction: bool = False,
+    ) -> RPeaksDetectionOutput:
         """
         alias of `self.inference`
         """
         return self.inference(input, bin_pred_thr, duration_thr, dist_thr, correction)
 
 
-def _inference_post_process(prob:np.ndarray,
-                            fs:int,
-                            skip_dist:int,
-                            bin_pred_thr:float=0.5,
-                            duration_thr:int=4*16,
-                            dist_thr:Union[int,Sequence[int]]=200,) -> List[np.ndarray]:
-    """ finished, checked,
+def _inference_post_process(
+    prob: np.ndarray,
+    fs: int,
+    skip_dist: int,
+    bin_pred_thr: float = 0.5,
+    duration_thr: int = 4 * 16,
+    dist_thr: Union[int, Sequence[int]] = 200,
+) -> List[np.ndarray]:
+    """finished, checked,
 
     prob --> qrs mask --> qrs intervals --> rpeaks
 
@@ -382,12 +409,16 @@ def _inference_post_process(prob:np.ndarray,
     # mask = (prob > bin_pred_thr).astype(int)
     rpeaks = []
     for b_idx in range(batch_size):
-        b_prob = prob[b_idx,...]
+        b_prob = prob[b_idx, ...]
         b_mask = (b_prob > bin_pred_thr).astype(int)
         b_qrs_intervals = mask_to_intervals(b_mask, 1)
-        b_rpeaks = np.array([
-            (itv[0]+itv[1])//2 for itv in b_qrs_intervals if itv[1]-itv[0] >= _duration_thr
-        ])
+        b_rpeaks = np.array(
+            [
+                (itv[0] + itv[1]) // 2
+                for itv in b_qrs_intervals
+                if itv[1] - itv[0] >= _duration_thr
+            ]
+        )
         # print(f"before post-process, b_qrs_intervals = {b_qrs_intervals}")
         # print(f"before post-process, b_rpeaks = {b_rpeaks}")
 
@@ -399,21 +430,25 @@ def _inference_post_process(prob:np.ndarray,
             for r in range(len(b_rpeaks_diff)):
                 if b_rpeaks_diff[r] < dist_thr_inds:  # 200 ms
                     prev_r_ind = b_rpeaks[r]
-                    next_r_ind = b_rpeaks[r+1]
+                    next_r_ind = b_rpeaks[r + 1]
                     if b_prob[prev_r_ind] > b_prob[next_r_ind]:
-                        del_ind = r+1
+                        del_ind = r + 1
                     else:
                         del_ind = r
                     b_rpeaks = np.delete(b_rpeaks, del_ind)
                     check = True
                     break
         if len(_dist_thr) == 1:
-            b_rpeaks = b_rpeaks[np.where((b_rpeaks>=skip_dist) & (b_rpeaks<input_len-skip_dist))[0]]
+            b_rpeaks = b_rpeaks[
+                np.where((b_rpeaks >= skip_dist) & (b_rpeaks < input_len - skip_dist))[
+                    0
+                ]
+            ]
             rpeaks.append(b_rpeaks)
             continue
         check = True
         # TODO: parallel the following block
-        # CAUTION !!! 
+        # CAUTION !!!
         # this part is extremely slow in some cases (long duration and low SNR)
         dist_thr_inds = _dist_thr[1] / model_spacing
         while check:
@@ -422,24 +457,38 @@ def _inference_post_process(prob:np.ndarray,
             for r in range(len(b_rpeaks_diff)):
                 if b_rpeaks_diff[r] >= dist_thr_inds:  # 1200 ms
                     prev_r_ind = b_rpeaks[r]
-                    next_r_ind = b_rpeaks[r+1]
-                    prev_qrs = [itv for itv in b_qrs_intervals if itv[0]<=prev_r_ind<=itv[1]][0]
-                    next_qrs = [itv for itv in b_qrs_intervals if itv[0]<=next_r_ind<=itv[1]][0]
+                    next_r_ind = b_rpeaks[r + 1]
+                    prev_qrs = [
+                        itv for itv in b_qrs_intervals if itv[0] <= prev_r_ind <= itv[1]
+                    ][0]
+                    next_qrs = [
+                        itv for itv in b_qrs_intervals if itv[0] <= next_r_ind <= itv[1]
+                    ][0]
                     check_itv = [prev_qrs[1], next_qrs[0]]
-                    l_new_itv = mask_to_intervals(b_mask[check_itv[0]: check_itv[1]], 1)
+                    l_new_itv = mask_to_intervals(
+                        b_mask[check_itv[0] : check_itv[1]], 1
+                    )
                     if len(l_new_itv) == 0:
                         continue
-                    l_new_itv = [[itv[0]+check_itv[0], itv[1]+check_itv[0]] for itv in l_new_itv]
-                    new_itv = max(l_new_itv, key=lambda itv: itv[1]-itv[0])
-                    new_max_prob = (b_prob[new_itv[0]:new_itv[1]]).max()
+                    l_new_itv = [
+                        [itv[0] + check_itv[0], itv[1] + check_itv[0]]
+                        for itv in l_new_itv
+                    ]
+                    new_itv = max(l_new_itv, key=lambda itv: itv[1] - itv[0])
+                    new_max_prob = (b_prob[new_itv[0] : new_itv[1]]).max()
                     for itv in l_new_itv:
-                        itv_prob = (b_prob[itv[0]:itv[1]]).max()
-                        if itv[1] - itv[0] == new_itv[1] - new_itv[0] and itv_prob > new_max_prob:
+                        itv_prob = (b_prob[itv[0] : itv[1]]).max()
+                        if (
+                            itv[1] - itv[0] == new_itv[1] - new_itv[0]
+                            and itv_prob > new_max_prob
+                        ):
                             new_itv = itv
                             new_max_prob = itv_prob
-                    b_rpeaks = np.insert(b_rpeaks, r+1, 4*(new_itv[0]+new_itv[1]))
+                    b_rpeaks = np.insert(b_rpeaks, r + 1, 4 * (new_itv[0] + new_itv[1]))
                     check = True
                     break
-        b_rpeaks = b_rpeaks[np.where((b_rpeaks>=skip_dist) & (b_rpeaks<input_len-skip_dist))[0]]
+        b_rpeaks = b_rpeaks[
+            np.where((b_rpeaks >= skip_dist) & (b_rpeaks < input_len - skip_dist))[0]
+        ]
         rpeaks.append(b_rpeaks)
     return rpeaks

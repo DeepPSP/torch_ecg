@@ -13,7 +13,9 @@ from .resample import Resample
 from ..utils.misc import ReprMixin
 
 
-__all__ = ["PreprocManager",]
+__all__ = [
+    "PreprocManager",
+]
 
 
 class PreprocManager(ReprMixin):
@@ -37,10 +39,13 @@ class PreprocManager(ReprMixin):
     sig, fs = ppm(sig, 200)
     ```
     """
+
     __name__ = "PreprocManager"
 
-    def __init__(self, *pps:Optional[Tuple[PreProcessor,...]], random:bool=False) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self, *pps: Optional[Tuple[PreProcessor, ...]], random: bool = False
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -53,28 +58,24 @@ class PreprocManager(ReprMixin):
         self.random = random
         self._preprocessors = list(pps)
 
-    def _add_bandpass(self, **config:dict) -> NoReturn:
-        """
-        """
+    def _add_bandpass(self, **config: dict) -> NoReturn:
+        """ """
         self._preprocessors.append(BandPass(**config))
 
-    def _add_baseline_remove(self, **config:dict) -> NoReturn:
-        """
-        """
+    def _add_baseline_remove(self, **config: dict) -> NoReturn:
+        """ """
         self._preprocessors.append(BaselineRemove(**config))
 
-    def _add_normalize(self, **config:dict) -> NoReturn:
-        """
-        """
+    def _add_normalize(self, **config: dict) -> NoReturn:
+        """ """
         self._preprocessors.append(Normalize(**config))
 
-    def _add_resample(self, **config:dict) -> NoReturn:
-        """
-        """
+    def _add_resample(self, **config: dict) -> NoReturn:
+        """ """
         self._preprocessors.append(Resample(**config))
 
-    def __call__(self, sig:np.ndarray, fs:int) -> Tuple[np.ndarray, int]:
-        """ finished, checked,
+    def __call__(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
+        """finished, checked,
 
         Parameters
         ----------
@@ -103,8 +104,8 @@ class PreprocManager(ReprMixin):
         return pp_sig, new_fs
 
     @classmethod
-    def from_config(cls, config:dict) -> "PreprocManager":
-        """ finished, checked,
+    def from_config(cls, config: dict) -> "PreprocManager":
+        """finished, checked,
 
         Parameters
         ----------
@@ -125,7 +126,10 @@ class PreprocManager(ReprMixin):
             "resample": ppm._add_resample,
         }
         for pp_name, pp_config in config.items():
-            if pp_name in ["random", "fs",]:
+            if pp_name in [
+                "random",
+                "fs",
+            ]:
                 continue
             if pp_name in _mapping and isinstance(pp_config, dict):
                 _mapping[pp_name](**pp_config)
@@ -135,8 +139,8 @@ class PreprocManager(ReprMixin):
                 # raise ValueError(f"Unknown preprocessor: {pp_name}")
         return ppm
 
-    def rearrange(self, new_ordering:List[str]) -> NoReturn:
-        """ finished, checked,
+    def rearrange(self, new_ordering: List[str]) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -152,10 +156,12 @@ class PreprocManager(ReprMixin):
         for k in new_ordering:
             if k not in _mapping:
                 _mapping.update({k: k})
-        self._preprocessors.sort(key=lambda aug: new_ordering.index(_mapping[aug.__name__]))
+        self._preprocessors.sort(
+            key=lambda aug: new_ordering.index(_mapping[aug.__name__])
+        )
 
-    def add_(self, pp:PreProcessor, pos:int=-1) -> NoReturn:
-        """ finished, checked,
+    def add_(self, pp: PreProcessor, pos: int = -1) -> NoReturn:
+        """finished, checked,
 
         add a (custom) preprocessor to the manager,
         this method is preferred against directly manipulating
@@ -170,10 +176,12 @@ class PreprocManager(ReprMixin):
             should be >= -1, with -1 the indicator of the end
         """
         assert isinstance(pp, PreProcessor)
-        assert pp.__class__.__name__ not in [p.__class__.__name__ for p in self.preprocessors], \
-            f"Preprocessor {pp.__class__.__name__} already exists."
-        assert isinstance(pos, int) and pos >= -1, \
-            f"pos must be an integer >= -1, but got {pos}."
+        assert pp.__class__.__name__ not in [
+            p.__class__.__name__ for p in self.preprocessors
+        ], f"Preprocessor {pp.__class__.__name__} already exists."
+        assert (
+            isinstance(pos, int) and pos >= -1
+        ), f"pos must be an integer >= -1, but got {pos}."
         if pos == -1:
             self._preprocessors.append(pp)
         else:
@@ -187,4 +195,7 @@ class PreprocManager(ReprMixin):
         """
         return the extra keys for `__repr__`
         """
-        return super().extra_repr_keys() + ["random", "preprocessors",]
+        return super().extra_repr_keys() + [
+            "random",
+            "preprocessors",
+        ]

@@ -12,21 +12,25 @@ from .._preprocessors.base import (
 )
 
 
-__all__ = ["BaselineRemove",]
+__all__ = [
+    "BaselineRemove",
+]
 
 
 class BaselineRemove(torch.nn.Module):
-    """
-    """
+    """ """
+
     __name__ = "BaselineRemove"
 
-    def __init__(self,
-                 fs:Real,
-                 window1:float=0.2,
-                 window2:float=0.6,
-                 inplace:bool=True,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        fs: Real,
+        window1: float = 0.2,
+        window2: float = 0.6,
+        inplace: bool = True,
+        **kwargs: Any
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -49,8 +53,8 @@ class BaselineRemove(torch.nn.Module):
             warnings.warn("values of window1 and window2 are switched")
         self.inplace = inplace
 
-    def forward(self, sig:torch.Tensor) -> torch.Tensor:
-        """ finished, checked,
+    def forward(self, sig: torch.Tensor) -> torch.Tensor:
+        """finished, checked,
 
         apply the preprocessor to `sig`
 

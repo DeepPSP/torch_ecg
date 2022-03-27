@@ -9,7 +9,6 @@ from numbers import Real
 
 import wfdb
 import numpy as np
-np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
 
 from ...utils.misc import (
@@ -25,7 +24,7 @@ __all__ = [
 
 
 class CINC2017(PhysioNetDataBase):
-    """ finished, checked,
+    """finished, checked,
 
     AF Classification from a Short Single Lead ECG Recording
     - The PhysioNet Computing in Cardiology Challenge 2017
@@ -58,12 +57,14 @@ class CINC2017(PhysioNetDataBase):
     [1] https://physionet.org/content/challenge-2017/1.0.0/
     """
 
-    def __init__(self,
-                 db_dir:Union[str,Path],
-                 working_dir:Optional[Union[str,Path]]=None,
-                 verbose:int=2,
-                 **kwargs:Any) -> NoReturn:
-        """ finished, checked,
+    def __init__(
+        self,
+        db_dir: Union[str, Path],
+        working_dir: Optional[Union[str, Path]] = None,
+        verbose: int = 2,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -75,9 +76,15 @@ class CINC2017(PhysioNetDataBase):
             log verbosity
         kwargs: auxilliary key word arguments
         """
-        super().__init__(db_name="challenge-2017", db_dir=db_dir, working_dir=working_dir, verbose=verbose, **kwargs)
+        super().__init__(
+            db_name="challenge-2017",
+            db_dir=db_dir,
+            working_dir=working_dir,
+            verbose=verbose,
+            **kwargs,
+        )
         self.fs = 300
-        
+
         self.rec_ext = "mat"
         self.ann_ext = "hea"
 
@@ -85,11 +92,24 @@ class CINC2017(PhysioNetDataBase):
         self._ls_rec()
 
         self._df_ann = pd.read_csv(self.db_dir / "REFERENCE.csv", header=None)
-        self._df_ann.columns = ["rec", "ann",]
-        self._df_ann_ori = pd.read_csv(self.db_dir / "REFERENCE-original.csv", header=None)
-        self._df_ann_ori.columns = ["rec", "ann",]
+        self._df_ann.columns = [
+            "rec",
+            "ann",
+        ]
+        self._df_ann_ori = pd.read_csv(
+            self.db_dir / "REFERENCE-original.csv", header=None
+        )
+        self._df_ann_ori.columns = [
+            "rec",
+            "ann",
+        ]
         # ["N", "A", "O", "~"]
-        self._all_ann = list(set(self._df_ann.ann.unique().tolist() + self._df_ann_ori.ann.unique().tolist()))
+        self._all_ann = list(
+            set(
+                self._df_ann.ann.unique().tolist()
+                + self._df_ann_ori.ann.unique().tolist()
+            )
+        )
         self.d_ann_names = {
             "N": "Normal rhythm",
             "A": "AF rhythm",
@@ -104,20 +124,20 @@ class CINC2017(PhysioNetDataBase):
         }
 
     def _ls_rec(self) -> NoReturn:
-        """
-        """
+        """ """
         fp = self.db_dir / "RECORDS"
         if fp.exists():
             self._all_records = fp.read_text().splitlines()
             return
         self._all_records = get_record_list_recursive3(
-            db_dir=str(self.db_dir),
-            rec_patterns=f"A[\d]{{5}}.{self.rec_ext}"
+            db_dir=str(self.db_dir), rec_patterns=f"A[\d]{{5}}.{self.rec_ext}"
         )
         fp.write_text("\n".join(self._all_records) + "\n")
 
-    def load_data(self, rec:str, data_format:str="channel_first", units:str="mV") -> np.ndarray:
-        """ finished, checked,
+    def load_data(
+        self, rec: str, data_format: str = "channel_first", units: str = "mV"
+    ) -> np.ndarray:
+        """finished, checked,
 
         Parameters
         ----------
@@ -136,8 +156,18 @@ class CINC2017(PhysioNetDataBase):
         data: ndarray,
             data loaded from `rec`, with given units and format
         """
-        assert data_format.lower() in ["channel_first", "lead_first", "channel_last", "lead_last", "flat",]
-        assert units.lower() in ["mv", "uv", "μv",]
+        assert data_format.lower() in [
+            "channel_first",
+            "lead_first",
+            "channel_last",
+            "lead_last",
+            "flat",
+        ]
+        assert units.lower() in [
+            "mv",
+            "uv",
+            "μv",
+        ]
         wr = wfdb.rdrecord(str(self.db_dir / rec))
         data = wr.p_signal
 
@@ -155,8 +185,8 @@ class CINC2017(PhysioNetDataBase):
             data = data[..., np.newaxis]
         return data
 
-    def load_ann(self, rec:str, original:bool=False, ann_format:str="a") -> str:
-        """ finished, checked,
+    def load_ann(self, rec: str, original: bool = False, ann_format: str = "a") -> str:
+        """finished, checked,
 
         Parameters
         ----------
@@ -180,19 +210,21 @@ class CINC2017(PhysioNetDataBase):
             df = self._df_ann_ori
         else:
             df = self._df_ann
-        row = df[df.rec==rec].iloc[0]
+        row = df[df.rec == rec].iloc[0]
         ann = row.ann
         if ann_format.lower() == "f":
             ann = self.d_ann_names[ann]
         return ann
 
-    def plot(self,
-             rec:str,
-             data:Optional[np.ndarray]=None,
-             ann:Optional[str]=None,
-             ticks_granularity:int=0,
-             rpeak_inds:Optional[Union[Sequence[int],np.ndarray]]=None,) -> NoReturn:
-        """ finished, checked,
+    def plot(
+        self,
+        rec: str,
+        data: Optional[np.ndarray] = None,
+        ann: Optional[str] = None,
+        ticks_granularity: int = 0,
+        rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
+    ) -> NoReturn:
+        """finished, checked,
 
         Parameters
         ----------
@@ -218,7 +250,9 @@ class CINC2017(PhysioNetDataBase):
 
         if data is None:
             _data = self.load_data(
-                rec, units="μV", data_format="flat",
+                rec,
+                units="μV",
+                data_format="flat",
             )
         else:
             units = self._auto_infer_units(data)
@@ -238,11 +272,11 @@ class CINC2017(PhysioNetDataBase):
             rpeak_secs = np.array(rpeak_inds) / self.fs
 
         line_len = self.fs * 25  # 25 seconds
-        nb_lines = math.ceil(len(_data)/line_len)
+        nb_lines = math.ceil(len(_data) / line_len)
 
         for idx in range(nb_lines):
-            seg = _data[idx*line_len: (idx+1)*line_len]
-            secs = (np.arange(len(seg)) + idx*line_len) / self.fs
+            seg = _data[idx * line_len : (idx + 1) * line_len]
+            secs = (np.arange(len(seg)) + idx * line_len) / self.fs
             fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * len(seg) / self.fs))
             y_range = np.max(np.abs(seg)) + 100
             fig_sz_h = 6 * y_range / 1500
@@ -257,14 +291,10 @@ class CINC2017(PhysioNetDataBase):
                 ax.xaxis.set_minor_locator(plt.MultipleLocator(0.04))
                 ax.yaxis.set_minor_locator(plt.MultipleLocator(100))
                 ax.grid(which="minor", linestyle=":", linewidth="0.5", color="black")
-            ax.legend(
-                handles=[patch],
-                loc="lower left",
-                prop={"size": 16}
-            )
+            ax.legend(handles=[patch], loc="lower left", prop={"size": 16})
             if rpeak_inds is not None:
                 for r in rpeak_secs:
-                    ax.axvspan(r-0.01, r+0.01, color="green", alpha=0.7)
+                    ax.axvspan(r - 0.01, r + 0.01, color="green", alpha=0.7)
             ax.set_xlim(secs[0], secs[-1])
             ax.set_ylim(-y_range, y_range)
             ax.set_xlabel("Time [s]")

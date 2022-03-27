@@ -28,8 +28,8 @@ __all__ = [
 ]
 
 
-def ecg_denoise(filtered_sig:np.ndarray, fs:Real, config:ED) -> List[List[int]]:
-    """ finished, checked,
+def ecg_denoise(filtered_sig: np.ndarray, fs: Real, config: ED) -> List[List[int]]:
+    """finished, checked,
 
     a naive function removing non-ECG segments (flat and motion artefact)
 
@@ -51,7 +51,7 @@ def ecg_denoise(filtered_sig:np.ndarray, fs:Real, config:ED) -> List[List[int]]:
     # constants
     siglen = len(filtered_sig)
     window = int(config.get("window", 2000) * fs / 1000)  # 2000 ms
-    step = int(config.get("step", window/5))
+    step = int(config.get("step", window / 5))
     ampl_min = config.get("ampl_min", 0.2)  # 0.2 mV
     ampl_max = config.get("ampl_max", 6.0)  # 6 mV
 
@@ -62,36 +62,36 @@ def ecg_denoise(filtered_sig:np.ndarray, fs:Real, config:ED) -> List[List[int]]:
         return result
 
     # detect and remove flat part
-    n_seg, residue = divmod(siglen-window+step, step)
-    start_inds = [idx*step for idx in range(n_seg)]
+    n_seg, residue = divmod(siglen - window + step, step)
+    start_inds = [idx * step for idx in range(n_seg)]
     if residue != 0:
-        start_inds.append(siglen-window)
+        start_inds.append(siglen - window)
         n_seg += 1
 
     for idx in start_inds:
-        window_vals = filtered_sig[idx:idx+window]
-        ampl = np.max(window_vals)-np.min(window_vals)
+        window_vals = filtered_sig[idx : idx + window]
+        ampl = np.max(window_vals) - np.min(window_vals)
         if ampl > ampl_min:
-            mask[idx:idx+window] = _LABEL_VALID
+            mask[idx : idx + window] = _LABEL_VALID
 
     # detect and remove motion artefact
     window = window // 2  # 1000 ms
     step = window // 5
-    n_seg, residue = divmod(siglen-window+step, step)
-    start_inds = [idx*step for idx in range(n_seg)]
+    n_seg, residue = divmod(siglen - window + step, step)
+    start_inds = [idx * step for idx in range(n_seg)]
     if residue != 0:
-        start_inds.append(siglen-window)
+        start_inds.append(siglen - window)
         n_seg += 1
 
     for idx in start_inds:
-        window_vals = filtered_sig[idx:idx+window]
-        ampl = np.max(window_vals)-np.min(window_vals)
+        window_vals = filtered_sig[idx : idx + window]
+        ampl = np.max(window_vals) - np.min(window_vals)
         if ampl > ampl_max:
-            mask[idx:idx+window] = _LABEL_INVALID
+            mask[idx : idx + window] = _LABEL_INVALID
 
     # mask to intervals
-    interval_threshold = int(config.get("len_threshold", 5)*fs)  # 5s
+    interval_threshold = int(config.get("len_threshold", 5) * fs)  # 5s
     intervals = mask_to_intervals(mask, _LABEL_VALID)
-    intervals = [item for item in intervals if item[1]-item[0]>interval_threshold]
+    intervals = [item for item in intervals if item[1] - item[0] > interval_threshold]
 
     return intervals

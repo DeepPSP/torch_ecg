@@ -17,9 +17,9 @@ __all__ = [
 # might be able to let the model learn better classifying hyper-surfaces
 linear = CFG()
 linear.out_channels = [
-    256, 64,
+    256,
+    64,
 ]
 linear.bias = True
 linear.dropouts = 0.2
 linear.activation = "mish"
-

@@ -10,8 +10,11 @@ from ...cfg import CFG
 
 
 __all__ = [
-    "vgg_block_basic", "vgg_block_mish", "vgg_block_swish",
-    "vgg16", "vgg16_leadwise",
+    "vgg_block_basic",
+    "vgg_block_mish",
+    "vgg_block_swish",
+    "vgg16",
+    "vgg16_leadwise",
 ]
 
 
@@ -20,11 +23,11 @@ vgg16.fs = 500
 vgg16.num_convs = [2, 2, 3, 3, 3]
 _base_num_filters = 12
 vgg16.num_filters = [
-    _base_num_filters*4,
-    _base_num_filters*8,
-    _base_num_filters*16,
-    _base_num_filters*32,
-    _base_num_filters*32,
+    _base_num_filters * 4,
+    _base_num_filters * 8,
+    _base_num_filters * 16,
+    _base_num_filters * 32,
+    _base_num_filters * 32,
 ]
 vgg16.groups = 1
 vgg16.kernel_initializer = "he_normal"
@@ -36,11 +39,11 @@ vgg16_leadwise = deepcopy(vgg16)
 vgg16_leadwise.groups = 12
 _base_num_filters = 12 * 4
 vgg16_leadwise.num_filters = [
-    _base_num_filters*4,
-    _base_num_filters*8,
-    _base_num_filters*16,
-    _base_num_filters*32,
-    _base_num_filters*32,
+    _base_num_filters * 4,
+    _base_num_filters * 8,
+    _base_num_filters * 16,
+    _base_num_filters * 32,
+    _base_num_filters * 32,
 ]
 
 

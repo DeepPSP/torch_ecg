@@ -28,10 +28,11 @@ __all__ = [
 
 class FeatureExtractor(object):
     """
-    Class for extracting activations and 
+    Class for extracting activations and
     registering gradients from targetted intermediate layers
     """
-    def __init__(self, model:nn.Module, target_layers:Sequence[str]) -> NoReturn:
+
+    def __init__(self, model: nn.Module, target_layers: Sequence[str]) -> NoReturn:
         """
 
         Parameters
@@ -43,14 +44,12 @@ class FeatureExtractor(object):
         self.target_layers = target_layers
         self.gradients = []
 
-    def save_gradient(self, grad:Tensor) -> NoReturn:
-        """
-        """
+    def save_gradient(self, grad: Tensor) -> NoReturn:
+        """ """
         self.gradients.append(grad)
 
-    def __call__(self, x:Tensor) -> Tuple[List[Tensor], Tensor]:
-        """
-        """
+    def __call__(self, x: Tensor) -> Tuple[List[Tensor], Tensor]:
+        """ """
         outputs = []
         self.gradients = []
         for name, module in self.model._modules.items():
@@ -69,41 +68,48 @@ class ModelOutputs(object):
     2. Activations from intermeddiate targetted layers.
     3. Gradients from intermeddiate targetted layers.
     """
-    def __init__(self, model:nn.Module, feature_module:nn.Module, target_layers:Sequence[str]) -> NoReturn:
-        """
-        """
+
+    def __init__(
+        self, model: nn.Module, feature_module: nn.Module, target_layers: Sequence[str]
+    ) -> NoReturn:
+        """ """
         self.model = model
         self.feature_module = feature_module
         self.feature_extractor = FeatureExtractor(self.feature_module, target_layers)
 
     def get_gradients(self) -> List[Tensor]:
-        """
-        """
+        """ """
         return self.feature_extractor.gradients
 
-    def __call__(self, x:Tensor) -> Tuple[List[Tensor], Tensor]:
-        """
-        """
+    def __call__(self, x: Tensor) -> Tuple[List[Tensor], Tensor]:
+        """ """
         target_activations = []
         for name, module in self.model._modules.items():
             if module == self.feature_module:
                 target_activations, x = self.feature_extractor(x)
             elif "avgpool" in name.lower():
                 x = module(x)
-                x = x.view(x.size(0),-1)
+                x = x.view(x.size(0), -1)
             else:
                 x = module(x)
-        
+
         return target_activations, x
 
 
 class GradCam(object):
-    """ NOT finished,
-    """
+    """NOT finished,"""
+
     __DEBUG__ = True
     __name__ = "GradCam"
 
-    def __init__(self, model:nn.Module, feature_module:nn.Module, target_layer_names:Sequence[str], target_channel_last:bool=False, device:str='cpu') -> NoReturn:
+    def __init__(
+        self,
+        model: nn.Module,
+        feature_module: nn.Module,
+        target_layer_names: Sequence[str],
+        target_channel_last: bool = False,
+        device: str = "cpu",
+    ) -> NoReturn:
         """
 
         Parameters
@@ -118,15 +124,16 @@ class GradCam(object):
 
         self.model.eval()
         self.model.to(self.device)
-        self.extractor = ModelOutputs(self.model, self.feature_module, self.target_layer_names)
+        self.extractor = ModelOutputs(
+            self.model, self.feature_module, self.target_layer_names
+        )
 
-    def forward(self, input:Tensor) -> Tensor:
-        """
-        """
+    def forward(self, input: Tensor) -> Tensor:
+        """ """
         return self.model(input)
 
-    def __call__(self, input:Tensor, index:Optional[int]=None):
-        """ NOT finished,
+    def __call__(self, input: Tensor, index: Optional[int] = None):
+        """NOT finished,
 
         Parameters
         ----------
