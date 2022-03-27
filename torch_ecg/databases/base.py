@@ -261,6 +261,18 @@ class _DataBase(ReprMixin, ABC):
         """
         raise NotImplementedError
 
+    def __len__(self) -> int:
+        """
+        number of records in the database
+        """
+        return len(self.all_records)
+
+    def __getitem__(self, index: int) -> str:
+        """
+        get the record name by index
+        """
+        return self.all_records[index]
+
 
 class PhysioNetDataBase(_DataBase):
     """
