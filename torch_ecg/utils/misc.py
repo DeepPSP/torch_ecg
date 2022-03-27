@@ -194,7 +194,10 @@ def get_record_list_recursive3(
             ]
         roots = deepcopy(new_roots)
     if isinstance(rec_patterns, str):
-        res = [os.path.splitext(item)[0].replace(str(db_dir), "") for item in res]
+        res = [
+            os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep)
+            for item in res
+        ]
         res = sorted(res)
     elif isinstance(rec_patterns, dict):
         for k in rec_patterns.keys():

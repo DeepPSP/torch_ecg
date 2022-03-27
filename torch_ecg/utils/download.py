@@ -17,6 +17,9 @@ __all__ = [
 ]
 
 
+PHYSIONET_DB_VERSION_PATTERN = "\d+\.\d+\.\d+"
+
+
 def http_get(
     url: str,
     dst_dir: Union[str, Path],
@@ -90,7 +93,9 @@ def _stem(path: Union[str, Path]) -> str:
     return ret
 
 
-def _suffix(path: Union[str, Path]) -> str:
+def _suffix(
+    path: Union[str, Path], ignore_pattern: str = PHYSIONET_DB_VERSION_PATTERN
+) -> str:
     """
     get file extension, including all suffixes
 
@@ -104,7 +109,7 @@ def _suffix(path: Union[str, Path]) -> str:
     str,
         full file extension
     """
-    return "".join(Path(path).suffixes)
+    return "".join(Path(re.sub(ignore_pattern, "", str(path))).suffixes)
 
 
 def _unzip_file(

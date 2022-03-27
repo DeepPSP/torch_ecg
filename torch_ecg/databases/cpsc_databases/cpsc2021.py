@@ -22,6 +22,7 @@ from ...utils.misc import (
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (
     CPSCDataBase,
+    PhysioNetDataBase,
     DEFAULT_FIG_SIZE_PER_SEC,
     WFDB_Beat_Annotations,
     WFDB_Non_Beat_Annotations,
@@ -49,7 +50,7 @@ PlotCfg.t_onset = -100
 PlotCfg.t_offset = 60
 
 
-class CPSC2021(CPSCDataBase):
+class CPSC2021(PhysioNetDataBase):
     r"""
 
     The 4th China Physiological Signal Challenge 2021:
@@ -1130,12 +1131,14 @@ class CPSC2021(CPSCDataBase):
         return int(round(n + self._epsilon))
 
     @property
-    def version(self) -> str:
-        raise "1.0.0"
-
-    @property
-    def url(self) -> str:
-        return f"https://physionet.org/files/{self.db_name}/{self.version}/"
+    def url_(self) -> str:
+        """URL of the compressed database file"""
+        if self._url_compressed is not None:
+            return self._url_compressed
+        # currently, cpsc2021 is not included in the list obtained
+        # using `wfdb.get_dbs()`
+        self._url_compressed = f"https://www.physionet.org/static/published-projects/cpsc2021/paroxysmal-atrial-fibrillation-events-detection-from-dynamic-ecg-recordings-the-4th-china-physiological-signal-challenge-2021-{self.version}.zip"
+        return self._url_compressed
 
 
 ###################################################################

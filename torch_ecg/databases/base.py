@@ -302,6 +302,7 @@ class PhysioNetDataBase(_DataBase):
         self.fs = None
         self._all_records = None
         self._version = None
+        self._url_compressed = None
 
         self.df_all_db_info = get_physionet_dbs()
 
@@ -509,26 +510,28 @@ class PhysioNetDataBase(_DataBase):
     @property
     def url_(self) -> str:
         """URL of the compressed database file"""
+        if self._url_compressed is not None:
+            return self._url_compressed
         domain = "https://physionet.org/static/published-projects/"
-        punct = re.sub("[-]", "", punctuation)
+        punct = re.sub("[-:]", "", punctuation)
         db_desc = self.df_all_db_info[
             self.df_all_db_info["db_name"] == self.db_name
         ].iloc[0]["db_description"]
         db_desc = re.sub(f"[{punct}]+", "", db_desc).lower()
-        db_desc = re.sub("[\s]+", "-", db_desc)
+        db_desc = re.sub("[\s:]+", "-", db_desc)
         url = posixpath.join(domain, f"{self.db_name}/{db_desc}-{self.version}.zip")
         if requests.head(url).headers.get("Content-Type") == "application/zip":
-            return url
+            self._url_compressed = url
         else:
             new_url = posixpath.join(
                 wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/get-zip/{self.version}"
             )
             print(f"{url} is not available, try {new_url} instead")
-            return None
+        return self._url_compressed
 
     def download(self, compressed: bool = False) -> NoReturn:
         """
-        download the database from Physionet
+        download the database from PhysioNet
         """
         if compressed:
             if self.url_ is not None:
