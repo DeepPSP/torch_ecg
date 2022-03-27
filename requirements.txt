@@ -16,3 +16,4 @@ deprecated
 pyEDFlib
 PyWavelets
 torch_optimizer
+requests

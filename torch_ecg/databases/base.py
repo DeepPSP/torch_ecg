@@ -11,15 +11,16 @@ Remarks:
 2. visualizing using UMAP: http://zzz.bwh.harvard.edu/luna/vignettes/nsrr-umap/
 """
 
-import os, pprint, time, posixpath
+import os, pprint, time, posixpath, re, warnings
 from pathlib import Path
 from abc import ABC, abstractmethod
 from collections import namedtuple
 from dataclasses import dataclass
 from typing import Union, Optional, Any, List, NoReturn
 from numbers import Real
+from string import punctuation
 
-import wfdb
+import wfdb, requests
 import numpy as np
 np.set_printoptions(precision=5, suppress=True)
 import pandas as pd
@@ -30,6 +31,8 @@ from ..utils.misc import (
     get_record_list_recursive3, dict_to_str, ReprMixin,
     list_sum,
 )
+from ..utils.download import http_get
+from .aux_data import get_physionet_dbs
 
 
 __all__ = [
@@ -286,18 +289,14 @@ class PhysioNetDataBase(_DataBase):
         # self.fs is default to the frequency of ECG if ECG applicable
         self.fs = None
         self._all_records = None
+        self._version = None
 
-        if self.verbose <= 2:
-            self.df_all_db_info = pd.DataFrame()
-            return
-        
-        all_dbs = wfdb.io.get_dbs()
-        self.df_all_db_info = pd.DataFrame(
-            {
-                "db_name": [item[0] for item in all_dbs],
-                "db_description": [item[1] for item in all_dbs]
-            }
-        )
+        self.df_all_db_info = get_physionet_dbs()
+
+        if self.verbose > 2:
+            self.df_all_db_info = pd.DataFrame(
+                wfdb.get_dbs(), columns=["db_name", "db_description",]
+            ).drop_duplicates().reset_index(drop=True)
 
     def _ls_rec(self, db_name:Optional[str]=None, local:bool=True) -> NoReturn:
         """ finished, checked,
@@ -443,7 +442,20 @@ class PhysioNetDataBase(_DataBase):
 
     @property
     def version(self) -> str:
-        return wfdb.io.record.get_version(self.db_name)
+        if self._version is not None:
+            return self._version
+        try:
+            self._version = wfdb.io.record.get_version(self.db_name)
+        except:
+            warnings.warn("Cannot get the version number from PhysioNet! Defaults to '1.0.0'")
+            self._version = "1.0.0"
+        return self._version
+
+    @property
+    def webpage(self) -> str:
+        return posixpath.join(
+            wfdb.io.download.PN_CONTENT_URL, f"{self.db_name}/{self.version}"
+        )
 
     @property
     def url(self) -> str:
@@ -451,10 +463,32 @@ class PhysioNetDataBase(_DataBase):
             wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/{self.version}"
         )
 
-    def download(self) -> NoReturn:
+    @property
+    def url_(self) -> str:
+        """ URL of the compressed database file """
+        domain = "https://physionet.org/static/published-projects/"
+        punct = re.sub("[-]", "", punctuation)
+        db_desc = self.df_all_db_info[self.df_all_db_info["db_name"]==self.db_name].iloc[0]["db_description"]
+        db_desc = re.sub(f"[{punct}]+", "", db_desc).lower()
+        db_desc = re.sub("[\s]+", "-", db_desc)
+        url = posixpath.join(domain, f"{self.db_name}/{db_desc}-{self.version}.zip")
+        if requests.head(url).headers.get("Content-Type") == "application/zip":
+            return url
+        else:
+            new_url = posixpath.join(wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/get-zip/{self.version}")
+            print(f"{url} is not available, try {new_url} instead")
+            return None
+
+    def download(self, compressed:bool=False) -> NoReturn:
         """
         download the database from Physionet
         """
+        if compressed:
+            if self.url_ is not None:
+                http_get(self.url_, self.db_dir, extract=True)
+                return
+            else:
+                print("No compressed database available! Downloading the uncompressed version...")
         wfdb.dl_database(
             self.db_name,
             self.db_dir,
