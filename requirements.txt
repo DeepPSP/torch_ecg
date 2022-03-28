@@ -17,3 +17,6 @@ pyEDFlib
 PyWavelets
 torch_optimizer
 requests
+xmltodict
+einops
+matplotlib
