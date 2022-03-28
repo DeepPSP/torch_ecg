@@ -1,7 +1,7 @@
 numpy
 scipy
-joblib==0.13.2
-Cython==0.29.10
+joblib
+Cython
 pandas
 scikit-learn
 packaging
