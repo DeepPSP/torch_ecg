@@ -28,8 +28,13 @@ setuptools.setup(
             "references*",
             "docs*",
             "benchmarks*",
+            "tests*",
+            "sample*",
         ]
     ),
+    package_data={
+        "torch_ecg.databases.aux_data": ["*.tar.gz"]
+    },
     # entry_points=,
     classifiers=[
         "Programming Language :: Python",
