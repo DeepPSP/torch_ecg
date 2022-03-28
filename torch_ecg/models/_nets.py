@@ -108,6 +108,7 @@ except:
 try:
     Swish = nn.SiLU  # pytorch added in version 1.7
     Swish.__name__ = "Swish"
+    SiLU = nn.SiLU
 except:
 
     class Swish(nn.Module):
@@ -123,10 +124,13 @@ except:
             """ """
             return input * F.sigmoid(input)
 
+    SiLU = Swish
+    SiLU.__name__ = "SiLU"
+
 
 try:
     Hardswish = nn.Hardswish  # pytorch added in version 1.6
-    Swish.__name__ = "Hardswish"
+    Hardswish.__name__ = "Hardswish"
 except:
 
     class Hardswish(nn.Module):
@@ -183,7 +187,7 @@ Activations.rrelu = nn.RReLU
 Activations.leaky = nn.LeakyReLU
 Activations.leaky_relu = Activations.leaky
 Activations.gelu = nn.GELU
-Activations.silu = nn.SiLU
+Activations.silu = SiLU
 Activations.elu = nn.ELU
 Activations.celu = nn.CELU
 Activations.selu = nn.SELU
