@@ -6,7 +6,7 @@ for downloading the data files.
 
 """
 
-import os, re, tempfile, zipfile, tarfile
+import os, re, tempfile, zipfile, tarfile, shutil
 from pathlib import Path
 from typing import NoReturn, Union, Optional
 
@@ -70,6 +70,16 @@ def http_get(
             _unzip_file(str(downloaded_file.name), str(dst_dir))
         elif ".tar" in _suffix(url):  # tar files
             _untar_file(str(downloaded_file.name), str(dst_dir))
+        else:
+            os.remove(downloaded_file.name)
+            raise Exception(f"Unknown file type {_suffix(url)}.")
+        # avoid the case the compressed file is a folder with the same name
+        _folder = Path(url).name.replace(_suffix(url), "")
+        if _folder in os.listdir(dst_dir):
+            tmp_folder = str(dst_dir).rstrip(os.sep) + "_tmp"
+            os.rename(dst_dir, tmp_folder)
+            os.rename(Path(tmp_folder) / _folder, dst_dir)
+            shutil.rmtree(tmp_folder)
     else:
         shutil.copyfile(downloaded_file.name, Path(dst_dir) / Path(url).name)
     os.remove(downloaded_file.name)
