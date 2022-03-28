@@ -97,6 +97,7 @@ DEFAULTS.prefix = "TorchECG"
 DEFAULTS.torch_dtype = torch.float32  # torch.float64, torch.float16
 DEFAULTS.str_dtype = str(DEFAULTS.torch_dtype).replace("torch.", "")
 DEFAULTS.np_dtype = np.dtype(DEFAULTS.str_dtype)
+DEFAULTS.dtype = DEFAULTS.torch_dtype
 
 DEFAULTS.device = (
     torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")

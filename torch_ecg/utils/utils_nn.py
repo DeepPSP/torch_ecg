@@ -225,13 +225,16 @@ def compute_output_shape(
         )
 
     if isinstance(padding, int):
+        _padding = list(repeat(list(repeat(padding, 2)), dim))
+    elif len(padding) == 2 and isinstance(padding[0], int):
         _padding = list(repeat(padding, dim))
-    elif len(padding) == dim:
+    elif len(padding) == dim and all([isinstance(p, Sequence) for p in padding]) and all([len(p) == 2 for p in padding]):
         _padding = padding
     else:
-        raise ValueError(
-            f"input has {dim} dimensions, while kernel has {len(padding)} dimensions, both not including the channel dimension"
-        )
+        # raise ValueError(
+        #     f"input has {dim} dimensions, while kernel has {len(padding)} dimensions, both not including the channel dimension"
+        # )
+        raise ValueError("Invalid padding")
 
     if isinstance(output_padding, int):
         _output_padding = list(repeat(output_padding, dim))
@@ -263,7 +266,7 @@ def compute_output_shape(
         "transposeconvolution",
     ]:
         output_shape = [
-            (i - 1) * s - 2 * p + d * (k - 1) + o + 1
+            (i - 1) * s - sum(p) + d * (k - 1) + o + 1
             for i, p, o, d, k, s in zip(
                 _input_shape,
                 _padding,
@@ -275,7 +278,7 @@ def compute_output_shape(
         ]
     else:
         output_shape = [
-            floor(((i + 2 * p - minus_term(d, k)) / s) + 1)
+            floor(((i + sum(p) - minus_term(d, k)) / s) + 1)
             for i, p, d, k, s in zip(
                 _input_shape, _padding, _dilation, _kernel_size, _stride
             )
