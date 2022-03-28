@@ -1,5 +1,6 @@
 """
 utilities for signal processing on PyTorch tensors
+
 """
 
 from typing import Union, Iterable, Optional
@@ -86,6 +87,7 @@ def normalize(
     for shape in [(l,), (l,1), (1,l)]:
         nm_sig = normalize(torch.rand(l,s), per_channel=True, mean=torch.rand(*shape))
     ```
+
     """
     _method = method.lower()
     assert _method in [
@@ -180,6 +182,7 @@ def resample(
         one of only one of `dst_fs` (with `fs`) and `siglen` should be specified
     inplace: bool, default False,
         if True, normalization will be done inplace (on the signal)
+
     """
     assert (
         sum([bool(dst_fs), bool(siglen)]) == 1

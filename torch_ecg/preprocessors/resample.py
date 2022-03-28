@@ -18,6 +18,7 @@ class Resample(torch.nn.Module):
     resample the signal into fixed sampling frequency or length
 
     TODO: consider vectorized `scipy.signal.resample`?
+
     """
 
     __name__ = "Resample"
@@ -45,6 +46,7 @@ class Resample(torch.nn.Module):
 
         NOTE that one and only one of `fs` and `siglen` should be set,
         if `fs` is set, `src_fs` should also be set
+
         """
         super().__init__()
         self.dst_fs = dst_fs
@@ -71,6 +73,7 @@ class Resample(torch.nn.Module):
         -------
         sig: Tensor,
             the resampled Tensor ECG signal
+
         """
         sig = resample_t(
             sig=sig,

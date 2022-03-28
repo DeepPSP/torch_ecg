@@ -1,6 +1,7 @@
 """
 utilities for signal processing,
 including spatial, temporal, spatio-temporal domains
+
 """
 
 from copy import deepcopy
@@ -78,6 +79,7 @@ def smooth(
     References
     ----------
     [1] https://scipy-cookbook.readthedocs.io/items/SignalSmooth.html
+
     """
     radius = min(len(x), window_len)
     radius = radius if radius % 2 == 1 else radius - 1
@@ -121,14 +123,16 @@ class MovingAverage(object):
     References
     ----------
     [1] https://en.wikipedia.org/wiki/Moving_average
+
     """
 
-    def __init__(self, data: Sequence, **kwargs):
+    def __init__(self, data: Sequence, **kwargs) -> NoReturn:
         """
         Parameters
         ----------
         data: sequence,
             the series data to compute its moving average
+
         """
         self.data = np.array(data)
         self.verbose = kwargs.get("verbose", 0)
@@ -143,6 +147,7 @@ class MovingAverage(object):
             - 'ema', 'ewma', 'exponential', 'exponential weighted', 'exponential moving average', 'exponential weighted moving average'
             - 'cma', 'cumulative', 'cumulative moving average'
             - 'wma', 'weighted', 'weighted moving average'
+
         """
         m = method.lower().replace("_", " ")
         if m in ["sma", "simple", "simple moving average"]:
@@ -175,6 +180,7 @@ class MovingAverage(object):
         center: bool, default False,
             if True, when computing the output value at each point, the window will be centered at that point;
             otherwise the previous `window` points of the current point will be used
+
         """
         smoothed = []
         if center:
@@ -205,6 +211,7 @@ class MovingAverage(object):
         ----------
         weight: float, default 0.6,
             weight of the previous data point
+
         """
         smoothed = []
         prev = self.data[0]
@@ -218,6 +225,7 @@ class MovingAverage(object):
     def _cma(self, **kwargs) -> np.ndarray:
         """
         cumulative moving average
+
         """
         smoothed = []
         prev = 0
@@ -236,6 +244,7 @@ class MovingAverage(object):
         ----------
         window: int, default 5,
             window length of the moving average
+
         """
         # smoothed = []
         # total = []
@@ -281,6 +290,7 @@ def resample_irregular_timeseries(
 
     NOTE:
     pandas also has the function to regularly resample irregular timeseries
+
     """
     if method.lower() not in ["spline", "interp1d"]:
         raise ValueError("method {} not implemented".format(method))
@@ -431,6 +441,7 @@ def detect_peaks(
     ---------------
     '1.0.5':
         The sign of `mph` is inverted if parameter `valley` is True
+
     """
     data = deepcopy(x)
     data = np.atleast_1d(data).astype("float64")
@@ -577,6 +588,7 @@ def _plot(x, mph, mpd, threshold, edge, valley, ax, ind):
     Plot results of the detect_peaks function, see its help.
 
     Parameters: ref. the function `detect_peaks`
+
     """
     if "plt" not in dir():
         import matplotlib.pyplot as plt
@@ -636,6 +648,7 @@ def remove_spikes_naive(
     -------
     sig: ndarray,
         signal with `spikes` removed
+
     """
     b = list(
         filter(
@@ -681,8 +694,9 @@ def butter_bandpass(
 
     References
     ----------
-    [2] scipy.signal.butter
-    [1] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
+    [1] scipy.signal.butter
+    [2] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
+
     """
     nyq = 0.5 * fs
     low = lowcut / nyq
@@ -754,6 +768,7 @@ def butter_bandpass_filter(
     ----------
     [1] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
     [2] https://dsp.stackexchange.com/questions/19084/applying-filter-in-scipy-signal-use-lfilter-or-filtfilt
+
     """
     if btype is None:
         b, a = butter_bandpass(lowcut, highcut, fs, order=order, verbose=verbose)
@@ -806,6 +821,7 @@ def get_ampl(
     -------
     ampl: float, or ndarray,
         amplitude of the signal
+
     """
     if fmt.lower() in ["channel_last", "lead_last"]:
         _sig = sig.T
@@ -907,6 +923,7 @@ def normalize(
     ----
     in cases where normalization is infeasible (std = 0),
     only the mean value will be shifted
+
     """
     _method = method.lower()
     assert _method in [

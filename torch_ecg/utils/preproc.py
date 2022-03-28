@@ -11,6 +11,7 @@ References:
 -----------
 [1] https://github.com/PIA-Group/BioSPPy
 [2] to add
+
 """
 
 import multiprocessing as mp
@@ -123,6 +124,7 @@ def preprocess_multi_lead_signal(
         - "rpeaks": the array of indices of rpeaks; empty if `rpeak_fn` is not given
 
     NOTE: currently NEVER set verbose >= 3
+
     """
     assert sig_fmt.lower() in [
         "channel_first",
@@ -219,6 +221,7 @@ def preprocess_single_lead_signal(
         with items
         - "filtered_ecg": the array of the processed ecg signal
         - "rpeaks": the array of indices of rpeaks; empty if `rpeak_fn` is not given
+
     """
     filtered_ecg = raw_sig.copy()
 
@@ -304,6 +307,7 @@ def rpeaks_detect_multi_leads(
     -------
     rpeaks: np.ndarray,
         array of indices of the detected rpeaks of the multi-lead ecg signal
+
     """
     assert sig_fmt.lower() in [
         "channel_first",
@@ -345,6 +349,7 @@ def merge_rpeaks(
     -------
     final_rpeaks: np.ndarray
         the final rpeaks obtained by merging the rpeaks from all the leads
+
     """
     rpeak_masks = np.zeros_like(sig, dtype=int)
     sig_len = sig.shape[1]

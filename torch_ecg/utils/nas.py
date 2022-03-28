@@ -1,5 +1,6 @@
 """
 neural architecture search
+
 """
 
 from typing import NoReturn, Optional, Tuple, Sequence
@@ -51,6 +52,7 @@ class NAS:
             model configurations, each with a different network architecture
         lazy: bool, default False,
             whether to load the dataset in the trainer at initialization
+
         """
         self.trainer_cls = trainer_cls
         self.model_cls = model_cls
@@ -109,6 +111,7 @@ class NAS:
             training dataset
         ds_val: Dataset,
             validation dataset
+
         """
         self.ds_train = ds_train
         self.ds_val = ds_val

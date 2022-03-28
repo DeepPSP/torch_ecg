@@ -2,6 +2,7 @@
 loggers, including (planned) CSVLogger, TensorBoardXLogger, WandbLogger
 
 with reference to `loggers` of `textattack` and `loggers` of `pytorch-lightning`
+
 """
 
 import logging, csv, importlib
@@ -36,6 +37,7 @@ __all__ = [
 class BaseLogger(ReprMixin, ABC):
     """
     the abstract base class of all loggers
+
     """
 
     __name__ = "BaseLogger"
@@ -61,6 +63,7 @@ class BaseLogger(ReprMixin, ABC):
         part: str, optional,
             the part of the training data the metrics computed from,
             can be "train" or "val" or "test", etc.
+
         """
         raise NotImplementedError
 
@@ -76,6 +79,7 @@ class BaseLogger(ReprMixin, ABC):
         level: int, optional,
             the level of the message,
             can be logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
+
         """
         raise NotImplementedError
 
@@ -103,6 +107,7 @@ class BaseLogger(ReprMixin, ABC):
         ----------
         epoch: int,
             the number of the epoch
+
         """
         pass
 
@@ -114,6 +119,7 @@ class BaseLogger(ReprMixin, ABC):
         ----------
         epoch: int,
             the number of the epoch
+
         """
         pass
 
@@ -131,6 +137,7 @@ class BaseLogger(ReprMixin, ABC):
     def extra_repr_keys(self) -> List[str]:
         """
         extra keys to be displayed in the repr of the logger
+
         """
         return super().extra_repr_keys() + [
             "filename",
@@ -155,6 +162,7 @@ class TxtLogger(BaseLogger):
             the directory to save the log file
         log_suffix: str, optional,
             the suffix of the log file
+
         """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         if log_suffix is None:
@@ -185,6 +193,7 @@ class TxtLogger(BaseLogger):
         part: str, optional,
             the part of the training data the metrics computed from,
             can be "train" or "val" or "test", etc.
+
         """
         if step is not None:
             self.step = step
@@ -221,6 +230,7 @@ class TxtLogger(BaseLogger):
         level: int, optional,
             the level of the message,
             can be logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
+
         """
         self.logger.log(level, msg)
 
@@ -242,6 +252,7 @@ class TxtLogger(BaseLogger):
         ----------
         epoch: int,
             the number of the epoch
+
         """
         self.logger.info(f"Train epoch_{epoch}:\n{self.long_sep}")
 
@@ -253,6 +264,7 @@ class TxtLogger(BaseLogger):
         ----------
         epoch: int,
             the number of the epoch
+
         """
         self.logger.info(f"{self.long_sep}\n")
 
@@ -298,6 +310,7 @@ class CSVLogger(BaseLogger):
             the directory to save the log file
         log_suffix: str, optional,
             the suffix of the log file
+
         """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         if log_suffix is None:
@@ -329,6 +342,7 @@ class CSVLogger(BaseLogger):
         part: str, optional,
             the part of the training data the metrics computed from,
             can be "train" or "val" or "test", etc.
+
         """
         if step is not None:
             self.step = step
@@ -393,6 +407,7 @@ class TensorBoardXLogger(BaseLogger):
             the directory to save the log file
         log_suffix: str, optional,
             the suffix of the log file
+
         """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         self.logger = tensorboardX.SummaryWriter(
@@ -421,6 +436,7 @@ class TensorBoardXLogger(BaseLogger):
         part: str, optional,
             the part of the training data the metrics computed from,
             can be "train" or "val" or "test", etc.
+
         """
         if step is not None:
             self.step = step
@@ -535,6 +551,7 @@ class LoggerManager(ReprMixin):
             the directory to save the log file
         log_suffix: str, optional,
             the suffix of the log file
+
         """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         self._log_suffix = log_suffix
@@ -577,6 +594,7 @@ class LoggerManager(ReprMixin):
         part: str, optional,
             the part of the training data the metrics computed from,
             can be "train" or "val" or "test", etc.
+
         """
         for l in self.loggers:
             l.log_metrics(metrics, step, epoch, part)
@@ -592,6 +610,7 @@ class LoggerManager(ReprMixin):
         level: int, optional,
             the level of the message,
             can be logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
+
         """
         for l in self.loggers:
             l.log_message(msg, level)
@@ -604,6 +623,7 @@ class LoggerManager(ReprMixin):
         ----------
         epoch: int,
             the epoch number
+
         """
         for l in self.loggers:
             l.epoch_start(epoch)
@@ -616,6 +636,7 @@ class LoggerManager(ReprMixin):
         ----------
         epoch: int,
             the epoch number
+
         """
         for l in self.loggers:
             l.epoch_end(epoch)
@@ -657,6 +678,7 @@ class LoggerManager(ReprMixin):
         Returns
         -------
         LoggerManager
+
         """
         lm = cls(config.get("log_dir", None), config.get("log_suffix", None))
         if config.get("txt_logger", True):
@@ -673,6 +695,7 @@ class LoggerManager(ReprMixin):
     def extra_repr_keys(self) -> List[str]:
         """
         extra keys to be displayed in the repr of the logger
+
         """
         return super().extra_repr_keys() + [
             "loggers",

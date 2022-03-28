@@ -52,6 +52,7 @@ def phs_edr(
     np.ndarray,
         1d, if `return_with_time` is set False,
         2d in the form of [idx,val], if `return_with_time` is set True
+
     """
     ts = np.array(rpeaks) * 1000 // fs
     winL, winR = int(winL_t * fs / 1000), int(winR_t * fs / 1000)
@@ -120,5 +121,6 @@ def phs_edr(
 def _getxy(sig: Sequence, von: int, bis: int) -> Real:
     """
     compute the integrand from `von` to `bis` of the signals with baseline removed
+
     """
     return (np.array(s)[von : bis + 1]).sum()

@@ -3,6 +3,7 @@ utilities for computing metrics.
 
 NOTE that only the widely used metrics are implemented here,
 challenge (e.g. CinC, CPSC series) specific metrics are not included.
+
 """
 
 from typing import Union, Optional, Dict
@@ -35,6 +36,7 @@ def top_n_accuracy(preds: Tensor, labels: Tensor, n: int = 1) -> float:
     -------
     acc: float,
         top n accuracy
+
     """
     assert preds.shape[0] == labels.shape[0]
     batch_size, n_classes, *extra_dims = preds.shape

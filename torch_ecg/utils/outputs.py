@@ -1,4 +1,8 @@
 """
+TODO
+----
+    compute a set of metrics inside the `Output` classes
+
 """
 
 from abc import ABC, abstractmethod
@@ -59,7 +63,22 @@ class ClassificationOutput(BaseOutput):
         pred: np.ndarray = None,
         **kwargs: Any,
     ) -> NoReturn:
-        """ """
+        """
+
+        classification output
+
+        Parameters
+        ----------
+        classes : sequence of str,
+            class names
+        prob : np.ndarray,
+            probabilities of each class,
+            of shape (batch_size, num_classes)
+        pred : np.ndarray,
+            predicted class indices, or binary predictions,
+            of shape (batch_size,) or (batch_size, num_classes)
+
+        """
         super().__init__(*args, classes=classes, prob=prob, pred=pred, **kwargs)
 
     def required_fields(self) -> Set[str]:
@@ -87,7 +106,24 @@ class MultiLabelClassificationOutput(BaseOutput):
         pred: np.ndarray = None,
         **kwargs: Any,
     ) -> NoReturn:
-        """ """
+        """
+
+        multi-label classification output
+
+        Parameters
+        ----------
+        classes : sequence of str,
+            class names
+        thr : float,
+            threshold for making binary predictions
+        prob : np.ndarray,
+            probabilities of each class,
+            of shape (batch_size, num_classes)
+        pred : np.ndarray,
+            binary predictions,
+            of shape (batch_size, num_classes)
+
+        """
         super().__init__(
             *args, classes=classes, thr=thr, prob=prob, pred=pred, **kwargs
         )
@@ -117,7 +153,23 @@ class SequenceTaggingOutput(BaseOutput):
         pred: np.ndarray = None,
         **kwargs: Any,
     ) -> NoReturn:
-        """ """
+        """
+
+        sequence tagging output
+
+        Parameters
+        ----------
+        classes : sequence of str,
+            class names
+        prob : np.ndarray,
+            probabilities of each class at each time step (each sample point),
+            of shape (batch_size, signal_length, num_classes)
+        pred : np.ndarray,
+            predicted class indices at each time step (each sample point),
+            or binary predictions at each time step (each sample point),
+            of shape (batch_size, signal_length), or (batch_size, signal_length, num_classes)
+
+        """
         super().__init__(*args, classes=classes, prob=prob, pred=pred, **kwargs)
 
     def required_fields(self) -> Set[str]:
@@ -149,7 +201,23 @@ class WaveDelineationOutput(SequenceTaggingOutput):
         mask: np.ndarray = None,
         **kwargs: Any,
     ) -> NoReturn:
-        """ """
+        """
+
+        wave delineation output
+
+        Parameters
+        ----------
+        classes : sequence of str,
+            class names
+        prob : np.ndarray,
+            probabilities of each class at each time step (each sample point),
+            of shape (batch_size, signal_length, num_classes)
+        mask : np.ndarray,
+            predicted class indices at each time step (each sample point),
+            or binary predictions at each time step (each sample point),
+            of shape (batch_size, signal_length), or (batch_size, signal_length, num_classes)
+
+        """
         super().__init__(
             *args, classes=classes, prob=prob, pred=mask, mask=mask, **kwargs
         )
@@ -179,7 +247,22 @@ class RPeaksDetectionOutput(BaseOutput):
         pred: np.ndarray = None,
         **kwargs: Any,
     ) -> NoReturn:
-        """ """
+        """
+
+        r-peaks detection output
+
+        Parameters
+        ----------
+        rpeak_indices : sequence of sequence of int,
+            r-peak indices for each batch sample
+        prob : np.ndarray,
+            probabilities at each time step (each sample point),
+            of shape (batch_size, signal_length)
+        pred : np.ndarray,
+            binary predictions at each time step (each sample point),
+            of shape (batch_size, signal_length)
+
+        """
         super().__init__(*args, rpeak_indices=rpeak_indices, prob=prob, **kwargs)
 
     def required_fields(self) -> Set[str]:

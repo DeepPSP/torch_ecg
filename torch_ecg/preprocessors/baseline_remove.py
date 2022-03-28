@@ -43,6 +43,7 @@ class BaselineRemove(torch.nn.Module):
         inplace: bool, default True,
             if True, the preprocessor will modify the input signal
         kwargs: keyword arguments,
+
         """
         super().__init__()
         self.fs = fs
@@ -68,6 +69,7 @@ class BaselineRemove(torch.nn.Module):
         sig: Tensor,
             the median filtered (hence baseline removed) ECG signals,
             of shape (batch, lead, siglen)
+
         """
         if not self.inplace:
             sig = sig.clone()

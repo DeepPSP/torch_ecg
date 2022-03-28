@@ -1,6 +1,7 @@
 """
 Abstract base class for trainers,
 in order to replace the functions for classes in the training pipelines
+
 """
 
 import textwrap
@@ -105,6 +106,7 @@ class BaseTrainer(ReprMixin, ABC):
             the device to be used for training
         lazy: bool, default False,
             whether to initialize the data loader lazily
+
         """
         self.model = model
         if type(self.model).__name__ in [
@@ -271,6 +273,7 @@ class BaseTrainer(ReprMixin, ABC):
         ----------
         pbar: tqdm,
             the progress bar for training
+
         """
         for epoch_step, data in enumerate(self.train_loader):
             self.global_step += 1
@@ -326,6 +329,7 @@ class BaseTrainer(ReprMixin, ABC):
         """
         batch dimension, usually 0,
         but can be 1 for some models, e.g. RR_LSTM
+
         """
         raise NotImplementedError
 
@@ -385,6 +389,7 @@ class BaseTrainer(ReprMixin, ABC):
             preds, labels, *extra_tensors,
             preds usually are NOT the logits,
             but tensors before fed into `sigmoid` or `softmax` to get the logits
+
         """
         raise NotImplementedError
 
@@ -403,6 +408,7 @@ class BaseTrainer(ReprMixin, ABC):
         -------
         dict,
             the evaluation results (metrics)
+
         """
         raise NotImplementedError
 
@@ -415,6 +421,7 @@ class BaseTrainer(ReprMixin, ABC):
         ----------
         eval_res: dict,
             the evaluation results (metrics)
+
         """
         if self.train_config.lr_scheduler.lower() == "none":
             pass
@@ -440,6 +447,7 @@ class BaseTrainer(ReprMixin, ABC):
         ----------
         train_config: dict,
             training configuration
+
         """
         _default_config = CFG(deepcopy(self.__DEFATULT_CONFIGS__))
         _default_config.update(train_config)
@@ -526,6 +534,7 @@ class BaseTrainer(ReprMixin, ABC):
             collate_fn=collate_fn,
         )
         ```
+
         """
         raise NotImplementedError
 
@@ -644,7 +653,9 @@ class BaseTrainer(ReprMixin, ABC):
 
         Returns
         -------
-        bool, True if compatible, False otherwise
+        bool,
+            True if compatible, False otherwise
+
         """
         return dicts_equal(self.model_config, model_config)
 
@@ -659,6 +670,7 @@ class BaseTrainer(ReprMixin, ABC):
             if is str, the path of the checkpoint, which is a `.pth.tar` file containing a dict,
             `checkpoint` should contain "model_state_dict", "optimizer_state_dict", "model_config", "train_config", "epoch"
             to resume a training process
+
         """
         if isinstance(checkpoint, str):
             ckpt = torch.load(checkpoint, map_location=self.device)
@@ -691,6 +703,7 @@ class BaseTrainer(ReprMixin, ABC):
         ----------
         path: str,
             path to save the checkpoint
+
         """
         torch.save(
             {
@@ -710,6 +723,7 @@ class BaseTrainer(ReprMixin, ABC):
         -------
         list of str,
             extra keys to display in the string representation of the trainer
+
         """
         return [
             "train_config",

@@ -63,6 +63,7 @@ def overlaps(interval: Interval, another: Interval) -> int:
     Returns
     -------
     int, overlap length of two intervals; if < 0, the distance of two intervals
+
     """
     # in case a or b is not in ascending order
     interval.sort()
@@ -90,6 +91,7 @@ def validate_interval(
     tuple, consisting of
         a bool, indicating whether `interval` is a valid interval
         an interval (can be empty)
+
     """
     if isinstance(interval[0], (list, tuple)):
         info = [validate_interval(itv, join_book_endeds) for itv in interval]
@@ -121,6 +123,7 @@ def in_interval(
     Returns
     -------
     is_in: bool,
+
     """
     itv = sorted(interval)
     if left_closed:
@@ -154,6 +157,7 @@ def in_generalized_interval(
     Returns
     -------
     is_in: bool,
+
     """
     is_in = False
     for interval in generalized_interval:
@@ -183,6 +187,7 @@ def get_confidence_interval(
     Returns
     -------
     conf_itv: ndarray,
+
     """
     from scipy.stats import norm
 
@@ -220,6 +225,7 @@ def intervals_union(
     -------
     processed: GeneralizedInterval,
         the union of the intervals in `interval_list`
+
     """
     interval_sort_key = lambda i: i[0]
     # list_add = lambda list1, list2: list1+list2
@@ -288,6 +294,7 @@ def generalized_intervals_union(
     -------
     iu: GeneralizedInterval,
         the union of `interval_list`
+
     """
     all_intervals = [itv for gnr_itv in interval_list for itv in gnr_itv]
     iu = intervals_union(interval_list=all_intervals, join_book_endeds=join_book_endeds)
@@ -312,6 +319,7 @@ def intervals_intersection(
     -------
     its: Interval,
         the intersection of all intervals in `interval_list`
+
     """
     if [] in interval_list:
         return []
@@ -349,6 +357,7 @@ def generalized_intervals_intersection(
     -------
     its: GeneralizedInterval,
         the intersection of `generalized_interval` and `another_generalized_interval`
+
     """
     this = intervals_union(generalized_interval)
     another = intervals_union(another_generalized_interval)
@@ -388,6 +397,7 @@ def generalized_interval_complement(
     -------
     cpl: union of `Interval`s,
         the complement of `generalized_interval` in `total_interval`
+
     """
     rearranged_intervals = intervals_union(generalized_interval)
     total_interval.sort()
@@ -449,6 +459,7 @@ def get_optimal_covering(
         ret_traceback: list，
             contains the list of indices of the intervals in the original `to_cover`,
             that each interval in the covering covers
+
     """
     start_time = time.time()
     verbose = kwargs.get("verbose", 0)
@@ -633,6 +644,7 @@ def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
         - "max_cont_len"
         - "max_cont_sublist_start"
         - "max_cont_sublist"
+
     """
     complementary_sublist = (
         [-1] + [i for i in range(tot_rng) if i not in sublist] + [tot_rng]
@@ -664,6 +676,7 @@ def interval_len(interval: Interval) -> Real:
     -------
     itv_len: real number,
         the `length` of `interval`
+
     """
     interval.sort()
     itv_len = interval[-1] - interval[0] if len(interval) > 0 else 0
@@ -683,6 +696,7 @@ def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
     -------
     gi_len: real number,
         the `length` of `generalized_interval`
+
     """
     gi_len = sum([interval_len(item) for item in intervals_union(generalized_interval)])
     return gi_len
@@ -705,6 +719,7 @@ def diff_with_step(a: Sequence, step: int = 1, **kwargs) -> np.ndarray:
     -------
     d: ndarray:
         the difference array
+
     """
     _a = np.array(a)
     if step >= len(_a):
@@ -730,6 +745,7 @@ def find_extrema(signal: Optional[Sequence] = None, mode: str = "both") -> np.nd
     -------
     extrema : ndarray
         indices of the extrama points.
+
     """
     # check inputs
     if signal is None:
@@ -765,7 +781,9 @@ def is_intersect(
 
     Returns
     -------
-    bool, True if `interval` intersects with another_interval, False otherwise
+    bool,
+        True if `interval` intersects with another_interval, False otherwise
+
     """
     if (
         interval is None
@@ -825,6 +843,7 @@ def max_disjoint_covering(
     ----------
     [1] https://en.wikipedia.org/wiki/Maximum_disjoint_set
     [2] https://www.geeksforgeeks.org/maximal-disjoint-intervals/
+
     """
     if len(intervals) <= 1:
         covering = deepcopy(intervals)
@@ -924,6 +943,7 @@ def mask_to_intervals(
         the intervals corr. to each value in `vals` if `vals` is `None` or `Sequence`;
         or the intervals corr. to `vals` if `vals` is int.
         each interval is of the form `[a,b]`
+
     """
     if vals is None:
         _vals = list(set(mask))

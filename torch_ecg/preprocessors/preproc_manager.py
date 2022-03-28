@@ -37,6 +37,7 @@ class PreprocManager(ReprMixin, nn.Module):
     sig = torch.rand(2,12,8000)
     sig = ppm(sig)
     ```
+
     """
 
     __name__ = "PreprocManager"
@@ -57,6 +58,7 @@ class PreprocManager(ReprMixin, nn.Module):
             whether to apply the augmenters in random order
         inplace: bool, default True,
             whether to apply the preprocessors in-place
+
         """
         super().__init__()
         self.random = random
@@ -90,6 +92,7 @@ class PreprocManager(ReprMixin, nn.Module):
         -------
         sig: Tensor,
             the preprocessed signal tensor
+
         """
         if len(self.preprocessors) == 0:
             raise ValueError("No preprocessors added to the manager.")
@@ -114,6 +117,7 @@ class PreprocManager(ReprMixin, nn.Module):
         -------
         ppm: PreprocManager,
             a new instance of `PreprocManager`
+
         """
         ppm = cls(
             random=config.get("random", False), inplace=config.get("inplace", True)
@@ -145,6 +149,7 @@ class PreprocManager(ReprMixin, nn.Module):
         ----------
         new_ordering: list of str,
             the new ordering of the preprocessors
+
         """
         _mapping = {
             "Resample": "resample",
@@ -173,6 +178,7 @@ class PreprocManager(ReprMixin, nn.Module):
         pos: int, default -1,
             the position to insert the preprocessor,
             should be >= -1, with -1 the indicator of the end
+
         """
         assert isinstance(pp, nn.Module)
         assert pp.__class__.__name__ not in [
@@ -193,6 +199,7 @@ class PreprocManager(ReprMixin, nn.Module):
     def extra_repr_keys(self) -> List[str]:
         """
         return the extra keys for `__repr__`
+
         """
         return super().extra_repr_keys() + [
             "random",

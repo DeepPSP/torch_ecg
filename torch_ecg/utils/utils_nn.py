@@ -1,5 +1,6 @@
 """
 utilities for nn models
+
 """
 
 import re
@@ -60,6 +61,7 @@ def extend_predictions(
     extended_preds: ndarray,
         the extended array of predictions, with indices in `extended_classes`,
         of shape (n_records, n_classes), or (n_classes,)
+
     """
     _preds = np.atleast_2d(preds)
     assert _preds.shape[1] == len(
@@ -129,6 +131,7 @@ def compute_output_shape(
     References
     ----------
     [1] https://discuss.pytorch.org/t/utility-function-for-calculating-the-shape-of-a-conv-output/11173/5
+
     """
     __TYPES__ = [
         "conv",
@@ -228,7 +231,11 @@ def compute_output_shape(
         _padding = list(repeat(list(repeat(padding, 2)), dim))
     elif len(padding) == 2 and isinstance(padding[0], int):
         _padding = list(repeat(padding, dim))
-    elif len(padding) == dim and all([isinstance(p, Sequence) for p in padding]) and all([len(p) == 2 for p in padding]):
+    elif (
+        len(padding) == dim
+        and all([isinstance(p, Sequence) for p in padding])
+        and all([len(p) == 2 for p in padding])
+    ):
         _padding = padding
     else:
         # raise ValueError(
@@ -325,6 +332,7 @@ def compute_conv_output_shape(
     -------
     output_shape: tuple,
         shape of the output Tensor
+
     """
     output_shape = compute_output_shape(
         "conv",
@@ -371,6 +379,7 @@ def compute_maxpool_output_shape(
     -------
     output_shape: tuple,
         shape of the output Tensor
+
     """
     output_shape = compute_output_shape(
         "maxpool",
@@ -414,6 +423,7 @@ def compute_avgpool_output_shape(
     -------
     output_shape: tuple,
         shape of the output Tensor
+
     """
     output_shape = compute_output_shape(
         "avgpool",
@@ -469,6 +479,7 @@ def compute_deconv_output_shape(
     -------
     output_shape: tuple,
         shape of the output Tensor
+
     """
     output_shape = compute_output_shape(
         "deconv",
@@ -505,6 +516,7 @@ def compute_module_size(
     -------
     n_params: int,
         size (number of parameters) of this torch module
+
     """
     module_parameters = filter(lambda p: p.requires_grad, module.parameters())
     n_params = sum([np.prod(p.size()) for p in module_parameters])
@@ -576,9 +588,11 @@ def compute_receptive_field(
     484
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[4,1,4,8,1,16,32,64,1])
     1984
+
     this is the receptive fields of the output feature maps
     of the 3 branches of the multi-scopic net, using its original hyper-parameters,
     (note the 3 max pooling layers)
+
     """
     _kernel_sizes = (
         [kernel_sizes] if isinstance(kernel_sizes, int) else list(kernel_sizes)
@@ -619,6 +633,7 @@ def default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor,
     -------
     tuple of Tensor,
         the concatenated values to feed into neural networks
+
     """
     try:
         n_fields = len(batch[0])
@@ -645,6 +660,7 @@ def intervals_iou(itv_a: Tensor, itv_b: Tensor, iou_type="iou") -> Tensor:
         of shape (N, 2), (K, 2) resp.
     iou_type: str, default "iou", case insensitive
         type of IoU
+
     """
     raise NotImplementedError
     left_intersect = torch.max(itv_a[:, np.newaxis, :1], itvb[..., :1]).squeeze(
@@ -712,6 +728,7 @@ def _adjust_cnn_filter_lengths(
     -------
     config: dict,
         the adjusted config dictionary
+
     """
     assert "fs" in config
     config = deepcopy(config)
@@ -772,6 +789,7 @@ def adjust_cnn_filter_lengths(
     -------
     config: dict,
         the adjusted config dictionary
+
     """
     config = _adjust_cnn_filter_lengths(config, fs, ensure_odd, pattern)
     config["fs"] = fs
@@ -782,6 +800,7 @@ class SizeMixin(object):
     """finished, checked,
 
     mixin class for size related methods
+
     """
 
     @property
@@ -854,6 +873,7 @@ class CkptMixin(object):
             the model loaded from a checkpoint
         aux_config: dict,
             auxiliary configs that are needed for data preprocessing, etc.
+
         """
         _device = device or DEFAULTS.device
         ckpt = torch.load(path, map_location=_device)

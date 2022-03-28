@@ -43,6 +43,7 @@ class BandPass(torch.nn.Module):
         inplace: bool, default True,
             if True, the preprocessor will modify the input signal
         kwargs: keyword arguments,
+
         """
         super().__init__()
         self.fs = fs
@@ -71,6 +72,7 @@ class BandPass(torch.nn.Module):
         -------
         filtered_sig: Tensor,
             the bandpass filtered ECG signals, of shape (batch, lead, siglen)
+
         """
         if not self.inplace:
             sig = sig.clone()

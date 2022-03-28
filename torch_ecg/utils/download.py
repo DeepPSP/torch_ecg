@@ -3,6 +3,7 @@ utilities for downloading and extracting compressed data files
 
 For most PhysioNet databases, the WFDB package already has a method `dl_database`
 for downloading the data files.
+
 """
 
 import os, re, tempfile, zipfile, tarfile
@@ -42,6 +43,7 @@ def http_get(
     References
     ----------
     1. https://github.com/huggingface/transformers/blob/master/src/transformers/file_utils.py
+
     """
     assert (
         re.search("(\.zip)|(\.tar)", _suffix(url)) is not None
@@ -86,6 +88,7 @@ def _stem(path: Union[str, Path]) -> str:
     -------
     str,
         filename without extension
+
     """
     ret = Path(path).stem
     for _ in range(3):
@@ -108,6 +111,7 @@ def _suffix(
     -------
     str,
         full file extension
+
     """
     return "".join(Path(re.sub(ignore_pattern, "", str(path))).suffixes)
 
@@ -124,6 +128,7 @@ def _unzip_file(
         path to the .zip file
     dst_dir: str or Path,
         path to the destination folder
+
     """
     print(f"Extracting file {path_to_zip_file} to {dst_dir}.")
     with zipfile.ZipFile(str(path_to_zip_file)) as zip_ref:
@@ -142,6 +147,7 @@ def _untar_file(
         path to the .tar.xx file
     dst_dir: str or Path,
         path to the destination folder
+
     """
     print(f"Extracting file {path_to_tar_file} to {dst_dir}.")
     mode = Path(path_to_tar_file).suffix.replace(".", "r:").replace("tar", "")

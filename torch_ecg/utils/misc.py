@@ -83,6 +83,7 @@ def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str) -> List[st
     -------
     res: list of str,
         list of records, in lexicographical order
+
     """
     res = []
     roots = [str(db_dir)]
@@ -123,6 +124,7 @@ def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> Li
     -------
     res: list of str,
         list of records, in lexicographical order
+
     """
     res = []
     roots = [str(db_dir)]
@@ -165,6 +167,7 @@ def get_record_list_recursive3(
     -------
     res: list of str,
         list of records, in lexicographical order
+
     """
     if isinstance(rec_patterns, str):
         res = []
@@ -230,6 +233,7 @@ def dict_to_str(
     -------
     s: str,
         the formatted string
+
     """
     assert isinstance(d, (dict, list, tuple))
     if len(d) == 0:
@@ -309,6 +313,7 @@ def str2bool(v: Union[str, bool]) -> bool:
     References
     ----------
     https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
+
     """
     if isinstance(v, bool):
         b = v
@@ -338,6 +343,7 @@ def diff_with_step(a: np.ndarray, step: int = 1, **kwargs) -> np.ndarray:
     -------
     d: ndarray:
         the difference array
+
     """
     if step >= len(a):
         raise ValueError(
@@ -363,6 +369,7 @@ def ms2samples(t: Real, fs: Real) -> int:
     -------
     n_samples: int,
         number of samples corresponding to time `t`
+
     """
     n_samples = t * fs // 1000
     return n_samples
@@ -384,6 +391,7 @@ def samples2ms(n_samples: int, fs: Real) -> Real:
     -------
     t: real number,
         time duration correponding to `n_samples`
+
     """
     t = n_samples * 1000 / fs
     return t
@@ -418,6 +426,8 @@ def get_mask(
     Returns
     -------
     mask: ndarray or list,
+        the mask array
+
     """
     if isinstance(shape, int):
         shape = (shape,)
@@ -456,6 +466,7 @@ def class_weight_to_sample_weight(
     -------
     sample_weight: ndarray,
         the array of sample weight
+
     """
     if not class_weight:
         sample_weight = np.ones_like(y, dtype=float)
@@ -500,6 +511,7 @@ def plot_single_lead(
     ticks_granularity: int, default 0,
         the granularity to plot axis ticks, the higher the more,
         0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
+
     """
     if "plt" not in dir():
         import matplotlib.pyplot as plt
@@ -567,6 +579,7 @@ def init_logger(
     Returns
     -------
     logger: Logger
+
     """
     if log_file is None:
         log_file = f"log_{get_date_str()}.txt"
@@ -621,6 +634,7 @@ def get_date_str(fmt: Optional[str] = None):
     -------
     date_str: str,
         current time in the `str` format
+
     """
     now = datetime.datetime.now()
     date_str = now.strftime(fmt or "%m-%d_%H-%M")
@@ -636,6 +650,7 @@ def rdheader(header_data: Union[str, Sequence[str]]) -> Union[Record, MultiRecor
     ----------
     head_data: str, or sequence of str,
         path of the .hea header file, or lines of the .hea header file
+
     """
     if isinstance(header_data, str):
         if not header_data.endswith(".hea"):
@@ -737,6 +752,7 @@ def ensure_lead_fmt(
     -------
     out_values: ndarray,
         ECG signal in the format of `fmt`
+
     """
     out_values = np.array(values)
     lead_dim = np.where(np.array(out_values.shape) == n_leads)[0]
@@ -783,6 +799,7 @@ def ensure_siglen(
     out_values: ndarray,
         ECG signal in the format of `fmt` and of fixed length `siglen`,
         of ndim=3 if `tolerence` is given, otherwise ndim=2
+
     """
     if fmt.lower() in ["channel_last", "lead_last"]:
         _values = np.array(values).T
@@ -869,6 +886,7 @@ def masks_to_waveforms(
         each item value is a list containing the `ECGWaveForm`s corr. to the lead;
         each item key is from `leads` if `leads` is set,
         otherwise would be "lead_1", "lead_2", ..., "lead_n"
+
     """
     if masks.ndim == 1:
         _masks = masks[np.newaxis, ...]
@@ -947,6 +965,7 @@ def mask_to_intervals(
         the intervals corr. to each value in `vals` if `vals` is `None` or `Sequence`;
         or the intervals corr. to `vals` if `vals` is int.
         each interval is of the form `[a,b]`
+
     """
     if vals is None:
         _vals = list(set(mask))
@@ -992,6 +1011,7 @@ def list_sum(l: Sequence[list]) -> list:
     l_sum: list,
         sum of `l`,
         i.e. if l = [list1, list2, ...], then l_sum = list1 + list2 + ...
+
     """
     l_sum = reduce(lambda a, b: a + b, l, [])
     return l_sum
@@ -1016,11 +1036,11 @@ def read_log_txt(
         indicators of the scalar recordings,
         if is str, should be indicators separated by "|"
 
-
     Returns
     -------
     summary: DataFrame,
         scalars summary, in the format of a pandas DataFrame
+
     """
     with open(fp, "r") as f:
         content = f.read().splitlines()
@@ -1065,6 +1085,7 @@ def read_event_scalars(
     -------
     summary: DataFrame or dict of DataFrame
         the wall_time, step, value of the scalars
+
     """
     try:
         from tensorflow.python.summary.event_accumulator import EventAccumulator
@@ -1123,6 +1144,7 @@ def dicts_equal(d1: dict, d2: dict) -> bool:
     >>> d2 = {"a": pd.DataFrame([{"hehe":1,"haha":2}])[["hehe","haha"]]}
     >>> dicts_equal(d1, d2)
     True
+
     """
     import torch
 
@@ -1177,6 +1199,7 @@ def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
     -------
     str,
         the representation of the class
+
     """
     indent = 4 * depth * " "
     closing_indent = 4 * (depth - 1) * " "
@@ -1203,6 +1226,7 @@ def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
 class ReprMixin(object):
     """
     Mixin for enhanced __repr__ and __str__ methods.
+
     """
 
     def __repr__(self) -> str:
@@ -1223,6 +1247,7 @@ class MovingAverage(object):
     References
     ----------
     [1] https://en.wikipedia.org/wiki/Moving_average
+
     """
 
     def __init__(self, data: Optional[Sequence] = None, **kwargs: Any) -> NoReturn:
@@ -1232,6 +1257,7 @@ class MovingAverage(object):
         data: array_like,
             the series data to compute its moving average
         kwargs: auxilliary key word arguments
+
         """
         if data is None:
             self.data = np.array([])
@@ -1251,6 +1277,7 @@ class MovingAverage(object):
             - "ema", "ewma", "exponential", "exponential weighted", "exponential moving average", "exponential weighted moving average"
             - "cma", "cumulative", "cumulative moving average"
             - "wma", "weighted", "weighted moving average"
+
         """
         m = method.lower().replace("_", " ")
         if m in ["sma", "simple", "simple moving average"]:
@@ -1285,6 +1312,7 @@ class MovingAverage(object):
         center: bool, default False,
             if True, when computing the output value at each point, the window will be centered at that point;
             otherwise the previous `window` points of the current point will be used
+
         """
         smoothed = []
         if center:
@@ -1315,6 +1343,7 @@ class MovingAverage(object):
         ----------
         weight: float, default 0.6,
             weight of the previous data point
+
         """
         smoothed = []
         prev = self.data[0]
@@ -1328,6 +1357,7 @@ class MovingAverage(object):
     def _cma(self, **kwargs) -> np.ndarray:
         """
         cumulative moving average
+
         """
         smoothed = []
         prev = 0
@@ -1346,6 +1376,7 @@ class MovingAverage(object):
         ----------
         window: int, default 5,
             window length of the moving average
+
         """
         conv = np.arange(1, window + 1)[::-1]
         deno = np.sum(conv)
@@ -1369,6 +1400,7 @@ def uniform(low: Real, high: Real, num: int) -> List[float]:
     -------
     arr: list of float,
         array of randomly generated numbers with uniform distribution
+
     """
     arr = [random.uniform(low, high) for _ in range(num)]
     return arr
@@ -1379,6 +1411,17 @@ def nildent(text: str) -> str:
 
     kill all leading white spaces in each line of `text`,
     while keeping all lines (including empty)
+
+    Parameters
+    ----------
+    text: str,
+        text to be processed
+
+    Returns
+    -------
+    new_text: str,
+        processed text
+
     """
     new_text = "\n".join([l.lstrip() for l in text.splitlines()]) + (
         "\n" if text.endswith("\n") else ""
@@ -1398,6 +1441,7 @@ def isclass(obj: Any) -> bool:
     -------
     bool:
         True if `obj` is a class, False otherwise
+
     """
     try:
         return issubclass(obj, object)
@@ -1437,6 +1481,7 @@ def strafified_train_test_split(
     will be put into the test set,
     and **at the same time**, approximately 20% of the Chinese and 20% of the Americans
     lie in the test set as well.
+
     """
     df_inspection = df[strafified_cols].copy()
     for item in strafified_cols:

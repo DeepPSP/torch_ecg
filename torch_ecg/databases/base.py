@@ -9,6 +9,7 @@ Base classes for datasets from different sources:
 Remarks:
 1. for whole-dataset visualizing: http://zzz.bwh.harvard.edu/luna/vignettes/dataplots/
 2. visualizing using UMAP: http://zzz.bwh.harvard.edu/luna/vignettes/nsrr-umap/
+
 """
 
 import os, pprint, time, posixpath, re, warnings
@@ -144,6 +145,7 @@ class _DataBase(ReprMixin, ABC):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         self.db_name = db_name
         self.db_dir = Path(db_dir)
@@ -164,6 +166,7 @@ class _DataBase(ReprMixin, ABC):
     def load_data(self, rec: str, **kwargs) -> Any:
         """
         load data from the record `rec`
+
         """
         raise NotImplementedError
 
@@ -173,6 +176,7 @@ class _DataBase(ReprMixin, ABC):
         load annotations of the record `rec`
 
         NOTE that the records might have several annotation files
+
         """
         raise NotImplementedError
 
@@ -193,6 +197,7 @@ class _DataBase(ReprMixin, ABC):
         -------
         units: str,
             units of `sig`, "μV" or "mV"
+
         """
         if sig_type.lower() == "ecg":
             _MAX_mV = 20  # 20mV, seldom an ECG device has range larger than this value
@@ -236,6 +241,7 @@ class _DataBase(ReprMixin, ABC):
         ----------
         arrhythmias: str, or list of str,
             the arrhythmia(s) to check, in abbreviations or in SNOMEDCTCode
+
         """
         if isinstance(arrhythmias, str):
             d = [arrhythmias]
@@ -258,18 +264,21 @@ class _DataBase(ReprMixin, ABC):
     def url(self) -> Union[str, List[str]]:
         """
         URL(s) for downloading the database
+
         """
         raise NotImplementedError
 
     def __len__(self) -> int:
         """
         number of records in the database
+
         """
         return len(self.all_records)
 
     def __getitem__(self, index: int) -> str:
         """
         get the record name by index
+
         """
         return self.all_records[index]
 
@@ -277,6 +286,7 @@ class _DataBase(ReprMixin, ABC):
 class PhysioNetDataBase(_DataBase):
     """
     https://www.physionet.org/
+
     """
 
     def __init__(
@@ -300,6 +310,7 @@ class PhysioNetDataBase(_DataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name=db_name,
@@ -344,6 +355,7 @@ class PhysioNetDataBase(_DataBase):
             if not set, `self.db_name` will be used
         local: bool, default True,
             if True, read from local storage, prior to using `wfdb.get_record_list`
+
         """
         if local:
             self._ls_rec_local()
@@ -360,6 +372,7 @@ class PhysioNetDataBase(_DataBase):
         """finished, checked,
 
         find all records in `self.db_dir`
+
         """
         record_list_fp = self.db_dir / "RECORDS"
         if record_list_fp.is_file():
@@ -388,6 +401,7 @@ class PhysioNetDataBase(_DataBase):
         Returns
         -------
         int, a `subject_id` attached to the record `rec`
+
         """
         raise NotImplementedError
 
@@ -428,6 +442,7 @@ class PhysioNetDataBase(_DataBase):
         References
         ----------
         [1] https://archive.physionet.org/physiobank/annotations.shtml
+
         """
         attrs = vars(self)
         methods = [
@@ -544,6 +559,7 @@ class PhysioNetDataBase(_DataBase):
     def download(self, compressed: bool = False) -> NoReturn:
         """
         download the database from PhysioNet
+
         """
         if compressed:
             if self.url_ is not None:
@@ -564,6 +580,7 @@ class PhysioNetDataBase(_DataBase):
 class NSRRDataBase(_DataBase):
     """
     https://sleepdata.org/
+
     """
 
     def __init__(
@@ -586,6 +603,7 @@ class NSRRDataBase(_DataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name=db_name,
@@ -637,6 +655,7 @@ class NSRRDataBase(_DataBase):
         full_file_path: str or Path, optional,
             path of the file which contains the psg data,
             if not given, default path will be used
+
         """
         if operation == "open":
             if self.file_opened is not None:
@@ -661,6 +680,7 @@ class NSRRDataBase(_DataBase):
         Returns
         -------
         int, a `subject_id` attached to the record `rec`
+
         """
         raise NotImplementedError
 
@@ -672,6 +692,7 @@ class NSRRDataBase(_DataBase):
         ----------
         rec: str,
             record name
+
         """
         raise NotImplementedError
 
@@ -683,6 +704,7 @@ class NSRRDataBase(_DataBase):
         detailed: bool, default False,
             if False, an short introduction of the database will be printed,
             if True, then docstring of the class will be printed additionally
+
         """
         if not detailed:
             # raw_info = {
@@ -755,6 +777,7 @@ class CPSCDataBase(_DataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name=db_name,
@@ -781,6 +804,7 @@ class CPSCDataBase(_DataBase):
         Returns
         -------
         int, a `subject_id` attached to the record `rec`
+
         """
         raise NotImplementedError
 
