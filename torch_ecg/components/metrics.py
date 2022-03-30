@@ -12,6 +12,7 @@ from ..utils.utils_metrics import (
     _metrics_from_confusion_matrix,
     ovr_confusion_matrix,
     confusion_matrix,
+    top_n_accuracy,
 )
 
 
