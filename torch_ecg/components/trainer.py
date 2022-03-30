@@ -25,8 +25,9 @@ from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
 import torch_optimizer as extra_optim
 
-from .utils_nn import default_collate_fn as collate_fn
-from .misc import (
+from .loggers import LoggerManager
+from ..utils.utils_nn import default_collate_fn as collate_fn
+from ..utils.misc import (
     dicts_equal,
     init_logger,
     get_date_str,
@@ -34,7 +35,6 @@ from .misc import (
     str2bool,
     ReprMixin,
 )
-from .loggers import LoggerManager
 from ..augmenters import AugmenterManager
 from ..models.loss import (
     BCEWithLogitsWithClassWeightLoss,
