@@ -1515,7 +1515,7 @@ def strafified_train_test_split(
     return df_train, df_test
 
 
-def add_docstring(doc:str, mode:str="replace") -> Callable:
+def add_docstring(doc: str, mode: str = "replace") -> Callable:
     """
     decorator to add docstring to a function
 
@@ -1529,19 +1529,33 @@ def add_docstring(doc:str, mode:str="replace") -> Callable:
         case insensitive
 
     """
+
     def decorator(func: Callable) -> Callable:
         """ """
+
         @wraps(func)
         def wrapper(*args, **kwargs) -> Callable:
             """ """
             return func(*args, **kwargs)
+
         if mode.lower() == "replace":
             wrapper.__doc__ = doc
         elif mode.lower() == "append":
-            wrapper.__doc__ += "\n\n" + doc
+            tmp = re.sub("[\s]+", "", wrapper.__doc__)
+            new_lines = 1 - (len(tmp) - len(tmp.rstrip("\n")))
+            tmp = re.sub("[\s]+", "", doc)
+            new_lines -= len(tmp) - len(tmp.lstrip("\n"))
+            new_lines = max(0, new_lines) * "\n"
+            wrapper.__doc__ += new_lines + doc
         elif mode.lower() == "prepend":
+            tmp = re.sub("[\s]+", "", doc)
+            new_lines = 1 - (len(tmp) - len(tmp.rstrip("\n")))
+            tmp = re.sub("[\s]+", "", wrapper.__doc__)
+            new_lines -= len(tmp) - len(tmp.lstrip("\n"))
+            new_lines = max(0, new_lines) * "\n"
             wrapper.__doc__ = doc + "\n\n" + wrapper.__doc__
         else:
             raise ValueError(f"mode {mode} is not supported")
         return wrapper
+
     return decorator

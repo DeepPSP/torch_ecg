@@ -32,9 +32,7 @@ setuptools.setup(
             "sample*",
         ]
     ),
-    package_data={
-        "torch_ecg.databases.aux_data": ["*.tar.gz"]
-    },
+    package_data={"torch_ecg.databases.aux_data": ["*.tar.gz"]},
     # entry_points=,
     classifiers=[
         "Programming Language :: Python",

@@ -25,7 +25,8 @@ class CFG(ED):
     this class is created in order to renew the `update` method,
     to fit the hierarchical structure of configurations
 
-    for example:
+    Examples
+    --------
     >>> c = CFG(hehe={"a":1,"b":2})
     >>> c.update(hehe={"a":-1})
     >>> c
@@ -55,10 +56,11 @@ class CFG(ED):
             except:
                 dict.__setitem__(self, k, v)
         # Class attributes
+        exclude_fields = ["update", "pop"]
         for k in self.__class__.__dict__:
-            if not (k.startswith("__") and k.endswith("__")) and not k in (
-                "update",
-                "pop",
+            if (
+                not (k.startswith("__") and k.endswith("__"))
+                and not k in exclude_fields
             ):
                 setattr(self, k, getattr(self, k))
 
