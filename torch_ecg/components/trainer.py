@@ -4,7 +4,7 @@ in order to replace the functions for classes in the training pipelines
 
 """
 
-import textwrap
+import textwrap, logging
 from pathlib import Path
 from copy import deepcopy
 from abc import ABC, abstractmethod
@@ -202,40 +202,55 @@ class BaseTrainer(ReprMixin, ABC):
                     part="val",
                 )
 
-                # update best model and best metric
-                if eval_res[self.train_config.monitor] > self.best_metric:
-                    self.best_metric = eval_res[self.train_config.monitor]
-                    self.best_state_dict = self._model.state_dict()
-                    self.best_eval_res = deepcopy(eval_res)
-                    self.best_epoch = self.epoch
-                    self.pseudo_best_epoch = self.epoch
-                elif self.train_config.early_stopping:
-                    if (
-                        eval_res[self.train_config.monitor]
-                        >= self.best_metric - self.train_config.early_stopping.min_delta
-                    ):
+                # update best model and best metric if monitor is set
+                if self.train_config.monitor is not None:
+                    if eval_res[self.train_config.monitor] > self.best_metric:
+                        self.best_metric = eval_res[self.train_config.monitor]
+                        self.best_state_dict = self._model.state_dict()
+                        self.best_eval_res = deepcopy(eval_res)
+                        self.best_epoch = self.epoch
                         self.pseudo_best_epoch = self.epoch
-                    elif (
-                        self.epoch - self.pseudo_best_epoch
-                        >= self.train_config.early_stopping.patience
-                    ):
-                        msg = f"early stopping is triggered at epoch {self.epoch}"
-                        self.log_manager.log_message(msg)
-                        break
+                    elif self.train_config.early_stopping:
+                        if (
+                            eval_res[self.train_config.monitor]
+                            >= self.best_metric
+                            - self.train_config.early_stopping.min_delta
+                        ):
+                            self.pseudo_best_epoch = self.epoch
+                        elif (
+                            self.epoch - self.pseudo_best_epoch
+                            >= self.train_config.early_stopping.patience
+                        ):
+                            msg = f"early stopping is triggered at epoch {self.epoch}"
+                            self.log_manager.log_message(msg)
+                            break
 
-                msg = textwrap.dedent(
-                    f"""
-                    best metric = {self.best_metric},
-                    obtained at epoch {self.best_epoch}
-                """
-                )
-                self.log_manager.log_message(msg)
+                    msg = textwrap.dedent(
+                        f"""
+                        best metric = {self.best_metric},
+                        obtained at epoch {self.best_epoch}
+                    """
+                    )
+                    self.log_manager.log_message(msg)
 
-                # save checkpoint
-                save_suffix = f"epochloss_{self.epoch_loss:.5f}_metric_{eval_res[self.train_config.monitor]:.2f}"
+                    # save checkpoint
+                    save_suffix = f"epochloss_{self.epoch_loss:.5f}_metric_{eval_res[self.train_config.monitor]:.2f}"
+                else:
+                    save_suffix = f"epochloss_{self.epoch_loss:.5f}"
                 save_filename = f"{self.save_prefix}{self.epoch}_{get_date_str()}_{save_suffix}.pth.tar"
                 save_path = self.train_config.checkpoints / save_filename
-                self.save_checkpoint(str(save_path))
+                if self.train_config.keep_checkpoint_max != 0:
+                    self.save_checkpoint(str(save_path))
+                    self.saved_models.append(save_path)
+                # remove outdated models
+                if len(self.saved_models) > self.train_config.keep_checkpoint_max > 0:
+                    model_to_remove = self.saved_models.popleft()
+                    try:
+                        os.remove(model_to_remove)
+                    except:
+                        self.log_manager.log_message(
+                            f"failed to remove {str(model_to_remove)}"
+                        )
 
                 # update learning rate using lr_scheduler
                 if self.train_config.lr_scheduler.lower() == "plateau":
@@ -257,10 +272,20 @@ class BaseTrainer(ReprMixin, ABC):
             save_path = self.train_config.model_dir / save_filename
             self.save_checkpoint(path=str(save_path))
             self.log_manager.log_message(f"best model is saved at {save_path}")
+        elif self.train_config.monitor is None:
+            self.log_manager.log_message(
+                "no monitor is set, no model is selected and saved as the best model"
+            )
+            self.best_state_dict = self._model.state_dict()
         else:
             raise ValueError("No best model found!")
 
         self.log_manager.close()
+
+        if not self.best_state_dict:
+            # in case no best model is found,
+            # e.g. monitor is not set, or keep_checkpoint_max is 0
+            self.best_state_dict = self._model.state_dict()
 
         return self.best_state_dict
 
@@ -344,7 +369,7 @@ class BaseTrainer(ReprMixin, ABC):
         """ """
         return [
             "classes",
-            "monitor",
+            # "monitor",  # can be None
             "n_epochs",
             "batch_size",
             "log_step",
@@ -452,29 +477,34 @@ class BaseTrainer(ReprMixin, ABC):
         _default_config = CFG(deepcopy(self.__DEFATULT_CONFIGS__))
         _default_config.update(train_config)
         self._train_config = CFG(deepcopy(_default_config))
-        if not self.train_config.get("model_dir", None):
-            self._train_config.model_dir = self.train_config.checkpoints
-        self._train_config.model_dir = Path(self._train_config.model_dir)
+
+        # check validity of the config
         self._validate_train_config()
 
+        # set aliases
         self.n_epochs = self.train_config.n_epochs
         self.batch_size = self.train_config.batch_size
         self.lr = self.train_config.learning_rate
 
-        if not self.lazy:
-            self._setup_dataloaders()
-
+        # setup log manager first
         self._setup_log_manager()
-
         msg = (
             f"training configurations are as follows:\n{dict_to_str(self.train_config)}"
         )
         self.log_manager.log_message(msg)
 
-        self._setup_augmenter_manager()
+        # setup directories
+        self._setup_directories()
 
-        self.train_config.checkpoints.mkdir(parents=True, exist_ok=True)
-        self.train_config.model_dir.mkdir(parents=True, exist_ok=True)
+        # setup callbacks
+        self._setup_callbacks()
+
+        # setup data loaders
+        if not self.lazy:
+            self._setup_dataloaders()
+
+        # setup augmenters manager
+        self._setup_augmenter_manager()
 
     def extra_log_suffix(self) -> str:
         """ """
@@ -485,6 +515,36 @@ class BaseTrainer(ReprMixin, ABC):
         config = {"log_suffix": self.extra_log_suffix()}
         config.update(self.train_config)
         self.log_manager = LoggerManager.from_config(config=config)
+
+    def _setup_directories(self) -> NoReturn:
+        """finished, checked,"""
+        if not self.train_config.get("model_dir", None):
+            self._train_config.model_dir = self.train_config.checkpoints
+        self._train_config.model_dir = Path(self._train_config.model_dir)
+        self.train_config.checkpoints.mkdir(parents=True, exist_ok=True)
+        self.train_config.model_dir.mkdir(parents=True, exist_ok=True)
+
+    def _setup_callbacks(self) -> NoReturn:
+        """finished, checked,"""
+        self._train_config.monitor = self.train_config.get("monitor", None)
+        if self.train_config.monitor is None:
+            assert (
+                self.train_config.lr_scheduler.lower() != "plateau"
+            ), "monitor is not specified, lr_scheduler should not be ReduceLROnPlateau"
+        self._train_config.keep_checkpoint_max = self.train_config.get(
+            "keep_checkpoint_max", 1
+        )
+        if self._train_config.keep_checkpoint_max < 0:
+            self._train_config.keep_checkpoint_max = -1
+            self.log_manager.log_message(
+                msg="keep_checkpoint_max is set to -1, all checkpoints will be kept",
+                level=logging.WARNING,
+            )
+        elif self._train_config.keep_checkpoint_max == 0:
+            self.log_manager.log_message(
+                msg="keep_checkpoint_max is set to 0, no checkpoint will be kept",
+                level=logging.WARNING,
+            )
 
     def _setup_augmenter_manager(self) -> NoReturn:
         """finished, checked,"""
