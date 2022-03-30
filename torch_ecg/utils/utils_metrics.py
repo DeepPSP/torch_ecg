@@ -6,6 +6,7 @@ challenge (e.g. CinC, CPSC series) specific metrics are not included.
 
 """
 
+from itertools import repeat
 from typing import Union, Optional, Dict, Tuple, Sequence
 from numbers import Number, Real
 
@@ -14,6 +15,8 @@ import einops
 import torch
 from torch import Tensor
 from torch import nn
+
+from .misc import add_docstring
 
 
 __all__ = [
@@ -91,10 +94,10 @@ def confusion_matrix(
     assert all(value in (0, 1) for value in np.unique(labels))
     assert all(value in (0, 1) for value in np.unique(outputs))
 
-    num_patients, num_classes = np.shape(labels)
+    num_samples, num_classes = np.shape(labels)
 
     A = np.zeros((num_classes, num_classes))
-    for k in range(num_patients):
+    for k in range(num_samples):
         i = np.argmax(outputs[k, :])
         j = np.argmax(labels[k, :])
         A[i, j] += 1
@@ -135,10 +138,10 @@ def one_vs_rest_confusion_matrix(
     assert all(value in (0, 1) for value in np.unique(labels))
     assert all(value in (0, 1) for value in np.unique(outputs))
 
-    num_patients, num_classes = np.shape(labels)
+    num_samples, num_classes = np.shape(labels)
 
     A = np.zeros((num_classes, 2, 2))
-    for i in range(num_patients):
+    for i in range(num_samples):
         for j in range(num_classes):
             if labels[i, j] == 1 and outputs[i, j] == 1:  # TP
                 A[j, 0, 0] += 1
@@ -156,14 +159,9 @@ def one_vs_rest_confusion_matrix(
 ovr_confusion_matrix = one_vs_rest_confusion_matrix
 
 
-def auc(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
-    num_classes: Optional[int] = None,
-) -> Tuple[float, float, np.ndarray, np.ndarray]:
-    """
-    Compute macro AUROC and macro AUPRC, and AUPRCs, AUPRCs for each class.
-
+_METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
+    Compute macro {}, and {} for each class.
+    
     Parameters
     ----------
     labels: np.ndarray or Tensor,
@@ -176,28 +174,78 @@ def auc(
         number of classes,
         if `labels` and `outputs` are both of shape (n_samples,),
         then `num_classes` must be specified.
+"""
 
+
+@add_docstring(
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("metrics", "metrics"), "prepend"
+)
+def _metrics_from_confusion_matrix(
+    labels: Union[np.ndarray, Tensor],
+    outputs: Union[np.ndarray, Tensor],
+    num_classes: Optional[int] = None,
+) -> Dict[str, Union[float, np.ndarray]]:
+    """
     Returns
     -------
-    macro_auroc: float,
-        macro AUROC
-    macro_auprc: float,
-        macro AUPRC
-    auprc: np.ndarray,
-        AUPRCs for each class, of shape: (n_classes,)
-    auprc: np.ndarray,
-        AUPRCs for each class, of shape: (n_classes,)
+    metrics: dict,
+        metrics computed from the one-vs-rest confusion matrix
+
+    Examples
+    --------
+    >>> labels, outputs = np.random.randint(0,2,(100,10)), np.random.randint(0,2,(100,10))
+    >>> metrics = _metrics_from_confusion_matrix(labels, outputs)
+
+    References
+    ----------
+    1. https://en.wikipedia.org/wiki/Precision_and_recall
 
     """
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
-    num_patients, num_classes = np.shape(labels)
+    num_samples, num_classes = np.shape(labels)
 
-    # Compute and summarize the confusion matrices for each class across at distinct output values.
-    auroc = np.zeros(num_classes)
-    auprc = np.zeros(num_classes)
+    A = ovr_confusion_matrix(labels, outputs)
 
+    # sens: sensitivity, recall, hit rate, or true positive rate
+    # spec: specificity, selectivity or true negative rate
+    # prec: precision or positive predictive value
+    # npv: negative predictive value
+    # jac: jaccard index, threat score, or critical success index
+    # acc: accuracy
+    # phi: phi coefficient, or matthews correlation coefficient
+    # NOTE: never use repeat here, because it will cause bugs
+    # sens, spec, prec, npv, jac, acc, phi = list(repeat(np.zeros(num_classes), 7))
+    sens, spec, prec, npv, jac, acc, phi = [np.zeros(num_classes) for _ in range(7)]
+    auroc = np.zeros(num_classes)  # area under the receiver-operater characteristic curve (ROC AUC)
+    auprc = np.zeros(num_classes)  # area under the precision-recall curve
     for k in range(num_classes):
-        # We only need to compute TPs, FPs, FNs, and TNs at distinct output values.
+        tp, fp, fn, tn = A[k, 0, 0], A[k, 0, 1], A[k, 1, 0], A[k, 1, 1]
+        if tp + fn > 0:
+            sens[k] = tp / (tp + fn)
+        else:
+            sens[k] = float("nan")
+        # continue
+        if tp + fp > 0:
+            prec[k] = tp / (tp + fp)
+        else:
+            prec[k] = float("nan")
+        if tn + fn > 0:
+            spec[k] = tn / (tn + fp)
+        else:
+            spec[k] = float("nan")
+        if tn + fn > 0:
+            npv[k] = tn / (tn + fn)
+        else:
+            npv[k] = float("nan")
+        if tp + fn + fp > 0:
+            jac[k] = tp / (tp + fn + fp)
+        else:
+            jac[k] = float("nan")
+        acc[k] = (tp + tn) / num_samples
+        phi[k] = (tp * tn - fp * fn) / np.sqrt(
+            (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)
+        )
+
         thresholds = np.unique(outputs[:, k])
         thresholds = np.append(thresholds, thresholds[-1] + 1)
         thresholds = thresholds[::-1]
@@ -224,7 +272,7 @@ def auc(
             tn[j] = tn[j - 1]
 
             # Update the TPs, FPs, FNs, and TNs at i-th output value.
-            while i < num_patients and outputs[idx[i], k] >= thresholds[j]:
+            while i < num_samples and outputs[idx[i], k] >= thresholds[j]:
                 if labels[idx[i], k]:
                     tp[j] += 1
                     fn[j] -= 1
@@ -234,130 +282,230 @@ def auc(
                 i += 1
 
         # Summarize the TPs, FPs, FNs, and TNs for class k.
-        tpr = np.zeros(num_thresholds)
-        tnr = np.zeros(num_thresholds)
-        ppv = np.zeros(num_thresholds)
+        tpr_ = np.zeros(num_thresholds)
+        tnr_ = np.zeros(num_thresholds)
+        ppv_ = np.zeros(num_thresholds)
         for j in range(num_thresholds):
             if tp[j] + fn[j]:
-                tpr[j] = float(tp[j]) / float(tp[j] + fn[j])
+                tpr_[j] = float(tp[j]) / float(tp[j] + fn[j])
             else:
-                tpr[j] = float("nan")
+                tpr_[j] = float("nan")
             if fp[j] + tn[j]:
-                tnr[j] = float(tn[j]) / float(fp[j] + tn[j])
+                tnr_[j] = float(tn[j]) / float(fp[j] + tn[j])
             else:
-                tnr[j] = float("nan")
+                tnr_[j] = float("nan")
             if tp[j] + fp[j]:
-                ppv[j] = float(tp[j]) / float(tp[j] + fp[j])
+                ppv_[j] = float(tp[j]) / float(tp[j] + fp[j])
             else:
-                ppv[j] = float("nan")
+                ppv_[j] = float("nan")
 
         # Compute AUROC as the area under a piecewise linear function with TPR/
         # sensitivity (x-axis) and TNR/specificity (y-axis) and AUPRC as the area
         # under a piecewise constant with TPR/recall (x-axis) and PPV/precision
         # (y-axis) for class k.
         for j in range(num_thresholds - 1):
-            auroc[k] += 0.5 * (tpr[j + 1] - tpr[j]) * (tnr[j + 1] + tnr[j])
-            auprc[k] += (tpr[j + 1] - tpr[j]) * ppv[j + 1]
+            auroc[k] += 0.5 * (tpr_[j + 1] - tpr_[j]) * (tnr_[j + 1] + tnr_[j])
+            auprc[k] += (tpr_[j + 1] - tpr_[j]) * ppv_[j + 1]
 
-    # Compute macro AUROC and macro AUPRC across classes.
-    if np.any(np.isfinite(auroc)):
-        macro_auroc = np.nanmean(auroc)
-    else:
-        macro_auroc = float("nan")
-    if np.any(np.isfinite(auprc)):
-        macro_auprc = np.nanmean(auprc)
-    else:
-        macro_auprc = float("nan")
+    fnr = 1 - sens  # false negative rate, miss rate
+    fpr = 1 - spec  # false positive rate, fall-out
+    fdr = 1 - prec  # false discovery rate
+    for_ = 1 - npv  # false omission rate
+    plr = sens / fpr  # positive likelihood ratio
+    nlr = fnr / spec  # negative likelihood ratio
+    pt = np.sqrt(fpr) / (np.sqrt(sens) + np.sqrt(fpr))  # prevalence threshold
+    ba = (sens + spec) / 2  # balanced accuracy
+    f1 = 2 * sens * prec / (sens + prec)  # f1-measure
+    fm = np.sqrt(prec * sens)  # fowlkes-mallows index
+    bm = sens + spec - 1  # informedness, bookmaker informedness
+    mk = prec + npv - 1  # markedness
+    dor = plr / nlr  # diagnostic odds ratio
 
-    return macro_auroc, macro_auprc, auroc, auprc
-
-
-def accuracy(
-    labels: Union[np.ndarray, Tensor],
-    outputs: Union[np.ndarray, Tensor],
-    num_classes: Optional[int] = None,
-) -> float:
-    """
-    Compute accuracy.
-
-    Parameters
-    ----------
-    labels: np.ndarray or Tensor,
-        binary labels, of shape: (n_samples, n_classes)
-        or indices of each label class, of shape: (n_samples,)
-    outputs: np.ndarray or Tensor,
-        binary outputs, of shape: (n_samples, n_classes)
-        or indices of each class predicted, of shape: (n_samples,)
-    num_classes: int, optional,
-        number of classes,
-        if `labels` and `outputs` are both of shape (n_samples,),
-        then `num_classes` must be specified.
-
-    Returns
-    -------
-    accuracy: float,
-        the accuracy
-
-    """
-    labels, outputs = cls_to_bin(labels, outputs, num_classes)
-    A = confusion_matrix(labels, outputs)
-
-    if np.sum(A) > 0:
-        accuracy = np.sum(np.diag(A)) / np.sum(A)
-    else:
-        accuracy = float("nan")
-
-    return accuracy
+    metrics = {}
+    for m in [
+        "sens",  # sensitivity, recall, hit rate, or true positive rate
+        "spec",  # specificity, selectivity or true negative rate
+        "prec",  # precision or positive predictive value
+        "npv",  # negative predictive value
+        "jac",  # jaccard index, threat score, or critical success index
+        "acc",  # accuracy
+        "phi",  # phi coefficient, or matthews correlation coefficient
+        "fnr",  # false negative rate, miss rate
+        "fpr",  # false positive rate, fall-out
+        "fdr",  # false discovery rate
+        "for_",  # false omission rate
+        "plr",  # positive likelihood ratio
+        "nlr",  # negative likelihood ratio
+        "pt",  # prevalence threshold
+        "ba",  # balanced accuracy
+        "f1",  # f1-measure
+        "fm",  # fowlkes-mallows index
+        "bm",  # bookmaker informedness
+        "mk",  # markedness
+        "dor",  # diagnostic odds ratio
+        "auroc",  # area under the receiver-operater characteristic curve (ROC AUC)
+        "auprc",  # area under the precision-recall curve
+    ]:
+        metrics[m.strip("_")] = eval(m)
+        metrics[f"macro_{m}".strip("_")] = (
+            np.nanmean(eval(m)) if np.any(np.isfinite(eval(m))) else float("nan")
+        )
+    return metrics
 
 
+@add_docstring(
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("F1-measure", "F1-measures"), "prepend"
+)
 def f_measure(
     labels: Union[np.ndarray, Tensor],
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
 ) -> Tuple[float, np.ndarray]:
     """
-    Compute macro F-measure, and F-measures for each class.
-
-    Parameters
-    ----------
-    labels: np.ndarray or Tensor,
-        binary labels, of shape: (n_samples, n_classes)
-        or indices of each label class, of shape: (n_samples,)
-    outputs: np.ndarray or Tensor,
-        binary outputs, of shape: (n_samples, n_classes)
-        or indices of each class predicted, of shape: (n_samples,)
-    num_classes: int, optional,
-        number of classes,
-        if `labels` and `outputs` are both of shape (n_samples,),
-        then `num_classes` must be specified.
-
     Returns
     -------
-    macro_f_measure: float,
-        macro F-measure
-    f_measure: np.ndarray,
-        F-measures for each class, of shape: (n_classes,)
+    macro_f1: float,
+        macro F1-measure
+    f1: np.ndarray,
+        F1-measures for each class, of shape: (n_classes,)
 
     """
-    labels, outputs = cls_to_bin(labels, outputs, num_classes)
-    num_patients, num_classes = np.shape(labels)
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
 
-    A = ovr_confusion_matrix(labels, outputs)
+    return m["macro_f1"], m["f1"]
 
-    f_measure = np.zeros(num_classes)
-    for k in range(num_classes):
-        tp, fp, fn, tn = A[k, 0, 0], A[k, 0, 1], A[k, 1, 0], A[k, 1, 1]
-        if 2 * tp + fp + fn > 0:
-            f_measure[k] = float(2 * tp) / float(2 * tp + fp + fn)
-        else:
-            f_measure[k] = float("nan")
 
-    if np.any(np.isfinite(f_measure)):
-        macro_f_measure = np.nanmean(f_measure)
-    else:
-        macro_f_measure = float("nan")
+@add_docstring(
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("sensitivity", "sensitivities"),
+    "prepend",
+)
+def sensitivity(
+    labels: Union[np.ndarray, Tensor],
+    outputs: Union[np.ndarray, Tensor],
+    num_classes: Optional[int] = None,
+) -> Tuple[float, np.ndarray]:
+    """
+    Returns
+    -------
+    macro_sens: float,
+        macro sensitivity
+    sens: np.ndarray,
+        sensitivities for each class, of shape: (n_classes,)
 
-    return macro_f_measure, f_measure
+    """
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+
+    return m["macro_sens"], m["sens"]
+
+
+# aliases
+recall = sensitivity
+true_positive_rate = sensitivity
+hit_rate = sensitivity
+
+
+@add_docstring(
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("precision", "precisions"), "prepend"
+)
+def precision(
+    labels: Union[np.ndarray, Tensor],
+    outputs: Union[np.ndarray, Tensor],
+    num_classes: Optional[int] = None,
+) -> Tuple[float, np.ndarray]:
+    """
+    Returns
+    -------
+    macro_prec: float,
+        macro precision
+    prec: np.ndarray,
+        precisions for each class, of shape: (n_classes,)
+
+    """
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+
+    return m["macro_prec"], m["prec"]
+
+
+# aliases
+positive_predictive_value = precision
+
+
+@add_docstring(
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("specificity", "specificities"),
+    "prepend",
+)
+def specificity(
+    labels: Union[np.ndarray, Tensor],
+    outputs: Union[np.ndarray, Tensor],
+    num_classes: Optional[int] = None,
+) -> Tuple[float, np.ndarray]:
+    """
+    Returns
+    -------
+    macro_spec: float,
+        macro specificity
+    spec: np.ndarray,
+        specificities for each class, of shape: (n_classes,)
+
+    """
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+
+    return m["macro_spec"], m["spec"]
+
+
+# aliases
+selectivity = specificity
+true_negative_rate = specificity
+
+
+@add_docstring(
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("AUROC and macro AUPRC", "AUPRCs, AUPRCs"),
+    "prepend",
+)
+def auc(
+    labels: Union[np.ndarray, Tensor],
+    outputs: Union[np.ndarray, Tensor],
+    num_classes: Optional[int] = None,
+) -> Tuple[float, float, np.ndarray, np.ndarray]:
+    """
+    Returns
+    -------
+    macro_auroc: float,
+        macro AUROC
+    macro_auprc: float,
+        macro AUPRC
+    auprc: np.ndarray,
+        AUPRCs for each class, of shape: (n_classes,)
+    auprc: np.ndarray,
+        AUPRCs for each class, of shape: (n_classes,)
+
+    """
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+
+    return m["macro_auroc"], m["macro_auprc"], m["auroc"], m["auprc"]
+
+
+@add_docstring(
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("accuracy", "accuracies"),
+    "prepend",
+)
+def accuracy(
+    labels: Union[np.ndarray, Tensor],
+    outputs: Union[np.ndarray, Tensor],
+    num_classes: Optional[int] = None,
+) -> float:
+    """
+    Returns
+    -------
+    macro_acc: float,
+        the macro accuracy
+    acc: np.ndarray,
+        accuracies for each class, of shape: (n_classes,)
+
+    """
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+
+    return m["macro_acc"], m["acc"]
 
 
 def QRS_score(
