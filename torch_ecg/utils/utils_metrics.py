@@ -23,10 +23,8 @@ __all__ = [
     "top_n_accuracy",
     "confusion_matrix",
     "ovr_confusion_matrix",
-    "auc",
-    "accuracy",
-    "f_measure",
     "QRS_score",
+    "_metrics_from_confusion_matrix",
 ]
 
 
@@ -160,7 +158,7 @@ ovr_confusion_matrix = one_vs_rest_confusion_matrix
 
 
 _METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
-    Compute macro {}, and {} for each class.
+    Compute macro {metric}, and {metrics} for each class.
     
     Parameters
     ----------
@@ -174,16 +172,21 @@ _METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
         number of classes,
         if `labels` and `outputs` are both of shape (n_samples,),
         then `num_classes` must be specified.
+    weights: np.ndarray or Tensor, optional,
+        weights for each class, of shape: (n_classes,),
+        used to compute macro {metric},
 """
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("metrics", "metrics"), "prepend"
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(metric="metrics", metrics="metrics"),
+    "prepend",
 )
 def _metrics_from_confusion_matrix(
     labels: Union[np.ndarray, Tensor],
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
+    weights: Optional[Union[np.ndarray, Tensor]] = None,
 ) -> Dict[str, Union[float, np.ndarray]]:
     """
     Returns
@@ -216,7 +219,9 @@ def _metrics_from_confusion_matrix(
     # NOTE: never use repeat here, because it will cause bugs
     # sens, spec, prec, npv, jac, acc, phi = list(repeat(np.zeros(num_classes), 7))
     sens, spec, prec, npv, jac, acc, phi = [np.zeros(num_classes) for _ in range(7)]
-    auroc = np.zeros(num_classes)  # area under the receiver-operater characteristic curve (ROC AUC)
+    auroc = np.zeros(
+        num_classes
+    )  # area under the receiver-operater characteristic curve (ROC AUC)
     auprc = np.zeros(num_classes)  # area under the precision-recall curve
     for k in range(num_classes):
         tp, fp, fn, tn = A[k, 0, 0], A[k, 0, 1], A[k, 1, 0], A[k, 1, 1]
@@ -321,6 +326,10 @@ def _metrics_from_confusion_matrix(
     mk = prec + npv - 1  # markedness
     dor = plr / nlr  # diagnostic odds ratio
 
+    if weights is None:
+        _weights = np.ones(num_classes)
+    else:
+        _weights = weights / np.mean(weights)
     metrics = {}
     for m in [
         "sens",  # sensitivity, recall, hit rate, or true positive rate
@@ -348,18 +357,24 @@ def _metrics_from_confusion_matrix(
     ]:
         metrics[m.strip("_")] = eval(m)
         metrics[f"macro_{m}".strip("_")] = (
-            np.nanmean(eval(m)) if np.any(np.isfinite(eval(m))) else float("nan")
+            np.nanmean(eval(m) * _weights)
+            if np.any(np.isfinite(eval(m)))
+            else float("nan")
         )
     return metrics
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("F1-measure", "F1-measures"), "prepend"
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
+        metric="F1-measure", metrics="F1-measures"
+    ),
+    "prepend",
 )
 def f_measure(
     labels: Union[np.ndarray, Tensor],
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
+    weights: Optional[Union[np.ndarray, Tensor]] = None,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -370,19 +385,22 @@ def f_measure(
         F1-measures for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_f1"], m["f1"]
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("sensitivity", "sensitivities"),
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
+        metric="sensitivity", metrics="sensitivities"
+    ),
     "prepend",
 )
 def sensitivity(
     labels: Union[np.ndarray, Tensor],
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
+    weights: Optional[Union[np.ndarray, Tensor]] = None,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -393,7 +411,7 @@ def sensitivity(
         sensitivities for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_sens"], m["sens"]
 
@@ -405,12 +423,16 @@ hit_rate = sensitivity
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("precision", "precisions"), "prepend"
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
+        metric="precision", metrics="precisions"
+    ),
+    "prepend",
 )
 def precision(
     labels: Union[np.ndarray, Tensor],
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
+    weights: Optional[Union[np.ndarray, Tensor]] = None,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -421,7 +443,7 @@ def precision(
         precisions for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_prec"], m["prec"]
 
@@ -431,13 +453,16 @@ positive_predictive_value = precision
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("specificity", "specificities"),
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
+        metric="specificity", metrics="specificities"
+    ),
     "prepend",
 )
 def specificity(
     labels: Union[np.ndarray, Tensor],
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
+    weights: Optional[Union[np.ndarray, Tensor]] = None,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -448,7 +473,7 @@ def specificity(
         specificities for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_spec"], m["spec"]
 
@@ -459,13 +484,16 @@ true_negative_rate = specificity
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("AUROC and macro AUPRC", "AUPRCs, AUPRCs"),
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
+        metric="AUROC and macro AUPRC", metrics="AUPRCs, AUPRCs"
+    ),
     "prepend",
 )
 def auc(
     labels: Union[np.ndarray, Tensor],
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
+    weights: Optional[Union[np.ndarray, Tensor]] = None,
 ) -> Tuple[float, float, np.ndarray, np.ndarray]:
     """
     Returns
@@ -480,19 +508,22 @@ def auc(
         AUPRCs for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_auroc"], m["macro_auprc"], m["auroc"], m["auprc"]
 
 
 @add_docstring(
-    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format("accuracy", "accuracies"),
+    _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(
+        metric="accuracy", metrics="accuracies"
+    ),
     "prepend",
 )
 def accuracy(
     labels: Union[np.ndarray, Tensor],
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
+    weights: Optional[Union[np.ndarray, Tensor]] = None,
 ) -> float:
     """
     Returns
@@ -503,7 +534,7 @@ def accuracy(
         accuracies for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes)
+    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_acc"], m["acc"]
 
