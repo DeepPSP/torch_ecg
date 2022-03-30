@@ -32,7 +32,7 @@ except ModuleNotFoundError:
 
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.utils.trainer import BaseTrainer
+from torch_ecg.components.trainer import BaseTrainer
 
 from cfg import TrainCfg, ModelCfg
 from dataset import LUDB

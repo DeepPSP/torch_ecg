@@ -33,7 +33,7 @@ from ..utils.utils_nn import (
     CkptMixin,
 )
 from ..utils.misc import dict_to_str
-from ..utils.outputs import SequenceLabelingOutput
+from ..components.outputs import SequenceLabelingOutput
 from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
 from ._nets import (
     Mish,

@@ -44,7 +44,7 @@ except ModuleNotFoundError:
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.utils.trainer import BaseTrainer
+from torch_ecg.components.trainer import BaseTrainer
 
 from model import ECG_CRNN_CINC2021
 from dataset import CINC2021

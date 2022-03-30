@@ -21,7 +21,7 @@ except ModuleNotFoundError:
 from torch_ecg.cfg import CFG
 from torch_ecg.models import ECG_CRNN, ECG_SEQ_LAB_NET
 from torch_ecg.utils.misc import mask_to_intervals
-from torch_ecg.utils.outputs import (
+from torch_ecg.components.outputs import (
     MultiLableClassificationOutput,
     SequenceLabelingOutput,
 )

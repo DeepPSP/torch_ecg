@@ -21,6 +21,7 @@ from . import augmenters
 from . import databases
 from . import models
 from . import model_configs
+from . import components
 from .version import __version__
 
 
@@ -30,6 +31,7 @@ __all__ = [
     "preprocessors",
     "augmenters",
     "databases",
+    "components",
     "models",
     "model_configs",
     "__version__",

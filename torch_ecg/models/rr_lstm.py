@@ -24,7 +24,7 @@ from ..cfg import CFG, DEFAULTS
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
 from ..utils.misc import dict_to_str
 from ..utils.utils_nn import compute_module_size, SizeMixin, CkptMixin
-from ..utils.outputs import BaseOutput
+from ..components.outputs import BaseOutput
 from ..models._nets import (
     Mish,
     Swish,

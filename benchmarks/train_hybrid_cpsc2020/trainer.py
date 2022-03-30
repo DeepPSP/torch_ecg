@@ -30,7 +30,7 @@ except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
-from torch_ecg.utils.trainer import BaseTrainer
+from torch_ecg.components.trainer import BaseTrainer
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.misc import (
     get_date_str,
@@ -39,7 +39,7 @@ from torch_ecg.utils.misc import (
     mask_to_intervals,
     list_sum,
 )
-from torch_ecg.utils.outputs import BaseOutput
+from torch_ecg.components.outputs import BaseOutput
 
 from model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
 from cfg import ModelCfg, TrainCfg

@@ -36,7 +36,7 @@ from torch_ecg.models.rr_lstm import RR_LSTM
 from torch_ecg.utils.misc import mask_to_intervals
 from torch_ecg.utils.utils_interval import intervals_union
 from torch_ecg.utils.preproc import merge_rpeaks
-from torch_ecg.utils.outputs import SequenceTaggingOutput, RPeaksDetectionOutput
+from torch_ecg.components.outputs import SequenceTaggingOutput, RPeaksDetectionOutput
 
 from cfg import ModelCfg
 

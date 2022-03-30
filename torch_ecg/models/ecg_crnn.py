@@ -25,7 +25,7 @@ from ..utils.utils_nn import (
     CkptMixin,
 )
 from ..utils.misc import dict_to_str
-from ..utils.outputs import BaseOutput
+from ..components.outputs import BaseOutput
 from ._nets import (
     Mish,
     Swish,

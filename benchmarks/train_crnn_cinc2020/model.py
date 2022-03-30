@@ -19,7 +19,7 @@ except ModuleNotFoundError:
 
 from torch_ecg.cfg import CFG
 from torch_ecg.models.ecg_crnn import ECG_CRNN
-from torch_ecg.utils.outputs import MultiLabelClassificationOutput
+from torch_ecg.components.outputs import MultiLabelClassificationOutput
 
 from cfg import ModelCfg
 
