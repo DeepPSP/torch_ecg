@@ -28,35 +28,59 @@ __all__ = [
 ]
 
 
-def top_n_accuracy(preds: Tensor, labels: Tensor, n: int = 1) -> float:
+def top_n_accuracy(
+    labels: Union[np.ndarray, Tensor],
+    outputs: Union[np.ndarray, Tensor],
+    n: Union[int, Sequence[int]] = 1,
+) -> Union[float, Dict[str, float]]:
     """
 
     Parameters
     ----------
-    preds: Tensor,
-        of shape (batch_size, num_classes) or (batch_size, num_classes, d_1, ..., d_m)
-    labels: Tensor,
+    labels: np.ndarray or Tensor,
+        labels of class indices,
         of shape (batch_size,) or (batch_size, d_1, ..., d_m)
-    n: int,
+    outputs: np.ndarray or Tensor,
+        predicted probabilities, of shape (batch_size, num_classes) or (batch_size, d_1, ..., d_m, num_classes)
+        of shape (batch_size, num_classes) or (batch_size, num_classes, d_1, ..., d_m)
+    n: int or list of int,
         top n to be considered
 
     Returns
     -------
-    acc: float,
+    acc: float or dict of float,
         top n accuracy
 
+    Examples
+    --------
+    >>> labels, outputs = np.random.randint(0, 10, (100)), np.random.uniform(0, 1, (100, 10))  # 100 samples, 10 classes
+    >>> top_n_accuracy(labels, outputs, 3)
+    0.32
+    >>> top_n_accuracy(labels, outputs, [1,3,5])
+    {'top_1_acc': 0.12, 'top_3_acc': 0.32, 'top_5_acc': 0.52}
+
     """
-    assert preds.shape[0] == labels.shape[0]
-    batch_size, n_classes, *extra_dims = preds.shape
-    _, indices = torch.topk(
-        preds, n, dim=1
-    )  # of shape (batch_size, n) or (batch_size, n, d_1, ..., d_n)
-    pattern = " ".join([f"d_{i+1}" for i in range(len(extra_dims))])
-    pattern = f"batch_size {pattern} -> batch_size n {pattern}"
-    correct = torch.sum(indices == einops.repeat(labels, pattern, n=n))
-    acc = correct.item() / preds.shape[0]
-    for d in extra_dims:
-        acc = acc / d
+    assert outputs.shape[0] == labels.shape[0]
+    labels, outputs = torch.as_tensor(labels), torch.as_tensor(outputs)
+    batch_size, n_classes, *extra_dims = outputs.shape
+    if isinstance(n, int):
+        ln = [n]
+    else:
+        ln = n
+    acc = {}
+    for _n in ln:
+        key = f"top_{_n}_acc"
+        _, indices = torch.topk(
+            outputs, _n, dim=1
+        )  # of shape (batch_size, n) or (batch_size, n, d_1, ..., d_n)
+        pattern = " ".join([f"d_{i+1}" for i in range(len(extra_dims))])
+        pattern = f"batch_size {pattern} -> batch_size n {pattern}"
+        correct = torch.sum(indices == einops.repeat(labels, pattern, n=_n))
+        acc[key] = correct.item() / outputs.shape[0]
+        for d in extra_dims:
+            acc[key] = acc[key] / d
+    if len(ln) == 1:
+        return acc[key]
     return acc
 
 
