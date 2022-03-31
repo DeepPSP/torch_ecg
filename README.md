@@ -237,23 +237,27 @@ In general, variants of ResNet are the most commonly used architectures, as can 
 
 More details and a list of references can be found in the [README file](/torch_ecg/models/cnn/README.md) of this module.
 
-## Other Useful Tools
-### [Loggers](/torch_ecg/utils/loggers.py)
+## [Components](/torch_ecg/components/)
+This module consists of frequently used components such as loggers, trainers, etc.
+
+### [Loggers](/torch_ecg/components/loggers.py)
 Loggers including
 1. CSV logger
 2. text logger
 3. tensorboard logger
 are implemented and manipulated uniformly by a manager.
 
-### [R peaks detection algorithms](/torch_ecg/utils/rpeaks.py)
-This is a collection of traditional (non deep learning) algorithms for R peaks detection collected from [WFDB](https://github.com/MIT-LCP/wfdb-python) and [BioSPPy](https://github.com/PIA-Group/BioSPPy).
-
-### [Trainer](/torch_ecg/utils/trainer.py)
+### [Trainer](/torch_ecg/components/trainer.py)
 An abstract base class `BaseTrainer` is implemented, in which some common steps in building a training pipeline (workflow) are impemented. A few task specific methods are assigned as `abstractmethod`s, for example the method
 ```python
 evaluate(self, data_loader:DataLoader) -> Dict[str, float]
 ```
 for evaluation on the validation set during training and perhaps further for model selection and early stopping.
+
+## Other Useful Tools
+
+### [R peaks detection algorithms](/torch_ecg/utils/rpeaks.py)
+This is a collection of traditional (non deep learning) algorithms for R peaks detection collected from [WFDB](https://github.com/MIT-LCP/wfdb-python) and [BioSPPy](https://github.com/PIA-Group/BioSPPy).
 
 ## Usage Examples
 See case studies in the [benchmarks folder](/benchmarks/).
@@ -286,7 +290,7 @@ def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
             return self._all_data[index], self._all_labels[index], self._all_masks[index]
 ```
 2. Inherit a [base model](/torch_ecg/models/ecg_seq_lab_net.py) to create [task specific models](/benchmarks/train_hybrid_cpsc2021/model.py), along with [tailored model configs](/benchmarks/train_hybrid_cpsc2021/cfg.py)
-3. Inherit the [`BaseTrainer`](/torch_ecg/utils/trainer.py) to build the [training pipeline](/benchmarks/train_hybrid_cpsc2021/trainer.py), with the `abstractmethod`s (`_setup_dataloaders`, `run_one_step`, `evaluate`, `batch_dim`, etc.) implemented.
+3. Inherit the [`BaseTrainer`](/torch_ecg/components/trainer.py) to build the [training pipeline](/benchmarks/train_hybrid_cpsc2021/trainer.py), with the `abstractmethod`s (`_setup_dataloaders`, `run_one_step`, `evaluate`, `batch_dim`, etc.) implemented.
 
 ## CAUTION
 For the most of the time, but not always, after updates, I will run the notebooks in the [benchmarks](/benchmarks/) manually. If someone finds some bug, please raise an issue. The test workflow is to be enhanced and automated, see [this project](https://github.com/DeepPSP/torch_ecg/projects/8).
