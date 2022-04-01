@@ -144,12 +144,12 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         # segments_dir for sliced segments of fixed length
         self.segments_base_dir = self.config.db_dir / "segments"
         self.segments_base_dir.mkdir(parents=True, exist_ok=True)
-        self.segment_name_pattern = "S_\d{1,3}_\d{1,2}_\d{7}"
+        self.segment_name_pattern = "S_[\d]{1,3}_[\d]{1,2}_[\d]{7}"
         self.segment_ext = "mat"
         # rr_dir for sequence of rr intervals of fix length
         self.rr_seq_base_dir = self.config.db_dir / "rr_seq"
         self.rr_seq_base_dir.mkdir(parents=True, exist_ok=True)
-        self.rr_seq_name_pattern = "R_\d{1,3}_\d{1,2}_\d{7}"
+        self.rr_seq_name_pattern = "R_[\d]{1,3}_[\d]{1,2}_[\d]{7}"
         self.rr_seq_ext = "mat"
 
         self._all_data = None

@@ -4,11 +4,13 @@
 import shutil
 from copy import deepcopy
 from pathlib import Path
-from typing import NoReturn, Optional, Any, Sequence, Union
+from typing import NoReturn, Optional, Any, Sequence, Union, Tuple, Dict, List
 
 import pytest
+import numpy as np
 import torch
 from torch import Tensor
+from torch.utils.data import Dataset, DataLoader
 from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 
 try:
@@ -19,21 +21,22 @@ except:
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
     import torch_ecg
 
+from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.databases import LUDB
 from torch_ecg.databases.datasets.ludb import LUDBDataset, LUDBTrainCfg
 from torch_ecg.databases.physionet_databases.ludb import (
     compute_metrics as compute_ludb_metrics,
 )
-from torch_ecg.components.outputs import WaveDelineationOutput
-from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.model_configs import ECG_UNET_VANILLA_CONFIG
+from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
 from torch_ecg.utils.utils_nn import (
     default_collate_fn as collate_fn,
     adjust_cnn_filter_lengths,
 )
+from torch_ecg.utils.misc import add_docstring
 from torch_ecg.components.trainer import BaseTrainer
+from torch_ecg.components.outputs import WaveDelineationOutput
 
 
 ###############################################################################
@@ -97,6 +100,7 @@ class ECG_UNET_LUDB(ECG_UNET):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         model_config = deepcopy(ModelCfg.unet)
         if config:
@@ -133,6 +137,7 @@ class ECG_UNET_LUDB(ECG_UNET):
                 predicted probability map, of shape (n_samples, seq_len, n_classes)
             - mask: np.ndarray,
                 predicted mask, of shape (n_samples, seq_len)
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -172,10 +177,243 @@ class ECG_UNET_LUDB(ECG_UNET):
         return self.inference(input, bin_pred_thr)
 
 
+class LUDBTrainer(BaseTrainer):
+    """ """
+
+    __DEBUG__ = True
+    __name__ = "LUDBTrainer"
+
+    def __init__(
+        self,
+        model: torch.nn.Module,
+        model_config: dict,
+        train_config: dict,
+        device: Optional[torch.device] = None,
+        lazy: bool = True,
+        **kwargs: Any,
+    ) -> NoReturn:
+        """finished, checked,
+
+        Parameters
+        ----------
+        model: Module,
+            the model to be trained
+        model_config: dict,
+            the configuration of the model,
+            used to keep a record in the checkpoints
+        train_config: dict,
+            the configuration of the training,
+            including configurations for the data loader, for the optimization, etc.
+            will also be recorded in the checkpoints.
+            `train_config` should at least contain the following keys:
+                "monitor": str,
+                "loss": str,
+                "n_epochs": int,
+                "batch_size": int,
+                "learning_rate": float,
+                "lr_scheduler": str,
+                    "lr_step_size": int, optional, depending on the scheduler
+                    "lr_gamma": float, optional, depending on the scheduler
+                    "max_lr": float, optional, depending on the scheduler
+                "optimizer": str,
+                    "decay": float, optional, depending on the optimizer
+                    "momentum": float, optional, depending on the optimizer
+        device: torch.device, optional,
+            the device to be used for training
+        lazy: bool, default True,
+            whether to initialize the data loader lazily
+        """
+        super().__init__(model, LUDBDataset, model_config, train_config, device, lazy)
+
+    def _setup_dataloaders(
+        self,
+        train_dataset: Optional[Dataset] = None,
+        val_dataset: Optional[Dataset] = None,
+    ) -> NoReturn:
+        """finished, checked,
+
+        setup the dataloaders for training and validation
+
+        Parameters
+        ----------
+        train_dataset: Dataset, optional,
+            the training dataset
+        val_dataset: Dataset, optional,
+            the validation dataset
+        """
+        if train_dataset is None:
+            train_dataset = self.dataset_cls(
+                config=self.train_config, training=True, lazy=False
+            )
+
+        if self.train_config.debug:
+            val_train_dataset = train_dataset
+        else:
+            val_train_dataset = None
+        if val_dataset is None:
+            val_dataset = self.dataset_cls(
+                config=self.train_config, training=False, lazy=False
+            )
+
+        # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
+        num_workers = 4
+
+        self.train_loader = DataLoader(
+            dataset=train_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=num_workers,
+            pin_memory=True,
+            drop_last=False,
+            collate_fn=collate_fn,
+        )
+
+        if self.train_config.debug:
+            self.val_train_loader = DataLoader(
+                dataset=val_train_dataset,
+                batch_size=self.batch_size,
+                shuffle=True,
+                num_workers=num_workers,
+                pin_memory=True,
+                drop_last=False,
+                collate_fn=collate_fn,
+            )
+        else:
+            self.val_train_loader = None
+        self.val_loader = DataLoader(
+            dataset=val_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=num_workers,
+            pin_memory=True,
+            drop_last=False,
+            collate_fn=collate_fn,
+        )
+
+    def run_one_step(
+        self, *data: Tuple[torch.Tensor, torch.Tensor]
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """
+
+        Parameters
+        ----------
+        data: tuple of Tensors,
+            the data to be processed for training one step (batch),
+            should be of the following order:
+            signals, labels, *extra_tensors
+
+        Returns
+        -------
+        preds: Tensor,
+            the predictions of the model for the given data
+        labels: Tensor,
+            the labels of the given data
+        """
+        signals, labels = data
+        signals = signals.to(self.device)
+        # labels of shape (batch_size, seq_len) if loss is CrossEntropyLoss
+        # otherwise of shape (batch_size, seq_len, n_classes)
+        labels = labels.to(self.device)
+        preds = self.model(signals)  # of shape (batch_size, seq_len, n_classes)
+        if self.train_config.loss == "CrossEntropyLoss":
+            preds = preds.permute(0, 2, 1)  # of shape (batch_size, n_classes, seq_len)
+            # or use the following
+            # preds = pres.reshape(-1, preds.shape[-1])  # of shape (batch_size * seq_len, n_classes)
+            # labels = labels.reshape(-1)  # of shape (batch_size * seq_len,)
+        return preds, labels
+
+    @torch.no_grad()
+    def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
+        """ """
+        self.model.eval()
+
+        all_scalar_preds = []
+        all_mask_preds = []
+        all_labels = []
+
+        for signals, labels in data_loader:
+            signals = signals.to(device=self.device, dtype=self.dtype)
+            labels = labels.numpy()
+            all_labels.append(labels)
+
+            if torch.cuda.is_available():
+                torch.cuda.synchronize()
+            model_output = self._model.inference(signals)
+            all_scalar_preds.append(model_output.prob)
+            all_mask_preds.append(model_output.mask)
+
+        # all_scalar_preds of shape (n_samples, seq_len, n_classes)
+        all_scalar_preds = np.concatenate(all_scalar_preds, axis=0)
+        # all_scalar_preds of shape (n_samples, seq_len)
+        all_mask_preds = np.concatenate(all_mask_preds, axis=0)
+        # all_labels of shape (n_samples, seq_len) if loss is CrossEntropyLoss
+        # otherwise of shape (n_samples, seq_len, n_classes)
+        all_labels = np.concatenate(all_labels, axis=0)
+
+        if self.train_config.loss != "CrossEntropyLoss":
+            all_labels = all_labels.argmax(
+                axis=-1
+            )  # (n_samples, seq_len, n_classes) -> (n_samples, seq_len)
+
+        # eval_res are scorings of onsets and offsets of pwaves, qrs complexes, twaves,
+        # each scoring is a dict consisting of the following metrics:
+        # sensitivity, precision, f1_score, mean_error, standard_deviation
+        eval_res_split = compute_ludb_metrics(
+            np.repeat(all_labels[:, np.newaxis, :], self.model_config.n_leads, axis=1),
+            np.repeat(
+                all_mask_preds[:, np.newaxis, :], self.model_config.n_leads, axis=1
+            ),
+            self._cm,
+            self.train_config.fs,
+        )
+
+        # TODO: provide numerical values for the metrics from all of the dicts of eval_res
+        eval_res = {
+            metric: np.mean([eval_res_split[f"{wf}_{pos}"][metric]])
+            for metric in [
+                "sensitivity",
+                "precision",
+                "f1_score",
+                "mean_error",
+                "standard_deviation",
+            ]
+            for wf in self._cm
+            for pos in [
+                "onset",
+                "offset",
+            ]
+        }
+
+        self.model.train()
+
+        return eval_res
+
+    @property
+    def _cm(self) -> Dict[str, str]:
+        """ """
+        return {
+            "pwave": self.train_config.class_map["p"],
+            "qrs": self.train_config.class_map["N"],
+            "twave": self.train_config.class_map["t"],
+        }
+
+    @property
+    def batch_dim(self) -> int:
+        """
+        batch dimension,
+        """
+        return 0
+
+    @property
+    def extra_required_train_config_fields(self) -> List[str]:
+        """ """
+        return []
+
+
 def test_unet_ludb_pipeline() -> NoReturn:
     """ """
 
-    train_cfg_fl = deepcopy(TrainCfg)
+    train_cfg_fl = deepcopy(LUDBTrainCfg)
     train_cfg_fl.use_single_lead = False
     train_cfg_fl.loss = "FocalLoss"
 
@@ -187,7 +425,7 @@ def test_unet_ludb_pipeline() -> NoReturn:
     train_cfg_fl.model_dir.mkdir(parents=True, exist_ok=True)
     train_cfg_fl.checkpoints.mkdir(parents=True, exist_ok=True)
 
-    # train_cfg_ce = deepcopy(TrainCfg)
+    # train_cfg_ce = deepcopy(LUDBTrainCfg)
     # train_cfg_ce.use_single_lead = False
     # train_cfg_ce.loss = "CrossEntropyLoss"
 
@@ -219,3 +457,7 @@ def test_unet_ludb_pipeline() -> NoReturn:
     bmd = trainer.train()
 
     shutil.rmtree(_CWD)
+
+
+if __name__ == "__main__":
+    test_unet_ludb_pipeline()
