@@ -14,6 +14,7 @@ from scipy.io import loadmat
 from ...cfg import CFG
 from ...utils.ecg_arrhythmia_knowledge import PVC, SPB
 from ...utils.utils_interval import get_optimal_covering
+from ...utils.download import http_get
 from ..base import CPSCDataBase, DEFAULT_FIG_SIZE_PER_SEC
 
 
@@ -161,7 +162,7 @@ class CPSC2020(CPSCDataBase):
 
     Usage
     -----
-    1. ecg arrhythmia (PVC, SPB) detection
+    1. ECG arrhythmia (PVC, SPB) detection
 
     References
     ----------
@@ -250,9 +251,8 @@ class CPSC2020(CPSCDataBase):
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
@@ -270,13 +270,12 @@ class CPSC2020(CPSCDataBase):
         sampto: Optional[int] = None,
         keep_dim: bool = True,
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
         units: str, default "mV",
             units of the output signal, can also be "μV", with an alias of "uV"
         sampfrom: int, optional,
@@ -289,7 +288,8 @@ class CPSC2020(CPSCDataBase):
         Returns
         -------
         data: ndarray,
-            the ecg data
+            the ECG data
+
         """
         rec_name = self._get_rec_name(rec)
         rec_fp = self.data_dir / f"{rec_name}.{self.rec_ext}"
@@ -308,13 +308,12 @@ class CPSC2020(CPSCDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
     ) -> Dict[str, np.ndarray]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
         sampfrom: int, optional,
             start index of the data to be loaded
         sampto: int, optional,
@@ -326,6 +325,8 @@ class CPSC2020(CPSCDataBase):
             with items (ndarray) "SPB_indices" and "PVC_indices",
             which record the indices of SPBs and PVCs
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         ann_name = self._get_ann_name(rec)
         ann_fp = self.ann_dir / f"{ann_name}.{self.ann_ext}"
         ann = loadmat(str(ann_fp))["ref"]
@@ -345,39 +346,31 @@ class CPSC2020(CPSCDataBase):
         return ann
 
     def _get_ann_name(self, rec: Union[int, str]) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
         ann_name: str,
             filename of the annotation file
+
         """
         if isinstance(rec, int):
-            assert rec in range(
-                1, self.n_records + 1
-            ), f"rec should be in range(1,{self.n_records+1})"
-            ann_name = self.all_annotations[rec - 1]
-        elif isinstance(rec, str):
-            assert (
-                rec in self.all_annotations + self.all_records
-            ), f"rec should be one of {self.all_records} or one of {self.all_annotations}"
-            ann_name = rec.replace("A", "R")
+            rec = self[rec]
+        ann_name = rec.replace("A", "R")
         return ann_name
 
     def _get_rec_name(self, rec: Union[int, str]) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
@@ -385,17 +378,12 @@ class CPSC2020(CPSCDataBase):
             filename of the record
         """
         if isinstance(rec, int):
-            assert rec in range(
-                1, self.n_records + 1
-            ), f"rec should be in range(1,{self.n_records+1})"
-            rec_name = self.all_records[rec - 1]
-        elif isinstance(rec, str):
-            assert rec in self.all_records, f"rec should be one of {self.all_records}"
-            rec_name = rec
+            rec = self[rec]
+        rec_name = rec
         return rec_name
 
     def train_test_split_rec(self, test_rec_num: int = 2) -> Dict[str, List[str]]:
-        """finished, checked,
+        """
 
         split the records into train set and test set
 
@@ -444,7 +432,7 @@ class CPSC2020(CPSCDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
     ) -> List[List[int]]:
-        """finished, checked,
+        """
 
         locate the sample indices of premature beats in a record,
         in the form of a list of lists,
@@ -452,9 +440,8 @@ class CPSC2020(CPSCDataBase):
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
         premature_type: str, optional,
             premature beat type, can be one of "SPB", "PVC"
         window: int, default 10000,
@@ -469,6 +456,8 @@ class CPSC2020(CPSCDataBase):
         premature_intervals: list,
             list of intervals of premature beats
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         ann = self.load_ann(rec)
         if premature_type:
             premature_inds = ann[f"{premature_type.upper()}_indices"]
@@ -501,15 +490,14 @@ class CPSC2020(CPSCDataBase):
         sampto: Optional[int] = None,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
         data: ndarray, optional,
-            ecg signal to plot,
+            ECG signal to plot,
             if given, data of `rec` will not be used,
             this is useful when plotting filtered data
         ann: dict, optional,
@@ -527,6 +515,8 @@ class CPSC2020(CPSCDataBase):
             indices of R peaks,
             if `data` is None, then indices should be the absolute indices in the record
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         if "plt" not in dir():
             import matplotlib.pyplot as plt
         import matplotlib.patches as mpatches
@@ -653,7 +643,7 @@ class CPSC2020(CPSCDataBase):
 def _ann_to_beat_ann_epoch_v1(
     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
 ) -> dict:
-    """finished, checked,
+    """
 
     the naive method to label beat types using annotations provided by the dataset
 
@@ -677,6 +667,7 @@ def _ann_to_beat_ann_epoch_v1(
             for v1, this term is always the same as `ann`, hence useless
         - beat_ann: ndarray,
             label for each beat from `rpeaks`
+
     """
     beat_ann = np.array(["N" for _ in range(len(rpeaks))])
     for idx, r in enumerate(rpeaks):
@@ -692,7 +683,7 @@ def _ann_to_beat_ann_epoch_v1(
 def _ann_to_beat_ann_epoch_v2(
     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
 ) -> dict:
-    """finished, checked, has flaws, deprecated,
+    """has flaws, deprecated,
 
     similar to `_ann_to_beat_ann_epoch_v1`, but records those matched annotations,
     for further post-process, adding those beats that are in annotation,
@@ -720,6 +711,7 @@ def _ann_to_beat_ann_epoch_v2(
             that match some beat from `rpeaks`
         - beat_ann: ndarray,
             label for each beat from `rpeaks`
+
     """
     beat_ann = np.array(["N" for _ in range(len(rpeaks))], dtype="<U1")
     # used to add back those beat that is not detected via proprocess algorithm
@@ -761,7 +753,7 @@ def _ann_to_beat_ann_epoch_v2(
 def _ann_to_beat_ann_epoch_v3(
     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
 ) -> dict:
-    """finished, checked,
+    """
 
     similar to `_ann_to_beat_ann_epoch_v2`, but more reasonable
 
@@ -784,6 +776,7 @@ def _ann_to_beat_ann_epoch_v3(
             that match some beat from `rpeaks`
         - beat_ann: ndarray,
             label for each beat from `rpeaks`
+
     """
     beat_ann = np.array(["N" for _ in range(len(rpeaks))], dtype="<U1")
     ann_matched = {k: [] for k, v in ann.items()}
@@ -817,6 +810,10 @@ def _ann_to_beat_ann_epoch_v3(
             "https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/TrainingSet.zip"
         )
 
+    def download(self) -> NoReturn:
+        """download the database from self.url"""
+        http_get(self.url, self.db_dir, extract=True)
+
 
 def compute_metrics(
     sbp_true: List[np.ndarray],
@@ -825,7 +822,7 @@ def compute_metrics(
     pvc_pred: List[np.ndarray],
     verbose: int = 0,
 ) -> Union[Tuple[int], dict]:
-    """finished, checked,
+    """
 
     Score Function for all (test) records
 
@@ -843,6 +840,7 @@ def compute_metrics(
         - true_positive: number of true positives of each ectopic beat type
         - false_positive: number of false positives of each ectopic beat type
         - false_negative: number of false negatives of each ectopic beat type
+
     """
     BaseCfg = CFG()
     BaseCfg.fs = 400

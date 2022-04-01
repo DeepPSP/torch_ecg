@@ -247,6 +247,7 @@ class CINC2021(PhysioNetDataBase):
         self.db_dir_base = Path(db_dir)
         self.db_dirs = CFG({tranche: "" for tranche in self.db_tranches})
         self._all_records = None
+        self.__all_records = None
         self._stats = pd.DataFrame()
         self._stats_columns = {
             "record",
@@ -420,6 +421,7 @@ class CINC2021(PhysioNetDataBase):
             print(f"Done in {time.time() - start:.5f} seconds!")
             record_list_fp.write_text(json.dumps(to_save))
         self._all_records = CFG(self._all_records)
+        self.__all_records = list_sum(self._all_records.values())
 
     def _aggregate_stats(self, fast: bool = False) -> NoReturn:
         """
@@ -1859,6 +1861,20 @@ class CINC2021(PhysioNetDataBase):
         for url in self.url:
             http_get(url, self.db_dir_base, extract=False)
         prepare_dataset(self.db_dir_base, verbose=True)
+
+    def __len__(self) -> int:
+        """
+        number of records in the database
+
+        """
+        return len(self.__all_records)
+
+    def __getitem__(self, index: int) -> str:
+        """
+        get the record name by index
+
+        """
+        return self.__all_records[index]
 
 
 _exceptional_records = [  # with nan values (p_signal) read by wfdb

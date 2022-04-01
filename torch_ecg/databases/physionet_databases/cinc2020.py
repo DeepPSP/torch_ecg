@@ -225,6 +225,7 @@ class CINC2020(PhysioNetDataBase):
         self.db_dir_base = Path(db_dir)
         self.db_dirs = CFG({tranche: "" for tranche in self.db_tranches})
         self._all_records = None
+        self.__all_records = None
         self._ls_rec()  # loads file system structures into self.db_dirs and self._all_records
 
         self._diagnoses_records_list = None
@@ -344,6 +345,7 @@ class CINC2020(PhysioNetDataBase):
                 ]
             print(f"Done in {time.time() - start:.5f} seconds!")
             record_list_fp.write_text(json.dumps(to_save))
+        self.__all_records = list_sum(self._all_records.values())
 
     def _ls_diagnoses_records(self) -> NoReturn:
         """list all the records for all diagnoses"""
@@ -368,6 +370,7 @@ class CINC2020(PhysioNetDataBase):
             print(f"Done in {time.time() - start:.5f} seconds!")
             dr_fp.write_text(json.dumps(self._diagnoses_records_list))
         self._all_records = CFG(self._all_records)
+        self.__all_records = list_sum(self._all_records.values())
 
     @property
     def diagnoses_records_list(self):
@@ -1464,6 +1467,20 @@ class CINC2020(PhysioNetDataBase):
         """ """
         for url in self.url:
             http_get(url, self.db_dir_base / _stem(url), extract=True)
+
+    def __len__(self) -> int:
+        """
+        number of records in the database
+
+        """
+        return len(self.__all_records)
+
+    def __getitem__(self, index: int) -> str:
+        """
+        get the record name by index
+
+        """
+        return self.__all_records[index]
 
 
 from ..aux_data.cinc2020_aux_data import load_weights

@@ -70,12 +70,13 @@ class CPSC2018(CPSCDataBase):
 
     Usage
     -----
-    1. ecg arrythmia detection
+    1. ECG arrythmia detection
 
     References
     ----------
-    [1] http://2018.icbeb.org/#
-    [2] https://physionetchallenges.github.io/2020/
+    1. <a name="ref1"></a> http://2018.icbeb.org/#
+    2. <a name="ref2"></a> https://physionetchallenges.github.io/2020/
+
     """
 
     def __init__(
@@ -96,6 +97,7 @@ class CPSC2018(CPSCDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="cpsc2018",
@@ -184,50 +186,48 @@ class CPSC2018(CPSCDataBase):
             item.with_suffix("").name for item in self.db_dir.glob(f"*.{self.rec_ext}")
         ]
 
-    def get_subject_id(self, rec_no: Union[int, str]) -> int:
+    def get_subject_id(self, rec: Union[int, str]) -> int:
         """not finished,
 
         Parameters
         ----------
-        rec_no: int or str,
-            number of the record, NOTE that rec_no starts from 1; or name of the record
+        rec: int or str,
+            name or index of the record
 
         Returns
         -------
         pid: int,
-            the `subject_id` corr. to `rec_no`
+            the `subject_id` corr. to `rec`
+
         """
         raise NotImplementedError
 
     def load_data(
         self,
-        rec_no: Union[int, str],
+        rec: Union[int, str],
         data_format="channel_first",
         units: str = "mV",
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec_no: int or str,
-            number of the record, NOTE that rec_no starts from 1; or name of the record,
-            int only supported for the original CPSC2018 dataset
+        rec: int or str,
+            name or index of the record
         data_format: str, default "channel_first",
-            format of the ecg data, "channels_last" or "channels_first" (original)
+            format of the ECG data, "channels_last" or "channels_first" (original)
         units: str, default "mV",
             units of the output signal, can also be "μV", with an alias of "uV"
 
         Returns
         -------
         data: ndarray,
-            the ecg data
+            the ECG data
+
         """
-        if isinstance(rec_no, int):
-            assert rec_no in range(
-                1, self.nb_records + 1
-            ), f"rec_no should be in range(1,{self.nb_records+1})"
-            rec_no = f"A{rec_no:04d}"
-        rec_fp = self.db_dir / f"{rec_no}.{self.rec_ext}"
+        if isinstance(rec, int):
+            rec = self[rec]
+        rec_fp = self.db_dir / f"{rec}.{self.rec_ext}"
         data = loadmat(str(rec_fp))
         data = np.asarray(data["val"], dtype=np.float64)
         if data_format == "channels_last":
@@ -247,14 +247,13 @@ class CPSC2018(CPSCDataBase):
 
         return data
 
-    def load_ann(self, rec_no: Union[int, str], keep_original: bool = True) -> dict:
-        """finished, checked,
+    def load_ann(self, rec: Union[int, str], keep_original: bool = True) -> dict:
+        """
 
         Parameters
         ----------
-        rec_no: int or str,
-            number of the record, NOTE that rec_no starts from 1; or name of the record,
-            int only supported for the original CPSC2018 dataset
+        rec: int or str,
+            name or index of the record
         keep_original: bool, default True,
             keep the original annotations or not,
             mainly concerning "N" and "Normal" ("SNR" for the newer version)
@@ -263,13 +262,11 @@ class CPSC2018(CPSCDataBase):
         -------
         ann_dict, dict,
             the annotations with items: ref. self.ann_items
+
         """
-        if isinstance(rec_no, int):
-            assert rec_no in range(
-                1, self.nb_records + 1
-            ), f"rec_no should be in range(1, {self.nb_records+1})"
-            rec_no = f"A{rec_no:04d}"
-        ann_fp = self.db_dir / f"{rec_no}.{self.ann_ext}"
+        if isinstance(rec, int):
+            rec = self[rec]
+        ann_fp = self.db_dir / f"{rec}.{self.ann_ext}"
         header_data = ann_fp.read_text().splitlines()
 
         ann_dict = {}
@@ -333,7 +330,7 @@ class CPSC2018(CPSCDataBase):
         return ann_dict
 
     def _parse_diagnosis(self, l_Dx: List[str]) -> Tuple[dict, dict]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -346,6 +343,7 @@ class CPSC2018(CPSCDataBase):
             diagnosis, including SNOMED CT Codes, fullnames and abbreviations of each diagnosis
         diag_scored_dict: dict,
             the scored items in `diag_dict`
+
         """
         diag_dict, diag_scored_dict = {}, {}
         try:
@@ -392,7 +390,7 @@ class CPSC2018(CPSCDataBase):
         return diag_dict, diag_scored_dict
 
     def _parse_leads(self, l_leads_data: List[str]) -> pd.DataFrame:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -403,6 +401,7 @@ class CPSC2018(CPSCDataBase):
         -------
         df_leads: DataFrame,
             infomation of each leads in the format of DataFrame
+
         """
         df_leads = pd.read_csv(
             io.StringIO("\n".join(l_leads_data)), delim_whitespace=True, header=None
@@ -459,15 +458,14 @@ class CPSC2018(CPSCDataBase):
         return df_leads
 
     def get_labels(
-        self, rec_no: Union[int, str], keep_original: bool = False
+        self, rec: Union[int, str], keep_original: bool = False
     ) -> List[str]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec_no: int or str,
-            number of the record, NOTE that rec_no starts from 1; or name of the record,
-            int only supported for the original CPSC2018 dataset
+        rec: int or str,
+            name or index of the record
         keep_original: bool, default False,
             keep the original annotations or not,
             mainly concerning "N" and "Normal"
@@ -476,21 +474,21 @@ class CPSC2018(CPSCDataBase):
         -------
         labels, list,
             the list of labels (abbr. diagnosis)
+
         """
-        ann_dict = self.load_ann(rec_no, keep_original=keep_original)
+        if isinstance(rec, int):
+            rec = self[rec]
+        ann_dict = self.load_ann(rec, keep_original=keep_original)
         labels = ann_dict["diagnosis"]
         return labels
 
-    def get_diagnosis(
-        self, rec_no: Union[int, str], full_name: bool = True
-    ) -> List[str]:
-        """finished, checked,
+    def get_diagnosis(self, rec: Union[int, str], full_name: bool = True) -> List[str]:
+        """
 
         Parameters
         ----------
-        rec_no: int or str,
-            number of the record, NOTE that rec_no starts from 1; or name of the record,
-            int only supported for the original CPSC2018 dataset
+        rec: int or str,
+            name or index of the record
         full_name: bool, default True,
             full name of the diagnosis or short name of it (ref. self.diagnosis_abbr_to_full)
 
@@ -498,8 +496,11 @@ class CPSC2018(CPSCDataBase):
         -------
         diagonosis, list,
             the list of (full) diagnosis
+
         """
-        diagonosis = self.get_labels(rec_no)
+        if isinstance(rec, int):
+            rec = self[rec]
+        diagonosis = self.get_labels(rec)
         if full_name:
             diagonosis = diagonosis["diagnosis_fullname"]
         else:
@@ -507,22 +508,24 @@ class CPSC2018(CPSCDataBase):
         return diagonosis
 
     def get_subject_info(
-        self, rec_no: Union[int, str], items: Optional[List[str]] = None
+        self, rec: Union[int, str], items: Optional[List[str]] = None
     ) -> dict:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec_no: int or str,
-            number of the record, NOTE that rec_no starts from 1; or name of the record,
-            int only supported for the original CPSC2018 dataset
+        rec: int or str,
+            name or index of the record
         items: list of str, optional,
             items of the subject information (e.g. sex, age, etc.)
 
         Returns
         -------
         subject_info, dict,
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         if items is None or len(items) == 0:
             info_items = [
                 "age",
@@ -533,26 +536,25 @@ class CPSC2018(CPSCDataBase):
             ]
         else:
             info_items = items
-        ann_dict = self.load_ann(rec_no)
+        ann_dict = self.load_ann(rec)
         subject_info = {item: ann_dict[item] for item in info_items}
 
         return subject_info
 
     def save_challenge_predictions(
         self,
-        rec_no: Union[int, str],
+        rec: Union[int, str],
         output_dir: Union[str, Path],
         scores: List[Real],
         labels: List[int],
         classes: List[str],
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec_no: int or str,
-            number of the record, NOTE that rec_no starts from 1; or name of the record,
-            int only supported for the original CPSC2018 dataset
+        rec: int or str,
+            name or index of the record
         output_dir: str or Path,
             directory to save the predictions
         scores: list of real,
@@ -561,13 +563,11 @@ class CPSC2018(CPSCDataBase):
             0 or 1
         classes: list of str,
             ...
+
         """
-        if isinstance(rec_no, str):
-            rec_no = int(rec_no[1:])
-        assert rec_no in range(
-            1, self.nb_records + 1
-        ), f"rec_no should be in range(1, {self.nb_records+1})"
-        recording = self._all_records[rec_no]
+        if isinstance(rec, int):
+            rec = self[rec]
+        recording = rec
         new_file = recording + ".csv"
         output_file = Path(output_dir) / new_file
 
@@ -583,44 +583,41 @@ class CPSC2018(CPSCDataBase):
 
     def plot(
         self,
-        rec_no: Union[int, str],
+        rec: Union[int, str],
         ticks_granularity: int = 0,
         leads: Optional[Union[str, List[str]]] = None,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec_no: int or str,
-            number of the record, NOTE that rec_no starts from 1; or name of the record,
-            int only supported for the original CPSC2018 dataset
+        rec: int or str,
+            name or index of the record
         ticks_granularity: int, default 0,
             the granularity to plot axis ticks, the higher the more,
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
         leads: str or list of str, optional,
             the leads to plot
         kwargs: auxilliary key word arguments
+
         """
-        if isinstance(rec_no, str):
-            rec_no = int(rec_no[1:])
-        assert rec_no in range(
-            1, self.nb_records + 1
-        ), f"rec_no should be in range(1, {self.nb_records+1})"
+        if isinstance(rec, int):
+            rec = self[rec]
         if "plt" not in dir():
             import matplotlib.pyplot as plt
         if leads is None or leads == "all":
             leads = self.all_leads
         assert all([l in self.all_leads for l in leads])
 
-        lead_list = self.load_ann(rec_no)["df_leads"]["lead_name"].tolist()
+        lead_list = self.load_ann(rec)["df_leads"]["lead_name"].tolist()
         lead_indices = [lead_list.index(l) for l in leads]
-        data = self.load_data(rec_no, data_format="channel_first", units="μV")[
+        data = self.load_data(rec, data_format="channel_first", units="μV")[
             lead_indices
         ]
         y_ranges = np.max(np.abs(data), axis=1) + 100
 
-        diag = self.get_diagnosis(rec_no, full_name=False)
+        diag = self.get_diagnosis(rec, full_name=False)
 
         nb_leads = len(leads)
 

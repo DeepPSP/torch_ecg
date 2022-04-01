@@ -82,6 +82,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     2. preprocessed ECGs are sliced with overlap to generate data and label for different tasks:
         the data files stores segments of fixed length of preprocessed ECGs,
         the annotation files contain "qrs_mask", and "af_mask"
+
     """
 
     __DEBUG__ = False
@@ -90,7 +91,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def __init__(
         self, config: CFG, task: str, training: bool = True, lazy: bool = True
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -105,6 +106,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,
             if True, the data will not be loaded immediately,
+
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -162,12 +164,15 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         self.__set_task(self.task, lazy=False)
 
     def __set_task(self, task: str, lazy: bool = True) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
         task: str,
             name of the task, can be one of `CPSC2021TrainCfg.tasks`
+        lazy: bool, default True,
+            if True, the data will not be loaded immediately,
+
         """
         assert task.lower() in CPSC2021TrainCfg.tasks, f"illegal task \042{task}\042"
         if (
@@ -279,14 +284,11 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             )
 
     def reset_task(self, task: str, lazy: bool = True) -> NoReturn:
-        """finished, checked,"""
+        """ """
         self.__set_task(task, lazy)
 
     def _ls_segments(self) -> NoReturn:
-        """finished, checked,
-
-        list all the segments
-        """
+        """list all the segments"""
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
             for s in self.reader.all_subjects:
@@ -313,10 +315,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             )
 
     def _ls_rr_seq(self) -> NoReturn:
-        """finished, checked,
-
-        list all the rr sequences
-        """
+        """list all the rr sequences"""
         for s in self.reader.all_subjects:
             self.rr_seq_dirs[s] = self.rr_seq_base_dir / s
             self.rr_seq_dirs[s].mkdir(parents=True, exist_ok=True)
@@ -379,7 +378,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 )
 
     def _get_seg_data_path(self, seg: str) -> Path:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -390,13 +389,14 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         -------
         fp: Path,
             path of the data file of the segment
+
         """
         subject = seg.split("_")[1]
         fp = self.segments_dirs.data[subject] / f"{seg}.{self.segment_ext}"
         return fp
 
     def _get_seg_ann_path(self, seg: str) -> Path:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -407,13 +407,14 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         -------
         fp: Path,
             path of the annotation file of the segment
+
         """
         subject = seg.split("_")[1]
         fp = self.segments_dirs.ann[subject] / f"{seg}.{self.segment_ext}"
         return fp
 
     def _load_seg_data(self, seg: str) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -424,13 +425,14 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         -------
         seg_data: ndarray,
             data of the segment, of shape (2, `self.seglen`)
+
         """
         seg_data_fp = self._get_seg_data_path(seg)
         seg_data = loadmat(str(seg_data_fp))["ecg"]
         return seg_data
 
     def _load_seg_ann(self, seg: str) -> dict:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -445,6 +447,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             - qrs_mask: mask of qrs complexes of the segment
             - af_mask: mask of af episodes of the segment
             - interval: interval ([start_idx, end_idx]) in the original ECG record of the segment
+
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
         seg_ann = {
@@ -457,7 +460,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def _load_seg_mask(
         self, seg: str, task: Optional[str] = None
     ) -> Union[np.ndarray, Dict[str, np.ndarray]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -472,6 +475,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         seg_mask: np.ndarray or dict,
             mask(s) of the segment,
             of shape (self.seglen, self.n_classes)
+
         """
         seg_mask = {
             k: v.reshape((self.seglen, -1))
@@ -496,7 +500,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return seg_mask
 
     def _load_seg_seq_lab(self, seg: str, reduction: int) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -511,6 +515,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         seq_lab: np.ndarray,
             label of the sequence,
             of shape (self.seglen//reduction, self.n_classes)
+
         """
         seg_mask = self._load_seg_mask(seg)
         seg_len, n_classes = seg_mask.shape
@@ -528,7 +533,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return seq_lab
 
     def _get_rr_seq_path(self, seq_name: str) -> Path:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -539,13 +544,14 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         -------
         fp: Path,
             path of the annotation file of the rr_seq
+
         """
         subject = seq_name.split("_")[1]
         fp = self.rr_seq_dirs[subject] / f"{seq_name}.{self.rr_seq_ext}"
         return fp
 
     def _load_rr_seq(self, seq_name: str) -> Dict[str, np.ndarray]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -559,6 +565,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             - rr: the sequence of rr intervals, with units in seconds, of shape (self.seglen, 1)
             - label: label of the rr intervals, 0 for normal, 1 for af, of shape (self.seglen, self.n_classes)
             - interval: interval of the current rr sequence in the whole rr sequence in the original record
+
         """
         rr_seq_path = self._get_rr_seq_path(seq_name)
         rr_seq = {
@@ -570,7 +577,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return rr_seq
 
     def persistence(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
-        """finished, checked,
+        """
 
         make the dataset persistent w.r.t. the ratios in `self.config`
 
@@ -580,6 +587,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
+
         """
         if verbose >= 1:
             print(" preprocessing data ".center("#", 110))
@@ -603,7 +611,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def _preprocess_data(
         self, force_recompute: bool = False, verbose: int = 0
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
@@ -614,6 +622,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
+
         """
         for idx, rec in enumerate(self.reader.all_records):
             self._preprocess_one_record(
@@ -627,7 +636,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def _preprocess_one_record(
         self, rec: str, force_recompute: bool = False, verbose: int = 0
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
@@ -640,6 +649,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
+
         """
         suffix = self._get_rec_suffix(self.allowed_preproc)
         save_fp = self.preprocess_dir / f"{rec}-{suffix}.{self.segment_ext}"
@@ -650,7 +660,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         savemat(save_fp, {"ecg": pps}, format="5")
 
     def load_preprocessed_data(self, rec: str) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -661,6 +671,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         -------
         p_sig: ndarray,
             the pre-computed processed ECG
+
         """
         preproc = self.allowed_preproc
         suffix = self._get_rec_suffix(preproc)
@@ -675,7 +686,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return p_sig
 
     def _get_rec_suffix(self, operations: List[str]) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -687,12 +698,13 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         -------
         suffix: str,
             suffix of the filename of the preprocessed ecg signal
+
         """
         suffix = "-".join(sorted([item.lower() for item in operations]))
         return suffix
 
     def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
-        """finished, checked,
+        """
 
         slice all records into segments of length `self.seglen`,
         and perform data augmentations specified in `self.config`
@@ -703,6 +715,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
+
         """
         self.__assert_task(
             [
@@ -732,7 +745,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         update_segments_json: bool = False,
         verbose: int = 0,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         slice one record into segments of length `self.seglen`,
         and perform data augmentations specified in `self.config`
@@ -749,6 +762,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             useful when slicing not all records
         verbose: int, default 0,
             print verbosity
+
         """
         self.__assert_task(
             [
@@ -836,7 +850,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         start_idx: Optional[int] = None,
         end_idx: Optional[int] = None,
     ) -> CFG:
-        """finished, checked,
+        """
 
         generate segment, with possible data augmentation
 
@@ -862,6 +876,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             - qrs_mask: mask of qrs complexes of the segment
             - af_mask: mask of af episodes of the segment
             - interval: interval ([start_idx, end_idx]) in the original ECG record of the segment
+
         """
         assert not all(
             [start_idx is None, end_idx is None]
@@ -960,7 +975,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def __save_segments(
         self, rec: str, segments: List[CFG], update_segments_json: bool = False
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -970,6 +985,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             list of the segments (meta-)data
         update_segments_json: bool, default False,
             if True, the file `self.segments_json` will be updated
+
         """
         subject = self.reader.get_subject_id(rec)
         ordering = list(range(len(segments)))
@@ -998,13 +1014,14 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             )
 
     def _clear_cached_segments(self, recs: Optional[Sequence[str]] = None) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
         recs: sequence of str, optional
             sequence of the records whose segments are to be cleared,
             defaults to all records
+
         """
         self.__assert_task(
             [
@@ -1045,7 +1062,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def _slice_rr_seq(
         self, force_recompute: bool = False, verbose: int = 0
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         slice sequences of rr intervals into fixed length (sub)sequences
 
@@ -1055,6 +1072,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
+
         """
         self.__assert_task(["rr_lstm"])
         if force_recompute:
@@ -1079,7 +1097,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         update_rr_seq_json: bool = False,
         verbose: int = 0,
     ) -> NoReturn:
-        """finished, checked,"""
+        """"""
         self.__assert_task(["rr_lstm"])
         subject = self.reader.get_subject_id(rec)
         rec_rr_seq = [
@@ -1167,13 +1185,14 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             )
 
     def _clear_cached_rr_seq(self, recs: Optional[Sequence[str]] = None) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
         recs: sequence of str, optional
             sequence of the records whose segments are to be cleared,
             defaults to all records
+
         """
         self.__assert_task(["rr_lstm"])
         if recs is not None:
@@ -1195,7 +1214,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         )
 
     def _get_rec_name(self, seg_or_rr: str) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1206,6 +1225,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         -------
         rec: str,
             name of the record that `seg` was generated from
+
         """
         rec = re.sub("[RS]", "data", os.path.splitext(seg_or_rr)[0])[:-8]
         return rec
@@ -1213,7 +1233,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def _train_test_split(
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> Dict[str, List[str]]:
-        """finished, checked,
+        """
 
         do train test split,
         it is ensured that both the train and the test set contain all classes
@@ -1231,6 +1251,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         split_res: dict,
             keys are "train" and "test",
             values are list of the subjects split for training or validation
+
         """
         start = time.time()
         print("\nstart performing train test split...\n")
@@ -1308,7 +1329,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         ), f"DO NOT call this method when the current task is {self.task}. Switch task using `reset_task`"
 
     def plot_seg(self, seg: str, ticks_granularity: int = 0) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1317,6 +1338,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         ticks_granularity: int, default 0,
             the granularity to plot axis ticks, the higher the more,
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
+
         """
         seg_data = self._load_seg_data(seg)
         print(f"seg_data.shape = {seg_data.shape}")
@@ -1547,7 +1569,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
         start_idx: Optional[int] = None,
         end_idx: Optional[int] = None,
     ) -> CFG:
-        """finished, checked,
+        """
 
         generate segment, with possible data augmentation
 
@@ -1573,6 +1595,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
             - qrs_mask: mask of qrs complexes of the segment
             - af_mask: mask of af episodes of the segment
             - interval: interval ([start_idx, end_idx]) in the original ECG record of the segment
+
         """
         assert not all(
             [start_idx is None, end_idx is None]
@@ -1669,7 +1692,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
         return new_seg
 
     def load_preprocessed_data(self, rec: str) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1680,6 +1703,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
         -------
         p_sig: ndarray,
             the pre-computed processed ECG
+
         """
         preproc = self.allowed_preproc
         suffix = _get_rec_suffix(preproc)
@@ -1702,7 +1726,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
 
 
 def _get_rec_suffix(operations: List[str]) -> str:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -1713,6 +1737,7 @@ def _get_rec_suffix(operations: List[str]) -> str:
     -------
     suffix: str,
         suffix of the filename of the preprocessed ecg signal
+
     """
     suffix = "-".join(sorted([item.lower() for item in operations]))
     return suffix
@@ -1727,7 +1752,7 @@ def _generate_weight_mask(
     boundary_weight: float,
     plot: bool = False,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     generate weight mask for a binary target mask,
     accounting the foreground weight and boundary weight
@@ -1751,6 +1776,7 @@ def _generate_weight_mask(
     -------
     weight_mask: ndarray,
         the weight mask
+
     """
     weight_mask = np.ones_like(target_mask, dtype=float)
     sigma = int((radius * fs) / reduction)

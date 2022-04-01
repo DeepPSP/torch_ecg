@@ -12,6 +12,8 @@ import pandas as pd
 from scipy.io import loadmat
 
 from ..base import CPSCDataBase, DEFAULT_FIG_SIZE_PER_SEC
+from ...utils.misc import add_docstring
+from ...utils.download import http_get
 
 
 __all__ = [
@@ -66,11 +68,12 @@ class CPSC2019(CPSCDataBase):
 
     Usage
     -----
-    1. ecg wave delineation
+    1. ECG wave delineation
 
     References
     ----------
-    [1] http://2019.icbeb.org/Challenge.html
+    1. <a name="ref1"></a> http://2019.icbeb.org/Challenge.html
+
     """
 
     def __init__(
@@ -91,6 +94,7 @@ class CPSC2019(CPSCDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="cpsc2019",
@@ -120,7 +124,7 @@ class CPSC2019(CPSCDataBase):
         self.ref_dir = self.ann_dir
 
     def _ls_rec(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         records_fn = self.db_dir / "records.json"
         if records_fn.is_file():
             records_json = json.loads(records_fn.read_text())
@@ -159,18 +163,19 @@ class CPSC2019(CPSCDataBase):
         """ """
         return self._all_annotations
 
-    def get_subject_id(self, rec_no: int) -> int:
+    def get_subject_id(self, rec: Union[str, int]) -> int:
         """not finished,
 
         Parameters
         ----------
-        rec_no: int,
-            number of the record, NOTE that rec_no starts from 1
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
         pid: int,
             the `subject_id` corr. to `rec_no`
+
         """
         pid = 0
         raise NotImplementedError
@@ -178,20 +183,23 @@ class CPSC2019(CPSCDataBase):
     def load_data(
         self, rec: Union[int, str], units: str = "mV", keep_dim: bool = True
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec_no: int,
-            number of the record, NOTE that rec_no starts from 1
+        rec: str or int,
+            name or index of the record
         keep_dim: bool, default True,
             whether or not to flatten the data of shape (n,1)
 
         Returns
         -------
         data: ndarray,
-            the ecg data
+            the ECG data
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         fp = self.data_dir / f"{self._get_rec_name(rec)}.{self.rec_ext}"
         data = loadmat(str(fp))["ecg"]
         if units.lower() in [
@@ -204,13 +212,12 @@ class CPSC2019(CPSCDataBase):
         return data
 
     def load_ann(self, rec: Union[int, str], keep_dim: bool = True) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
         keep_dim: bool, default True,
             whether or not to flatten the data of shape (n,1)
 
@@ -218,13 +225,17 @@ class CPSC2019(CPSCDataBase):
         -------
         ann: ndarray,
             array of indices of R peaks
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         fp = self.ann_dir / f"{self._get_ann_name(rec)}.{self.ann_ext}"
         ann = loadmat(str(fp))["R_peak"].astype(int)
         if not keep_dim:
             ann = ann.flatten()
         return ann
 
+    @add_docstring(load_ann.__doc__)
     def load_rpeaks(
         self, rec: Union[int, str], keep_dim: bool = True
     ) -> Dict[str, np.ndarray]:
@@ -234,43 +245,40 @@ class CPSC2019(CPSCDataBase):
         return self.load_ann(rec=rec, keep_dim=keep_dim)
 
     def _get_rec_name(self, rec: Union[int, str]) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
         rec_name: str,
             filename of the record
+
         """
         if isinstance(rec, int):
-            assert rec in range(
-                1, self.n_records + 1
-            ), f"rec should be in range(1,{self.n_records+1})"
-            rec_name = self.all_records[rec - 1]
-        elif isinstance(rec, str):
-            assert rec in self.all_records, f"rec {rec} not found"
-            rec_name = rec
+            rec = self[rec]
+        rec_name = rec
         return rec_name
 
     def _get_ann_name(self, rec: Union[int, str]) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
         ann_name: str,
             filename of annotations of the record `rec`
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         rec_name = self._get_rec_name(rec)
         ann_name = rec_name.replace("data", "R")
         return ann_name
@@ -282,15 +290,14 @@ class CPSC2019(CPSCDataBase):
         ann: Optional[np.ndarray] = None,
         ticks_granularity: int = 0,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: int or str,
-            number of the record, NOTE that rec_no starts from 1,
-            or the record name
+        rec: str or int,
+            name or index of the record
         data: ndarray, optional,
-            ecg signal to plot,
+            ECG signal to plot,
             if given, data of `rec` will not be used,
             this is useful when plotting filtered data
         ann: ndarray, optional,
@@ -299,7 +306,10 @@ class CPSC2019(CPSCDataBase):
         ticks_granularity: int, default 0,
             the granularity to plot axis ticks, the higher the more,
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         if "plt" not in dir():
             import matplotlib.pyplot as plt
 
@@ -354,6 +364,10 @@ class CPSC2019(CPSCDataBase):
     def url(self) -> str:
         return "http://2019.icbeb.org/file/train.rar"
 
+    def download(self) -> NoReturn:
+        """download the database from self.url"""
+        http_get(self.url, self.db_dir, extract=False)
+
 
 def compute_metrics(
     rpeaks_truth: Sequence[Union[np.ndarray, Sequence[int]]],
@@ -362,7 +376,7 @@ def compute_metrics(
     thr: float = 0.075,
     verbose: int = 0,
 ) -> float:
-    """finished, checked,
+    """
 
     metric (scoring) function modified from the official one, with errors fixed
 
@@ -384,6 +398,7 @@ def compute_metrics(
     -------
     rec_acc: float,
         accuracy of predictions
+
     """
     assert len(rpeaks_truth) == len(
         rpeaks_pred

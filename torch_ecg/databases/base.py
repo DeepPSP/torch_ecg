@@ -539,7 +539,7 @@ class PhysioNetDataBase(_DataBase):
         if self._url_compressed is not None:
             return self._url_compressed
         domain = "https://physionet.org/static/published-projects/"
-        punct = re.sub("[-:]", "", punctuation)
+        punct = re.sub("[\-:]", "", punctuation)
         db_desc = self.df_all_db_info[
             self.df_all_db_info["db_name"] == self.db_name
         ].iloc[0]["db_description"]
