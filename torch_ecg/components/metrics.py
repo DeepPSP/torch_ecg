@@ -2,23 +2,25 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import NoReturn, Any, Union, Optional, List, Callable
+from typing import NoReturn, Any, Union, Optional, List, Callable, Sequence
 
 import numpy as np
 from torch import Tensor
 
-from ..utils.misc import ReprMixin, nildent
+from ..utils.misc import ReprMixin, nildent, add_docstring
 from ..utils.utils_metrics import (
     _metrics_from_confusion_matrix,
     ovr_confusion_matrix,
     confusion_matrix,
     top_n_accuracy,
+    QRS_score,
 )
 
 
 __all__ = [
     "Metrics",
     "ClassificationMetrics",
+    "RPeaksDetectionMetrics",
 ]
 
 
@@ -37,7 +39,10 @@ class Metrics(ReprMixin, ABC):
 
 
 class ClassificationMetrics(Metrics):
-    """ """
+    """
+    Metrics for the task of classification
+
+    """
 
     __name__ = "ClassificationMetrics"
 
@@ -64,6 +69,7 @@ class ClassificationMetrics(Metrics):
                 num_classes: Optional[int]=None,
                 weights: Optional[np.ndarray]=None
             ) -> dict`
+
         """
         self.multi_label = multi_label
         self.set_macro(macro)
@@ -131,9 +137,6 @@ class ClassificationMetrics(Metrics):
 
         return self
 
-    def __call__(self, *args: Any, **kwargs: Any) -> "ClassificationMetrics":
-        return self.compute()
-
     compute.__doc__ = _metrics_from_confusion_matrix.__doc__.replace(
         "metrics: dict,", f"{__name__},"
     ).replace(
@@ -147,7 +150,16 @@ class ClassificationMetrics(Metrics):
     array([0.46938776, 0.4742268 , 0.4375    , 0.52941176, 0.58      ,
        0.57692308, 0.55769231, 0.48351648, 0.55855856, 0.3956044 ])""",
     )
-    __call__.__doc__ = compute.__doc__
+
+    @add_docstring(compute.__doc__)
+    def __call__(
+        self,
+        labels: Union[np.ndarray, Tensor],
+        outputs: Union[np.ndarray, Tensor],
+        num_classes: Optional[int] = None,
+        weights: Optional[np.ndarray] = None,
+    ) -> "ClassificationMetrics":
+        return self.compute(labels, outputs, num_classes, weights)
 
     @property
     def sensitivity(self) -> Union[float, np.ndarray]:
@@ -300,3 +312,125 @@ class ClassificationMetrics(Metrics):
             "multi_label",
             "macro",
         ]
+
+
+class RPeaksDetectionMetrics(Metrics):
+    """
+    Metrics for the task of R peaks detection, proposed in CPSC2019
+
+    """
+
+    __name__ = "RPeaksDetectionMetrics"
+
+    def __init__(
+        self,
+        thr: float = 0.075,
+        extra_metrics: Optional[Callable] = None,
+    ) -> NoReturn:
+        """
+
+        Parameters
+        ----------
+        thr: float, default 0.075,
+            threshold for a prediction to be truth positive,
+            with units in seconds,
+        extra_metrics: Callable,
+            extra metrics to compute,
+            has to be a function with signature:
+            `def extra_metrics(
+                labels: Sequence[Union[Sequence[int], np.ndarray]],
+                outputs: Sequence[Union[Sequence[int], np.ndarray]],
+                fs: int
+            ) -> dict`
+
+        """
+        self.thr = thr
+        self._extra_metrics = extra_metrics
+        self._em = {}
+        self._metrics = {"qrs_score": np.nan}
+
+    def compute(
+        self,
+        labels: Sequence[Union[Sequence[int], np.ndarray]],
+        outputs: Sequence[Union[Sequence[int], np.ndarray]],
+        fs: int,
+        thr: Optional[float] = None,
+    ) -> "RPeaksDetectionMetrics":
+        """ """
+        self._metrics["qrs_score"] = QRS_score(labels, outputs, fs, thr or self.thr)
+        if self._extra_metrics is not None:
+            self._em = self._extra_metrics(labels, outputs, num_classes, weights)
+            self._metrics.update(self._em)
+
+        return self
+
+    compute.__doc__ = (
+        QRS_score.__doc__.replace("rpeaks_truths", "labels")
+        .replace("rpeaks_preds", "outputs")
+        .replace(
+            "thr: float, default 0.075,", "thr: float, optional, defaults to self.thr,"
+        )
+        .replace("rec_acc: float,", f"{__name__},")
+        .replace(
+            "accuracy of predictions", f"an instance of the metrics class `{__name__}`"
+        )
+        .rstrip(" \n")
+        + """
+
+    Examples
+    --------
+    >>> labels = [np.array([500, 1000])]
+    >>> outputs = [np.array([500, 700, 1000])]  # a false positive at 700
+    >>> metrics = RPeaksDetectionMetrics()
+    >>> metrics = metrics.compute(labels, outputs, fs=500)
+    >>> metrics.qrs_score
+    0.7
+       
+    """
+    )
+
+    @add_docstring(compute.__doc__)
+    def __call__(
+        self,
+        labels: Sequence[Union[Sequence[int], np.ndarray]],
+        outputs: Sequence[Union[Sequence[int], np.ndarray]],
+        fs: int,
+        thr: Optional[float] = None,
+    ) -> "RPeaksDetectionMetrics":
+        return self.compute(labels, outputs, fs, thr)
+
+    @property
+    def qrs_score(self) -> float:
+        return self._metrics[f"qrs_score"]
+
+    @property
+    def extra_metrics(self) -> dict:
+        return self._em
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["thr"]
+
+
+class WaveDelineationMetrics(Metrics):
+    """
+    Metrics for the task of ECG wave delineation
+
+    """
+
+    __name__ = "WaveDelineationMetrics"
+
+    def __init__(
+        self,
+        extra_metrics: Optional[Callable] = None,
+    ) -> NoReturn:
+        """ """
+        pass
+
+    def compute(
+        self,
+        labels: Union[np.ndarray, Tensor],
+        outputs: Union[np.ndarray, Tensor],
+        num_classes: Optional[int] = None,
+    ) -> "WaveDelineationMetrics":
+        """ """
+        pass
