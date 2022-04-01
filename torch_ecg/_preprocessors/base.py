@@ -8,8 +8,8 @@ from numbers import Real
 from typing import Optional, List, NoReturn, Tuple, List
 
 import numpy as np
-from scipy.ndimage.filters import median_filter
-from scipy.signal.signaltools import resample
+from scipy.ndimage import median_filter
+from scipy.signal import resample
 
 # from scipy.signal import medfilt
 # https://github.com/scipy/scipy/issues/9680

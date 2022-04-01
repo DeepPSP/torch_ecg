@@ -4,11 +4,13 @@
 import shutil
 from copy import deepcopy
 from pathlib import Path
-from typing import NoReturn, Optional, Any, Sequence, Union
+from typing import NoReturn, Optional, Any, Sequence, Union, Tuple, Dict, List
 
 import pytest
+import numpy as np
 import torch
 from torch import Tensor
+from torch.utils.data import Dataset, DataLoader
 from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
 
 try:

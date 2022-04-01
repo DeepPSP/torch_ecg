@@ -34,7 +34,7 @@ from torch_ecg.models.ecg_crnn import ECG_CRNN
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
 from torch_ecg.models.unets import ECG_UNET, ECG_SUBTRACT_UNET
 from torch_ecg.models.rr_lstm import RR_LSTM
-from torch_ecg.utils.misc import mask_to_intervals
+from torch_ecg.utils.misc import mask_to_intervals, add_docstring
 from torch_ecg.utils.utils_interval import intervals_union
 from torch_ecg.utils.preproc import merge_rpeaks
 from torch_ecg.components.outputs import SequenceTaggingOutput, RPeaksDetectionOutput

@@ -256,7 +256,10 @@ class LUDBTrainer(BaseTrainer):
             )
 
         # https://discuss.pytorch.org/t/guidelines-for-assigning-num-workers-to-dataloader/813/4
-        num_workers = 4
+        if torch.cuda.is_available():
+            num_workers = 4
+        else:
+            num_workers = 0
 
         self.train_loader = DataLoader(
             dataset=train_dataset,
