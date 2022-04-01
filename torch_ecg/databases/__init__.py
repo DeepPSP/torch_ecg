@@ -26,7 +26,6 @@ from .base import (
     WFDB_Beat_Annotations,
     WFDB_Non_Beat_Annotations,
     WFDB_Rhythm_Annotations,
-    ECGWaveForm,
     BeatAnn,
 )
 
@@ -53,6 +52,5 @@ __all__ = [
     "WFDB_Beat_Annotations",
     "WFDB_Non_Beat_Annotations",
     "WFDB_Rhythm_Annotations",
-    "ECGWaveForm",
     "BeatAnn",
 ]

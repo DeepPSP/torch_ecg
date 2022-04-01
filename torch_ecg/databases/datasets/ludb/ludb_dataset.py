@@ -7,6 +7,7 @@ from random import shuffle, randint
 from copy import deepcopy
 from functools import reduce
 from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
+from numbers import Real
 
 import numpy as np
 
@@ -42,7 +43,7 @@ class LUDBDataset(ReprMixin, Dataset):
         training: bool = True,
         lazy: bool = False,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -52,7 +53,8 @@ class LUDBDataset(ReprMixin, Dataset):
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,
-            if True, the data will not be loaded immediately,
+            if True, the data will not be loaded immediately
+
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -95,7 +97,7 @@ class LUDBDataset(ReprMixin, Dataset):
         return len(self.records)
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,"""
+        """ """
         if self.config.use_single_lead:
             rec_idx, lead_idx = divmod(index, len(self.leads))
         else:
@@ -123,7 +125,7 @@ class LUDBDataset(ReprMixin, Dataset):
         return signals, labels
 
     def _load_all_data(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         self._signals, self._labels = [], []
 
         with tqdm(self.fdr, total=len(self.fdr)) as bar:
@@ -147,7 +149,7 @@ class LUDBDataset(ReprMixin, Dataset):
     def _train_test_split(
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> List[str]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -161,6 +163,7 @@ class LUDBDataset(ReprMixin, Dataset):
         -------
         records: list of str,
             list of the records split for training or validation
+
         """
         _train_ratio = int(train_ratio * 100)
         _test_ratio = 100 - _train_ratio
@@ -227,7 +230,7 @@ class FastDataReader(ReprMixin, Dataset):
         return len(self.records)
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,"""
+        """ """
         rec = self.records[index]
         signals = self.reader.load_data(
             rec,

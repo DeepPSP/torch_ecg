@@ -41,7 +41,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
     def __init__(
         self, config: CFG, training: bool = True, lazy: bool = True
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -56,6 +56,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default True,
             if True, the data will not be loaded immediately,
+
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -127,7 +128,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
         self._labels = np.concatenate(self._labels, axis=0)
 
     def _load_one_record(self, rec: str) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,
+        """
 
         load a record from the database using data reader
 
@@ -147,6 +148,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
             the values of the record
         labels: np.ndarray,
             the labels of the record
+
         """
         values = self.reader.load_resampled_data(
             rec, data_format=self.config.data_format, siglen=None
@@ -183,7 +185,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
         return self._labels
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,"""
+        """ """
         return self.signals[index], self.labels[index]
 
     def __len__(self) -> int:
@@ -193,7 +195,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
     def _train_test_split(
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> List[str]:
-        """finished, checked,
+        """
 
         do train test split,
         it is ensured that both the train and the test set contain all classes
@@ -210,6 +212,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
         -------
         records: list of str,
             list of the records split for training or validation
+
         """
         time.sleep(1)
         start = time.time()
@@ -281,7 +284,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
     def _check_train_test_split_validity(
         self, train_set: List[str], test_set: List[str], all_classes: Set[str]
     ) -> bool:
-        """finished, checked,
+        """
 
         the train-test split is valid iff
         records in both `train_set` and `test` contain all classes in `all_classes`
@@ -299,6 +302,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
         -------
         is_valid: bool,
             the split is valid or not
+
         """
         add = lambda a, b: a + b
         train_classes = set(
@@ -316,9 +320,9 @@ class CINC2020Dataset(ReprMixin, Dataset):
         return is_valid
 
     def persistence(self) -> NoReturn:
-        """finished, checked,
-
+        """
         make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
+
         """
         _TRANCHES = "ABEF"
         if self.training:
@@ -350,10 +354,10 @@ class CINC2020Dataset(ReprMixin, Dataset):
         self.__data_aug = prev_state
 
     def _check_nan(self) -> NoReturn:
-        """finished, checked,
-
+        """
         during training, sometimes nan values are encountered,
         which ruins the whole training process
+
         """
         for idx, (values, labels) in self:
             if np.isnan(values).any():

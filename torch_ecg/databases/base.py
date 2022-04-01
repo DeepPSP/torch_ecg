@@ -46,7 +46,6 @@ __all__ = [
     "ImageDataBase",
     "AudioDataBase",
     "OtherDataBase",
-    "ECGWaveForm",
     "DEFAULT_FIG_SIZE_PER_SEC",
     "BeatAnn",
 ]
@@ -841,11 +840,6 @@ class CPSCDataBase(_DataBase):
             print("--- helpler - methods ---")
             pp.pprint(methods)
 
-
-ECGWaveForm = namedtuple(
-    typename="ECGWaveForm",
-    field_names=["name", "onset", "offset", "peak", "duration"],
-)
 
 DEFAULT_FIG_SIZE_PER_SEC = 4.8
 

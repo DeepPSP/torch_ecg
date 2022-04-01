@@ -43,7 +43,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         training: bool = True,
         lazy: bool = False,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -58,6 +58,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,
             if True, the data will not be loaded immediately,
+
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -87,7 +88,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
             self._load_all_data()
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,"""
+        """ """
         if self.lazy:
             signal, label = self.fdr[index]
         else:
@@ -138,6 +139,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         -------
         records: list of str,
             list of the records split for training or validation
+
         """
         assert 0 < train_ratio < 100
         _train_ratio = train_ratio if train_ratio < 1 else train_ratio / 100
