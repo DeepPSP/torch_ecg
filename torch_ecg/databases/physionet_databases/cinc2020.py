@@ -22,6 +22,7 @@ from ...utils.misc import (
     ms2samples,
     dict_to_str,
     ensure_siglen,
+    add_docstring,
 )
 from ...utils.download import http_get, _stem
 from ...utils import ecg_arrhythmia_knowledge as EAK
@@ -157,14 +158,15 @@ class CINC2020(PhysioNetDataBase):
 
     References
     ----------
-    [1] https://physionetchallenges.github.io/2020/
-    [2] https://physionet.org/content/challenge-2020/1.0.1/
-    [3] http://2018.icbeb.org/#
-    [4] https://physionet.org/content/incartdb/1.0.0/
-    [5] https://physionet.org/content/ptbdb/1.0.0/
-    [6] https://physionet.org/content/ptb-xl/1.0.1/
-    [7] (deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ecg-public/
-    [8] (recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/
+    1. <a name="ref1"></a> https://physionetchallenges.github.io/2020/
+    2. <a name="ref2"></a> https://physionet.org/content/challenge-2020/1.0.1/
+    3. <a name="ref3"></a> http://2018.icbeb.org/#
+    4. <a name="ref4"></a> https://physionet.org/content/incartdb/1.0.0/
+    5. <a name="ref5"></a> https://physionet.org/content/ptbdb/1.0.0/
+    6. <a name="ref6"></a> https://physionet.org/content/ptb-xl/1.0.1/
+    7. <a name="ref7"></a> (deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ECG-public/
+    8. <a name="ref8"></a> (recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/
+
     """
 
     def __init__(
@@ -185,6 +187,7 @@ class CINC2020(PhysioNetDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="challenge-2020",
@@ -272,7 +275,7 @@ class CINC2020(PhysioNetDataBase):
         ]  # ref. ISSUES 4
 
     def get_subject_id(self, rec: str) -> int:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -292,7 +295,7 @@ class CINC2020(PhysioNetDataBase):
         return sid
 
     def _ls_rec(self) -> NoReturn:
-        """finished, checked,
+        """
 
         list all the records and load into `self._all_records`,
         facilitating further uses
@@ -343,10 +346,7 @@ class CINC2020(PhysioNetDataBase):
             record_list_fp.write_text(json.dumps(to_save))
 
     def _ls_diagnoses_records(self) -> NoReturn:
-        """finished, checked,
-
-        list all the records for all diagnoses
-        """
+        """list all the records for all diagnoses"""
         fn = "diagnoses_records_list.json"
         dr_fp = self.db_dir_base / fn
         if dr_fp.is_file():
@@ -371,13 +371,13 @@ class CINC2020(PhysioNetDataBase):
 
     @property
     def diagnoses_records_list(self):
-        """finished, checked,"""
+        """ """
         if self._diagnoses_records_list is None:
             self._ls_diagnoses_records()
         return self._diagnoses_records_list
 
     def _get_tranche(self, rec: str) -> str:
-        """finished, checked,
+        """
 
         get the tranche"s symbol (one of "A","B","C","D","E","F") of a record via its name
 
@@ -390,13 +390,14 @@ class CINC2020(PhysioNetDataBase):
         -------
         tranche, str,
             symbol of the tranche, ref. `self.rec_prefix`
+
         """
         prefix = "".join(re.findall(r"[A-Z]", rec))
         tranche = {v: k for k, v in self.rec_prefix.items()}[prefix]
         return tranche
 
     def get_data_filepath(self, rec: str, with_ext: bool = True) -> str:
-        """finished, checked,
+        """
 
         get the absolute file path of the data file of `rec`
 
@@ -413,6 +414,7 @@ class CINC2020(PhysioNetDataBase):
         -------
         fp: str,
             absolute file path of the data file of the record
+
         """
         tranche = self._get_tranche(rec)
         fp = self.db_dirs[tranche] / f"{rec}.{self.rec_ext}"
@@ -421,7 +423,7 @@ class CINC2020(PhysioNetDataBase):
         return str(fp)
 
     def get_header_filepath(self, rec: str, with_ext: bool = True) -> str:
-        """finished, checked,
+        """
 
         get the absolute file path of the header file of `rec`
 
@@ -438,6 +440,7 @@ class CINC2020(PhysioNetDataBase):
         -------
         fp: str,
             absolute file path of the header file of the record
+
         """
         tranche = self._get_tranche(rec)
         fp = self.db_dirs[tranche] / f"{rec}.{self.ann_ext}"
@@ -445,8 +448,9 @@ class CINC2020(PhysioNetDataBase):
             fp = fp.with_suffix("")
         return str(fp)
 
+    @add_docstring(get_header_filepath.__doc__)
     def get_ann_filepath(self, rec: str, with_ext: bool = True) -> str:
-        """finished, checked,
+        """
         alias for `get_header_filepath`
         """
         fp = self.get_header_filepath(rec, with_ext=with_ext)
@@ -461,9 +465,9 @@ class CINC2020(PhysioNetDataBase):
         units: str = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
-        load physical (converted from digital) ecg data,
+        load physical (converted from digital) ECG data,
         which is more understandable for humans
 
         Parameters
@@ -473,7 +477,7 @@ class CINC2020(PhysioNetDataBase):
         leads: str or list of str, optional,
             the leads to load
         data_format: str, default "channel_first",
-            format of the ecg data,
+            format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first")
         backend: str, default "wfdb",
@@ -486,7 +490,8 @@ class CINC2020(PhysioNetDataBase):
         Returns
         -------
         data: ndarray,
-            the ecg data
+            the ECG data
+
         """
         assert data_format.lower() in [
             "channel_first",
@@ -542,7 +547,7 @@ class CINC2020(PhysioNetDataBase):
     def load_ann(
         self, rec: str, raw: bool = False, backend: str = "wfdb"
     ) -> Union[dict, str]:
-        """finished, checked,
+        """
 
         load annotations (header) stored in the .hea files
 
@@ -560,6 +565,7 @@ class CINC2020(PhysioNetDataBase):
         -------
         ann_dict, dict or str,
             the annotations with items: ref. `self.ann_items`
+
         """
         tranche = self._get_tranche(rec)
         ann_fp = self.get_ann_filepath(rec, with_ext=True)
@@ -580,7 +586,7 @@ class CINC2020(PhysioNetDataBase):
         return ann_dict
 
     def _load_ann_wfdb(self, rec: str, header_data: List[str]) -> dict:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -595,6 +601,7 @@ class CINC2020(PhysioNetDataBase):
         -------
         ann_dict, dict,
             the annotations with items: ref. `self.ann_items`
+
         """
         header_fp = self.get_header_filepath(rec, with_ext=False)
         header_reader = wfdb.rdheader(header_fp)
@@ -684,7 +691,7 @@ class CINC2020(PhysioNetDataBase):
         return ann_dict
 
     def _load_ann_naive(self, header_data: List[str]) -> dict:
-        """finished, checked,
+        """
 
         load annotations (header) using raw data read directly from a header file
 
@@ -697,6 +704,7 @@ class CINC2020(PhysioNetDataBase):
         -------
         ann_dict, dict,
             the annotations with items: ref. `self.ann_items`
+
         """
         ann_dict = {}
         (
@@ -759,7 +767,7 @@ class CINC2020(PhysioNetDataBase):
         return ann_dict
 
     def _parse_diagnosis(self, l_Dx: List[str]) -> Tuple[dict, dict]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -772,6 +780,7 @@ class CINC2020(PhysioNetDataBase):
             diagnosis, including SNOMED CT Codes, fullnames and abbreviations of each diagnosis
         diag_scored_dict: dict,
             the scored items in `diag_dict`
+
         """
         diag_dict, diag_scored_dict = {}, {}
         try:
@@ -818,7 +827,7 @@ class CINC2020(PhysioNetDataBase):
         return diag_dict, diag_scored_dict
 
     def _parse_leads(self, l_leads_data: List[str]) -> pd.DataFrame:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -829,6 +838,7 @@ class CINC2020(PhysioNetDataBase):
         -------
         df_leads: DataFrame,
             infomation of each leads in the format of DataFrame
+
         """
         df_leads = pd.read_csv(
             io.StringIO("\n".join(l_leads_data)), delim_whitespace=True, header=None
@@ -893,7 +903,7 @@ class CINC2020(PhysioNetDataBase):
     def get_labels(
         self, rec: str, scored_only: bool = True, fmt: str = "s", normalize: bool = True
     ) -> List[str]:
-        """finished, checked,
+        """
 
         read labels (diagnoses or arrhythmias) of a record
 
@@ -916,6 +926,7 @@ class CINC2020(PhysioNetDataBase):
         -------
         labels, list,
             the list of labels
+
         """
         ann_dict = self.load_ann(rec)
         if scored_only:
@@ -935,7 +946,7 @@ class CINC2020(PhysioNetDataBase):
         return labels
 
     def get_fs(self, rec: str) -> Real:
-        """finished, checked,
+        """
 
         get the sampling frequency of a record
 
@@ -954,7 +965,7 @@ class CINC2020(PhysioNetDataBase):
         return fs
 
     def get_subject_info(self, rec: str, items: Optional[List[str]] = None) -> dict:
-        """finished, checked,
+        """
 
         read auxiliary information of a subject (a record) stored in the header files
 
@@ -1035,7 +1046,7 @@ class CINC2020(PhysioNetDataBase):
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked, to improve,
+        """to improve,
 
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
@@ -1046,7 +1057,7 @@ class CINC2020(PhysioNetDataBase):
         rec: str,
             name of the record
         data: ndarray, optional,
-            (12-lead) ecg signal to plot,
+            (12-lead) ECG signal to plot,
             should be of the format "channel_first", and compatible with `leads`
             if given, data of `rec` will not be used,
             this is useful when plotting filtered data
@@ -1273,7 +1284,7 @@ class CINC2020(PhysioNetDataBase):
     def get_tranche_class_distribution(
         self, tranches: Sequence[str], scored_only: bool = True
     ) -> Dict[str, int]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1285,7 +1296,9 @@ class CINC2020(PhysioNetDataBase):
         Returns
         -------
         distribution: dict,
-            keys are abbrevations of the classes, values are appearance of corr. classes in the tranche.
+            keys are abbrevations of the classes,
+            values are appearance of corr. classes in the tranche.
+
         """
         tranche_names = [self.tranche_names[t] for t in tranches]
         df = dx_mapping_scored if scored_only else dx_mapping_all
@@ -1300,7 +1313,7 @@ class CINC2020(PhysioNetDataBase):
     def get_arrhythmia_knowledge(
         arrhythmias: Union[str, List[str]], **kwargs
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         knowledge about ECG features of specific arrhythmias,
 
@@ -1308,6 +1321,7 @@ class CINC2020(PhysioNetDataBase):
         ----------
         arrhythmias: str, or list of str,
             the arrhythmia(s) to check, in abbreviations or in SNOMED CT Code
+
         """
         if isinstance(arrhythmias, str):
             d = [normalize_class(arrhythmias)]
@@ -1330,7 +1344,7 @@ class CINC2020(PhysioNetDataBase):
     def load_resampled_data(
         self, rec: str, data_format: str = "channel_first", siglen: Optional[int] = None
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
         resample the data of `rec` to 500Hz,
         or load the resampled data in 500Hz, if the corr. data file already exists
@@ -1340,7 +1354,7 @@ class CINC2020(PhysioNetDataBase):
         rec: str,
             name of the record
         data_format: str, default "channel_first",
-            format of the ecg data,
+            format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first")
         siglen: int, optional,
@@ -1352,6 +1366,7 @@ class CINC2020(PhysioNetDataBase):
         -------
         data: ndarray,
             the resampled (and perhaps sliced) signal data
+
         """
         tranche = self._get_tranche(rec)
         if siglen is None:
@@ -1379,7 +1394,7 @@ class CINC2020(PhysioNetDataBase):
         return data
 
     def load_raw_data(self, rec: str, backend: str = "scipy") -> np.ndarray:
-        """finished, checked,
+        """
 
         load raw data from corresponding files with no further processing,
         in order to facilitate feeding data into the `run_12ECG_classifier` function
@@ -1397,7 +1412,8 @@ class CINC2020(PhysioNetDataBase):
         -------
         raw_data: ndarray,
             raw data (d_signal) loaded from corresponding data file,
-            without subtracting baseline nor dividing adc gain
+            without subtracting baseline nor dividing ADC gain
+
         """
         tranche = self._get_tranche(rec)
         if backend.lower() == "wfdb":
@@ -1410,7 +1426,7 @@ class CINC2020(PhysioNetDataBase):
         return raw_data
 
     def _check_nan(self, tranches: Union[str, Sequence[str]]) -> NoReturn:
-        """finished, checked,
+        """
 
         check if records from `tranches` has nan values
 
@@ -1422,6 +1438,7 @@ class CINC2020(PhysioNetDataBase):
         ----------
         tranches: str or sequence of str,
             tranches to check
+
         """
         for t in tranches:
             for rec in self.all_records[t]:
@@ -1431,7 +1448,7 @@ class CINC2020(PhysioNetDataBase):
 
     @property
     def url(self) -> List[str]:
-        domain = "https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ecg-public/"
+        domain = "https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ECG-public/"
         return [posixpath.join(domain, f) for f in self.data_files]
 
     data_files = [
@@ -1455,7 +1472,7 @@ from ..aux_data.cinc2020_aux_data import load_weights
 def compute_all_metrics(
     classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence
 ) -> Tuple[float]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -1471,12 +1488,20 @@ def compute_all_metrics(
     Returns
     -------
     auroc: float,
+        area under the receiver operating characteristic (ROC) curve
     auprc: float,
+        area under the precision-recall curve
     accuracy: float,
+        accuracy
     f_measure: float,
+        f1 score
     f_beta_measure: float,
+        f-beta score
     g_beta_measure: float,
+        g-beta score
     challenge_metric: float,
+        challenge metric, defined by a weight matrix
+
     """
     # normal_class = "426783006"
     normal_class = "NSR"
@@ -1520,7 +1545,7 @@ def compute_all_metrics(
 
 # Compute recording-wise accuracy.
 def compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> float:
-    """checked,"""
+    """ """
     num_recordings, num_classes = np.shape(labels)
 
     num_correct_recordings = 0
@@ -1535,7 +1560,7 @@ def compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> float:
 def compute_confusion_matrices(
     labels: np.ndarray, outputs: np.ndarray, normalize: bool = False
 ) -> np.ndarray:
-    """checked,"""
+    """ """
     # Compute a binary confusion matrix for each class k:
     #
     #     [TN_k FN_k]
@@ -1580,7 +1605,7 @@ def compute_confusion_matrices(
 
 # Compute macro F-measure.
 def compute_f_measure(labels: np.ndarray, outputs: np.ndarray) -> float:
-    """checked,"""
+    """ """
     num_recordings, num_classes = np.shape(labels)
 
     A = compute_confusion_matrices(labels, outputs)
@@ -1602,7 +1627,7 @@ def compute_f_measure(labels: np.ndarray, outputs: np.ndarray) -> float:
 def compute_beta_measures(
     labels: np.ndarray, outputs: np.ndarray, beta: Real
 ) -> Tuple[float, float]:
-    """checked,"""
+    """ """
     num_recordings, num_classes = np.shape(labels)
 
     A = compute_confusion_matrices(labels, outputs, normalize=True)
@@ -1630,7 +1655,7 @@ def compute_beta_measures(
 
 # Compute macro AUROC and macro AUPRC.
 def compute_auc(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, float]:
-    """checked,"""
+    """ """
     num_recordings, num_classes = np.shape(labels)
 
     # Compute and summarize the confusion matrices for each class across at distinct output values.
@@ -1711,10 +1736,10 @@ def compute_auc(labels: np.ndarray, outputs: np.ndarray) -> Tuple[float, float]:
 def compute_modified_confusion_matrix(
     labels: np.ndarray, outputs: np.ndarray
 ) -> np.ndarray:
-    """checked,
-
+    """
     Compute a binary multi-class, multi-label confusion matrix,
     where the rows are the labels and the columns are the outputs.
+
     """
     num_recordings, num_classes = np.shape(labels)
     A = np.zeros((num_classes, num_classes))
@@ -1743,7 +1768,7 @@ def compute_challenge_metric(
     classes: List[str],
     normal_class: str,
 ) -> float:
-    """checked,"""
+    """ """
     num_recordings, num_classes = np.shape(labels)
     normal_index = classes.index(normal_class)
 

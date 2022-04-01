@@ -51,7 +51,8 @@ class MITDB(PhysioNetDataBase):
 
     References
     ----------
-    [1] https://physionet.org/content/mitdb/1.0.0/
+    1. <a name="ref1"></a> https://physionet.org/content/mitdb/1.0.0/
+
     """
 
     def __init__(
@@ -73,6 +74,7 @@ class MITDB(PhysioNetDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="mitdb",
@@ -139,7 +141,7 @@ class MITDB(PhysioNetDataBase):
 
     def load_data(
         self,
-        rec: str,
+        rec: Union[str, int],
         leads: Optional[Union[str, List[str]]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
@@ -147,15 +149,15 @@ class MITDB(PhysioNetDataBase):
         units: str = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
-        load physical (converted from digital) ecg data,
+        load physical (converted from digital) ECG data,
         which is more understandable for humans
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         leads: str or list of str, optional,
             the leads to load
         sampfrom: int, optional,
@@ -163,7 +165,7 @@ class MITDB(PhysioNetDataBase):
         sampto: int, optional,
             end index of the data to be loaded
         data_format: str, default "channel_first",
-            format of the ecg data,
+            format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first")
         units: str, default "mV",
@@ -174,8 +176,11 @@ class MITDB(PhysioNetDataBase):
         Returns
         -------
         data: ndarray,
-            the ecg data
+            the ECG data
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         fp = str(self.db_dir / rec)
         if not leads:
             _leads = self._get_lead_names(rec)
@@ -202,7 +207,7 @@ class MITDB(PhysioNetDataBase):
 
     def load_ann(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         rhythm_format: str = "interval",
@@ -210,7 +215,7 @@ class MITDB(PhysioNetDataBase):
         extended_beats: bool = False,
         keep_original: bool = False,
     ) -> dict:
-        """finished, checked,
+        """
 
         load rhythm and beat annotations,
         which are stored in the `aux_note`, `symbol` attributes of corresponding annotation files.
@@ -218,8 +223,8 @@ class MITDB(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -238,7 +243,10 @@ class MITDB(PhysioNetDataBase):
             the annotations of `rhythm` and `beat`, with
             `rhythm` annotatoins in the format of `intervals`, or `mask`;
             `beat` annotations in the format of `dict` or `BeatAnn`
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         assert rhythm_format.lower() in [
             "interval",
             "mask",
@@ -310,21 +318,21 @@ class MITDB(PhysioNetDataBase):
 
     def load_rhythm_ann(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         rhythm_format: str = "interval",
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
-        """finished, checked,
+        """
 
         load rhythm annotations,
         which are stored in the `aux_note` attribute of corresponding annotation files.
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -341,7 +349,10 @@ class MITDB(PhysioNetDataBase):
         -------
         ann, dict or ndarray,
             the annotations in the format of intervals, or in the format of mask
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         return self.load_ann(
             rec,
             sampfrom,
@@ -352,21 +363,21 @@ class MITDB(PhysioNetDataBase):
 
     def load_beat_ann(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         beat_format: str = "beat",
         keep_original: bool = False,
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
-        """finished, checked,
+        """
 
         load beat annotations,
         which are stored in the `symbol` attribute of corresponding annotation files
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -381,7 +392,10 @@ class MITDB(PhysioNetDataBase):
         -------
         ann, dict or list,
             locations (indices) of the all the beat types ("A", "N", "Q", "V",)
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         return self.load_ann(
             rec,
             sampfrom,
@@ -392,12 +406,12 @@ class MITDB(PhysioNetDataBase):
 
     def load_rpeak_indices(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         keep_original: bool = False,
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
         load rpeak indices, or equivalently qrs complex locations,
         which are stored in the `symbol` attribute of corresponding annotation files,
@@ -405,8 +419,8 @@ class MITDB(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -419,7 +433,10 @@ class MITDB(PhysioNetDataBase):
         -------
         rpeak_inds, ndarray,
             locations (indices) of the all the rpeaks (qrs complexes)
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         fp = str(self.db_dir / rec)
         wfdb_ann = wfdb.rdann(fp, extension=self.ann_ext)
         header = wfdb.rdheader(fp)
@@ -439,24 +456,28 @@ class MITDB(PhysioNetDataBase):
             rpeak_inds -= sf
         return rpeak_inds
 
-    def _get_lead_names(self, rec: str) -> List[str]:
+    def _get_lead_names(self, rec: Union[str, int]) -> List[str]:
         """
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
 
-        returns:
+        Returns
+        -------
         list of str:
             a list of names of the leads contained in the record
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         fp = str(self.db_dir / rec)
         return wfdb.rdheader(fp).sig_name
 
     def plot(
         self,
-        rec: str,
+        rec: Union[str, int],
         data: Optional[np.ndarray] = None,
         ann: Optional[Dict[str, np.ndarray]] = None,
         beat_ann: Optional[Dict[str, np.ndarray]] = None,

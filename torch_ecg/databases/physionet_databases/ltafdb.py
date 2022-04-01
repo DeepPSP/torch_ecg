@@ -22,7 +22,7 @@ __all__ = [
 
 
 class LTAFDB(PhysioNetDataBase):
-    """finished, checked,
+    """
 
     Long Term AF Database
 
@@ -52,9 +52,10 @@ class LTAFDB(PhysioNetDataBase):
 
     References
     ----------
-    [1] https://physionet.org/content/ltafdb/1.0.0/
-    [2] Petrutiu S, Sahakian AV, Swiryn S. Abrupt changes in fibrillatory wave characteristics at the termination of paroxysmal atrial fibrillation in humans. Europace 9:466-470 (2007).
-    [3] https://physionet.org/files/ltafdb/1.0.0/tables.shtml
+    1. <a name="ref1"></a> https://physionet.org/content/ltafdb/1.0.0/
+    2. <a name="ref2"></a> Petrutiu S, Sahakian AV, Swiryn S. Abrupt changes in fibrillatory wave characteristics at the termination of paroxysmal atrial fibrillation in humans. Europace 9:466-470 (2007).
+    3. <a name="ref3"></a> https://physionet.org/files/ltafdb/1.0.0/tables.shtml
+
     """
 
     def __init__(
@@ -64,7 +65,7 @@ class LTAFDB(PhysioNetDataBase):
         verbose: int = 2,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -76,6 +77,7 @@ class LTAFDB(PhysioNetDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         from matplotlib.pyplot import cm
 
@@ -141,12 +143,13 @@ class LTAFDB(PhysioNetDataBase):
         -------
         sid: int,
             the `get_subject_id` corr. to `rec`
+
         """
         raise NotImplementedError
 
     def load_data(
         self,
-        rec: str,
+        rec: Union[str, int],
         leads: Optional[Union[int, List[int]]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
@@ -154,15 +157,15 @@ class LTAFDB(PhysioNetDataBase):
         units: str = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
-        load physical (converted from digital) ecg data,
+        load physical (converted from digital) ECG data,
         which is more understandable for humans
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         leads: int or list of int, optional,
             the lead number(s) to load
         sampfrom: int, optional,
@@ -170,7 +173,7 @@ class LTAFDB(PhysioNetDataBase):
         sampto: int, optional,
             end index of the data to be loaded
         data_format: str, default "channel_first",
-            format of the ecg data,
+            format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first")
         units: str, default "mV",
@@ -181,8 +184,11 @@ class LTAFDB(PhysioNetDataBase):
         Returns
         -------
         data: ndarray,
-            the ecg data
+            the ECG data
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         fp = self.db_dir / rec
         if not leads:
             _leads = self.all_leads
@@ -209,14 +215,14 @@ class LTAFDB(PhysioNetDataBase):
 
     def load_ann(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         rhythm_format: str = "interval",
         beat_format: str = "beat",
         keep_original: bool = False,
     ) -> dict:
-        """finished, checked,
+        """
 
         load rhythm and beat annotations,
         which are stored in the `aux_note`, `symbol` attributes of corresponding annotation files.
@@ -224,8 +230,8 @@ class LTAFDB(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -246,7 +252,10 @@ class LTAFDB(PhysioNetDataBase):
             `beat` annotations in the format of `dict` or `BeatAnn`
 
         NOTE that at head and tail of the record, segments named "NOISE" are added
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         ann = {
             "beat": self.load_beat_ann(
                 rec,
@@ -267,13 +276,13 @@ class LTAFDB(PhysioNetDataBase):
 
     def load_rhythm_ann(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         rhythm_format: str = "interval",
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
-        """finished, checked,
+        """
 
         load rhythm annotations,
         which are stored in the `aux_note` attribute of corresponding annotation files.
@@ -281,8 +290,8 @@ class LTAFDB(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -299,7 +308,10 @@ class LTAFDB(PhysioNetDataBase):
             the annotations in the format of intervals, or in the format of mask
 
         NOTE that at head and tail of the record, segments named "NOISE" are added
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         assert rhythm_format.lower() in [
             "interval",
             "mask",
@@ -357,21 +369,21 @@ class LTAFDB(PhysioNetDataBase):
 
     def load_beat_ann(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         beat_format: str = "beat",
         keep_original: bool = False,
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
-        """finished, checked,
+        """
 
         load beat annotations,
         which are stored in the `symbol` attribute of corresponding annotation files
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -386,7 +398,10 @@ class LTAFDB(PhysioNetDataBase):
         -------
         ann, dict or list,
             locations (indices) of the all the beat types ("A", "N", "Q", "V",)
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         assert beat_format.lower() in [
             "beat",
             "dict",
@@ -420,13 +435,13 @@ class LTAFDB(PhysioNetDataBase):
 
     def load_rpeak_indices(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         use_manual: bool = True,
         keep_original: bool = False,
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
         load rpeak indices, or equivalently qrs complex locations,
         which are stored in the `symbol` attribute of corresponding annotation files,
@@ -434,8 +449,8 @@ class LTAFDB(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -451,7 +466,10 @@ class LTAFDB(PhysioNetDataBase):
         -------
         rpeak_inds, ndarray,
             locations (indices) of the all the rpeaks (qrs complexes)
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         fp = self.db_dir / rec
         if use_manual:
             ext = self.manual_ann_ext
@@ -470,7 +488,7 @@ class LTAFDB(PhysioNetDataBase):
 
     def plot(
         self,
-        rec: str,
+        rec: Union[str, int],
         data: Optional[np.ndarray] = None,
         ann: Optional[Dict[str, np.ndarray]] = None,
         beat_ann: Optional[Dict[str, np.ndarray]] = None,
@@ -482,7 +500,7 @@ class LTAFDB(PhysioNetDataBase):
         same_range: bool = False,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
@@ -490,10 +508,10 @@ class LTAFDB(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         data: ndarray, optional,
-            (2-lead) ecg signal to plot,
+            (2-lead) ECG signal to plot,
             should be of the format "channel_first", and compatible with `leads`
             if given, data of `rec` will not be used,
             this is useful when plotting filtered data
@@ -523,7 +541,11 @@ class LTAFDB(PhysioNetDataBase):
         same_range: bool, default False,
             if True, forces all leads to have the same y range
         kwargs: dict,
+            additional arguments to be passed to `matplotlib.pyplot.plot`, etc.
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         if "plt" not in dir():
             import matplotlib.pyplot as plt
 

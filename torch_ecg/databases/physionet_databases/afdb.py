@@ -13,9 +13,7 @@ import pandas as pd
 import wfdb
 
 from ...cfg import CFG
-from ...utils.misc import (
-    get_record_list_recursive,
-)
+from ...utils.misc import get_record_list_recursive, add_docstring
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import PhysioNetDataBase, DEFAULT_FIG_SIZE_PER_SEC
 
@@ -26,7 +24,7 @@ __all__ = [
 
 
 class AFDB(PhysioNetDataBase):
-    """finished, checked,
+    """
 
     MIT-BIH Atrial Fibrillation Database
 
@@ -57,8 +55,9 @@ class AFDB(PhysioNetDataBase):
 
     References
     ----------
-    [1] https://physionet.org/content/afdb/1.0.0/
-    [2] Moody GB, Mark RG. A new method for detecting atrial fibrillation using R-R intervals. Computers in Cardiology. 10:227-230 (1983).
+    1. <a name="ref1"></a> https://physionet.org/content/afdb/1.0.0/
+    2. <a name="ref2"></a> Moody GB, Mark RG. A new method for detecting atrial fibrillation using R-R intervals. Computers in Cardiology. 10:227-230 (1983).
+
     """
 
     def __init__(
@@ -68,7 +67,7 @@ class AFDB(PhysioNetDataBase):
         verbose: int = 2,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -80,6 +79,7 @@ class AFDB(PhysioNetDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="afdb",
@@ -118,7 +118,7 @@ class AFDB(PhysioNetDataBase):
 
     def load_data(
         self,
-        rec: str,
+        rec: Union[str, int],
         leads: Optional[Union[str, List[str]]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
@@ -126,15 +126,14 @@ class AFDB(PhysioNetDataBase):
         units: str = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """finished, checked,
-
+        """
         load physical (converted from digital) ecg data,
         which is more understandable for humans
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         leads: str or list of str, optional,
             the leads to load
         sampfrom: int, optional,
@@ -154,7 +153,10 @@ class AFDB(PhysioNetDataBase):
         -------
         data: ndarray,
             the ecg data
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         fp = str(self.db_dir / rec)
         if not leads:
             _leads = self.all_leads
@@ -181,14 +183,13 @@ class AFDB(PhysioNetDataBase):
 
     def load_ann(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        fmt: str = "interval",
+        ann_format: str = "interval",
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
-        """finished, checked,
-
+        """
         load annotations (header) stored in the .hea files
 
         Parameters
@@ -199,10 +200,10 @@ class AFDB(PhysioNetDataBase):
             start index of the annotations to be loaded
         sampto: int, optional,
             end index of the annotations to be loaded
-        fmt: str, default "interval", case insensitive,
+        ann_format: str, default "interval", case insensitive,
             format of returned annotation, can also be "mask"
         keep_original: bool, default False,
-            if True, in the "interval" `fmt`,
+            if True, in the "interval" `ann_format`,
             intervals (in the form [a,b]) will keep the same with the annotation file
             otherwise subtract `sampfrom` if specified
 
@@ -210,6 +211,7 @@ class AFDB(PhysioNetDataBase):
         -------
         ann, dict or ndarray,
             the annotations in the format of intervals, or in the format of mask
+
         """
         fp = str(self.db_dir / rec)
         wfdb_ann = wfdb.rdann(fp, extension=self.ann_ext)
@@ -240,7 +242,7 @@ class AFDB(PhysioNetDataBase):
             }
         )
 
-        if fmt.lower() == "mask":
+        if ann_format.lower() == "mask":
             tmp = deepcopy(ann)
             ann = np.full(shape=(st - sf,), fill_value=self.class_map.N, dtype=int)
             for rhythm, l_itv in tmp.items():
@@ -254,20 +256,19 @@ class AFDB(PhysioNetDataBase):
 
     def load_beat_ann(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         use_manual: bool = True,
         keep_original: bool = False,
     ) -> np.ndarray:
-        """finished, checked,
-
+        """
         load beat annotations stored in corresponding annotation files
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -283,7 +284,10 @@ class AFDB(PhysioNetDataBase):
         -------
         ann, ndarray,
             locations (indices) of the qrs complexes
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         fp = str(self.db_dir / rec)
         if use_manual and rec in self.qrsc_records:
             ext = self.manual_beat_ann_ext
@@ -300,9 +304,10 @@ class AFDB(PhysioNetDataBase):
             ann -= sampfrom
         return ann
 
+    @add_docstring(load_beat_ann.__doc__)
     def load_rpeak_indices(
         self,
-        rec: str,
+        rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         use_manual: bool = True,
@@ -315,7 +320,7 @@ class AFDB(PhysioNetDataBase):
 
     def plot(
         self,
-        rec: str,
+        rec: Union[str, int],
         data: Optional[np.ndarray] = None,
         ann: Optional[Dict[str, np.ndarray]] = None,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
@@ -326,7 +331,7 @@ class AFDB(PhysioNetDataBase):
         same_range: bool = False,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
@@ -334,8 +339,8 @@ class AFDB(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         data: ndarray, optional,
             (2-lead) ecg signal to plot,
             should be of the format "channel_first", and compatible with `leads`
@@ -361,7 +366,11 @@ class AFDB(PhysioNetDataBase):
         same_range: bool, default False,
             if True, forces all leads to have the same y range
         kwargs: dict,
+            keyword arguments for `matplotlib.pyplot.plot`, etc.
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         if "plt" not in dir():
             import matplotlib.pyplot as plt
 
@@ -397,7 +406,7 @@ class AFDB(PhysioNetDataBase):
                 rec,
                 sampfrom=sampfrom,
                 sampto=sampto,
-                fmt="interval",
+                ann_format="interval",
                 keep_original=False,
             )
         else:

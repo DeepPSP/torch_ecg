@@ -24,7 +24,7 @@ __all__ = [
 
 
 class CINC2017(PhysioNetDataBase):
-    """finished, checked,
+    """
 
     AF Classification from a Short Single Lead ECG Recording
     - The PhysioNet Computing in Cardiology Challenge 2017
@@ -54,7 +54,8 @@ class CINC2017(PhysioNetDataBase):
 
     References
     ----------
-    [1] https://physionet.org/content/challenge-2017/1.0.0/
+    1. <a name="ref1"></a> https://physionet.org/content/challenge-2017/1.0.0/
+
     """
 
     def __init__(
@@ -64,7 +65,7 @@ class CINC2017(PhysioNetDataBase):
         verbose: int = 2,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -75,6 +76,7 @@ class CINC2017(PhysioNetDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="challenge-2017",
@@ -135,14 +137,17 @@ class CINC2017(PhysioNetDataBase):
         fp.write_text("\n".join(self._all_records) + "\n")
 
     def load_data(
-        self, rec: str, data_format: str = "channel_first", units: str = "mV"
+        self,
+        rec: Union[str, int],
+        data_format: str = "channel_first",
+        units: str = "mV",
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         data_format: str, default "channel_first",
             format of the ecg data, case insensitive, can be
             "channel_last" (alias "lead_last"), or
@@ -156,6 +161,8 @@ class CINC2017(PhysioNetDataBase):
         data: ndarray,
             data loaded from `rec`, with given units and format
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         assert data_format.lower() in [
             "channel_first",
             "lead_first",
@@ -185,13 +192,15 @@ class CINC2017(PhysioNetDataBase):
             data = data[..., np.newaxis]
         return data
 
-    def load_ann(self, rec: str, original: bool = False, ann_format: str = "a") -> str:
-        """finished, checked,
+    def load_ann(
+        self, rec: Union[str, int], original: bool = False, ann_format: str = "a"
+    ) -> str:
+        """
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         original: bool, default False,
             if True, load annotations from the file `REFERENCE-original.csv`,
             otherwise from `REFERENCE.csv`
@@ -204,7 +213,10 @@ class CINC2017(PhysioNetDataBase):
         -------
         ann: str,
             annotation (label) of the record
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         assert rec in self.all_records and ann_format.lower() in ["a", "f"]
         if original:
             df = self._df_ann_ori
@@ -218,18 +230,18 @@ class CINC2017(PhysioNetDataBase):
 
     def plot(
         self,
-        rec: str,
+        rec: Union[str, int],
         data: Optional[np.ndarray] = None,
         ann: Optional[str] = None,
         ticks_granularity: int = 0,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         data: ndarray, optional,
             ecg signal to plot,
             if given, data of `rec` will not be used,
@@ -243,7 +255,10 @@ class CINC2017(PhysioNetDataBase):
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
         rpeak_inds: array_like, optional,
             indices of R peaks,
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         if "plt" not in dir():
             import matplotlib.pyplot as plt
         import matplotlib.patches as mpatches

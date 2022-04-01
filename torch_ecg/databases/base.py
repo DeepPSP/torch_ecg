@@ -163,7 +163,7 @@ class _DataBase(ReprMixin, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def load_data(self, rec: str, **kwargs) -> Any:
+    def load_data(self, rec: Union[str, int], **kwargs) -> Any:
         """
         load data from the record `rec`
 
@@ -171,7 +171,7 @@ class _DataBase(ReprMixin, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def load_ann(self, rec: str, **kwargs) -> Any:
+    def load_ann(self, rec: Union[str, int], **kwargs) -> Any:
         """
         load annotations of the record `rec`
 

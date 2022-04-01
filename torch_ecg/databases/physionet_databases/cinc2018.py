@@ -70,7 +70,8 @@ class CINC2018(PhysioNetDataBase):
 
     References
     ----------
-    [1] https://physionet.org/content/challenge-2018/1.0.0/
+    1. <a name="ref1"></a> https://physionet.org/content/challenge-2018/1.0.0/
+
     """
 
     def __init__(

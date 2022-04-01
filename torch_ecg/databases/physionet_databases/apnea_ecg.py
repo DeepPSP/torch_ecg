@@ -12,6 +12,7 @@ import pandas as pd
 import wfdb
 
 from ..base import PhysioNetDataBase
+from ...utils.misc import add_docstring
 
 
 __all__ = [
@@ -52,8 +53,9 @@ class ApneaECG(PhysioNetDataBase):
 
     References
     ----------
-    [1] https://physionet.org/content/apnea-ecg/1.0.0/
-    [2] T Penzel, GB Moody, RG Mark, AL Goldberger, JH Peter. The Apnea-ECG Database. Computers in Cardiology 2000;27:255-258
+    1. <a name="ref1"></a> https://physionet.org/content/apnea-ecg/1.0.0/
+    2. <a name="ref2"></a> T Penzel, GB Moody, RG Mark, AL Goldberger, JH Peter. The Apnea-ECG Database. Computers in Cardiology 2000;27:255-258
+
     """
 
     def __init__(
@@ -75,6 +77,7 @@ class ApneaECG(PhysioNetDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="apnea-ecg",
@@ -110,8 +113,7 @@ class ApneaECG(PhysioNetDataBase):
         }
 
     def _ls_rec(self, local: bool = True) -> NoReturn:
-        """finished, checked,
-
+        """
         find all records (relative path without file extension),
         and save into `self._all_records` for further use
 
@@ -119,107 +121,28 @@ class ApneaECG(PhysioNetDataBase):
         ----------
         local: bool, default True,
             if True, read from local storage, prior to using `wfdb.get_record_list`
+
         """
         try:
             super()._ls_rec(local=local)
         except:
-            self._all_records = [
-                "a01",
-                "a01er",
-                "a01r",
-                "a02",
-                "a02er",
-                "a02r",
-                "a03",
-                "a03er",
-                "a03r",
-                "a04",
-                "a04er",
-                "a04r",
-                "a05",
-                "a06",
-                "a07",
-                "a08",
-                "a09",
-                "a10",
-                "a11",
-                "a12",
-                "a13",
-                "a14",
-                "a15",
-                "a16",
-                "a17",
-                "a18",
-                "a19",
-                "a20",
-                "b01",
-                "b01er",
-                "b01r",
-                "b02",
-                "b03",
-                "b04",
-                "b05",
-                "c01",
-                "c01er",
-                "c01r",
-                "c02",
-                "c02er",
-                "c02r",
-                "c03",
-                "c03er",
-                "c03r",
-                "c04",
-                "c05",
-                "c06",
-                "c07",
-                "c08",
-                "c09",
-                "c10",
-                "x01",
-                "x02",
-                "x03",
-                "x04",
-                "x05",
-                "x06",
-                "x07",
-                "x08",
-                "x09",
-                "x10",
-                "x11",
-                "x12",
-                "x13",
-                "x14",
-                "x15",
-                "x16",
-                "x17",
-                "x18",
-                "x19",
-                "x20",
-                "x21",
-                "x22",
-                "x23",
-                "x24",
-                "x25",
-                "x26",
-                "x27",
-                "x28",
-                "x29",
-                "x30",
-                "x31",
-                "x32",
-                "x33",
-                "x34",
-                "x35",
-            ]
+            self._all_records = wfdb.get_record_list(self.db_name)
 
-    def get_subject_id(self, rec: str) -> int:
+    def get_subject_id(self, rec: Union[str, int]) -> int:
         """
-
         Parameters
         ----------
         rec: str,
-            record name
+            name of the record
+
+        Returns
+        -------
+        int,
+            subject id
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         stoi = {"a": "1", "b": "2", "c": "3", "x": "4"}
         return int("2000" + stoi[rec[0]] + rec[1:3])
 
@@ -227,7 +150,6 @@ class ApneaECG(PhysioNetDataBase):
         self, rec: str, lead: int = 0, rec_path: Optional[Union[str, Path]] = None
     ) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str,
@@ -235,8 +157,14 @@ class ApneaECG(PhysioNetDataBase):
         lead: int, default 0
             number of the lead, can be 0 or 1
         rec_path: str or Path, optional,
-            path of the file which contains the ecg data,
+            path of the file which contains the ECG data,
             if not given, default path will be used
+
+        Returns
+        -------
+        sig: np.ndarray,
+            the ECG signal or the respiration signal
+
         """
         file_path = str(rec_path or (self.db_dir / rec))
         self.wfdb_rec = wfdb.rdrecord(file_path)
@@ -248,7 +176,23 @@ class ApneaECG(PhysioNetDataBase):
     def load_ecg_data(
         self, rec: str, lead: int = 0, rec_path: Optional[str] = None
     ) -> np.ndarray:
-        """ """
+        """
+        Parameters
+        ----------
+        rec: str,
+            record name
+        lead: int, default 0
+            number of the lead, can be 0 or 1
+        rec_path: str or Path, optional,
+            path of the file which contains the ecg data,
+            if not given, default path will be used
+
+        Returns
+        -------
+        sig: np.ndarray,
+            the ecg signal
+
+        """
         if rec.endswith(("r", "er")):
             raise ValueError(f"{rec} is not a record of ECG signals")
         return self.load_data(rec=rec, lead=lead, rec_path=rec_path)
@@ -260,7 +204,25 @@ class ApneaECG(PhysioNetDataBase):
         channels: Optional[Union[str, List[str], Tuple[str]]] = None,
         rec_path: Optional[str] = None,
     ) -> np.ndarray:
-        """ """
+        """
+        Parameters
+        ----------
+        rec: str,
+            record name
+        lead: int, default 0
+            number of the lead, can be 0 or 1
+        channels: str or list of str, default None
+            channels to be loaded, if None, all channels will be loaded
+        rec_path: str or Path, optional,
+            path of the file which contains the ecg data,
+            if not given, default path will be used
+
+        Returns
+        -------
+        sig: np.ndarray,
+            the respiration signal
+
+        """
         if not rec.endswith(("r", "er")):
             raise ValueError(f"{rec} is not a record of RSP signals")
         sig = self.load_data(rec=rec, lead=lead, rec_path=rec_path)
@@ -279,7 +241,6 @@ class ApneaECG(PhysioNetDataBase):
         self, rec: str, ann_path: Optional[Union[str, Path]] = None, **kwargs
     ) -> list:
         """
-
         Parameters
         ----------
         rec: str,
@@ -292,6 +253,7 @@ class ApneaECG(PhysioNetDataBase):
         -------
         detailed_ann: list,
             annotations of the form [idx, ann]
+
         """
         file_path = str(ann_path or (self.db_dir / rec))
         extension = kwargs.get("extension", "apn")
@@ -306,7 +268,6 @@ class ApneaECG(PhysioNetDataBase):
         self, rec: str, ann_path: Optional[str] = None
     ) -> pd.DataFrame:
         """
-
         Parameters
         ----------
         rec: str,
@@ -319,6 +280,7 @@ class ApneaECG(PhysioNetDataBase):
         -------
         df_apnea_ann: DataFrame,
             apnea annotations with columns "event_start","event_end", "event_name", "event_duration"
+
         """
         detailed_anno = self.load_ann(rec, ann_path, extension="apn")
         apnea = np.array([p[0] for p in detailed_anno if p[1] == "A"])
@@ -367,7 +329,6 @@ class ApneaECG(PhysioNetDataBase):
 
     def plot_ann(self, rec, ann_path: Optional[str] = None) -> NoReturn:
         """
-
         Parameters
         ----------
         rec: str,
@@ -375,16 +336,18 @@ class ApneaECG(PhysioNetDataBase):
         ann_path: str, optional,
             path of the file which contains the annotations,
             if not given, default path will be used
+
         """
         df_apnea_ann = self.load_apnea_event(rec, ann_path)
         self._plot_ann(df_apnea_ann)
 
     def _plot_ann(self, df_apnea_ann: pd.DataFrame) -> NoReturn:
         """
-
         Parameters
+        ----------
         df_apnea_ann: DataFrame,
             apnea events with columns `self.sleep_event_keys`
+
         """
         import matplotlib.pyplot as plt
         import matplotlib.patches as mpatches

@@ -143,8 +143,9 @@ class LUDB(PhysioNetDataBase):
 
     References
     ----------
-    [1] https://physionet.org/content/ludb/1.0.1/
-    [2] Kalyakulina, A., Yusipov, I., Moskalenko, V., Nikolskiy, A., Kozlov, A., Kosonogov, K., Zolotykh, N., & Ivanchenko, M. (2020). Lobachevsky University Electrocardiography Database (version 1.0.0).
+    1. <a name="ref1"></a> https://physionet.org/content/ludb/1.0.1/
+    2. <a name="ref2"></a> Kalyakulina, A., Yusipov, I., Moskalenko, V., Nikolskiy, A., Kozlov, A., Kosonogov, K., Zolotykh, N., & Ivanchenko, M. (2020). Lobachevsky University Electrocardiography Database (version 1.0.1).
+
     """
 
     def __init__(
@@ -154,7 +155,7 @@ class LUDB(PhysioNetDataBase):
         verbose: int = 2,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -165,6 +166,7 @@ class LUDB(PhysioNetDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="ludb",
@@ -247,45 +249,48 @@ class LUDB(PhysioNetDataBase):
         """ """
         raise NotImplementedError
 
-    def _get_path(self, rec: str) -> str:
-        """finished, checked,
+    def _get_path(self, rec: Union[str, int]) -> str:
+        """
 
         get the path of a record, without file extension
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
         rec_fp: str,
             path of the record, without file extension
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         rec_fp = str(self.db_dir / "data" / rec)
         return rec_fp
 
     def load_data(
         self,
-        rec: str,
+        rec: Union[str, int],
         leads: Optional[Union[str, List[str]]] = None,
         data_format="channel_first",
         units: str = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
-        load physical (converted from digital) ecg data,
+        load physical (converted from digital) ECG data,
         which is more understandable for humans
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         leads: str or list of str, optional,
             the leads to load
         data_format: str, default "channel_first",
-            format of the ecg data,
+            format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first", original)
         units: str, default "mV",
@@ -296,8 +301,11 @@ class LUDB(PhysioNetDataBase):
         Returns
         -------
         data: ndarray,
-            the ecg data
+            the ECG data
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         assert data_format.lower() in [
             "channel_first",
             "lead_first",
@@ -325,16 +333,19 @@ class LUDB(PhysioNetDataBase):
         return data
 
     def load_ann(
-        self, rec: str, leads: Optional[Sequence[str]] = None, metadata: bool = False
+        self,
+        rec: Union[str, int],
+        leads: Optional[Sequence[str]] = None,
+        metadata: bool = False,
     ) -> dict:
-        """finished, checked,
+        """
 
         load the wave delineation, along with metadata if specified
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         leads: str or list of str, optional,
             the leads to load
         metadata: bool, default False,
@@ -344,6 +355,8 @@ class LUDB(PhysioNetDataBase):
         -------
         ann_dict: dict,
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         ann_dict = CFG()
         rec_fp = self._get_path(rec)
 
@@ -412,38 +425,40 @@ class LUDB(PhysioNetDataBase):
 
         return ann_dict
 
-    def load_diagnoses(self, rec: str) -> List[str]:
-        """finished, checked,
+    def load_diagnoses(self, rec: Union[str, int]) -> List[str]:
+        """
 
         load diagnoses of the `rec`
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
         diagnoses: list of str,
+            diagnoses of the record
+
         """
         diagnoses = self._load_header(rec)["diagnoses"]
         return diagnoses
 
     def load_masks(
         self,
-        rec: str,
+        rec: Union[str, int],
         leads: Optional[Sequence[str]] = None,
         mask_format: str = "channel_first",
         class_map: Optional[Dict[str, int]] = None,
     ) -> np.ndarray:
-        """finished, checked,
+        """
 
         load the wave delineation in the form of masks
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         leads: str or list of str, optional,
             the leads to load
         mask_format: str, default "channel_first",
@@ -458,7 +473,10 @@ class LUDB(PhysioNetDataBase):
         -------
         masks: ndarray,
             the masks corresponding to the wave delineation annotations of `rec`
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         _class_map = CFG(class_map) if class_map is not None else self.class_map
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=True)
         data = self.load_data(rec, leads=_leads, data_format="channel_first")
@@ -484,7 +502,7 @@ class LUDB(PhysioNetDataBase):
         class_map: Optional[Dict[str, int]] = None,
         fs: Optional[Real] = None,
     ) -> Dict[str, List[ECGWaveForm]]:
-        """finished, checked,
+        """
 
         convert masks into lists of waveforms
 
@@ -504,12 +522,13 @@ class LUDB(PhysioNetDataBase):
             if not set, `self.class_map` will be used
         fs: real number, optional,
             sampling frequency of the signal corresponding to the `masks`,
-            if is None, `self.fs` will be used, to compute `duration` of the ecg waveforms
+            if is None, `self.fs` will be used, to compute `duration` of the ECG waveforms
 
         Returns
         -------
         waves: dict,
             each item value is a list containing the `ECGWaveForm`s corr. to the lead (item key)
+
         """
         if masks.ndim == 1:
             _masks = masks[np.newaxis, ...]
@@ -570,20 +589,24 @@ class LUDB(PhysioNetDataBase):
             waves[lead_name].sort(key=lambda w: w.onset)
         return waves
 
-    def _load_header(self, rec: str) -> dict:
-        """finished, checked,
+    def _load_header(self, rec: Union[str, int]) -> dict:
+        """
 
         load header data into a dict
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
         header_dict: dict,
+            the header data
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         header_dict = CFG({})
         rec_fp = self._get_path(rec)
         header_reader = wfdb.rdheader(rec_fp)
@@ -615,7 +638,7 @@ class LUDB(PhysioNetDataBase):
         standard_ordering: bool = True,
         lower_cases: bool = False,
     ) -> List[str]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -625,6 +648,11 @@ class LUDB(PhysioNetDataBase):
             if True, the ordering will be re-aranged to be accordance with `self.all_leads`
         lower_cases: bool, default False,
             if True, all names of the leads will be in lower cases
+
+        Returns
+        -------
+        leads: list of str,
+            the leads in the standard names and order
         """
         if leads is None:
             _leads = self.all_leads_lower
@@ -645,14 +673,14 @@ class LUDB(PhysioNetDataBase):
         return _leads
 
     def load_subject_info(
-        self, rec: str, fields: Optional[Union[str, Sequence[str]]] = None
+        self, rec: Union[str, int], fields: Optional[Union[str, Sequence[str]]] = None
     ) -> Union[dict, str]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         fields: str or sequence of str, optional,
             field(s) of the subject info of record `rec`,
             if not specified, all fields of the subject info will be returned
@@ -661,7 +689,10 @@ class LUDB(PhysioNetDataBase):
         -------
         info: dict or str,
             subject info of the given fields of the record
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         row = self._df_subject_info[self._df_subject_info.ID == rec]
         if row.empty:
             return {}
@@ -679,7 +710,7 @@ class LUDB(PhysioNetDataBase):
 
     def plot(
         self,
-        rec: str,
+        rec: Union[str, int],
         data: Optional[np.ndarray] = None,
         ticks_granularity: int = 0,
         leads: Optional[Union[str, List[str]]] = None,
@@ -687,7 +718,7 @@ class LUDB(PhysioNetDataBase):
         waves: Optional[ECGWaveForm] = None,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked, to improve,
+        """to improve,
 
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
@@ -695,10 +726,10 @@ class LUDB(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         data: ndarray, optional,
-            12-lead ecg signal to plot,
+            12-lead ECG signal to plot,
             if given, data of `rec` will not be used,
             this is useful when plotting filtered data
         ticks_granularity: int, default 0,
@@ -723,7 +754,10 @@ class LUDB(PhysioNetDataBase):
         if not modifying this number, at most 40 seconds of signal could be plotted once
 
         Contributors: Jeethan, and WEN Hao
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         if "plt" not in dir():
             import matplotlib.pyplot as plt
 
