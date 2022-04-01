@@ -51,7 +51,7 @@ def compute_metrics(
     fs: Real,
     mask_format: str = "channel_first",
 ) -> Dict[str, Dict[str, float]]:
-    """finished, checked,
+    """
 
     compute metrics
     (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
@@ -115,7 +115,7 @@ def compute_metrics_waveform(
     pred_waveforms: Sequence[Sequence[ECGWaveForm]],
     fs: Real,
 ) -> Dict[str, Dict[str, float]]:
-    """finished, checked,
+    """
 
     compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
     of evaluations on a multiple samples (differ by records, or leads)
@@ -235,7 +235,7 @@ def compute_metrics_waveform(
 def _compute_metrics_waveform(
     truths: Sequence[ECGWaveForm], preds: Sequence[ECGWaveForm], fs: Real
 ) -> Dict[str, Dict[str, float]]:
-    """finished, checked,
+    """
 
     compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
     of evaluations on a single sample (the same record, the same lead)
@@ -320,7 +320,7 @@ def _compute_metrics_waveform(
 def _compute_metrics_base(
     truths: Sequence[Real], preds: Sequence[Real], fs: Real
 ) -> Dict[str, float]:
-    """finished, checked,
+    """
 
     Parameters
     ----------

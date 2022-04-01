@@ -6,6 +6,7 @@ Possible Solutions
 2. sequence labelling (AF, non-AF) -> postprocess (merge too-close intervals, etc) -> onsets & offsets
 3. per-beat (R peak detection first) classification (CNN, etc. + RR LSTM) -> postprocess (merge too-close intervals, etc) -> onsets & offsets
 4. object detection (? onsets and offsets)
+
 """
 
 from itertools import repeat
@@ -56,7 +57,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
     __name__ = "ECG_SEQ_LAB_NET_CPSC2021"
 
     def __init__(self, config: CFG, **kwargs: Any) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -66,13 +67,12 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
 
         Usage
         -----
-        ```python
-        from cfg import ModelCfg
-        task = "qrs_detection"  # or "main"
-        model_cfg = deepcopy(ModelCfg[task])
-        model_cfg.model_name = "seq_lab"
-        model = ECG_SEQ_LAB_NET_CPSC2021(model_cfg)
-        ````
+        >>> from cfg import ModelCfg
+        >>> task = "qrs_detection"  # or "main"
+        >>> model_cfg = deepcopy(ModelCfg[task])
+        >>> model_cfg.model_name = "seq_lab"
+        >>> model = ECG_SEQ_LAB_NET_CPSC2021(model_cfg)
+
         """
         if config[config.model_name].reduction == 1:
             config[config.model_name].recover_length = True
@@ -86,7 +86,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
         bin_pred_thr: float = 0.5,
         **kwargs: Any,
     ) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -115,13 +115,14 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
                 - af_episodes: list of list of intervals,
                     af episodes, in the form of intervals of [start, end], right inclusive
                 - af_mask: alias of pred
+
         """
         if self.task == "qrs_detection":
             return self._inference_qrs_detection(input, bin_pred_thr, **kwargs)
         elif self.task == "main":
             return self._inference_main_task(input, bin_pred_thr, **kwargs)
 
-    @torch.no_grad()
+    @add_docstring(inference.__doc__)
     def inference_CPSC2021(
         self,
         input: Union[Sequence[float], np.ndarray, Tensor],
@@ -141,7 +142,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
         duration_thr: int = 4 * 16,
         dist_thr: Union[int, Sequence[int]] = 200,
     ) -> RPeaksDetectionOutput:
-        """finished, checked,
+        """
 
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
         and normalized to a suitable mean and std
@@ -168,6 +169,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
                 list of ndarray of rpeak indices for each batch element
             - prob: array_like,
                 the probability array of the input sequence of signals
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -199,7 +201,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
         rpeaks: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
         episode_len_thr: int = 5,
     ) -> SequenceTaggingOutput:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -225,6 +227,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
             - af_episodes: list of list of intervals,
                 af episodes, in the form of intervals of [start, end], right inclusive
             - af_mask: alias of pred
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -259,7 +262,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
     __name__ = "ECG_UNET_CPSC2021"
 
     def __init__(self, config: CFG, **kwargs: Any) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -269,11 +272,12 @@ class ECG_UNET_CPSC2021(ECG_UNET):
 
         Usage
         -----
-        from cfg import ModelCfg
-        task = "qrs_detection"  # or "main"
-        model_cfg = deepcopy(ModelCfg[task])
-        model_cfg.model_name = "unet"
-        model = ECG_SEQ_LAB_NET_CPSC2021(model_cfg)
+        >>> from cfg import ModelCfg
+        >>> task = "qrs_detection"  # or "main"
+        >>> model_cfg = deepcopy(ModelCfg[task])
+        >>> model_cfg.model_name = "unet"
+        >>> model = ECG_SEQ_LAB_NET_CPSC2021(model_cfg)
+
         """
         super().__init__(
             config.classes, config.n_leads, config[config.model_name], **kwargs
@@ -287,7 +291,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
         bin_pred_thr: float = 0.5,
         **kwargs: Any,
     ) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -316,13 +320,14 @@ class ECG_UNET_CPSC2021(ECG_UNET):
                 - af_episodes: list of list of intervals,
                     af episodes, in the form of intervals of [start, end], right inclusive
                 - af_mask: alias of pred
+
         """
         if self.task == "qrs_detection":
             return self._inference_qrs_detection(input, bin_pred_thr, **kwargs)
         elif self.task == "main":
             return self._inference_main_task(input, bin_pred_thr, **kwargs)
 
-    @torch.no_grad()
+    @add_docstring(inference.__doc__)
     def inference_CPSC2021(
         self,
         input: Union[Sequence[float], np.ndarray, Tensor],
@@ -342,7 +347,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
         duration_thr: int = 4 * 16,
         dist_thr: Union[int, Sequence[int]] = 200,
     ) -> RPeaksDetectionOutput:
-        """finished, checked,
+        """
 
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
         and normalized to a suitable mean and std
@@ -369,6 +374,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
                 list of ndarray of rpeak indices for each batch element
             - prob: array_like,
                 the probability array of the input sequence of signals
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -400,7 +406,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
         rpeaks: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
         episode_len_thr: int = 5,
     ) -> SequenceTaggingOutput:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -426,6 +432,7 @@ class ECG_UNET_CPSC2021(ECG_UNET):
             - af_episodes: list of list of intervals,
                 af episodes, in the form of intervals of [start, end], right inclusive
             - af_mask: alias of pred
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -460,7 +467,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
     __name__ = "ECG_SUBTRACT_UNET_CPSC2021"
 
     def __init__(self, config: CFG, **kwargs: Any) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -470,11 +477,12 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
 
         Usage
         -----
-        from cfg import ModelCfg
-        task = "qrs_detection"  # or "main"
-        model_cfg = deepcopy(ModelCfg[task])
-        model_cfg.model_name = "unet"
-        model = ECG_SEQ_LAB_NET_CPSC2021(model_cfg)
+        >>> from cfg import ModelCfg
+        >>> task = "qrs_detection"  # or "main"
+        >>> model_cfg = deepcopy(ModelCfg[task])
+        >>> model_cfg.model_name = "unet"
+        >>> model = ECG_SEQ_LAB_NET_CPSC2021(model_cfg)
+
         """
         super().__init__(
             config.classes, config.n_leads, config[config.model_name], **kwargs
@@ -488,7 +496,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
         bin_pred_thr: float = 0.5,
         **kwargs: Any,
     ) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -517,13 +525,14 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
                 - af_episodes: list of list of intervals,
                     af episodes, in the form of intervals of [start, end], right inclusive
                 - af_mask: alias of pred
+
         """
         if self.task == "qrs_detection":
             return self._inference_qrs_detection(input, bin_pred_thr, **kwargs)
         elif self.task == "main":
             return self._inference_main_task(input, bin_pred_thr, **kwargs)
 
-    @torch.no_grad()
+    @add_docstring(inference.__doc__)
     def inference_CPSC2021(
         self,
         input: Union[Sequence[float], np.ndarray, Tensor],
@@ -543,7 +552,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
         duration_thr: int = 4 * 16,
         dist_thr: Union[int, Sequence[int]] = 200,
     ) -> RPeaksDetectionOutput:
-        """finished, checked,
+        """
 
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
         and normalized to a suitable mean and std
@@ -570,6 +579,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
                 list of ndarray of rpeak indices for each batch element
             - prob: array_like,
                 the probability array of the input sequence of signals
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -601,7 +611,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
         rpeaks: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
         episode_len_thr: int = 5,
     ) -> SequenceTaggingOutput:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -627,6 +637,7 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
             - af_episodes: list of list of intervals,
                 af episodes, in the form of intervals of [start, end], right inclusive
             - af_mask: alias of pred
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -661,7 +672,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
     __name__ = "RR_LSTM_CPSC2021"
 
     def __init__(self, config: CFG, **kwargs: Any) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -671,11 +682,12 @@ class RR_LSTM_CPSC2021(RR_LSTM):
 
         Usage
         -----
-        from cfg import ModelCfg
-        task = "rr_lstm"
-        model_cfg = deepcopy(ModelCfg[task])
-        model_cfg.model_name = "rr_lstm"
-        model = ECG_SEQ_LAB_NET_CPSC2021(model_cfg)
+        >>> from cfg import ModelCfg
+        >>> task = "rr_lstm"
+        >>> model_cfg = deepcopy(ModelCfg[task])
+        >>> model_cfg.model_name = "rr_lstm"
+        >>> model = ECG_SEQ_LAB_NET_CPSC2021(model_cfg)
+
         """
         super().__init__(config.classes, config[config.model_name], **kwargs)
 
@@ -687,7 +699,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
         rpeaks: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
         episode_len_thr: int = 5,
     ) -> SequenceTaggingOutput:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -719,6 +731,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
         for AFf, further processing is needed to move the start and end
         to the first and last indices of the signal,
         rather than the indices of the first and the last rpeak
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -763,7 +776,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
             af_mask=af_mask,  # alias of pred
         )
 
-    @torch.no_grad()
+    @add_docstring(inference.__doc__)
     def inference_CPSC2021(
         self,
         input: Union[Sequence[float], np.ndarray, Tensor],
@@ -778,7 +791,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
     def from_checkpoint(
         path: str, device: Optional[torch.device] = None
     ) -> Tuple[torch.nn.Module, dict]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -794,6 +807,7 @@ class RR_LSTM_CPSC2021(RR_LSTM):
             the model loaded from a checkpoint
         aux_config: dict,
             auxiliary configs that are needed for data preprocessing, etc.
+
         """
         _device = device or (
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -817,7 +831,7 @@ def _qrs_detection_post_process(
     duration_thr: int = 4 * 16,
     dist_thr: Union[int, Sequence[int]] = 200,
 ) -> List[np.ndarray]:
-    """finished, checked,
+    """
 
     prob --> qrs mask --> qrs intervals --> rpeaks
 
@@ -842,6 +856,7 @@ def _qrs_detection_post_process(
         (1st element).(optional) maximum distance for checking missing qrs complexes, units in ms,
         e.g. [200, 1200]
         if is int, then is the case of (0-th element).
+
     """
     batch_size, prob_arr_len = prob.shape
     # print(batch_size, prob_arr_len)
@@ -951,7 +966,7 @@ def _main_task_post_process(
     siglens: Optional[Sequence[int]] = None,
     episode_len_thr: int = 5,
 ) -> Tuple[List[List[List[int]]], np.ndarray]:
-    """finished, checked,
+    """
 
     post processing of the main task,
     converting mask into list of af episodes,
@@ -982,6 +997,7 @@ def _main_task_post_process(
         af episodes, in the form of intervals of [start, end], right inclusive
     af_mask: ndarray,
         array (mask) of binary prediction of af, of shape (batch_size, seq_len)
+
     """
     batch_size, prob_arr_len = prob.shape
     model_spacing = 1000 / fs  # units in ms

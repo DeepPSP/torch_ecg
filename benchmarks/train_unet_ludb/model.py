@@ -22,7 +22,7 @@ except ModuleNotFoundError:
 from torch_ecg.cfg import CFG
 from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
-from torch_ecg.utils.misc import mask_to_intervals
+from torch_ecg.utils.misc import mask_to_intervals, add_docstring
 from torch_ecg.utils.utils_signal import remove_spikes_naive
 from torch_ecg.components.outputs import WaveDelineationOutput
 
@@ -43,7 +43,7 @@ class ECG_UNET_LUDB(ECG_UNET):
     def __init__(
         self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -52,6 +52,7 @@ class ECG_UNET_LUDB(ECG_UNET):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         model_config = deepcopy(ModelCfg.unet)
         if config:
@@ -69,7 +70,7 @@ class ECG_UNET_LUDB(ECG_UNET):
         input: Union[Sequence[float], np.ndarray, Tensor],
         bin_pred_thr: float = 0.5,
     ) -> WaveDelineationOutput:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -88,6 +89,7 @@ class ECG_UNET_LUDB(ECG_UNET):
                 predicted probability map, of shape (n_samples, seq_len, n_classes)
             - mask: np.ndarray,
                 predicted mask, of shape (n_samples, seq_len)
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -115,6 +117,7 @@ class ECG_UNET_LUDB(ECG_UNET):
             mask=mask,
         )
 
+    @add_docstring(inference.__doc__)
     def inference_LUDB(
         self,
         input: Union[np.ndarray, Tensor],
@@ -123,4 +126,4 @@ class ECG_UNET_LUDB(ECG_UNET):
         """
         alias of `self.inference`
         """
-        return self.inference(input, bin_pred_thr, duration_thr, dist_thr, correction)
+        return self.inference(input, bin_pred_thr)

@@ -27,7 +27,7 @@ from torch_ecg.models.ecg_seq_lab_net import (
 )
 from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
-from torch_ecg.utils.misc import mask_to_intervals
+from torch_ecg.utils.misc import mask_to_intervals, add_docstring
 from torch_ecg.utils.utils_signal import remove_spikes_naive
 from torch_ecg.components.outputs import RPeaksDetectionOutput
 
@@ -49,7 +49,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
     def __init__(
         self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -58,6 +58,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         model_config = deepcopy(ModelCfg.seq_lab_crnn)
         model_config.update(deepcopy(config) or {})
@@ -73,7 +74,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         dist_thr: Union[int, Sequence[int]] = 200,
         correction: bool = False,
     ) -> RPeaksDetectionOutput:
-        """finished, checked,
+        """
 
         auxiliary function to `forward`, for CPSC2019,
 
@@ -105,6 +106,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
                 list of ndarray of rpeak indices for each batch element
             - prob: array_like,
                 the probability array of the input sequence of signals
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -142,7 +144,7 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
             prob=prob,
         )
 
-    @torch.no_grad()
+    @add_docstring(inference.__doc__)
     def inference_CPSC2019(
         self,
         input: Union[np.ndarray, Tensor],
@@ -166,7 +168,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
     def __init__(
         self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -175,6 +177,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         model_config = deepcopy(ModelCfg.subtract_unet)
         model_config.update(deepcopy(config) or {})
@@ -189,7 +192,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
         dist_thr: Union[int, Sequence[int]] = 200,
         correction: bool = False,
     ) -> RPeaksDetectionOutput:
-        """finished, checked,
+        """
 
         auxiliary function to `forward`, for CPSC2019,
 
@@ -221,6 +224,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
                 list of ndarray of rpeak indices for each batch element
             - prob: array_like,
                 the probability array of the input sequence of signals
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -256,7 +260,7 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
             prob=prob,
         )
 
-    @torch.no_grad()
+    @add_docstring(inference.__doc__)
     def inference_CPSC2019(
         self,
         input: Union[np.ndarray, Tensor],
@@ -280,7 +284,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
     def __init__(
         self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -289,6 +293,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         model_config = deepcopy(ModelCfg.unet)
         model_config.update(deepcopy(config) or {})
@@ -303,7 +308,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
         dist_thr: Union[int, Sequence[int]] = 200,
         correction: bool = False,
     ) -> RPeaksDetectionOutput:
-        """finished, checked,
+        """
 
         auxiliary function to `forward`, for CPSC2019,
 
@@ -335,6 +340,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
                 list of ndarray of rpeak indices for each batch element
             - prob: array_like,
                 the probability array of the input sequence of signals
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -370,7 +376,7 @@ class ECG_UNET_CPSC2019(ECG_UNET):
             prob=prob,
         )
 
-    @torch.no_grad()
+    @add_docstring(inference.__doc__)
     def inference_CPSC2019(
         self,
         input: Union[np.ndarray, Tensor],
@@ -393,7 +399,7 @@ def _inference_post_process(
     duration_thr: int = 4 * 16,
     dist_thr: Union[int, Sequence[int]] = 200,
 ) -> List[np.ndarray]:
-    """finished, checked,
+    """
 
     prob --> qrs mask --> qrs intervals --> rpeaks
 

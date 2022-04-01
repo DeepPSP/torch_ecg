@@ -21,7 +21,7 @@ from torch_ecg.databases.physionet_databases.cpsc2019 import (
 from torch_ecg.cfg import CFG
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.utils.trainer import BaseTrainer
+from torch_ecg.components.trainer import BaseTrainer
 
 
 def test_seq_lab_cpsc2019_pipeline() -> NoReturn:
