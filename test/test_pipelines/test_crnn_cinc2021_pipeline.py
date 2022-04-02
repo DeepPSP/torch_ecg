@@ -31,6 +31,17 @@ from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.components.trainer import BaseTrainer
 
 
+###############################################################################
+# set paths
+_CWD = Path(__file__).absolute().parent.parent / "tmp" / "test_crnn_cinc2021_pipeline"
+_CWD.mkdir(parents=True, exist_ok=True)
+_DB_DIR = _CWD.parent.parent / "sample-data" / "cinc2021"
+###############################################################################
+
+###############################################################################
+# set up configs
+
+
 def test_crnn_cinc2021_pipeline() -> NoReturn:
     """ """
     pass
