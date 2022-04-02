@@ -22,5 +22,3 @@ from torch_ecg._preprocessors import (
     ZScoreNormalize,
     Resample,
 )
-
-# from .test_data import load_test_clf_data

@@ -34,6 +34,21 @@ from torch_ecg.model_configs import (
     resnet_vanilla_wide_50_2,
     resnet_vanilla_wide_101_2,
     # custom resnet
+    resnetN,
+    resnetNB,
+    resnetNBS,
+    resnetNS,
+    tresnetN,
+    tresnetP,
+    tresnetF,
+    tresnetS,
+    tresnetM,
+    tresnetL,
+    resnet_nature_comm,
+    resnet_nature_comm_bottle_neck,
+    resnet_nature_comm_bottle_neck_se,
+    resnet_nature_comm_bottle_neck_nl,
+    resnet_nature_comm_bottle_neck_gc,
     resnet_cpsc2018,
     resnet_cpsc2018_leadwise,
     # stanford resnet
@@ -46,9 +61,9 @@ from torch_ecg.model_configs import (
     multi_scopic,
     multi_scopic_leadwise,
     # vanilla dense_net
-    dense_net_vanilla,
+    densenet_vanilla,
     # custom dense_net
-    dense_net_leadwise,
+    densenet_leadwise,
     # vanilla xception
     xception_vanilla,
     # custom xception
@@ -153,8 +168,22 @@ def test_cnn() -> NoReturn:
         "resnet_vanilla_wide_50_2",
         "resnet_vanilla_wide_101_2",
         # custom resnet
-        "resnet",
-        "resnet_leadwise",
+        "resnetN",
+        "resnetNB",
+        "resnetNBS",
+        "resnetNS",
+        "tresnetN",
+        "tresnetP",
+        "tresnetF",
+        "tresnetS",
+        "tresnetM",
+        "tresnetL",
+        "resnet_nature_comm",
+        "resnet_nature_comm_bottle_neck",
+        "resnet_nature_comm_bottle_neck_se",
+        "resnet_nature_comm_bottle_neck_nl",
+        "resnet_nature_comm_bottle_neck_gc",
+        # "resnet_leadwise",
         # TODO: fix bugs in the following
         # "resnext_vanilla_50_32x4d", "resnext_vanilla_101_32x8d",
         # stanford resnet
@@ -175,8 +204,8 @@ def test_cnn() -> NoReturn:
     print("\n" + " Test DenseNet configs ".center(50, "-") + "\n")
     DenseNet.__DEBUG__ = False
     for cfg in [
-        "dense_net_vanilla",
-        "dense_net_leadwise",
+        "densenet_vanilla",
+        "densenet_leadwise",
     ]:
         _test_cnn("DenseNet", cfg)
 

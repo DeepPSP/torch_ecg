@@ -41,8 +41,6 @@ from torch_ecg.models._nets import (
     GlobalContextBlock,
     CRF,
     ExtendedCRF,
-    WeightedBCELoss,
-    BCEWithLogitsWithClassWeightLoss,
 )
 
 
