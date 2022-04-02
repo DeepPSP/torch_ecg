@@ -351,6 +351,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         -------
         pred: Tensor,
             of shape (batch_size, seq_len, n_classes)
+
         """
         batch_size, channels, seq_len = input.shape
 
@@ -385,6 +386,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         -------
         Tensor,
             of shape (batch_size, seq_len, n_classes)
+
         """
         return F.interpolate(
             pred.permute(0, 2, 1),
@@ -418,6 +420,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         -------
         output_shape: sequence,
             the output shape of this model, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         output_shape = self.cnn.compute_output_shape(_seq_len, batch_size)

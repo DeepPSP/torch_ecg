@@ -142,7 +142,7 @@ class CPSC2019(CPSCDataBase):
         self._all_annotations = [
             ann
             for ann in self._all_annotations
-            if (self.ann_dir, f"{ann}.{self.ann_ext}").is_file()
+            if (self.ann_dir / f"{ann}.{self.ann_ext}").is_file()
         ]
         common = set([rec.split("_")[1] for rec in self._all_records]) & set(
             [ann.split("_")[1] for ann in self._all_annotations]
@@ -370,8 +370,8 @@ class CPSC2019(CPSCDataBase):
 
 
 def compute_metrics(
-    rpeaks_truth: Sequence[Union[np.ndarray, Sequence[int]]],
-    rpeaks_pred: Sequence[Union[np.ndarray, Sequence[int]]],
+    rpeaks_truths: Sequence[Union[np.ndarray, Sequence[int]]],
+    rpeaks_preds: Sequence[Union[np.ndarray, Sequence[int]]],
     fs: Real,
     thr: float = 0.075,
     verbose: int = 0,
@@ -382,9 +382,9 @@ def compute_metrics(
 
     Parameters
     ----------
-    rpeaks_truth: sequence,
+    rpeaks_truths: sequence,
         sequence of ground truths of rpeaks locations from multiple records
-    rpeaks_pred: sequence,
+    rpeaks_preds: sequence,
         predictions of ground truths of rpeaks locations for multiple records
     fs: real number,
         sampling frequency of ECG signal
@@ -400,16 +400,16 @@ def compute_metrics(
         accuracy of predictions
 
     """
-    assert len(rpeaks_truth) == len(
-        rpeaks_pred
-    ), f"number of records does not match, truth indicates {len(rpeaks_truth)}, while pred indicates {len(rpeaks_pred)}"
-    n_records = len(rpeaks_truth)
-    record_flags = np.ones((len(rpeaks_truth),), dtype=float)
+    assert len(rpeaks_truths) == len(
+        rpeaks_preds
+    ), f"number of records does not match, truth indicates {len(rpeaks_truths)}, while pred indicates {len(rpeaks_preds)}"
+    n_records = len(rpeaks_truths)
+    record_flags = np.ones((len(rpeaks_truths),), dtype=float)
     thr_ = thr * fs
     if verbose >= 1:
         print(f"number of records = {n_records}")
         print(f"threshold in number of sample points = {thr_}")
-    for idx, (truth_arr, pred_arr) in enumerate(zip(rpeaks_truth, rpeaks_pred)):
+    for idx, (truth_arr, pred_arr) in enumerate(zip(rpeaks_truths, rpeaks_preds)):
         false_negative = 0
         false_positive = 0
         true_positive = 0

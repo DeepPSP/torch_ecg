@@ -34,4 +34,4 @@ jobs:
         pip freeze
     - name: Test with pytest
       run: |
-        pytest test/test_pipelines/test_unet_ludb_pipeline.py -v
+        pytest test/test_pipelines/ -v

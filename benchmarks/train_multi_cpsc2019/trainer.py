@@ -8,21 +8,12 @@ from typing import Union, Optional, Tuple, Sequence, Dict, List, NoReturn, Any
 from numbers import Real, Number
 
 import numpy as np
-
-# try:
-#     from tqdm.auto import tqdm
-# except ModuleNotFoundError:
-#     from tqdm import tqdm
-from tqdm import tqdm
 import torch
 from torch import nn
-from torch import optim
 from torch import Tensor
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
-from tensorboardX import SummaryWriter
-import biosppy.signals.ecg as BSE
 
 try:
     import torch_ecg
@@ -35,9 +26,6 @@ from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.components.trainer import BaseTrainer
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 from torch_ecg.utils.misc import (
-    init_logger,
-    get_date_str,
-    dict_to_str,
     str2bool,
     mask_to_intervals,
 )
