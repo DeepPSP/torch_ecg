@@ -416,7 +416,6 @@ class LUDBTrainer(BaseTrainer):
 
 def test_unet_ludb_pipeline() -> NoReturn:
     """ """
-
     train_cfg_fl = deepcopy(LUDBTrainCfg)
     train_cfg_fl.use_single_lead = False
     train_cfg_fl.loss = "FocalLoss"

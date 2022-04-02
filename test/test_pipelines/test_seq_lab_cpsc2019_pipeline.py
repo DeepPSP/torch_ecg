@@ -42,7 +42,7 @@ from torch_ecg.components.outputs import RPeaksDetectionOutput
 # set paths
 _CWD = Path(__file__).absolute().parent.parent / "tmp" / "test_seq_lab_cpsc2019_pipeline"
 _CWD.mkdir(parents=True, exist_ok=True)
-_DB_DIR = _CWD.parent.parent / "sample-data" / "cpsc2019"
+_DB_DIR = _CWD.parent.parent.parent / "sample-data" / "cpsc2019"
 ###############################################################################
 
 ###############################################################################
@@ -542,7 +542,6 @@ class CPSC2019Trainer(BaseTrainer):
 
 def test_seq_lab_cpsc2019_pipeline() -> NoReturn:
     """ """
-
     train_config = deepcopy(CPSC2019TrainCfg)
     train_config.db_dir = _DB_DIR
     train_config.log_dir = _CWD / "logs"
