@@ -31,7 +31,7 @@ __all__ = [
 def load_model(
     name: str, **kwargs
 ) -> Union[Model, Tuple[Model, ...], nn.Module, Tuple[nn.Module, ...]]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -54,7 +54,7 @@ def load_model(
 def _load_keras_ecg_seq_lab_net(
     which: str = "both", **kwargs
 ) -> Union[Tuple[Model, Model], Model]:
-    """finished, checked,
+    """
 
     load the CNN model and CRNN model from the entry 0416 of CPSC2019
 

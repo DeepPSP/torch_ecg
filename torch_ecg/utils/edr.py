@@ -22,7 +22,7 @@ def phs_edr(
     mode: str = "complex",
     verbose: int = 0,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     computes the respiratory rate from single-lead ECG signals.
 

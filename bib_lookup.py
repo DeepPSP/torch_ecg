@@ -103,7 +103,7 @@ class BibLookup(object):
         email: Optional[str] = None,
         **kwargs,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -173,7 +173,7 @@ class BibLookup(object):
         self._ordering = [k.lower() for k in self._ordering]
 
     def __call__(self, identifier: str, align: Optional[str] = None) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -207,7 +207,7 @@ class BibLookup(object):
         return res
 
     def _obtain_feed_content(self, identifier: str) -> Tuple[str, dict]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -275,7 +275,7 @@ class BibLookup(object):
         return category, fc
 
     def _handle_doi(self, feed_content: dict) -> str:
-        """finished, checked,
+        """
 
         handle a DOI query using POST
 
@@ -297,7 +297,7 @@ class BibLookup(object):
         return res
 
     def _handle_pm(self, feed_content: dict) -> str:
-        """finished, checked,
+        """
 
         handle a PubMed query using POST
 
@@ -327,7 +327,7 @@ class BibLookup(object):
         return res
 
     def _handle_arxiv(self, feed_content: dict) -> Union[str, Dict[str, str]]:
-        """finished, checked,
+        """
 
         handle a arXiv query using GET
 
@@ -374,7 +374,7 @@ class BibLookup(object):
     def _align_result(
         self, res: Union[str, Dict[str, str]], align: Optional[str] = None
     ) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -460,7 +460,7 @@ class BibLookup(object):
         return new_str
 
     def _enclose_braces(self, s: Union[int, str]) -> str:
-        """finished, checked,
+        """
 
         ensure that the input string is enclosed with braces
 

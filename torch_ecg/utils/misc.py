@@ -66,7 +66,7 @@ __all__ = [
 
 
 def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str) -> List[str]:
-    """finished, checked,
+    """
 
     get the list of records in `db_dir` recursively,
     for example, there are two folders "patient1", "patient2" in `db_dir`,
@@ -107,7 +107,7 @@ def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str) -> List[st
 
 
 def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> List[str]:
-    """finished, checked,
+    """
 
     get the list of records in `db_dir` recursively,
     for example, there are two folders "patient1", "patient2" in `db_dir`,
@@ -149,7 +149,7 @@ def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> Li
 def get_record_list_recursive3(
     db_dir: Union[str, Path], rec_patterns: Union[str, Dict[str, str]]
 ) -> Union[List[str], Dict[str, List[str]]]:
-    """finished, checked,
+    """
 
     get the list of records in `db_dir` recursively,
     for example, there are two folders "patient1", "patient2" in `db_dir`,
@@ -217,7 +217,7 @@ def get_record_list_recursive3(
 def dict_to_str(
     d: Union[dict, list, tuple], current_depth: int = 1, indent_spaces: int = 4
 ) -> str:
-    """finished, checked,
+    """
 
     convert a (possibly) nested dict into a `str` of json-like formatted form,
     this nested dict might also contain lists or tuples of dict (and of str, int, etc.)
@@ -298,7 +298,7 @@ def dict_to_str(
 
 
 def str2bool(v: Union[str, bool]) -> bool:
-    """finished, checked,
+    """
 
     converts a "boolean" value possibly in the format of str to bool
 
@@ -329,7 +329,7 @@ def str2bool(v: Union[str, bool]) -> bool:
 
 
 def diff_with_step(a: np.ndarray, step: int = 1, **kwargs) -> np.ndarray:
-    """finished, checked,
+    """
 
     compute a[n+step] - a[n] for all valid n
 
@@ -356,7 +356,7 @@ def diff_with_step(a: np.ndarray, step: int = 1, **kwargs) -> np.ndarray:
 
 
 def ms2samples(t: Real, fs: Real) -> int:
-    """finished, checked,
+    """
 
     convert time `t` with units in ms to number of samples
 
@@ -378,7 +378,7 @@ def ms2samples(t: Real, fs: Real) -> int:
 
 
 def samples2ms(n_samples: int, fs: Real) -> Real:
-    """finished, checked,
+    """
 
     inverse function of `ms2samples`
 
@@ -406,7 +406,7 @@ def get_mask(
     right_bias: int,
     return_fmt: str = "mask",
 ) -> Union[np.ndarray, list]:
-    """finished, checked,
+    """
 
     get the mask around the `critical_points`
 
@@ -449,7 +449,7 @@ def get_mask(
 def class_weight_to_sample_weight(
     y: np.ndarray, class_weight: Union[str, List[float], np.ndarray, dict] = "balanced"
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     transform class weight to sample weight
 
@@ -563,7 +563,7 @@ def init_logger(
     mode: str = "a",
     verbose: int = 0,
 ) -> logging.Logger:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -625,7 +625,7 @@ def init_logger(
 
 
 def get_date_str(fmt: Optional[str] = None):
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -644,7 +644,7 @@ def get_date_str(fmt: Optional[str] = None):
 
 
 def rdheader(header_data: Union[str, Sequence[str]]) -> Union[Record, MultiRecord]:
-    """finished, checked,
+    """
 
     modified from `wfdb.rdheader`
 
@@ -736,7 +736,7 @@ def rdheader(header_data: Union[str, Sequence[str]]) -> Union[Record, MultiRecor
 def ensure_lead_fmt(
     values: Sequence[Real], n_leads: int = 12, fmt: str = "lead_first"
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     ensure the `n_leads`-lead (ECG) signal to be of the format of `fmt`
 
@@ -775,7 +775,7 @@ def ensure_siglen(
     fmt: str = "lead_first",
     tolerance: Optional[float] = None,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     ensure the (ECG) signal to be of length `siglen`,
     strategy:
@@ -860,7 +860,7 @@ def masks_to_waveforms(
     mask_format: str = "channel_first",
     leads: Optional[Sequence[str]] = None,
 ) -> Dict[str, List[ECGWaveForm]]:
-    """finished, checked,
+    """
 
     convert masks into lists of waveforms
 
@@ -949,7 +949,7 @@ def mask_to_intervals(
     vals: Optional[Union[int, Sequence[int]]] = None,
     right_inclusive: bool = False,
 ) -> Union[list, dict]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -1001,7 +1001,7 @@ def mask_to_intervals(
 
 
 def list_sum(l: Sequence[list]) -> list:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -1024,7 +1024,7 @@ def read_log_txt(
     epoch_startswith: str = "Train epoch_",
     scalar_startswith: Union[str, Iterable[str]] = "train/|test/",
 ) -> pd.DataFrame:
-    """finished, checked,
+    """
 
     read from log txt file, in case tensorboard not working
 
@@ -1071,7 +1071,7 @@ def read_log_txt(
 def read_event_scalars(
     fp: str, keys: Optional[Union[str, Iterable[str]]] = None
 ) -> Union[pd.DataFrame, Dict[str, pd.DataFrame]]:
-    """finished, checked,
+    """
 
     read scalars from event file, in case tensorboard not working
 
@@ -1120,7 +1120,7 @@ def read_event_scalars(
 
 
 def dicts_equal(d1: dict, d2: dict) -> bool:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -1186,7 +1186,7 @@ def dicts_equal(d1: dict, d2: dict) -> bool:
 
 
 def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -1242,7 +1242,7 @@ class ReprMixin(object):
 
 
 class MovingAverage(object):
-    """finished, checked, to be improved,
+    """to be improved,
 
     moving average
 
@@ -1387,7 +1387,7 @@ class MovingAverage(object):
 
 
 def uniform(low: Real, high: Real, num: int) -> List[float]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -1409,7 +1409,7 @@ def uniform(low: Real, high: Real, num: int) -> List[float]:
 
 
 def nildent(text: str) -> str:
-    """finished, checked,
+    """
 
     kill all leading white spaces in each line of `text`,
     while keeping all lines (including empty)
@@ -1432,7 +1432,7 @@ def nildent(text: str) -> str:
 
 
 def isclass(obj: Any) -> bool:
-    """finished, checked,
+    """
 
     Parameters
     ----------

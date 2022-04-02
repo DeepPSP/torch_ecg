@@ -35,7 +35,7 @@ class RandomRenormalize(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -73,7 +73,7 @@ class RandomRenormalize(Augmenter):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

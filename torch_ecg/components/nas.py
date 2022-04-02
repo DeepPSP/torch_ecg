@@ -36,7 +36,7 @@ class NAS:
         model_configs: Sequence[dict],
         lazy: bool = False,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -72,7 +72,7 @@ class NAS:
             self.ds_val = None
 
     def search(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         if self.ds_train is None or self.ds_val is None:
             raise ValueError("training dataset or validation dataset is not set")
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -103,7 +103,7 @@ class NAS:
             torch.cuda.empty_cache()
 
     def _setup_dataset(self, ds_train: Dataset, ds_val: Dataset) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------

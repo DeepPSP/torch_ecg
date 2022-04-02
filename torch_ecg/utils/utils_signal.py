@@ -264,7 +264,7 @@ def resample_irregular_timeseries(
     interp_kw: dict = {},
     verbose: int = 0,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     resample the 2d irregular timeseries `s` into a 1d or 2d regular time series with frequency `output_fs`,
     elements of `s` are in the form [time, value], where the unit of `time` is ms
@@ -629,7 +629,7 @@ def _plot(x, mph, mpd, threshold, edge, valley, ax, ind):
 def remove_spikes_naive(
     sig: np.ndarray, threshold: Real = 20, inplace: bool = True
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
 
@@ -796,7 +796,7 @@ def get_ampl(
     window: Real = 0.2,
     critical_points: Optional[Sequence] = None,
 ) -> Union[float, np.ndarray]:
-    """finished, checked,
+    """
 
     get amplitude of a signal (near critical points if given)
 
@@ -877,7 +877,7 @@ def normalize(
     sig_fmt: str = "channel_first",
     per_channel: bool = False,
 ) -> np.ndarray:
-    """ finished, checked,
+    """ 
     
     perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,

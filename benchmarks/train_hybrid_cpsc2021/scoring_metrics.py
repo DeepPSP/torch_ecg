@@ -345,7 +345,7 @@ def compute_challenge_metric(
     onset_score_range: Sequence[float],
     offset_score_range: Sequence[float],
 ) -> float:
-    """finished, checked,
+    """
 
     compute challenge metric for a single record
 
@@ -384,7 +384,7 @@ def gen_endpoint_score_mask(
     bias: dict = {1: 1, 2: 0.5},
     verbose: int = 0,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """finished, checked,
+    """
 
     generate the scoring mask for the onsets and offsets of af episodes,
 

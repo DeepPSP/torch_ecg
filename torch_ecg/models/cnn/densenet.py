@@ -46,7 +46,7 @@ __all__ = [
 
 
 class DenseBasicBlock(SizeMixin, nn.Module):
-    """finished, checked,
+    """
 
     the basic building block for DenseNet,
     consisting of normalization -> activation -> convolution (-> dropout (optional)),
@@ -71,7 +71,7 @@ class DenseBasicBlock(SizeMixin, nn.Module):
         dropout: float = 0.0,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -122,7 +122,7 @@ class DenseBasicBlock(SizeMixin, nn.Module):
             self.dropout = None
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -163,7 +163,7 @@ class DenseBasicBlock(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -183,7 +183,7 @@ class DenseBasicBlock(SizeMixin, nn.Module):
 
 
 class DenseBottleNeck(SizeMixin, nn.Module):
-    """finished, checked,
+    """
 
     bottleneck modification of `DenseBasicBlock`,
     with an additional prefixed sequence of
@@ -209,7 +209,7 @@ class DenseBottleNeck(SizeMixin, nn.Module):
         dropout: float = 0.0,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -276,7 +276,7 @@ class DenseBottleNeck(SizeMixin, nn.Module):
             self.dropout = None
 
     def bn_function(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         the `not memory_efficient` way
 
@@ -294,7 +294,7 @@ class DenseBottleNeck(SizeMixin, nn.Module):
         return bottleneck_output
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -339,7 +339,7 @@ class DenseBottleNeck(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -359,7 +359,7 @@ class DenseBottleNeck(SizeMixin, nn.Module):
 
 
 class DenseMacroBlock(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     macro blocks for `DenseNet`,
     stacked sequence of builing blocks of similar pattern
@@ -381,7 +381,7 @@ class DenseMacroBlock(SizeMixin, nn.Sequential):
         dropout: float = 0.0,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -447,7 +447,7 @@ class DenseMacroBlock(SizeMixin, nn.Sequential):
             )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -465,7 +465,7 @@ class DenseMacroBlock(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -487,7 +487,7 @@ class DenseMacroBlock(SizeMixin, nn.Sequential):
 
 
 class DenseTransition(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     transition blocks between `DenseMacroBlock`s,
     used to perform sub-sampling,
@@ -511,7 +511,7 @@ class DenseTransition(SizeMixin, nn.Sequential):
         bias: bool = False,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -572,7 +572,7 @@ class DenseTransition(SizeMixin, nn.Sequential):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -590,7 +590,7 @@ class DenseTransition(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -612,7 +612,7 @@ class DenseTransition(SizeMixin, nn.Sequential):
 
 
 class DenseNet(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     The core part of the SOTA model (framework) of CPSC2020
 
@@ -647,7 +647,7 @@ class DenseNet(SizeMixin, nn.Sequential):
     )
 
     def __init__(self, in_channels: int, **config) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -782,7 +782,7 @@ class DenseNet(SizeMixin, nn.Sequential):
                 self.add_module(f"transition_{idx}", dt)
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -800,7 +800,7 @@ class DenseNet(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

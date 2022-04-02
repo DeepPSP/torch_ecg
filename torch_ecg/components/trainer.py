@@ -72,7 +72,7 @@ class BaseTrainer(ReprMixin, ABC):
         device: Optional[torch.device] = None,
         lazy: bool = False,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -146,7 +146,7 @@ class BaseTrainer(ReprMixin, ABC):
         self.epoch_loss = 0
 
     def train(self) -> OrderedDict:
-        """finished, checked,"""
+        """ """
         self._setup_optimizer()
 
         self._setup_scheduler()
@@ -290,7 +290,7 @@ class BaseTrainer(ReprMixin, ABC):
         return self.best_state_dict
 
     def train_one_epoch(self, pbar: tqdm) -> NoReturn:
-        """finished, checked,
+        """
 
         train one epoch, and update the progress bar
 
@@ -466,7 +466,7 @@ class BaseTrainer(ReprMixin, ABC):
             self.scheduler.step()
 
     def _setup_from_config(self, train_config: dict) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -511,13 +511,13 @@ class BaseTrainer(ReprMixin, ABC):
         return f"{self._model.__name__}_{self.train_config.optimizer}_LR_{self.lr}_BS_{self.batch_size}"
 
     def _setup_log_manager(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         config = {"log_suffix": self.extra_log_suffix()}
         config.update(self.train_config)
         self.log_manager = LoggerManager.from_config(config=config)
 
     def _setup_directories(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         if not self.train_config.get("model_dir", None):
             self._train_config.model_dir = self.train_config.checkpoints
         self._train_config.model_dir = Path(self._train_config.model_dir)
@@ -525,7 +525,7 @@ class BaseTrainer(ReprMixin, ABC):
         self.train_config.model_dir.mkdir(parents=True, exist_ok=True)
 
     def _setup_callbacks(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         self._train_config.monitor = self.train_config.get("monitor", None)
         if self.train_config.monitor is None:
             assert (
@@ -547,7 +547,7 @@ class BaseTrainer(ReprMixin, ABC):
             )
 
     def _setup_augmenter_manager(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         self.augmenter_manager = AugmenterManager.from_config(config=self.train_config)
 
     @abstractmethod
@@ -556,7 +556,7 @@ class BaseTrainer(ReprMixin, ABC):
         train_dataset: Optional[Dataset] = None,
         val_dataset: Optional[Dataset] = None,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         setup the dataloaders for training and validation
 
@@ -611,7 +611,7 @@ class BaseTrainer(ReprMixin, ABC):
         return 0
 
     def _setup_optimizer(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         if self.train_config.optimizer.lower() == "adam":
             self.optimizer = optim.Adam(
                 params=self.model.parameters(),
@@ -638,7 +638,7 @@ class BaseTrainer(ReprMixin, ABC):
             )
 
     def _setup_scheduler(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         if (
             self.train_config.lr_scheduler is None
             or self.train_config.lr_scheduler.lower() == "none"
@@ -676,7 +676,7 @@ class BaseTrainer(ReprMixin, ABC):
             )
 
     def _setup_criterion(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         loss_kw = self.train_config.get("loss_kw", {})
         for k, v in loss_kw.items():
             if isinstance(v, torch.Tensor):
@@ -703,7 +703,7 @@ class BaseTrainer(ReprMixin, ABC):
             )
 
     def _check_model_config_compatability(self, model_config: dict) -> bool:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -757,7 +757,7 @@ class BaseTrainer(ReprMixin, ABC):
         # TODO: resume optimizer, etc.
 
     def save_checkpoint(self, path: str) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -777,7 +777,7 @@ class BaseTrainer(ReprMixin, ABC):
         )
 
     def extra_repr_keys(self) -> List[str]:
-        """finished, checked,
+        """
 
         Returns
         -------

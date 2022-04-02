@@ -40,7 +40,7 @@ def compute_ecg_features(
     save_dir: Optional[str] = None,
     save_fmt: str = "npy",
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -100,7 +100,7 @@ def compute_ecg_features(
 
 
 def compute_wavelet_descriptor(beat: np.ndarray, config: ED) -> np.ndarray:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -127,7 +127,7 @@ def compute_wavelet_descriptor(beat: np.ndarray, config: ED) -> np.ndarray:
 def compute_rr_descriptor(
     rpeaks: np.ndarray, config: Optional[ED] = None
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -175,7 +175,7 @@ def compute_rr_descriptor(
 
 
 def _compute_pre_rr(rr_intervals: np.ndarray) -> np.ndarray:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -195,7 +195,7 @@ def _compute_pre_rr(rr_intervals: np.ndarray) -> np.ndarray:
 
 
 def _compute_post_rr(rr_intervals: np.ndarray) -> np.ndarray:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -216,7 +216,7 @@ def _compute_post_rr(rr_intervals: np.ndarray) -> np.ndarray:
 
 
 def _compute_local_rr(prev_rr: np.ndarray, config: ED) -> np.ndarray:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -255,7 +255,7 @@ def _compute_global_rr_epoch(
     epoch_end: int,
     global_range: int,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -285,7 +285,7 @@ def _compute_global_rr_epoch(
 def _compute_global_rr(
     rpeaks: np.ndarray, prev_rr: np.ndarray, config: ED
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -330,7 +330,7 @@ def _compute_global_rr(
 
 
 def compute_morph_descriptor(beat: np.ndarray, config: ED) -> np.ndarray:
-    """finished, checked,
+    """
 
     Parameters
     ----------

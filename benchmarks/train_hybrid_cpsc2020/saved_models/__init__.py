@@ -22,7 +22,7 @@ __all__ = [
 
 
 def load_model(which: str = "both") -> Union[nn.Module, Tuple[nn.Module, ...]]:
-    """finished, checked,
+    """
 
     Parameters
     ----------

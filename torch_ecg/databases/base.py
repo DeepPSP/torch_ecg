@@ -180,7 +180,7 @@ class _DataBase(ReprMixin, ABC):
         raise NotImplementedError
 
     def _auto_infer_units(self, sig: np.ndarray, sig_type: str = "ECG") -> str:
-        """finished, checked,
+        """
 
         automatically infer the units of `sig`,
         under the assumption that `sig` not being raw signal, with baseline removed
@@ -232,7 +232,7 @@ class _DataBase(ReprMixin, ABC):
     def get_arrhythmia_knowledge(
         cls, arrhythmias: Union[str, List[str]], **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         knowledge about ECG features of specific arrhythmias,
 
@@ -342,7 +342,7 @@ class PhysioNetDataBase(_DataBase):
             )
 
     def _ls_rec(self, db_name: Optional[str] = None, local: bool = True) -> NoReturn:
-        """finished, checked,
+        """
 
         find all records (relative path without file extension),
         and save into `self._all_records` for further use
@@ -368,7 +368,7 @@ class PhysioNetDataBase(_DataBase):
     def _ls_rec_local(
         self,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         find all records in `self.db_dir`
 
@@ -428,7 +428,7 @@ class PhysioNetDataBase(_DataBase):
     def helper(
         self, items: Union[List[str], str, type(None)] = None, **kwargs
     ) -> NoReturn:
-        """finished, checked, to be improved,
+        """to be improved,
 
         print corr. meanings of symbols belonging to `items`
 
@@ -645,7 +645,7 @@ class NSRRDataBase(_DataBase):
         operation: str = "close",
         full_file_path: Optional[Union[str, Path]] = None,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------

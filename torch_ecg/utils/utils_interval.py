@@ -49,7 +49,7 @@ GeneralizedInterval = Union[Sequence[Interval], type(EMPTY_SET)]
 
 
 def overlaps(interval: Interval, another: Interval) -> int:
-    """finished, checked,
+    """
 
     Return the amount of overlap, in bp between interval and anohter.
     If >0, the number of bp of overlap
@@ -109,7 +109,7 @@ def validate_interval(
 def in_interval(
     val: Real, interval: Interval, left_closed: bool = True, right_closed: bool = False
 ) -> bool:
-    """finished, checked,
+    """
 
     check whether val is inside interval or not
 
@@ -143,7 +143,7 @@ def in_generalized_interval(
     left_closed: bool = True,
     right_closed: bool = False,
 ) -> bool:
-    """finished, checked,
+    """
 
     check whether val is inside generalized_interval or not
 
@@ -174,7 +174,7 @@ def get_confidence_interval(
     confidence: float = 0.95,
     **kwargs: Any,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -209,7 +209,7 @@ def get_confidence_interval(
 def intervals_union(
     interval_list: GeneralizedInterval, join_book_endeds: bool = True
 ) -> GeneralizedInterval:
-    """finished, checked,
+    """
 
     find the union (ordered and non-intersecting) of all the intervals in `interval_list`,
     which is a list of intervals in the form [a,b], where a,b need not be ordered
@@ -279,7 +279,7 @@ def generalized_intervals_union(
     interval_list: Union[List[GeneralizedInterval], Tuple[GeneralizedInterval]],
     join_book_endeds: bool = True,
 ) -> GeneralizedInterval:
-    """finished, checked,
+    """
 
     calculate the union of a list (or tuple) of `GeneralizedInterval`s
 
@@ -304,7 +304,7 @@ def generalized_intervals_union(
 def intervals_intersection(
     interval_list: GeneralizedInterval, drop_degenerate: bool = True
 ) -> Interval:
-    """finished, checked,
+    """
 
     calculate the intersection of all intervals in interval_list
 
@@ -341,7 +341,7 @@ def generalized_intervals_intersection(
     another_generalized_interval: GeneralizedInterval,
     drop_degenerate: bool = True,
 ) -> GeneralizedInterval:
-    """finished, checked,
+    """
 
     calculate the intersection of generalized_interval and another_generalized_interval,
     which are both generalized intervals
@@ -384,7 +384,7 @@ def generalized_intervals_intersection(
 def generalized_interval_complement(
     total_interval: Interval, generalized_interval: GeneralizedInterval
 ) -> GeneralizedInterval:
-    """finished, checked, to be improved,
+    """to be improved,
 
     TODO: the case `total_interval` is a `GeneralizedInterval`
 
@@ -426,7 +426,7 @@ def get_optimal_covering(
     traceback: bool = False,
     **kwargs: Any,
 ) -> Tuple[GeneralizedInterval, list]:
-    """finished, checked,
+    """
 
     compute an optimal covering (disjoint union of intervals) that covers `to_cover` such that
     each interval in the covering is of length at least `min_len`,
@@ -622,7 +622,7 @@ def get_optimal_covering(
 
 
 def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
-    """finished, checked,
+    """
 
     find the maximum length of continuous (consecutive) sublists of `sublist`,
     whose element are integers within the range from 0 to `tot_rng`,
@@ -664,7 +664,7 @@ def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
 
 
 def interval_len(interval: Interval) -> Real:
-    """finished, checked,
+    """
 
     compute the length of an interval. 0 for the empty interval []
 
@@ -684,7 +684,7 @@ def interval_len(interval: Interval) -> Real:
 
 
 def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
-    """finished, checked,
+    """
 
     compute the length of a generalized interval. 0 for the empty interval []
 
@@ -703,7 +703,7 @@ def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
 
 
 def diff_with_step(a: Sequence, step: int = 1, **kwargs) -> np.ndarray:
-    """finished, checked,
+    """
 
     compute a[n+step] - a[n] for all valid n
 
@@ -813,7 +813,7 @@ def max_disjoint_covering(
     with_traceback: bool = True,
     verbose: int = 0,
 ) -> Tuple[GeneralizedInterval, List[int]]:
-    """finished, checked,
+    """
 
     find the largest (the largest interval length) covering of a sequence of intervals
 
@@ -925,7 +925,7 @@ def mask_to_intervals(
     vals: Optional[Union[int, Sequence[int]]] = None,
     right_inclusive: bool = False,
 ) -> Union[list, dict]:
-    """finished, checked,
+    """
 
     Parameters
     ----------

@@ -32,7 +32,7 @@ __all__ = [
 def evaluate_scores_detailed(
     classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence
 ) -> Tuple[Union[float, np.ndarray]]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -105,7 +105,7 @@ def evaluate_scores_detailed(
 def evaluate_scores(
     classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence
 ) -> Tuple[Union[float, np.ndarray]]:
-    """finished, checked,
+    """
 
     simplified version of `evaluate_scores_detailed`,
     this function doesnot produce per class scores

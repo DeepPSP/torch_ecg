@@ -72,7 +72,7 @@ df_weights.index = df_weights.index.map(str)
 
 
 def expand_equiv_classes(df: pd.DataFrame, sep: str = "|") -> pd.DataFrame:
-    """finished, checked,
+    """
 
     expand df so that rows/cols with equivalent classes indicated by `sep` are separated
 
@@ -415,7 +415,7 @@ def load_weights(
 
 
 def normalize_class(c: Union[str, int], ensure_scored: bool = False) -> str:
-    """finished, checked,
+    """
 
     normalize the class name to its abbr.,
     facilitating the computation of the `load_weights` function
@@ -440,7 +440,7 @@ def normalize_class(c: Union[str, int], ensure_scored: bool = False) -> str:
 
 
 def get_class(snomed_ct_code: Union[str, int]) -> Dict[str, str]:
-    """finished, checked,
+    """
 
     look up the abbreviation and the full name of an ECG arrhythmia,
     given its SNOMEDCTCode
@@ -470,7 +470,7 @@ def get_class_count(
     threshold: Optional[Real] = 0,
     fmt: str = "a",
 ) -> Dict[str, int]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -561,7 +561,7 @@ def get_class_weight(
     fmt: str = "a",
     min_weight: Real = 0.5,
 ) -> Dict[str, int]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -627,7 +627,7 @@ else:
 def get_cooccurrence(
     c1: Union[str, int], c2: Union[str, int], ensure_scored: bool = False
 ) -> int:
-    """finished, checked,
+    """
 
     Parameters
     ----------

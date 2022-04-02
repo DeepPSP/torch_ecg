@@ -34,7 +34,7 @@ class Transformer(SizeMixin, nn.Module):
         dropout: float = 0.1,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -80,7 +80,7 @@ class Transformer(SizeMixin, nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -96,7 +96,7 @@ class Transformer(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

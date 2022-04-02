@@ -23,7 +23,7 @@ def compute_metrics(
     thr: float = 0.075,
     verbose: int = 0,
 ) -> float:
-    """finished, checked,
+    """
 
     Parameters
     ----------

@@ -80,7 +80,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
         width_multiplier: float = 1.0,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -193,7 +193,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -211,7 +211,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -253,7 +253,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
     __name__ = "MobileNetV1"
 
     def __init__(self, in_channels: int, **config) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -353,7 +353,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
         width_multiplier: float = 1.0,
         ordering: str = "cba",
     ) -> nn.Sequential:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -432,7 +432,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
         return flow
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -450,7 +450,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -504,7 +504,7 @@ class InvertedResidual(SizeMixin, nn.Module):
         width_multiplier: float = 1.0,
         use_se: bool = True,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -593,7 +593,7 @@ class InvertedResidual(SizeMixin, nn.Module):
         _, self.__out_channels, _ = pw_linear.compute_output_shape()
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -617,7 +617,7 @@ class InvertedResidual(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

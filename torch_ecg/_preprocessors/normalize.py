@@ -45,7 +45,7 @@ class Normalize(PreProcessor):
         per_channel: bool = False,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -82,7 +82,7 @@ class Normalize(PreProcessor):
             ), f"mean and std should be real numbers in the non per-channel setting"
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
-        """finished, checked,
+        """
 
         apply the preprocessor to `sig`
 
@@ -141,7 +141,7 @@ class MinMaxNormalize(Normalize):
         self,
         per_channel: bool = False,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -176,7 +176,7 @@ class NaiveNormalize(Normalize):
         per_channel: bool = False,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -222,7 +222,7 @@ class ZScoreNormalize(Normalize):
         per_channel: bool = False,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------

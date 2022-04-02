@@ -42,7 +42,7 @@ def compute_rpeak_metric(
     thr: float = 0.075,
     verbose: int = 0,
 ) -> Dict[str, float]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -129,7 +129,7 @@ def compute_rr_metric(
     weight_masks: Optional[Sequence[Union[np.ndarray, Sequence[int]]]] = None,
     verbose: int = 0,
 ) -> Dict[str, float]:
-    """finished, checked,
+    """
 
     this metric for evaluating the RR_LSTM model,
     which imitates the metric provided by the organizers of CPSC2021
@@ -196,7 +196,7 @@ def compute_main_task_metric(
     rpeaks: Optional[Sequence[Sequence[int]]] = None,
     verbose: int = 0,
 ) -> Dict[str, float]:
-    """finished, checked,
+    """
 
     this metric for evaluating the main task model (seq_lab or unet),
     which imitates the metric provided by the organizers of CPSC2021

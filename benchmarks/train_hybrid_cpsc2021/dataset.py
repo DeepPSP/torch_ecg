@@ -102,7 +102,7 @@ class CPSC2021(ReprMixin, Dataset):
     def __init__(
         self, config: CFG, task: str, training: bool = True, lazy: bool = True
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -170,7 +170,7 @@ class CPSC2021(ReprMixin, Dataset):
         self.__set_task(self.task, lazy=False)
 
     def __set_task(self, task: str, lazy: bool = True) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -287,11 +287,11 @@ class CPSC2021(ReprMixin, Dataset):
             )
 
     def reset_task(self, task: str, lazy: bool = True) -> NoReturn:
-        """finished, checked,"""
+        """ """
         self.__set_task(task, lazy)
 
     def _ls_segments(self) -> NoReturn:
-        """finished, checked,
+        """
 
         list all the segments
         """
@@ -321,7 +321,7 @@ class CPSC2021(ReprMixin, Dataset):
             )
 
     def _ls_rr_seq(self) -> NoReturn:
-        """finished, checked,
+        """
 
         list all the rr sequences
         """
@@ -387,7 +387,7 @@ class CPSC2021(ReprMixin, Dataset):
                 )
 
     def _get_seg_data_path(self, seg: str) -> Path:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -404,7 +404,7 @@ class CPSC2021(ReprMixin, Dataset):
         return fp
 
     def _get_seg_ann_path(self, seg: str) -> Path:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -421,7 +421,7 @@ class CPSC2021(ReprMixin, Dataset):
         return fp
 
     def _load_seg_data(self, seg: str) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -438,7 +438,7 @@ class CPSC2021(ReprMixin, Dataset):
         return seg_data
 
     def _load_seg_ann(self, seg: str) -> dict:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -465,7 +465,7 @@ class CPSC2021(ReprMixin, Dataset):
     def _load_seg_mask(
         self, seg: str, task: Optional[str] = None
     ) -> Union[np.ndarray, Dict[str, np.ndarray]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -504,7 +504,7 @@ class CPSC2021(ReprMixin, Dataset):
         return seg_mask
 
     def _load_seg_seq_lab(self, seg: str, reduction: int) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -536,7 +536,7 @@ class CPSC2021(ReprMixin, Dataset):
         return seq_lab
 
     def _get_rr_seq_path(self, seq_name: str) -> Path:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -553,7 +553,7 @@ class CPSC2021(ReprMixin, Dataset):
         return fp
 
     def _load_rr_seq(self, seq_name: str) -> Dict[str, np.ndarray]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -578,7 +578,7 @@ class CPSC2021(ReprMixin, Dataset):
         return rr_seq
 
     def persistence(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
-        """finished, checked,
+        """
 
         make the dataset persistent w.r.t. the ratios in `self.config`
 
@@ -611,7 +611,7 @@ class CPSC2021(ReprMixin, Dataset):
     def _preprocess_data(
         self, force_recompute: bool = False, verbose: int = 0
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
@@ -635,7 +635,7 @@ class CPSC2021(ReprMixin, Dataset):
     def _preprocess_one_record(
         self, rec: str, force_recompute: bool = False, verbose: int = 0
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
@@ -658,7 +658,7 @@ class CPSC2021(ReprMixin, Dataset):
         savemat(save_fp, {"ecg": pps}, format="5")
 
     def load_preprocessed_data(self, rec: str) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -683,7 +683,7 @@ class CPSC2021(ReprMixin, Dataset):
         return p_sig
 
     def _get_rec_suffix(self, operations: List[str]) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -700,7 +700,7 @@ class CPSC2021(ReprMixin, Dataset):
         return suffix
 
     def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
-        """finished, checked,
+        """
 
         slice all records into segments of length `self.seglen`,
         and perform data augmentations specified in `self.config`
@@ -740,7 +740,7 @@ class CPSC2021(ReprMixin, Dataset):
         update_segments_json: bool = False,
         verbose: int = 0,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         slice one record into segments of length `self.seglen`,
         and perform data augmentations specified in `self.config`
@@ -844,7 +844,7 @@ class CPSC2021(ReprMixin, Dataset):
         start_idx: Optional[int] = None,
         end_idx: Optional[int] = None,
     ) -> CFG:
-        """finished, checked,
+        """
 
         generate segment, with possible data augmentation
 
@@ -968,7 +968,7 @@ class CPSC2021(ReprMixin, Dataset):
     def __save_segments(
         self, rec: str, segments: List[CFG], update_segments_json: bool = False
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1006,7 +1006,7 @@ class CPSC2021(ReprMixin, Dataset):
             )
 
     def _clear_cached_segments(self, recs: Optional[Sequence[str]] = None) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1053,7 +1053,7 @@ class CPSC2021(ReprMixin, Dataset):
     def _slice_rr_seq(
         self, force_recompute: bool = False, verbose: int = 0
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         slice sequences of rr intervals into fixed length (sub)sequences
 
@@ -1087,7 +1087,7 @@ class CPSC2021(ReprMixin, Dataset):
         update_rr_seq_json: bool = False,
         verbose: int = 0,
     ) -> NoReturn:
-        """finished, checked,"""
+        """ """
         self.__assert_task(["rr_lstm"])
         subject = self.reader.get_subject_id(rec)
         rec_rr_seq = [
@@ -1175,7 +1175,7 @@ class CPSC2021(ReprMixin, Dataset):
             )
 
     def _clear_cached_rr_seq(self, recs: Optional[Sequence[str]] = None) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1203,7 +1203,7 @@ class CPSC2021(ReprMixin, Dataset):
         )
 
     def _get_rec_name(self, seg_or_rr: str) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1221,7 +1221,7 @@ class CPSC2021(ReprMixin, Dataset):
     def _train_test_split(
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> Dict[str, List[str]]:
-        """finished, checked,
+        """
 
         do train test split,
         it is ensured that both the train and the test set contain all classes
@@ -1314,7 +1314,7 @@ class CPSC2021(ReprMixin, Dataset):
         ), f"DO NOT call this method when the current task is {self.task}. Switch task using `reset_task`"
 
     def plot_seg(self, seg: str, ticks_granularity: int = 0) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1553,7 +1553,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
         start_idx: Optional[int] = None,
         end_idx: Optional[int] = None,
     ) -> CFG:
-        """finished, checked,
+        """
 
         generate segment, with possible data augmentation
 
@@ -1675,7 +1675,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
         return new_seg
 
     def load_preprocessed_data(self, rec: str) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1708,7 +1708,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
 
 
 def _get_rec_suffix(operations: List[str]) -> str:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -1733,7 +1733,7 @@ def _generate_weight_mask(
     boundary_weight: float,
     plot: bool = False,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     generate weight mask for a binary target mask,
     accounting the foreground weight and boundary weight

@@ -23,7 +23,7 @@ def normalize(
     per_channel: bool = False,
     inplace: bool = True,
 ) -> torch.Tensor:
-    """ finished, checked,
+    """ 
     
     perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
@@ -165,7 +165,7 @@ def resample(
     siglen: Optional[int] = None,
     inplace: bool = False,
 ) -> torch.Tensor:
-    """finished, checked,
+    """
 
     resample signal tensors to a new sampling frequency or a new signal length,
 

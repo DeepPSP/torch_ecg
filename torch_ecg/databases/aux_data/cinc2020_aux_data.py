@@ -262,7 +262,7 @@ equiv_class_dict = CFG(
 def load_weights(
     classes: Sequence[Union[int, str]] = None, return_fmt: str = "np"
 ) -> Union[np.ndarray, pd.DataFrame]:
-    """finished, checked,
+    """
 
     load the weight matrix of the `classes`
 
@@ -299,7 +299,7 @@ def load_weights(
 
 
 def normalize_class(c: Union[str, int], ensure_scored: bool = False) -> str:
-    """finished, checked,
+    """
 
     normalize the class name to its abbr.,
     facilitating the computation of the `load_weights` function
@@ -324,7 +324,7 @@ def normalize_class(c: Union[str, int], ensure_scored: bool = False) -> str:
 
 
 def get_class(snomed_ct_code: Union[str, int]) -> Dict[str, str]:
-    """finished, checked,
+    """
 
     look up the abbreviation and the full name of an ECG arrhythmia,
     given its SNOMED CT Code
@@ -354,7 +354,7 @@ def get_class_count(
     threshold: Optional[Real] = 0,
     fmt: str = "a",
 ) -> Dict[str, int]:
-    """finished, checked,
+    """
 
     Parameters:
     -----------
@@ -444,7 +444,7 @@ def get_class_weight(
     fmt: str = "a",
     min_weight: Real = 0.5,
 ) -> Dict[str, int]:
-    """finished, checked,
+    """
 
     Parameters:
     -----------
@@ -621,7 +621,7 @@ dx_cooccurrence_scored = dx_cooccurrence_all.loc[
 def get_cooccurrence(
     c1: Union[str, int], c2: Union[str, int], ensure_scored: bool = False
 ) -> int:
-    """finished, checked,
+    """
 
     Parameters:
     -----------

@@ -86,7 +86,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         config: Optional[CFG] = None,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -265,7 +265,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         self.softmax = nn.Softmax(-1)
 
     def extract_features(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         extract feature map before the dense (linear) classifying layer(s)
 
@@ -352,7 +352,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         class_names: bool = False,
         bin_pred_thr: float = 0.5,
     ) -> BaseOutput:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -377,7 +377,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

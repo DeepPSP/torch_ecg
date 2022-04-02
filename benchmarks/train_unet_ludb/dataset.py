@@ -55,7 +55,7 @@ class LUDB(ReprMixin, Dataset):
         training: bool = True,
         lazy: bool = False,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -104,7 +104,7 @@ class LUDB(ReprMixin, Dataset):
         return len(self.records)
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,"""
+        """ """
         if self.config.use_single_lead:
             rec_idx, lead_idx = divmod(index, len(self.leads))
         else:
@@ -132,7 +132,7 @@ class LUDB(ReprMixin, Dataset):
         return signals, labels
 
     def _load_all_data(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         self._signals, self._labels = [], []
 
         with tqdm(self.fdr, total=len(self.fdr)) as bar:
@@ -156,7 +156,7 @@ class LUDB(ReprMixin, Dataset):
     def _train_test_split(
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> List[str]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -232,7 +232,7 @@ class FastDataReader(ReprMixin, Dataset):
         return len(self.records)
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,"""
+        """ """
         rec = self.records[index]
         signals = self.reader.load_data(
             rec,

@@ -77,7 +77,7 @@ class XceptionMultiConv(SizeMixin, nn.Module):
         dropouts: Union[Sequence[float], float] = 0.0,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -169,7 +169,7 @@ class XceptionMultiConv(SizeMixin, nn.Module):
             self.shortcut = None
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -193,7 +193,7 @@ class XceptionMultiConv(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -242,7 +242,7 @@ class XceptionEntryFlow(SizeMixin, nn.Sequential):
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -379,7 +379,7 @@ class XceptionEntryFlow(SizeMixin, nn.Sequential):
                 )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -397,7 +397,7 @@ class XceptionEntryFlow(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -441,7 +441,7 @@ class XceptionMiddleFlow(SizeMixin, nn.Sequential):
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -527,7 +527,7 @@ class XceptionMiddleFlow(SizeMixin, nn.Sequential):
                 )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -545,7 +545,7 @@ class XceptionMiddleFlow(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -594,7 +594,7 @@ class XceptionExitFlow(SizeMixin, nn.Sequential):
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -726,7 +726,7 @@ class XceptionExitFlow(SizeMixin, nn.Sequential):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -744,7 +744,7 @@ class XceptionExitFlow(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -781,7 +781,7 @@ class Xception(SizeMixin, nn.Sequential):
     __name__ = "Xception"
 
     def __init__(self, in_channels: int, **config) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -823,7 +823,7 @@ class Xception(SizeMixin, nn.Sequential):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -841,7 +841,7 @@ class Xception(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

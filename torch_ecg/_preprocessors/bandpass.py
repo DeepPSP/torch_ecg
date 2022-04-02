@@ -31,7 +31,7 @@ class BandPass(PreProcessor):
         filter_order: Optional[int] = None,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -57,7 +57,7 @@ class BandPass(PreProcessor):
         self.filter_order = filter_order
 
     def apply(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
-        """finished, checked,
+        """
 
         apply the preprocessor to `sig`
 

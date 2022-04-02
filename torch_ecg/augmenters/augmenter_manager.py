@@ -59,7 +59,7 @@ class AugmenterManager(torch.nn.Module):
     def __init__(
         self, *augs: Optional[Tuple[Augmenter, ...]], random: bool = False
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -100,7 +100,7 @@ class AugmenterManager(torch.nn.Module):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any,
     ) -> Union[Tensor, Tuple[Tensor]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -145,7 +145,7 @@ class AugmenterManager(torch.nn.Module):
 
     @classmethod
     def from_config(cls, config: dict) -> "AugmenterManager":
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -183,7 +183,7 @@ class AugmenterManager(torch.nn.Module):
         return am
 
     def rearrange(self, new_ordering: List[str]) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------

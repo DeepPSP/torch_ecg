@@ -53,7 +53,7 @@ class CPSC2019(ReprMixin, Dataset):
         training: bool = True,
         lazy: bool = False,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -93,7 +93,7 @@ class CPSC2019(ReprMixin, Dataset):
             self._load_all_data()
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,"""
+        """ """
         if self.lazy:
             signal, label = self.fdr[index]
         else:

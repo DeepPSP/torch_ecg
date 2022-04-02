@@ -44,7 +44,7 @@ __all__ = [
 
 
 class ResNetBasicBlock(SizeMixin, nn.Module):
-    """finished, checked,
+    """
 
     building blocks for `ResNet`, as implemented in ref. [2] of `ResNet`
     """
@@ -64,7 +64,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
         attn: Optional[dict] = None,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -177,7 +177,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
             self.out_dropout = None
 
     def _make_shortcut_layer(self) -> Union[nn.Module, None]:
-        """finished, checked,"""
+        """ """
         if self.__DEBUG__:
             print(
                 f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}"
@@ -213,7 +213,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
         return shortcut
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -251,7 +251,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -275,7 +275,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
 
 
 class ResNetBottleNeck(SizeMixin, nn.Module):
-    """finished, checked,
+    """
 
     bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
     as for 1D ECG, should be of the "baby-giant-baby" pattern?
@@ -300,7 +300,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
         attn: Optional[dict] = None,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -457,7 +457,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
             self.out_dropout = None
 
     def _make_shortcut_layer(self) -> Union[nn.Module, None]:
-        """finished, checked,"""
+        """ """
         if self.__DEBUG__:
             print(
                 f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}"
@@ -493,7 +493,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
         return shortcut
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -531,7 +531,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -643,7 +643,7 @@ class ResNetStem(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -665,7 +665,7 @@ class ResNetStem(SizeMixin, nn.Sequential):
 
 
 class ResNet(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     References
     ----------
@@ -690,7 +690,7 @@ class ResNet(SizeMixin, nn.Sequential):
     )
 
     def __init__(self, in_channels: int, **config) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -881,7 +881,7 @@ class ResNet(SizeMixin, nn.Sequential):
             macro_in_channels = macro_num_filters * bb.expansion
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -901,7 +901,7 @@ class ResNet(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

@@ -83,7 +83,7 @@ class CINC2020Trainer(BaseTrainer):
         lazy: bool = True,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -121,7 +121,7 @@ class CINC2020Trainer(BaseTrainer):
         train_dataset: Optional[Dataset] = None,
         val_dataset: Optional[Dataset] = None,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         setup the dataloaders for training and validation
 

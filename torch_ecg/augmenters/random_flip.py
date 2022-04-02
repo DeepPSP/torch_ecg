@@ -29,7 +29,7 @@ class RandomFlip(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -65,7 +65,7 @@ class RandomFlip(Augmenter):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

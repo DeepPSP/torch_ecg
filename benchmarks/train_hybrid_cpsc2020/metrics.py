@@ -102,7 +102,7 @@ def CPSC2020_score(
     pvc_pred: List[np.ndarray],
     verbose: int = 0,
 ) -> Union[Tuple[int], dict]:
-    """finished, checked,
+    """
 
     Score Function for all (test) records
 
@@ -210,7 +210,7 @@ def CPSC2020_score(
 def eval_score(
     classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence
 ) -> Tuple[float]:
-    """finished, checked,
+    """
 
     for classification of segments of ECGs
 

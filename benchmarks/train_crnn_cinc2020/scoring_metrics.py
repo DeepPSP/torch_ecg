@@ -30,7 +30,7 @@ __all__ = [
 def evaluate_12ECG_score(
     classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence
 ) -> Tuple[float]:
-    """finished, checked,
+    """
 
     Parameters
     ----------

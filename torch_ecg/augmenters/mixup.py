@@ -40,7 +40,7 @@ class Mixup(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -72,7 +72,7 @@ class Mixup(Augmenter):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

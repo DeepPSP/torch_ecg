@@ -68,7 +68,7 @@ class CPSC2021Trainer(BaseTrainer):
         lazy: bool = True,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -106,7 +106,7 @@ class CPSC2021Trainer(BaseTrainer):
         train_dataset: Optional[Dataset] = None,
         val_dataset: Optional[Dataset] = None,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         setup the dataloaders for training and validation
 
@@ -436,7 +436,7 @@ _MODEL_MAP = {
 
 
 def _set_task(task: str, config: CFG) -> NoReturn:
-    """finished, checked,"""
+    """ """
     assert task in config.tasks
     config.task = task
     for item in [

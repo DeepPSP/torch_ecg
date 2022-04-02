@@ -68,7 +68,7 @@ DL_QRS_DETECTORS = [
 def preprocess_signal(
     raw_sig: np.ndarray, fs: Real, config: Optional[ED] = None
 ) -> Dict[str, np.ndarray]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -146,7 +146,7 @@ def parallel_preprocess_signal(
     save_fmt: str = "npy",
     verbose: int = 0,
 ) -> Dict[str, np.ndarray]:
-    """finished, checked,
+    """
 
     Parameters
     ----------

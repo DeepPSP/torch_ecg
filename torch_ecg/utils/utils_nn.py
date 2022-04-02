@@ -41,7 +41,7 @@ __all__ = [
 def extend_predictions(
     preds: Sequence, classes: List[str], extended_classes: List[str]
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     extend the prediction arrays to prediction arrays in larger range of classes
 
@@ -95,7 +95,7 @@ def compute_output_shape(
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
-    """finished, checked,
+    """
 
     compute the output shape of a (transpose) convolution/maxpool/avgpool layer
 
@@ -449,7 +449,7 @@ def compute_deconv_output_shape(
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
-    """finished, checked,
+    """
 
     compute the output shape of a transpose convolution layer
 
@@ -498,7 +498,7 @@ def compute_deconv_output_shape(
 def compute_module_size(
     module: nn.Module, human: bool = False, dtype: str = "float32"
 ) -> Union[int, str]:
-    """finished, checked,
+    """
 
     compute the size (number of parameters) of a module
 
@@ -540,7 +540,7 @@ def compute_receptive_field(
     dilations: Union[Sequence[int], int] = 1,
     input_len: Optional[int] = None,
 ) -> Union[int, float]:
-    r""" finished, checked,
+    r""" 
 
     computes the (generic) receptive field of feature map of certain channel,
     from certain flow (if not merged, different flows, e.g. shortcut, must be computed separately),
@@ -617,7 +617,7 @@ def compute_receptive_field(
 
 
 def default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, ...]:
-    """finished, checked,
+    """
 
     collate functions for model training
 
@@ -708,7 +708,7 @@ def _adjust_cnn_filter_lengths(
     ensure_odd: bool = True,
     pattern: str = "filter_length|filt_size",
 ) -> dict:
-    """finished, checked,
+    """
 
     adjust the filter lengths (kernel sizes) in the config for convolutional neural networks,
     according to the new sampling frequency
@@ -769,7 +769,7 @@ def adjust_cnn_filter_lengths(
     ensure_odd: bool = True,
     pattern: str = "filter_length|filt_size",
 ) -> dict:
-    """finished, checked,
+    """
 
     adjust the filter lengths in the config for convolutional neural networks,
     according to the new sampling frequency
@@ -797,7 +797,7 @@ def adjust_cnn_filter_lengths(
 
 
 class SizeMixin(object):
-    """finished, checked,
+    """
 
     mixin class for size related methods
 
@@ -846,7 +846,7 @@ class SizeMixin(object):
 
 
 class CkptMixin(object):
-    """finished, checked,
+    """
 
     mixin class for loading from checkpoint class methods
     """
@@ -855,7 +855,7 @@ class CkptMixin(object):
     def from_checkpoint(
         cls, path: str, device: Optional[torch.device] = None
     ) -> Tuple[nn.Module, dict]:
-        """finished, checked,
+        """
 
         load a model from a checkpoint
 

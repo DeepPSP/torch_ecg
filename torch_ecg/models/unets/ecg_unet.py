@@ -70,7 +70,7 @@ class DoubleConv(MultiConv):
         mid_channels: Optional[int] = None,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -140,7 +140,7 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
         mode: str = "max",
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -204,7 +204,7 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -222,7 +222,7 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -277,7 +277,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
         mid_channels: Optional[int] = None,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -360,7 +360,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
         )
 
     def forward(self, input: Tensor, down_output: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -393,7 +393,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -426,7 +426,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
 
 
 class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
-    """finished, checked,
+    """
 
     UNet for (multi-lead) ECG wave delineation
 
@@ -440,7 +440,7 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
     __name__ = "ECG_UNET"
 
     def __init__(self, classes: Sequence[str], n_leads: int, config: dict) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -552,7 +552,7 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -601,7 +601,7 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

@@ -38,7 +38,7 @@ __all__ = [
 
 
 class VGGBlock(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     building blocks of the CNN feature extractor `VGG16`
     """
@@ -54,7 +54,7 @@ class VGGBlock(SizeMixin, nn.Sequential):
         groups: int = 1,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -119,7 +119,7 @@ class VGGBlock(SizeMixin, nn.Sequential):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -137,7 +137,7 @@ class VGGBlock(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -168,7 +168,7 @@ class VGGBlock(SizeMixin, nn.Sequential):
 
 
 class VGG16(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     CNN feature extractor of the CRNN models proposed in refs of `ECG_CRNN`
     """
@@ -177,7 +177,7 @@ class VGG16(SizeMixin, nn.Sequential):
     __name__ = "VGG16"
 
     def __init__(self, in_channels: int, **config) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -225,7 +225,7 @@ class VGG16(SizeMixin, nn.Sequential):
             module_in_channels = nf
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -243,7 +243,7 @@ class VGG16(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

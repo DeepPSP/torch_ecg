@@ -26,7 +26,7 @@ def weighted_binary_cross_entropy(
     size_average: bool = True,
     reduce: bool = True,
 ) -> Tensor:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -68,7 +68,7 @@ def weighted_binary_cross_entropy(
 
 
 class WeightedBCELoss(nn.Module):
-    """finished, checked,
+    """
 
     Reference (original source):
     https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
@@ -141,12 +141,12 @@ class WeightedBCELoss(nn.Module):
 
 
 class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
-    """finished, checked,"""
+    """ """
 
     __name__ = "BCEWithLogitsWithClassWeightsLoss"
 
     def __init__(self, class_weight: Tensor) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -177,16 +177,16 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
 
 
 class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
-    """finished, checked,"""
+    """ """
 
     __name__ = "MaskedBCEWithLogitsLoss"
 
     def __init__(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         super().__init__(reduction="none")
 
     def forward(self, input: Tensor, target: Tensor, weight_mask: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -240,7 +240,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         multi_label: bool = True,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -290,7 +290,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         return self.class_weight
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -323,7 +323,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
 
 class AsymmetricLoss(nn.Module):
-    """finished, checked,
+    """
 
     The asymmetric loss is defined as
 
@@ -353,7 +353,7 @@ class AsymmetricLoss(nn.Module):
         reduction: str = "mean",
         implementation: str = "alibaba-miil",
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -413,7 +413,7 @@ class AsymmetricLoss(nn.Module):
             ) = self.xs_neg = self.loss = self.loss_pos = self.loss_neg = None
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        """ " finished, checked,
+        """
 
         Parameters
         ----------
@@ -433,7 +433,7 @@ class AsymmetricLoss(nn.Module):
             return self._forward_deep_psp(input, target)
 
     def _forward_deep_psp(self, input: Tensor, target: Tensor) -> Tensor:
-        """ " finished, checked,
+        """
 
         Parameters
         ----------
@@ -480,7 +480,7 @@ class AsymmetricLoss(nn.Module):
         return self.loss
 
     def _forward_alibaba_miil(self, input: Tensor, target: Tensor) -> Tensor:
-        """ " finished, checked,
+        """
 
         Parameters
         ----------

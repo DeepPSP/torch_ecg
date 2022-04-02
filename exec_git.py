@@ -57,7 +57,7 @@ def get_parser() -> dict:
 
 
 def run(action: str) -> NoReturn:
-    """finished, checked,
+    """
 
     Parameters
     ----------

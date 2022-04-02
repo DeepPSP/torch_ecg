@@ -31,7 +31,7 @@ class Resample(torch.nn.Module):
         inplace: bool = False,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -61,7 +61,7 @@ class Resample(torch.nn.Module):
             self.scale_factor = self.dst_fs / self.fs
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------

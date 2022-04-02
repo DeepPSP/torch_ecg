@@ -29,7 +29,7 @@ __all__ = [
 
 
 def ecg_denoise(filtered_sig: np.ndarray, fs: Real, config: ED) -> List[List[int]]:
-    """finished, checked,
+    """
 
     a naive function removing non-ECG segments (flat and motion artefact)
 

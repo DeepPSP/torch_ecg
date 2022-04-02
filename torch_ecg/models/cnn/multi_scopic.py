@@ -37,7 +37,7 @@ __all__ = [
 
 
 class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     basic building block of the CNN part of the SOTA model
     from CPSC2019 challenge (entry 0416)
@@ -58,7 +58,7 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
         groups: int = 1,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -132,7 +132,7 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
             self.add_module("dropout", nn.Dropout(self.config.dropout, inplace=False))
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -150,7 +150,7 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -176,7 +176,7 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
 
 
 class MultiScopicBranch(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     branch path of the CNN part of the SOTA model
     from CPSC2019 challenge (entry 0416)
@@ -195,7 +195,7 @@ class MultiScopicBranch(SizeMixin, nn.Sequential):
         groups: int = 1,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -264,7 +264,7 @@ class MultiScopicBranch(SizeMixin, nn.Sequential):
             block_in_channels = self.__num_filters[idx]
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -282,7 +282,7 @@ class MultiScopicBranch(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -304,7 +304,7 @@ class MultiScopicBranch(SizeMixin, nn.Sequential):
 
 
 class MultiScopicCNN(SizeMixin, nn.Module):
-    """finished, checked,
+    """
 
     CNN part of the SOTA model from CPSC2019 challenge (entry 0416)
     """
@@ -313,7 +313,7 @@ class MultiScopicCNN(SizeMixin, nn.Module):
     __name__ = "MultiScopicCNN"
 
     def __init__(self, in_channels: int, **config) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -371,7 +371,7 @@ class MultiScopicCNN(SizeMixin, nn.Module):
             )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -396,7 +396,7 @@ class MultiScopicCNN(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

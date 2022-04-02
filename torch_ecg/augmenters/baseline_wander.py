@@ -128,7 +128,7 @@ class BaselineWanderAugmenter(Augmenter):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -196,7 +196,7 @@ def _get_ampl(sig: Tensor, fs: int) -> Tensor:
 
 
 def _gen_gaussian_noise(siglen: int, mean: Real = 0, std: Real = 0) -> np.ndarray:
-    """finished, checked,
+    """
 
     generate 1d Gaussian noise of given length, mean, and standard deviation
 
@@ -226,7 +226,7 @@ def _gen_sinusoidal_noise(
     amplitude_mean: Real = 0,
     amplitude_std: Real = 0,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     generate 1d sinusoidal noise of given length, amplitude, start phase, and end phase
 
@@ -263,7 +263,7 @@ def _gen_baseline_wander(
     amplitude: Union[Real, Sequence[Real]],
     amplitude_gaussian: Sequence[Real] = [0, 0],
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     generate 1d baseline wander of given length, amplitude, and frequency
 
@@ -314,7 +314,7 @@ def gen_baseline_wander(
     ampl_ratio: np.ndarray,
     gaussian: np.ndarray,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     generate 1d baseline wander of given length, amplitude, and frequency
 

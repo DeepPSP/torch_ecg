@@ -69,7 +69,7 @@ def special_detectors(
     verbose: int = 0,
     **kwargs: Any,
 ) -> dict:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -150,7 +150,7 @@ def pacing_rhythm_detector(
     ret_prob: bool = True,
     verbose: int = 0,
 ) -> Real:
-    """finished, checked, to be improved (fine-tuning hyper-parameters in cfg.py),
+    """to be improved (fine-tuning hyper-parameters in cfg.py),
 
     Parameters
     ----------
@@ -258,7 +258,7 @@ def electrical_axis_detector(
     method: Optional[str] = None,
     verbose: int = 0,
 ) -> str:
-    """finished, checked, to be improved (fine-tuning hyper-parameters in cfg.py),
+    """to be improved (fine-tuning hyper-parameters in cfg.py),
 
     detector of the heart electrical axis by means of "2-lead" method or "3-lead" method,
     NOTE that the extreme axis is not checked and treated as "normal"
@@ -409,7 +409,7 @@ def brady_tachy_detector(
     normal_rr_range: Optional[Sequence[Real]] = None,
     verbose: int = 0,
 ) -> str:
-    """finished, checked, to be improved (fine-tuning hyper-parameters in cfg.py),
+    """to be improved (fine-tuning hyper-parameters in cfg.py),
 
     detemine if the ecg is bradycadia or tachycardia or normal,
     only by the mean rr interval.
@@ -473,7 +473,7 @@ def LQRSV_detector(
     leads: Sequence[str] = Standard12Leads,
     verbose: int = 0,
 ) -> bool:
-    """finished, checked, to be improved (fine-tuning hyper-parameters in cfg.py),
+    """to be improved (fine-tuning hyper-parameters in cfg.py),
 
     Parameters
     ----------
@@ -558,7 +558,7 @@ def LQRSV_detector_backup(
     leads: Sequence[str] = Standard12Leads,
     verbose: int = 0,
 ) -> bool:
-    """finished, checked, to be improved (fine-tuning hyper-parameters in cfg.py),
+    """to be improved (fine-tuning hyper-parameters in cfg.py),
 
     Parameters
     ----------
@@ -673,7 +673,7 @@ def PRWP_detector(
     leads: Sequence[str] = Standard12Leads,
     verbose: int = 0,
 ) -> bool:
-    """finished, checked, to be improved
+    """to be improved
 
     Parameters
     ----------

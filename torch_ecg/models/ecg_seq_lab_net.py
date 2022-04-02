@@ -59,7 +59,7 @@ __all__ = [
 
 
 class ECG_SEQ_LAB_NET(ECG_CRNN):
-    """finished, checked,
+    """
 
     SOTA model from CPSC2019 challenge (entry 0416)
 
@@ -80,7 +80,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
     def __init__(
         self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -98,7 +98,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         super().__init__(classes, n_leads, _config)
 
     def extract_features(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         extract feature map before the dense (linear) classifying layer(s)
 
@@ -129,7 +129,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         return features
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -156,7 +156,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         return pred
 
     def _recover_length(self, pred: Tensor, seq_len: int) -> Tensor:
-        """finished, checked,
+        """
 
         recover the length of `pred` to `seq_len`
 
@@ -181,7 +181,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
 
 class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
-    """finished, checked,
+    """
 
     SOTA model from CPSC2019 challenge (entry 0416), legacy version
 
@@ -202,7 +202,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
     def __init__(
         self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -309,7 +309,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def extract_features(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         extract feature map before the dense (linear) classifying layer(s)
 
@@ -340,7 +340,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         return features
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -370,7 +370,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
         return pred
 
     def _recover_length(self, pred: Tensor, seq_len: int) -> Tensor:
-        """finished, checked,
+        """
 
         recover the length of `pred` to `seq_len`
 
@@ -405,7 +405,7 @@ class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

@@ -108,7 +108,7 @@ class CINC2018(PhysioNetDataBase):
         self._all_records = []
 
     def get_subject_id(self, rec: str) -> int:
-        """finished, checked,
+        """
 
         Parameters
         ----------

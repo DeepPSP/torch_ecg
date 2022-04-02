@@ -64,7 +64,7 @@ class TripleConv(MultiConv):
         out_activation: bool = True,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -129,7 +129,7 @@ class DownTripleConv(SizeMixin, nn.Sequential):
         mode: str = "max",
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -187,7 +187,7 @@ class DownTripleConv(SizeMixin, nn.Sequential):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -205,7 +205,7 @@ class DownTripleConv(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -247,7 +247,7 @@ class DownBranchedDoubleConv(SizeMixin, nn.Module):
         mode: str = "max",
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -300,7 +300,7 @@ class DownBranchedDoubleConv(SizeMixin, nn.Module):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -324,7 +324,7 @@ class DownBranchedDoubleConv(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -453,7 +453,7 @@ class UpTripleConv(SizeMixin, nn.Module):
         )
 
     def forward(self, input: Tensor, down_output: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -473,7 +473,7 @@ class UpTripleConv(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -504,7 +504,7 @@ class UpTripleConv(SizeMixin, nn.Module):
 
 
 class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
-    """finished, checked,
+    """
 
     entry 0433 of CPSC2019
     """
@@ -513,7 +513,7 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
     __name__ = "ECG_SUBTRACT_UNET"
 
     def __init__(self, classes: Sequence[str], n_leads: int, config: dict) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -657,7 +657,7 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -718,7 +718,7 @@ class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

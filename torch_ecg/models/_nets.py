@@ -204,7 +204,7 @@ Activations.softmax = nn.Softmax
 def get_activation(
     act: Union[str, nn.Module, type(None)], kw_act: Optional[dict] = None
 ) -> Optional[nn.Module]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -264,7 +264,7 @@ Normalizations.local_response_normalization = Normalizations.local_response_norm
 def get_normalization(
     norm: Union[str, nn.Module, type(None)], kw_norm: Optional[dict] = None
 ) -> Optional[nn.Module]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -312,7 +312,7 @@ _DEFAULT_CONV_CONFIGS = CFG(
 # ---------------------------------------------
 # basic building blocks of CNN
 class Bn_Activation(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     batch normalization --> activation
     """
@@ -327,7 +327,7 @@ class Bn_Activation(SizeMixin, nn.Sequential):
         kw_activation: Optional[dict] = None,
         dropout: float = 0.0,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -379,7 +379,7 @@ class Bn_Activation(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -398,7 +398,7 @@ class Bn_Activation(SizeMixin, nn.Sequential):
 
 
 class Conv_Bn_Activation(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     1d convolution --> batch normalization (optional) -- > activation (optional),
     orderings can be adjusted,
@@ -423,7 +423,7 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
         ordering: str = "cba",
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -646,7 +646,7 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -681,7 +681,7 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
 
 
 class MultiConv(SizeMixin, nn.Sequential):
-    """finished, checked,
+    """
 
     a sequence (stack) of `Conv_Bn_Activation` blocks,
     perhaps with `Dropout` between
@@ -702,7 +702,7 @@ class MultiConv(SizeMixin, nn.Sequential):
         out_activation: bool = True,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -820,7 +820,7 @@ class MultiConv(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -869,7 +869,7 @@ class BranchedConv(SizeMixin, nn.Module):
         dropouts: Union[Sequence[Sequence[float]], Sequence[float], float] = 0.0,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -957,7 +957,7 @@ class BranchedConv(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> List[Sequence[Union[int, None]]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1008,7 +1008,7 @@ class SeparableConv(SizeMixin, nn.Sequential):
         bias: bool = True,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1104,7 +1104,7 @@ class SeparableConv(SizeMixin, nn.Sequential):
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1122,7 +1122,7 @@ class SeparableConv(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1237,7 +1237,7 @@ class DownSample(SizeMixin, nn.Sequential):
         mode: str = "max",
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1401,7 +1401,7 @@ class DownSample(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1499,7 +1499,7 @@ class BlurPool(SizeMixin, nn.Module):
         pad_off: int = 0,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1556,7 +1556,7 @@ class BlurPool(SizeMixin, nn.Module):
         self.pad = self._get_pad_layer()
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1605,7 +1605,7 @@ class BlurPool(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1670,7 +1670,7 @@ class AntiAliasConv(SizeMixin, nn.Sequential):
         bias: bool = True,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1728,7 +1728,7 @@ class AntiAliasConv(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1773,7 +1773,7 @@ class BidirectionalLSTM(SizeMixin, nn.Module):
         return_sequences: bool = True,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1823,7 +1823,7 @@ class BidirectionalLSTM(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1865,7 +1865,7 @@ class StackedLSTM(SizeMixin, nn.Sequential):
         return_sequences: bool = True,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -1970,7 +1970,7 @@ class StackedLSTM(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2179,7 +2179,7 @@ class AttentionWithContext(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2249,7 +2249,7 @@ class MultiHeadAttention(SizeMixin, nn.Module):
         activation: Optional[Union[str, nn.Module]] = "relu",
         **kwargs: Any,
     ):
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2339,7 +2339,7 @@ class MultiHeadAttention(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2380,7 +2380,7 @@ class SelfAttention(SizeMixin, nn.Module):
         activation: Optional[Union[str, nn.Module]] = "relu",
         **kwargs: Any,
     ):
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2428,7 +2428,7 @@ class SelfAttention(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2460,7 +2460,7 @@ class AttentivePooling(SizeMixin, nn.Module):
         dropout: float = 0.2,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2508,7 +2508,7 @@ class AttentivePooling(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2541,7 +2541,7 @@ class ZeroPadding(SizeMixin, nn.Module):
     def __init__(
         self, in_channels: int, out_channels: int, loc: str = "head"
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2584,7 +2584,7 @@ class ZeroPadding(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2621,7 +2621,7 @@ class SeqLin(SizeMixin, nn.Sequential):
         dropouts: Union[float, Sequence[float]] = 0.0,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2721,7 +2721,7 @@ class SeqLin(SizeMixin, nn.Sequential):
         batch_size: Optional[int] = None,
         input_seq: bool = True,
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2764,7 +2764,7 @@ class MLP(SeqLin):
         dropouts: Union[float, Sequence[float]] = 0.0,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2817,7 +2817,7 @@ class NonLocalBlock(SizeMixin, nn.Module):
         subsample_length: int = 2,
         **config,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2874,7 +2874,7 @@ class NonLocalBlock(SizeMixin, nn.Module):
         )
 
     def forward(self, x: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2906,7 +2906,7 @@ class NonLocalBlock(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2925,7 +2925,7 @@ class NonLocalBlock(SizeMixin, nn.Module):
 
 
 class SEBlock(SizeMixin, nn.Module):
-    """finished, checked,
+    """
 
     Squeeze-and-Excitation Block
 
@@ -2944,7 +2944,7 @@ class SEBlock(SizeMixin, nn.Module):
     )
 
     def __init__(self, in_channels: int, reduction: int = 16, **config) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -2979,7 +2979,7 @@ class SEBlock(SizeMixin, nn.Module):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3002,7 +3002,7 @@ class SEBlock(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3063,7 +3063,7 @@ class SKBlock(SizeMixin, nn.Module):
 
 
 class GlobalContextBlock(SizeMixin, nn.Module):
-    """finished, checked,
+    """
 
     Global Context Block
 
@@ -3096,7 +3096,7 @@ class GlobalContextBlock(SizeMixin, nn.Module):
         ],
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3151,7 +3151,7 @@ class GlobalContextBlock(SizeMixin, nn.Module):
             self.channel_mul_conv = None
 
     def spatial_pool(self, x: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3178,7 +3178,7 @@ class GlobalContextBlock(SizeMixin, nn.Module):
         return context
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3211,7 +3211,7 @@ class GlobalContextBlock(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3284,7 +3284,7 @@ class CBAMBlock(SizeMixin, nn.Module):
         no_spatial: bool = False,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3359,7 +3359,7 @@ class CBAMBlock(SizeMixin, nn.Module):
             )
 
     def _fwd_channel_gate(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         forward function of the channel gate
 
@@ -3387,7 +3387,7 @@ class CBAMBlock(SizeMixin, nn.Module):
         return output
 
     def _fwd_spatial_gate(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         forward function of the spatial gate
 
@@ -3412,7 +3412,7 @@ class CBAMBlock(SizeMixin, nn.Module):
         return output
 
     def _lp_pool(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         global power-average pooling over `input`
 
@@ -3431,7 +3431,7 @@ class CBAMBlock(SizeMixin, nn.Module):
         )
 
     def _lse_pool(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         global logsumexp pooling over `input`
 
@@ -3448,7 +3448,7 @@ class CBAMBlock(SizeMixin, nn.Module):
         return torch.logsumexp(input, dim=-1)
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         forward function of the `CBAMBlock`,
         first channel gate, then (optional) spatial gate
@@ -3469,7 +3469,7 @@ class CBAMBlock(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3895,7 +3895,7 @@ class CRF(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3934,7 +3934,7 @@ class ExtendedCRF(SizeMixin, nn.Sequential):
     __name__ = "ExtendedCRF"
 
     def __init__(self, in_channels: int, num_tags: int, bias: bool = True) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3967,7 +3967,7 @@ class ExtendedCRF(SizeMixin, nn.Sequential):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -3992,7 +3992,7 @@ class ExtendedCRF(SizeMixin, nn.Sequential):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -4024,7 +4024,7 @@ class SpaceToDepth(SizeMixin, nn.Module):
     def __init__(
         self, in_channels: int, out_channels: int, block_size: int = 4
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -4050,7 +4050,7 @@ class SpaceToDepth(SizeMixin, nn.Module):
             self.out_conv = None
 
     def forward(self, x: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -4073,7 +4073,7 @@ class SpaceToDepth(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -4259,7 +4259,7 @@ class MLDecoder(SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -4344,7 +4344,7 @@ def drop_path(
 
 
 def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
-    """finished, checked,
+    """
 
     make attention layer by config
 

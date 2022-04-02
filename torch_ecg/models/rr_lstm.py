@@ -62,7 +62,7 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
     def __init__(
         self, classes: Sequence[str], config: Optional[CFG] = None, **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -179,7 +179,7 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -232,7 +232,7 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

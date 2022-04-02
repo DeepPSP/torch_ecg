@@ -45,7 +45,7 @@ class Normalize(torch.nn.Module):
         inplace: bool = True,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -81,7 +81,7 @@ class Normalize(torch.nn.Module):
         self.inplace = inplace
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -121,7 +121,7 @@ class MinMaxNormalize(Normalize):
         self,
         per_channel: bool = False,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -150,7 +150,7 @@ class NaiveNormalize(Normalize):
         per_channel: bool = False,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -188,7 +188,7 @@ class ZScoreNormalize(Normalize):
         per_channel: bool = False,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------

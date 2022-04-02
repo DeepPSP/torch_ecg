@@ -30,7 +30,7 @@ CNN_MODEL, CRNN_MODEL = load_model("keras_ecg_seq_lab_net")
 def seq_lab_net_detect(
     sig: np.ndarray, fs: Real, correction: bool = False, **kwargs
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     use model of entry 0416 of CPSC2019,
     to detect R peaks in single-lead ECGs of arbitrary length
@@ -193,7 +193,7 @@ def _seq_lab_net_post_process(
     dist_thr: Union[int, Sequence[int]] = 200,
     verbose: int = 0,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     convert the array of probability predictions into the array of indices of rpeaks
 
@@ -316,7 +316,7 @@ def _seq_lab_net_post_process(
 
 
 def _remove_spikes_naive(sig: np.ndarray) -> np.ndarray:
-    """finished, checked,
+    """
 
     remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
 

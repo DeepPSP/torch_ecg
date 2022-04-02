@@ -24,7 +24,7 @@ class Resample(PreProcessor):
     def __init__(
         self, fs: Optional[int] = None, siglen: Optional[int] = None, **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -42,7 +42,7 @@ class Resample(PreProcessor):
         ), "one and only one of `fs` and `siglen` should be set"
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
-        """finished, checked,
+        """
 
         apply the preprocessor to `sig`
 

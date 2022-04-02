@@ -45,7 +45,7 @@ class PreprocManager(ReprMixin):
     def __init__(
         self, *pps: Optional[Tuple[PreProcessor, ...]], random: bool = False
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -75,7 +75,7 @@ class PreprocManager(ReprMixin):
         self._preprocessors.append(Resample(**config))
 
     def __call__(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -105,7 +105,7 @@ class PreprocManager(ReprMixin):
 
     @classmethod
     def from_config(cls, config: dict) -> "PreprocManager":
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -140,7 +140,7 @@ class PreprocManager(ReprMixin):
         return ppm
 
     def rearrange(self, new_ordering: List[str]) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -161,7 +161,7 @@ class PreprocManager(ReprMixin):
         )
 
     def add_(self, pp: PreProcessor, pos: int = -1) -> NoReturn:
-        """finished, checked,
+        """
 
         add a (custom) preprocessor to the manager,
         this method is preferred against directly manipulating

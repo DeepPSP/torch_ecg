@@ -371,7 +371,7 @@ def challenge_entry(sample_path):
 
 
 def _detect_rpeaks(model, sig, siglen, overlap_len, config):
-    """finished, checked,
+    """
 
     NOTE: sig are sliced data with overlap,
     hence DO NOT directly use model's inference method
@@ -447,7 +447,7 @@ def _detect_rpeaks(model, sig, siglen, overlap_len, config):
 
 
 def _rr_lstm(model, rpeaks, siglen, config):
-    """finished, checked,"""
+    """ """
     try:
         model = model.to(_CUDA)
     except:
@@ -473,7 +473,7 @@ def _rr_lstm(model, rpeaks, siglen, config):
 
 
 def _main_task(model, sig, siglen, overlap_len, rpeaks, config):
-    """finished, checked,"""
+    """ """
     try:
         model = model.to(_CUDA)
     except:

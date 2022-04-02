@@ -1097,7 +1097,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         update_rr_seq_json: bool = False,
         verbose: int = 0,
     ) -> NoReturn:
-        """"""
+        """ """
         self.__assert_task(["rr_lstm"])
         subject = self.reader.get_subject_id(rec)
         rec_rr_seq = [

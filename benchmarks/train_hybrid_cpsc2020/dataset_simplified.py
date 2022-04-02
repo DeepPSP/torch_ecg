@@ -74,7 +74,7 @@ class CPSC2020(Dataset):
     __name__ = "CPSC2020"
 
     def __init__(self, config: CFG, training: bool = True) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -138,7 +138,7 @@ class CPSC2020(Dataset):
             self._n_gn_choices = len(self.config.bw_gaussian)
 
     def _ls_segments(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
             for rec in self.reader.all_records:
@@ -169,7 +169,7 @@ class CPSC2020(Dataset):
         return self.__all_segments
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,"""
+        """ """
         seg_name = self.segments[index]
         seg_data = self._load_seg_data(seg_name)
         if self.config.model_name.lower() == "crnn":
@@ -235,7 +235,7 @@ class CPSC2020(Dataset):
         return len(self.segments)
 
     def _get_seg_ampl(self, seg_data: np.ndarray, window: int = 80) -> float:
-        """finished, checked,
+        """
 
         get amplitude of a segment
 
@@ -259,7 +259,7 @@ class CPSC2020(Dataset):
         return ampl
 
     def _get_seg_data_path(self, seg: str) -> Path:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -276,7 +276,7 @@ class CPSC2020(Dataset):
         return fp
 
     def _get_seg_ann_path(self, seg: str) -> Path:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -293,7 +293,7 @@ class CPSC2020(Dataset):
         return fp
 
     def _load_seg_data(self, seg: str) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -310,7 +310,7 @@ class CPSC2020(Dataset):
         return seg_data
 
     def _load_seg_label(self, seg: str) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -327,7 +327,7 @@ class CPSC2020(Dataset):
         return seg_label
 
     def _load_seg_beat_ann(self, seg: str) -> Dict[str, np.ndarray]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -349,7 +349,7 @@ class CPSC2020(Dataset):
         return seg_beat_ann
 
     def _load_seg_seq_lab(self, seg: str, reduction: int = 8) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------

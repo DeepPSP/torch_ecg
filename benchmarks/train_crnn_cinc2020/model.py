@@ -42,7 +42,7 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         config: Optional[CFG] = None,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -66,7 +66,7 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         class_names: bool = False,
         bin_pred_thr: float = 0.5,
     ) -> MultiLabelClassificationOutput:
-        """finished, checked,
+        """
 
         auxiliary function to `forward`, for CINC2020,
 

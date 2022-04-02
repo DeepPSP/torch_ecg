@@ -42,7 +42,7 @@ class StretchCompress(Augmenter):
     def __init__(
         self, ratio: Real = 6, prob: float = 0.5, inplace: bool = True, **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -70,7 +70,7 @@ class StretchCompress(Augmenter):
     def forward(
         self, sig: Tensor, *labels: Optional[Sequence[Tensor]], **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -349,7 +349,7 @@ class StretchCompressOffline(ReprMixin):
         overlap: float = 0.5,
         critical_overlap: float = 0.85,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -388,7 +388,7 @@ class StretchCompressOffline(ReprMixin):
         *labels: Sequence[np.ndarray],
         critical_points: Optional[Sequence[int]] = None,
     ) -> List[Tuple[Union[np.ndarray, int], ...]]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -467,7 +467,7 @@ class StretchCompressOffline(ReprMixin):
         start_idx: Optional[int] = None,
         end_idx: Optional[int] = None,
     ) -> Tuple[Union[np.ndarray, int], ...]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -543,7 +543,7 @@ class StretchCompressOffline(ReprMixin):
         return (aug_seg,) + tuple(aug_labels) + (start_idx, end_idx)
 
     def _sample_ratio(self) -> float:
-        """finished, checked,"""
+        """ """
         if np.random.uniform() >= self.prob:
             return 0
         else:

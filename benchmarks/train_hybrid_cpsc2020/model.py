@@ -48,7 +48,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         config: Optional[CFG] = None,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -71,7 +71,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         class_names: bool = False,
         bin_pred_thr: float = 0.5,
     ) -> MultiLableClassificationOutput:
-        """finished, checked,
+        """
 
         auxiliary function to `forward`, for CPSC2020,
 
@@ -152,7 +152,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         config: Optional[CFG] = None,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -180,7 +180,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         bin_pred_thr: float = 0.5,
         rpeak_inds: Optional[List[np.ndarray]] = None,
     ) -> SequenceLabelingOutput:
-        """finished, checked,
+        """
 
         auxiliary function to `forward`, for CPSC2020,
 

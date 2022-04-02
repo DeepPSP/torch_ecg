@@ -39,7 +39,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
     def __init__(
         self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -62,7 +62,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
         class_names: bool = False,
         bin_pred_thr: float = 0.5,
     ) -> MultiLabelClassificationOutput:
-        """finished, checked,
+        """
 
         auxiliary function to `forward`, for CINC2021,
 

@@ -48,7 +48,7 @@ class PreprocManager(ReprMixin, nn.Module):
         random: bool = False,
         inplace: bool = True,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -81,7 +81,7 @@ class PreprocManager(ReprMixin, nn.Module):
         self._preprocessors.append(Resample(**config))
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -105,7 +105,7 @@ class PreprocManager(ReprMixin, nn.Module):
 
     @classmethod
     def from_config(cls, config: dict) -> "PreprocManager":
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -143,7 +143,7 @@ class PreprocManager(ReprMixin, nn.Module):
         return ppm
 
     def rearrange(self, new_ordering: List[str]) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -165,7 +165,7 @@ class PreprocManager(ReprMixin, nn.Module):
         )
 
     def add_(self, pp: nn.Module, pos: int = -1) -> NoReturn:
-        """finished, checked,
+        """
 
         add a (custom) preprocessor to the manager,
         this method is preferred against directly manipulating

@@ -118,7 +118,7 @@ class CPSC2020(ReprMixin, Dataset):
     __name__ = "CPSC2020"
 
     def __init__(self, config: CFG, training: bool = True) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -189,7 +189,7 @@ class CPSC2020(ReprMixin, Dataset):
             self._n_gn_choices = len(self.config.bw_gaussian)
 
     def _ls_segments(self) -> NoReturn:
-        """finished, checked,"""
+        """ """
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
             for rec in self.reader.all_records:
@@ -220,7 +220,7 @@ class CPSC2020(ReprMixin, Dataset):
         return self.__all_segments
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,"""
+        """ """
         seg_name = self.segments[index]
         seg_data = self._load_seg_data(seg_name)
         if self.config.model_name.lower() == "crnn":
@@ -286,7 +286,7 @@ class CPSC2020(ReprMixin, Dataset):
         return len(self.segments)
 
     def _get_seg_ampl(self, seg_data: np.ndarray, window: int = 80) -> float:
-        """finished, checked,
+        """
 
         get amplitude of a segment
 
@@ -310,7 +310,7 @@ class CPSC2020(ReprMixin, Dataset):
         return ampl
 
     def _get_seg_data_path(self, seg: str) -> Path:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -327,7 +327,7 @@ class CPSC2020(ReprMixin, Dataset):
         return fp
 
     def _get_seg_ann_path(self, seg: str) -> Path:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -344,7 +344,7 @@ class CPSC2020(ReprMixin, Dataset):
         return fp
 
     def _load_seg_data(self, seg: str) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -361,7 +361,7 @@ class CPSC2020(ReprMixin, Dataset):
         return seg_data
 
     def _load_seg_label(self, seg: str) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -378,7 +378,7 @@ class CPSC2020(ReprMixin, Dataset):
         return seg_label
 
     def _load_seg_beat_ann(self, seg: str) -> Dict[str, np.ndarray]:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -400,7 +400,7 @@ class CPSC2020(ReprMixin, Dataset):
         return seg_beat_ann
 
     def _load_seg_seq_lab(self, seg: str, reduction: int = 8) -> np.ndarray:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -445,7 +445,7 @@ class CPSC2020(ReprMixin, Dataset):
         self.__data_aug = True
 
     def persistence(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
-        """finished, checked,
+        """
 
         make the dataset persistent w.r.t. the ratios in `self.config`
 
@@ -471,7 +471,7 @@ class CPSC2020(ReprMixin, Dataset):
     def _preprocess_data(
         self, preproc: List[str], force_recompute: bool = False, verbose: int = 0
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
@@ -506,7 +506,7 @@ class CPSC2020(ReprMixin, Dataset):
         force_recompute: bool = False,
         verbose: int = 0,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
@@ -579,7 +579,7 @@ class CPSC2020(ReprMixin, Dataset):
         return _p
 
     def _get_rec_suffix(self, operations: List[str]) -> str:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -596,7 +596,7 @@ class CPSC2020(ReprMixin, Dataset):
         return suffix
 
     def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
-        """finished, checked,
+        """
 
         slice all records into segments of length `self.config.input_len`, i.e. `self.seglen`,
         and perform data augmentations specified in `self.config`
@@ -629,7 +629,7 @@ class CPSC2020(ReprMixin, Dataset):
         update_segments_json: bool = False,
         verbose: int = 0,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         slice one record into segments of length `self.config.input_len`, i.e. `self.seglen`,
         and perform data augmentations specified in `self.config`
@@ -801,7 +801,7 @@ class CPSC2020(ReprMixin, Dataset):
         ticks_granularity: int = 0,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------

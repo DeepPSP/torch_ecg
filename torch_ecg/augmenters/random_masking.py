@@ -33,7 +33,7 @@ class RandomMasking(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -74,7 +74,7 @@ class RandomMasking(Augmenter):
         critical_points: Optional[Sequence[Sequence[int]]] = None,
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """finished, checked,
+        """
 
         Parameters
         ----------

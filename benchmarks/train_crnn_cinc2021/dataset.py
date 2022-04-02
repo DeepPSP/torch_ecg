@@ -63,7 +63,7 @@ class CINC2021(ReprMixin, Dataset):
     def __init__(
         self, config: CFG, training: bool = True, lazy: bool = True
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -165,7 +165,7 @@ class CINC2021(ReprMixin, Dataset):
         self._labels = np.concatenate(self._labels, axis=0)
 
     def _load_one_record(self, rec: str) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,
+        """
 
         load a record from the database using data reader
 
@@ -257,7 +257,7 @@ class CINC2021(ReprMixin, Dataset):
         return self._labels
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """finished, checked,"""
+        """ """
         return self.signals[index], self.labels[index]
 
     def __len__(self) -> int:
@@ -267,7 +267,7 @@ class CINC2021(ReprMixin, Dataset):
     def _train_test_split(
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> List[str]:
-        """finished, checked,
+        """
 
         do train test split,
         it is ensured that both the train and the test set contain all classes
@@ -375,7 +375,7 @@ class CINC2021(ReprMixin, Dataset):
     def _check_train_test_split_validity(
         self, train_set: List[str], test_set: List[str], all_classes: Set[str]
     ) -> bool:
-        """finished, checked,
+        """
 
         the train-test split is valid iff
         records in both `train_set` and `test` contain all classes in `all_classes`
@@ -416,7 +416,7 @@ class CINC2021(ReprMixin, Dataset):
         return is_valid
 
     def persistence(self) -> NoReturn:
-        """finished, checked,
+        """
 
         make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
         """
@@ -448,7 +448,7 @@ class CINC2021(ReprMixin, Dataset):
         print(f"y saved to {filename}")
 
     def _check_nan(self) -> NoReturn:
-        """finished, checked,
+        """
 
         during training, sometimes nan values are encountered,
         which ruins the whole training process

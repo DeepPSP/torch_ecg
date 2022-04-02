@@ -68,7 +68,7 @@ def train(
     logger: Optional[logging.Logger] = None,
     debug: bool = False,
 ) -> OrderedDict:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -596,7 +596,7 @@ def evaluate_crnn(
     debug: bool = True,
     logger: Optional[logging.Logger] = None,
 ) -> Tuple[float]:
-    """finished, checked,
+    """
 
     Parameters
     ----------
@@ -703,7 +703,7 @@ def evaluate_seq_lab(
     debug: bool = True,
     logger: Optional[logging.Logger] = None,
 ) -> Dict[str, int]:
-    """finished, checked,
+    """
 
     Parameters
     ----------

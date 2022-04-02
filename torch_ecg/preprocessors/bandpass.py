@@ -30,7 +30,7 @@ class BandPass(torch.nn.Module):
         inplace: bool = True,
         **kwargs: Any
     ) -> NoReturn:
-        """finished, checked,
+        """
 
         Parameters
         ----------
@@ -59,7 +59,7 @@ class BandPass(torch.nn.Module):
         self.inplace = inplace
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """finished, checked,
+        """
 
         apply the preprocessor to `sig`
 

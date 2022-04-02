@@ -86,7 +86,7 @@ def preprocess_multi_lead_signal(
     filter_type: str = "butter",
     filter_order: Optional[int] = None,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     perform preprocessing for multi-lead ecg signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
@@ -194,7 +194,7 @@ def preprocess_single_lead_signal(
     bl_win: Optional[List[Real]] = None,
     band_fs: Optional[List[Real]] = None,
 ) -> np.ndarray:
-    """finished, checked,
+    """
 
     perform preprocessing for single lead ecg signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
