@@ -42,6 +42,7 @@ from torch_ecg.components.outputs import WaveDelineationOutput
 ###############################################################################
 # set paths
 _CWD = Path(__file__).absolute().parent.parent / "tmp"
+_CWD.mkdir(parents=True, exist_ok=True)
 _DB_DIR = _CWD / "ludb"
 _DB_DIR.mkdir(parents=True, exist_ok=True)
 ###############################################################################
