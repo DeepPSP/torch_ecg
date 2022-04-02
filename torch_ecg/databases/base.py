@@ -386,7 +386,7 @@ class PhysioNetDataBase(_DataBase):
         start = time.time()
         self._all_records = get_record_list_recursive3(self.db_dir, self.data_ext)
         print(f"Done in {time.time() - start:.3f} seconds!")
-        record_list_fp.write_text("\n".join(self._all_records) + "\n")
+        # record_list_fp.write_text("\n".join(self._all_records) + "\n")
 
     def get_subject_id(self, rec: str) -> int:
         """

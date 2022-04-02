@@ -35,3 +35,4 @@ jobs:
     - name: Test with pytest
       run: |
         pytest test/test_pipelines/ -v
+        pytest test/test_download.py -v
