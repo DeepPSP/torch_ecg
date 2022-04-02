@@ -1,7 +1,7 @@
 """
 """
 
-from pytest import approx
+import pytest
 import torch
 
 try:
@@ -23,4 +23,4 @@ from torch_ecg._preprocessors import (
     Resample,
 )
 
-from .test_data import load_test_clf_data
+# from .test_data import load_test_clf_data

@@ -4,6 +4,7 @@
 import time
 from typing import NoReturn
 
+import pytest
 import torch
 from easydict import EasyDict as ED
 

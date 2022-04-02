@@ -11,7 +11,7 @@ try:
 except:
     import sys
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
     import torch_ecg
 from torch_ecg.databases import (
     AFDB,

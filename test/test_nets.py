@@ -2,6 +2,7 @@
 test of the classes from models._nets.py
 """
 
+import pytest
 import torch
 
 try:
