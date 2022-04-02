@@ -34,4 +34,4 @@ jobs:
         pip freeze
     - name: Test with pytest
       run: |
-        # pytest test -v
+        pytest test/ -v
