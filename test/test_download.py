@@ -53,7 +53,7 @@ def test_download_ludb():
     shutil.rmtree(db_dir)
 
 
-def test_download_ludb():
+def test_download_mitdb():
     """ """
     # download mitdb
     db_dir = _CWD / "mitdb"
@@ -66,7 +66,7 @@ def test_download_ludb():
     shutil.rmtree(db_dir)
 
 
-def test_download_ludb():
+def test_download_afdb():
     """ """
     # download afdb
     db_dir = _CWD / "afdb"
@@ -77,3 +77,6 @@ def test_download_ludb():
     db._ls_rec()
     assert len(db) == 23
     shutil.rmtree(db_dir)
+
+
+# other databases are very large, hence currently not being tested
