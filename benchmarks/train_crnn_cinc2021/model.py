@@ -21,6 +21,7 @@ except ModuleNotFoundError:
 from torch_ecg.cfg import CFG
 from torch_ecg.models.ecg_crnn import ECG_CRNN
 from torch_ecg.components.outputs import MultiLabelClassificationOutput
+from torch_ecg.utils.misc import add_docstring
 
 from cfg import ModelCfg
 
@@ -50,6 +51,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         model_config = CFG(deepcopy(ModelCfg))
         model_config.update(deepcopy(config) or {})
@@ -90,6 +92,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
 
         NOTE that when `input` is ndarray, one should make sure that it is transformed,
         e.g. bandpass filtered, normalized, etc.
+
         """
         if "NSR" in self.classes:
             nsr_cid = self.classes.index("NSR")
@@ -132,7 +135,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
             pred=pred,
         )
 
-    @torch.no_grad()
+    add_docstring(inference.__doc__)
     def inference_CINC2021(
         self,
         input: Union[np.ndarray, Tensor],
