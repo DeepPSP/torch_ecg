@@ -30,7 +30,7 @@ jobs:
         pip install pytest pytest-xdist # Testing packages
         pip uninstall torch-ecg --yes # Remove if already installed 
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
-        pip install -e .[dev]
+        # pip install -e .[develop]
         pip freeze
     - name: Test with pytest
       run: |

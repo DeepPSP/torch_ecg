@@ -148,6 +148,13 @@ class _DataBase(ReprMixin, ABC):
         """
         self.db_name = db_name
         self.db_dir = Path(db_dir)
+        if not self.db_dir.exists():
+            self.db_dir.mkdir(parents=True, exist_ok=True)
+            warnings.warn(
+                f"{self.db_dir} does not exist, created it. "
+                "Please check if it is correct. "
+                "Or you may want to download the database into this folder."
+            )
         self.working_dir = Path(working_dir or os.getcwd())
         self.working_dir.mkdir(parents=True, exist_ok=True)
         self.data_ext = None
@@ -365,9 +372,7 @@ class PhysioNetDataBase(_DataBase):
         except:
             self._ls_rec_local()
 
-    def _ls_rec_local(
-        self,
-    ) -> NoReturn:
+    def _ls_rec_local(self) -> NoReturn:
         """
 
         find all records in `self.db_dir`
