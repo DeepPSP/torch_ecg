@@ -449,7 +449,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
             pred=pred,
         )
 
-    add_docstring(inference.__doc__)
+    @add_docstring(inference.__doc__)
     def inference_CINC2021(
         self,
         input: Union[np.ndarray, Tensor],
@@ -508,7 +508,9 @@ class CINC2021Trainer(BaseTrainer):
             whether to initialize the data loader lazily
 
         """
-        super().__init__(model, CINC2021Dataset, model_config, train_config, device, lazy)
+        super().__init__(
+            model, CINC2021Dataset, model_config, train_config, device, lazy
+        )
 
     def _setup_dataloaders(
         self,
@@ -708,6 +710,7 @@ class CINC2021Trainer(BaseTrainer):
         return super().extra_log_suffix() + f"_{self.model_config.cnn.name}"
 
 
+# fmt: off
 # Define the Challenge lead sets. These variables are not required. You can change or remove them.
 twelve_leads = ("I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6")
 six_leads = ("I", "II", "III", "aVR", "aVL", "aVF")
@@ -715,11 +718,12 @@ four_leads = ("I", "II", "III", "V2")
 three_leads = ("I", "II", "V2")
 two_leads = ("I", "II")
 lead_sets = (twelve_leads, six_leads, four_leads, three_leads, two_leads)
+# fmt: on
 
 
 def test_crnn_cinc2021_pipeline() -> NoReturn:
     """ """
-    
+
     train_config = deepcopy(CINC2021TrainCfg)
     train_config.db_dir = _DB_DIR
     train_config.log_dir = _CWD / "logs"
@@ -744,7 +748,13 @@ def test_crnn_cinc2021_pipeline() -> NoReturn:
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    for lead_set_name in ["twelve_leads", "six_leads", "four_leads", "three_leads", "two_leads"]:
+    for lead_set_name in [
+        "twelve_leads",
+        "six_leads",
+        "four_leads",
+        "three_leads",
+        "two_leads",
+    ]:
         train_config.leads = eval(lead_set_name)
         train_config.n_leads = len(train_config.leads)
         model_config = eval(f"deepcopy(ModelCfg.{lead_set_name})")

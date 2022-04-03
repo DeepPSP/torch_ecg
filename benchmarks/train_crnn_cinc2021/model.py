@@ -135,7 +135,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
             pred=pred,
         )
 
-    add_docstring(inference.__doc__)
+    @add_docstring(inference.__doc__)
     def inference_CINC2021(
         self,
         input: Union[np.ndarray, Tensor],
