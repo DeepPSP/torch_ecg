@@ -22,7 +22,7 @@ from torch.utils.data.dataset import Dataset
 
 from ...._preprocessors import PreprocManager
 from ....cfg import CFG
-from ....databases import CINC2021Dataset as CR
+from ....databases import CINC2021 as CR
 from ....utils.ecg_arrhythmia_knowledge import Standard12Leads
 from ....utils.misc import ReprMixin, ensure_siglen, list_sum
 from ....utils.utils_signal import remove_spikes_naive
