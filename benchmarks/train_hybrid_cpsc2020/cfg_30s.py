@@ -337,7 +337,7 @@ TrainCfg.flip = [-1] + [
 ] * 4  # making the signal upside down, with probability 1/(1+4)
 # TODO: explore and add more data augmentations
 
-TrainCfg.seq_lab_reduction = 2 ** 4  # TODO: automatic adjust via model config
+TrainCfg.seq_lab_reduction = 2**4  # TODO: automatic adjust via model config
 
 # configs of training epochs, batch, etc.
 TrainCfg.n_epochs = 200

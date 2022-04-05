@@ -1782,7 +1782,7 @@ def _generate_weight_mask(
         # weight[max(0, idx-sigma): (idx+sigma)] = boundary_weight
         weight = np.full_like(target_mask, boundary_weight, dtype=float)
         weight = weight * np.exp(
-            -np.power(np.arange(len(target_mask)) - idx, 2) / sigma ** 2
+            -np.power(np.arange(len(target_mask)) - idx, 2) / sigma**2
         )
         weight_mask += weight
     if plot:

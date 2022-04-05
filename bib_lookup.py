@@ -227,14 +227,11 @@ class BibLookup(object):
         """
         idtf = identifier.lower().strip()
         if re.search(self.__doi_pattern, idtf):
-            url = (
-                "https://doi.org/"
-                + re.sub(
-                    self.__doi_pattern_prefix,
-                    "",
-                    idtf,
-                ).strip("/")
-            )
+            url = "https://doi.org/" + re.sub(
+                self.__doi_pattern_prefix,
+                "",
+                idtf,
+            ).strip("/")
             fc = {
                 "url": url,
                 "headers": {"Accept": "application/x-bibtex; charset=utf-8"},
@@ -254,14 +251,11 @@ class BibLookup(object):
             }
             category = "pm"
         elif re.search(self.__arxiv_pattern, idtf):
-            url = (
-                "http://export.arxiv.org/api/query?id_list="
-                + re.sub(
-                    self.__arxiv_pattern_prefix,
-                    "",
-                    idtf,
-                ).strip("/")
-            )
+            url = "http://export.arxiv.org/api/query?id_list=" + re.sub(
+                self.__arxiv_pattern_prefix,
+                "",
+                idtf,
+            ).strip("/")
             fc = {
                 "url": url,
             }

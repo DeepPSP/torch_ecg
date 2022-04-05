@@ -809,7 +809,7 @@ class ResNet(SizeMixin, nn.Sequential):
         self.__num_filters = self.config.get(
             "num_filters",
             [
-                (2 ** i) * self.input_stem.compute_output_shape()[1]
+                (2**i) * self.input_stem.compute_output_shape()[1]
                 for i in range(len(self.config.num_blocks))
             ],
         )

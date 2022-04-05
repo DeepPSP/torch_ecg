@@ -348,9 +348,9 @@ def compute_beta_measures(
     g_beta_measure = np.zeros(num_classes)
     for k in range(num_classes):
         tp, fp, fn, tn = A[k, 1, 1], A[k, 1, 0], A[k, 0, 1], A[k, 0, 0]
-        if (1 + beta ** 2) * tp + fp + beta ** 2 * fn:
-            f_beta_measure[k] = float((1 + beta ** 2) * tp) / float(
-                (1 + beta ** 2) * tp + fp + beta ** 2 * fn
+        if (1 + beta**2) * tp + fp + beta**2 * fn:
+            f_beta_measure[k] = float((1 + beta**2) * tp) / float(
+                (1 + beta**2) * tp + fp + beta**2 * fn
             )
         else:
             f_beta_measure[k] = float("nan")

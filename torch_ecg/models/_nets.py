@@ -73,7 +73,6 @@ if version.parse(torch.__version__) >= version.parse("1.5.0"):
     def _true_divide(dividend, divisor):
         return torch.true_divide(dividend, divisor)
 
-
 else:
 
     def _true_divide(dividend, divisor):

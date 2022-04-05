@@ -122,7 +122,7 @@ CPSC2019TrainCfg.cnn_name = "multi_scopic"
 CPSC2019TrainCfg.rnn_name = "lstm"
 CPSC2019TrainCfg.attn_name = "se"
 
-CPSC2019TrainCfg.reduction = 2 ** 3  # TODO: automatic adjust via model config
+CPSC2019TrainCfg.reduction = 2**3  # TODO: automatic adjust via model config
 CPSC2019TrainCfg.recover_length = True
 
 CPSC2019TrainCfg.monitor = "qrs_score"

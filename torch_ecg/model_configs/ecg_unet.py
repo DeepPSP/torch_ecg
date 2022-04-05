@@ -34,7 +34,7 @@ ECG_UNET_VANILLA_CONFIG.down_scales = list(
     repeat(2, ECG_UNET_VANILLA_CONFIG.down_up_block_num)
 )
 ECG_UNET_VANILLA_CONFIG.down_num_filters = [
-    ECG_UNET_VANILLA_CONFIG.init_num_filters * (2 ** idx)
+    ECG_UNET_VANILLA_CONFIG.init_num_filters * (2**idx)
     for idx in range(1, ECG_UNET_VANILLA_CONFIG.down_up_block_num + 1)
 ]
 ECG_UNET_VANILLA_CONFIG.down_filter_lengths = list(
@@ -46,7 +46,7 @@ ECG_UNET_VANILLA_CONFIG.up_scales = list(
     repeat(2, ECG_UNET_VANILLA_CONFIG.down_up_block_num)
 )
 ECG_UNET_VANILLA_CONFIG.up_num_filters = [
-    ECG_UNET_VANILLA_CONFIG.init_num_filters * (2 ** idx)
+    ECG_UNET_VANILLA_CONFIG.init_num_filters * (2**idx)
     for idx in range(ECG_UNET_VANILLA_CONFIG.down_up_block_num - 1, -1, -1)
 ]
 ECG_UNET_VANILLA_CONFIG.up_deconv_filter_lengths = list(

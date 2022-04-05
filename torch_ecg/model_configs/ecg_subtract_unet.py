@@ -40,7 +40,7 @@ ECG_SUBTRACT_UNET_CONFIG.down_mode = "max"
 ECG_SUBTRACT_UNET_CONFIG.down_scales = [10, 5, 2]
 init_down_num_filters = 24
 ECG_SUBTRACT_UNET_CONFIG.down_num_filters = [
-    list(repeat(init_down_num_filters * (2 ** idx), _num_convs))
+    list(repeat(init_down_num_filters * (2**idx), _num_convs))
     for idx in range(0, ECG_SUBTRACT_UNET_CONFIG.down_up_block_num - 1)
 ]
 ECG_SUBTRACT_UNET_CONFIG.down_filter_lengths = [11, 5]
