@@ -10,18 +10,10 @@ Reference
 5. Ridnik, T., Lawen, H., Noy, A., Ben Baruch, E., Sharir, G., & Friedman, I. (2021). Tresnet: High performance gpu-dedicated architecture. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (pp. 1400-1409).
 """
 
-from itertools import repeat
 from copy import deepcopy
 
-import numpy as np
-
-from ..attn import (
-    squeeze_excitation,
-    non_local,
-    global_context,
-)
 from ...cfg import CFG
-
+from ..attn import global_context, non_local, squeeze_excitation
 
 __all__ = [
     # building blocks

@@ -4,19 +4,17 @@ utilities for nn models
 """
 
 import re
+from copy import deepcopy
 from itertools import repeat
 from math import floor
-from copy import deepcopy
-from typing import Union, Sequence, List, Tuple, Optional, NoReturn
 from numbers import Real
+from typing import List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
-from torch import Tensor
-from torch import nn
+from torch import Tensor, nn
 
 from ..cfg import DEFAULTS
-
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -154,13 +152,18 @@ def compute_output_shape(
         "convolution",
     ]:
         # as function of dilation, kernel_size
-        minus_term = lambda d, k: d * (k - 1) + 1
+        def minus_term(d, k):
+            return d * (k - 1) + 1
+
         out_channels = num_filters
     elif lt in [
         "maxpool",
         "maxpooling",
     ]:
-        minus_term = lambda d, k: d * (k - 1) + 1
+
+        def minus_term(d, k):
+            return d * (k - 1) + 1
+
         out_channels = input_shape[-1] if channel_last else input_shape[1]
     elif lt in [
         "avgpool",
@@ -168,7 +171,10 @@ def compute_output_shape(
         "averagepool",
         "averagepooling",
     ]:
-        minus_term = lambda d, k: k
+
+        def minus_term(d, k):
+            return k
+
         out_channels = input_shape[-1] if channel_last else input_shape[1]
     elif lt in [
         "deconv",
@@ -637,7 +643,7 @@ def default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor,
     """
     try:
         n_fields = len(batch[0])
-    except:
+    except Exception:
         raise ValueError("No data")
     ret = []
     for i in range(n_fields):
@@ -648,58 +654,16 @@ def default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor,
     return tuple(ret)
 
 
-def intervals_iou(itv_a: Tensor, itv_b: Tensor, iou_type="iou") -> Tensor:
-    """NOT finished, NOT checked,
+if torch.__version__ >= "1.15.0":
 
-    1d analogue of the 2d bounding boxes IoU,
-    for 1d "object detection" models
+    def _true_divide(dividend, divisor):
+        return torch.true_divide(dividend, divisor)
 
-    Parameters
-    ----------
-    itv_a, itv_b: Tensor,
-        of shape (N, 2), (K, 2) resp.
-    iou_type: str, default "iou", case insensitive
-        type of IoU
 
-    """
-    raise NotImplementedError
-    left_intersect = torch.max(itv_a[:, np.newaxis, :1], itvb[..., :1]).squeeze(
-        -1
-    )  # shape (N,K)
-    right_intersect = torch.min(itv_a[:, np.newaxis, 1:], itvb[..., 1:]).squeeze(
-        -1
-    )  # shape (N,K)
+else:
 
-    left_union = torch.min(itv_a[:, np.newaxis, :1], itvb[..., :1]).squeeze(
-        -1
-    )  # shape (N,K)
-    right_union = torch.max(itv_a[:, np.newaxis, 1:], itvb[..., 1:]).squeeze(
-        -1
-    )  # shape (N,K)
-
-    en = (left_intersect < right_intersect).type(left_intersect.type())
-    len_intersect = (right_intersect - left_intersect) * en
-    len_union = right_union - left_union
-
-    iou = _true_divide(len_intersect, len_union)
-
-    if iou_type.lower() == "iou":
-        return iou
-
-    cen_a = torch.mean(itv_a, dim=-1, keepdim=True)  # shape (N,1,1)
-    cen_b = torch.mean(itv_b, dim=-1, keepdim=False)  # shape (K,1)
-    cen_dist = torch.abs(itv_a - itv_b).squeeze(-1)  # shape (N,K)
-
-    diou = iou - _true_divide(cen_dist, len_union)
-
-    if iou_type.lower() == "diou":
-        return diou
-
-    len_a = a[..., 1] - a[..., 0]
-    len_b = b[..., 1] - b[..., 0]
-
-    if iou_type.lower() == "ciou":
-        raise NotImplementedError
+    def _true_divide(dividend, divisor):
+        return dividend / divisor
 
 
 def _adjust_cnn_filter_lengths(
@@ -742,9 +706,9 @@ def _adjust_cnn_filter_lengths(
             if isinstance(v, (Sequence, np.ndarray)):  # DO NOT use `Iterable`
                 config[k] = [
                     _adjust_cnn_filter_lengths(
-                        {"filter_length": l, "fs": config["fs"]}, fs, ensure_odd
+                        {"filter_length": fl, "fs": config["fs"]}, fs, ensure_odd
                     )["filter_length"]
-                    for l in v
+                    for fl in v
                 ]
             elif isinstance(v, Real):
                 # DO NOT use `int`, which might not work for numpy array elements

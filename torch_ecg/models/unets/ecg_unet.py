@@ -6,35 +6,26 @@ References
 ----------
 [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
 [2] https://github.com/milesial/Pytorch-UNet/
+
 """
 
 from copy import deepcopy
-from collections import OrderedDict
-from itertools import repeat
-from typing import Union, Optional, Sequence, NoReturn
-from numbers import Real
+from typing import NoReturn, Optional, Sequence, Union
 
-import numpy as np
 import torch
-from torch import nn
-from torch import Tensor
 import torch.nn.functional as F
 from easydict import EasyDict as ED
+from torch import Tensor, nn
 
 from ...cfg import DEFAULTS
-from ...utils.utils_nn import (
-    compute_deconv_output_shape,
-    compute_module_size,
-    SizeMixin,
-    CkptMixin,
-)
-from ...utils.misc import dict_to_str
 from ...models._nets import (
     Conv_Bn_Activation,
+    DownSample,  # noqa: F401
     MultiConv,
-    DownSample,
     ZeroPadding,
 )
+from ...utils.misc import dict_to_str
+from ...utils.utils_nn import CkptMixin, SizeMixin, compute_deconv_output_shape
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

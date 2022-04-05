@@ -44,7 +44,6 @@ import pandas as pd
 
 from ..cfg import CFG
 
-
 __all__ = [
     # named lead sets
     "Standard12Leads",
@@ -773,5 +772,5 @@ for ea_str in __all__:
             0,
             f"{_snomedbrowser_url}{_dx_mapping[_dx_mapping.Abbreviation==ea_str]['SNOMEDCTCode'].values[0]}",
         )
-    except:
+    except Exception:
         pass

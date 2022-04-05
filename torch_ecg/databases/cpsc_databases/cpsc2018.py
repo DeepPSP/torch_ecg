@@ -3,24 +3,17 @@
 """
 
 import io
-from pathlib import Path
 from datetime import datetime
-from typing import Union, Optional, Any, List, Dict, Tuple, NoReturn
 from numbers import Real
+from pathlib import Path
+from typing import Any, List, NoReturn, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from scipy.io import loadmat
 
-from ..aux_data.cinc2020_aux_data import (
-    dx_mapping_all,
-    dx_mapping_scored,
-    dx_mapping_unscored,
-    normalize_class,
-    abbr_to_snomed_ct_code,
-)
-from ..base import CPSCDataBase, DEFAULT_FIG_SIZE_PER_SEC
-
+from ..aux_data.cinc2020_aux_data import dx_mapping_all, dx_mapping_scored
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase
 
 __all__ = [
     "CPSC2018",
@@ -287,37 +280,39 @@ class CPSC2018(CPSCDataBase):
         )
         try:  # see NOTE. 1.
             ann_dict["age"] = int(
-                [l for l in header_data if l.startswith("#Age")][0].split(": ")[-1]
+                [line for line in header_data if line.startswith("#Age")][0].split(
+                    ": "
+                )[-1]
             )
-        except:
+        except Exception:
             ann_dict["age"] = np.nan
         try:
-            ann_dict["sex"] = [l for l in header_data if l.startswith("#Sex")][0].split(
-                ": "
-            )[-1]
-        except:
+            ann_dict["sex"] = [line for line in header_data if line.startswith("#Sex")][
+                0
+            ].split(": ")[-1]
+        except Exception:
             ann_dict["sex"] = "Unknown"
         try:
             ann_dict["medical_prescription"] = [
-                l for l in header_data if l.startswith("#Rx")
+                line for line in header_data if line.startswith("#Rx")
             ][0].split(": ")[-1]
-        except:
+        except Exception:
             ann_dict["medical_prescription"] = "Unknown"
         try:
-            ann_dict["history"] = [l for l in header_data if l.startswith("#Hx")][
-                0
-            ].split(": ")[-1]
-        except:
+            ann_dict["history"] = [
+                line for line in header_data if line.startswith("#Hx")
+            ][0].split(": ")[-1]
+        except Exception:
             ann_dict["history"] = "Unknown"
         try:
             ann_dict["symptom_or_surgery"] = [
-                l for l in header_data if l.startswith("#Sx")
+                line for line in header_data if line.startswith("#Sx")
             ][0].split(": ")[-1]
-        except:
+        except Exception:
             ann_dict["symptom_or_surgery"] = "Unknown"
 
         l_Dx = (
-            [l for l in header_data if l.startswith("#Dx")][0]
+            [line for line in header_data if line.startswith("#Dx")][0]
             .split(": ")[-1]
             .split(",")
         )
@@ -379,7 +374,7 @@ class CPSC2018(CPSCDataBase):
                 for idx, item in enumerate(diag_dict["diagnosis_fullname"])
                 if scored_indices[idx]
             ]
-        except:  # the old version, the Dx"s are abbreviations
+        except Exception:  # the old version, the Dx"s are abbreviations
             diag_dict["diagnosis_abbr"] = diag_dict["diagnosis_code"]
             selection = dx_mapping_all["Abbreviation"].isin(diag_dict["diagnosis_abbr"])
             diag_dict["diagnosis_fullname"] = dx_mapping_all[selection]["Dx"].tolist()
@@ -608,10 +603,10 @@ class CPSC2018(CPSCDataBase):
             import matplotlib.pyplot as plt
         if leads is None or leads == "all":
             leads = self.all_leads
-        assert all([l in self.all_leads for l in leads])
+        assert all([ld in self.all_leads for ld in leads])
 
         lead_list = self.load_ann(rec)["df_leads"]["lead_name"].tolist()
-        lead_indices = [lead_list.index(l) for l in leads]
+        lead_indices = [lead_list.index(ld) for ld in leads]
         data = self.load_data(rec, data_format="channel_first", units="μV")[
             lead_indices
         ]

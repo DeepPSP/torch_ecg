@@ -5,7 +5,6 @@ heads for making predictions
 
 from ..cfg import CFG
 
-
 __all__ = [
     "linear",
 ]

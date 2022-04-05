@@ -2,21 +2,20 @@
 """
 """
 
-import random, math
-from pathlib import Path
-from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
+import math
+import random
 from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
 
 import numpy as np
-import pandas as pd
 from scipy.io import loadmat
 
 from ...cfg import CFG
-from ...utils.ecg_arrhythmia_knowledge import PVC, SPB
-from ...utils.utils_interval import get_optimal_covering
 from ...utils.download import http_get
-from ..base import CPSCDataBase, DEFAULT_FIG_SIZE_PER_SEC
-
+from ...utils.ecg_arrhythmia_knowledge import PVC, SPB  # noqa: F401
+from ...utils.utils_interval import get_optimal_covering
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase
 
 __all__ = [
     "CPSC2020",
@@ -466,7 +465,7 @@ class CPSC2020(CPSCDataBase):
             premature_inds = np.sort(premature_inds)
         try:  # premature_inds empty?
             sf, st = (sampfrom or 0), (sampto or premature_inds[-1] + 1)
-        except:
+        except Exception:
             premature_intervals = []
             return premature_intervals
         premature_inds = premature_inds[(sf < premature_inds) & (premature_inds < st)]

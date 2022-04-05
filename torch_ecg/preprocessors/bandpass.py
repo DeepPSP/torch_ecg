@@ -1,16 +1,12 @@
 """
 """
 
-from typing import NoReturn, Optional, Any
 from numbers import Real
-import warnings
+from typing import Any, NoReturn, Optional
 
 import torch
 
-from .._preprocessors.base import (
-    preprocess_multi_lead_signal,
-)
-
+from .._preprocessors.base import preprocess_multi_lead_signal
 
 __all__ = [
     "BandPass",

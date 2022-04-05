@@ -6,30 +6,28 @@ References
 [1] Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017). Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
 [2] Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
 [3] Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019). Searching for mobilenetv3. In Proceedings of the IEEE International Conference on Computer Vision (pp. 1314-1324).
+
 """
 
 from copy import deepcopy
 from itertools import repeat
-from collections import OrderedDict
-from typing import Union, Optional, Sequence, NoReturn, Any
+from typing import Any, NoReturn, Optional, Sequence, Union
 
-import numpy as np
 import torch
-from torch import nn
-from torch import Tensor
+from torch import Tensor, nn
 
 from ...cfg import CFG, DEFAULTS
-from ...utils.utils_nn import compute_module_size, SizeMixin
-from ...utils.misc import dict_to_str
-from ...models._nets import (
+from ...models._nets import (  # noqa: F401
     Conv_Bn_Activation,
-    MultiConv,
     DownSample,
+    GlobalContextBlock,
+    Initializers,
+    MultiConv,
     NonLocalBlock,
     SEBlock,
-    GlobalContextBlock,
 )
-
+from ...utils.misc import dict_to_str
+from ...utils.utils_nn import SizeMixin
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -751,10 +749,10 @@ class MobileNetV2(SizeMixin, nn.Sequential):
                 bias=self.config.bias,
                 width_multiplier=max(1.0, self.config.width_multiplier),
             )
-        self.add_module(
-            "final_convs",
-            final_convs,
-        )
+        # self.add_module(
+        #     "final_convs",
+        #     init_convs,
+        # )
 
     def forward(self, input: Tensor) -> Tensor:
         """NOT finished, NOT checked,

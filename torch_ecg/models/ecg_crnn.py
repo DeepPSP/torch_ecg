@@ -4,52 +4,41 @@ for classifying ECG arrhythmias
 """
 
 from copy import deepcopy
-from itertools import repeat
-from collections import OrderedDict
-from typing import Union, Optional, Tuple, Sequence, NoReturn, Any
-from numbers import Real, Number
+from typing import Any, NoReturn, Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
 import torch
-from torch import nn
-from torch import Tensor
-import torch.nn.functional as F
+from torch import Tensor, nn
 
 from ..cfg import CFG, DEFAULTS
-from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
-from ..utils.utils_nn import (
-    compute_conv_output_shape,
-    compute_module_size,
-    SizeMixin,
-    CkptMixin,
-)
-from ..utils.misc import dict_to_str
 from ..components.outputs import BaseOutput
-from ._nets import (
-    Mish,
-    Swish,
+from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
+from ..utils.misc import dict_to_str
+from ..utils.utils_nn import CkptMixin, SizeMixin
+from ._nets import (  # noqa: F401
     Activations,
+    AttentionWithContext,
+    AttentivePooling,
     Bn_Activation,
     Conv_Bn_Activation,
     DownSample,
-    ZeroPadding,
-    StackedLSTM,
-    AttentionWithContext,
-    SelfAttention,
+    GlobalContextBlock,
+    Mish,
     MultiHeadAttention,
-    AttentivePooling,
     NonLocalBlock,
     SEBlock,
-    GlobalContextBlock,
+    SelfAttention,
     SeqLin,
+    StackedLSTM,
+    Swish,
+    ZeroPadding,
 )
-from .cnn.vgg import VGG16
-from .cnn.resnet import ResNet
-from .cnn.multi_scopic import MultiScopicCNN
-from .cnn.densenet import DenseNet
-from .cnn.xception import Xception
-from .transformers import Transformer
+from .cnn.densenet import DenseNet  # noqa: F401
+from .cnn.multi_scopic import MultiScopicCNN  # noqa: F401
+from .cnn.resnet import ResNet  # noqa: F401
+from .cnn.vgg import VGG16  # noqa: F401
+from .cnn.xception import Xception  # noqa: F401
+from .transformers import Transformer  # noqa: F401
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -372,7 +361,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             pred: ndarray,
                 the array (with values 0, 1 for each class) of binary prediction
         """
-        raise NotImplementedError(f"implement a task specific inference method")
+        raise NotImplementedError("implement a task specific inference method")
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None

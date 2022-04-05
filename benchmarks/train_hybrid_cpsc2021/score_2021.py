@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import numpy as np
 import json
 import os
 import sys
 
+import numpy as np
 import scipy.io as sio
 import wfdb
 

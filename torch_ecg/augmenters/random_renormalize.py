@@ -1,17 +1,14 @@
 """
 """
 
-from typing import Any, NoReturn, Sequence, Union, Optional, Iterable, List, Tuple
 from numbers import Real
+from typing import Any, Iterable, List, NoReturn, Optional, Sequence, Tuple
 
 import numpy as np
-import torch
 from torch import Tensor
 
-from .base import Augmenter
-
 from ..utils.utils_signal_t import normalize as normalize_t
-
+from .base import Augmenter
 
 __all__ = [
     "RandomRenormalize",

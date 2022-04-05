@@ -1,15 +1,32 @@
 """
 """
 
-import setuptools
 from pathlib import Path
 
-from torch_ecg import __version__
+import setuptools
 
+from torch_ecg import __version__
 
 cwd = Path(__file__).absolute().parent
 
 long_description = (cwd / "README.md").read_text(encoding="utf-8")
+
+extras = {}
+extras["test"] = [
+    "black",
+    "isort",
+    "pytest",
+    "pytest-xdist",
+]
+extras["docs"] = [
+    "recommonmark",
+    "nbsphinx",
+    "sphinx-autobuild",
+    "sphinx-rtd-theme",
+    "sphinx-markdown-tables",
+    "sphinx-copybutton",
+]
+extras["dev"] = extras["docs"] + extras["test"]
 
 
 setuptools.setup(
@@ -45,4 +62,5 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     install_requires=open("requirements.txt").readlines(),
+    extras_require=extras,
 )

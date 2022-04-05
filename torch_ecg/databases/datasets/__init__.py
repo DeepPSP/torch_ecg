@@ -15,7 +15,6 @@ from .cpsc2021.cpsc2021_dataset import CPSC2021Dataset
 from .ludb.ludb_cfg import LUDBTrainCfg
 from .ludb.ludb_dataset import LUDBDataset
 
-
 __all__ = [
     "CINC2020TrainCfg", "CINC2020Dataset",
     "CINC2021TrainCfg", "CINC2021Dataset",

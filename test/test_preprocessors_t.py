@@ -1,23 +1,22 @@
 """
 """
 
-import pytest
-import torch
+# import pytest
+# import torch
 
 try:
-    import torch_ecg
-except:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
-    import torch_ecg
 
-from torch_ecg.preprocessors import (
-    BandPass,
-    BaselineRemove,
-    NaiveNormalize,
-    MinMaxNormalize,
-    ZScoreNormalize,
-    Resample,
-)
+# from torch_ecg.preprocessors import (
+#     BandPass,
+#     BaselineRemove,
+#     MinMaxNormalize,
+#     NaiveNormalize,
+#     Resample,
+#     ZScoreNormalize,
+# )

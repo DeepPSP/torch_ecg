@@ -1,43 +1,39 @@
 """
 """
 
-import os, sys, argparse
+import argparse
+import os
+import sys
 from copy import deepcopy
-from collections import deque, OrderedDict
-from typing import Union, Optional, Tuple, Sequence, Dict, List, NoReturn, Any
-from numbers import Real, Number
+from typing import Any, Dict, List, NoReturn, Optional, Tuple
 
 import numpy as np
 import torch
 from torch import nn
-from torch import Tensor
-from torch.utils.data import Dataset, DataLoader
-import torch.nn.functional as F
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
+from torch.utils.data import DataLoader, Dataset
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.components.trainer import BaseTrainer
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.utils.misc import (
-    str2bool,
-    mask_to_intervals,
-)
-
 from cfg import ModelCfg, TrainCfg
-from model import (
-    ECG_SEQ_LAB_NET_CPSC2019,
-    ECG_UNET_CPSC2019,
-    ECG_SUBTRACT_UNET_CPSC2019,
-)
 from dataset import CPSC2019
 from metrics import compute_metrics
+from model import (
+    ECG_SEQ_LAB_NET_CPSC2019,
+    ECG_SUBTRACT_UNET_CPSC2019,
+    ECG_UNET_CPSC2019,
+)
+
+from torch_ecg.cfg import CFG, DEFAULTS
+from torch_ecg.components.trainer import BaseTrainer
+from torch_ecg.utils.misc import mask_to_intervals, str2bool
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 ECG_SEQ_LAB_NET_CPSC2019.__DEBUG__ = False
 ECG_UNET_CPSC2019.__DEBUG__ = False

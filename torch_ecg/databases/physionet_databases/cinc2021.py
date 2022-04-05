@@ -2,43 +2,44 @@
 """
 """
 
-import io, re, json, time, warnings, posixpath
-from pathlib import Path
+import io
+import json
+import posixpath
+import re
+import time
+import warnings
 from copy import deepcopy
 from datetime import datetime
-from typing import Union, Optional, Any, List, Dict, Tuple, Set, Sequence, NoReturn
-from numbers import Real, Number
-from collections.abc import Iterable
+from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
 import wfdb
 from scipy.io import loadmat
-from scipy.signal import resample, resample_poly
+from scipy.signal import resample, resample_poly  # noqa: F401
 
 from ...cfg import CFG, DEFAULTS
-from ...utils.misc import (
-    get_record_list_recursive,
-    get_record_list_recursive3,
-    ms2samples,
-    dict_to_str,
-    list_sum,
-    ensure_siglen,
-    add_docstring,
-)
-from ...utils.download import http_get
 from ...utils import ecg_arrhythmia_knowledge as EAK
+from ...utils.download import http_get
+from ...utils.misc import (
+    add_docstring,
+    dict_to_str,
+    ensure_siglen,
+    get_record_list_recursive3,
+    list_sum,
+    ms2samples,
+)
 from ..aux_data.cinc2021_aux_data import (
+    df_weights_abbr,
     dx_mapping_all,
     dx_mapping_scored,
-    dx_mapping_unscored,
-    normalize_class,
-    abbr_to_snomed_ct_code,
-    df_weights_abbr,
     equiv_class_dict,
+    load_weights,
+    normalize_class,
 )
-from ..base import PhysioNetDataBase, DEFAULT_FIG_SIZE_PER_SEC
-
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase
 
 __all__ = [
     "CINC2021",
@@ -395,7 +396,7 @@ class CINC2021(PhysioNetDataBase):
             )
             start = time.time()
             rec_patterns_with_ext = {
-                tranche: f"^{self.rec_prefix[tranche]}(?:\d+).{self.rec_ext}$"
+                tranche: f"^{self.rec_prefix[tranche]}(?:\\d+).{self.rec_ext}$"
                 for tranche in self.db_tranches
             }
             self._all_records = get_record_list_recursive3(
@@ -491,7 +492,9 @@ class CINC2021(PhysioNetDataBase):
                 "diagnosis",
                 "diagnosis_scored",
             ]:
-                _stats_to_save[k] = _stats_to_save[k].apply(lambda l: list_sep.join(l))
+                _stats_to_save[k] = _stats_to_save[k].apply(
+                    lambda lst: list_sep.join(lst)
+                )
             _stats_to_save.to_csv(stats_file_fp, index=False)
             print(f"Done in {time.time() - start:.5f} seconds!")
         else:
@@ -531,7 +534,7 @@ class CINC2021(PhysioNetDataBase):
             )
             return None
             # raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
-        rec_pattern = f"^{self.rec_prefix[tranche]}(?:\d+).{self.rec_ext}$"
+        rec_pattern = f"^{self.rec_prefix[tranche]}(?:\\d+).{self.rec_ext}$"
         res = None
         root = Path(root)
         assert root.is_dir()
@@ -579,7 +582,7 @@ class CINC2021(PhysioNetDataBase):
                 for d in df_weights_abbr.columns.values.tolist():
                     self._diagnoses_records_list[d] = sorted(
                         self._stats[
-                            self._stats["diagnosis_scored"].apply(lambda l: d in l)
+                            self._stats["diagnosis_scored"].apply(lambda lst: d in lst)
                         ]["record"].tolist()
                     )
             else:
@@ -849,54 +852,54 @@ class CINC2021(PhysioNetDataBase):
             ann_dict["datetime"] = datetime.strptime(
                 " ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S"
             )
-        except:
+        except Exception:
             pass
         try:  # see NOTE. 1.
             ann_dict["age"] = int(
-                [l for l in header_reader.comments if "Age" in l][0]
+                [line for line in header_reader.comments if "Age" in line][0]
                 .split(":")[-1]
                 .strip()
             )
-        except:
+        except Exception:
             ann_dict["age"] = np.nan
         try:  # only "10726" has "NaN" sex
             ann_dict["sex"] = (
-                [l for l in header_reader.comments if "Sex" in l][0]
+                [line for line in header_reader.comments if "Sex" in line][0]
                 .split(":")[-1]
                 .strip()
                 .replace("NaN", "Unknown")
             )
-        except:
+        except Exception:
             ann_dict["sex"] = "Unknown"
         try:
             ann_dict["medical_prescription"] = (
-                [l for l in header_reader.comments if "Rx" in l][0]
+                [line for line in header_reader.comments if "Rx" in line][0]
                 .split(":")[-1]
                 .strip()
             )
-        except:
+        except Exception:
             ann_dict["medical_prescription"] = "Unknown"
         try:
             ann_dict["history"] = (
-                [l for l in header_reader.comments if "Hx" in l][0]
+                [line for line in header_reader.comments if "Hx" in line][0]
                 .split(":")[-1]
                 .strip()
             )
-        except:
+        except Exception:
             ann_dict["history"] = "Unknown"
         try:
             ann_dict["symptom_or_surgery"] = (
-                [l for l in header_reader.comments if "Sx" in l][0]
+                [line for line in header_reader.comments if "Sx" in line][0]
                 .split(":")[-1]
                 .strip()
             )
-        except:
+        except Exception:
             ann_dict["symptom_or_surgery"] = "Unknown"
 
-        # l_Dx = [l for l in header_reader.comments if "Dx" in l][0].split(": ")[-1].split(",")
+        # l_Dx = [line for line in header_reader.comments if "Dx" in line][0].split(": ")[-1].split(",")
         # ref. ISSUE 6
         l_Dx = (
-            [l for l in header_reader.comments if "Dx" in l][0]
+            [line for line in header_reader.comments if "Dx" in line][0]
             .split(":")[-1]
             .strip()
             .split(",")
@@ -969,53 +972,56 @@ class CINC2021(PhysioNetDataBase):
             ann_dict["datetime"] = datetime.strptime(
                 " ".join([ann_dict["datetime"], daytime]), "%d-%b-%Y %H:%M:%S"
             )
-        except:
+        except Exception:
             pass
         try:  # see NOTE. 1.
             ann_dict["age"] = int(
-                [l for l in header_data if l.startswith("#Age")][0]
+                [line for line in header_data if line.startswith("#Age")][0]
                 .split(":")[-1]
                 .strip()
             )
-        except:
+        except Exception:
             ann_dict["age"] = np.nan
         try:
             ann_dict["sex"] = (
-                [l for l in header_data if l.startswith("#Sex")][0]
+                [line for line in header_data if line.startswith("#Sex")][0]
                 .split(":")[-1]
                 .strip()
             )
-        except:
+        except Exception:
             ann_dict["sex"] = "Unknown"
         try:
             ann_dict["medical_prescription"] = (
-                [l for l in header_data if l.startswith("#Rx")][0]
+                [line for line in header_data if line.startswith("#Rx")][0]
                 .split(":")[-1]
                 .strip()
             )
-        except:
+        except Exception:
             ann_dict["medical_prescription"] = "Unknown"
         try:
             ann_dict["history"] = (
-                [l for l in header_data if l.startswith("#Hx")][0]
+                [line for line in header_data if line.startswith("#Hx")][0]
                 .split(":")[-1]
                 .strip()
             )
-        except:
+        except Exception:
             ann_dict["history"] = "Unknown"
         try:
             ann_dict["symptom_or_surgery"] = (
-                [l for l in header_data if l.startswith("#Sx")][0]
+                [line for line in header_data if line.startswith("#Sx")][0]
                 .split(":")[-1]
                 .strip()
             )
-        except:
+        except Exception:
             ann_dict["symptom_or_surgery"] = "Unknown"
 
-        # l_Dx = [l for l in header_data if l.startswith("#Dx")][0].split(": ")[-1].split(",")
+        # l_Dx = [line for line in header_data if line.startswith("#Dx")][0].split(": ")[-1].split(",")
         # ref. ISSUE 6
         l_Dx = (
-            [l for l in header_data if "Dx" in l][0].split(":")[-1].strip().split(",")
+            [line for line in header_data if "Dx" in line][0]
+            .split(":")[-1]
+            .strip()
+            .split(",")
         )
         l_Dx = [d for d in l_Dx if len(d) > 0]
         ann_dict["diagnosis"], ann_dict["diagnosis_scored"] = self._parse_diagnosis(
@@ -1083,7 +1089,7 @@ class CINC2021(PhysioNetDataBase):
             for idx, item in enumerate(diag_dict["diagnosis_fullname"])
             if scored_indices[idx]
         ]
-        # except:  # the old version, the Dx's are abbreviations, deprecated
+        # except Exception:  # the old version, the Dx's are abbreviations, deprecated
         # diag_dict["diagnosis_abbr"] = diag_dict["diagnosis_code"]
         # selection = dx_mapping_all["Abbreviation"].isin(diag_dict["diagnosis_abbr"])
         # diag_dict["diagnosis_fullname"] = dx_mapping_all[selection]["Dx"].tolist()
@@ -1359,12 +1365,12 @@ class CINC2021(PhysioNetDataBase):
             _leads = [leads]
         else:
             _leads = leads
-        # assert all([l in self.all_leads for l in _leads])
+        # assert all([ld in self.all_leads for ld in _leads])
         assert set(_leads).issubset(self._all_leads_set)
 
         # lead_list = self.load_ann(rec)["df_leads"]["lead_name"].tolist()
-        # lead_indices = [lead_list.index(l) for l in _leads]
-        lead_indices = [self.all_leads.index(l) for l in _leads]
+        # lead_indices = [lead_list.index(ld) for ld in _leads]
+        lead_indices = [self.all_leads.index(ld) for ld in _leads]
         if data is None:
             _data = self.load_data(rec, data_format="channel_first", units="μV")[
                 lead_indices
@@ -1727,6 +1733,11 @@ class CINC2021(PhysioNetDataBase):
             list of exceptional records
 
         """
+        six_leads = ("I", "II", "III", "aVR", "aVL", "aVF")
+        four_leads = ("I", "II", "III", "V2")
+        three_leads = ("I", "II", "V2")
+        two_leads = ("I", "II")
+
         exceptional_records = []
         _two_leads = set(two_leads)
         _three_leads = set(three_leads)
@@ -1977,9 +1988,6 @@ _exceptional_records = [  # with nan values (p_signal) read by wfdb
     "Q0400",
     "Q2961",
 ]
-
-
-from ..aux_data.cinc2021_aux_data import load_weights
 
 
 def compute_all_metrics_detailed(
@@ -2418,7 +2426,7 @@ def prepare_dataset(
     currently, for updating headers only, corresponding .tar.gz file of records should be presented
 
     """
-    import shutil, tarfile
+    import tarfile
 
     _tranches = "CPSC,CPSC_Extra,StPetersburg,PTB,PTB_XL,Georgia,CUSPHNFH".split(",")
 
@@ -2534,7 +2542,7 @@ def get_parser() -> dict:
         "-v",
         "--verbose",
         action="store_true",
-        help=f"verbosity",
+        help="verbosity",
         dest="verbose",
     )
 

@@ -6,24 +6,23 @@ References
 [1] http://2019.icbeb.org/Challenge.html
 """
 
-import math
 import multiprocessing as mp
-from typing import Union, Optional, Sequence, Dict
 from numbers import Real
+from typing import Dict, Optional, Sequence, Union
 
 import numpy as np
 import torch
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
+    from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.models.loss import MaskedBCEWithLogitsLoss
 from torch_ecg.utils.utils_interval import mask_to_intervals
-
 
 __all__ = [
     "compute_rpeak_metric",

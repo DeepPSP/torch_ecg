@@ -5,13 +5,14 @@ including spatial, temporal, spatio-temporal domains
 """
 
 from copy import deepcopy
-from typing import Union, Optional, List, Tuple, Sequence, Iterable, NoReturn
 from numbers import Real
+from typing import Iterable, NoReturn, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from scipy import interpolate
-from scipy.signal import peak_prominences, butter, filtfilt
+from scipy.signal import butter, filtfilt, peak_prominences
 
+from .misc import ensure_siglen
 
 __all__ = [
     "smooth",
@@ -93,7 +94,7 @@ def smooth(
     if radius < 3:
         return x
 
-    if not window in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
+    if window not in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
         raise ValueError(
             "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
         )
@@ -877,7 +878,7 @@ def normalize(
     sig_fmt: str = "channel_first",
     per_channel: bool = False,
 ) -> np.ndarray:
-    """ 
+    r""" 
     
     perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
@@ -938,7 +939,7 @@ def normalize(
     if not per_channel:
         assert isinstance(mean, Real) and isinstance(
             std, Real
-        ), f"mean and std should be real numbers in the non per-channel setting"
+        ), "mean and std should be real numbers in the non per-channel setting"
     assert sig_fmt.lower() in [
         "channel_first",
         "lead_first",

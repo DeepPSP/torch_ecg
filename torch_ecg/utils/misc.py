@@ -1,34 +1,37 @@
 """
 """
-import os, sys, re, logging, datetime, random
-from pathlib import Path
-from functools import reduce, wraps
+import datetime
+import logging
+import os
+import random
+import re
+import sys
 from collections import namedtuple
-from glob import glob
 from copy import deepcopy
+from functools import reduce, wraps
+from glob import glob
+from numbers import Number, Real
+from pathlib import Path
 from typing import (
-    Union,
-    Optional,
-    NoReturn,
     Any,
-    List,
-    Dict,
-    Tuple,
-    Sequence,
-    Iterable,
     Callable,
+    Dict,
+    Iterable,
+    List,
+    NoReturn,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
 )
-from numbers import Real, Number
 
 import numpy as np
 import pandas as pd
-from scipy import interpolate
 from sklearn.utils import compute_class_weight
+from wfdb import MultiRecord, Record
 from wfdb.io import _header
-from wfdb import Record, MultiRecord
 
 from ..cfg import CFG, DEFAULTS
-
 
 __all__ = [
     "get_record_list_recursive",
@@ -149,7 +152,7 @@ def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> Li
 def get_record_list_recursive3(
     db_dir: Union[str, Path], rec_patterns: Union[str, Dict[str, str]]
 ) -> Union[List[str], Dict[str, List[str]]]:
-    """
+    r"""
 
     get the list of records in `db_dir` recursively,
     for example, there are two folders "patient1", "patient2" in `db_dir`,
@@ -239,7 +242,7 @@ def dict_to_str(
     """
     assert isinstance(d, (dict, list, tuple))
     if len(d) == 0:
-        s = f"{{}}" if isinstance(d, dict) else f"[]"
+        s = r"{}" if isinstance(d, dict) else "[]"
         return s
     # flat_types = (Number, bool, str,)
     flat_types = (
@@ -476,7 +479,7 @@ def class_weight_to_sample_weight(
 
     try:
         sample_weight = y.copy().astype(int)
-    except:
+    except Exception:
         sample_weight = y.copy()
         assert (
             isinstance(class_weight, dict) or class_weight.lower() == "balanced"
@@ -485,10 +488,9 @@ def class_weight_to_sample_weight(
     if isinstance(class_weight, str) and class_weight.lower() == "balanced":
         classes = np.unique(y).tolist()
         cw = compute_class_weight("balanced", classes=classes, y=y)
-        trans_func = lambda s: cw[classes.index(s)]
+        sample_weight = np.vectorize(lambda s: cw[classes.index(s)])(sample_weight)
     else:
-        trans_func = lambda s: class_weight[s]
-    sample_weight = np.vectorize(trans_func)(sample_weight)
+        sample_weight = np.vectorize(lambda s: class_weight[s])(sample_weight)
     sample_weight = sample_weight / np.max(sample_weight)
     return sample_weight
 
@@ -1000,22 +1002,22 @@ def mask_to_intervals(
     return intervals
 
 
-def list_sum(l: Sequence[list]) -> list:
+def list_sum(lst: Sequence[list]) -> list:
     """
 
     Parameters
     ----------
-    l: sequence of list,
+    lst: sequence of list,
         the sequence of lists to obtain the summation
 
     Returns
     -------
     l_sum: list,
-        sum of `l`,
-        i.e. if l = [list1, list2, ...], then l_sum = list1 + list2 + ...
+        sum of `lst`,
+        i.e. if lst = [list1, list2, ...], then l_sum = list1 + list2 + ...
 
     """
-    l_sum = reduce(lambda a, b: a + b, l, [])
+    l_sum = reduce(lambda a, b: a + b, lst, [])
     return l_sum
 
 
@@ -1052,14 +1054,14 @@ def read_log_txt(
         field_pattern = f"""^({"|".join(scalar_startswith)})"""
     summary = []
     new_line = None
-    for l in content:
-        if l.startswith(epoch_startswith):
+    for line in content:
+        if line.startswith(epoch_startswith):
             if new_line:
                 summary.append(new_line)
-            epoch = re.findall("[\d]+", l)[0]
+            epoch = re.findall("[\\d]+", line)[0]
             new_line = {"epoch": epoch}
-        if re.findall(field_pattern, l):
-            field, val = l.split(":")
+        if re.findall(field_pattern, line):
+            field, val = line.split(":")
             field = field.strip()
             val = float(val.strip())
             new_line[field] = val
@@ -1091,7 +1093,7 @@ def read_event_scalars(
     """
     try:
         from tensorflow.python.summary.event_accumulator import EventAccumulator
-    except:
+    except Exception:
         from tensorboard.backend.event_processing.event_accumulator import (
             EventAccumulator,
         )
@@ -1425,7 +1427,7 @@ def nildent(text: str) -> str:
         processed text
 
     """
-    new_text = "\n".join([l.lstrip() for l in text.splitlines()]) + (
+    new_text = "\n".join([line.lstrip() for line in text.splitlines()]) + (
         "\n" if text.endswith("\n") else ""
     )
     return new_text
@@ -1538,7 +1540,7 @@ def add_docstring(doc: str, mode: str = "replace") -> Callable:
             """ """
             return func(*args, **kwargs)
 
-        pattern = "(\s^\n){1,}"
+        pattern = "(\\s^\n){1,}"
         if mode.lower() == "replace":
             wrapper.__doc__ = doc
         elif mode.lower() == "append":

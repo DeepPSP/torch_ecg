@@ -1,9 +1,17 @@
 """
 """
 
+from . import aux_data
+from .base import (
+    BeatAnn,
+    WFDB_Beat_Annotations,
+    WFDB_Non_Beat_Annotations,
+    WFDB_Rhythm_Annotations,
+)
+from .cpsc_databases import CPSC2018, CPSC2019, CPSC2020, CPSC2021
+from .nsrr_databases import SHHS
 from .physionet_databases import (
     AFDB,
-    ApneaECG,
     CINC2017,
     CINC2018,
     CINC2020,
@@ -11,24 +19,8 @@ from .physionet_databases import (
     LTAFDB,
     LUDB,
     MITDB,
+    ApneaECG,
 )
-from .cpsc_databases import (
-    CPSC2018,
-    CPSC2019,
-    CPSC2020,
-    CPSC2021,
-)
-from .nsrr_databases import (
-    SHHS,
-)
-from . import aux_data
-from .base import (
-    WFDB_Beat_Annotations,
-    WFDB_Non_Beat_Annotations,
-    WFDB_Rhythm_Annotations,
-    BeatAnn,
-)
-
 
 __all__ = [
     # from physionet

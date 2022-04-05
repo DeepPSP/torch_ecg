@@ -1,16 +1,15 @@
 """
 """
 
-from random import randint
-from typing import Any, NoReturn, Sequence, Union, Optional, List, Tuple
 from numbers import Real
+from random import randint
+from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
 from torch import Tensor
 
 from .base import Augmenter
-
 
 __all__ = [
     "RandomMasking",

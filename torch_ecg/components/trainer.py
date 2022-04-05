@@ -4,12 +4,14 @@ in order to replace the functions for classes in the training pipelines
 
 """
 
-import textwrap, logging
-from pathlib import Path
-from copy import deepcopy
+import logging
+import os
+import textwrap
 from abc import ABC, abstractmethod
-from collections import deque, OrderedDict
-from typing import NoReturn, Optional, Union, Tuple, Dict, List
+from collections import OrderedDict, deque
+from copy import deepcopy
+from pathlib import Path
+from typing import Dict, List, NoReturn, Optional, Tuple, Union
 
 import numpy as np
 
@@ -17,33 +19,26 @@ try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
     from tqdm import tqdm
+
 import torch
-from torch import nn
-from torch import optim
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
-from torch.utils.data.dataset import Dataset
+import torch_optimizer as extra_optim  # noqa: F401
+from torch import nn, optim
+from torch.nn.parallel import DataParallel as DP  # noqa: F401
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader
-import torch_optimizer as extra_optim
+from torch.utils.data.dataset import Dataset
 
-from .loggers import LoggerManager
-from ..utils.utils_nn import default_collate_fn as collate_fn
-from ..utils.misc import (
-    dicts_equal,
-    init_logger,
-    get_date_str,
-    dict_to_str,
-    str2bool,
-    ReprMixin,
-)
 from ..augmenters import AugmenterManager
-from ..models.loss import (
-    BCEWithLogitsWithClassWeightLoss,
-    MaskedBCEWithLogitsLoss,
-    FocalLoss,
-    AsymmetricLoss,
-)
 from ..cfg import CFG, DEFAULTS
-
+from ..models.loss import (
+    AsymmetricLoss,
+    BCEWithLogitsWithClassWeightLoss,
+    FocalLoss,
+    MaskedBCEWithLogitsLoss,
+)
+from ..utils.misc import ReprMixin, dict_to_str, dicts_equal, get_date_str
+from ..utils.utils_nn import default_collate_fn as collate_fn  # noqa: F401
+from .loggers import LoggerManager
 
 __all__ = [
     "BaseTrainer",
@@ -247,7 +242,7 @@ class BaseTrainer(ReprMixin, ABC):
                     model_to_remove = self.saved_models.popleft()
                     try:
                         os.remove(model_to_remove)
-                    except:
+                    except Exception:
                         self.log_manager.log_message(
                             f"failed to remove {str(model_to_remove)}"
                         )

@@ -1,13 +1,9 @@
 """
 """
 
-from itertools import repeat
 from copy import deepcopy
 
-import numpy as np
-
 from ...cfg import CFG
-
 
 __all__ = [
     "vgg_block_basic",

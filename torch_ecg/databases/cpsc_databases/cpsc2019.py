@@ -3,18 +3,16 @@
 """
 
 import json
-from pathlib import Path
-from typing import Union, Optional, Any, List, Dict, Sequence, NoReturn
 from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, NoReturn, Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
 from scipy.io import loadmat
 
-from ..base import CPSCDataBase, DEFAULT_FIG_SIZE_PER_SEC
-from ...utils.misc import add_docstring
 from ...utils.download import http_get
-
+from ...utils.misc import add_docstring
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase
 
 __all__ = [
     "CPSC2019",
@@ -132,7 +130,7 @@ class CPSC2019(CPSCDataBase):
             self._all_annotations = records_json["ann"]
             return
         print(
-            f"Please allow some time for the reader to confirm the existence of corresponding data files and annotation files..."
+            "Please allow some time for the reader to confirm the existence of corresponding data files and annotation files..."
         )
         self._all_records = [
             rec
@@ -289,6 +287,7 @@ class CPSC2019(CPSCDataBase):
         data: Optional[np.ndarray] = None,
         ann: Optional[np.ndarray] = None,
         ticks_granularity: int = 0,
+        **kwargs: Any,
     ) -> NoReturn:
         """
 

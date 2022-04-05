@@ -5,19 +5,18 @@ References
 ----------
 [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
 """
-import os
+
 import math
 from itertools import repeat
-from typing import Union, Optional, Sequence, NoReturn
 from numbers import Real
+from typing import Sequence, Union
 
+import biosppy.signals.ecg as BSE
 import numpy as np
 from scipy.signal import resample_poly
-import biosppy.signals.ecg as BSE
-
-from .ecg_rpeaks_dl_models import load_model
 from train.train_crnn_cpsc2020.utils import mask_to_intervals
 
+from .ecg_rpeaks_dl_models import load_model
 
 __all__ = [
     "seq_lab_net_detect",

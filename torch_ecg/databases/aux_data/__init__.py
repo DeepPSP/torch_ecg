@@ -5,11 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from . import (
-    cinc2020_aux_data,
-    cinc2021_aux_data,
-)
-
+from . import cinc2020_aux_data, cinc2021_aux_data
 
 __all__ = [
     "cinc2020_aux_data",

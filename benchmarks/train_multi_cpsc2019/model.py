@@ -2,37 +2,29 @@
 """
 
 from copy import deepcopy
-from functools import reduce
-from typing import Union, Optional, Sequence, Tuple, List, NoReturn, Any
+from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
 
+import biosppy.signals.ecg as BSE
 import numpy as np
-import pandas as pd
 import torch
 from torch import Tensor
-import torch.nn.functional as F
-import biosppy.signals.ecg as BSE
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.models.ecg_seq_lab_net import (
-    ECG_SEQ_LAB_NET,
-    # _ECG_SEQ_LAB_NET,
-)
-from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
-from torch_ecg.models.unets.ecg_unet import ECG_UNET
-from torch_ecg.utils.misc import mask_to_intervals, add_docstring
-from torch_ecg.utils.utils_signal import remove_spikes_naive
-from torch_ecg.components.outputs import RPeaksDetectionOutput
-
 from cfg import ModelCfg
 
+from torch_ecg.cfg import CFG
+from torch_ecg.components.outputs import RPeaksDetectionOutput
+from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET  # _ECG_SEQ_LAB_NET,
+from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
+from torch_ecg.models.unets.ecg_unet import ECG_UNET
+from torch_ecg.utils.misc import add_docstring, mask_to_intervals
 
 __all__ = [
     "ECG_SEQ_LAB_NET_CPSC2019",

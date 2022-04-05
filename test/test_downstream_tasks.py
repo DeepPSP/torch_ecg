@@ -4,38 +4,30 @@
 import time
 from typing import NoReturn
 
-import pytest
 import torch
-from easydict import EasyDict as ED
 
 try:
-    import torch_ecg
-except:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
-    import torch_ecg
 
-from torch_ecg.model_configs import (
-    # downstream tasks
-    ATI_CNN_CONFIG,
-    ECG_CRNN_CONFIG,
-    ECG_SEQ_LAB_NET_CONFIG,
-    ECG_SUBTRACT_UNET_CONFIG,
-    ECG_UNET_VANILLA_CONFIG,
-    ECG_YOLO_CONFIG,
-    RR_AF_CRF_CONFIG,
-    RR_AF_VANILLA_CONFIG,
-    RR_LSTM_CONFIG,
-)
-
-from torch_ecg.models.rr_lstm import RR_LSTM
-from torch_ecg.models.ecg_crnn import ECG_CRNN
-from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
-from torch_ecg.models.unets.ecg_unet import ECG_UNET
-from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
-
+from torch_ecg.model_configs import ATI_CNN_CONFIG  # noqa: F401; noqa: F401
+from torch_ecg.model_configs import ECG_CRNN_CONFIG  # noqa: F401
+from torch_ecg.model_configs import ECG_SEQ_LAB_NET_CONFIG  # noqa: F401
+from torch_ecg.model_configs import ECG_SUBTRACT_UNET_CONFIG  # noqa: F401
+from torch_ecg.model_configs import ECG_UNET_VANILLA_CONFIG  # noqa: F401
+from torch_ecg.model_configs import ECG_YOLO_CONFIG  # noqa: F401
+from torch_ecg.model_configs import RR_AF_CRF_CONFIG  # noqa: F401
+from torch_ecg.model_configs import RR_AF_VANILLA_CONFIG  # noqa: F401
+from torch_ecg.model_configs import RR_LSTM_CONFIG  # noqa: F401
+from torch_ecg.models.ecg_crnn import ECG_CRNN  # noqa: F401
+from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET  # noqa: F401
+from torch_ecg.models.rr_lstm import RR_LSTM  # noqa: F401
+from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET  # noqa: F401
+from torch_ecg.models.unets.ecg_unet import ECG_UNET  # noqa: F401
 
 _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 

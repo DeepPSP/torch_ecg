@@ -1,17 +1,12 @@
 """
 """
 
-from typing import NoReturn, Optional, Any, Tuple, List
 from numbers import Real
-import warnings
+from typing import Any, List, NoReturn, Optional, Tuple
 
 import numpy as np
 
-from .base import (
-    PreProcessor,
-    preprocess_multi_lead_signal,
-)
-
+from .base import PreProcessor, preprocess_multi_lead_signal
 
 __all__ = [
     "BandPass",

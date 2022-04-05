@@ -2,12 +2,13 @@
 data generator for feeding data into pytorch models
 """
 
-import time, json
-from pathlib import Path
-from random import shuffle, randint
+import json
+import time
 from copy import deepcopy
 from functools import reduce
-from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
+from pathlib import Path
+from random import sample, shuffle
+from typing import List, NoReturn, Optional, Sequence, Set, Tuple
 
 import numpy as np
 
@@ -15,17 +16,16 @@ try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
     from tqdm import tqdm
+
 import torch
 from torch.utils.data.dataset import Dataset
 
-from ....cfg import CFG
 from ...._preprocessors import PreprocManager
-from ....utils.misc import ensure_siglen, dict_to_str, list_sum, ReprMixin
-from ....utils.utils_signal import normalize, remove_spikes_naive
+from ....cfg import CFG
 from ....databases import CINC2020 as CR
-
-from .cinc2020_cfg import CINC2020TrainCfg
-
+from ....utils.misc import ReprMixin, ensure_siglen, list_sum
+from ....utils.utils_signal import remove_spikes_naive
+from .cinc2020_cfg import CINC2020TrainCfg  # noqa: F401
 
 __all__ = [
     "CINC2020Dataset",
@@ -121,9 +121,9 @@ class CINC2020Dataset(ReprMixin, Dataset):
         self._signals, self._labels = [], []
         with tqdm(range(len(fdr)), desc="Loading data", unit="records") as pbar:
             for idx in pbar:
-                s, l = fdr[idx]
-                self._signals.append(s)
-                self._labels.append(l)
+                sig, lb = fdr[idx]
+                self._signals.append(sig)
+                self._labels.append(lb)
         self._signals = np.concatenate(self._signals, axis=0).astype(self.dtype)
         self._labels = np.concatenate(self._labels, axis=0)
 
@@ -153,8 +153,8 @@ class CINC2020Dataset(ReprMixin, Dataset):
         values = self.reader.load_resampled_data(
             rec, data_format=self.config.data_format, siglen=None
         )
-        for l in range(values.shape[0]):
-            values[l] = remove_spikes_naive(values[l])
+        for idx in range(values.shape[0]):
+            values[idx] = remove_spikes_naive(values[idx])
         values, _ = self.ppm(values, self.config.fs)
         values = ensure_siglen(
             values,
@@ -246,7 +246,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
                             rec, scored_only=True, fmt="a", normalize=True
                         )
                         rec_labels = [
-                            c for c in rec_labels if c in TrainCfg.tranche_classes[t]
+                            c for c in rec_labels if c in self.config.tranche_classes[t]
                         ]
                         if len(rec_labels) == 0:
                             # skip records with no scored class
@@ -265,8 +265,8 @@ class CINC2020Dataset(ReprMixin, Dataset):
                     split_idx = int(len(tranche_records[t]) * train_ratio)
                     train_set[t] = tranche_records[t][:split_idx]
                     test_set[t] = tranche_records[t][split_idx:]
-                    is_valid = _check_train_test_split_validity(
-                        train_set[t], test_set[t], set(TrainCfg.tranche_classes[t])
+                    is_valid = self._check_train_test_split_validity(
+                        train_set[t], test_set[t], set(self.config.tranche_classes[t])
                     )
             train_file.write_text(json.dumps(train_set, ensure_ascii=False))
             test_file.write_text(json.dumps(test_set, ensure_ascii=False))
@@ -304,7 +304,10 @@ class CINC2020Dataset(ReprMixin, Dataset):
             the split is valid or not
 
         """
-        add = lambda a, b: a + b
+
+        def add(a, b):
+            return a + b
+
         train_classes = set(
             reduce(add, [self.reader.get_labels(rec, fmt="a") for rec in train_set])
         )
@@ -324,6 +327,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
         make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
 
         """
+        prev_state = self.__data_aug
         _TRANCHES = "ABEF"
         if self.training:
             ratio = int(self.config.train_ratio * 100)
@@ -403,8 +407,8 @@ class FastDataReader(ReprMixin, Dataset):
         values = self.reader.load_resampled_data(
             rec, data_format=self.config.data_format, siglen=None
         )
-        for l in range(values.shape[0]):
-            values[l] = remove_spikes_naive(values[l])
+        for idx in range(values.shape[0]):
+            values[idx] = remove_spikes_naive(values[idx])
         if self.ppm:
             values, _ = self.ppm(values, self.config.fs)
         values = ensure_siglen(

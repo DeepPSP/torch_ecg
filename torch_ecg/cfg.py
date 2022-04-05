@@ -2,12 +2,11 @@
 """
 
 from pathlib import Path
-from typing import Optional, MutableMapping, NoReturn
+from typing import MutableMapping, NoReturn, Optional
 
 import numpy as np
 import torch
 from easydict import EasyDict as ED
-
 
 __all__ = [
     "CFG",
@@ -53,14 +52,14 @@ class CFG(ED):
         for k, v in d.items():
             try:
                 setattr(self, k, v)
-            except:
+            except Exception:
                 dict.__setitem__(self, k, v)
         # Class attributes
         exclude_fields = ["update", "pop"]
         for k in self.__class__.__dict__:
             if (
                 not (k.startswith("__") and k.endswith("__"))
-                and not k in exclude_fields
+                and k not in exclude_fields
             ):
                 setattr(self, k, getattr(self, k))
 
@@ -88,7 +87,7 @@ class CFG(ED):
             else:
                 try:
                     setattr(self, k, _new_cfg[k])
-                except:
+                except Exception:
                     dict.__setitem__(self, k, _new_cfg[k])
 
 

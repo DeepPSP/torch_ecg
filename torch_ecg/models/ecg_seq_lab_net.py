@@ -10,41 +10,32 @@ multi-scopic cnn --> (bidi-lstm -->) "attention" (se block) --> seq linear
 References
 ----------
 [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
+
 """
 
 from copy import deepcopy
-from itertools import repeat
-from collections import OrderedDict
-from typing import Union, Optional, Tuple, List, Sequence, NoReturn, Any
-from numbers import Real, Number
+from typing import NoReturn, Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
 import torch
-from torch import nn
-from torch import Tensor
 import torch.nn.functional as F
+from torch import Tensor, nn
 
 from ..cfg import CFG, DEFAULTS
-from ..utils.utils_nn import (
-    compute_conv_output_shape,
-    compute_module_size,
-    SizeMixin,
-    CkptMixin,
-)
-from ..utils.misc import dict_to_str
 from ..components.outputs import SequenceLabelingOutput
 from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
-from ._nets import (
-    Mish,
-    Swish,
+from ..utils.misc import dict_to_str
+from ..utils.utils_nn import CkptMixin, SizeMixin
+from ._nets import (  # noqa: F401
     Activations,
+    AttentivePooling,
     Bn_Activation,
     Conv_Bn_Activation,
+    Mish,
     SEBlock,
-    StackedLSTM,
-    AttentivePooling,
     SeqLin,
+    StackedLSTM,
+    Swish,
 )
 from .cnn.multi_scopic import MultiScopicCNN
 from .ecg_crnn import ECG_CRNN

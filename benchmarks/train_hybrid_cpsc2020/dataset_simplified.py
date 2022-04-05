@@ -10,41 +10,35 @@ References
 """
 
 import json
-from pathlib import Path
-from random import shuffle, randint, uniform, sample
 from copy import deepcopy
-from functools import reduce
-from itertools import product, repeat
-from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
+from pathlib import Path
+from random import randint, sample, shuffle, uniform
+from typing import Dict, NoReturn, Tuple
 
 import numpy as np
-from scipy import signal as SS
-from scipy.io import loadmat, savemat
+from scipy.io import loadmat
 
 try:
-    from tqdm.auto import tqdm
+    from tqdm.auto import tqdm  # noqa: F401
 except ModuleNotFoundError:
-    from tqdm import tqdm
+    from tqdm import tqdm  # noqa: F401
+
 import torch
 from torch.utils.data.dataset import Dataset
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
+from cfg import ModelCfg, PreprocCfg, TrainCfg  # noqa: F401
+
+from torch_ecg.augmenters.baseline_wander import gen_baseline_wander
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2020 as CR
-from torch_ecg.utils.misc import (
-    mask_to_intervals,
-    list_sum,
-    get_record_list_recursive3,
-)
-from torch_ecg._preprocessors import PreprocManager
-
-from cfg import TrainCfg, ModelCfg, PreprocCfg
+from torch_ecg.utils.misc import get_record_list_recursive3, list_sum
 
 if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -150,7 +144,7 @@ class CPSC2020(Dataset):
         print(
             f"please allow the reader a few minutes to collect the segments from {self.segments_dir}..."
         )
-        seg_filename_pattern = f"S\d{{2}}_\d{{7}}{self.reader.rec_ext}"
+        seg_filename_pattern = f"S\\d{{2}}_\\d{{7}}{self.reader.rec_ext}"
         self.__all_segments = CFG(
             {
                 rec: get_record_list_recursive3(

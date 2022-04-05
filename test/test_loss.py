@@ -1,25 +1,22 @@
 """
 """
 
-import pytest
 import torch
 
 try:
-    import torch_ecg
-except:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
-    import torch_ecg
 
 from torch_ecg.models.loss import (
-    BCEWithLogitsWithClassWeightLoss,
-    MaskedBCEWithLogitsLoss,
-    FocalLoss,
     AsymmetricLoss,
+    BCEWithLogitsWithClassWeightLoss,
+    FocalLoss,
+    MaskedBCEWithLogitsLoss,
 )
-
 
 inp = torch.tensor([[10.0, -10.0], [-10.0, 10.0]])
 targ_1 = torch.tensor([[1.0, 0.0], [0.0, 1.0]])

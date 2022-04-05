@@ -2,12 +2,13 @@
 data generator for feeding data into pytorch models
 """
 
-import json, time, textwrap
-from pathlib import Path
-import multiprocessing as mp
-from random import shuffle, randint, sample
+import json
+import textwrap
+import time
 from copy import deepcopy
-from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
+from pathlib import Path
+from random import sample, shuffle
+from typing import List, NoReturn, Optional, Sequence, Set, Tuple
 
 import numpy as np
 
@@ -15,18 +16,17 @@ try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
     from tqdm import tqdm
+
 import torch
 from torch.utils.data.dataset import Dataset
 
-from ....cfg import CFG
-from ....databases import CINC2021 as CR
-from ....utils.misc import ensure_siglen, dict_to_str, list_sum, ReprMixin
-from ....utils.utils_signal import normalize, remove_spikes_naive
-from ....utils.ecg_arrhythmia_knowledge import Standard12Leads
 from ...._preprocessors import PreprocManager
-
-from .cinc2021_cfg import CINC2021TrainCfg
-
+from ....cfg import CFG
+from ....databases import CINC2021Dataset as CR
+from ....utils.ecg_arrhythmia_knowledge import Standard12Leads
+from ....utils.misc import ReprMixin, ensure_siglen, list_sum
+from ....utils.utils_signal import remove_spikes_naive
+from .cinc2021_cfg import CINC2021TrainCfg  # noqa: F401
 
 __all__ = [
     "CINC2021Dataset",
@@ -94,7 +94,7 @@ class CINC2021Dataset(ReprMixin, Dataset):
         self.siglen = self.config.input_len
         self.lazy = lazy
 
-        self._indices = [Standard12Leads.index(l) for l in self.config.leads]
+        self._indices = [Standard12Leads.index(ld) for ld in self.config.leads]
 
         self.records = self._train_test_split(
             self.config.train_ratio, force_recompute=False
@@ -139,12 +139,12 @@ class CINC2021Dataset(ReprMixin, Dataset):
         self._signals, self._labels = [], []
         with tqdm(desc="Loading data", total=len(fdr), unit="records") as pbar:
             for idx in range(len(fdr)):
-                s, l = fdr[idx]
+                sig, lb = fdr[idx]
                 # np.concatenate slows down the process severely
                 # self._signals = np.concatenate((self._signals, s), axis=0)
                 # self._labels = np.concatenate((self._labels, l), axis=0)
-                self._signals.append(s)
-                self._labels.append(l)
+                self._signals.append(sig)
+                self._labels.append(lb)
                 pbar.update(1)
         self._signals = np.concatenate(self._signals, axis=0).astype(self.dtype)
         self._labels = np.concatenate(self._labels, axis=0)
@@ -179,8 +179,8 @@ class CINC2021Dataset(ReprMixin, Dataset):
             data_format=self.config.data_format,
             siglen=None,
         )
-        for l in range(values.shape[0]):
-            values[l] = remove_spikes_naive(values[l])
+        for idx in range(values.shape[0]):
+            values[idx] = remove_spikes_naive(values[idx])
         values, _ = self.ppm(values, self.config.fs)
         values = ensure_siglen(
             values,
@@ -204,7 +204,7 @@ class CINC2021Dataset(ReprMixin, Dataset):
         """ """
         prev_leads = self.config.leads
         self.config.leads = leads
-        self._indices = [prev_leads.index(l) for l in leads]
+        self._indices = [prev_leads.index(ld) for ld in leads]
         self._signals = self._signals[:, self._indices, :]
 
     def emtpy(self, leads: Optional[Sequence[str]] = None) -> NoReturn:
@@ -218,17 +218,17 @@ class CINC2021Dataset(ReprMixin, Dataset):
         )
 
     @classmethod
-    def from_extern(cls, ext_ds: "CINC2021", config: CFG) -> "CINC2021":
+    def from_extern(cls, ext_ds: "CINC2021Dataset", config: CFG) -> "CINC2021Dataset":
         """ """
         new_ds = cls(config, ext_ds.training, lazy=True)
-        indices = [ext_ds.config.leads.index(l) for l in new_ds.config.leads]
+        indices = [ext_ds.config.leads.index(ld) for ld in new_ds.config.leads]
         new_ds._signals = ext_ds._signals[:, indices, :]
         new_ds._labels = ext_ds._labels.copy()
         return new_ds
 
-    def reload_from_extern(self, ext_ds: "CINC2021") -> NoReturn:
+    def reload_from_extern(self, ext_ds: "CINC2021Dataset") -> NoReturn:
         """ """
-        indices = [ext_ds.config.leads.index(l) for l in self.config.leads]
+        indices = [ext_ds.config.leads.index(ld) for ld in self.config.leads]
         self._signals = ext_ds._signals[:, indices, :]
         self._labels = ext_ds._labels.copy()
 
@@ -488,8 +488,8 @@ class FastDataReader(ReprMixin, Dataset):
             data_format=self.config.data_format,
             siglen=None,
         )
-        for l in range(values.shape[0]):
-            values[l] = remove_spikes_naive(values[l])
+        for idx in range(values.shape[0]):
+            values[idx] = remove_spikes_naive(values[idx])
         if self.ppm:
             values, _ = self.ppm(values, self.config.fs)
         values = ensure_siglen(

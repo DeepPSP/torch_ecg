@@ -2,23 +2,22 @@
 """
 
 from numbers import Real
-from typing import Union, Optional, Any, List, Tuple, Sequence
+from typing import List, Sequence, Tuple, Union
 
 import numpy as np
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.utils.misc import dict_to_str
-
 from cfg import BaseCfg
 
+from torch_ecg.cfg import CFG
+from torch_ecg.utils.misc import dict_to_str
 
 __all__ = [
     "CPSC2020_loss",

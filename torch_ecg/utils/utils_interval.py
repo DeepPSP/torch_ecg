@@ -13,12 +13,10 @@ TODO:
 """
 import time
 from copy import deepcopy
-from functools import reduce
 from numbers import Real
-from typing import Union, Optional, Any, List, Tuple, Sequence
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
-
 
 __all__ = [
     "get_optimal_covering",
@@ -227,12 +225,11 @@ def intervals_union(
         the union of the intervals in `interval_list`
 
     """
-    interval_sort_key = lambda i: i[0]
     # list_add = lambda list1, list2: list1+list2
     processed = [item for item in interval_list if len(item) > 0]
     for item in processed:
         item.sort()
-    processed.sort(key=interval_sort_key)
+    processed.sort(key=lambda i: i[0])
     # end_points = reduce(list_add, processed)
     merge_flag = True
     while merge_flag:
@@ -498,8 +495,7 @@ def get_optimal_covering(
     for interval in to_cover_intervals:
         interval.sort()
 
-    interval_sort_key = lambda i: i[0]
-    to_cover_intervals.sort(key=interval_sort_key)
+    to_cover_intervals.sort(key=lambda i: i[0])
 
     if verbose >= 2:
         print(f"to_cover_intervals after sorted = {to_cover_intervals}")

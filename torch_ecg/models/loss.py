@@ -1,13 +1,11 @@
 """custom loss functions"""
 
 from numbers import Real
-from typing import Union, Sequence, Tuple, List, Optional, NoReturn, Any
+from typing import Any, NoReturn, Optional, Union
 
 import torch
-from torch import nn
-from torch import Tensor
 import torch.nn.functional as F
-
+from torch import Tensor, nn
 
 __all__ = [
     "WeightedBCELoss",
@@ -323,7 +321,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
 
 class AsymmetricLoss(nn.Module):
-    """
+    r"""
 
     The asymmetric loss is defined as
 

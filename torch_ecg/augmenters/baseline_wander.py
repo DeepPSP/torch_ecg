@@ -2,18 +2,18 @@
 add baseline wander composed of sinusoidal and Gaussian noise to the ECGs
 """
 
-from random import randint, uniform
 import multiprocessing as mp
-from typing import Any, NoReturn, Sequence, Union, Optional, List, Tuple
+from itertools import repeat
 from numbers import Real
+from random import randint
+from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
 from torch import Tensor
 
-from .base import Augmenter
 from ..utils.utils_signal import get_ampl
-
+from .base import Augmenter
 
 __all__ = [
     "BaselineWanderAugmenter",

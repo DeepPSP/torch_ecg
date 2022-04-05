@@ -3,8 +3,7 @@ import re
 
 import numpy as np
 import scipy.io as sio
-
-from CPSC2019_challenge import *
+from CPSC2019_challenge import CPSC2019_challenge
 
 
 def load_ans(data_path_, rpos_path_, fs_):
@@ -12,8 +11,8 @@ def load_ans(data_path_, rpos_path_, fs_):
     Please modify this function when you have to load model or any other parameters in CPSC2019_challenge()
     """
 
-    def is_mat(l):
-        return l.endswith(".mat")
+    def is_mat(fp):
+        return fp.endswith(".mat")
 
     ecg_files = list(filter(is_mat, os.listdir(data_path_)))
     rpos_files = list(filter(is_mat, os.listdir(rpos_path_)))

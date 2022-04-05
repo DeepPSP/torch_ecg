@@ -1,17 +1,16 @@
 """
 """
 
-from random import shuffle
 from copy import deepcopy
-from typing import Any, NoReturn, Sequence, Union, Tuple, Optional, List
 from numbers import Real
+from random import shuffle
+from typing import Any, List, NoReturn, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
 from torch import Tensor
 
 from .base import Augmenter
-
 
 __all__ = [
     "Mixup",

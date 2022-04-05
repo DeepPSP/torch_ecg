@@ -4,40 +4,36 @@
 import shutil
 from copy import deepcopy
 from pathlib import Path
-from typing import NoReturn, Optional, Any, Sequence, Union, Tuple, Dict, List
+from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
 
-import pytest
 import numpy as np
 import torch
 from torch import Tensor
-from torch.utils.data import Dataset, DataLoader
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
+from torch.utils.data import DataLoader, Dataset
 
 try:
-    import torch_ecg
-except:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
-    import torch_ecg
 
 from torch_ecg.cfg import CFG, DEFAULTS
+from torch_ecg.components.outputs import WaveDelineationOutput
+from torch_ecg.components.trainer import BaseTrainer
 from torch_ecg.databases import LUDB
 from torch_ecg.databases.datasets.ludb import LUDBDataset, LUDBTrainCfg
 from torch_ecg.databases.physionet_databases.ludb import (
     compute_metrics as compute_ludb_metrics,
 )
-from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.model_configs import ECG_UNET_VANILLA_CONFIG
+from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
-from torch_ecg.utils.utils_nn import (
-    default_collate_fn as collate_fn,
-    adjust_cnn_filter_lengths,
-)
 from torch_ecg.utils.misc import add_docstring
-from torch_ecg.components.trainer import BaseTrainer
-from torch_ecg.components.outputs import WaveDelineationOutput
-
+from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 ###############################################################################
 # set paths

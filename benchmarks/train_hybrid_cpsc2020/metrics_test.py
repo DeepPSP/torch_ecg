@@ -1,25 +1,22 @@
 """
 """
 
-from typing import Union, Optional, Any, List, Tuple
-
 import numpy as np
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
-    from os.path import dirname, abspath
+    from os.path import abspath, dirname
 
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
+
+from cfg import BaseCfg
+from metrics import CPSC2020_loss, CPSC2020_score  # noqa: F401
 
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import dict_to_str
 from torch_ecg.utils.utils_interval import in_generalized_interval
-
-from cfg import BaseCfg
-from metrics import CPSC2020_loss, CPSC2020_score
-
 
 __all__ = [
     "CPSC2020_loss_test",

@@ -9,16 +9,16 @@ References
 [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
 [2] to add more
 """
+
 import os
-from typing import Union, Optional, Tuple
+from typing import Tuple, Union
 
 try:
-    from keras.models import model_from_json, Model
-except:
+    from keras.models import Model, model_from_json
+except ImportError:
     from tensorflow.keras.models import model_from_json, Model
-import torch
-from torch import nn
 
+from torch import nn
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 

@@ -2,33 +2,32 @@
 """
 """
 
-import math, time, json, warnings
-from pathlib import Path
-from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
+import json
+import math
+import os
+import time
+import warnings
 from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from scipy.signal import resample, resample_poly
+import scipy.io as sio
 import wfdb
+from scipy.signal import resample, resample_poly  # noqa: F401
 
 from ...cfg import CFG
-from ...utils.misc import (
-    get_record_list_recursive,
-    get_record_list_recursive3,
-    ms2samples,
-    list_sum,
-)
+from ...utils.misc import get_record_list_recursive3, list_sum, ms2samples
 from ...utils.utils_interval import generalized_intervals_intersection
-from ..base import (
+from ..base import (  # noqa: F401
+    DEFAULT_FIG_SIZE_PER_SEC,
     CPSCDataBase,
     PhysioNetDataBase,
-    DEFAULT_FIG_SIZE_PER_SEC,
     WFDB_Beat_Annotations,
     WFDB_Non_Beat_Annotations,
     WFDB_Rhythm_Annotations,
 )
-
 
 __all__ = [
     "CPSC2021",
@@ -151,7 +150,7 @@ class CPSC2021(PhysioNetDataBase):
         self.ann_ext = "atr"
         self.header_ext = "hea"
         self.all_leads = ["I", "II"]
-        self.rec_patterns_with_ext = f"^data_(?:\d+)_(?:\d+).{self.rec_ext}$"
+        self.rec_patterns_with_ext = f"^data_(?:\\d+)_(?:\\d+).{self.rec_ext}$"
 
         self._labels_f2a = {  # fullname to abbreviation
             "non atrial fibrillation": "N",
@@ -529,7 +528,7 @@ class CPSC2021(PhysioNetDataBase):
             _leads = [leads]
         else:
             _leads = leads
-        assert all([l in self.all_leads for l in _leads])
+        assert all([ld in self.all_leads for ld in _leads])
 
         rec_fp = self._get_path(rec)
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
@@ -616,8 +615,8 @@ class CPSC2021(PhysioNetDataBase):
 
         try:
             f = func[field.lower()]
-        except:
-            raise ValueError(f"invalid field")
+        except Exception:
+            raise ValueError("invalid field")
         ann = f(rec, ann, sf, st, **kwargs)
         return ann
 
@@ -745,7 +744,7 @@ class CPSC2021(PhysioNetDataBase):
         ]:
             if sf > 0 or st < siglen:
                 raise ValueError(
-                    f"when `fmt` is `c_intervals`, `sampfrom` and `sampto` should never be used!"
+                    "when `fmt` is `c_intervals`, `sampfrom` and `sampto` should never be used!"
                 )
             af_episodes = [
                 [start, end] for start, end in zip(af_start_inds, af_end_inds)
@@ -952,7 +951,7 @@ class CPSC2021(PhysioNetDataBase):
             _leads = [leads]
         else:
             _leads = leads
-        assert all([l in self.all_leads for l in _leads])
+        assert all([ld in self.all_leads for ld in _leads])
 
         if data is None:
             _data = self.load_data(

@@ -1,16 +1,15 @@
 """
 """
 
-from random import sample
 from abc import ABC, abstractmethod
-from typing import Optional, Tuple, Union, List, Any, Sequence
+from random import sample
+from typing import Any, List, Optional, Sequence, Tuple
 
 import numpy as np
-from torch import Tensor
 import torch.nn as nn
+from torch import Tensor
 
 from ..utils.misc import ReprMixin
-
 
 __all__ = [
     "Augmenter",

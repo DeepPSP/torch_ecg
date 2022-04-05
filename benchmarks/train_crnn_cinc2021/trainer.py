@@ -21,35 +21,37 @@ References: (mainly tips for faster and better training)
 4. more....
 """
 
-import os, sys, textwrap, argparse, logging
+import argparse
+import logging
+import os
+import sys
+import textwrap
 from copy import deepcopy
-from typing import Tuple, Dict, Any, List, NoReturn, Optional
+from typing import Any, Dict, List, NoReturn, Optional, Tuple
 
 import numpy as np
 import torch
 from torch import nn
-from torch import Tensor
-import torch.nn.functional as F
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
-from torch.utils.data.dataset import Dataset
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader
+from torch.utils.data.dataset import Dataset
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
-    import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.components.trainer import BaseTrainer
-
-from model import ECG_CRNN_CINC2021
+from cfg import BaseCfg, ModelCfg, TrainCfg
 from dataset import CINC2021
+from model import ECG_CRNN_CINC2021
 from scoring_metrics import evaluate_scores
-from cfg import BaseCfg, TrainCfg, ModelCfg
+
+from torch_ecg.cfg import CFG, DEFAULTS
+from torch_ecg.components.trainer import BaseTrainer
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 CINC2021.__DEBUG__ = False
 ECG_CRNN_CINC2021.__DEBUG__ = False

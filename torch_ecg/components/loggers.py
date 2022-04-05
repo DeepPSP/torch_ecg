@@ -5,24 +5,21 @@ with reference to `loggers` of `textattack` and `loggers` of `pytorch-lightning`
 
 """
 
-import logging, csv, importlib
-from pathlib import Path
-from datetime import datetime
+import csv
+import importlib
+import logging
 from abc import ABC, abstractmethod
-from typing import NoReturn, Optional, Union, List, Any, Dict
+from datetime import datetime
 from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, List, NoReturn, Optional, Union
 
-import torch
 import pandas as pd
 import tensorboardX
+import torch
 
-from ..utils.misc import (
-    get_date_str,
-    ReprMixin,
-    init_logger,
-)
 from ..cfg import DEFAULTS
-
+from ..utils.misc import ReprMixin, get_date_str, init_logger
 
 __all__ = [
     "BaseLogger",
@@ -596,8 +593,8 @@ class LoggerManager(ReprMixin):
             can be "train" or "val" or "test", etc.
 
         """
-        for l in self.loggers:
-            l.log_metrics(metrics, step, epoch, part)
+        for lgs in self.loggers:
+            lgs.log_metrics(metrics, step, epoch, part)
 
     def log_message(self, msg: str, level: int = logging.INFO) -> NoReturn:
         """
@@ -612,8 +609,8 @@ class LoggerManager(ReprMixin):
             can be logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
 
         """
-        for l in self.loggers:
-            l.log_message(msg, level)
+        for lgs in self.loggers:
+            lgs.log_message(msg, level)
 
     def epoch_start(self, epoch: int) -> NoReturn:
         """
@@ -625,8 +622,8 @@ class LoggerManager(ReprMixin):
             the epoch number
 
         """
-        for l in self.loggers:
-            l.epoch_start(epoch)
+        for lgs in self.loggers:
+            lgs.epoch_start(epoch)
 
     def epoch_end(self, epoch: int) -> NoReturn:
         """
@@ -638,18 +635,18 @@ class LoggerManager(ReprMixin):
             the epoch number
 
         """
-        for l in self.loggers:
-            l.epoch_end(epoch)
+        for lgs in self.loggers:
+            lgs.epoch_end(epoch)
 
     def flush(self) -> NoReturn:
         """ """
-        for l in self.loggers:
-            l.flush()
+        for lgs in self.loggers:
+            lgs.flush()
 
     def close(self) -> NoReturn:
         """ """
-        for l in self.loggers:
-            l.close()
+        for lgs in self.loggers:
+            lgs.close()
 
     @property
     def loggers(self) -> List[BaseLogger]:

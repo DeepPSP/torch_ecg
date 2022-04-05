@@ -1,70 +1,62 @@
 """
 """
 
-from pathlib import Path
 from copy import deepcopy
-from itertools import repeat
-
-import numpy as np
+from pathlib import Path
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.model_configs import (
+from torch_ecg.model_configs import (  # noqa: F401
     ECG_SEQ_LAB_NET_CONFIG,
-    RR_LSTM_CONFIG,
+    ECG_SUBTRACT_UNET_CONFIG,
+    ECG_UNET_VANILLA_CONFIG,
     RR_AF_CRF_CONFIG,
     RR_AF_VANILLA_CONFIG,
-    ECG_UNET_VANILLA_CONFIG,
-    ECG_SUBTRACT_UNET_CONFIG,
-    # cnn
+    RR_LSTM_CONFIG,
+    attention,
+    densenet_leadwise,
+    global_context,
+    linear,
+    lstm,
+    multi_scopic,
+    multi_scopic_block,
+    multi_scopic_leadwise,
+    non_local,
+    resnet_block_basic,
+    resnet_block_basic_gc,
+    resnet_block_basic_se,
+    resnet_bottle_neck_B,
+    resnet_bottle_neck_D,
+    resnet_bottle_neck_gc,
+    resnet_bottle_neck_se,
+    resnet_nature_comm,
+    resnet_nature_comm_bottle_neck,
+    resnet_nature_comm_bottle_neck_se,
+    resnet_nature_comm_gc,
+    resnet_nature_comm_se,
+    resnetN,
+    resnetNB,
+    resnetNBS,
+    resnetNS,
+    squeeze_excitation,
+    tresnetF,
+    tresnetM,
+    tresnetN,
+    tresnetP,
+    tresnetS,
+    vgg16,
+    vgg16_leadwise,
     vgg_block_basic,
     vgg_block_mish,
     vgg_block_swish,
-    vgg16,
-    vgg16_leadwise,
-    resnet_block_basic,
-    resnet_bottle_neck_B,
-    resnet_bottle_neck_D,
-    resnet_block_basic_se,
-    resnet_block_basic_gc,
-    resnet_bottle_neck_se,
-    resnet_bottle_neck_gc,
-    resnet_nature_comm,
-    resnet_nature_comm_se,
-    resnet_nature_comm_gc,
-    resnet_nature_comm_bottle_neck,
-    resnet_nature_comm_bottle_neck_se,
-    resnetN,
-    resnetNB,
-    resnetNS,
-    resnetNBS,
-    tresnetF,
-    tresnetP,
-    tresnetN,
-    tresnetS,
-    tresnetM,
-    multi_scopic_block,
-    multi_scopic,
-    multi_scopic_leadwise,
-    densenet_leadwise,
     xception_leadwise,
-    # lstm
-    lstm,
-    attention,
-    # mlp
-    linear,
-    # attn
-    non_local,
-    squeeze_excitation,
-    global_context,
 )
-
 
 __all__ = [
     "BaseCfg",

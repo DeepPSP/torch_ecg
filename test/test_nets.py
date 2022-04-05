@@ -2,47 +2,42 @@
 test of the classes from models._nets.py
 """
 
-import pytest
 import torch
 
 try:
-    import torch_ecg
-except:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
-    import torch_ecg
 
-from torch_ecg.models._nets import (
-    Mish,
-    Swish,
-    Hardswish,
-    Initializers,
-    Activations,
-    Bn_Activation,
-    Conv_Bn_Activation,
-    CBA,
-    MultiConv,
-    BranchedConv,
-    SeparableConv,
-    DownSample,
-    BidirectionalLSTM,
-    StackedLSTM,
-    AttentionWithContext,
-    MultiHeadAttention,
-    SelfAttention,
-    AttentivePooling,
-    ZeroPadding,
-    SeqLin,
-    MLP,
-    NonLocalBlock,
-    SEBlock,
-    GlobalContextBlock,
-    CRF,
-    ExtendedCRF,
-)
-
+from torch_ecg.models._nets import CBA  # noqa: F401; noqa: F401
+from torch_ecg.models._nets import CRF  # noqa: F401
+from torch_ecg.models._nets import MLP  # noqa: F401
+from torch_ecg.models._nets import Activations  # noqa: F401
+from torch_ecg.models._nets import AttentionWithContext  # noqa: F401
+from torch_ecg.models._nets import AttentivePooling  # noqa: F401
+from torch_ecg.models._nets import BidirectionalLSTM  # noqa: F401
+from torch_ecg.models._nets import Bn_Activation  # noqa: F401
+from torch_ecg.models._nets import BranchedConv  # noqa: F401
+from torch_ecg.models._nets import Conv_Bn_Activation  # noqa: F401
+from torch_ecg.models._nets import DownSample  # noqa: F401
+from torch_ecg.models._nets import ExtendedCRF  # noqa: F401
+from torch_ecg.models._nets import GlobalContextBlock  # noqa: F401
+from torch_ecg.models._nets import Hardswish  # noqa: F401
+from torch_ecg.models._nets import Initializers  # noqa: F401
+from torch_ecg.models._nets import Mish  # noqa: F401
+from torch_ecg.models._nets import MultiConv  # noqa: F401
+from torch_ecg.models._nets import MultiHeadAttention  # noqa: F401
+from torch_ecg.models._nets import NonLocalBlock  # noqa: F401
+from torch_ecg.models._nets import SEBlock  # noqa: F401
+from torch_ecg.models._nets import SelfAttention  # noqa: F401
+from torch_ecg.models._nets import SeparableConv  # noqa: F401
+from torch_ecg.models._nets import SeqLin  # noqa: F401
+from torch_ecg.models._nets import StackedLSTM  # noqa: F401
+from torch_ecg.models._nets import Swish  # noqa: F401
+from torch_ecg.models._nets import ZeroPadding  # noqa: F401
 
 mish = Mish()
 swish = Swish()

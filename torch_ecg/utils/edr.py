@@ -2,10 +2,9 @@
 """
 
 from numbers import Real
-from typing import Union, Optional, Any, Dict, List, Tuple, Sequence
+from typing import Sequence
 
 import numpy as np
-
 
 __all__ = [
     "phs_edr",
@@ -58,7 +57,7 @@ def phs_edr(
     winL, winR = int(winL_t * fs / 1000), int(winR_t * fs / 1000)
 
     if mode == "simple":
-        ecg_der_rsp = np.vectorize(lambda idx: _getxy(s, idx - winL, idx + winR))(
+        ecg_der_rsp = np.vectorize(lambda idx: _getxy(sig, idx - winL, idx + winR))(
             np.array(rpeaks)
         )
     elif mode == "complex":
@@ -68,7 +67,7 @@ def phs_edr(
             if verbose == -1:
                 print("-" * 80)
                 print(f"idx = {idx}, winL = {winL}, winR = {winR}")
-            x = _getxy(s, idx - winL, idx + winR)
+            x = _getxy(sig, idx - winL, idx + winR)
             if verbose == -1:
                 print(f"x = {x}")
 
@@ -123,4 +122,4 @@ def _getxy(sig: Sequence, von: int, bis: int) -> Real:
     compute the integrand from `von` to `bis` of the signals with baseline removed
 
     """
-    return (np.array(s)[von : bis + 1]).sum()
+    return (np.array(sig)[von : bis + 1]).sum()

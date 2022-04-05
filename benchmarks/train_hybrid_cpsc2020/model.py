@@ -3,7 +3,7 @@
 
 from copy import deepcopy
 from functools import reduce
-from typing import Union, Optional, Sequence, Tuple, List, NoReturn, Any
+from typing import Any, List, NoReturn, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -11,23 +11,22 @@ import torch
 from torch import Tensor
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
+from cfg import ModelCfg
+
 from torch_ecg.cfg import CFG
-from torch_ecg.models import ECG_CRNN, ECG_SEQ_LAB_NET
-from torch_ecg.utils.misc import mask_to_intervals
 from torch_ecg.components.outputs import (
     MultiLableClassificationOutput,
     SequenceLabelingOutput,
 )
-
-from cfg import ModelCfg
-
+from torch_ecg.models import ECG_CRNN, ECG_SEQ_LAB_NET
+from torch_ecg.utils.misc import mask_to_intervals
 
 __all__ = [
     "ECG_CRNN_CPSC2020",

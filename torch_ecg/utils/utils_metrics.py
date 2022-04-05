@@ -6,18 +6,15 @@ challenge (e.g. CinC, CPSC series) specific metrics are not included.
 
 """
 
-from itertools import repeat
-from typing import Union, Optional, Dict, Tuple, Sequence
-from numbers import Number, Real
+from numbers import Real
+from typing import Dict, Optional, Sequence, Tuple, Union
 
-import numpy as np
 import einops
+import numpy as np
 import torch
 from torch import Tensor
-from torch import nn
 
 from .misc import add_docstring
-
 
 __all__ = [
     "top_n_accuracy",

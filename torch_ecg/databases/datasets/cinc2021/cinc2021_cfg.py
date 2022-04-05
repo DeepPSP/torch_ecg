@@ -5,16 +5,11 @@ along with some constants
 "Brady", "LAD", "RAD", "PR", "LQRSV" are treated exceptionally, as special classes
 """
 
-from pathlib import Path
 from copy import deepcopy
 from typing import List, NoReturn
 
 from ....cfg import CFG, DEFAULTS
-from ...aux_data.cinc2021_aux_data import (
-    equiv_class_dict,
-    get_class_weight,
-)
-
+from ...aux_data.cinc2021_aux_data import get_class_weight
 
 __all__ = [
     "CINC2021TrainCfg",

@@ -1,15 +1,17 @@
 """
 """
 
-from . import _nets
-from . import loss
-from . import cnn
-from . import unets
-from . import ecg_crnn
-from . import ecg_seq_lab_net
-from . import grad_cam
-from . import rr_lstm
-from . import transformers
+from . import (  # noqa: F401
+    _nets,
+    cnn,
+    ecg_crnn,
+    ecg_seq_lab_net,
+    grad_cam,
+    loss,
+    rr_lstm,
+    transformers,
+    unets,
+)
 
 # NOT implemented yet
 # from . import gan

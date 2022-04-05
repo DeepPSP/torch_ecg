@@ -1,6 +1,7 @@
 """
 """
 
+from .augmenter_manager import AugmenterManager
 from .base import Augmenter
 from .baseline_wander import BaselineWanderAugmenter
 from .label_smooth import LabelSmooth
@@ -9,8 +10,6 @@ from .random_flip import RandomFlip
 from .random_masking import RandomMasking
 from .random_renormalize import RandomRenormalize
 from .stretch_compress import StretchCompress, StretchCompressOffline
-from .augmenter_manager import AugmenterManager
-
 
 __all__ = [
     "Augmenter",

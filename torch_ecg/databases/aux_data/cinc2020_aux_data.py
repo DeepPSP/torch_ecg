@@ -5,14 +5,13 @@ from 3 files of the official evaluation repo:
 """
 
 from io import StringIO
-from typing import Union, Optional, List, Tuple, Sequence, Dict
 from numbers import Real
+from typing import Dict, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 
 from ...cfg import CFG
-
 
 __all__ = [
     "df_weights",

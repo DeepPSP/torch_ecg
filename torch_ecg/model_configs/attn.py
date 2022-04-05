@@ -2,11 +2,7 @@
 configs for the attention modules
 """
 
-from itertools import repeat
-from copy import deepcopy
-
 from ..cfg import CFG
-
 
 __all__ = [
     "non_local",

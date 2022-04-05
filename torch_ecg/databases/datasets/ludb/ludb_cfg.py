@@ -4,12 +4,10 @@ References
 [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
 """
 
-from pathlib import Path
 from copy import deepcopy
 
 from ....cfg import CFG, DEFAULTS
 from ....utils import ecg_arrhythmia_knowledge as EAK
-
 
 __all__ = [
     "LUDBTrainCfg",

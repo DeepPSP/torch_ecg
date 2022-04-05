@@ -1,16 +1,13 @@
 """
 """
 
-from typing import NoReturn, Any
-from numbers import Real
 import warnings
+from numbers import Real
+from typing import Any, NoReturn
 
 import torch
 
-from .._preprocessors.base import (
-    preprocess_multi_lead_signal,
-)
-
+from .._preprocessors.base import preprocess_multi_lead_signal
 
 __all__ = [
     "BaselineRemove",

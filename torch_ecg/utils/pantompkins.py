@@ -39,6 +39,9 @@ class PanTompkins(object):
         # the detection sensitivity and to avoid missing beats"
         # self.irregular_hr = irregular_hr
 
+    def ispeak(self, sig, siglen, ind, windonw):
+        return sig[ind] == (sig[ind - windonw : ind + windonw]).max()
+
     def detect_qrs_static(self):
         """
         Detect all the qrs locations in the static signal
@@ -97,7 +100,7 @@ class PanTompkins(object):
         for i in range(self.qrs_inds[0] + 41, self.siglen):
 
             # Number of indices from the previous r peak to this index
-            last_r_distance = i - qrs_inds[-1]
+            last_r_distance = i - self.qrs_inds[-1]
 
             # It has been very long since the last r peak
             # was found. Search back for common 2 signal
@@ -107,12 +110,12 @@ class PanTompkins(object):
                 self.backsearch()
                 # Continue with this index whether or not
                 # a previous common peak was marked as qrs
-                last_r_distance = i - qrs_inds[-1]
+                last_r_distance = i - self.qrs_inds[-1]
 
             # Determine whether the current index is a peak
             # for each signal
-            is_peak_F = ispeak(sig_F, self.siglen, i, 20)
-            is_peak_I = ispeak(sig_I, self.siglen, i, 20)
+            is_peak_F = self.ispeak(self.sig_F, self.siglen, i, 20)
+            is_peak_I = self.ispeak(self.sig_I, self.siglen, i, 20)
 
             # Keep track of common peaks that have not been classified as
             # signal peaks for future backsearch
@@ -128,7 +131,7 @@ class PanTompkins(object):
 
             if is_peak_F:
                 # Satisfied signal peak criteria for the channel
-                if sig_F[i] > self.thresh_F:
+                if self.sig_F[i] > self.thresh_F:
                     is_sigpeak_F = True
                 # Did not satisfy signal peak criteria.
                 # Classify as noise peak
@@ -137,7 +140,7 @@ class PanTompkins(object):
 
             if is_peak_I:
                 # Satisfied signal peak criteria for the channel
-                if sig_I[i] > self.thresh_I:
+                if self.sig_I[i] > self.thresh_I:
                     is_sigpeak_I = True
                 # Did not satisfy signal peak criteria.
                 # Classify as noise peak
@@ -227,7 +230,7 @@ class PanTompkins(object):
         if plotsteps:
             if "plt" not in dir():
                 import matplotlib.pyplot as plt
-            plt.plot(sig_deriv)
+            # plt.plot(sig_deriv)
             plt.plot(self.sig_I)
             plt.legend(["deriv", "mwi"])
             plt.show()
@@ -356,9 +359,9 @@ class PanTompkins(object):
         self.rr_average_bound = np.mean(self.rr_history_bound)
 
         # what is rr_average_unbound ever used for?
-        self.rr_low_limit = 0.92 * rr_average_bound
-        self.rr_high_limit = 1.16 * rr_average_bound
-        self.rr_missed_limit = 1.66 * rr_average_bound
+        self.rr_low_limit = 0.92 * self.rr_average_bound
+        self.rr_high_limit = 1.16 * self.rr_average_bound
+        self.rr_missed_limit = 1.66 * self.rr_average_bound
 
         # The qrs indices detected.
         # Initialize with the first signal peak
@@ -390,9 +393,9 @@ class PanTompkins(object):
                 self.rr_history_bound = self.rr_history_bound[:-1].append(new_rr)
                 self.rr_average_bound = np.mean(self.rr_history_bound)
 
-                self.rr_low_limit = 0.92 * rr_average_bound
-                self.rr_high_limit = 1.16 * rr_average_bound
-                self.rr_missed_limit = 1.66 * rr_average_bound
+                self.rr_low_limit = 0.92 * self.rr_average_bound
+                self.rr_high_limit = 1.16 * self.rr_average_bound
+                self.rr_missed_limit = 1.66 * self.rr_average_bound
 
             # Clear the common peaks since last r peak variable
             self.recent_commonpeaks = []
@@ -455,6 +458,7 @@ class PanTompkins(object):
     # We are only analyzing left half for gradient
     # Overall, check 0.12s to the left of the peak.
     # tcheckwidth = 24
+
     def istwave(self, i):
         """
         Determine whether the coinciding peak index happens
@@ -476,10 +480,10 @@ class PanTompkins(object):
         lastqrsind = self.qrs_inds[:-1]
 
         qrs_sig_F_deriv = scisig.lfilter(
-            b_deriv, a_deriv, self.sig_F[lastqrsind - qrscheckwidth : lastqrsind]
+            b_deriv, a_deriv, self.sig_F[lastqrsind - self.qrscheckwidth : lastqrsind]
         )
         checksection_sig_F_deriv = scisig.lfilter(
-            b_deriv, a_deriv, self.sig_F[i - qrscheckwidth : i]
+            b_deriv, a_deriv, self.sig_F[i - self.qrscheckwidth : i]
         )
 
         # Classified as a t-wave
@@ -494,7 +498,7 @@ class PanTompkins(object):
         self.qrs_inds = np.array(self.qrs_inds)
 
         if self.fs != 200:
-            self.qrs_inds = self.qrs_inds * fs / 200
+            self.qrs_inds = self.qrs_inds * self.fs / 200
 
         self.qrs_inds = self.qrs_inds.astype("int64")
 
@@ -512,7 +516,7 @@ def pantompkins(sig, fs):
 # Determine whether the signal contains a peak at index ind.
 # Check if it is the max value amoung samples ind-radius to ind+radius
 def ispeak_radius(sig, siglen, ind, radius):
-    if sig[ind] == max(sig[max(0, i - radius) : min(siglen, i + radius)]):
+    if sig[ind] == max(sig[max(0, ind - radius) : min(siglen, ind + radius)]):
         return True
     else:
         return False

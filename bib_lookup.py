@@ -16,15 +16,15 @@ This file will no longer be updated.
 
 """
 
-import re, warnings, calendar
-from time import strptime
+import calendar
+import re
+import warnings
 from collections import OrderedDict
-from typing import Union, Optional, Tuple, List, Sequence, Tuple, Dict, NoReturn
-from numbers import Number
+from time import strptime
+from typing import Dict, List, NoReturn, Optional, Sequence, Tuple, Union
 
-import requests
 import feedparser
-
+import requests
 
 __all__ = [
     "BibLookup",
@@ -138,31 +138,33 @@ class BibLookup(object):
             "left-middle",
             "left_middle",
         ]
-        colon = "[\s]*:[\s]*"
+        colon = "[\\s]*:[\\s]*"
         # NOTE when applying `re.search`, all strings are converted to lower cases
         # DOI examples:
         # "10.7555/JBR.28.20130191" (a counter example that several bib fields are missing)
-        self.__doi_pattern_prefix = "doi[\s]*:[\s]*|(?:https?:\/\/)?(?:dx\.)?doi\.org\/"
-        self.__doi_pattern = f"^(?:{self.__doi_pattern_prefix})?10\..+\/.+$"
+        self.__doi_pattern_prefix = (
+            "doi[\\s]*:[\\s]*|(?:https?:\\/\\/)?(?:dx\\.)?doi\\.org\\/"
+        )
+        self.__doi_pattern = f"^(?:{self.__doi_pattern_prefix})?10\\..+\\/.+$"
         # PubMed examples:
         # "22331878" or
         # "http://www.ncbi.nlm.nih.gov/pubmed/22331878"
         self.__pmid_pattern_prefix = f"pmid{colon}|pmcid{colon}"  # and pmcid
         # self.__pmid_pattern = f"^(?:{self.__pmid_pattern_prefix})?(?:\d+|pmc\d+(?:\.\d+)?)$"
-        self.__pmurl_pattern_prefix = "(?:https?:\/\/)?(?:pubmed\.ncbi\.nlm\.nih\.gov\/|www\.ncbi\.nlm\.nih\.gov\/pubmed\/)"
+        self.__pmurl_pattern_prefix = "(?:https?:\\/\\/)?(?:pubmed\\.ncbi\\.nlm\\.nih\\.gov\\/|www\\.ncbi\\.nlm\\.nih\\.gov\\/pubmed\\/)"
         # self.__pmurl_pattern = f"^(?:{self.__pmurl_pattern_prefix})?(?:\d+|pmc\d+(?:\.\d+)?)(?:\/)?$"
         self.__pm_pattern_prefix = (
             f"{self.__pmurl_pattern_prefix}|{self.__pmid_pattern_prefix}"
         )
         self.__pm_pattern = (
-            f"^(?:{self.__pm_pattern_prefix})?(?:\d+|pmc\d+(?:\.\d+)?)(?:\/)?$"
+            f"^(?:{self.__pm_pattern_prefix})?(?:\\d+|pmc\\d+(?:\\.\\d+)?)(?:\\/)?$"
         )
         # arXiv examples:
         # "arXiv:1501.00001v1", "arXiv:cs/0012022"
         self.__arxiv_pattern_prefix = (
-            f"((?:(?:(?:https?:\/\/)?arxiv.org\/)?abs\/)|(arxiv{colon}))"
+            f"((?:(?:(?:https?:\\/\\/)?arxiv.org\\/)?abs\\/)|(arxiv{colon}))"
         )
-        self.__arxiv_pattern = f"^(?:{self.__arxiv_pattern_prefix})?(?:([\w\-]+\/\d+)|(\d+\.\d+(v(\d+))?))$"
+        self.__arxiv_pattern = f"^(?:{self.__arxiv_pattern_prefix})?(?:([\\w\\-]+\\/\\d+)|(\\d+\\.\\d+(v(\\d+))?))$"
         # self.__arxiv_pattern_old = f"^(?:{self.__arxiv_pattern_prefix})?[\w\-]+\/\d+$"
         self.__default_err = "Not Found"
 
@@ -346,7 +348,7 @@ class BibLookup(object):
         parsed = feedparser.parse(r.content.decode("utf-8")).entries[0]
         if self.verbose > 1:
             print(parsed)
-        title = re.sub("[\s]+", " ", parsed["title"])  # sometimes this field has "\n"
+        title = re.sub("[\\s]+", " ", parsed["title"])  # sometimes this field has "\n"
         if title == "Error":
             res = self.__default_err
             return res
@@ -398,17 +400,17 @@ class BibLookup(object):
             "left_middle",
         ], f"align must be one of 'middle', 'left', 'left-middle', 'left_middle', but got {_align}"
         if isinstance(res, str):
-            lines = [l.strip() for l in res.split("\n") if len(l.strip()) > 0]
+            lines = [line.strip() for line in res.split("\n") if len(line.strip()) > 0]
             d = OrderedDict()
             header = lines[0]
-            for l in lines[1:-1]:
-                key, val = l.strip().split("=")
+            for line in lines[1:-1]:
+                key, val = line.strip().split("=")
                 # convert month from abbreviation to number
                 if (
                     key.lower().strip() == "month"
-                    and val.strip("\{\}, ").capitalize() in calendar.month_abbr
+                    and val.strip("\\{\\}, ").capitalize() in calendar.month_abbr
                 ):
-                    _val = val.strip("\{\}, ")
+                    _val = val.strip("\\{\\}, ")
                     val = val.replace(_val, str(strptime(_val, "%b").tm_mon))
                 d[key.strip()] = self._enclose_braces(val)
         elif isinstance(res, dict):
@@ -420,9 +422,9 @@ class BibLookup(object):
                 if (
                     k.lower().strip() == "month"
                     and isinstance(v, str)
-                    and v.strip("\{\}, ").capitalize() in calendar.month_abbr
+                    and v.strip("\\{\\}, ").capitalize() in calendar.month_abbr
                 ):
-                    _v = v.strip("\{\}, ")
+                    _v = v.strip("\\{\\}, ")
                     v = v.replace(_v, str(strptime(_v, "%b").tm_mon))
                 d[k] = self._enclose_braces(v)
                 if idx < len(tmp) - 1:

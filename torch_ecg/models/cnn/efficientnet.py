@@ -6,29 +6,23 @@ References
 [1] Tan, M., & Le, Q. V. (2019). Efficientnet: Rethinking model scaling for convolutional neural networks. arXiv preprint arXiv:1905.11946.
 [2] Tan, M., & Le, Q. V. (2021). Efficientnetv2: Smaller models and faster training. arXiv preprint arXiv:2104.00298.
 [3] https://github.com/google/automl
+
 """
 
-from copy import deepcopy
-from itertools import repeat
-from collections import OrderedDict
-from typing import Union, Optional, Sequence, NoReturn
+from typing import NoReturn
 
-import numpy as np
 import torch
 from torch import nn
-from torch import Tensor
 
-from ...cfg import CFG, DEFAULTS
-from ...utils.utils_nn import compute_module_size, SizeMixin
-from ...utils.misc import dict_to_str
-from ...models._nets import (
+from ...cfg import DEFAULTS
+from ...models._nets import (  # noqa: F401
     Conv_Bn_Activation,
     DownSample,
+    GlobalContextBlock,
     NonLocalBlock,
     SEBlock,
-    GlobalContextBlock,
 )
-
+from ...utils.utils_nn import SizeMixin
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

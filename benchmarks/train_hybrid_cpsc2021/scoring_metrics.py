@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-import numpy as np
 import json
 import os
 import sys
-from typing import Union, Optional, List, Tuple, Sequence, NoReturn
+from typing import Sequence, Tuple
 
+import numpy as np
 import scipy.io as sio
 import wfdb
-
 
 __all__ = [
     "compute_challenge_metric",

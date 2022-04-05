@@ -14,14 +14,12 @@ References
 ----------
 to add
 """
-from typing import Union, Optional, List
 from numbers import Real
+from typing import List
 
 import numpy as np
 from easydict import EasyDict as ED
-
 from train.train_crnn_cpsc2020.utils import mask_to_intervals
-
 
 __all__ = [
     "ecg_denoise",

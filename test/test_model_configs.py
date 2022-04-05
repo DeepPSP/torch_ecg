@@ -4,82 +4,18 @@
 import time
 from typing import NoReturn
 
-import pytest
 import torch
 from easydict import EasyDict as ED
 
 try:
-    import torch_ecg
-except:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
-    import torch_ecg
 
-from torch_ecg.model_configs import (
-    # building blocks
-    # CNN
-    # vgg
-    vgg16,
-    vgg16_leadwise,
-    # vanilla resnet
-    resnet_vanilla_18,
-    resnet_vanilla_34,
-    resnet_vanilla_50,
-    resnet_vanilla_101,
-    resnet_vanilla_152,
-    resnext_vanilla_50_32x4d,
-    resnext_vanilla_101_32x8d,
-    resnet_vanilla_wide_50_2,
-    resnet_vanilla_wide_101_2,
-    # custom resnet
-    resnetN,
-    resnetNB,
-    resnetNBS,
-    resnetNS,
-    tresnetN,
-    tresnetP,
-    tresnetF,
-    tresnetS,
-    tresnetM,
-    tresnetL,
-    resnet_nature_comm,
-    resnet_nature_comm_bottle_neck,
-    resnet_nature_comm_bottle_neck_se,
-    resnet_nature_comm_bottle_neck_nl,
-    resnet_nature_comm_bottle_neck_gc,
-    resnet_cpsc2018,
-    resnet_cpsc2018_leadwise,
-    # stanford resnet
-    resnet_block_stanford,
-    resnet_stanford,
-    # cpsc2018 SOTA, legacy
-    cpsc_2018,
-    cpsc_2018_leadwise,
-    # multi_scopic
-    multi_scopic,
-    multi_scopic_leadwise,
-    # vanilla dense_net
-    densenet_vanilla,
-    # custom dense_net
-    densenet_leadwise,
-    # vanilla xception
-    xception_vanilla,
-    # custom xception
-    xception_leadwise,
-    # vanilla mobilenets
-    mobilenet_v1_vanilla,
-    # RNN
-    lstm,
-    attention,
-    # MLP
-    linear,
-    # ATTN
-    non_local,
-    squeeze_excitation,
-    global_context,
-    # downstream tasks
+from torch_ecg.model_configs import (  # noqa: F401
     ATI_CNN_CONFIG,
     ECG_CRNN_CONFIG,
     ECG_SEQ_LAB_NET_CONFIG,
@@ -89,32 +25,74 @@ from torch_ecg.model_configs import (
     RR_AF_CRF_CONFIG,
     RR_AF_VANILLA_CONFIG,
     RR_LSTM_CONFIG,
+    attention,
+    cpsc_2018,
+    cpsc_2018_leadwise,
+    densenet_leadwise,
+    densenet_vanilla,
+    global_context,
+    linear,
+    lstm,
+    mobilenet_v1_vanilla,
+    multi_scopic,
+    multi_scopic_leadwise,
+    non_local,
+    resnet_block_stanford,
+    resnet_cpsc2018,
+    resnet_cpsc2018_leadwise,
+    resnet_nature_comm,
+    resnet_nature_comm_bottle_neck,
+    resnet_nature_comm_bottle_neck_gc,
+    resnet_nature_comm_bottle_neck_nl,
+    resnet_nature_comm_bottle_neck_se,
+    resnet_stanford,
+    resnet_vanilla_18,
+    resnet_vanilla_34,
+    resnet_vanilla_50,
+    resnet_vanilla_101,
+    resnet_vanilla_152,
+    resnet_vanilla_wide_50_2,
+    resnet_vanilla_wide_101_2,
+    resnetN,
+    resnetNB,
+    resnetNBS,
+    resnetNS,
+    resnext_vanilla_50_32x4d,
+    resnext_vanilla_101_32x8d,
+    squeeze_excitation,
+    tresnetF,
+    tresnetL,
+    tresnetM,
+    tresnetN,
+    tresnetP,
+    tresnetS,
+    vgg16,
+    vgg16_leadwise,
+    xception_leadwise,
+    xception_vanilla,
 )
-
-from torch_ecg.models.cnn.darknet import DarkNet
-from torch_ecg.models.cnn.densenet import DenseNet
-from torch_ecg.models.cnn.efficientnet import EfficientNet, EfficientNetV2
-from torch_ecg.models.cnn.ho_resnet import (
+from torch_ecg.models.cnn.darknet import DarkNet  # noqa: F401
+from torch_ecg.models.cnn.densenet import DenseNet  # noqa: F401
+from torch_ecg.models.cnn.efficientnet import EfficientNet, EfficientNetV2  # noqa: F401
+from torch_ecg.models.cnn.ho_resnet import (  # noqa: F401
     MidPointResNet,
     RK4ResNet,
     RK8ResNet,
 )
-from torch_ecg.models.cnn.mobilenet import (
+from torch_ecg.models.cnn.mobilenet import (  # noqa: F401
     MobileNetV1,
     MobileNetV2,
     MobileNetV3,
 )
-from torch_ecg.models.cnn.multi_scopic import MultiScopicCNN
-from torch_ecg.models.cnn.resnet import ResNet
-from torch_ecg.models.cnn.vgg import VGG16
-from torch_ecg.models.cnn.xception import Xception
-
-from torch_ecg.models.rr_lstm import RR_LSTM
-from torch_ecg.models.ecg_crnn import ECG_CRNN
-from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
-from torch_ecg.models.unets.ecg_unet import ECG_UNET
-from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
-
+from torch_ecg.models.cnn.multi_scopic import MultiScopicCNN  # noqa: F401
+from torch_ecg.models.cnn.resnet import ResNet  # noqa: F401
+from torch_ecg.models.cnn.vgg import VGG16  # noqa: F401
+from torch_ecg.models.cnn.xception import Xception  # noqa: F401
+from torch_ecg.models.ecg_crnn import ECG_CRNN  # noqa: F401
+from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET  # noqa: F401
+from torch_ecg.models.rr_lstm import RR_LSTM  # noqa: F401
+from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET  # noqa: F401
+from torch_ecg.models.unets.ecg_unet import ECG_UNET  # noqa: F401
 
 _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 

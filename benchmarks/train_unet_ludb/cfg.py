@@ -4,23 +4,22 @@ References
 [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
 """
 
-from pathlib import Path
 from copy import deepcopy
+from pathlib import Path
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
-from torch_ecg.model_configs import (
+from torch_ecg.model_configs import (  # noqa: F401
     ECG_SUBTRACT_UNET_CONFIG,
     ECG_UNET_VANILLA_CONFIG,
 )
-
+from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
 
 __all__ = [
     "TrainCfg",

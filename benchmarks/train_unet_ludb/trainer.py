@@ -4,40 +4,41 @@ References
 [1] https://github.com/milesial/Pytorch-UNet/blob/master/train.py
 """
 
-import os, sys, argparse
+import argparse
+import os
+import sys
 from copy import deepcopy
-from collections import deque, OrderedDict
-from typing import Union, Optional, Tuple, Sequence, NoReturn, Any, Dict, List
-from numbers import Real, Number
+from typing import Any, Dict, List, NoReturn, Optional, Tuple
 
 import numpy as np
 
 try:
-    from tqdm.auto import tqdm
+    from tqdm.auto import tqdm  # noqa: F401
 except ModuleNotFoundError:
-    from tqdm import tqdm
+    from tqdm import tqdm  # noqa: F401
+
 import torch
 from torch import nn
-from torch import Tensor
-from torch.utils.data import Dataset, DataLoader
-import torch.nn.functional as F
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
+from torch.utils.data import DataLoader, Dataset
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.components.trainer import BaseTrainer
-
-from cfg import TrainCfg, ModelCfg
+from cfg import ModelCfg, TrainCfg
 from dataset import LUDB
 from metrics import compute_metrics
 from model import ECG_UNET_LUDB
+
+from torch_ecg.cfg import CFG
+from torch_ecg.components.trainer import BaseTrainer
+from torch_ecg.utils.misc import str2bool
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 LUDB.__DEBUG__ = False
 ECG_UNET_LUDB.__DEBUG__ = False

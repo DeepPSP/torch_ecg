@@ -2,13 +2,13 @@
 metrics from the official scoring repository
 """
 
-from typing import Union, Optional, List, Tuple, Sequence, NoReturn
-from numbers import Number, Real
+from numbers import Real
+from typing import List, Sequence, Tuple, Union
 
 import numpy as np
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
     from pathlib import Path
@@ -16,7 +16,6 @@ except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.databases.aux_data.cinc2021_aux_data import load_weights
-
 
 __all__ = [
     "evaluate_scores_detailed",

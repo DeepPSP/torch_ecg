@@ -5,11 +5,10 @@ References
 """
 
 import math
-from typing import Union, Optional, Sequence
 from numbers import Real
+from typing import Sequence, Union
 
 import numpy as np
-
 
 __all__ = [
     "compute_metrics",

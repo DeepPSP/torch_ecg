@@ -2,12 +2,11 @@
 data generator for feeding data into pytorch models
 """
 
-import json, math
-from pathlib import Path
-from random import shuffle, randint, uniform, sample
+import json
+import math
 from copy import deepcopy
-from functools import reduce
-from typing import Optional, List, Tuple, Sequence, NoReturn
+from random import shuffle
+from typing import List, NoReturn, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -18,13 +17,11 @@ try:
 except ModuleNotFoundError:
     from tqdm import tqdm
 
+from ...._preprocessors import PreprocManager
 from ....cfg import CFG
 from ....databases import CPSC2019 as CR
-from ...._preprocessors import PreprocManager
 from ....utils.misc import ReprMixin
-
-from .cpsc2019_cfg import CPSC2019TrainCfg
-
+from .cpsc2019_cfg import CPSC2019TrainCfg  # noqa: F401
 
 __all__ = [
     "CPSC2019Dataset",

@@ -1,52 +1,54 @@
 """
 """
 
-import os, sys, logging, argparse, textwrap
-from pathlib import Path
+import argparse
+import logging
+import os
+import sys
+import textwrap
+from collections import OrderedDict, deque
 from copy import deepcopy
-from collections import deque, OrderedDict
-from typing import Union, Optional, Tuple, Dict, Sequence, NoReturn
-from numbers import Real, Number
+from pathlib import Path
+from typing import Dict, Optional, Tuple
 
 import numpy as np
+import torch
+from tensorboardX import SummaryWriter
+from torch import nn, optim
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
+from torch.utils.data import DataLoader
 
 # try:
 #     from tqdm.auto import tqdm
 # except ModuleNotFoundError:
 #     from tqdm import tqdm
 from tqdm import tqdm
-import torch
-from torch import nn
-from torch import optim
-from torch import Tensor
-from torch.utils.data import DataLoader
-import torch.nn.functional as F
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
-from tensorboardX import SummaryWriter
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.components.trainer import BaseTrainer
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.utils.misc import (
-    get_date_str,
-    dict_to_str,
-    str2bool,
-    mask_to_intervals,
-    list_sum,
-)
-from torch_ecg.components.outputs import BaseOutput
-
-from model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
 from cfg import ModelCfg, TrainCfg
 
 # from dataset import CPSC2020
 from dataset_simplified import CPSC2020 as CPSC2020_SIMPLIFIED
-from metrics import eval_score, CPSC2020_loss, CPSC2020_score
+from metrics import CPSC2020_loss, CPSC2020_score, eval_score  # noqa: F401
+from model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
+
+from torch_ecg.cfg import CFG
+from torch_ecg.components.outputs import BaseOutput  # noqa: F401
+from torch_ecg.components.trainer import BaseTrainer  # noqa: F401
+from torch_ecg.models.loss import BCEWithLogitsWithClassWeightLoss
+from torch_ecg.utils.misc import (
+    dict_to_str,
+    get_date_str,
+    list_sum,
+    mask_to_intervals,
+    str2bool,
+)
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -547,7 +549,7 @@ def train(
                 model_to_remove = saved_models.popleft()
                 try:
                     os.remove(model_to_remove)
-                except:
+                except Exception:
                     logger.info(f"failed to remove {model_to_remove}")
 
     # save the best model
@@ -962,9 +964,9 @@ if __name__ == "__main__":
             {
                 "model_state_dict": model.state_dict(),
                 "model_config": model_config,
-                "train_config": config,
+                "train_config": train_config,
             },
-            str(config.checkpoints / "INTERRUPTED.pth.tar"),
+            str(train_config.checkpoints / "INTERRUPTED.pth.tar"),
         )
         logger.info("Saved interrupt")
         try:

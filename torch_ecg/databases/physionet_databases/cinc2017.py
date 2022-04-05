@@ -4,19 +4,14 @@
 
 import math
 from pathlib import Path
-from typing import Union, Optional, Any, List, Sequence, NoReturn
-from numbers import Real
+from typing import Any, NoReturn, Optional, Sequence, Union
 
-import wfdb
 import numpy as np
 import pandas as pd
+import wfdb
 
-from ...utils.misc import (
-    get_record_list_recursive,
-    get_record_list_recursive3,
-)
-from ..base import PhysioNetDataBase, DEFAULT_FIG_SIZE_PER_SEC
-
+from ...utils.misc import get_record_list_recursive3
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase
 
 __all__ = [
     "CINC2017",
@@ -132,7 +127,7 @@ class CINC2017(PhysioNetDataBase):
             self._all_records = fp.read_text().splitlines()
             return
         self._all_records = get_record_list_recursive3(
-            db_dir=str(self.db_dir), rec_patterns=f"A[\d]{{5}}.{self.rec_ext}"
+            db_dir=str(self.db_dir), rec_patterns=f"A[\\d]{{5}}.{self.rec_ext}"
         )
         fp.write_text("\n".join(self._all_records) + "\n")
 

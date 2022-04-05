@@ -1,19 +1,15 @@
 """
 """
+
 import math
 import time
-from numbers import Real
-from typing import Tuple
 
-import torch
 import numpy as np
-from scipy.signal import resample_poly
-
-from signal_processing import parallel_preprocess_signal
-from signal_processing import ecg_denoise
-from saved_models import load_model
+import torch
 from cfg import ModelCfg
-
+from saved_models import load_model
+from scipy.signal import resample_poly
+from signal_processing import ecg_denoise, parallel_preprocess_signal
 
 CRNN_MODEL, SEQ_LAB_MODEL = load_model(which="both")
 CRNN_CFG, SEQ_LAB_CFG = ModelCfg.crnn, ModelCfg.seq_lab

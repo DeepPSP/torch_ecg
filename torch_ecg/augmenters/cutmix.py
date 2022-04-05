@@ -3,15 +3,16 @@ Cutmix augmentation, for segmentation tasks.
 This technique is very successful in CPSC2021 challenge of paroxysmal AF events detection.
 """
 
-from typing import Any, NoReturn, Sequence, Union, Optional, List, Tuple
+from copy import deepcopy
 from numbers import Real
+from random import shuffle
+from typing import Any, List, NoReturn, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
 from torch import Tensor
 
 from .base import Augmenter
-
 
 __all__ = [
     "CutMix",

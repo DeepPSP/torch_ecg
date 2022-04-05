@@ -2,12 +2,12 @@
 data generator for feeding data into pytorch models
 """
 
-import json, math
-from pathlib import Path
-from random import shuffle, randint, uniform, sample
+import json
+import math
 from copy import deepcopy
-from functools import reduce
-from typing import Optional, List, Tuple, Sequence, NoReturn
+from pathlib import Path
+from random import shuffle
+from typing import List, NoReturn, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -15,22 +15,23 @@ try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
     from tqdm import tqdm
+
 import torch
 from torch.utils.data.dataset import Dataset
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.utils.misc import ReprMixin
-from torch_ecg.databases import CPSC2019 as CR
-from torch_ecg._preprocessors import PreprocManager
+from cfg import ModelCfg, TrainCfg  # noqa: F401
 
-from cfg import TrainCfg, ModelCfg
+from torch_ecg._preprocessors import PreprocManager
+from torch_ecg.cfg import CFG
+from torch_ecg.databases import CPSC2019 as CR
+from torch_ecg.utils.misc import ReprMixin
 
 if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

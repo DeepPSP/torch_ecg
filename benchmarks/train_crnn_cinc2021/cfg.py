@@ -5,30 +5,23 @@ along with some constants
 "Brady", "LAD", "RAD", "PR", "LQRSV" are treated exceptionally, as special classes
 """
 
-from pathlib import Path
 from copy import deepcopy
-from itertools import repeat
+from pathlib import Path
 from typing import List, NoReturn
 
-import numpy as np
-
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.databases.aux_data.cinc2021_aux_data import (
-    equiv_class_dict,
-    get_class_weight,
-)
-from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
-from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
-
 from cfg_models import ModelArchCfg
 
+from torch_ecg.cfg import CFG, DEFAULTS
+from torch_ecg.databases.aux_data.cinc2021_aux_data import get_class_weight
+from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
+from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
 
 __all__ = [
     "BaseCfg",
@@ -308,18 +301,18 @@ ModelCfg.attn_name = TrainCfg.attn_name
 
 # model architectures configs
 ModelCfg.update(ModelArchCfg)
-for l in ["twelve_leads", "six_leads", "four_leads", "three_leads", "two_leads"]:
-    adjust_cnn_filter_lengths(ModelCfg[l], ModelCfg.fs)
-    ModelCfg[l].cnn.name = ModelCfg.cnn_name
-    ModelCfg[l].rnn.name = ModelCfg.rnn_name
-    ModelCfg[l].attn.name = ModelCfg.attn_name
-    # ModelCfg[l].clf = CFG()
-    # ModelCfg[l].clf.out_channels = [
+for lead_set in ["twelve_leads", "six_leads", "four_leads", "three_leads", "two_leads"]:
+    adjust_cnn_filter_lengths(ModelCfg[lead_set], ModelCfg.fs)
+    ModelCfg[lead_set].cnn.name = ModelCfg.cnn_name
+    ModelCfg[lead_set].rnn.name = ModelCfg.rnn_name
+    ModelCfg[lead_set].attn.name = ModelCfg.attn_name
+    # ModelCfg[lead_set].clf = CFG()
+    # ModelCfg[lead_set].clf.out_channels = [
     # # not including the last linear layer, whose out channels equals n_classes
     # ]
-    # ModelCfg[l].clf.bias = True
-    # ModelCfg[l].clf.dropouts = 0.0
-    # ModelCfg[l].clf.activation = "mish"  # for a single layer `SeqLin`, activation is ignored
+    # ModelCfg[lead_set].clf.bias = True
+    # ModelCfg[lead_set].clf.dropouts = 0.0
+    # ModelCfg[lead_set].clf.activation = "mish"  # for a single layer `SeqLin`, activation is ignored
 
 
 # the no special classes version

@@ -4,27 +4,22 @@
 import shutil
 from pathlib import Path
 
-import pytest
-
 try:
-    import torch_ecg
-except:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
-    import torch_ecg
-from torch_ecg.databases import (
-    AFDB,
-    ApneaECG,
-    CINC2017,
-    CINC2018,
-    CINC2020,
-    CINC2021,
-    LTAFDB,
-    LUDB,
-    MITDB,
-)
 
+from torch_ecg.databases import AFDB  # noqa: F401; noqa: F401
+from torch_ecg.databases import CINC2017  # noqa: F401
+from torch_ecg.databases import CINC2018  # noqa: F401
+from torch_ecg.databases import CINC2020  # noqa: F401
+from torch_ecg.databases import CINC2021  # noqa: F401
+from torch_ecg.databases import LTAFDB  # noqa: F401
+from torch_ecg.databases import LUDB  # noqa: F401
+from torch_ecg.databases import MITDB  # noqa: F401
+from torch_ecg.databases import ApneaECG  # noqa: F401
 
 ###############################################################################
 # set paths

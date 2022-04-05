@@ -16,40 +16,34 @@ TODO:
 currently all are binary detectors, --> detectors producing a probability?
 """
 
-import multiprocessing as mp
 from itertools import repeat
 from numbers import Real
-from typing import Union, Optional, Any, List, Dict, Callable, Sequence
+from typing import Any, Optional, Sequence
 
 import numpy as np
-from scipy.signal import peak_prominences, peak_widths
 from biosppy.signals.tools import filter_signal
 from deprecated import deprecated
+from scipy.signal import peak_prominences
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.utils.preproc import (
-    preprocess_multi_lead_signal,
-    rpeaks_detect_multi_leads,
-)
-from torch_ecg.utils.utils_signal import detect_peaks, get_ampl
-from torch_ecg.utils.misc import ms2samples, samples2ms, get_mask
-from torch_ecg.utils.ecg_arrhythmia_knowledge import (
-    Standard12Leads,
-    ChestLeads,
-    PrecordialLeads,
-    LimbLeads,
-)
-
 from cfg import SpecialDetectorCfg
 
+from torch_ecg.cfg import CFG
+from torch_ecg.utils.ecg_arrhythmia_knowledge import (
+    LimbLeads,
+    PrecordialLeads,
+    Standard12Leads,
+)
+from torch_ecg.utils.misc import get_mask, ms2samples, samples2ms
+from torch_ecg.utils.preproc import preprocess_multi_lead_signal
+from torch_ecg.utils.utils_signal import detect_peaks, get_ampl
 
 __all__ = [
     "special_detectors",
@@ -200,8 +194,8 @@ def pacing_rhythm_detector(
     n_leads, sig_len = data_hp.shape
     assert n_leads == len(leads)
 
-    for l in range(n_leads):
-        lead_hp = np.abs(data_hp[l, ...])
+    for ld in range(n_leads):
+        lead_hp = np.abs(data_hp[ld, ...])
         mph = SpecialDetectorCfg.pr_spike_mph_ratio * np.sum(lead_hp) / sig_len
         lead_spikes = detect_peaks(
             x=lead_hp,
@@ -212,7 +206,7 @@ def pacing_rhythm_detector(
             verbose=0,
         )
         if verbose >= 2:
-            print(f"for the {l}-th lead, its spike detecting mph = {mph:.4f} mV")
+            print(f"for the {ld}-th lead, its spike detecting mph = {mph:.4f} mV")
             print(f"lead_spikes = {lead_spikes.tolist()}")
             print(
                 f"with prominences = {np.round(peak_prominences(lead_hp, lead_spikes, wlen=ms2samples(SpecialDetectorCfg.pr_spike_prominence_wlen, fs))[0], 5).tolist()}"
@@ -221,22 +215,22 @@ def pacing_rhythm_detector(
 
     # make decision using `potential_spikes`
     sig_duration_ms = samples2ms(sig_len, fs)
-    # lead_has_enough_spikes = [False if len(potential_spikes[l]) ==0 else sig_duration_ms / len(potential_spikes[l]) < SpecialDetectorCfg.pr_spike_inv_density_threshold for l in range(n_leads)]
+    # lead_has_enough_spikes = [False if len(potential_spikes[ld]) ==0 else sig_duration_ms / len(potential_spikes[ld]) < SpecialDetectorCfg.pr_spike_inv_density_threshold for ld in range(n_leads)]
     lead_has_enough_spikes = list(repeat(0, n_leads))
-    for l in range(n_leads):
-        if len(potential_spikes[l]) > 0:
+    for ld in range(n_leads):
+        if len(potential_spikes[ld]) > 0:
             relative_inv_density = (
                 SpecialDetectorCfg.pr_spike_inv_density_threshold
-                - sig_duration_ms / len(potential_spikes[l])
+                - sig_duration_ms / len(potential_spikes[ld])
             )
             # sigmoid
-            lead_has_enough_spikes[l] = 1 / (1 + np.exp(-relative_inv_density / 100))
+            lead_has_enough_spikes[ld] = 1 / (1 + np.exp(-relative_inv_density / 100))
             if not ret_prob:
-                lead_has_enough_spikes[l] = int(lead_has_enough_spikes[l] >= 0.5)
+                lead_has_enough_spikes[ld] = int(lead_has_enough_spikes[ld] >= 0.5)
     if verbose >= 1:
         print(f"lead_has_enough_spikes = {lead_has_enough_spikes}")
         print(
-            f"leads spikes density (units in ms) = {[len(potential_spikes[l]) / sig_duration_ms for l in range(n_leads)]}"
+            f"leads spikes density (units in ms) = {[len(potential_spikes[ld]) / sig_duration_ms for ld in range(n_leads)]}"
         )
 
     _threshold = int(round(SpecialDetectorCfg.pr_spike_leads_threshold * n_leads))
@@ -311,7 +305,7 @@ def electrical_axis_detector(
     lead_aVF = s[list(leads).index("aVF")]
     try:
         lead_II = s[list(leads).index("II")]
-    except:
+    except Exception:
         # no lead II, degenerates to the "2-lead" method
         method = "2-lead"
 
@@ -447,7 +441,7 @@ def brady_tachy_detector(
                 f"mean_rr = {round(samples2ms(mean_rr, fs), 1)} ms, with detailed rr_intervals (with units in ms) = {(np.vectorize(lambda item:samples2ms(item, fs))(rr_intervals)).tolist()}"
             )
         else:
-            print(f"not enough r peaks for computing rr intervals")
+            print("not enough r peaks for computing rr intervals")
     nrr = normal_rr_range or [
         SpecialDetectorCfg.tachy_threshold,
         SpecialDetectorCfg.brady_threshold,
@@ -505,10 +499,10 @@ def LQRSV_detector(
         critical_points=rpeaks,
     )
 
-    limb_leads = [l for l in leads if l in LimbLeads]
-    limb_lead_inds = [list(leads).index(l) for l in limb_leads]
-    precordial_leads = [l for l in leads if l in PrecordialLeads]
-    precordial_lead_inds = [list(leads).index(l) for l in precordial_leads]
+    limb_leads = [ld for ld in leads if ld in LimbLeads]
+    limb_lead_inds = [list(leads).index(ld) for ld in limb_leads]
+    precordial_leads = [ld for ld in leads if ld in PrecordialLeads]
+    precordial_lead_inds = [list(leads).index(ld) for ld in precordial_leads]
 
     if verbose >= 1:
         print(
@@ -597,10 +591,10 @@ def LQRSV_detector_backup(
     if verbose >= 2:
         print(f"qrs intervals = {l_qrs}")
 
-    limb_leads = [l for l in leads if l in LimbLeads]
-    limb_lead_inds = [list(leads).index(l) for l in limb_leads]
-    precordial_leads = [l for l in leads if l in PrecordialLeads]
-    precordial_lead_inds = [list(leads).index(l) for l in precordial_leads]
+    limb_leads = [ld for ld in leads if ld in LimbLeads]
+    limb_lead_inds = [list(leads).index(ld) for ld in limb_leads]
+    precordial_leads = [ld for ld in leads if ld in PrecordialLeads]
+    precordial_lead_inds = [list(leads).index(ld) for ld in precordial_leads]
 
     l_qrs_limb_leads = []
     l_qrs_precordial_leads = []
@@ -711,16 +705,16 @@ def PRWP_detector(
         is_PRWP = False
         return is_PRWP
 
-    limb_leads = [l for l in leads if l in LimbLeads]
-    limb_lead_inds = [list(leads).index(l) for l in limb_leads]
+    limb_leads = [ld for ld in leads if ld in LimbLeads]
+    limb_lead_inds = [list(leads).index(ld) for ld in limb_leads]
 
     try:
         lead_V3_ind = list(leads).index("V3")
-    except:
+    except Exception:
         lead_V3_ind = None
 
-    leads_V1_4 = [l for l in leads if l in ["V1", "V2", "V3", "V4"]]
-    leads_V1_4_inds = [list(leads).index(l) for l in leads_V1_4]
+    leads_V1_4 = [ld for ld in leads if ld in ["V1", "V2", "V3", "V4"]]
+    leads_V1_4_inds = [list(leads).index(ld) for ld in leads_V1_4]
 
     # condition 1: R<3mm in V3
     if lead_V3_ind is not None:

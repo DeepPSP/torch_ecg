@@ -10,17 +10,15 @@ Possible Solutions
 """
 
 from itertools import repeat
-from copy import deepcopy
 from numbers import Real
-from typing import Union, Optional, Sequence, Tuple, List, NoReturn, Any
+from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
 
 import numpy as np
-import pandas as pd
 import torch
 from torch import Tensor
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
     from pathlib import Path
@@ -28,19 +26,15 @@ except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG
+from torch_ecg.components.outputs import RPeaksDetectionOutput, SequenceTaggingOutput
 
 # models from torch_ecg
-from torch_ecg.models.ecg_crnn import ECG_CRNN
-from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
-from torch_ecg.models.unets import ECG_UNET, ECG_SUBTRACT_UNET
-from torch_ecg.models.rr_lstm import RR_LSTM
-from torch_ecg.utils.misc import mask_to_intervals, add_docstring
+from torch_ecg.models.ecg_crnn import ECG_CRNN  # noqa: F401
+from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET  # noqa: F401
+from torch_ecg.models.rr_lstm import RR_LSTM  # noqa: F401
+from torch_ecg.models.unets import ECG_SUBTRACT_UNET, ECG_UNET  # noqa: F401
+from torch_ecg.utils.misc import add_docstring, mask_to_intervals
 from torch_ecg.utils.utils_interval import intervals_union
-from torch_ecg.utils.preproc import merge_rpeaks
-from torch_ecg.components.outputs import SequenceTaggingOutput, RPeaksDetectionOutput
-
-from cfg import ModelCfg
-
 
 __all__ = [
     "ECG_SEQ_LAB_NET_CPSC2021",
@@ -132,7 +126,7 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
         """
         alias for `self.inference`
         """
-        return self.inference(input, class_names, bin_pred_thr, **kwargs)
+        return self.inference(input, bin_pred_thr, **kwargs)
 
     @torch.no_grad()
     def _inference_qrs_detection(
@@ -781,11 +775,13 @@ class RR_LSTM_CPSC2021(RR_LSTM):
         self,
         input: Union[Sequence[float], np.ndarray, Tensor],
         bin_pred_thr: float = 0.5,
+        rpeaks: Optional[Union[Sequence[int], Sequence[Sequence[int]]]] = None,
+        episode_len_thr: int = 5,
     ) -> SequenceTaggingOutput:
         """
         alias for `self.inference`
         """
-        return self.inference(input, class_names, bin_pred_thr)
+        return self.inference(input, bin_pred_thr, rpeaks, episode_len_thr)
 
     @staticmethod
     def from_checkpoint(

@@ -2,11 +2,10 @@
 configs of the model of (subtract) UNET structures
 """
 
-from itertools import repeat
 from copy import deepcopy
+from itertools import repeat
 
 from ..cfg import CFG
-
 
 __all__ = [
     "ECG_SUBTRACT_UNET_CONFIG",

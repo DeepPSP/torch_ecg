@@ -4,39 +4,36 @@
 import shutil
 from copy import deepcopy
 from pathlib import Path
-from typing import NoReturn, Optional, Any, Sequence, Union, Tuple, Dict, List
+from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
 
-import pytest
+import biosppy.signals.ecg as BSE
 import numpy as np
 import torch
 from torch import Tensor
-from torch.utils.data import Dataset, DataLoader
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
+from torch.nn.parallel import DataParallel as DP
+
+# from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.utils.data import DataLoader, Dataset
 
 try:
-    import torch_ecg
-except:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
-    import torch_ecg
 
 from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.databases.datasets.cpsc2019 import CPSC2019Dataset, CPSC2019TrainCfg
+from torch_ecg.components.outputs import RPeaksDetectionOutput
+from torch_ecg.components.trainer import BaseTrainer
 from torch_ecg.databases.cpsc_databases.cpsc2019 import (
     compute_metrics as compute_cpsc2019_metrics,
 )
-from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
+from torch_ecg.databases.datasets.cpsc2019 import CPSC2019Dataset, CPSC2019TrainCfg
 from torch_ecg.model_configs import ECG_SEQ_LAB_NET_CONFIG
-from torch_ecg.utils.utils_nn import (
-    default_collate_fn as collate_fn,
-    adjust_cnn_filter_lengths,
-)
-from torch_ecg.components.trainer import BaseTrainer
-from torch_ecg.utils.misc import mask_to_intervals, add_docstring
-from torch_ecg.utils.utils_signal import remove_spikes_naive
-from torch_ecg.components.outputs import RPeaksDetectionOutput
-
+from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
+from torch_ecg.utils.misc import add_docstring, mask_to_intervals
+from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 ###############################################################################
 # set paths

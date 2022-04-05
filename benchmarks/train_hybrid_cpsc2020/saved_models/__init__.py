@@ -1,17 +1,12 @@
 """
 """
+
 import os
-from typing import Union, Optional, Tuple
+from typing import Tuple, Union
 
 import torch
 from torch import nn
-
-from train.train_crnn_cpsc2020.model import (
-    ECG_CRNN_CPSC2020,
-    ECG_SEQ_LAB_NET_CPSC2020,
-)
-from train.train_crnn_cpsc2020.cfg import ModelCfg
-
+from train.train_crnn_cpsc2020.model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
 
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 

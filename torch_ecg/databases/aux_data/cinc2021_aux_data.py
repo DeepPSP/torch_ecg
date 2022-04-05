@@ -4,16 +4,15 @@ from 3 files of the official evaluation repo:
     dx_mapping_scored.csv, dx_mapping_unscored.csv, weights.csv
 """
 
-from pathlib import Path
 from io import StringIO
-from typing import Union, Optional, List, Tuple, Sequence, Dict
 from numbers import Real
+from pathlib import Path
+from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 
 from ...cfg import CFG
-
 
 __all__ = [
     "df_weights",

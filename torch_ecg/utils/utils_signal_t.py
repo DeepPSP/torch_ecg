@@ -3,11 +3,10 @@ utilities for signal processing on PyTorch tensors
 
 """
 
-from typing import Union, Iterable, Optional
 from numbers import Real
+from typing import Iterable, Optional, Union
 
 import torch
-
 
 __all__ = [
     "normalize",
@@ -23,7 +22,7 @@ def normalize(
     per_channel: bool = False,
     inplace: bool = True,
 ) -> torch.Tensor:
-    """ 
+    r""" 
     
     perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
@@ -133,7 +132,7 @@ def normalize(
 
     if not per_channel:
         assert _std.shape[1] == 1 and _mean.shape[1] == 1, (
-            f"if `per_channel` is False, `std` and `mean` should be scalars, "
+            "if `per_channel` is False, `std` and `mean` should be scalars, "
             "or of shape (batch, 1), or (batch, 1, 1), or (1,)"
         )
 

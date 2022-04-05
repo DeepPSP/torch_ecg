@@ -12,30 +12,29 @@ Remarks:
 
 """
 
-import os, pprint, time, posixpath, re, warnings
-from pathlib import Path
+import os
+import posixpath
+import pprint
+import re
+import time
+import warnings
 from abc import ABC, abstractmethod
-from collections import namedtuple
+from copy import deepcopy
 from dataclasses import dataclass
-from typing import Union, Optional, Any, List, NoReturn
-from numbers import Real
+from pathlib import Path
 from string import punctuation
+from typing import Any, List, NoReturn, Optional, Union
 
-import wfdb, requests
 import numpy as np
 import pandas as pd
+import requests
+import wfdb
 from pyedflib import EdfReader
 
-from ..utils import ecg_arrhythmia_knowledge as EAK
-from ..utils.misc import (
-    get_record_list_recursive3,
-    dict_to_str,
-    ReprMixin,
-    list_sum,
-)
+from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa: F401
 from ..utils.download import http_get
+from ..utils.misc import ReprMixin, dict_to_str, get_record_list_recursive3
 from .aux_data import get_physionet_dbs
-
 
 __all__ = [
     "WFDB_Beat_Annotations",
@@ -43,9 +42,7 @@ __all__ = [
     "WFDB_Rhythm_Annotations",
     "PhysioNetDataBase",
     "NSRRDataBase",
-    "ImageDataBase",
-    "AudioDataBase",
-    "OtherDataBase",
+    "CPSCDataBase",
     "DEFAULT_FIG_SIZE_PER_SEC",
     "BeatAnn",
 ]
@@ -369,7 +366,7 @@ class PhysioNetDataBase(_DataBase):
         try:
             self._all_records = wfdb.get_record_list(db_name or self.db_name)
             self._all_records = [Path(item).name for item in self._all_records]
-        except:
+        except Exception:
             self._ls_rec_local()
 
     def _ls_rec_local(self) -> NoReturn:
@@ -425,7 +422,7 @@ class PhysioNetDataBase(_DataBase):
                 ]["db_description"].values[0]
                 print(short_description)
                 return
-            except:
+            except Exception:
                 pass
         info = "\n".join(self.__doc__.split("\n")[1:])
         print(info)
@@ -510,7 +507,7 @@ class PhysioNetDataBase(_DataBase):
                 if k in a.keys() or "(" + k in a.keys():
                     try:
                         print(f"{k.split('(')[1]} stands for {a[k]}")
-                    except:
+                    except Exception:
                         print(f"{k} stands for {a['('+k]}")
 
     @property
@@ -519,7 +516,7 @@ class PhysioNetDataBase(_DataBase):
             return self._version
         try:
             self._version = wfdb.io.record.get_version(self.db_name)
-        except:
+        except Exception:
             warnings.warn(
                 "Cannot get the version number from PhysioNet! Defaults to '1.0.0'"
             )
@@ -544,12 +541,12 @@ class PhysioNetDataBase(_DataBase):
         if self._url_compressed is not None:
             return self._url_compressed
         domain = "https://physionet.org/static/published-projects/"
-        punct = re.sub("[\-:]", "", punctuation)
+        punct = re.sub("[\\-:]", "", punctuation)
         db_desc = self.df_all_db_info[
             self.df_all_db_info["db_name"] == self.db_name
         ].iloc[0]["db_description"]
         db_desc = re.sub(f"[{punct}]+", "", db_desc).lower()
-        db_desc = re.sub("[\s:]+", "-", db_desc)
+        db_desc = re.sub("[\\s:]+", "-", db_desc)
         url = posixpath.join(domain, f"{self.db_name}/{db_desc}-{self.version}.zip")
         if requests.head(url).headers.get("Content-Type") == "application/zip":
             self._url_compressed = url

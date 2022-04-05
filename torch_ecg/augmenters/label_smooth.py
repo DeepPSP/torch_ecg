@@ -1,15 +1,12 @@
 """
 """
 
-from typing import Any, NoReturn, Sequence, Union, Optional, List, Tuple
-from numbers import Real
+from typing import Any, List, NoReturn, Optional, Sequence, Tuple
 
-import numpy as np
 import torch
 from torch import Tensor
 
 from .base import Augmenter
-
 
 __all__ = [
     "LabelSmooth",

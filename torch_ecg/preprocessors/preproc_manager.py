@@ -1,17 +1,17 @@
 """
 """
 
-from typing import NoReturn, Optional, Any, Tuple, List
+from random import sample
+from typing import List, NoReturn, Optional, Tuple
 
 import torch
 import torch.nn as nn
 
+from ..utils.misc import ReprMixin
 from .bandpass import BandPass
 from .baseline_remove import BaselineRemove
 from .normalize import Normalize
 from .resample import Resample
-from ..utils.misc import default_class_repr, ReprMixin
-
 
 __all__ = [
     "PreprocManager",

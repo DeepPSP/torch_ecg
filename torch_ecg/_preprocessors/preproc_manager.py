@@ -1,17 +1,17 @@
 """
 """
 
-from typing import NoReturn, Optional, Any, Tuple, List
+from random import sample
+from typing import List, NoReturn, Optional, Tuple
 
 import numpy as np
 
-from .base import PreProcessor
+from ..utils.misc import ReprMixin
 from .bandpass import BandPass
+from .base import PreProcessor
 from .baseline_remove import BaselineRemove
 from .normalize import Normalize
 from .resample import Resample
-from ..utils.misc import ReprMixin
-
 
 __all__ = [
     "PreprocManager",

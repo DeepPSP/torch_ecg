@@ -5,32 +5,29 @@ whose performance however seems exceeded by newer networks
 
 from copy import deepcopy
 from itertools import repeat
-from typing import Union, Optional, Sequence, NoReturn
 from numbers import Real
+from typing import NoReturn, Optional, Sequence, Union
 
-import numpy as np
 import torch
-from torch import nn
-from torch import Tensor
 import torch.nn.functional as F
+from torch import Tensor, nn
 
 from ...cfg import CFG, DEFAULTS
-from ...utils.utils_nn import compute_module_size, SizeMixin
-from ...utils.misc import dict_to_str
-from ...models._nets import (
+from ...models._nets import (  # noqa: F401
     Activations,
     Conv_Bn_Activation,
-    MultiConv,
     DownSample,
-    ZeroPadding,
+    DropPath,
+    GlobalContextBlock,
+    MultiConv,
     NonLocalBlock,
     SEBlock,
-    GlobalContextBlock,
     SpaceToDepth,
-    DropPath,
+    ZeroPadding,
     make_attention_layer,
 )
-
+from ...utils.misc import dict_to_str
+from ...utils.utils_nn import SizeMixin
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

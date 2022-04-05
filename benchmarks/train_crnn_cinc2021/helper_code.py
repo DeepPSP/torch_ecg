@@ -3,9 +3,10 @@
 # Do *not* edit this script.
 # These are helper functions that you can use with your code.
 
-import numpy as np, os
-from scipy.io import loadmat
+import os
 
+import numpy as np
+from scipy.io import loadmat
 
 # Define the Challenge lead sets. These variables are not required. You can change or remove them.
 twelve_leads = (
@@ -88,8 +89,6 @@ def load_header(header_file):
 
 # Load recording file as an array.
 def load_recording(recording_file, header=None, leads=None, key="val"):
-    from scipy.io import loadmat
-
     recording = loadmat(recording_file)[key]
     if header and leads:
         recording = choose_leads(recording, header, leads)
@@ -116,7 +115,7 @@ def get_recording_id(header):
         if i == 0:
             try:
                 recording_id = l.split(" ")[0]
-            except:
+            except Exception:
                 pass
         else:
             break
@@ -140,11 +139,11 @@ def get_leads(header):
 # Get age from header.
 def get_age(header):
     age = None
-    for l in header.split("\n"):
-        if l.startswith("#Age"):
+    for line in header.split("\n"):
+        if line.startswith("#Age"):
             try:
-                age = float(l.split(": ")[1].strip())
-            except:
+                age = float(line.split(": ")[1].strip())
+            except Exception:
                 age = float("nan")
     return age
 
@@ -152,11 +151,11 @@ def get_age(header):
 # Get sex from header.
 def get_sex(header):
     sex = None
-    for l in header.split("\n"):
-        if l.startswith("#Sex"):
+    for line in header.split("\n"):
+        if line.startswith("#Sex"):
             try:
-                sex = l.split(": ")[1].strip()
-            except:
+                sex = line.split(": ")[1].strip()
+            except Exception:
                 pass
     return sex
 
@@ -164,11 +163,11 @@ def get_sex(header):
 # Get number of leads from header.
 def get_num_leads(header):
     num_leads = None
-    for i, l in enumerate(header.split("\n")):
-        if i == 0:
+    for idx, line in enumerate(header.split("\n")):
+        if idx == 0:
             try:
-                num_leads = float(l.split(" ")[1])
-            except:
+                num_leads = float(line.split(" ")[1])
+            except Exception:
                 pass
         else:
             break
@@ -182,7 +181,7 @@ def get_frequency(header):
         if i == 0:
             try:
                 frequency = float(l.split(" ")[2])
-            except:
+            except Exception:
                 pass
         else:
             break
@@ -196,7 +195,7 @@ def get_num_samples(header):
         if i == 0:
             try:
                 num_samples = float(l.split(" ")[3])
-            except:
+            except Exception:
                 pass
         else:
             break
@@ -216,7 +215,7 @@ def get_adc_gains(header, leads):
                 j = leads.index(current_lead)
                 try:
                     adc_gains[j] = float(entries[2].split("/")[0])
-                except:
+                except Exception:
                     pass
         else:
             break
@@ -236,7 +235,7 @@ def get_baselines(header, leads):
                 j = leads.index(current_lead)
                 try:
                     baselines[j] = float(entries[4].split("/")[0])
-                except:
+                except Exception:
                     pass
         else:
             break
@@ -246,13 +245,13 @@ def get_baselines(header, leads):
 # Get labels from header.
 def get_labels(header):
     labels = list()
-    for l in header.split("\n"):
-        if l.startswith("#Dx"):
+    for line in header.split("\n"):
+        if line.startswith("#Dx"):
             try:
-                entries = l.split(": ")[1].split(",")
+                entries = line.split(": ")[1].split(",")
                 for entry in entries:
                     labels.append(entry.strip())
-            except:
+            except Exception:
                 pass
     return labels
 
@@ -261,8 +260,8 @@ def get_labels(header):
 def save_outputs(output_file, recording_id, classes, labels, probabilities):
     # Format the model outputs.
     recording_string = "#{}".format(recording_id)
-    class_string = ",".join(str(c) for c in classes)
-    label_string = ",".join(str(l) for l in labels)
+    class_string = ",".join(str(cs) for cs in classes)
+    label_string = ",".join(str(lb) for lb in labels)
     probabilities_string = ",".join(str(p) for p in probabilities)
     output_string = (
         recording_string

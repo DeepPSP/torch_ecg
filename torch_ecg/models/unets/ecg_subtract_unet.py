@@ -5,35 +5,27 @@ the main differences to a normal Unet are that
 1. at the bottom, subtraction (and concatenation) is used
 2. uses triple convolutions at each block, instead of double convolutions
 3. dropout is used between certain convolutional layers ("cba" layers indeed)
+
 """
 
 from copy import deepcopy
-from collections import OrderedDict
 from itertools import repeat
-from typing import Union, Optional, Sequence, List, Tuple, NoReturn
-from numbers import Real
+from typing import NoReturn, Optional, Sequence, Union
 
 import numpy as np
 import torch
-from torch import nn
-from torch import Tensor
-import torch.nn.functional as F
+from torch import Tensor, nn
 
 from ...cfg import CFG, DEFAULTS
-from ...utils.utils_nn import (
-    compute_deconv_output_shape,
-    compute_module_size,
-    SizeMixin,
-    CkptMixin,
-)
-from ...utils.misc import dict_to_str
-from ...models._nets import (
-    Conv_Bn_Activation,
-    MultiConv,
+from ...models._nets import (  # noqa: F401
     BranchedConv,
+    Conv_Bn_Activation,
     DownSample,
+    MultiConv,
     ZeroPadding,
 )
+from ...utils.misc import dict_to_str
+from ...utils.utils_nn import CkptMixin, SizeMixin, compute_deconv_output_shape
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

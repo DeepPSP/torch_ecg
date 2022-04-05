@@ -1,23 +1,20 @@
 """
 """
 
-from itertools import repeat
-import multiprocessing as mp
 from abc import ABC, abstractmethod
+from itertools import repeat
 from numbers import Real
-from typing import Optional, List, NoReturn, Tuple, List
+from typing import List, NoReturn, Optional, Tuple
 
 import numpy as np
-from scipy.ndimage import median_filter
-from scipy.signal import resample
 
 # from scipy.signal import medfilt
 # https://github.com/scipy/scipy/issues/9680
 from biosppy.signals.tools import filter_signal
+from scipy.ndimage import median_filter
 
 from ..utils.misc import ReprMixin
 from ..utils.utils_signal import butter_bandpass_filter
-
 
 __all__ = [
     "PreProcessor",

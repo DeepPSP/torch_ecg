@@ -2,20 +2,19 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import NoReturn, Any, Union, Optional, List, Callable, Sequence
+from typing import Any, Callable, List, NoReturn, Optional, Sequence, Union
 
 import numpy as np
 from torch import Tensor
 
-from ..utils.misc import ReprMixin, nildent, add_docstring
-from ..utils.utils_metrics import (
-    _metrics_from_confusion_matrix,
-    ovr_confusion_matrix,
-    confusion_matrix,
-    top_n_accuracy,
+from ..utils.misc import ReprMixin, add_docstring
+from ..utils.utils_metrics import (  # noqa: F401
     QRS_score,
+    _metrics_from_confusion_matrix,
+    confusion_matrix,
+    ovr_confusion_matrix,
+    top_n_accuracy,
 )
-
 
 __all__ = [
     "Metrics",
@@ -359,7 +358,7 @@ class RPeaksDetectionMetrics(Metrics):
         """ """
         self._metrics["qrs_score"] = QRS_score(labels, outputs, fs, thr or self.thr)
         if self._extra_metrics is not None:
-            self._em = self._extra_metrics(labels, outputs, num_classes, weights)
+            self._em = self._extra_metrics(labels, outputs, fs)
             self._metrics.update(self._em)
 
         return self
@@ -401,7 +400,7 @@ class RPeaksDetectionMetrics(Metrics):
 
     @property
     def qrs_score(self) -> float:
-        return self._metrics[f"qrs_score"]
+        return self._metrics["qrs_score"]
 
     @property
     def extra_metrics(self) -> dict:

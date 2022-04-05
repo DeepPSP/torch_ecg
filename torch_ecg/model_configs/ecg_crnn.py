@@ -4,61 +4,57 @@ configs of models of CRNN structures, for classification
 
 from copy import deepcopy
 
-from .cnn import (
-    vgg_block_basic,
-    vgg_block_mish,
-    vgg_block_swish,
-    vgg16,
-    vgg16_leadwise,
-    resnet_block_stanford,
-    resnet_stanford,
+from ..cfg import CFG
+from ..utils.utils_nn import adjust_cnn_filter_lengths
+from .attn import (  # noqa: F401
+    global_context,
+    non_local,
+    squeeze_excitation,
+    transformer,
+)
+from .cnn import (  # noqa: F401
+    densenet_leadwise,
+    densenet_vanilla,
+    multi_scopic,
+    multi_scopic_block,
+    multi_scopic_leadwise,
     resnet_block_basic,
+    resnet_block_stanford,
     resnet_bottle_neck,
     resnet_cpsc2018,
     resnet_cpsc2018_leadwise,
+    resnet_nature_comm,
+    resnet_nature_comm_bottle_neck,
+    resnet_nature_comm_bottle_neck_gc,
+    resnet_nature_comm_bottle_neck_nl,
+    resnet_nature_comm_bottle_neck_se,
+    resnet_nature_comm_gc,
+    resnet_nature_comm_nl,
+    resnet_nature_comm_se,
+    resnet_stanford,
     resnet_vanilla_18,
     resnet_vanilla_34,
     resnet_vanilla_50,
-    resnext_vanilla_50_32x4d,
-    resnet_nature_comm,
-    resnet_nature_comm_se,
-    resnet_nature_comm_gc,
-    resnet_nature_comm_nl,
-    resnet_nature_comm_bottle_neck,
-    resnet_nature_comm_bottle_neck_se,
-    resnet_nature_comm_bottle_neck_gc,
-    resnet_nature_comm_bottle_neck_nl,
     resnetN,
     resnetNB,
-    resnetNS,
     resnetNBS,
+    resnetNS,
+    resnext_vanilla_50_32x4d,
     tresnetF,
-    tresnetP,
-    tresnetN,
-    tresnetS,
     tresnetM,
-    multi_scopic_block,
-    multi_scopic,
-    multi_scopic_leadwise,
-    densenet_vanilla,
-    densenet_leadwise,
-    xception_vanilla,
+    tresnetN,
+    tresnetP,
+    tresnetS,
+    vgg16,
+    vgg16_leadwise,
+    vgg_block_basic,
+    vgg_block_mish,
+    vgg_block_swish,
     xception_leadwise,
+    xception_vanilla,
 )
-from .rnn import (
-    lstm,
-    attention,
-)
-from .mlp import linear
-from .attn import (
-    non_local,
-    squeeze_excitation,
-    global_context,
-    transformer,
-)
-from ..utils.utils_nn import adjust_cnn_filter_lengths
-from ..cfg import CFG
-
+from .mlp import linear  # noqa: F401
+from .rnn import attention, lstm  # noqa: F401
 
 __all__ = [
     "ECG_CRNN_CONFIG",

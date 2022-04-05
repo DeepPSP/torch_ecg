@@ -6,15 +6,13 @@ TODO
 """
 
 from abc import ABC, abstractmethod
-from collections import OrderedDict
-from typing import Optional, Union, Tuple, NoReturn, Sequence, Any, Set
+from typing import Any, NoReturn, Sequence, Set, Union
 
 import numpy as np
 import pandas as pd
 
 from ..cfg import CFG
 from ..utils.misc import add_docstring
-
 
 __all__ = [
     "BaseOutput",

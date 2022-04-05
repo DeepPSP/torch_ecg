@@ -2,19 +2,20 @@
 """
 """
 
-import json, math
-from pathlib import Path
-from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
+import json
+import math
+from copy import deepcopy
 from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, List, NoReturn, Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
 import wfdb
+from scipy.signal import resample_poly
 
 from ...cfg import CFG
 from ...utils.utils_interval import generalized_intervals_intersection
-from ..base import PhysioNetDataBase, DEFAULT_FIG_SIZE_PER_SEC, BeatAnn
-
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, BeatAnn, PhysioNetDataBase
 
 __all__ = [
     "LTAFDB",
@@ -556,9 +557,9 @@ class LTAFDB(PhysioNetDataBase):
             _leads = [leads]
         else:
             _leads = leads
-        assert all([l in self.all_leads for l in _leads])
+        assert all([ld in self.all_leads for ld in _leads])
 
-        lead_indices = [self.all_leads.index(l) for l in _leads]
+        lead_indices = [self.all_leads.index(ld) for ld in _leads]
         if data is None:
             _data = self.load_data(
                 rec,

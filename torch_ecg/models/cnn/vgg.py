@@ -3,29 +3,20 @@ the most basic CNN
 """
 
 from copy import deepcopy
-from typing import Union, Optional, Tuple, Sequence, NoReturn
-from numbers import Real, Number
+from typing import NoReturn, Optional, Sequence, Union
 
-import numpy as np
-import pandas as pd
 import torch
-from torch import nn
-from torch import Tensor
+from torch import Tensor, nn
 
 from ...cfg import CFG, DEFAULTS
-from ...utils.utils_nn import (
-    compute_maxpool_output_shape,
-    compute_module_size,
-    SizeMixin,
-)
-from ...utils.misc import dict_to_str
-from ...models._nets import (
+from ...models._nets import (  # noqa: F401
     Conv_Bn_Activation,
+    GlobalContextBlock,
     NonLocalBlock,
     SEBlock,
-    GlobalContextBlock,
 )
-
+from ...utils.misc import dict_to_str
+from ...utils.utils_nn import SizeMixin, compute_maxpool_output_shape
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

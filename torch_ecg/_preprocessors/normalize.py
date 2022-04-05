@@ -2,14 +2,13 @@
 normalization of the signals
 """
 
-from typing import NoReturn, Any, Union, Tuple, List
 from numbers import Real
+from typing import Any, List, NoReturn, Tuple, Union
 
 import numpy as np
 
-from .base import PreProcessor
 from ..utils.utils_signal import normalize
-
+from .base import PreProcessor
 
 __all__ = [
     "Normalize",
@@ -20,7 +19,7 @@ __all__ = [
 
 
 class Normalize(PreProcessor):
-    """
+    r"""
     perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
     or perform min-max normalization on `sig`,
@@ -79,7 +78,7 @@ class Normalize(PreProcessor):
         if not per_channel:
             assert isinstance(mean, Real) and isinstance(
                 std, Real
-            ), f"mean and std should be real numbers in the non per-channel setting"
+            ), "mean and std should be real numbers in the non per-channel setting"
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """
@@ -128,7 +127,7 @@ class Normalize(PreProcessor):
 
 
 class MinMaxNormalize(Normalize):
-    """
+    r"""
     Min-Max normalization, defined as
 
         .. math::
@@ -206,7 +205,7 @@ class NaiveNormalize(Normalize):
 
 
 class ZScoreNormalize(Normalize):
-    """
+    r"""
     Z-score normalization via
 
         .. math::

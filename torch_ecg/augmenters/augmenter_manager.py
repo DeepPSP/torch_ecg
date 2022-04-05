@@ -2,13 +2,12 @@
 """
 
 from random import sample
-from abc import ABC, abstractmethod
-from typing import Optional, Tuple, Union, List, Any, Sequence, NoReturn
+from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
 
-import numpy as np
 import torch
 from torch import Tensor
 
+from ..utils.misc import default_class_repr
 from .base import Augmenter
 from .baseline_wander import BaselineWanderAugmenter
 from .label_smooth import LabelSmooth
@@ -17,8 +16,6 @@ from .random_flip import RandomFlip
 from .random_masking import RandomMasking
 from .random_renormalize import RandomRenormalize
 from .stretch_compress import StretchCompress
-from ..utils.misc import default_class_repr, ReprMixin
-
 
 __all__ = [
     "AugmenterManager",

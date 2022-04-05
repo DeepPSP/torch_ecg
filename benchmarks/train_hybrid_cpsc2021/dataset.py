@@ -35,13 +35,14 @@ for idx, seg in enumerate(err_list):
 and similarly for the task of `rr_lstm`
 """
 
-import os, json, re, time
-from pathlib import Path
-import multiprocessing as mp
+import json
+import os
 import random
-from itertools import repeat
+import re
+import time
 from copy import deepcopy
-from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
+from pathlib import Path
+from typing import Dict, List, NoReturn, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from scipy import signal as SS
@@ -50,34 +51,31 @@ try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
     from tqdm import tqdm
+
 import torch
-from torch.utils.data.dataset import Dataset
 from scipy.io import loadmat, savemat
+from torch.utils.data.dataset import Dataset
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
+from cfg import ModelCfg, TrainCfg
+
+from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CPSC2021 as CR
-from torch_ecg._preprocessors import PreprocManager
-from torch_ecg.utils.utils_interval import mask_to_intervals
-from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
 from torch_ecg.utils.misc import (
+    ReprMixin,
+    get_record_list_recursive3,
     list_sum,
     nildent,
-    uniform,
-    get_record_list_recursive3,
-    ReprMixin,
 )
-
-from cfg import (
-    TrainCfg,
-    ModelCfg,
-)
+from torch_ecg.utils.utils_interval import mask_to_intervals
+from torch_ecg.utils.utils_signal import remove_spikes_naive
 
 if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -152,12 +150,12 @@ class CPSC2021(ReprMixin, Dataset):
         # segments_dir for sliced segments of fixed length
         self.segments_base_dir = self.config.db_dir / "segments"
         self.segments_base_dir.mkdir(parents=True, exist_ok=True)
-        self.segment_name_pattern = "S_\d{1,3}_\d{1,2}_\d{7}"
+        self.segment_name_pattern = "S_\\d{1,3}_\\d{1,2}_\\d{7}"
         self.segment_ext = "mat"
         # rr_dir for sequence of rr intervals of fix length
         self.rr_seq_base_dir = self.config.db_dir / "rr_seq"
         self.rr_seq_base_dir.mkdir(parents=True, exist_ok=True)
-        self.rr_seq_name_pattern = "R_\d{1,3}_\d{1,2}_\d{7}"
+        self.rr_seq_name_pattern = "R_\\d{1,3}_\\d{1,2}_\\d{7}"
         self.rr_seq_ext = "mat"
 
         self._all_data = None
@@ -1383,8 +1381,8 @@ class FastDataReader(ReprMixin, Dataset):
             subject = seg_name.split("_")[1]
             seg_data_fp = self.file_dirs.data[subject] / f"{seg_name}.{self.file_ext}"
             seg_data = loadmat(str(seg_data_fp))["ecg"]
-            for l in range(seg_data.shape[0]):
-                seg_data[l] = remove_spikes_naive(seg_data[l])
+            for idx in range(seg_data.shape[0]):
+                seg_data[idx] = remove_spikes_naive(seg_data[idx])
             seg_ann_fp = self.file_dirs.ann[subject] / f"{seg_name}.{self.file_ext}"
             seg_label = loadmat(str(seg_ann_fp))[self._seg_keys[self.task]].reshape(
                 (self.seglen, -1)
@@ -1395,7 +1393,7 @@ class FastDataReader(ReprMixin, Dataset):
                 seg_label = np.stack(
                     arrays=[
                         np.mean(
-                            seg_mask[reduction * idx : reduction * (idx + 1)],
+                            seg_data[reduction * idx : reduction * (idx + 1)],
                             axis=0,
                             keepdims=True,
                         ).astype(int)

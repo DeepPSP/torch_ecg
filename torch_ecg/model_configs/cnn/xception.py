@@ -2,11 +2,8 @@
 """
 
 from itertools import repeat
-from copy import deepcopy
 
-import numpy as np
 from easydict import EasyDict as ED
-
 
 __all__ = [
     # vanilla xception

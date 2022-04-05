@@ -4,19 +4,10 @@ configs of C(R)NN structure models, for ECG wave delineation
 
 from copy import deepcopy
 
-from .cnn import (
-    multi_scopic_block,
-    multi_scopic,
-    multi_scopic_leadwise,
-)
-from .attn import (
-    non_local,
-    squeeze_excitation,
-    global_context,
-)
-from ..utils.utils_nn import adjust_cnn_filter_lengths
 from ..cfg import CFG
-
+from ..utils.utils_nn import adjust_cnn_filter_lengths
+from .attn import global_context, non_local, squeeze_excitation  # noqa: F401
+from .cnn import multi_scopic, multi_scopic_block, multi_scopic_leadwise  # noqa: F401
 
 __all__ = [
     "ECG_SEQ_LAB_NET_CONFIG",

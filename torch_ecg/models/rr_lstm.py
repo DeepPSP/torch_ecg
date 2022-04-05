@@ -5,42 +5,36 @@ using rr time series as input and using lstm as model
 References
 ----------
 [1] https://github.com/al3xsh/rnn-based-af-detection
+
 """
 
 from copy import deepcopy
-from itertools import repeat
-from collections import OrderedDict
-from typing import Union, Optional, Tuple, Sequence, NoReturn, Any
-from numbers import Real, Number
+from typing import Any, NoReturn, Optional, Sequence, Union
 
-import numpy as np
-import pandas as pd
 import torch
-from torch import nn
-from torch import Tensor
-import torch.nn.functional as F
+from torch import Tensor, nn
 
 from ..cfg import CFG, DEFAULTS
-from ..model_configs.rr_lstm import RR_LSTM_CONFIG
-from ..utils.misc import dict_to_str
-from ..utils.utils_nn import compute_module_size, SizeMixin, CkptMixin
 from ..components.outputs import BaseOutput
-from ..models._nets import (
-    Mish,
-    Swish,
+from ..model_configs.rr_lstm import RR_LSTM_CONFIG
+from ..models._nets import (  # noqa: F401
+    CRF,
     Activations,
+    AttentionWithContext,
+    AttentivePooling,
+    ExtendedCRF,
+    GlobalContextBlock,
+    Mish,
+    MultiHeadAttention,
     NonLocalBlock,
     SEBlock,
-    GlobalContextBlock,
-    StackedLSTM,
-    AttentionWithContext,
     SelfAttention,
-    MultiHeadAttention,
-    AttentivePooling,
     SeqLin,
-    CRF,
-    ExtendedCRF,
+    StackedLSTM,
+    Swish,
 )
+from ..utils.misc import dict_to_str
+from ..utils.utils_nn import CkptMixin, SizeMixin
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

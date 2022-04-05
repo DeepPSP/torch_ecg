@@ -1,10 +1,7 @@
 """
 """
 
-from copy import deepcopy
-
 from ..cfg import CFG
-
 
 __all__ = [
     "RR_AF_VANILLA_CONFIG",

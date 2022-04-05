@@ -2,11 +2,10 @@
 """
 
 import json
-from pathlib import Path
-from random import shuffle, randint
 from copy import deepcopy
-from functools import reduce
-from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
+from pathlib import Path
+from random import randint, shuffle
+from typing import List, NoReturn, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -14,22 +13,23 @@ try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
     from tqdm import tqdm
+
 import torch
 from torch.utils.data.dataset import Dataset
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
+from cfg import TrainCfg
+
+from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import LUDB as LR
-from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.utils.misc import ReprMixin
-
-from cfg import TrainCfg
 
 if TrainCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

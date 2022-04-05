@@ -12,24 +12,20 @@ References
 ----------
 [1] Liu, Feifei, et al. "Performance analysis of ten common QRS detectors on different ECG application cases." Journal of healthcare engineering 2018 (2018).
 """
+
 from numbers import Real
-from typing import Union, Optional
 
 import numpy as np
-
-from wfdb.processing.qrs import (
-    XQRS,
-    GQRS,
-    xqrs_detect as _xqrs_detect,
-    gqrs_detect as _gqrs_detect,
-)
+from wfdb.processing.qrs import GQRS, XQRS  # noqa: F401
+from wfdb.processing.qrs import gqrs_detect as _gqrs_detect
+from wfdb.processing.qrs import xqrs_detect as _xqrs_detect
 
 try:
     from wfdb.processing.pantompkins import pantompkins as _pantompkins
 except ModuleNotFoundError:
     from .pantompkins import pantompkins as _pantompkins
-import biosppy.signals.ecg as BSE
 
+import biosppy.signals.ecg as BSE
 
 __all__ = [
     "xqrs_detect",

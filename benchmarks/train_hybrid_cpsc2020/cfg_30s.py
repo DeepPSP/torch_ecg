@@ -4,22 +4,21 @@ NOTE:
 pipeline under this config file is NOT tested!
 """
 
-from pathlib import Path
-from itertools import repeat
 from copy import deepcopy
+from itertools import repeat
+from pathlib import Path
 
-import pywt
 import numpy as np
+import pywt
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 from torch_ecg.cfg import CFG, DEFAULTS
-
 
 __all__ = [
     "BaseCfg",

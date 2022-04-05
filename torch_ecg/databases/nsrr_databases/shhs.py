@@ -4,22 +4,18 @@ docstring, to write
 """
 
 import warnings
-from pathlib import Path
 from datetime import datetime
-from typing import Union, Optional, Any, List, Dict, Iterable, Sequence, NoReturn
 from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, List, NoReturn, Optional, Union
 
 import numpy as np
 import pandas as pd
 import xmltodict as xtd
-from pyedflib import EdfReader
+from pyedflib import EdfReader  # noqa: F401
 
-from ...utils.misc import (
-    get_record_list_recursive,
-)
 from ...utils.utils_interval import intervals_union
 from ..base import NSRRDataBase
-
 
 __all__ = [
     "SHHS",
@@ -251,7 +247,7 @@ class SHHS(NSRRDataBase):
                 f"shhs{int(row['visitnumber'])}-{int(row['nsrrid'])}"
                 for _, row in self.load_hrv_summary_ann().iterrows()
             ]
-        except:
+        except Exception:
             self.rec_with_hrv_ann = []
 
         self.all_signals = [
@@ -1828,8 +1824,8 @@ class SHHS(NSRRDataBase):
         df_sleep_event: DataFrame, optional,
             sleep event annotations
         """
-        import matplotlib.pyplot as plt
         import matplotlib.patches as mpatches
+        import matplotlib.pyplot as plt
 
         check = [df_sleep_stage is None, df_sleep_event is None]
         nb_axes = len(check) - np.sum(check)

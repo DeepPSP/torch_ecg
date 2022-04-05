@@ -1,12 +1,9 @@
-import glob
-import numpy as np
 import os
 import re
 
+import numpy as np
 import scipy.io as sio
-
-from CPSC2020_challenge import *
-
+from CPSC2020_challenge import CPSC2020_challenge
 
 FS = 400
 THR = 0.15
@@ -25,8 +22,8 @@ def load_ans():
         V_results: position results for V
     """
 
-    def is_mat(l):
-        return l.endswith(".mat")
+    def is_mat(fp):
+        return fp.endswith(".mat")
 
     data_files = list(filter(is_mat, os.listdir(DATA_PATH)))
 

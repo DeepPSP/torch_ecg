@@ -2,12 +2,9 @@
 """
 
 import json
-from pathlib import Path
-from random import shuffle, randint
 from copy import deepcopy
-from functools import reduce
-from typing import Union, Optional, List, Tuple, Dict, Sequence, Set, NoReturn
-from numbers import Real
+from random import randint, shuffle
+from typing import List, NoReturn, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -15,16 +12,15 @@ try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
     from tqdm import tqdm
+
 import torch
 from torch.utils.data.dataset import Dataset
 
+from ...._preprocessors import PreprocManager
 from ....cfg import CFG
 from ....databases import LUDB as LR
-from ...._preprocessors import PreprocManager
 from ....utils.misc import ReprMixin
-
-from .ludb_cfg import LUDBTrainCfg
-
+from .ludb_cfg import LUDBTrainCfg  # noqa: F401
 
 __all__ = [
     "LUDBDataset",

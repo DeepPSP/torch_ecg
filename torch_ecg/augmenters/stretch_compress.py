@@ -1,20 +1,19 @@
 """
 """
 
-from random import choice, randint
-from typing import Any, NoReturn, Sequence, List, Tuple, Union, Optional
 from numbers import Real
+from random import choice, randint
+from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
-from torch import Tensor
-import torch.nn.functional as F
 import torch.multiprocessing as tmp
-from scipy.signal import resample, resample_poly
+import torch.nn.functional as F
+from scipy.signal import resample, resample_poly  # noqa: F401
+from torch import Tensor
 
-from .base import Augmenter
 from ..utils.misc import ReprMixin
-
+from .base import Augmenter
 
 __all__ = [
     "StretchCompress",
@@ -259,6 +258,7 @@ def _stretch_compress_one_batch_element(
     labels = list(labels)
     label_len = []
     n_labels = len(labels)
+    siglen = sig.shape[-1]
     for idx in range(n_labels):
         labels[idx] = labels[idx].permute(
             0, 2, 1

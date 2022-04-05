@@ -3,15 +3,11 @@
 """
 
 from pathlib import Path
-from typing import Union, Optional, Any, List, NoReturn
-from numbers import Real
+from typing import Any, NoReturn, Optional, Union
 
-import wfdb
 import numpy as np
-import pandas as pd
 
 from ..base import PhysioNetDataBase
-
 
 __all__ = [
     "CINC2018",

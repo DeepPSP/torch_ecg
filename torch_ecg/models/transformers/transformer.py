@@ -1,14 +1,13 @@
 """
 """
 
-from typing import NoReturn, Any, Union, Optional, Sequence
+from typing import Any, NoReturn, Optional, Sequence, Union
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
-from ...utils.utils_nn import compute_module_size, SizeMixin
 from ...cfg import DEFAULTS
+from ...utils.utils_nn import SizeMixin
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -65,7 +64,7 @@ class Transformer(SizeMixin, nn.Module):
                 batch_first=self.__batch_first,
                 activation=kwargs.get("activation", "relu"),
             )
-        except:
+        except Exception:
             self.__batch_first = False
             encoder_layer = nn.TransformerEncoderLayer(
                 d_model=self.__input_size,

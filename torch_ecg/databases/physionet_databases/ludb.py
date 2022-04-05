@@ -2,18 +2,18 @@
 """
 """
 
-from pathlib import Path
-from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
 from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, List, NoReturn, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 import wfdb
+from scipy.signal import resample_poly
 
 from ...cfg import CFG, DEFAULTS
 from ...utils.misc import ECGWaveForm, masks_to_waveforms
 from ..base import PhysioNetDataBase
-
 
 __all__ = [
     "LUDB",
@@ -197,7 +197,7 @@ class LUDB(PhysioNetDataBase):
             "V5",
             "V6",
         ]
-        self.all_leads_lower = [l.lower() for l in self.all_leads]
+        self.all_leads_lower = [ld.lower() for ld in self.all_leads]
         # Version 1.0.0 has different beat_ann_ext: [f"atr_{item}" for item in self.all_leads_lower]
         self.beat_ann_ext = [f"{item}" for item in self.all_leads_lower]
 
@@ -365,11 +365,11 @@ class LUDB(PhysioNetDataBase):
         # wave delineation annotations
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
         _ann_ext = [
-            f"{l.lower()}" for l in _leads
+            f"{ld.lower()}" for ld in _leads
         ]  # for Version 1.0.0, it is f"{l.lower()}"
-        ann_dict["waves"] = CFG({l: [] for l in _leads})
-        for l, e in zip(_leads, _ann_ext):
-            ann = wfdb.rdann(rec_fp, extension=e)
+        ann_dict["waves"] = CFG({ld: [] for ld in _leads})
+        for ld, ext in zip(_leads, _ann_ext):
+            ann = wfdb.rdann(rec_fp, extension=ext)
             df_lead_ann = pd.DataFrame()
             symbols = np.array(ann.symbol)
             peak_inds = np.where(np.isin(symbols, ["p", "N", "t"]))[0]
@@ -419,7 +419,7 @@ class LUDB(PhysioNetDataBase):
                     peak=int(row.peak),
                     duration=row.duration,
                 )
-                ann_dict["waves"][l].append(w)
+                ann_dict["waves"][ld].append(w)
 
         if metadata:
             header_dict = self._load_header(rec)
@@ -618,18 +618,22 @@ class LUDB(PhysioNetDataBase):
         header_dict["record_fmt"] = header_reader.fmt
         try:
             header_dict["age"] = int(
-                [l for l in header_reader.comments if "<age>" in l][0].split(": ")[-1]
+                [line for line in header_reader.comments if "<age>" in line][0].split(
+                    ": "
+                )[-1]
             )
-        except:
+        except Exception:
             header_dict["age"] = np.nan
         try:
-            header_dict["sex"] = [l for l in header_reader.comments if "<sex>" in l][
-                0
-            ].split(": ")[-1]
-        except:
+            header_dict["sex"] = [
+                line for line in header_reader.comments if "<sex>" in line
+            ][0].split(": ")[-1]
+        except Exception:
             header_dict["sex"] = ""
         d_start = [
-            idx for idx, l in enumerate(header_reader.comments) if "<diagnoses>" in l
+            idx
+            for idx, line in enumerate(header_reader.comments)
+            if "<diagnoses>" in line
         ][0] + 1
         header_dict["diagnoses"] = header_reader.comments[d_start:]
         return header_dict
@@ -661,14 +665,14 @@ class LUDB(PhysioNetDataBase):
         elif isinstance(leads, str):
             _leads = [leads.lower()]
         else:
-            _leads = [l.lower() for l in leads]
+            _leads = [ld.lower() for ld in leads]
 
         if standard_ordering:
-            _leads = [l for l in self.all_leads_lower if l in _leads]
+            _leads = [ld for ld in self.all_leads_lower if ld in _leads]
 
         if not lower_cases:
             _lead_indices = [
-                idx for idx, l in enumerate(self.all_leads_lower) if l in _leads
+                idx for idx, ld in enumerate(self.all_leads_lower) if ld in _leads
             ]
             _leads = [self.all_leads[idx] for idx in _lead_indices]
 
@@ -767,8 +771,8 @@ class LUDB(PhysioNetDataBase):
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
 
         # lead_list = self.load_ann(rec)["df_leads"]["lead_name"].tolist()
-        # _lead_indices = [lead_list.index(l) for l in leads]
-        _lead_indices = [self.all_leads.index(l) for l in _leads]
+        # _lead_indices = [lead_list.index(ld) for ld in leads]
+        _lead_indices = [self.all_leads.index(ld) for ld in _leads]
         if data is None:
             _data = self.load_data(rec, data_format="channel_first", units="μV")[
                 _lead_indices
@@ -790,18 +794,18 @@ class LUDB(PhysioNetDataBase):
             waves = self.load_ann(rec, leads=_leads)["waves"]
 
         if waves is not None:
-            pwaves = {l: [] for l in _leads}
-            qrs = {l: [] for l in _leads}
-            twaves = {l: [] for l in _leads}
-            for l, l_w in waves.items():
-                for w in l_w:
-                    itv = [w.onset, w.offset]
-                    if w.name == self._symbol_to_wavename["p"]:
-                        pwaves[l].append(itv)
-                    elif w.name == self._symbol_to_wavename["N"]:
-                        qrs[l].append(itv)
-                    elif w.name == self._symbol_to_wavename["t"]:
-                        twaves[l].append(itv)
+            pwaves = {ld: [] for ld in _leads}
+            qrs = {ld: [] for ld in _leads}
+            twaves = {ld: [] for ld in _leads}
+            for l_idx, l_w in waves.items():
+                for wv in l_w:
+                    itv = [wv.onset, wv.offset]
+                    if wv.name == self._symbol_to_wavename["p"]:
+                        pwaves[l_idx].append(itv)
+                    elif wv.name == self._symbol_to_wavename["N"]:
+                        qrs[l_idx].append(itv)
+                    elif wv.name == self._symbol_to_wavename["t"]:
+                        twaves[l_idx].append(itv)
 
         palette = {
             "pwaves": "green",

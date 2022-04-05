@@ -1,37 +1,36 @@
 #!/usr/bin/env python3
 
-import os, sys, time, json
-from pathlib import Path
+import json
+import sys
+import time
 from itertools import repeat
+from pathlib import Path
 
-import wfdb
 import numpy as np
-import torch
 import scipy.signal as SS
+import torch
+import wfdb
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
-
-from torch_ecg.cfg import CFG
-from torch_ecg.utils.preproc import (
-    preprocess_multi_lead_signal,
-    remove_spikes_naive,
-)
-from torch_ecg.utils.utils_signal import normalize
-from torch_ecg.utils.utils_interval import (
-    generalized_intervals_intersection,
-    generalized_intervals_union,
-)
 
 from model import (
     ECG_SEQ_LAB_NET_CPSC2021,
     ECG_UNET_CPSC2021,
     RR_LSTM_CPSC2021,
-    _qrs_detection_post_process,
     _main_task_post_process,
+    _qrs_detection_post_process,
 )
+
+from torch_ecg.cfg import CFG
+from torch_ecg.utils.preproc import preprocess_multi_lead_signal, remove_spikes_naive
+from torch_ecg.utils.utils_interval import (
+    generalized_intervals_intersection,
+    generalized_intervals_union,
+)
+from torch_ecg.utils.utils_signal import normalize
 
 """
 Written by:  Xingyao Wang, Chengyu Liu
@@ -140,7 +139,7 @@ def challenge_entry(sample_path):
     _sample_path = Path(sample_path).with_suffix("")
     try:
         wfdb_rec = wfdb.rdrecord(sample_path, physical=True)
-    except:
+    except Exception:
         wfdb_rec = wfdb.rdrecord(_sample_path, physical=True)
     sig = np.asarray(wfdb_rec.p_signal.T)
     for idx in range(sig.shape[0]):
@@ -344,11 +343,11 @@ def challenge_entry(sample_path):
     for idx in range(len(final_pred)):
         try:
             final_pred[idx][0] = final_pred[idx][0].item()
-        except:
+        except Exception:
             pass
         try:
             final_pred[idx][1] = final_pred[idx][1].item()
-        except:
+        except Exception:
             pass
 
     pred_dict = {"predict_endpoints": final_pred}
@@ -378,7 +377,7 @@ def _detect_rpeaks(model, sig, siglen, overlap_len, config):
     """
     try:
         model = model.to(_CUDA)
-    except:
+    except Exception:
         pass
     _device = next(model.parameters()).device
     _dtype = next(model.parameters()).dtype
@@ -450,7 +449,7 @@ def _rr_lstm(model, rpeaks, siglen, config):
     """ """
     try:
         model = model.to(_CUDA)
-    except:
+    except Exception:
         pass
     rr = np.diff(rpeaks) / config.fs
     # just use the model's inference method
@@ -476,7 +475,7 @@ def _main_task(model, sig, siglen, overlap_len, rpeaks, config):
     """ """
     try:
         model = model.to(_CUDA)
-    except:
+    except Exception:
         pass
     _device = next(model.parameters()).device
     _dtype = next(model.parameters()).dtype

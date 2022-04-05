@@ -32,34 +32,38 @@ Training strategy
         ["IAVB", "AF", "AFL", "IRBBB", "LAnFB", "LBBB", "NSIVCB", "PAC", "PVC", "LPR", "LQT", "QAb", "RBBB", "SA", "SB", "NSR", "STach", "TAb", "TInv"]
 """
 
-import os, sys, time, textwrap, argparse, logging
+import argparse
+import logging
+import os
+import sys
+import textwrap
 from copy import deepcopy
-from typing import Tuple, Dict, Any, List, NoReturn, Optional
+from typing import Any, Dict, List, NoReturn, Optional, Tuple
 
 import numpy as np
 import torch
 from torch import nn
-from torch import Tensor
-import torch.nn.functional as F
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
-from torch.utils.data.dataset import Dataset
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader
+from torch.utils.data.dataset import Dataset
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
-    import sys
+    from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.components.trainer import BaseTrainer
-
+from cfg import BaseCfg, ModelCfg, TrainCfg  # noqa: F401
+from dataset import CINC2020
 from model import ECG_CRNN_CINC2020
 from scoring_metrics import evaluate_12ECG_score
-from cfg import BaseCfg, TrainCfg, ModelCfg
-from dataset import CINC2020
+
+from torch_ecg.cfg import CFG
+from torch_ecg.components.trainer import BaseTrainer
+from torch_ecg.utils.misc import str2bool
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 CINC2020.__DEBUG__ = False
 

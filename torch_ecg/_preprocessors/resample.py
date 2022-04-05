@@ -2,14 +2,13 @@
 resample the signal into fixed sampling frequency or length
 """
 
-from typing import NoReturn, Optional, Any, Tuple, List
 from numbers import Real
+from typing import Any, List, NoReturn, Optional, Tuple
 
 import numpy as np
 import scipy.signal as SS
 
 from .base import PreProcessor
-
 
 __all__ = [
     "Resample",

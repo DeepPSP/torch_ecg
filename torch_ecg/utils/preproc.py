@@ -16,32 +16,28 @@ References:
 
 import multiprocessing as mp
 from collections import Counter
-from copy import deepcopy
 from numbers import Real
-from typing import Union, Optional, Any, List, Dict, Callable
+from typing import Dict, List, Optional
 
 import numpy as np
-from scipy.ndimage.filters import median_filter
-from scipy.signal.signaltools import resample
 
 # from scipy.signal import medfilt
 # https://github.com/scipy/scipy/issues/9680
 from biosppy.signals.tools import filter_signal
+from scipy.ndimage.filters import median_filter
 
+from ..cfg import CFG
+from .misc import get_mask, list_sum, ms2samples
 from .rpeaks import (
-    pantompkins_detect,
-    xqrs_detect,
-    gqrs_detect,
-    hamilton_detect,
-    ssf_detect,
     christov_detect,
     engzee_detect,
     gamboa_detect,
+    gqrs_detect,
+    hamilton_detect,
+    pantompkins_detect,
+    ssf_detect,
+    xqrs_detect,
 )
-from .utils_signal import remove_spikes_naive
-from .misc import ms2samples, get_mask, list_sum
-from ..cfg import CFG
-
 
 __all__ = [
     "preprocess_multi_lead_signal",
@@ -258,8 +254,8 @@ def preprocess_single_lead_signal(
     )
 
     if verbose >= 3:
-        from utils.misc import plot_single_lead
         from cfg import PlotCfg
+        from utils.misc import plot_single_lead
 
         t = np.arange(len(filtered_ecg)) / fs
         waves = {

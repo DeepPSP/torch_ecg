@@ -1,42 +1,41 @@
 """
 """
 
-import shutil, logging, textwrap
-from itertools import repeat
+import logging
+import shutil
+import textwrap
 from copy import deepcopy
+from itertools import repeat
 from pathlib import Path
-from typing import NoReturn, Optional, Any, Sequence, Union, Tuple, Dict, List
+from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
 
-import pytest
 import numpy as np
+import pandas as pd
 import torch
 from torch import Tensor
-from torch.utils.data import Dataset, DataLoader
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
+from torch.utils.data import DataLoader, Dataset
 
 try:
-    import torch_ecg
-except:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
     import sys
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
-    import torch_ecg
 
+from torch_ecg.cfg import CFG, DEFAULTS
+from torch_ecg.components.outputs import MultiLabelClassificationOutput
+from torch_ecg.components.trainer import BaseTrainer
 from torch_ecg.databases.datasets.cinc2021 import CINC2021Dataset, CINC2021TrainCfg
 from torch_ecg.databases.physionet_databases.cinc2021 import (
     compute_metrics as compute_cinc2021_metrics,
 )
-from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.models.ecg_crnn import ECG_CRNN
 from torch_ecg.model_configs.ecg_crnn import ECG_CRNN_CONFIG
-from torch_ecg.utils.utils_nn import (
-    default_collate_fn as collate_fn,
-    adjust_cnn_filter_lengths,
-)
+from torch_ecg.models.ecg_crnn import ECG_CRNN
 from torch_ecg.utils.misc import add_docstring
-from torch_ecg.components.trainer import BaseTrainer
-from torch_ecg.components.outputs import MultiLabelClassificationOutput
-
+from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 ###############################################################################
 # set paths
@@ -331,18 +330,18 @@ ModelCfg.attn_name = CINC2021TrainCfg.attn_name
 
 # model architectures configs
 ModelCfg.update(ModelArchCfg)
-for l in ["twelve_leads", "six_leads", "four_leads", "three_leads", "two_leads"]:
-    adjust_cnn_filter_lengths(ModelCfg[l], ModelCfg.fs)
-    ModelCfg[l].cnn.name = ModelCfg.cnn_name
-    ModelCfg[l].rnn.name = ModelCfg.rnn_name
-    ModelCfg[l].attn.name = ModelCfg.attn_name
-    # ModelCfg[l].clf = CFG()
-    # ModelCfg[l].clf.out_channels = [
+for lead_set in ["twelve_leads", "six_leads", "four_leads", "three_leads", "two_leads"]:
+    adjust_cnn_filter_lengths(ModelCfg[lead_set], ModelCfg.fs)
+    ModelCfg[lead_set].cnn.name = ModelCfg.cnn_name
+    ModelCfg[lead_set].rnn.name = ModelCfg.rnn_name
+    ModelCfg[lead_set].attn.name = ModelCfg.attn_name
+    # ModelCfg[lead_set].clf = CFG()
+    # ModelCfg[lead_set].clf.out_channels = [
     # # not including the last linear layer, whose out channels equals n_classes
     # ]
-    # ModelCfg[l].clf.bias = True
-    # ModelCfg[l].clf.dropouts = 0.0
-    # ModelCfg[l].clf.activation = "mish"  # for a single layer `SeqLin`, activation is ignored
+    # ModelCfg[lead_set].clf.bias = True
+    # ModelCfg[lead_set].clf.dropouts = 0.0
+    # ModelCfg[lead_set].clf.activation = "mish"  # for a single layer `SeqLin`, activation is ignored
 
 
 class ECG_CRNN_CINC2021(ECG_CRNN):

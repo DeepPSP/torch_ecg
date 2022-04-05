@@ -2,24 +2,23 @@
 """
 """
 
-from pathlib import Path
 from collections import defaultdict
-from typing import Union, Optional, Any, List, NoReturn, Dict, Sequence
 from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, List, NoReturn, Optional, Sequence, Union
 
-import wfdb
 import numpy as np
-import pandas as pd
+import wfdb
+from scipy.signal import resample_poly
 
+from ...utils.misc import get_record_list_recursive3
+from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (
+    BeatAnn,
     PhysioNetDataBase,
     WFDB_Beat_Annotations,
     WFDB_Non_Beat_Annotations,
-    BeatAnn,
 )
-from ...utils.misc import get_record_list_recursive3
-from ...utils.utils_interval import generalized_intervals_intersection
-
 
 __all__ = [
     "MITDB",
@@ -136,7 +135,7 @@ class MITDB(PhysioNetDataBase):
         super()._ls_rec()
         if len(self._all_records) == 0:
             self._all_records = get_record_list_recursive3(
-                self.db_dir, f"^[\d]{{3}}.{self.data_ext}$"
+                self.db_dir, f"^[\\d]{{3}}.{self.data_ext}$"
             )
 
     def load_data(

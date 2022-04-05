@@ -1,48 +1,45 @@
 """
 """
 
-import os, sys, argparse
-from pathlib import Path
+import argparse
+import os
+import sys
 from copy import deepcopy
-from collections import deque, OrderedDict
-from typing import Any, Union, Optional, Tuple, Sequence, NoReturn, Dict, List
-from numbers import Real, Number
+from pathlib import Path
+from typing import Any, Dict, List, NoReturn, Optional, Tuple
 
 import numpy as np
 import torch
 from torch import nn
-from torch.utils.data import Dataset, DataLoader
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
+from torch.utils.data import DataLoader, Dataset
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.components.trainer import BaseTrainer
-from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
-from torch_ecg.utils.misc import (
-    dict_to_str,
-    str2bool,
+from aux_metrics import (
+    compute_main_task_metric,
+    compute_rpeak_metric,
+    compute_rr_metric,
 )
-from torch_ecg.utils.utils_interval import mask_to_intervals
-
-from model import (
+from cfg import BaseCfg, ModelCfg, TrainCfg
+from dataset import CPSC2021
+from model import (  # noqa: F401
     ECG_SEQ_LAB_NET_CPSC2021,
-    ECG_UNET_CPSC2021,
     ECG_SUBTRACT_UNET_CPSC2021,
+    ECG_UNET_CPSC2021,
     RR_LSTM_CPSC2021,
     _qrs_detection_post_process,
 )
-from scoring_metrics import compute_challenge_metric
-from aux_metrics import (
-    compute_rpeak_metric,
-    compute_rr_metric,
-    compute_main_task_metric,
-)
-from cfg import BaseCfg, TrainCfg, ModelCfg
-from dataset import CPSC2021
+
+from torch_ecg.cfg import CFG
+from torch_ecg.components.trainer import BaseTrainer
+from torch_ecg.utils.misc import str2bool
+from torch_ecg.utils.utils_interval import mask_to_intervals
+from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 if BaseCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

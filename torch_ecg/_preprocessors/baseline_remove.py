@@ -3,17 +3,13 @@ use median filter to remove baseline,
 note that highpass filters also have the effect of baseline removal
 """
 
-from typing import NoReturn, Any, Tuple, List
-from numbers import Real
 import warnings
+from numbers import Real
+from typing import Any, List, NoReturn, Tuple
 
 import numpy as np
 
-from .base import (
-    PreProcessor,
-    preprocess_multi_lead_signal,
-)
-
+from .base import PreProcessor, preprocess_multi_lead_signal
 
 __all__ = [
     "BaselineRemove",

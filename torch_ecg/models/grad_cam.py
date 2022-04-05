@@ -7,13 +7,11 @@ References
 https://github.com/jacobgil/pytorch-grad-cam
 """
 
-from typing import Union, Optional, Sequence, Tuple, List, NoReturn
+from typing import List, NoReturn, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
-from torch import nn
-from torch import Tensor
-from torch.autograd import Function
+from torch import Tensor, nn
 
 from ..cfg import DEFAULTS
 
@@ -146,7 +144,7 @@ class GradCam(object):
         features, output = self.extractor(input.to(self.device))
         n_classes = output.shape[-1]
 
-        if index == None:
+        if index is None:
             index = np.argmax(output.cpu().detach().numpy()[0])
 
         one_hot = np.zeros((1, n_classes), dtype=np.float32)

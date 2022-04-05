@@ -6,19 +6,24 @@ for downloading the data files.
 
 """
 
-import os, re, tempfile, zipfile, tarfile, shutil
+import os
+import re
+import shutil
+import tarfile
+import tempfile
+import zipfile
 from pathlib import Path
-from typing import NoReturn, Union, Optional
+from typing import NoReturn, Optional, Union
 
-import requests, tqdm
-
+import requests
+import tqdm
 
 __all__ = [
     "http_get",
 ]
 
 
-PHYSIONET_DB_VERSION_PATTERN = "\d+\.\d+\.\d+"
+PHYSIONET_DB_VERSION_PATTERN = "\\d+\\.\\d+\\.\\d+"
 
 
 def http_get(
@@ -46,7 +51,7 @@ def http_get(
 
     """
     assert (
-        re.search("(\.zip)|(\.tar)", _suffix(url)) is not None
+        re.search("(\\.zip)|(\\.tar)", _suffix(url)) is not None
     ), "URL must be pointing to a `zip` file or a compressed `tar` file."
     print(f"Downloading {url}.")
     parent_dir = Path(dst_dir).parent

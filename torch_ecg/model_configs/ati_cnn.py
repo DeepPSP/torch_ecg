@@ -7,22 +7,21 @@ but keep increasing the number of channels
 
 from copy import deepcopy
 
-from .cnn import (
-    vgg_block_basic,
-    vgg_block_mish,
-    vgg_block_swish,
-    vgg16,
-    vgg16_leadwise,
-    resnet_block_stanford,
-    resnet_stanford,
+from ..cfg import CFG
+from ..utils.utils_nn import adjust_cnn_filter_lengths
+from .cnn import (  # noqa: F401
     resnet_block_basic,
+    resnet_block_stanford,
     resnet_bottle_neck,
     resnet_cpsc2018,
     resnet_cpsc2018_leadwise,
+    resnet_stanford,
+    vgg16,
+    vgg16_leadwise,
+    vgg_block_basic,
+    vgg_block_mish,
+    vgg_block_swish,
 )
-from ..utils.utils_nn import adjust_cnn_filter_lengths
-from ..cfg import CFG
-
 
 __all__ = [
     "ATI_CNN_CONFIG",

@@ -13,35 +13,35 @@ References
 [1] https://github.com/PIA-Group/BioSPPy
 [2] to add
 """
-import os, time
 import multiprocessing as mp
+import os
+import time
 from copy import deepcopy
 from numbers import Real
-from typing import Union, Optional, Any, List, Dict
+from typing import Dict, Optional
 
 import numpy as np
-from easydict import EasyDict as ED
-from scipy.ndimage.filters import median_filter
-from scipy.signal.signaltools import resample
-from scipy.io import savemat
 
 # from scipy.signal import medfilt
 # https://github.com/scipy/scipy/issues/9680
 from biosppy.signals.tools import filter_signal
-
+from easydict import EasyDict as ED
+from scipy.io import savemat
+from scipy.ndimage.filters import median_filter
+from scipy.signal.signaltools import resample
 from train.train_crnn_cpsc2020.cfg import PreprocCfg
+
 from .ecg_rpeaks import (
-    xqrs_detect,
-    gqrs_detect,
-    pantompkins_detect,
-    hamilton_detect,
-    ssf_detect,
     christov_detect,
     engzee_detect,
     gamboa_detect,
+    gqrs_detect,
+    hamilton_detect,
+    pantompkins_detect,
+    ssf_detect,
+    xqrs_detect,
 )
 from .ecg_rpeaks_dl import seq_lab_net_detect
-
 
 __all__ = [
     "preprocess_signal",

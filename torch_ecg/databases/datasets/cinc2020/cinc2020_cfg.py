@@ -3,21 +3,15 @@ configurations for signal preprocess, feature extraction, training, etc.
 along with some constants
 
 "Brady", "LAD", "RAD", "PR", "LQRSV" are treated exceptionally, as special classes
+
 """
 
-from pathlib import Path
 from copy import deepcopy
-from itertools import repeat
 from typing import List, NoReturn
 
 from ....cfg import CFG, DEFAULTS
-from ....utils.utils_nn import adjust_cnn_filter_lengths
 from ....utils import ecg_arrhythmia_knowledge as EAK
-from ...aux_data.cinc2020_aux_data import (
-    equiv_class_dict,
-    get_class_weight,
-)
-
+from ...aux_data.cinc2020_aux_data import get_class_weight
 
 __all__ = [
     "CINC2020TrainCfg",

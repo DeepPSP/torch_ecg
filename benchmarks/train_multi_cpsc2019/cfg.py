@@ -1,14 +1,11 @@
 """
 """
 
-from pathlib import Path
 from copy import deepcopy
-from itertools import repeat
-
-import numpy as np
+from pathlib import Path
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
 
@@ -17,11 +14,10 @@ except ModuleNotFoundError:
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.model_configs import (
     ECG_SEQ_LAB_NET_CONFIG,
-    ECG_UNET_VANILLA_CONFIG,
     ECG_SUBTRACT_UNET_CONFIG,
+    ECG_UNET_VANILLA_CONFIG,
 )
 from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
-
 
 __all__ = [
     "ModelCfg",

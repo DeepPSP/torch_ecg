@@ -1,13 +1,12 @@
 """
 """
 
-from typing import NoReturn, Sequence, Iterable, Union, Any
 from numbers import Real
+from typing import Any, Iterable, NoReturn, Union
 
 import torch
 
 from ..utils.utils_signal_t import normalize as normalize_t
-
 
 __all__ = [
     "Normalize",
@@ -18,7 +17,7 @@ __all__ = [
 
 
 class Normalize(torch.nn.Module):
-    """
+    r"""
     perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
     or perform min-max normalization on `sig`,
@@ -107,7 +106,7 @@ class Normalize(torch.nn.Module):
 
 
 class MinMaxNormalize(Normalize):
-    """
+    r"""
     Min-Max normalization, defined as
 
         .. math::
@@ -171,7 +170,7 @@ class NaiveNormalize(Normalize):
 
 
 class ZScoreNormalize(Normalize):
-    """
+    r"""
     Z-score normalization via
 
         .. math::

@@ -3,18 +3,19 @@ neural architecture search
 
 """
 
-from typing import NoReturn, Optional, Tuple, Sequence
+from typing import NoReturn, Sequence
 
 import torch
 import torch.nn as nn
-from torch.nn.parallel import DistributedDataParallel as DDP, DataParallel as DP
+from torch.nn.parallel import DataParallel as DP
+from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
+from torch.utils.data import DataLoader  # noqa: F401
 from torch.utils.data.dataset import Dataset
-from torch.utils.data import DataLoader
+
+from ..cfg import CFG
+from .trainer import BaseTrainer
 
 # from easydict import EasyDict as ED
-
-from .trainer import BaseTrainer
-from ..cfg import CFG
 
 
 __all__ = [

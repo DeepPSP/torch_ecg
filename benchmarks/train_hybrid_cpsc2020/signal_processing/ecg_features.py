@@ -9,21 +9,18 @@ mainly RR intervals + morphological features
 
 --> (lstm using RR intervals) + (cnn using raw (or processed?) signal)
 """
+import multiprocessing as mp
+import operator
 import os
 from copy import deepcopy
 from typing import Optional
-import operator
-import multiprocessing as mp
-from functools import reduce
 
-import pywt
 import numpy as np
-from scipy.io import savemat
+import pywt
 from easydict import EasyDict as ED
-
+from scipy.io import savemat
 from train.train_crnn_cpsc2020.cfg import FeatureCfg
-from train.train_crnn_cpsc2020.utils import list_sum, compute_local_average
-
+from train.train_crnn_cpsc2020.utils import compute_local_average, list_sum
 
 __all__ = [
     "compute_ecg_features",
@@ -169,7 +166,7 @@ def compute_rr_descriptor(
         features_rr = np.column_stack((pre_rr, post_rr, local_rr, global_rr))
     else:
         features_rr = np.column_stack((pre_rr, post_rr, local_rr, global_rr))
-        features_rr = features_rr / cfg.fs  #  units to sec
+        features_rr = features_rr / cfg.fs  # units to sec
 
     return features_rr
 
@@ -189,7 +186,7 @@ def _compute_pre_rr(rr_intervals: np.ndarray) -> np.ndarray:
     """
     try:
         pre_rr = np.append(rr_intervals[0], rr_intervals)
-    except:  # in case empty rr_intervals
+    except Exception:  # in case empty rr_intervals
         pre_rr = np.array([], dtype=int)
     return pre_rr
 
@@ -210,7 +207,7 @@ def _compute_post_rr(rr_intervals: np.ndarray) -> np.ndarray:
     """
     try:
         post_rr = np.append(rr_intervals, rr_intervals[-1])
-    except:  # in case empty rr_intervals
+    except Exception:  # in case empty rr_intervals
         post_rr = np.array([], dtype=int)
     return post_rr
 

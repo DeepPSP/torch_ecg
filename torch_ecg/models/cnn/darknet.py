@@ -10,33 +10,27 @@ References
 [5] Wang, C. Y., Bochkovskiy, A., & Liao, H. Y. M. (2020). Scaled-YOLOv4: Scaling Cross Stage Partial Network. arXiv preprint arXiv:2011.08036.
 """
 
-import math
-from copy import deepcopy
-from itertools import repeat
-from typing import Union, Optional, Sequence, NoReturn
+from typing import NoReturn
 
-import numpy as np
 import torch
 from torch import nn
-from torch import Tensor
 
-from ...cfg import CFG, DEFAULTS
-from ...utils.utils_nn import compute_module_size, SizeMixin
-from ...utils.misc import dict_to_str, list_sum
-from ...models._nets import (
+from ...cfg import DEFAULTS
+from ...models._nets import (  # noqa: F401
     Conv_Bn_Activation,
     DownSample,
+    GlobalContextBlock,
     NonLocalBlock,
     SEBlock,
-    GlobalContextBlock,
 )
+from ...utils.utils_nn import SizeMixin
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = [
-    "Darknet",
+    "DarkNet",
 ]
 
 

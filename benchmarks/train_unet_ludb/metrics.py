@@ -15,24 +15,20 @@ KEY points
 """
 
 from numbers import Real
-from typing import Union, Optional, Sequence, Dict, Tuple
+from typing import Dict, Sequence
 
 import numpy as np
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.utils.misc import (
-    ECGWaveForm,
-    masks_to_waveforms,
-)
 from torch_ecg.cfg import CFG, DEFAULTS
-
+from torch_ecg.utils.misc import ECGWaveForm, masks_to_waveforms
 
 __all__ = [
     "compute_metrics",

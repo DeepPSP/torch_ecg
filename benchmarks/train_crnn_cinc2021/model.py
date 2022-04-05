@@ -2,29 +2,27 @@
 """
 
 from copy import deepcopy
-from typing import Union, Optional, Sequence, Tuple, NoReturn
+from typing import NoReturn, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 import torch
-from torch import nn
 from torch import Tensor
 
 try:
-    import torch_ecg
+    import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from torch_ecg.cfg import CFG
-from torch_ecg.models.ecg_crnn import ECG_CRNN
-from torch_ecg.components.outputs import MultiLabelClassificationOutput
-from torch_ecg.utils.misc import add_docstring
-
 from cfg import ModelCfg
 
+from torch_ecg.cfg import CFG
+from torch_ecg.components.outputs import MultiLabelClassificationOutput
+from torch_ecg.models.ecg_crnn import ECG_CRNN
+from torch_ecg.utils.misc import add_docstring
 
 __all__ = [
     "ECG_CRNN_CINC2021",

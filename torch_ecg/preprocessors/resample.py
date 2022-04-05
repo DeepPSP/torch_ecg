@@ -1,12 +1,11 @@
 """
 """
 
-from typing import NoReturn, Optional, Any
+from typing import Any, NoReturn, Optional
 
 import torch
 
 from ..utils.utils_signal_t import resample as resample_t
-
 
 __all__ = [
     "Resample",

@@ -1,11 +1,7 @@
 """
 """
 
-from . import mobilenet
-from . import multi_scopic
-from . import resnet
-from . import vgg
-from . import xception
+from . import mobilenet, multi_scopic, resnet, vgg, xception  # noqa: F401
 
 # NOT implemented yet
 # from . import darknet

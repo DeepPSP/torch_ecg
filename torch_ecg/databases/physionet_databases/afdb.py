@@ -2,21 +2,20 @@
 """
 """
 
-from pathlib import Path
 import math
-from datetime import datetime
-from typing import Union, Optional, Any, List, Tuple, Dict, Sequence, NoReturn
+from copy import deepcopy
 from numbers import Real
+from pathlib import Path
+from typing import Any, Dict, List, NoReturn, Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
 import wfdb
+from scipy.signal import resample_poly
 
 from ...cfg import CFG
-from ...utils.misc import get_record_list_recursive, add_docstring
+from ...utils.misc import add_docstring, get_record_list_recursive
 from ...utils.utils_interval import generalized_intervals_intersection
-from ..base import PhysioNetDataBase, DEFAULT_FIG_SIZE_PER_SEC
-
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase
 
 __all__ = [
     "AFDB",
@@ -381,9 +380,9 @@ class AFDB(PhysioNetDataBase):
             _leads = [leads]
         else:
             _leads = leads
-        assert all([l in self.all_leads for l in _leads])
+        assert all([ld in self.all_leads for ld in _leads])
 
-        lead_indices = [self.all_leads.index(l) for l in _leads]
+        lead_indices = [self.all_leads.index(ld) for ld in _leads]
         if data is None:
             _data = self.load_data(
                 rec,

@@ -2,18 +2,15 @@
 """
 """
 
-from pathlib import Path
 from datetime import datetime
-from typing import Union, Optional, Any, List, Tuple, NoReturn
-from numbers import Real
+from pathlib import Path
+from typing import Any, List, NoReturn, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 import wfdb
 
 from ..base import PhysioNetDataBase
-from ...utils.misc import add_docstring
-
 
 __all__ = [
     "ApneaECG",
@@ -125,7 +122,7 @@ class ApneaECG(PhysioNetDataBase):
         """
         try:
             super()._ls_rec(local=local)
-        except:
+        except Exception:
             self._all_records = wfdb.get_record_list(self.db_name)
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
@@ -349,8 +346,8 @@ class ApneaECG(PhysioNetDataBase):
             apnea events with columns `self.sleep_event_keys`
 
         """
-        import matplotlib.pyplot as plt
         import matplotlib.patches as mpatches
+        import matplotlib.pyplot as plt
 
         patches = {k: mpatches.Patch(color=c, label=k) for k, c in self.palette.items()}
         _, ax = plt.subplots(figsize=(20, 4))

@@ -3,32 +3,28 @@ basic building blocks, for 1d signal (time series)
 """
 
 from copy import deepcopy
-from math import sqrt
 from itertools import repeat
-from typing import Union, Sequence, Tuple, List, Optional, NoReturn, Any
+from math import sqrt
 from numbers import Real
+from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
 
-from packaging import version
 import numpy as np
 import torch
-from torch import nn
-from torch import Tensor
-from torch.nn import Parameter
 import torch.nn.functional as F
-from torch.nn.utils.rnn import PackedSequence
 from deprecated import deprecated
+from packaging import version
+from torch import Tensor, nn
+from torch.nn import Parameter
+from torch.nn.utils.rnn import PackedSequence
 
+from ..cfg import CFG
+from ..utils.misc import dict_to_str, isclass
+from ..utils.utils_nn import SizeMixin  # compute_output_shape,
 from ..utils.utils_nn import (
-    compute_output_shape,
+    compute_avgpool_output_shape,
     compute_conv_output_shape,
     compute_maxpool_output_shape,
-    compute_avgpool_output_shape,
-    compute_module_size,
-    SizeMixin,
 )
-from ..utils.misc import dict_to_str, isclass
-from ..cfg import CFG
-
 
 __all__ = [
     "Mish",
@@ -89,7 +85,7 @@ else:
 try:
     Mish = nn.Mish  # pytorch added in version 1.9
     Mish.__name__ = "Mish"
-except:
+except Exception:
 
     class Mish(nn.Module):
         """The Mish activation"""
@@ -109,7 +105,7 @@ try:
     Swish = nn.SiLU  # pytorch added in version 1.7
     Swish.__name__ = "Swish"
     SiLU = nn.SiLU
-except:
+except Exception:
 
     class Swish(nn.Module):
         """The Swish activation"""
@@ -131,7 +127,7 @@ except:
 try:
     Hardswish = nn.Hardswish  # pytorch added in version 1.6
     Hardswish.__name__ = "Hardswish"
-except:
+except Exception:
 
     class Hardswish(nn.Module):
         r"""Applies the hardswish function, element-wise, as described in the paper:
@@ -1591,15 +1587,15 @@ class BlurPool(SizeMixin, nn.Module):
             "reflect",
         ]:
             PadLayer = nn.ReflectionPad1d
-        elif pad_type in [
+        elif self.__pad_type in [
             "repl",
             "replicate",
         ]:
             PadLayer = nn.ReplicationPad1d
-        elif pad_type == "zero":
+        elif self.__pad_type == "zero":
             PadLayer = ZeroPad1d
         else:
-            print(f"Pad type [{pad_type}] not recognized")
+            print(f"Pad type [{self.__pad_type}] not recognized")
         return PadLayer(self.__pad_sizes)
 
     def compute_output_shape(
@@ -1815,7 +1811,7 @@ class BidirectionalLSTM(SizeMixin, nn.Module):
         input: Tensor,
             of shape (seq_len, batch_size, n_channels)
         """
-        output, _ = self.lstm(input)  #  seq_len, batch_size, 2 * hidden_size
+        output, _ = self.lstm(input)  # seq_len, batch_size, 2 * hidden_size
         if not self.return_sequence:
             output = output[-1, ...]
         return output
@@ -2652,7 +2648,7 @@ class SeqLin(SizeMixin, nn.Sequential):
         kw_initializer = kwargs.get("kw_initializer", {})
         act_layer = get_activation(activation)
         if not isclass(act_layer):
-            raise TypeError(f"`activation` must be a class or str, not an instance")
+            raise TypeError("`activation` must be a class or str, not an instance")
         self.__activation = act_layer.__name__
         if kernel_initializer:
             if kernel_initializer.lower() in Initializers.keys():
@@ -3427,7 +3423,7 @@ class CBAMBlock(SizeMixin, nn.Module):
             of shape (batch_size, n_channels, 1)
         """
         return F.lp_pool1d(
-            input, norm_type=self.__lp_norm_type, kernel_size=x.shape[-1]
+            input, norm_type=self.__lp_norm_type, kernel_size=input.shape[-1]
         )
 
     def _lse_pool(self, input: Tensor) -> Tensor:
@@ -4399,5 +4395,5 @@ def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
     else:
         try:
             return eval(f"""{config[key]}(in_channels, **config)""")
-        except:
+        except Exception:
             raise ValueError(f"Unknown attention type: {config[key]}")
