@@ -14,7 +14,7 @@ long_description = (cwd / "README.md").read_text(encoding="utf-8")
 extras = {}
 extras["test"] = [
     "black",
-    "isort",
+    "flake8",
     "pytest",
     "pytest-xdist",
 ]
