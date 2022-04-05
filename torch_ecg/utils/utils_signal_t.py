@@ -22,8 +22,8 @@ def normalize(
     per_channel: bool = False,
     inplace: bool = True,
 ) -> torch.Tensor:
-    r""" 
-    
+    r"""
+
     perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
     or perform min-max normalization on `sig`,
@@ -58,12 +58,12 @@ def normalize(
         if False, normalization will be done per sample, strictly required per sample
     inplace: bool, default True,
         if True, normalization will be done inplace (on `sig`)
-        
+
     Returns
     -------
     sig: Tensor,
         the normalized signal
-        
+
     NOTE
     ----
     in cases where normalization is infeasible (std = 0),

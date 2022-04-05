@@ -12,7 +12,7 @@ Training strategy:
 3. models will be trained for each tranche separatly:
 
 4. one model will be trained using the whole dataset (consider excluding tranche C? good news is that tranche C mainly consists of "Brady" and "STach", which can be classified using the special detectors)
-        
+
 References: (mainly tips for faster and better training)
 -----------
 1. https://efficientdl.com/faster-deep-learning-in-pytorch-a-guide/

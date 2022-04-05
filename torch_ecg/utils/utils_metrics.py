@@ -180,7 +180,7 @@ ovr_confusion_matrix = one_vs_rest_confusion_matrix
 
 _METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
     Compute macro {metric}, and {metrics} for each class.
-    
+
     Parameters
     ----------
     labels: np.ndarray or Tensor,

@@ -135,7 +135,7 @@ def CPSC2020_score(
     true_positive = CFG({"S": 0, "V": 0})
     false_positive = CFG({"S": 0, "V": 0})
     false_negative = CFG({"S": 0, "V": 0})
-    ## Scoring ##
+    # Scoring
     for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(
         zip(spb_true, pvc_true, spb_pred, pvc_pred)
     ):

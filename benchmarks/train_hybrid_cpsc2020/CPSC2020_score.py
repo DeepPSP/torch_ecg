@@ -69,7 +69,7 @@ def CPSC2020_score(S_refs, V_refs, S_results, V_results):
             len(S_refs),
         ]
     )
-    ## Scoring ##
+    # Scoring
     for i, s_ref in enumerate(S_refs):
         v_ref = V_refs[i]
         s_pos = S_results[i]

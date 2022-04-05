@@ -546,7 +546,7 @@ def compute_receptive_field(
     dilations: Union[Sequence[int], int] = 1,
     input_len: Optional[int] = None,
 ) -> Union[int, float]:
-    r""" 
+    r"""
 
     computes the (generic) receptive field of feature map of certain channel,
     from certain flow (if not merged, different flows, e.g. shortcut, must be computed separately),

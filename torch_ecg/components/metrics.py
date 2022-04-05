@@ -384,7 +384,7 @@ class RPeaksDetectionMetrics(Metrics):
     >>> metrics = metrics.compute(labels, outputs, fs=500)
     >>> metrics.qrs_score
     0.7
-       
+
     """
     )
 

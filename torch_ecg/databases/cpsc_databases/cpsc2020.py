@@ -856,7 +856,7 @@ def compute_metrics(
         ],
         dtype=int,
     )
-    ## Scoring ##
+    # Scoring
     for i, (s_ref, v_ref, s_pos, v_pos) in enumerate(
         zip(sbp_true, pvc_true, sbp_pred, pvc_pred)
     ):

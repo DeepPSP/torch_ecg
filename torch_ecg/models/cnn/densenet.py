@@ -1,7 +1,7 @@
 """
 The core part of the SOTA model (framework) of CPSC2020
 
-Its key points: 
+Its key points:
 1. ECG signal pre-processing: filters out the high frequency noise and baseline drift in the ECG signal
 2. QRS complex detection
 3. noisy heartbeat recognition: transient noise and artifacts
