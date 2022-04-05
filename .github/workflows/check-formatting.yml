@@ -26,10 +26,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
-        pip install black flake8 # Testing packages
+        python -m pip install black flake8 # Testing packages
         python -m pip install -r requirements.txt
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
-        pip install -e .[dev]
+        python -m pip install -e .[dev]
     - name: Check code format with black and flake8
       run: |
         black . --check --extend-exclude .ipynb -v
