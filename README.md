@@ -1,5 +1,9 @@
 # [torch_ecg](https://github.com/DeepPSP/torch_ecg/)
 
+![pytest](https://github.com/DeepPSP/torch_ecg/actions/workflows/run-pytest.yml/badge.svg)
+![codeql](https://github.com/DeepPSP/torch_ecg/actions/workflows/codeql-analysis.yml/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/torch-ecg?style=flat-square)
+
 Deep learning ecg models implemented using PyTorch.
 
 The system design is depicted as follows
