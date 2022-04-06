@@ -14,14 +14,22 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from .misc import add_docstring
+from .misc import (
+    add_docstring,
+    ECGWaveForm,
+    ECGWaveFormNames,
+    masks_to_waveforms,
+)
+from ..cfg import DEFAULTS
+
 
 __all__ = [
     "top_n_accuracy",
     "confusion_matrix",
     "ovr_confusion_matrix",
     "QRS_score",
-    "_metrics_from_confusion_matrix",
+    "metrics_from_confusion_matrix",
+    "compute_wave_delineation_metrics",
 ]
 
 
@@ -104,7 +112,7 @@ def confusion_matrix(
 
     Returns
     -------
-    A: np.ndarray,
+    cm: np.ndarray,
         confusion matrix, of shape: (n_classes, n_classes)
 
     """
@@ -115,13 +123,13 @@ def confusion_matrix(
 
     num_samples, num_classes = np.shape(labels)
 
-    A = np.zeros((num_classes, num_classes))
+    cm = np.zeros((num_classes, num_classes))
     for k in range(num_samples):
         i = np.argmax(outputs[k, :])
         j = np.argmax(labels[k, :])
-        A[i, j] += 1
+        cm[i, j] += 1
 
-    return A
+    return cm
 
 
 def one_vs_rest_confusion_matrix(
@@ -148,7 +156,7 @@ def one_vs_rest_confusion_matrix(
 
     Returns
     -------
-    A: np.ndarray,
+    ovr_cm: np.ndarray,
         one-vs-rest confusion matrix, of shape: (n_classes, 2, 2)
 
     """
@@ -159,19 +167,19 @@ def one_vs_rest_confusion_matrix(
 
     num_samples, num_classes = np.shape(labels)
 
-    A = np.zeros((num_classes, 2, 2))
+    ovr_cm = np.zeros((num_classes, 2, 2))
     for i in range(num_samples):
         for j in range(num_classes):
             if labels[i, j] == 1 and outputs[i, j] == 1:  # TP
-                A[j, 0, 0] += 1
+                ovr_cm[j, 0, 0] += 1
             elif labels[i, j] == 0 and outputs[i, j] == 1:  # FP
-                A[j, 0, 1] += 1
+                ovr_cm[j, 0, 1] += 1
             elif labels[i, j] == 1 and outputs[i, j] == 0:  # FN
-                A[j, 1, 0] += 1
+                ovr_cm[j, 1, 0] += 1
             elif labels[i, j] == 0 and outputs[i, j] == 0:  # TN
-                A[j, 1, 1] += 1
+                ovr_cm[j, 1, 1] += 1
 
-    return A
+    return ovr_cm
 
 
 # alias
@@ -203,7 +211,7 @@ _METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
     _METRICS_FROM_CONFUSION_MATRIX_PARAMS.format(metric="metrics", metrics="metrics"),
     "prepend",
 )
-def _metrics_from_confusion_matrix(
+def metrics_from_confusion_matrix(
     labels: Union[np.ndarray, Tensor],
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
@@ -218,7 +226,7 @@ def _metrics_from_confusion_matrix(
     Examples
     --------
     >>> labels, outputs = np.random.randint(0,2,(100,10)), np.random.randint(0,2,(100,10))
-    >>> metrics = _metrics_from_confusion_matrix(labels, outputs)
+    >>> metrics = metrics_from_confusion_matrix(labels, outputs)
 
     References
     ----------
@@ -228,7 +236,7 @@ def _metrics_from_confusion_matrix(
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
     num_samples, num_classes = np.shape(labels)
 
-    A = ovr_confusion_matrix(labels, outputs)
+    ovr_cm = ovr_confusion_matrix(labels, outputs)
 
     # sens: sensitivity, recall, hit rate, or true positive rate
     # spec: specificity, selectivity or true negative rate
@@ -245,7 +253,12 @@ def _metrics_from_confusion_matrix(
     )  # area under the receiver-operater characteristic curve (ROC AUC)
     auprc = np.zeros(num_classes)  # area under the precision-recall curve
     for k in range(num_classes):
-        tp, fp, fn, tn = A[k, 0, 0], A[k, 0, 1], A[k, 1, 0], A[k, 1, 1]
+        tp, fp, fn, tn = (
+            ovr_cm[k, 0, 0],
+            ovr_cm[k, 0, 1],
+            ovr_cm[k, 1, 0],
+            ovr_cm[k, 1, 1],
+        )
         if tp + fn > 0:
             sens[k] = tp / (tp + fn)
         else:
@@ -406,7 +419,7 @@ def f_measure(
         F1-measures for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_f1"], m["f1"]
 
@@ -432,7 +445,7 @@ def sensitivity(
         sensitivities for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_sens"], m["sens"]
 
@@ -464,7 +477,7 @@ def precision(
         precisions for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_prec"], m["prec"]
 
@@ -494,7 +507,7 @@ def specificity(
         specificities for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_spec"], m["spec"]
 
@@ -529,7 +542,7 @@ def auc(
         AUPRCs for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_auroc"], m["macro_auprc"], m["auroc"], m["auprc"]
 
@@ -555,7 +568,7 @@ def accuracy(
         accuracies for each class, of shape: (n_classes,)
 
     """
-    m = _metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
 
     return m["macro_acc"], m["acc"]
 
@@ -665,3 +678,339 @@ def _cls_to_bin(cls: np.ndarray, shape: Tuple[int]) -> np.ndarray:
     for i in range(shape[0]):
         bin_[i, cls[i]] = 1
     return bin_
+
+
+def compute_wave_delineation_metrics(
+    truth_masks: Sequence[np.ndarray],
+    pred_masks: Sequence[np.ndarray],
+    class_map: Dict[str, int],
+    fs: Real,
+    mask_format: str = "channel_first",
+    tol: Real = 0.15,
+) -> Dict[str, Dict[str, float]]:
+    f"""
+
+    compute metrics for the task of ECG wave delineation
+    (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
+    for multiple evaluations
+
+    Parameters
+    ----------
+    truth_masks: sequence of ndarray,
+        a sequence of ground truth masks,
+        each of which can also hold multiple masks from different samples (differ by record or by lead).
+        Each mask is of shape (n_channels, n_timesteps) or (n_timesteps, n_channels)
+    pred_masks: sequence of ndarray,
+        predictions corresponding to `truth_masks`,
+        of the same shapes.
+    class_map: dict,
+        class map, mapping names to waves to numbers from 0 to n_classes-1,
+        the keys should contain {", ".join([f'"{item}"' for item in ECGWaveFormNames])}.
+    fs: real number,
+        sampling frequency of the signal corresponding to the masks,
+        used to compute the duration of each waveform,
+        hence the error and standard deviations of errors
+    mask_format: str, default "channel_first",
+        format of the mask, one of the following:
+        'channel_last' (alias 'lead_last'), or
+        'channel_first' (alias 'lead_first')
+    tol: float, default 0.15,
+        tolerance for the duration of the waveform,
+        with units in seconds
+
+    Returns
+    -------
+    scorings: dict,
+        with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
+        each scoring is a dict consisting of the following metrics:
+        sensitivity, precision, f1_score, mean_error, standard_deviation
+
+    """
+    assert len(truth_masks) == len(pred_masks)
+    truth_waveforms, pred_waveforms = [], []
+    # compute for each element
+    for tm, pm in zip(truth_masks, pred_masks):
+        n_masks = (
+            tm.shape[0]
+            if mask_format.lower() in ["channel_first", "lead_first"]
+            else tm.shape[1]
+        )
+
+        new_t = masks_to_waveforms(tm, class_map, fs, mask_format)
+        new_t = [
+            new_t[f"lead_{idx+1}"] for idx in range(n_masks)
+        ]  # list of list of `ECGWaveForm`s
+        truth_waveforms += new_t
+
+        new_p = masks_to_waveforms(pm, class_map, fs, mask_format)
+        new_p = [
+            new_p[f"lead_{idx+1}"] for idx in range(n_masks)
+        ]  # list of list of `ECGWaveForm`s
+        pred_waveforms += new_p
+
+    scorings = compute_metrics_waveform(truth_waveforms, pred_waveforms, fs, tol)
+
+    return scorings
+
+
+def compute_metrics_waveform(
+    truth_waveforms: Sequence[Sequence[ECGWaveForm]],
+    pred_waveforms: Sequence[Sequence[ECGWaveForm]],
+    fs: Real,
+    tol: Real = 0.15,
+) -> Dict[str, Dict[str, float]]:
+    """
+
+    compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
+    of evaluations on a multiple samples (differ by records, or leads)
+
+    Parameters
+    ----------
+    truth_waveforms: sequence of sequence of `ECGWaveForm`s,
+        the ground truth,
+        each element is a sequence of `ECGWaveForm`s from the same sample
+    pred_waveforms: sequence of sequence of `ECGWaveForm`s,
+        the predictions corresponding to `truth_waveforms`,
+        each element is a sequence of `ECGWaveForm`s from the same sample
+    fs: real number,
+        sampling frequency of the signal corresponding to the waveforms,
+        used to compute the duration of each waveform,
+        hence the error and standard deviations of errors
+    tol: float, default 0.15,
+        tolerance for the duration of the waveform,
+        with units in seconds
+
+    Returns
+    -------
+    scorings: dict,
+        with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
+        each scoring is a dict consisting of the following metrics:
+        sensitivity, precision, f1_score, mean_error, standard_deviation
+
+    """
+    truth_positive = dict(
+        {
+            f"{wave}_{term}": 0
+            for wave in ECGWaveFormNames
+            for term in ["onset", "offset"]
+        }
+    )
+    false_positive = dict(
+        {
+            f"{wave}_{term}": 0
+            for wave in ECGWaveFormNames
+            for term in ["onset", "offset"]
+        }
+    )
+    false_negative = dict(
+        {
+            f"{wave}_{term}": 0
+            for wave in ECGWaveFormNames
+            for term in ["onset", "offset"]
+        }
+    )
+    errors = dict(
+        {
+            f"{wave}_{term}": []
+            for wave in ECGWaveFormNames
+            for term in ["onset", "offset"]
+        }
+    )
+    # accumulating results
+    for tw, pw in zip(truth_waveforms, pred_waveforms):
+        s = _compute_metrics_waveform(tw, pw, fs, tol)
+        for wave in [
+            "pwave",
+            "qrs",
+            "twave",
+        ]:
+            for term in ["onset", "offset"]:
+                truth_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"][
+                    "truth_positive"
+                ]
+                false_positive[f"{wave}_{term}"] += s[f"{wave}_{term}"][
+                    "false_positive"
+                ]
+                false_negative[f"{wave}_{term}"] += s[f"{wave}_{term}"][
+                    "false_negative"
+                ]
+                errors[f"{wave}_{term}"] += s[f"{wave}_{term}"]["errors"]
+    scorings = dict()
+    for wave in ECGWaveFormNames:
+        for term in ["onset", "offset"]:
+            tp = truth_positive[f"{wave}_{term}"]
+            fp = false_positive[f"{wave}_{term}"]
+            fn = false_negative[f"{wave}_{term}"]
+            err = errors[f"{wave}_{term}"]
+            sensitivity = tp / (tp + fn + DEFAULTS.eps)
+            precision = tp / (tp + fp + DEFAULTS.eps)
+            f1_score = (
+                2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
+            )
+            mean_error = np.mean(err) * 1000 / fs if len(err) > 0 else np.nan
+            standard_deviation = np.std(err) * 1000 / fs if len(err) > 0 else np.nan
+            scorings[f"{wave}_{term}"] = dict(
+                sensitivity=sensitivity,
+                precision=precision,
+                f1_score=f1_score,
+                mean_error=mean_error,
+                standard_deviation=standard_deviation,
+            )
+
+    return scorings
+
+
+def _compute_metrics_waveform(
+    truths: Sequence[ECGWaveForm],
+    preds: Sequence[ECGWaveForm],
+    fs: Real,
+    tol: Real = 0.15,
+) -> Dict[str, Dict[str, float]]:
+    """
+
+    compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
+    of evaluations on a single sample (the same record, the same lead)
+
+    Parameters
+    ----------
+    truths: sequence of `ECGWaveForm`s,
+        the ground truth
+    preds: sequence of `ECGWaveForm`s,
+        the predictions corresponding to `truths`,
+    fs: real number,
+        sampling frequency of the signal corresponding to the waveforms,
+        used to compute the duration of each waveform,
+        hence the error and standard deviations of errors
+    tol: float, default 0.15,
+        tolerance for the duration of the waveform,
+        with units in seconds
+
+    Returns
+    -------
+    scorings: dict,
+        with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
+        each scoring is a dict consisting of the following metrics:
+        truth_positive, false_negative, false_positive, errors,
+        sensitivity, precision, f1_score, mean_error, standard_deviation
+
+    """
+    pwave_onset_truths, pwave_offset_truths, pwave_onset_preds, pwave_offset_preds = (
+        [],
+        [],
+        [],
+        [],
+    )
+    qrs_onset_truths, qrs_offset_truths, qrs_onset_preds, qrs_offset_preds = (
+        [],
+        [],
+        [],
+        [],
+    )
+    twave_onset_truths, twave_offset_truths, twave_onset_preds, twave_offset_preds = (
+        [],
+        [],
+        [],
+        [],
+    )
+
+    for item in ["truths", "preds"]:
+        for w in eval(item):
+            for term in ["onset", "offset"]:
+                eval(f"{w.name}_{term}_{item}.append(w.{term})")
+
+    scorings = dict()
+    for wave in ECGWaveFormNames:
+        for term in ["onset", "offset"]:
+            (
+                truth_positive,
+                false_negative,
+                false_positive,
+                errors,
+                sensitivity,
+                precision,
+                f1_score,
+                mean_error,
+                standard_deviation,
+            ) = _compute_metrics_base(
+                eval(f"{wave}_{term}_truths"), eval(f"{wave}_{term}_preds"), fs, tol
+            )
+            scorings[f"{wave}_{term}"] = dict(
+                truth_positive=truth_positive,
+                false_negative=false_negative,
+                false_positive=false_positive,
+                errors=errors,
+                sensitivity=sensitivity,
+                precision=precision,
+                f1_score=f1_score,
+                mean_error=mean_error,
+                standard_deviation=standard_deviation,
+            )
+    return scorings
+
+
+def _compute_metrics_base(
+    truths: Sequence[Real], preds: Sequence[Real], fs: Real, tol: Real = 0.15
+) -> Dict[str, float]:
+    r"""
+
+    Parameters
+    ----------
+    truths: sequence of real numbers,
+        ground truth of indices of corresponding critical points
+    preds: sequence of real numbers,
+        predicted indices of corresponding critical points
+    fs: real number,
+        sampling frequency of the signal corresponding to the critical points,
+        used to compute the duration of each waveform,
+        hence the error and standard deviations of errors
+    tol: float, default 0.15,
+        tolerance for the duration of the waveform,
+        with units in seconds
+
+    Returns
+    -------
+    tuple of metrics:
+        truth_positive, false_negative, false_positive, errors,
+        sensitivity, precision, f1_score, mean_error, standard_deviation
+        see ref. \[[1](#ref1)\]
+
+    References
+    ----------
+    1. <a name="ref1"></a> Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
+
+    """
+    _tolerance = round(tol * fs)
+    _truths = np.array(truths)
+    _preds = np.array(preds)
+    truth_positive, false_positive, false_negative = 0, 0, 0
+    errors = []
+    n_included = 0
+    for point in truths:
+        _pred = _preds[np.where(np.abs(_preds - point) <= _tolerance)[0].tolist()]
+        if len(_pred) > 0:
+            truth_positive += 1
+            idx = np.argmin(np.abs(_pred - point))
+            errors.append(_pred[idx] - point)
+        else:
+            false_negative += 1
+        n_included += len(_pred)
+
+    false_positive = len(_preds) - truth_positive
+
+    sensitivity = truth_positive / (truth_positive + false_negative + DEFAULTS.eps)
+    precision = truth_positive / (truth_positive + false_positive + DEFAULTS.eps)
+    f1_score = 2 * sensitivity * precision / (sensitivity + precision + DEFAULTS.eps)
+    mean_error = np.mean(errors) * 1000 / fs if len(errors) > 0 else np.nan
+    standard_deviation = np.std(errors) * 1000 / fs if len(errors) > 0 else np.nan
+
+    return (
+        truth_positive,
+        false_negative,
+        false_positive,
+        errors,
+        sensitivity,
+        precision,
+        f1_score,
+        mean_error,
+        standard_deviation,
+    )

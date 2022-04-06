@@ -44,6 +44,7 @@ class DoubleConv(MultiConv):
     References
     ----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
+
     """
 
     __DEBUG__ = False
@@ -87,6 +88,7 @@ class DoubleConv(MultiConv):
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers
+
         """
         _mid_channels = mid_channels if mid_channels is not None else out_channels
         _out_channels = [_mid_channels, out_channels]
@@ -113,6 +115,7 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
     References
     ----------
     https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
+
     """
 
     __DEBUG__ = False
@@ -157,6 +160,7 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers
+
         """
         super().__init__()
         self.__mode = mode.lower()
@@ -206,6 +210,7 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         out = super().forward(input)
         return out
@@ -226,6 +231,7 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
         -------
         output_shape: sequence,
             the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self:
@@ -243,6 +249,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
     extra input
 
     channels are shrinked after up sampling
+
     """
 
     __DEBUG__ = False
@@ -299,6 +306,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
             for the deconvolutional layers
+
         """
         super().__init__()
         self.__up_scale = up_scale
@@ -366,6 +374,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
         -------
         output: Tensor,
             of shape (batch_size, n_channels'', seq_len')
+
         """
         output = self.up(input)
         output = self.zero_pad(output)
@@ -397,6 +406,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
         -------
         output_shape: sequence,
             the output shape of this `UpDoubleConv` layer, given `seq_len` and `batch_size`
+
         """
         _sep_len = seq_len
         if self.__mode == "deconv":
@@ -425,6 +435,7 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
     ----------
     [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
     [2] https://github.com/milesial/Pytorch-UNet/
+
     """
 
     __DEBUG__ = False
@@ -442,6 +453,7 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
         config: dict,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         super().__init__()
         self.classes = list(classes)
@@ -554,6 +566,7 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         to_concat = [self.init_conv(input)]
         # if self.__DEBUG__:
@@ -605,6 +618,7 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
         -------
         output_shape: sequence,
             the output shape of this model, given `seq_len` and `batch_size`
+
         """
         output_shape = (batch_size, seq_len, self.n_classes)
         return output_shape

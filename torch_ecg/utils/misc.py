@@ -51,6 +51,7 @@ __all__ = [
     "ensure_lead_fmt",
     "ensure_siglen",
     "ECGWaveForm",
+    "ECGWaveFormNames",
     "masks_to_waveforms",
     "mask_to_intervals",
     "list_sum",
@@ -853,6 +854,11 @@ ECGWaveForm = namedtuple(
     typename="ECGWaveForm",
     field_names=["name", "onset", "offset", "peak", "duration"],
 )
+ECGWaveFormNames = [
+    "pwave",
+    "qrs",
+    "twave",
+]
 
 
 def masks_to_waveforms(
@@ -918,11 +924,7 @@ def masks_to_waveforms(
     for channel_idx, lead_name in enumerate(_leads):
         current_mask = _masks[channel_idx, ...]
         for wave_name, wave_number in _class_map.items():
-            if wave_name.lower() not in [
-                "pwave",
-                "qrs",
-                "twave",
-            ]:
+            if wave_name.lower() not in ECGWaveFormNames:
                 continue
             current_wave_inds = np.where(current_mask == wave_number)[0]
             if len(current_wave_inds) == 0:

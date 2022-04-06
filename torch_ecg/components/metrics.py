@@ -2,24 +2,26 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, NoReturn, Optional, Sequence, Union
+from typing import Any, Callable, List, NoReturn, Optional, Sequence, Union, Dict
 
 import numpy as np
 from torch import Tensor
 
-from ..utils.misc import ReprMixin, add_docstring
+from ..utils.misc import ReprMixin, add_docstring, ECGWaveFormNames
 from ..utils.utils_metrics import (  # noqa: F401
     QRS_score,
-    _metrics_from_confusion_matrix,
+    metrics_from_confusion_matrix,
     confusion_matrix,
     ovr_confusion_matrix,
     top_n_accuracy,
+    compute_wave_delineation_metrics,
 )
 
 __all__ = [
     "Metrics",
     "ClassificationMetrics",
     "RPeaksDetectionMetrics",
+    "WaveDelineationMetrics",
 ]
 
 
@@ -105,13 +107,14 @@ class ClassificationMetrics(Metrics):
         self._cm = None
         self._cm_ovr = None
 
-    def set_macro(self, macro: bool) -> "ClassificationMetrics":
+    def set_macro(self, macro: bool) -> NoReturn:
         """
 
         Parameters
         ----------
         macro: bool,
             whether to use macro-averaged metrics
+
         """
         self.__prefix = ""
         self.macro = macro
@@ -127,7 +130,7 @@ class ClassificationMetrics(Metrics):
     ) -> "ClassificationMetrics":
         self._cm = confusion_matrix(labels, outputs, num_classes)
         self._cm_ovr = ovr_confusion_matrix(labels, outputs, num_classes)
-        self._metrics = _metrics_from_confusion_matrix(
+        self._metrics = metrics_from_confusion_matrix(
             labels, outputs, num_classes, weights
         )
         if self._extra_metrics is not None:
@@ -136,10 +139,10 @@ class ClassificationMetrics(Metrics):
 
         return self
 
-    compute.__doc__ = _metrics_from_confusion_matrix.__doc__.replace(
+    compute.__doc__ = metrics_from_confusion_matrix.__doc__.replace(
         "metrics: dict,", f"{__name__},"
     ).replace(
-        "metrics = _metrics_from_confusion_matrix(labels, outputs)",
+        "metrics = metrics_from_confusion_matrix(labels, outputs)",
         """metrics = ClassificationMetrics()
     >>> metrics = metrics.compute(labels, outputs)
     >>> metrics.fl_measure
@@ -420,16 +423,197 @@ class WaveDelineationMetrics(Metrics):
 
     def __init__(
         self,
+        macro: bool = True,
+        tol: float = 0.15,
         extra_metrics: Optional[Callable] = None,
     ) -> NoReturn:
-        """ """
-        pass
+        """
+
+        Parameters
+        ----------
+        macro: bool,
+            whether to use macro-averaged metrics
+        tol: float, default 0.15,
+            tolerance for the duration of the waveform,
+            with units in seconds
+        extra_metrics: Callable,
+            extra metrics to compute,
+            has to be a function with signature:
+            `def extra_metrics(
+                labels: Sequence[Union[Sequence[int], np.ndarray]],
+                outputs: Sequence[Union[Sequence[int], np.ndarray]],
+                fs: int
+            ) -> dict`
+
+        """
+        self.set_macro(macro)
+        self.tol = tol
+        self._extra_metrics = extra_metrics
+        self._em = {}
+        self._metrics = {
+            k: None
+            for k in [
+                "sensitivity",
+                "precision",
+                "f1_score",
+                "mean_error",
+                "standard_deviation",
+                "jaccard",
+            ]
+        }
+        self._metrics.update({f"macro_{k}": np.nan for k in self._metrics})
+
+    def set_macro(self, macro: bool) -> NoReturn:
+        """
+
+        Parameters
+        ----------
+        macro: bool,
+            whether to use macro-averaged metrics
+
+        """
+        self.__prefix = ""
+        self.macro = macro
+        if macro:
+            self.__prefix = "macro_"
 
     def compute(
         self,
         labels: Union[np.ndarray, Tensor],
         outputs: Union[np.ndarray, Tensor],
-        num_classes: Optional[int] = None,
+        class_map: Dict[str, int],
+        fs: int,
+        tol: Optional[float] = None,
     ) -> "WaveDelineationMetrics":
-        """ """
-        pass
+        f"""
+
+        compute metrics for the task of ECG wave delineation
+        (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
+        for multiple evaluations
+
+        Parameters
+        ----------
+        labels: ndarray or Tensor,
+            ground truth masks,
+            of shape (n_samples, n_channels, n_timesteps)
+        outputs: ndarray or Tensor,
+            predictions corresponding to `labels`,
+            of the same shape.
+        class_map: dict,
+            class map, mapping names to waves to numbers from 0 to n_classes-1,
+            the keys should contain {", ".join([f'"{item}"' for item in ECGWaveFormNames])}.
+        fs: real number,
+            sampling frequency of the signal corresponding to the masks,
+            used to compute the duration of each waveform,
+            hence the error and standard deviations of errors
+        mask_format: str, default "channel_first",
+            format of the mask, one of the following:
+            'channel_last' (alias 'lead_last'), or
+            'channel_first' (alias 'lead_first')
+        tol: float, default 0.15,
+            tolerance for the duration of the waveform,
+            with units in seconds
+
+        Returns
+        -------
+        WaveDelineationMetrics,
+            an instance of the metrics class `WaveDelineationMetrics`, containing the metrics
+            sensitivity, precision, f1_score, mean_error, standard_deviation
+            of the onsets and offsets of pwaves, qrs complexes, twaves;
+            along with the macro-averaged metrics.
+            Sample-point-wise classification metrics, including Jaccard index,
+            are included as well
+
+        """
+        # wave delineation specific metrics
+        truth_masks = labels.numpy() if isinstance(labels, Tensor) else labels
+        pred_masks = outputs.numpy() if isinstance(outputs, Tensor) else outputs
+        raw_metrics = compute_wave_delineation_metrics(
+            truth_masks, pred_masks, class_map, fs, tol or self.tol
+        )
+        self._metrics = {
+            metric: {
+                f"{wf}_{pos}": raw_metrics[f"{wf}_{pos}"][metric]
+                for wf in class_map
+                for pos in [
+                    "onset",
+                    "offset",
+                ]
+            }
+            for metric in [
+                "sensitivity",
+                "precision",
+                "f1_score",
+                "mean_error",
+                "standard_deviation",
+            ]
+        }
+        self._metrics.update(
+            {
+                f"macro_{metric}": np.nanmean(self._metrics[metric].values())
+                for metric in [
+                    "sensitivity",
+                    "precision",
+                    "f1_score",
+                    "mean_error",
+                    "standard_deviation",
+                ]
+            }
+        )
+        # sample-wise metrics
+        clf_mtx = ClassificationMetrics()
+        swm = clf_mtx(
+            truth_masks.reshape((-1)).copy(),
+            pred_masks.reshape((-1)).copy(),
+            len(class_map),
+        )
+        self._metrics.update(
+            {
+                "jaccard": swm._metrics["jac"],
+                "macro_jaccard": swm._metrics["macro_jac"],
+            }
+        )
+
+        return self
+
+    @add_docstring(compute.__doc__)
+    def __call__(
+        self,
+        labels: Union[np.ndarray, Tensor],
+        outputs: Union[np.ndarray, Tensor],
+        class_map: Dict[str, int],
+        fs: int,
+        tol: Optional[float] = None,
+    ) -> "WaveDelineationMetrics":
+        return self.compute(labels, outputs, class_map, fs, tol)
+
+    @property
+    def sensitivity(self) -> Union[float, Dict[str, float]]:
+        return self._metrics[f"{self.__prefix}sensitivity"]
+
+    @property
+    def precision(self) -> Union[float, Dict[str, float]]:
+        return self._metrics[f"{self.__prefix}precision"]
+
+    @property
+    def f1_score(self) -> Union[float, Dict[str, float]]:
+        return self._metrics[f"{self.__prefix}f1_score"]
+
+    @property
+    def mean_error(self) -> Union[float, Dict[str, float]]:
+        return self._metrics[f"{self.__prefix}mean_error"]
+
+    @property
+    def standard_deviation(self) -> Union[float, Dict[str, float]]:
+        return self._metrics[f"{self.__prefix}standard_deviation"]
+
+    @property
+    def jaccard_index(self) -> Union[float, Dict[str, float]]:
+        return self._metrics[f"{self.__prefix}jaccard"]
+
+    @property
+    def extra_metrics(self) -> dict:
+        return self._em
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["tol"]
