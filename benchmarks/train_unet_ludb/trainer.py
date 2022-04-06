@@ -248,7 +248,7 @@ class LUDBTrainer(BaseTrainer):
 
         # TODO: provide numerical values for the metrics from all of the dicts of eval_res
         eval_res = {
-            metric: np.mean([eval_res_split[f"{wf}_{pos}"][metric]])
+            metric: np.nanmean([eval_res_split[f"{wf}_{pos}"][metric]])
             for metric in [
                 "sensitivity",
                 "precision",

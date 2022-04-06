@@ -346,7 +346,8 @@ def _compute_metrics_base(
         _pred = _preds[np.where(np.abs(_preds - point) <= _tolerance)[0].tolist()]
         if len(_pred) > 0:
             truth_positive += 1
-            errors.append(_pred[0] - point)
+            idx = np.argmin(np.abs(_preds - point))
+            errors.append(_pred[idx] - point)
         else:
             false_negative += 1
         n_included += len(_pred)
