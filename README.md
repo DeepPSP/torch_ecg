@@ -22,6 +22,7 @@ The system design is depicted as follows
     - [Databases](#databases)
     - [Implemented Neural Network Architectures](#implemented-neural-network-architectures)
     - [CNN Backbones](#cnn-backbones)
+    - [Components](#components)
 - [Other Useful Tools](#other-useful-tools)
 - [Usage Examples](#usage-examples)
 
@@ -44,8 +45,13 @@ python -m pip install git+https://github.com/DeepPSP/torch_ecg.git
 ```
 
 ## Main Modules
+<details>
+<summary>Click to expand!</summary>
 
 ### [Augmenters](/torch_ecg/augmenters)
+<details>
+<summary>Click to expand!</summary>
+
 Augmenters are classes (subclasses of `torch` `Module`) that perform data augmentation in a uniform way and are managed by the [`AugmenterManager`](/torch_ecg/augmenters/augmenter_manager.py) (also a subclass of `torch` `Module`). Augmenters and the manager share a common signature of the `formward` method:
 ```python
 forward(self, sig:Tensor, label:Optional[Tensor]=None, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
@@ -85,7 +91,12 @@ sig, label, mask = am(sig, label, mask)
 
 Augmenters can be stochastic along the batch dimension and (or) the channel dimension (ref. the `get_indices` method of the [`Augmenter`](/torch_ecg/augmenters/base.py) base class).
 
+</details>
+  
 ### [Preprocessors](/torch_ecg/preprocessors)
+<details>
+<summary>Click to expand!</summary>
+
 Also [preprecessors](/torch_ecg/_preprocessors) acting on `numpy` `array`s. Similarly, preprocessors are monitored by a manager
 ```python
 import torch
@@ -111,7 +122,12 @@ The following preprocessors are implemented
 
 For more examples, see the [README file](/torch_ecg/preprocessors/README.md)) of the `preprecessors` module.
 
+</details>
+
 ### [Databases](/torch_ecg/databases)
+<details>
+<summary>Click to expand!</summary>
+
 This module include classes that manipulate the io of the ECG signals and labels in an ECG database, and maintains metadata (statistics, paths, plots, list of records, etc.) of it. This module is migrated and improved from [DeepPSP/database_reader](https://github.com/DeepPSP/database_reader)
 
 After migration, all should be tested again, the progression:
@@ -143,7 +159,12 @@ config.db_dir = "some/path/to/db"
 dataset = CINC2021Dataset(config, training=True, lazy=False)
 ```
 
+</details>
+
 ### [Implemented Neural Network Architectures](/torch_ecg/models)
+<details>
+<summary>Click to expand!</summary>
+
 1. CRNN, both for classification and sequence tagging (segmentation)
 2. U-Net
 3. RR-LSTM
@@ -217,7 +238,12 @@ my_model_config.cnn.my_resnet = my_resnet
 model = ECG_CRNN(["NSR", "AF", "PVC", "SPB"], 12, my_model_config)
 ```
 
+</details>
+
 ### [CNN Backbones](/torch_ecg/models/cnn)
+<details>
+<summary>Click to expand!</summary>
+
 #### Implemented
 1. VGG
 2. ResNet (including vanilla ResNet, ResNet-B, ResNet-C, ResNet-D, ResNeXT, TResNet, [Stanford ResNet](https://github.com/awni/ecg), [Nature Communications ResNet](https://github.com/antonior92/automatic-ecg-diagnosis), etc.)
@@ -241,29 +267,63 @@ In general, variants of ResNet are the most commonly used architectures, as can 
 
 More details and a list of references can be found in the [README file](/torch_ecg/models/cnn/README.md) of this module.
 
-## [Components](/torch_ecg/components/)
+</details>
+
+### [Components](/torch_ecg/components/)
+<details>
+<summary>Click to expand!</summary>
+
 This module consists of frequently used components such as loggers, trainers, etc.
 
-### [Loggers](/torch_ecg/components/loggers.py)
+#### [Loggers](/torch_ecg/components/loggers.py)
 Loggers including
 1. CSV logger
 2. text logger
 3. tensorboard logger
 are implemented and manipulated uniformly by a manager.
 
-### [Trainer](/torch_ecg/components/trainer.py)
+#### [Outputs](/torch_ecg/components/outputs.py)
+The `Output` classes implemented in this module serve as containers for ECG downstream task model outputs, including
+- `ClassificationOutput`
+- `MultiLabelClassificationOutput`
+- `SequenceTaggingOutput`
+- `WaveDelineationOutput`
+- `RPeaksDetectionOutput`
+
+each having some required fields (keys), and is able to hold an arbitrary number of custom fields. These classes are useful for the computation of metrics.
+
+#### [Metrics](/torch_ecg/components/metrics.py)
+This module has the following pre-defined (built-in) `Metrics` classes:
+- `ClassificationMetrics`
+- `RPeaksDetectionMetrics`
+- `WaveDelineationMetrics`
+
+These metrics are computed according to either [Wikipedia](https://en.wikipedia.org/wiki/Precision_and_recall), or some published literatures.
+
+#### [Trainer](/torch_ecg/components/trainer.py)
 An abstract base class `BaseTrainer` is implemented, in which some common steps in building a training pipeline (workflow) are impemented. A few task specific methods are assigned as `abstractmethod`s, for example the method
 ```python
 evaluate(self, data_loader:DataLoader) -> Dict[str, float]
 ```
 for evaluation on the validation set during training and perhaps further for model selection and early stopping.
 
+</details>
+  
+</details>
+
 ## Other Useful Tools
+<details>
+<summary>Click to expand!</summary>
 
 ### [R peaks detection algorithms](/torch_ecg/utils/rpeaks.py)
 This is a collection of traditional (non deep learning) algorithms for R peaks detection collected from [WFDB](https://github.com/MIT-LCP/wfdb-python) and [BioSPPy](https://github.com/PIA-Group/BioSPPy).
 
+</details>
+
 ## Usage Examples
+<details>
+<summary>Click to expand!</summary>
+
 See case studies in the [benchmarks folder](/benchmarks/).
 
 a large part of the case studies are migrated from other DeepPSP repositories, some are implemented in the old fasion, being inconsistent with the new system architecture of `torch_ecg`, hence need updating and testing
@@ -295,6 +355,8 @@ def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
 ```
 2. Inherit a [base model](/torch_ecg/models/ecg_seq_lab_net.py) to create [task specific models](/benchmarks/train_hybrid_cpsc2021/model.py), along with [tailored model configs](/benchmarks/train_hybrid_cpsc2021/cfg.py)
 3. Inherit the [`BaseTrainer`](/torch_ecg/components/trainer.py) to build the [training pipeline](/benchmarks/train_hybrid_cpsc2021/trainer.py), with the `abstractmethod`s (`_setup_dataloaders`, `run_one_step`, `evaluate`, `batch_dim`, etc.) implemented.
+
+</details>
 
 ## CAUTION
 For the most of the time, but not always, after updates, I will run the notebooks in the [benchmarks](/benchmarks/) manually. If someone finds some bug, please raise an issue. The test workflow is to be enhanced and automated, see [this project](https://github.com/DeepPSP/torch_ecg/projects/8).
