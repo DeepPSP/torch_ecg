@@ -1,8 +1,4 @@
 """
-TODO
-----
-    compute a set of metrics inside the `Output` classes
-
 """
 
 from abc import ABC, abstractmethod
@@ -13,6 +9,12 @@ import pandas as pd
 
 from ..cfg import CFG
 from ..utils.misc import add_docstring
+from .metrics import (
+    ClassificationMetrics,
+    RPeaksDetectionMetrics,
+    WaveDelineationMetrics,
+)
+
 
 __all__ = [
     "BaseOutput",
@@ -109,10 +111,11 @@ class BaseOutput(CFG, ABC):
         pop_fields = [
             k
             for k in self
-            if k in ["required_fields", "append"] or k.startswith("_abc")
+            if k in ["required_fields", "append", "compute_metrics"]
+            or k.startswith("_abc")
         ]
         for f in pop_fields:
-            self.pop(f)
+            self.pop(f, None)
         assert all(field in self.keys() for field in self.required_fields()), (
             f"{self.__name__} requires {self.required_fields()}, "
             f"but `{', '.join(self.required_fields() - set(self.keys()))}` are missing"
@@ -208,6 +211,25 @@ class ClassificationOutput(BaseOutput):
             ]
         )
 
+    def compute_metrics(self) -> ClassificationMetrics:
+        """
+
+        compute metrics from the output
+
+        Returns
+        -------
+        metrics : `ClassificationMetrics`
+            metrics computed from the output
+
+        """
+        assert hasattr(self, "labels") or hasattr(
+            self, "label"
+        ), "`labels` or `label` must be stored in the output for computing metrics"
+        clf_met = ClassificationMetrics(multi_label=False, macro=True)
+        return clf_met(
+            self.get("labels", self.get("label")), self.pred, len(self.classes)
+        )
+
 
 class MultiLabelClassificationOutput(BaseOutput):
     """
@@ -263,6 +285,30 @@ class MultiLabelClassificationOutput(BaseOutput):
             ]
         )
 
+    def compute_metrics(self, macro: bool = True) -> ClassificationMetrics:
+        """
+
+        compute metrics from the output
+
+        Parameters
+        ----------
+        macro: bool,
+            whether to use macro-averaged metrics
+
+        Returns
+        -------
+        metrics : `ClassificationMetrics`
+            metrics computed from the output
+
+        """
+        assert hasattr(self, "labels") or hasattr(
+            self, "label"
+        ), "`labels` or `label` must be stored in the output for computing metrics"
+        clf_met = ClassificationMetrics(multi_label=True, macro=macro)
+        return clf_met(
+            self.get("labels", self.get("label")), self.pred, len(self.classes)
+        )
+
 
 class SequenceTaggingOutput(BaseOutput):
     """
@@ -309,6 +355,33 @@ class SequenceTaggingOutput(BaseOutput):
                 "prob",
                 "pred",
             ]
+        )
+
+    def compute_metrics(self, macro: bool = True) -> ClassificationMetrics:
+        """
+
+        compute metrics from the output
+
+        Parameters
+        ----------
+        macro: bool,
+            whether to use macro-averaged metrics
+
+        Returns
+        -------
+        metrics : `ClassificationMetrics`
+            metrics computed from the output
+
+        """
+        assert hasattr(self, "labels") or hasattr(
+            self, "label"
+        ), "`labels` or `label` must be stored in the output for computing metrics"
+        clf_met = ClassificationMetrics(multi_label=False, macro=macro)
+        labels = self.get("labels", self.get("label"))
+        return clf_met(
+            labels.reshape((-1, labels.shape[-1])),
+            self.pred.reshape((-1, self.pred.shape[-1])),
+            len(self.classes),
         )
 
 
@@ -367,6 +440,38 @@ class WaveDelineationOutput(SequenceTaggingOutput):
             ]
         )
 
+    def compute_metrics(
+        self, macro: bool = True, tol: float = 0.15
+    ) -> ClassificationMetrics:
+        """
+
+        compute metrics from the output
+
+        Parameters
+        ----------
+        macro: bool,
+            whether to use macro-averaged metrics
+        tol: float, default 0.15,
+            tolerance for the duration of the waveform,
+            with units in seconds
+
+        Returns
+        -------
+        metrics : `WaveDelineationMetrics`
+            metrics computed from the output
+
+        """
+        assert hasattr(self, "labels") or hasattr(
+            self, "label"
+        ), "`labels` or `label` must be stored in the output for computing metrics"
+        wd_met = WaveDelineationMetrics(macro=macro, tol=tol)
+        labels = self.get("labels", self.get("label"))
+        return wd_met(
+            labels.reshape((-1, labels.shape[-1])),
+            self.mask.reshape((-1, self.mask.shape[-1])),
+            len(self.classes),
+        )
+
 
 class RPeaksDetectionOutput(BaseOutput):
     """
@@ -409,3 +514,26 @@ class RPeaksDetectionOutput(BaseOutput):
                 "prob",
             ]
         )
+
+    def compute_metrics(self, thr: float = 0.15) -> ClassificationMetrics:
+        """
+
+        compute metrics from the output
+
+        Parameters
+        ----------
+        tol: float, default 0.15,
+            tolerance for the duration of the waveform,
+            with units in seconds
+
+        Returns
+        -------
+        metrics : `RPeaksDetectionMetrics`
+            metrics computed from the output
+
+        """
+        assert hasattr(self, "labels") or hasattr(
+            self, "label"
+        ), "`labels` or `label` must be stored in the output for computing metrics"
+        rpd_met = RPeaksDetectionMetrics(thr=thr)
+        return rpd_met(self.get("labels", self.get("label")), self.rpeak_indices)
