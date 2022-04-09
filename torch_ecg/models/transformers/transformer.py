@@ -48,6 +48,7 @@ class Transformer(SizeMixin, nn.Module):
         dropout: float, default 0.1,
             dropout probability
         kwargs: keyword arguments,
+
         """
         super().__init__()
         self.__input_size = input_size
@@ -84,11 +85,14 @@ class Transformer(SizeMixin, nn.Module):
         Parameters
         ----------
         x: torch.Tensor,
-            the input tensor, of (seq_len, batch_size, input_size) or (batch_size, seq_len, input_size)
+            the input tensor,
+            of shape (seq_len, batch_size, input_size) or (batch_size, seq_len, input_size)
 
         Returns
         -------
-        torch.Tensor, of shape (seq_len, batch_size, input_size) or (batch_size, seq_len, input_size)
+        torch.Tensor:
+            of shape (seq_len, batch_size, input_size) or (batch_size, seq_len, input_size)
+
         """
         return self.encoder(x)
 
@@ -108,6 +112,7 @@ class Transformer(SizeMixin, nn.Module):
         -------
         output_shape: sequence,
             the output shape of this layer, given `seq_len` and `batch_size`
+
         """
         if self.__batch_first:
             return (batch_size, seq_len, self.__input_size)

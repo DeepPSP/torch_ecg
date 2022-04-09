@@ -14,13 +14,12 @@ from typing import NoReturn, Optional, Sequence, Union
 
 import torch
 import torch.nn.functional as F
-from easydict import EasyDict as ED
 from torch import Tensor, nn
 
-from ...cfg import DEFAULTS
+from ...cfg import DEFAULTS, CFG
 from ...models._nets import (
     Conv_Bn_Activation,
-    DownSample,  # noqa: F401
+    DownSample,
     MultiConv,
     ZeroPadding,
 )
@@ -169,7 +168,7 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
         self.__in_channels = in_channels
         self.__mid_channels = mid_channels if mid_channels is not None else out_channels
         self.__out_channels = out_channels
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(
                 f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
@@ -318,7 +317,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
         self.__deconv_filter_length = deconv_filter_length
         self.__mode = mode.lower()
         assert self.__mode in self.__MODES__
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(
                 f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
@@ -460,7 +459,7 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
         self.n_classes = len(classes)  # final out_channels
         self.__out_channels = self.n_classes
         self.__in_channels = n_leads
-        self.config = ED(deepcopy(config))
+        self.config = CFG(deepcopy(config))
         if self.__DEBUG__:
             print(
                 f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"

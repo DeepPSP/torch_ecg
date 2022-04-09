@@ -23,6 +23,7 @@ RR_AF_VANILLA_CONFIG.attn = CFG()
 RR_AF_VANILLA_CONFIG.attn.name = "none"  # "gc", "nl", "se"
 
 RR_AF_VANILLA_CONFIG.global_pool = "max"  # "avg", "attn"
+RR_AF_VANILLA_CONFIG.global_pool_size = 1
 
 RR_AF_VANILLA_CONFIG.clf = CFG()
 RR_AF_VANILLA_CONFIG.clf.name = "linear"  # crf

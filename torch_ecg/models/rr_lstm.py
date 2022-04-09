@@ -13,25 +13,19 @@ from typing import Any, NoReturn, Optional, Sequence, Union
 
 import torch
 from torch import Tensor, nn
+from einops import rearrange
 
 from ..cfg import CFG, DEFAULTS
 from ..components.outputs import BaseOutput
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
 from ..models._nets import (  # noqa: F401
-    CRF,
-    Activations,
-    AttentionWithContext,
-    AttentivePooling,
     ExtendedCRF,
     GlobalContextBlock,
-    Mish,
-    MultiHeadAttention,
     NonLocalBlock,
     SEBlock,
     SelfAttention,
-    SeqLin,
+    MLP,
     StackedLSTM,
-    Swish,
 )
 from ..utils.misc import dict_to_str
 from ..utils.utils_nn import CkptMixin, SizeMixin
@@ -144,10 +138,20 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
             self.clf = None
         elif self.config.clf.name.lower() == "linear":
             if self.config.global_pool.lower() == "max":
-                self.pool = nn.AdaptiveMaxPool1d((1,))
+                self.pool = nn.AdaptiveMaxPool1d(
+                    (self.config.global_pool_size,), return_indices=False
+                )
+                clf_input_size *= self.config.global_pool_size
+            elif self.config.global_pool.lower() == "avg":
+                self.pool = nn.AdaptiveAvgPool1d((self.config.global_pool_size,))
+                clf_input_size *= self.config.global_pool_size
             elif self.config.global_pool.lower() == "none":
                 self.pool = None
-            self.clf = SeqLin(
+            else:
+                raise NotImplementedError(
+                    f"Pooling type \042{self.config.global_pool}\042 not supported"
+                )
+            self.clf = MLP(
                 in_channels=clf_input_size,
                 out_channels=self.config.clf.linear.out_channels + [self.n_classes],
                 activation=self.config.clf.linear.activation,
@@ -199,7 +203,11 @@ class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
             x = x.permute(1, 2, 0)
         if self.pool:
             x = self.pool(x)  # (batch_size, n_channels, 1)
-            x = x.squeeze(dim=-1)  # (batch_size, n_channels)
+            # x = x.squeeze(dim=-1)  # (batch_size, n_channels)
+            x = rearrange(
+                x,
+                "batch_size n_channels pool_size -> batch_size (n_channels pool_size)",
+            )
         elif x.ndim == 3:
             x = x.permute(
                 0, 2, 1

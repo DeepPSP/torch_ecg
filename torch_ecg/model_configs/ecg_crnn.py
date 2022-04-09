@@ -250,6 +250,7 @@ ECG_CRNN_CONFIG.attn.transformer = deepcopy(transformer)
 # global pooling
 # currently is fixed using `AdaptiveMaxPool1d`
 ECG_CRNN_CONFIG.global_pool = "max"  # "avg", "attn"
+ECG_CRNN_CONFIG.global_pool_size = 1
 
 
 ECG_CRNN_CONFIG.clf = CFG()

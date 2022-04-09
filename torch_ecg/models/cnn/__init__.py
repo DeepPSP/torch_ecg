@@ -1,9 +1,20 @@
 """
 """
 
-from . import mobilenet, multi_scopic, resnet, vgg, xception  # noqa: F401
+from .densenet import DenseNet
+from .mobilenet import MobileNetV1, MobileNetV2
+from .multi_scopic import MultiScopicCNN
+from .resnet import ResNet
+from .vgg import VGG16
+from .xception import Xception
 
-# NOT implemented yet
-# from . import darknet
-# from . import efficientnet
-# from . import ho_resnet
+
+__all__ = [
+    "DenseNet",
+    "MobileNetV1",
+    "MobileNetV2",
+    "MultiScopicCNN",
+    "ResNet",
+    "VGG16",
+    "Xception",
+]

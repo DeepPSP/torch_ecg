@@ -1,6 +1,6 @@
 """
-validated C(R)NN structure models,
-for classifying ECG arrhythmias
+validated C(R)NN structure models, for classifying ECG arrhythmias
+
 """
 
 from copy import deepcopy
@@ -9,6 +9,7 @@ from typing import Any, NoReturn, Optional, Sequence, Union
 import numpy as np
 import torch
 from torch import Tensor, nn
+from einops import rearrange  # noqa: F401
 
 from ..cfg import CFG, DEFAULTS
 from ..components.outputs import BaseOutput
@@ -16,22 +17,13 @@ from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
 from ..utils.misc import dict_to_str
 from ..utils.utils_nn import CkptMixin, SizeMixin
 from ._nets import (  # noqa: F401
-    Activations,
-    AttentionWithContext,
-    AttentivePooling,
-    Bn_Activation,
-    Conv_Bn_Activation,
     DownSample,
     GlobalContextBlock,
-    Mish,
-    MultiHeadAttention,
     NonLocalBlock,
     SEBlock,
     SelfAttention,
-    SeqLin,
+    MLP,
     StackedLSTM,
-    Swish,
-    ZeroPadding,
 )
 from .cnn.densenet import DenseNet  # noqa: F401
 from .cnn.multi_scopic import MultiScopicCNN  # noqa: F401
@@ -63,6 +55,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
     [5] https://github.com/awni/ecg
     [6] CPSC2018 entry 0236
     [7] CPSC2019 entry 0416
+
     """
 
     __DEBUG__ = False
@@ -86,6 +79,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         super().__init__()
         self.classes = list(classes)
@@ -101,20 +95,15 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             debug_input_len = 4000
 
         cnn_choice = self.config.cnn.name.lower()
+        cnn_config = self.config.cnn[self.config.cnn.name]
         if "vgg16" in cnn_choice:
-            self.cnn = VGG16(self.n_leads, **(self.config.cnn[self.config.cnn.name]))
-            # rnn_input_size = self.config.cnn.vgg16.num_filters[-1]
+            self.cnn = VGG16(self.n_leads, **cnn_config)
         elif "resnet" in cnn_choice:
-            self.cnn = ResNet(self.n_leads, **(self.config.cnn[self.config.cnn.name]))
-            # rnn_input_size = \
-            #     2**len(self.config.cnn[cnn_choice].num_blocks) * self.config.cnn[cnn_choice].init_num_filters
+            self.cnn = ResNet(self.n_leads, **cnn_config)
         elif "multi_scopic" in cnn_choice:
-            self.cnn = MultiScopicCNN(
-                self.n_leads, **(self.config.cnn[self.config.cnn.name])
-            )
-            # rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
+            self.cnn = MultiScopicCNN(self.n_leads, **cnn_config)
         elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
-            self.cnn = DenseNet(self.n_leads, **(self.config.cnn[self.config.cnn.name]))
+            self.cnn = DenseNet(self.n_leads, **cnn_config)
         else:
             raise NotImplementedError(
                 f"the CNN \042{cnn_choice}\042 not implemented yet"
@@ -124,16 +113,14 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         if self.__DEBUG__:
             cnn_output_shape = self.cnn.compute_output_shape(debug_input_len, None)
             print(
-                f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}, given input_len = {debug_input_len}"
+                f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}, "
+                f"given input_len = {debug_input_len}"
             )
 
         if self.config.rnn.name.lower() == "none":
             self.rnn = None
             attn_input_size = rnn_input_size
         elif self.config.rnn.name.lower() == "lstm":
-            # hidden_sizes = self.config.rnn.lstm.hidden_sizes + [self.n_classes]
-            # if self.__DEBUG__:
-            #     print(f"lstm hidden sizes {self.config.rnn.lstm.hidden_sizes} ---> {hidden_sizes}")
             self.rnn = StackedLSTM(
                 input_size=rnn_input_size,
                 hidden_sizes=self.config.rnn.lstm.hidden_sizes,
@@ -145,7 +132,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             attn_input_size = self.rnn.compute_output_shape(None, None)[-1]
         elif self.config.rnn.name.lower() == "linear":
             # abuse of notation, to put before the global attention module
-            self.rnn = SeqLin(
+            self.rnn = MLP(
                 in_channels=rnn_input_size,
                 out_channels=self.config.rnn.linear.out_channels,
                 activation=self.config.rnn.linear.activation,
@@ -225,9 +212,13 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
                     f"since `retseq` of rnn is False, hence global pooling `{self.config.global_pool}` is ignored"
                 )
         elif self.config.global_pool.lower() == "max":
-            self.pool = nn.AdaptiveMaxPool1d((1,), return_indices=False)
+            self.pool = nn.AdaptiveMaxPool1d(
+                (self.config.global_pool_size,), return_indices=False
+            )
+            clf_input_size *= self.config.global_pool_size
         elif self.config.global_pool.lower() == "avg":
-            self.pool = nn.AdaptiveAvgPool1d((1,))
+            self.pool = nn.AdaptiveAvgPool1d((self.config.global_pool_size,))
+            clf_input_size *= self.config.global_pool_size
         elif self.config.global_pool.lower() == "attn":
             raise NotImplementedError("Attentive pooling not implemented yet!")
         elif self.config.global_pool.lower() == "none":
@@ -238,7 +229,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
             )
 
         # input of `self.clf` has shape: batch_size, channels
-        self.clf = SeqLin(
+        self.clf = MLP(
             in_channels=clf_input_size,
             out_channels=self.config.clf.out_channels + [self.n_classes],
             activation=self.config.clf.activation,
@@ -267,10 +258,10 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         -------
         features: Tensor,
             of shape (batch_size, channels, seq_len) or (batch_size, channels)
+
         """
         # CNN
         features = self.cnn(input)  # batch_size, channels, seq_len
-        # print(f"cnn out shape = {features.shape}")
 
         # RNN (optional)
         if self.config.rnn.name.lower() in ["lstm"]:
@@ -323,8 +314,12 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         features = self.extract_features(input)
 
         if self.pool:
-            features = self.pool(features)  # (batch_size, channels, 1)
-            features = features.squeeze(dim=-1)
+            features = self.pool(features)  # (batch_size, channels, pool_size)
+            # features = features.squeeze(dim=-1)
+            features = rearrange(
+                features,
+                "batch_size channels pool_size -> batch_size (channels pool_size)",
+            )
         else:
             # features of shape (batch_size, channels) or (batch_size, seq_len, channels)
             pass
@@ -360,6 +355,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
                 scalar predictions, (and binary predictions if `class_names` is True)
             pred: ndarray,
                 the array (with values 0, 1 for each class) of binary prediction
+
         """
         raise NotImplementedError("implement a task specific inference method")
 
@@ -379,6 +375,7 @@ class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
         -------
         output_shape: sequence,
             the output shape of this model, given `seq_len` and `batch_size`
+
         """
         if self.pool:
             return (batch_size, len(self.classes))

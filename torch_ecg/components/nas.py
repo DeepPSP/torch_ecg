@@ -15,8 +15,6 @@ from torch.utils.data.dataset import Dataset
 from ..cfg import CFG
 from .trainer import BaseTrainer
 
-# from easydict import EasyDict as ED
-
 
 __all__ = [
     "NAS",

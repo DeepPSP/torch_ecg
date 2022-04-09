@@ -18,10 +18,10 @@ The following augmenters are implemented:
 Usage example (this example uses all augmenters except cutmix, each with default config):
 ```python
 import torch
-from easydict import EasyDict as ED
+from torch_ecg.cfg import CFG
 from torch_ecg.augmenters import AugmenterManager
 
-config = ED(
+config = CFG(
     random=False,
     fs=500,
     baseline_wander={},

@@ -22,7 +22,6 @@ from ...models._nets import (  # noqa: F401
     Conv_Bn_Activation,
     DownSample,
     MultiConv,
-    ZeroPadding,
 )
 from ...utils.misc import dict_to_str
 from ...utils.utils_nn import CkptMixin, SizeMixin, compute_deconv_output_shape

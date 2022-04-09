@@ -4058,6 +4058,8 @@ class SpaceToDepth(SizeMixin, nn.Module):
             of shape (batch, channel', seqlen//bs)
         """
         batch, channel, seqlen = x.shape
+        x = x[..., : seqlen // self.bs * self.bs]
+        batch, channel, seqlen = x.shape
         x = x.view(batch, channel, seqlen // self.bs, self.bs)
         x = x.permute(0, 3, 1, 2).contiguous()
         x = x.view(batch, channel * self.bs, seqlen // self.bs)
