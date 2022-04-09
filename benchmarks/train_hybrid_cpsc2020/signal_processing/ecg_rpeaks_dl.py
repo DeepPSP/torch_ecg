@@ -14,6 +14,14 @@ from typing import Sequence, Union
 import biosppy.signals.ecg as BSE
 import numpy as np
 from scipy.signal import resample_poly
+
+try:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent.parent))
 from torch_ecg.utils.misc import mask_to_intervals
 
 from .ecg_rpeaks_dl_models import load_model

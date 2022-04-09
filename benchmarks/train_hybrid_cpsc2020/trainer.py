@@ -44,6 +44,7 @@ from torch_ecg.utils.misc import (
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 from cfg import ModelCfg, TrainCfg
+
 # from dataset import CPSC2020
 from dataset_simplified import CPSC2020 as CPSC2020_SIMPLIFIED
 from metrics import CPSC2020_loss, CPSC2020_score, eval_score  # noqa: F401

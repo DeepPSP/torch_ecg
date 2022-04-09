@@ -19,8 +19,16 @@ import numpy as np
 from wfdb.processing.qrs import GQRS, XQRS  # noqa: F401
 from wfdb.processing.qrs import gqrs_detect as _gqrs_detect
 from wfdb.processing.qrs import xqrs_detect as _xqrs_detect
-from torch_ecg.utils.pantompkins import pantompkins  as _pantompkins
 import biosppy.signals.ecg as BSE
+
+try:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent.parent))
+from torch_ecg.utils.pantompkins import pantompkins as _pantompkins
 
 
 __all__ = [

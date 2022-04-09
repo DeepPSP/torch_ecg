@@ -12,6 +12,7 @@ References
 ----------
 [1] https://github.com/PIA-Group/BioSPPy
 [2] to add
+
 """
 import multiprocessing as mp
 import os
@@ -25,6 +26,15 @@ from biosppy.signals.tools import filter_signal
 from scipy.io import savemat
 from scipy.ndimage.filters import median_filter
 from scipy.signal.signaltools import resample
+
+try:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent.parent))
+from torch_ecg.cfg import CFG
 
 from cfg import PreprocCfg
 from .ecg_rpeaks import (
@@ -63,7 +73,7 @@ DL_QRS_DETECTORS = [
 
 
 def preprocess_signal(
-    raw_sig: np.ndarray, fs: Real, config: Optional[ED] = None
+    raw_sig: np.ndarray, fs: Real, config: Optional[CFG] = None
 ) -> Dict[str, np.ndarray]:
     """
 
@@ -125,7 +135,7 @@ def preprocess_signal(
     else:
         rpeaks = np.array([], dtype=int)
 
-    retval = ED(
+    retval = CFG(
         {
             "filtered_ecg": filtered_ecg,
             "rpeaks": rpeaks,
@@ -138,7 +148,7 @@ def preprocess_signal(
 def parallel_preprocess_signal(
     raw_sig: np.ndarray,
     fs: Real,
-    config: Optional[ED] = None,
+    config: Optional[CFG] = None,
     save_dir: Optional[str] = None,
     save_fmt: str = "npy",
     verbose: int = 0,
@@ -274,7 +284,7 @@ def parallel_preprocess_signal(
                 os.path.join(save_dir, "rpeaks.mat"), {"rpeaks": rpeaks}, format="5"
             )
 
-    retval = ED(
+    retval = CFG(
         {
             "filtered_ecg": filtered_ecg,
             "rpeaks": rpeaks,

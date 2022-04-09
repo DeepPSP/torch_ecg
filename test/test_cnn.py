@@ -179,7 +179,7 @@ def test_cnn() -> NoReturn:
 
 
 @torch.no_grad()
-def _test_cnn(model_name: str, cfg: ED) -> NoReturn:
+def _test_cnn(model_name: str, cfg: CFG) -> NoReturn:
     """ """
     try:
         test_model = eval(

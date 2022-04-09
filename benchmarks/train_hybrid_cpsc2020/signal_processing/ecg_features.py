@@ -20,6 +20,14 @@ from typing import Optional, Union, Sequence
 import numpy as np
 import pywt
 from scipy.io import savemat
+
+try:
+    import torch_ecg  # noqa: F401
+except ModuleNotFoundError:
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent.parent))
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import list_sum
 
@@ -394,7 +402,7 @@ def compute_local_average(arr: Union[Sequence, np.ndarray], radius: int) -> np.n
         1d array
     radius: int,
         radius for computing average
-    
+
     Returns:
     --------
     res: ndarray,
@@ -405,17 +413,20 @@ def compute_local_average(arr: Union[Sequence, np.ndarray], radius: int) -> np.n
     if radius >= len(_arr) - 1:
         res = np.full(_arr.shape, fill_value=np.mean(_arr))
         return res
-    window = 2*radius + 1
+    window = 2 * radius + 1
     if window >= len(_arr):
-        head = np.array([np.mean(_arr[:i+radius+1]) for i in range(radius)])
-        tail = np.array([np.mean(_arr[i-radius:]) for i in range(radius,len(_arr))])
+        head = np.array([np.mean(_arr[: i + radius + 1]) for i in range(radius)])
+        tail = np.array([np.mean(_arr[i - radius :]) for i in range(radius, len(_arr))])
         res = np.concatenate((head, tail))
         return res
     body = np.vstack(
-        [np.concatenate((np.zeros((i,)), _arr, np.zeros((window-1-i,)))) for i in range(window)]
+        [
+            np.concatenate((np.zeros((i,)), _arr, np.zeros((window - 1 - i,))))
+            for i in range(window)
+        ]
     )
-    body = np.mean(body,axis=0)[2*radius:-2*radius]
-    head = np.array([np.mean(_arr[:i+radius+1]) for i in range(radius)])
-    tail = np.array([np.mean(_arr[i-2*radius:]) for i in range(radius)])
+    body = np.mean(body, axis=0)[2 * radius : -2 * radius]
+    head = np.array([np.mean(_arr[: i + radius + 1]) for i in range(radius)])
+    tail = np.array([np.mean(_arr[i - 2 * radius :]) for i in range(radius)])
     res = np.concatenate((head, body, tail))
     return res

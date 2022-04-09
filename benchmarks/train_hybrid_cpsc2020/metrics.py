@@ -14,10 +14,11 @@ except ModuleNotFoundError:
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from cfg import BaseCfg
-
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import dict_to_str
+
+from cfg import BaseCfg
+
 
 __all__ = [
     "CPSC2020_loss",
