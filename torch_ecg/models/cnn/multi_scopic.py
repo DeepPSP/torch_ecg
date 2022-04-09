@@ -8,6 +8,7 @@ from copy import deepcopy
 from itertools import repeat
 from typing import NoReturn, Optional, Sequence, Union
 
+import numpy as np
 import torch
 from torch import Tensor, nn
 
@@ -15,11 +16,8 @@ from ...cfg import CFG, DEFAULTS
 from ...models._nets import (  # noqa: F401
     Conv_Bn_Activation,
     DownSample,
-    GlobalContextBlock,
-    NonLocalBlock,
-    SEBlock,
 )
-from ...utils.misc import dict_to_str
+from ...utils.misc import dict_to_str, list_sum
 from ...utils.utils_nn import SizeMixin
 
 if DEFAULTS.torch_dtype == torch.float64:
@@ -171,6 +169,37 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
+    def _assign_weights_lead_wise(
+        self, other: "MultiScopicBasicBlock", indices: Sequence[int]
+    ) -> NoReturn:
+        """ """
+        assert not any([isinstance(m, nn.LayerNorm) for m in self]) and not any(
+            [isinstance(m, nn.LayerNorm) for m in other]
+        ), "Lead-wise assignment of weights is not supported for the existence of `LayerNorm` layers"
+        for blk, o_blk in zip(self, other):
+            if isinstance(blk, Conv_Bn_Activation):
+                blk._assign_weights_lead_wise(o_blk, indices)
+            elif isinstance(blk, (nn.BatchNorm1d, nn.GroupNorm, nn.InstanceNorm1d)):
+                if hasattr(blk, "num_features"):  # batch norm and instance norm
+                    out_channels = blk.num_features
+                else:  # group norm
+                    out_channels = blk.num_channels
+                units = out_channels // self.groups
+                out_indices = list_sum(
+                    [[i * units + j for j in range(units)] for i in indices]
+                )
+                o_blk.weight.data = blk.weight.data[out_indices].clone()
+                if blk.bias is not None:
+                    o_blk.bias.data = blk.bias.data[out_indices].clone()
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
+    @property
+    def groups(self) -> int:
+        return self.__groups
+
 
 class MultiScopicBranch(SizeMixin, nn.Sequential):
     """
@@ -299,6 +328,17 @@ class MultiScopicBranch(SizeMixin, nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
+    def _assign_weights_lead_wise(
+        self, other: "MultiScopicBranch", indices: Sequence[int]
+    ) -> NoReturn:
+        """ """
+        for blk, o_blk in zip(self, other):
+            blk._assign_weights_lead_wise(o_blk, indices)
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
 
 class MultiScopicCNN(SizeMixin, nn.Module):
     """
@@ -342,6 +382,7 @@ class MultiScopicCNN(SizeMixin, nn.Module):
             block: dict,
                 other parameters that can be set for the building blocks
             for a full list of configurable parameters, ref. corr. config file
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -379,11 +420,16 @@ class MultiScopicCNN(SizeMixin, nn.Module):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         branch_out = OrderedDict()
         for idx in range(self.__num_branches):
             key = f"branch_{idx}"
             branch_out[key] = self.branches[key].forward(input)
+        # NOTE: ideally, for lead-wise manner, output of each branch should be
+        # split into `self.config.groups` groups,
+        # channels from the same group from different branches should be first concatenated,
+        # and then concatenate the concatenated groups.
         output = torch.cat(
             [branch_out[f"branch_{idx}"] for idx in range(self.__num_branches)],
             dim=1,  # along channels
@@ -406,6 +452,7 @@ class MultiScopicCNN(SizeMixin, nn.Module):
         -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
+
         """
         out_channels = 0
         for idx in range(self.__num_branches):
@@ -416,3 +463,78 @@ class MultiScopicCNN(SizeMixin, nn.Module):
             out_channels += _branch_oc
         output_shape = (batch_size, out_channels, _seq_len)
         return output_shape
+
+    def assign_weights_lead_wise(
+        self, other: "MultiScopicCNN", indices: Sequence[int]
+    ) -> NoReturn:
+        """
+
+        Assign weights to the `other` MultiScopicCNN module in the lead-wise manner
+
+        Parameters
+        ----------
+        other: MultiScopicCNN,
+            the other MultiScopicCNN module
+        indices: sequence of int,
+            indices of the MultiScopicCNN modules to be assigned weights
+
+        Examples
+        --------
+        >>> import torch
+        >>> from torch_ecg.models import ECG_CRNN
+        >>> from torch_ecg.model_configs import ECG_CRNN_CONFIG
+        >>> # we create models using 12-lead ECGs and using reduced 6-lead ECGs
+        >>> indices = [0, 1, 2, 3, 4, 10]  # chosen randomly, no special meaning
+        >>> lead_12_config = deepcopy(ECG_CRNN_CONFIG)
+        >>> lead_12_config.cnn.name = "multi_scopic_leadwise"
+        >>> lead_6_config = deepcopy(ECG_CRNN_CONFIG)
+        >>> lead_6_config.cnn.name = "multi_scopic_leadwise"
+        >>> lead_6_config.cnn.multi_scopic_leadwise.groups = 6
+        >>> lead_6_config.cnn.multi_scopic_leadwise.num_filters = (
+                np.array([[192, 384, 768], [192, 384, 768], [192, 384, 768]]) / 2
+            ).astype(int).tolist()
+        >>> model12 = ECG_CRNN(["AF", "PVC", "NSR"], 12, lead_12_config)
+        >>> model6 = ECG_CRNN(["AF", "PVC", "NSR"], 6, lead_6_config)
+        >>> model12.eval()
+        >>> model6.eval()
+        >>> tensor12 = torch.zeros(1, 12, 200)  # batch, leads, seq_len
+        >>> tensor6 = torch.rand(1, 6, 200)
+        >>> tensor12[:, indices, :] = tensor6
+        >>> b = "branch_0"
+        >>> _, output_shape_12, _ = model12.cnn.branches[b].compute_output_shape()
+        >>> _, output_shape_6, _ = model6.cnn.branches[b].compute_output_shape()
+        >>> units = output_shape_12 // 12
+        >>> out_indices = list_sum([[i * units + j for j in range(units)] for i in indices])
+        >>> (model6.cnn.branches[b](tensor6) == model12.cnn.branches[b](tensor12)[:, out_indices, :]).all()
+        tensor(False)
+        >>> model12.cnn.assign_weights_lead_wise(model6.cnn, indices)
+        >>> (model6.cnn.branches[b](tensor6) == model12.cnn.branches[b](tensor12)[:, out_indices, :]).all()
+        tensor(True)
+
+        """
+        assert (
+            self.in_channels == self.config.groups
+        ), "the current model is not lead-wise"
+        assert (
+            other.in_channels == other.config.groups
+        ), "the other model is not lead-wise"
+        assert other.in_channels == len(
+            indices
+        ), "the length of indices should match the number of channels of the other model"
+        assert (
+            np.array(self.config.num_filters) * other.in_channels
+            == np.array(other.config.num_filters) * self.in_channels
+        ).all(), "the number of filters of the two models should be proportional to the number of channels of the other model"
+        for idx in range(self.num_branches):
+            for b, ob in zip(
+                self.branches[f"branch_{idx}"], other.branches[f"branch_{idx}"]
+            ):
+                b._assign_weights_lead_wise(ob, indices)
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
+    @property
+    def num_branches(self) -> int:
+        return self.__num_branches

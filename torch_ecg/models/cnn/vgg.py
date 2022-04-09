@@ -188,6 +188,7 @@ class VGG16(SizeMixin, nn.Sequential):
             block: dict,
                 other parameters that can be set for `VGGBlock`
             for a full list of configurable parameters, ref. corr. config file
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -253,3 +254,7 @@ class VGG16(SizeMixin, nn.Sequential):
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
         return output_shape
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels

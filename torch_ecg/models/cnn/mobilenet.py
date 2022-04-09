@@ -475,6 +475,10 @@ class MobileNetV1(SizeMixin, nn.Sequential):
             _, _, _seq_len = output_shape
         return output_shape
 
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
 
 class InvertedResidual(SizeMixin, nn.Module):
     """
@@ -792,6 +796,10 @@ class MobileNetV2(SizeMixin, nn.Sequential):
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
         return output_shape
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
 
 
 class MobileNetV3(SizeMixin, nn.Module):
