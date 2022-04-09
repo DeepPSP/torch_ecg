@@ -18,15 +18,16 @@ from numbers import Real
 from typing import List
 
 import numpy as np
-from easydict import EasyDict as ED
-from train.train_crnn_cpsc2020.utils import mask_to_intervals
+from torch_ecg.cfg import CFG
+from torch_ecg.utils.misc import mask_to_intervals
+
 
 __all__ = [
     "ecg_denoise",
 ]
 
 
-def ecg_denoise(filtered_sig: np.ndarray, fs: Real, config: ED) -> List[List[int]]:
+def ecg_denoise(filtered_sig: np.ndarray, fs: Real, config: CFG) -> List[List[int]]:
     """
 
     a naive function removing non-ECG segments (flat and motion artefact)

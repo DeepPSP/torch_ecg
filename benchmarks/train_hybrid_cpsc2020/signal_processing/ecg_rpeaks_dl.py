@@ -14,9 +14,10 @@ from typing import Sequence, Union
 import biosppy.signals.ecg as BSE
 import numpy as np
 from scipy.signal import resample_poly
-from train.train_crnn_cpsc2020.utils import mask_to_intervals
+from torch_ecg.utils.misc import mask_to_intervals
 
 from .ecg_rpeaks_dl_models import load_model
+
 
 __all__ = [
     "seq_lab_net_detect",

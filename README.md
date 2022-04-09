@@ -70,10 +70,10 @@ The following augmenters are implemented:
 Usage example (this example uses all augmenters except cutmix, each with default config):
 ```python
 import torch
-from easydict import EasyDict as ED
+from torch_ecg.cfg import CFG
 from torch_ecg.augmenters import AugmenterManager
 
-config = ED(
+config = CFG(
     random=False,
     fs=500,
     baseline_wander={},
@@ -100,10 +100,10 @@ Augmenters can be stochastic along the batch dimension and (or) the channel dime
 Also [preprecessors](/torch_ecg/_preprocessors) acting on `numpy` `array`s. Similarly, preprocessors are monitored by a manager
 ```python
 import torch
-from easydict import EasyDict as ED
+from torch_ecg.cfg import CFG
 from torch_ecg._preprocessors import PreprocManager
 
-config = ED(
+config = CFG(
     random=False,
     resample={"fs": 500},
     bandpass={},

@@ -25,10 +25,10 @@ class PreprocManager(ReprMixin, nn.Module):
     --------
     ```python
     import torch
-    from easydict import EasyDict as ED
+    from torch_ecg.cfg import CFG
     from torch_ecg.preprocessors import PreprocManager
 
-    config = ED(
+    config = CFG(
         random=False,
         bandpass={"fs":500},
         normalize={"method": "min-max"},

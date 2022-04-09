@@ -6,12 +6,11 @@ Also [preprocessors](/torch_ecg/_preprocessors) acting on `numpy` `array`s.
 `Preprocessor`s do the job of ECG signal preprocessing before fed into some neural network and are monitored by a manager. A short example is as follows
 ```python
 import torch
-from easydict import EasyDict as ED
-
+from torch_ecg.cfg import CFG
 from torch_ecg.preprocessors import PreprocManager
 
 
-config = ED(
+config = CFG(
     random=False,
     bandpass={"fs":500},
     normalize={"method": "min-max"},
@@ -24,12 +23,11 @@ sig = ppm(sig)
 For `Preprocessor`s that operate on the `numpy` `array`s, see the following example
 ```python
 import torch
-from easydict import EasyDict as ED
-
+from torch_ecg.cfg import CFG
 from torch_ecg._preprocessors import PreprocManager
 
 
-config = ED(
+config = CFG(
     random=False,
     resample={"fs": 500},
     bandpass={"filter_type": "fir"},
@@ -45,8 +43,7 @@ sig, fs = ppm(sig, 200)
 One can create custom preprocessors to be maintained by the manager. The following is a simple example
 ```python
 import torch
-from easydict import EasyDict as ED
-
+from torch_ecg.cfg import CFG
 from torch_ecg.preprocessors import PreprocManager
 
 class DummyPreProcessor(torch.nn.Module):
@@ -59,7 +56,7 @@ class DummyPreProcessor(torch.nn.Module):
         """
         return sig
 
-config = ED(
+config = CFG(
     random=False,
     bandpass={"fs":500},
     normalize={"method": "min-max"},
@@ -79,7 +76,7 @@ from typing import Tuple
 
 import numpy as np
 import torch
-from easydict import EasyDict as ED
+from torch_ecg.cfg import CFG
 
 from torch_ecg._preprocessors import PreprocManager, PreProcessor
 
@@ -95,7 +92,7 @@ class DummyPreProcessor(PreProcessor):
         return sig, fs
     
 
-config = ED(
+config = CFG(
     random=False,
     resample={"fs": 500},
     bandpass={"filter_type": "fir"},

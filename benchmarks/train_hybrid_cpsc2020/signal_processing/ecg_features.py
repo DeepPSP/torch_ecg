@@ -8,19 +8,23 @@ References
 mainly RR intervals + morphological features
 
 --> (lstm using RR intervals) + (cnn using raw (or processed?) signal)
+
 """
+
 import multiprocessing as mp
 import operator
 import os
 from copy import deepcopy
-from typing import Optional
+from typing import Optional, Union, Sequence
 
 import numpy as np
 import pywt
-from easydict import EasyDict as ED
 from scipy.io import savemat
-from train.train_crnn_cpsc2020.cfg import FeatureCfg
-from train.train_crnn_cpsc2020.utils import compute_local_average, list_sum
+from torch_ecg.cfg import CFG
+from torch_ecg.utils.misc import list_sum
+
+from ..cfg import FeatureCfg
+
 
 __all__ = [
     "compute_ecg_features",
@@ -33,7 +37,7 @@ __all__ = [
 def compute_ecg_features(
     sig: np.ndarray,
     rpeaks: np.ndarray,
-    config: Optional[ED] = None,
+    config: Optional[CFG] = None,
     save_dir: Optional[str] = None,
     save_fmt: str = "npy",
 ) -> np.ndarray:
@@ -96,7 +100,7 @@ def compute_ecg_features(
     return features
 
 
-def compute_wavelet_descriptor(beat: np.ndarray, config: ED) -> np.ndarray:
+def compute_wavelet_descriptor(beat: np.ndarray, config: CFG) -> np.ndarray:
     """
 
     Parameters
@@ -122,7 +126,7 @@ def compute_wavelet_descriptor(beat: np.ndarray, config: ED) -> np.ndarray:
 
 
 def compute_rr_descriptor(
-    rpeaks: np.ndarray, config: Optional[ED] = None
+    rpeaks: np.ndarray, config: Optional[CFG] = None
 ) -> np.ndarray:
     """
 
@@ -212,7 +216,7 @@ def _compute_post_rr(rr_intervals: np.ndarray) -> np.ndarray:
     return post_rr
 
 
-def _compute_local_rr(prev_rr: np.ndarray, config: ED) -> np.ndarray:
+def _compute_local_rr(prev_rr: np.ndarray, config: CFG) -> np.ndarray:
     """
 
     Parameters
@@ -280,7 +284,7 @@ def _compute_global_rr_epoch(
 
 
 def _compute_global_rr(
-    rpeaks: np.ndarray, prev_rr: np.ndarray, config: ED
+    rpeaks: np.ndarray, prev_rr: np.ndarray, config: CFG
 ) -> np.ndarray:
     """
 
@@ -326,7 +330,7 @@ def _compute_global_rr(
     return global_rr
 
 
-def compute_morph_descriptor(beat: np.ndarray, config: ED) -> np.ndarray:
+def compute_morph_descriptor(beat: np.ndarray, config: CFG) -> np.ndarray:
     """
 
     Parameters
@@ -379,3 +383,39 @@ def compute_morph_descriptor(beat: np.ndarray, config: ED) -> np.ndarray:
         morph[n] = 0.0
 
     return morph
+
+
+def compute_local_average(arr: Union[Sequence, np.ndarray], radius: int) -> np.ndarray:
+    """
+
+    Parameters
+    ----------
+    arr: sequence,
+        1d array
+    radius: int,
+        radius for computing average
+    
+    Returns:
+    --------
+    res: ndarray,
+
+    """
+    _arr = np.array(arr)
+    assert _arr.ndim == 1 and radius >= 1
+    if radius >= len(_arr) - 1:
+        res = np.full(_arr.shape, fill_value=np.mean(_arr))
+        return res
+    window = 2*radius + 1
+    if window >= len(_arr):
+        head = np.array([np.mean(_arr[:i+radius+1]) for i in range(radius)])
+        tail = np.array([np.mean(_arr[i-radius:]) for i in range(radius,len(_arr))])
+        res = np.concatenate((head, tail))
+        return res
+    body = np.vstack(
+        [np.concatenate((np.zeros((i,)), _arr, np.zeros((window-1-i,)))) for i in range(window)]
+    )
+    body = np.mean(body,axis=0)[2*radius:-2*radius]
+    head = np.array([np.mean(_arr[:i+radius+1]) for i in range(radius)])
+    tail = np.array([np.mean(_arr[i-2*radius:]) for i in range(radius)])
+    res = np.concatenate((head, body, tail))
+    return res

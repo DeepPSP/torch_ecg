@@ -30,13 +30,6 @@ try:
 except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from cfg import ModelCfg, TrainCfg
-
-# from dataset import CPSC2020
-from dataset_simplified import CPSC2020 as CPSC2020_SIMPLIFIED
-from metrics import CPSC2020_loss, CPSC2020_score, eval_score  # noqa: F401
-from model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
-
 from torch_ecg.cfg import CFG
 from torch_ecg.components.outputs import BaseOutput  # noqa: F401
 from torch_ecg.components.trainer import BaseTrainer  # noqa: F401
@@ -49,6 +42,12 @@ from torch_ecg.utils.misc import (
     str2bool,
 )
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
+
+from cfg import ModelCfg, TrainCfg
+# from dataset import CPSC2020
+from dataset_simplified import CPSC2020 as CPSC2020_SIMPLIFIED
+from metrics import CPSC2020_loss, CPSC2020_score, eval_score  # noqa: F401
+from model import ECG_CRNN_CPSC2020, ECG_SEQ_LAB_NET_CPSC2020
 
 if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

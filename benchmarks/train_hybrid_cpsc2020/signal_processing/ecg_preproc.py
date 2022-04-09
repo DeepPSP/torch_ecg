@@ -21,16 +21,12 @@ from numbers import Real
 from typing import Dict, Optional
 
 import numpy as np
-
-# from scipy.signal import medfilt
-# https://github.com/scipy/scipy/issues/9680
 from biosppy.signals.tools import filter_signal
-from easydict import EasyDict as ED
 from scipy.io import savemat
 from scipy.ndimage.filters import median_filter
 from scipy.signal.signaltools import resample
-from train.train_crnn_cpsc2020.cfg import PreprocCfg
 
+from cfg import PreprocCfg
 from .ecg_rpeaks import (
     christov_detect,
     engzee_detect,
@@ -42,6 +38,7 @@ from .ecg_rpeaks import (
     xqrs_detect,
 )
 from .ecg_rpeaks_dl import seq_lab_net_detect
+
 
 __all__ = [
     "preprocess_signal",

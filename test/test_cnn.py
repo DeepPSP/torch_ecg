@@ -4,9 +4,6 @@
 import time
 from typing import NoReturn
 
-import torch
-from easydict import EasyDict as ED
-
 try:
     import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
@@ -14,6 +11,9 @@ except ModuleNotFoundError:
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
+
+import torch
+from torch_ecg.cfg import CFG
 
 from torch_ecg.model_configs import (  # noqa: F401
     cpsc_2018,

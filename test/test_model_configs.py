@@ -5,7 +5,6 @@ import time
 from typing import NoReturn
 
 import torch
-from easydict import EasyDict as ED
 
 try:
     import torch_ecg  # noqa: F401
@@ -15,6 +14,7 @@ except ModuleNotFoundError:
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
 
+from torch_ecg.cfg import CFG
 from torch_ecg.model_configs import (  # noqa: F401
     ATI_CNN_CONFIG,
     ECG_CRNN_CONFIG,
@@ -211,7 +211,7 @@ def test_cnn() -> NoReturn:
 
 
 @torch.no_grad()
-def _test_cnn(model_name: str, cfg: ED) -> NoReturn:
+def _test_cnn(model_name: str, cfg: CFG) -> NoReturn:
     """ """
     try:
         test_model = eval(

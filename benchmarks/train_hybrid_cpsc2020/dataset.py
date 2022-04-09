@@ -79,7 +79,6 @@ except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
 import signal_processing as SP
-from cfg import ModelCfg, PreprocCfg
 
 # from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.augmenters.baseline_wander import gen_baseline_wander
@@ -91,6 +90,8 @@ from torch_ecg.utils.misc import (
     list_sum,
     mask_to_intervals,
 )
+
+from cfg import ModelCfg, PreprocCfg
 
 if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

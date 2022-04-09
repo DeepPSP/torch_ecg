@@ -11,12 +11,13 @@ except ModuleNotFoundError:
 
     sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
-from cfg import BaseCfg
-from metrics import CPSC2020_loss, CPSC2020_score  # noqa: F401
-
 from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import dict_to_str
 from torch_ecg.utils.utils_interval import in_generalized_interval
+
+from cfg import BaseCfg
+from metrics import CPSC2020_loss, CPSC2020_score  # noqa: F401
+
 
 __all__ = [
     "CPSC2020_loss_test",

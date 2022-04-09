@@ -18,8 +18,6 @@ except ModuleNotFoundError:
 
     sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
 
-from cfg import ModelCfg
-
 from torch_ecg.cfg import CFG
 from torch_ecg.components.outputs import (
     MultiLableClassificationOutput,
@@ -27,6 +25,9 @@ from torch_ecg.components.outputs import (
 )
 from torch_ecg.models import ECG_CRNN, ECG_SEQ_LAB_NET
 from torch_ecg.utils.misc import mask_to_intervals
+
+from cfg import ModelCfg
+
 
 __all__ = [
     "ECG_CRNN_CPSC2020",
