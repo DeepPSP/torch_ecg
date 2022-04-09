@@ -2,6 +2,7 @@
 
 ![pytest](https://github.com/DeepPSP/torch_ecg/actions/workflows/run-pytest.yml/badge.svg)
 ![codeql](https://github.com/DeepPSP/torch_ecg/actions/workflows/codeql-analysis.yml/badge.svg)
+![formatting](https://github.com/DeepPSP/torch_ecg/actions/workflows/check-formatting.yml/badge.svg)
 ![PyPI](https://img.shields.io/pypi/v/torch-ecg?style=flat-square)
 
 Deep learning ecg models implemented using PyTorch.
