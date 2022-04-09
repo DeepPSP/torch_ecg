@@ -5,7 +5,6 @@ Cython
 pandas
 scikit-learn
 packaging
-easydict
 wfdb==3.2.0
 biosppy
 torch

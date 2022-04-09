@@ -2,11 +2,10 @@
 """
 
 from pathlib import Path
-from typing import MutableMapping, NoReturn, Optional
+from typing import MutableMapping, NoReturn, Optional, Any
 
 import numpy as np
 import torch
-from easydict import EasyDict as ED
 
 __all__ = [
     "CFG",
@@ -19,8 +18,9 @@ _PROJECT_CACHE = Path("~").expanduser() / ".cache" / "torch_ecg"
 _PROJECT_CACHE.mkdir(parents=True, exist_ok=True)
 
 
-class CFG(ED):
+class CFG(dict):
     """
+
     this class is created in order to renew the `update` method,
     to fit the hierarchical structure of configurations
 
@@ -63,18 +63,29 @@ class CFG(ED):
             ):
                 setattr(self, k, getattr(self, k))
 
-    def __update__(
-        self, new_cfg: Optional[MutableMapping] = None, **kwargs
+    def __setattr__(self, name: str, value: Any) -> NoReturn:
+        if isinstance(value, (list, tuple)):
+            value = [self.__class__(x) if isinstance(x, dict) else x for x in value]
+        elif isinstance(value, dict) and not isinstance(value, self.__class__):
+            value = self.__class__(value)
+        super().__setattr__(name, value)
+        super().__setitem__(name, value)
+
+    __setitem__ = __setattr__
+
+    def update(
+        self, new_cfg: Optional[MutableMapping] = None, **kwargs: Any
     ) -> NoReturn:
         """
-        the original normal update method
 
-        """
-        super().update(new_cfg, **kwargs)
-
-    def update(self, new_cfg: Optional[MutableMapping] = None, **kwargs) -> NoReturn:
-        """
         the new hierarchical update method
+
+        Parameters
+        ----------
+        new_cfg : MutableMapping, optional
+            the new configuration, by default None
+        kwargs : Any, optional
+            key value pairs, by default None
 
         """
         _new_cfg = new_cfg or CFG()
@@ -89,6 +100,23 @@ class CFG(ED):
                     setattr(self, k, _new_cfg[k])
                 except Exception:
                     dict.__setitem__(self, k, _new_cfg[k])
+
+    def pop(self, key: str, default: Optional[Any] = None) -> Any:
+        """
+
+        the updated pop method
+
+        Parameters
+        ----------
+        key : str
+            the key to pop
+        default : Any, optional
+            the default value, by default None
+
+        """
+        if key in self:
+            delattr(self, key)
+        return super().pop(key, default)
 
 
 DEFAULTS = CFG()
