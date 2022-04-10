@@ -4,6 +4,7 @@
 ![codeql](https://github.com/DeepPSP/torch_ecg/actions/workflows/codeql-analysis.yml/badge.svg)
 ![formatting](https://github.com/DeepPSP/torch_ecg/actions/workflows/check-formatting.yml/badge.svg)
 ![PyPI](https://img.shields.io/pypi/v/torch-ecg?style=flat-square)
+[![DOI](https://zenodo.org/badge/298482237.svg)](https://zenodo.org/badge/latestdoi/298482237)
 
 ECG Deep Learning Framework Implemented using PyTorch.
 
@@ -382,6 +383,20 @@ For the most of the time, but not always, after updates, I will run the notebook
 
 ## Work in progress
 See the [projects page](https://github.com/DeepPSP/torch_ecg/projects).
+
+:point_right: [Back to TOC](#torch_ecg)
+
+## Citation
+```latex
+@misc{https://doi.org/10.5281/zenodo.6435048,
+     author = {WEN, Hao and KANG, Jingsu},
+      title = {{torch_ecg: An ECG Deep Learning Framework Implemented using PyTorch}},
+        doi = {10.5281/ZENODO.6435048},
+  publisher = {Zenodo},
+       year = {2022},
+  copyright = {MIT License}
+}
+```
 
 :point_right: [Back to TOC](#torch_ecg)
 
