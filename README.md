@@ -5,7 +5,7 @@
 ![formatting](https://github.com/DeepPSP/torch_ecg/actions/workflows/check-formatting.yml/badge.svg)
 ![PyPI](https://img.shields.io/pypi/v/torch-ecg?style=flat-square)
 
-Deep learning ecg models implemented using PyTorch.
+ECG Deep Learning Framework Implemented using PyTorch.
 
 The system design is depicted as follows
 
@@ -92,6 +92,8 @@ sig, label, mask = am(sig, label, mask)
 
 Augmenters can be stochastic along the batch dimension and (or) the channel dimension (ref. the `get_indices` method of the [`Augmenter`](/torch_ecg/augmenters/base.py) base class).
 
+:point_right: [Back to TOC](#torch_ecg)
+
 </details>
   
 ### [Preprocessors](/torch_ecg/preprocessors)
@@ -122,6 +124,8 @@ The following preprocessors are implemented
 4. resample
 
 For more examples, see the [README file](/torch_ecg/preprocessors/README.md)) of the `preprecessors` module.
+
+:point_right: [Back to TOC](#torch_ecg)
 
 </details>
 
@@ -159,6 +163,8 @@ config = deepcopy(CINC2021TrainCfg)
 config.db_dir = "some/path/to/db"
 dataset = CINC2021Dataset(config, training=True, lazy=False)
 ```
+
+:point_right: [Back to TOC](#torch_ecg)
 
 </details>
 
@@ -239,6 +245,8 @@ my_model_config.cnn.my_resnet = my_resnet
 model = ECG_CRNN(["NSR", "AF", "PVC", "SPB"], 12, my_model_config)
 ```
 
+:point_right: [Back to TOC](#torch_ecg)
+
 </details>
 
 ### [CNN Backbones](/torch_ecg/models/cnn)
@@ -267,6 +275,8 @@ In general, variants of ResNet are the most commonly used architectures, as can 
 5. etc.
 
 More details and a list of references can be found in the [README file](/torch_ecg/models/cnn/README.md) of this module.
+
+:point_right: [Back to TOC](#torch_ecg)
 
 </details>
 
@@ -308,6 +318,8 @@ evaluate(self, data_loader:DataLoader) -> Dict[str, float]
 ```
 for evaluation on the validation set during training and perhaps further for model selection and early stopping.
 
+:point_right: [Back to TOC](#torch_ecg)
+
 </details>
   
 </details>
@@ -318,6 +330,8 @@ for evaluation on the validation set during training and perhaps further for mod
 
 ### [R peaks detection algorithms](/torch_ecg/utils/rpeaks.py)
 This is a collection of traditional (non deep learning) algorithms for R peaks detection collected from [WFDB](https://github.com/MIT-LCP/wfdb-python) and [BioSPPy](https://github.com/PIA-Group/BioSPPy).
+
+:point_right: [Back to TOC](#torch_ecg)
 
 </details>
 
@@ -357,13 +371,21 @@ def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
 2. Inherit a [base model](/torch_ecg/models/ecg_seq_lab_net.py) to create [task specific models](/benchmarks/train_hybrid_cpsc2021/model.py), along with [tailored model configs](/benchmarks/train_hybrid_cpsc2021/cfg.py)
 3. Inherit the [`BaseTrainer`](/torch_ecg/components/trainer.py) to build the [training pipeline](/benchmarks/train_hybrid_cpsc2021/trainer.py), with the `abstractmethod`s (`_setup_dataloaders`, `run_one_step`, `evaluate`, `batch_dim`, etc.) implemented.
 
+:point_right: [Back to TOC](#torch_ecg)
+
 </details>
 
 ## CAUTION
 For the most of the time, but not always, after updates, I will run the notebooks in the [benchmarks](/benchmarks/) manually. If someone finds some bug, please raise an issue. The test workflow is to be enhanced and automated, see [this project](https://github.com/DeepPSP/torch_ecg/projects/8).
 
+:point_right: [Back to TOC](#torch_ecg)
+
 ## Work in progress
 See the [projects page](https://github.com/DeepPSP/torch_ecg/projects).
 
+:point_right: [Back to TOC](#torch_ecg)
+
 ## Thanks
 Much is learned, especially the modular design, from the adversarial NLP library [`TextAttack`](https://github.com/QData/TextAttack) and from Hugging Face [`transformers`](https://github.com/huggingface/transformers).
+
+:point_right: [Back to TOC](#torch_ecg)

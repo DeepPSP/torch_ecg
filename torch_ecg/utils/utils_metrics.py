@@ -263,12 +263,11 @@ def metrics_from_confusion_matrix(
             sens[k] = tp / (tp + fn)
         else:
             sens[k] = float("nan")
-        # continue
         if tp + fp > 0:
             prec[k] = tp / (tp + fp)
         else:
             prec[k] = float("nan")
-        if tn + fn > 0:
+        if tn + fp > 0:
             spec[k] = tn / (tn + fp)
         else:
             spec[k] = float("nan")

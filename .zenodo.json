@@ -1,0 +1,17 @@
+{
+    "title": "torch_ecg: An ECG Deep Learning Framework Implemented using PyTorch",
+    "license": "MIT",
+    "creators": [
+        {
+            "name": "Hao WEN",
+            "affiliation": "LMIB and School of Mathematical Sciences, Beihang University, Beijing, China",
+            "orcid": "0000-0002-8856-0883"
+        },
+        {
+            "name": "Jingsu KANG",
+            "affiliation": "Tianjin Medical University, Tianjin, China"
+        }
+    ],
+    "access_right": "open",
+    "description": "An ECG Deep Learning Framework Implemented using PyTorch."
+}
