@@ -390,8 +390,9 @@ See the [projects page](https://github.com/DeepPSP/torch_ecg/projects).
 ```latex
 @misc{https://doi.org/10.5281/zenodo.6435048,
      author = {WEN, Hao and KANG, Jingsu},
-      title = {{torch_ecg: An ECG Deep Learning Framework Implemented using PyTorch}},
+      title = {{torch\_ecg: An ECG Deep Learning Framework Implemented using PyTorch}},
         doi = {10.5281/ZENODO.6435048},
+        url = {https://zenodo.org/record/6435048},
   publisher = {Zenodo},
        year = {2022},
   copyright = {MIT License}
