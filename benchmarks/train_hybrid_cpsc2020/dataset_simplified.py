@@ -31,7 +31,7 @@ try:
 except ModuleNotFoundError:
     import sys
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from cfg import ModelCfg, PreprocCfg, TrainCfg  # noqa: F401
 

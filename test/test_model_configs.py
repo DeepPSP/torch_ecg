@@ -12,7 +12,7 @@ except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.model_configs import (  # noqa: F401

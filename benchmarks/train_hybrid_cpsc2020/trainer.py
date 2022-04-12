@@ -28,7 +28,7 @@ from tqdm import tqdm
 try:
     import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from torch_ecg.cfg import CFG
 from torch_ecg.components.outputs import BaseOutput  # noqa: F401

@@ -19,7 +19,7 @@ except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from torch_ecg.models.loss import MaskedBCEWithLogitsLoss
 from torch_ecg.utils.utils_interval import mask_to_intervals

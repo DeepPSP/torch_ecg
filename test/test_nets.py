@@ -10,7 +10,7 @@ except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
 
 from torch_ecg.models._nets import CBA  # noqa: F401; noqa: F401
 from torch_ecg.models._nets import CRF  # noqa: F401

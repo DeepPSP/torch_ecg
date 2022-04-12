@@ -14,7 +14,7 @@ import wfdb
 try:
     import torch_ecg  # noqa: F401
 except ModuleNotFoundError:
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from model import (
     ECG_SEQ_LAB_NET_CPSC2021,

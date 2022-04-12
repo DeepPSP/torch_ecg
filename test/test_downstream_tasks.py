@@ -12,7 +12,7 @@ except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
 
 from torch_ecg.model_configs import ATI_CNN_CONFIG  # noqa: F401; noqa: F401
 from torch_ecg.model_configs import ECG_CRNN_CONFIG  # noqa: F401

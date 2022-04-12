@@ -33,7 +33,7 @@ except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[3]))
 from torch_ecg.cfg import CFG
 
 from cfg import PreprocCfg

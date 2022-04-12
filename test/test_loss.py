@@ -9,7 +9,7 @@ except ModuleNotFoundError:
     import sys
     from pathlib import Path
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
 
 from torch_ecg.models.loss import (
     AsymmetricLoss,

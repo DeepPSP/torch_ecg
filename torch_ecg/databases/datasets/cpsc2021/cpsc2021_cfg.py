@@ -8,7 +8,7 @@ try:
 except ModuleNotFoundError:
     import sys
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.model_configs import (  # noqa: F401
@@ -56,6 +56,7 @@ from torch_ecg.model_configs import (  # noqa: F401
     vgg_block_swish,
     xception_leadwise,
 )
+
 
 __all__ = [
     "CPSC2021TrainCfg",

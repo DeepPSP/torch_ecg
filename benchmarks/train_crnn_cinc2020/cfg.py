@@ -14,7 +14,7 @@ try:
 except ModuleNotFoundError:
     import sys
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.databases.aux_data.cinc2020_aux_data import get_class_weight

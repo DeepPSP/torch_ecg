@@ -22,7 +22,7 @@ try:
 except ModuleNotFoundError:
     import sys
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.components.outputs import MultiLabelClassificationOutput
@@ -39,9 +39,9 @@ from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 ###############################################################################
 # set paths
-_CWD = Path(__file__).absolute().parent.parent / "tmp" / "test_crnn_cinc2021_pipeline"
+_CWD = Path(__file__).absolute().parents[1] / "tmp" / "test_crnn_cinc2021_pipeline"
 _CWD.mkdir(parents=True, exist_ok=True)
-_DB_DIR = _CWD.parent.parent.parent / "sample-data" / "cinc2021"
+_DB_DIR = _CWD.parents[2] / "sample-data" / "cinc2021"
 ###############################################################################
 
 ###############################################################################

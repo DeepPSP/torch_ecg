@@ -9,7 +9,7 @@ try:
 except ModuleNotFoundError:
     import sys
 
-    sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
+    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
 
 from torch_ecg.databases import AFDB  # noqa: F401; noqa: F401
 from torch_ecg.databases import CINC2017  # noqa: F401
@@ -23,7 +23,7 @@ from torch_ecg.databases import ApneaECG  # noqa: F401
 
 ###############################################################################
 # set paths
-_CWD = Path(__file__).absolute().parent.parent / "tmp" / "download"
+_CWD = Path(__file__).absolute().parents[1] / "tmp" / "download"
 try:
     shutil.rmtree(_CWD)
 except FileNotFoundError:
