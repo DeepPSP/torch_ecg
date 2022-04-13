@@ -64,7 +64,7 @@ __all__ = [
     "uniform",
     "nildent",
     "isclass",
-    "strafified_train_test_split",
+    "stratified_train_test_split",
     "add_docstring",
 ]
 
@@ -1455,7 +1455,7 @@ def isclass(obj: Any) -> bool:
         return False
 
 
-def strafified_train_test_split(
+def stratified_train_test_split(
     df: pd.DataFrame, strafified_cols: Sequence[str], test_ratio: float = 0.2
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
