@@ -1456,7 +1456,7 @@ def isclass(obj: Any) -> bool:
 
 
 def stratified_train_test_split(
-    df: pd.DataFrame, strafified_cols: Sequence[str], test_ratio: float = 0.2
+    df: pd.DataFrame, stratified_cols: Sequence[str], test_ratio: float = 0.2
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Do stratified train-test split on the dataframe,
@@ -1465,8 +1465,8 @@ def stratified_train_test_split(
     ----------
     df: pd.DataFrame,
         dataframe to be split
-    strafified_cols: sequence of str,
-        columns to be strafified, assuming each column is a categorical variable
+    stratified_cols: sequence of str,
+        columns to be stratified, assuming each column is a categorical variable
         each class in any of the columns will be
         split into train and test sets with an approximate ratio of `test_ratio`
     test_ratio: float, default 0.2,
@@ -1482,25 +1482,25 @@ def stratified_train_test_split(
     For example,
     if one has a dataframe with columns `sex`, `nationality`, etc.,
     assuming `sex` includes `male`, `female`; `nationality` includes `Chinese`, `American`,
-    and sets `strafified_cols = ["sex", "nationality"]` with `test_ratio = 0.2`,
+    and sets `stratified_cols = ["sex", "nationality"]` with `test_ratio = 0.2`,
     then approximately 20% of the male and 20% of the female subjects
     will be put into the test set,
     and **at the same time**, approximately 20% of the Chinese and 20% of the Americans
     lie in the test set as well.
 
     """
-    df_inspection = df[strafified_cols].copy()
-    for item in strafified_cols:
+    df_inspection = df[stratified_cols].copy()
+    for item in stratified_cols:
         all_entities = df_inspection[item].unique().tolist()
         entities_dict = {e: str(i) for i, e in enumerate(all_entities)}
         df_inspection[item] = df_inspection[item].apply(lambda e: entities_dict[e])
 
     inspection_col_name = "Inspection" * (
-        max([len(c) for c in strafified_cols]) // 10 + 1
+        max([len(c) for c in stratified_cols]) // 10 + 1
     )
     df_inspection[inspection_col_name] = ""
     for idx, row in df_inspection.iterrows():
-        cn = "-".join([row[sc] for sc in strafified_cols])
+        cn = "-".join([row[sc] for sc in stratified_cols])
         df_inspection.loc[idx, inspection_col_name] = cn
     item_names = df_inspection[inspection_col_name].unique().tolist()
     item_indices = {
