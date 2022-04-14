@@ -2,14 +2,20 @@
 """
 """
 
-from collections import defaultdict
+from collections import defaultdict, Counter
 from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, NoReturn, Optional, Sequence, Union
 
 import numpy as np
+import pandas as pd
 import wfdb
 from scipy.signal import resample_poly
+
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
 
 from ...utils.misc import get_record_list_recursive3
 from ...utils.utils_interval import generalized_intervals_intersection
@@ -46,7 +52,9 @@ class MITDB(PhysioNetDataBase):
 
     Usage
     -----
-    1.
+    1. Beat classification
+    2. rhythm classification (segmentation)
+    3. R peaks detection
 
     References
     ----------
@@ -130,6 +138,10 @@ class MITDB(PhysioNetDataBase):
 
         self._ls_rec()
 
+        self._stats = pd.DataFrame()
+        self._stats_columns = ["record", "beat_num", "beat_type_num", "rhythm_len"]
+        self._aggregate_stats()
+
     def _ls_rec(self) -> NoReturn:
         """ """
         super()._ls_rec()
@@ -137,6 +149,33 @@ class MITDB(PhysioNetDataBase):
             self._all_records = get_record_list_recursive3(
                 self.db_dir, f"^[\\d]{{3}}.{self.data_ext}$"
             )
+
+    def _aggregate_stats(self) -> NoReturn:
+        """ """
+        self._stats = pd.DataFrame(columns=self._stats_columns)
+        with tqdm(range(len(self)), desc="Aggregating stats", unit="records") as pbar:
+            for idx in pbar:
+                rec_ann = self.load_ann(idx)
+                beat_type_num = {
+                    k: v
+                    for k, v in Counter(
+                        [item.symbol for item in rec_ann["beat"]]
+                    ).most_common()
+                }
+                beat_num = sum(beat_type_num.values())
+                rhythm_len = {
+                    k: sum([itv[1] - itv[0] for itv in v])
+                    for k, v in rec_ann["rhythm"].items()
+                }
+                self._stats = self._stats.append(
+                    dict(
+                        record=self[idx],
+                        beat_num=beat_num,
+                        beat_type_num=beat_type_num,
+                        rhythm_len=rhythm_len,
+                    ),
+                    ignore_index=True,
+                )
 
     def load_data(
         self,
@@ -473,6 +512,28 @@ class MITDB(PhysioNetDataBase):
             rec = self[rec]
         fp = str(self.db_dir / rec)
         return wfdb.rdheader(fp).sig_name
+
+    @property
+    def df_stats(self) -> pd.DataFrame:
+        """ """
+        if self._stats.empty:
+            self._aggregate_stats()
+        return self._stats
+
+    @property
+    def db_stats(self) -> Dict[str, Dict[str, int]]:
+        """ """
+        if self._stats.empty:
+            self._aggregate_stats()
+        rhythm_len = defaultdict(int)
+        for rl_dict in self._stats["rhythm_len"]:
+            for k, v in rl_dict.items():
+                rhythm_len[k] += v
+        beat_type_num = defaultdict(int)
+        for btn_dict in self._stats["beat_type_num"]:
+            for k, v in btn_dict.items():
+                beat_type_num[k] += v
+        return dict(rhythm_len=dict(rhythm_len), beat_type_num=dict(beat_type_num))
 
     def plot(
         self,

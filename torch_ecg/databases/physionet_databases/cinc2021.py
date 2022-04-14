@@ -553,14 +553,14 @@ class CINC2021(PhysioNetDataBase):
         return res
 
     @property
-    def all_records(self):
+    def all_records(self) -> Dict[str, List[str]]:
         """list of all records in the dataset"""
         if self._all_records is None:
             self._ls_rec()
         return self._all_records
 
     @property
-    def df_stats(self):
+    def df_stats(self) -> pd.DataFrame:
         """ """
         if self._stats.empty:
             warnings.warn("the dataframe of stats is empty, try using _aggregate_stats")
@@ -599,7 +599,7 @@ class CINC2021(PhysioNetDataBase):
         self._diagnoses_records_list = CFG(self._diagnoses_records_list)
 
     @property
-    def diagnoses_records_list(self):
+    def diagnoses_records_list(self) -> Dict[str, List[str]]:
         """list of all records for each diagnosis"""
         if self._diagnoses_records_list is None:
             self._ls_diagnoses_records()

@@ -85,11 +85,57 @@ array([[ 28.,   7.],
 Each `Database` has the following basic functionalities
 1. Download from data archive (mainly PhysioNet) using the `download` method
 ```python
-from torch_ecg.databases import MITDB
-dr = MITDB(db_dir="/any/path/even/if/does/not/exists/")
-# download the compressed zip file of MITDB
-# and extract to `dr.db_dir`
-dr.download(compressed=True)
+>>> from torch_ecg.databases import MITDB
+>>> dr = MITDB(db_dir="/any/path/even/if/does/not/exists/")
+>>> # download the compressed zip file of MITDB
+>>> # and extract to `dr.db_dir`
+>>> dr.download(compressed=True)
 ```
 2. Loading data and annotations using `load_data` and `load_ann` respectively (ref. [Basic Usage](#basic-usage)).
 3. `plot` functions.
+
+For a `PhysioNetDataBase`, one has the `helper` function for looking up annotation meanings
+```python
+>>> from torch_ecg.databases import MITDB
+>>> dr = MITDB(db_dir="/any/path/even/if/does/not/exists/")
+>>> dr.helper("beat")
+MIT-BIH Arrhythmia Database
+--- helpler - beat ---
+{   '/': 'Paced beat',
+    '?': 'Beat not classified during learning',
+    'A': 'Atrial premature beat',
+    'B': 'Bundle branch block beat (unspecified)',
+    'E': 'Ventricular escape beat',
+    'F': 'Fusion of ventricular and normal beat',
+    'J': 'Nodal (junctional) premature beat',
+    'L': 'Left bundle branch block beat',
+    'N': 'Normal beat',
+    'Q': 'Unclassifiable beat',
+    'R': 'Right bundle branch block beat',
+    'S': 'Supraventricular premature or ectopic beat (atrial or nodal)',
+    'V': 'Premature ventricular contraction',
+    'a': 'Aberrated atrial premature beat',
+    'e': 'Atrial escape beat',
+    'f': 'Fusion of paced and normal beat',
+    'j': 'Nodal (junctional) escape beat',
+    'n': 'Supraventricular escape beat (atrial or nodal)',
+    'r': 'R-on-T premature ventricular contraction'}
+>>> dr.helper("rhythm")
+MIT-BIH Arrhythmia Database
+--- helpler - rhythm ---
+{   '(AB': 'Atrial bigeminy',
+    '(AFIB': 'Atrial fibrillation',
+    '(AFL': 'Atrial flutter',
+    '(B': 'Ventricular bigeminy',
+    '(BII': '2° heart block',
+    '(IVR': 'Idioventricular rhythm',
+    '(N': 'Normal sinus rhythm',
+    '(NOD': 'Nodal (A-V junctional) rhythm',
+    '(P': 'Paced rhythm',
+    '(PREX': 'Pre-excitation (WPW)',
+    '(SBR': 'Sinus bradycardia',
+    '(SVTA': 'Supraventricular tachyarrhythmia',
+    '(T': 'Ventricular trigeminy',
+    '(VFL': 'Ventricular flutter',
+    '(VT': 'Ventricular tachycardia'}
+```

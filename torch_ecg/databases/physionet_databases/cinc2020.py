@@ -378,7 +378,7 @@ class CINC2020(PhysioNetDataBase):
         self.__all_records = list_sum(self._all_records.values())
 
     @property
-    def diagnoses_records_list(self):
+    def diagnoses_records_list(self) -> Dict[str, List[str]]:
         """ """
         if self._diagnoses_records_list is None:
             self._ls_diagnoses_records()
