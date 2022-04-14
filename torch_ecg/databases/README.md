@@ -21,3 +21,75 @@ After migration, all should be tested again, the progression:
 | CPSC2019      | [CPSC](http://2019.icbeb.org/Challenge.html)                     | :heavy_check_mark: |
 | CPSC2020      | [CPSC](http://2020.icbeb.org/CSPC2020)                           | :heavy_check_mark: |
 | CPSC2021      | [CPSC](http://2021.icbeb.org/CPSC2021)                           | :heavy_check_mark: |
+
+
+## Basic Usage
+```python
+>>> from torch_ecg.databases import CINC2021
+>>> dr = CINC2021("/path/to/the/directory/of/CINC2021-data/)
+converting dtypes of columns `diagnosis` and `diagnosis_scored`...
+>>> len(dr)
+88253
+>>> dr.load_data(0, leads=["I", "II"], data_format="channel_last", units="uv")
+array([[ 28.,   7.],
+       [ 39.,  11.],
+       [ 45.,  15.],
+       ...,
+       [258., 248.],
+       [259., 249.],
+       [259., 250.]], dtype=float32)
+>>> dr.load_ann(0)
+{'rec_name': 'A0001',
+ 'nb_leads': 12,
+ 'fs': 500,
+ 'nb_samples': 7500,
+ 'datetime': datetime.datetime(2020, 5, 12, 12, 33, 59),
+ 'age': 74,
+ 'sex': 'Male',
+ 'medical_prescription': 'Unknown',
+ 'history': 'Unknown',
+ 'symptom_or_surgery': 'Unknown',
+ 'diagnosis': {'diagnosis_code': ['59118001'],
+  'diagnosis_abbr': ['RBBB'],
+  'diagnosis_fullname': ['right bundle branch block']},
+ 'diagnosis_scored': {'diagnosis_code': ['59118001'],
+  'diagnosis_abbr': ['RBBB'],
+  'diagnosis_fullname': ['right bundle branch block']},
+ 'df_leads':       filename fmt  byte_offset  ...  checksum block_size  lead_name
+ I    A0001.mat  16           24  ...     -1716          0          I
+ II   A0001.mat  16           24  ...      2029          0         II
+ III  A0001.mat  16           24  ...      3745          0        III
+ aVR  A0001.mat  16           24  ...      3680          0        aVR
+ aVL  A0001.mat  16           24  ...     -2664          0        aVL
+ aVF  A0001.mat  16           24  ...     -1499          0        aVF
+ V1   A0001.mat  16           24  ...       390          0         V1
+ V2   A0001.mat  16           24  ...       157          0         V2
+ V3   A0001.mat  16           24  ...     -2555          0         V3
+ V4   A0001.mat  16           24  ...        49          0         V4
+ V5   A0001.mat  16           24  ...      -321          0         V5
+ V6   A0001.mat  16           24  ...     -3112          0         V6
+ 
+ [12 rows x 12 columns]}
+>>> dr.get_labels(30000, scored_only=True, fmt="f")  # full names
+['sinus arrhythmia',
+ 'right axis deviation',
+ 'incomplete right bundle branch block']
+>>> dr.get_labels(30000, scored_only=True, fmt="a")  # abbreviations
+['SA', 'RAD', 'IRBBB']
+>>> dr.get_labels(30000, scored_only=False, fmt="s")  # SNOMED CT Code
+['427393009', '445211001', '47665007', '713426002']
+```
+
+## Functionalities
+
+Each `Database` has the following basic functionalities
+1. Download from data archive (mainly PhysioNet) using the `download` method
+```python
+from torch_ecg.databases import MITDB
+dr = MITDB(db_dir="/any/path/even/if/does/not/exists/")
+# download the compressed zip file of MITDB
+# and extract to `dr.db_dir`
+dr.download(compressed=True)
+```
+2. Loading data and annotations using `load_data` and `load_ann` respectively (ref. [Basic Usage](#basic-usage)).
+3. `plot` functions.
