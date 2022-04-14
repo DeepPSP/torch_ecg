@@ -129,8 +129,8 @@ class ApneaECG(PhysioNetDataBase):
         """
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
@@ -144,13 +144,16 @@ class ApneaECG(PhysioNetDataBase):
         return int("2000" + stoi[rec[0]] + rec[1:3])
 
     def load_data(
-        self, rec: str, lead: int = 0, rec_path: Optional[Union[str, Path]] = None
+        self,
+        rec: Union[str, int],
+        lead: int = 0,
+        rec_path: Optional[Union[str, Path]] = None,
     ) -> np.ndarray:
         """
         Parameters
         ----------
-        rec: str,
-            record name
+        rec: str or int,
+            name or index of the record
         lead: int, default 0
             number of the lead, can be 0 or 1
         rec_path: str or Path, optional,
@@ -163,6 +166,8 @@ class ApneaECG(PhysioNetDataBase):
             the ECG signal or the respiration signal
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         file_path = str(rec_path or (self.db_dir / rec))
         self.wfdb_rec = wfdb.rdrecord(file_path)
         sig = self.wfdb_rec.p_signal
@@ -171,13 +176,13 @@ class ApneaECG(PhysioNetDataBase):
         return sig
 
     def load_ecg_data(
-        self, rec: str, lead: int = 0, rec_path: Optional[str] = None
+        self, rec: Union[str, int], lead: int = 0, rec_path: Optional[str] = None
     ) -> np.ndarray:
         """
         Parameters
         ----------
-        rec: str,
-            record name
+        rec: str or int,
+            name or index of the record
         lead: int, default 0
             number of the lead, can be 0 or 1
         rec_path: str or Path, optional,
@@ -190,13 +195,15 @@ class ApneaECG(PhysioNetDataBase):
             the ecg signal
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         if rec.endswith(("r", "er")):
             raise ValueError(f"{rec} is not a record of ECG signals")
         return self.load_data(rec=rec, lead=lead, rec_path=rec_path)
 
     def load_rsp_data(
         self,
-        rec: str,
+        rec: Union[str, int],
         lead: int = 0,
         channels: Optional[Union[str, List[str], Tuple[str]]] = None,
         rec_path: Optional[str] = None,
@@ -204,8 +211,8 @@ class ApneaECG(PhysioNetDataBase):
         """
         Parameters
         ----------
-        rec: str,
-            record name
+        rec: str or int,
+            name or index of the record
         lead: int, default 0
             number of the lead, can be 0 or 1
         channels: str or list of str, default None
@@ -220,6 +227,8 @@ class ApneaECG(PhysioNetDataBase):
             the respiration signal
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         if not rec.endswith(("r", "er")):
             raise ValueError(f"{rec} is not a record of RSP signals")
         sig = self.load_data(rec=rec, lead=lead, rec_path=rec_path)
@@ -235,13 +244,16 @@ class ApneaECG(PhysioNetDataBase):
         return sig
 
     def load_ann(
-        self, rec: str, ann_path: Optional[Union[str, Path]] = None, **kwargs
+        self,
+        rec: Union[str, int],
+        ann_path: Optional[Union[str, Path]] = None,
+        **kwargs,
     ) -> list:
         """
         Parameters
         ----------
-        rec: str,
-            record name
+        rec: str or int,
+            name or index of the record
         ann_path: str or Path, optional,
             path of the file which contains the annotations,
             if not given, default path will be used
@@ -252,6 +264,8 @@ class ApneaECG(PhysioNetDataBase):
             annotations of the form [idx, ann]
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         file_path = str(ann_path or (self.db_dir / rec))
         extension = kwargs.get("extension", "apn")
         self.wfdb_ann = wfdb.rdann(file_path, extension=extension)
@@ -262,13 +276,13 @@ class ApneaECG(PhysioNetDataBase):
         return detailed_ann
 
     def load_apnea_event(
-        self, rec: str, ann_path: Optional[str] = None
+        self, rec: Union[str, int], ann_path: Optional[str] = None
     ) -> pd.DataFrame:
         """
         Parameters
         ----------
-        rec: str,
-            record name
+        rec: str or int,
+            name or index of the record
         ann_path: str, optional,
             path of the file which contains the annotations,
             if not given, default path will be used
@@ -279,6 +293,8 @@ class ApneaECG(PhysioNetDataBase):
             apnea annotations with columns "event_start","event_end", "event_name", "event_duration"
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         detailed_anno = self.load_ann(rec, ann_path, extension="apn")
         apnea = np.array([p[0] for p in detailed_anno if p[1] == "A"])
 
@@ -324,12 +340,14 @@ class ApneaECG(PhysioNetDataBase):
 
         return df_apnea_ann
 
-    def plot_ann(self, rec, ann_path: Optional[str] = None) -> NoReturn:
+    def plot_ann(
+        self, rec: Union[str, int], ann_path: Optional[str] = None
+    ) -> NoReturn:
         """
         Parameters
         ----------
-        rec: str,
-            record name
+        rec: str or int,
+            name or index of the record
         ann_path: str, optional,
             path of the file which contains the annotations,
             if not given, default path will be used

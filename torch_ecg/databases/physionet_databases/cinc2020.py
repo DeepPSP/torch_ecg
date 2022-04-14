@@ -277,19 +277,22 @@ class CINC2020(PhysioNetDataBase):
             "E08321",
         ]  # ref. ISSUES 4
 
-    def get_subject_id(self, rec: str) -> int:
+    def get_subject_id(self, rec: Union[str, int]) -> int:
         """
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
         sid: int,
             the `subject_id` corr. to `rec`
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         s2d = {"A": "11", "B": "12", "C": "21", "D": "31", "E": "32", "F": "41"}
         s2d = {self.rec_prefix[k]: v for k, v in s2d.items()}
         prefix = "".join(re.findall(r"[A-Z]", rec))
@@ -299,9 +302,9 @@ class CINC2020(PhysioNetDataBase):
 
     def _ls_rec(self) -> NoReturn:
         """
-
         list all the records and load into `self._all_records`,
         facilitating further uses
+
         """
         fn = "record_list.json"
         record_list_fp = self.db_dir_base / fn
@@ -381,15 +384,15 @@ class CINC2020(PhysioNetDataBase):
             self._ls_diagnoses_records()
         return self._diagnoses_records_list
 
-    def _get_tranche(self, rec: str) -> str:
+    def _get_tranche(self, rec: Union[str, int]) -> str:
         """
 
         get the tranche"s symbol (one of "A","B","C","D","E","F") of a record via its name
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
@@ -397,19 +400,21 @@ class CINC2020(PhysioNetDataBase):
             symbol of the tranche, ref. `self.rec_prefix`
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         prefix = "".join(re.findall(r"[A-Z]", rec))
         tranche = {v: k for k, v in self.rec_prefix.items()}[prefix]
         return tranche
 
-    def get_data_filepath(self, rec: str, with_ext: bool = True) -> str:
+    def get_data_filepath(self, rec: Union[str, int], with_ext: bool = True) -> str:
         """
 
         get the absolute file path of the data file of `rec`
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         with_ext: bool, default True,
             if True, the returned file path comes with file extension,
             otherwise without file extension,
@@ -421,13 +426,15 @@ class CINC2020(PhysioNetDataBase):
             absolute file path of the data file of the record
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         tranche = self._get_tranche(rec)
         fp = self.db_dirs[tranche] / f"{rec}.{self.rec_ext}"
         if not with_ext:
             fp = fp.with_suffix("")
         return str(fp)
 
-    def get_header_filepath(self, rec: str, with_ext: bool = True) -> str:
+    def get_header_filepath(self, rec: Union[str, int], with_ext: bool = True) -> str:
         """
 
         get the absolute file path of the header file of `rec`
@@ -447,6 +454,8 @@ class CINC2020(PhysioNetDataBase):
             absolute file path of the header file of the record
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         tranche = self._get_tranche(rec)
         fp = self.db_dirs[tranche] / f"{rec}.{self.ann_ext}"
         if not with_ext:
@@ -454,7 +463,7 @@ class CINC2020(PhysioNetDataBase):
         return str(fp)
 
     @add_docstring(get_header_filepath.__doc__)
-    def get_ann_filepath(self, rec: str, with_ext: bool = True) -> str:
+    def get_ann_filepath(self, rec: Union[str, int], with_ext: bool = True) -> str:
         """
         alias for `get_header_filepath`
         """
@@ -463,7 +472,7 @@ class CINC2020(PhysioNetDataBase):
 
     def load_data(
         self,
-        rec: str,
+        rec: Union[str, int],
         leads: Optional[Union[str, List[str]]] = None,
         data_format: str = "channel_first",
         backend: str = "wfdb",
@@ -477,8 +486,8 @@ class CINC2020(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         leads: str or list of str, optional,
             the leads to load
         data_format: str, default "channel_first",
@@ -498,6 +507,8 @@ class CINC2020(PhysioNetDataBase):
             the ECG data
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         assert data_format.lower() in [
             "channel_first",
             "lead_first",
@@ -550,7 +561,7 @@ class CINC2020(PhysioNetDataBase):
         return data
 
     def load_ann(
-        self, rec: str, raw: bool = False, backend: str = "wfdb"
+        self, rec: Union[str, int], raw: bool = False, backend: str = "wfdb"
     ) -> Union[dict, str]:
         """
 
@@ -558,8 +569,8 @@ class CINC2020(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         raw: bool, default False,
             if True, the raw annotations without parsing will be returned
         backend: str, default "wfdb", case insensitive,
@@ -572,6 +583,8 @@ class CINC2020(PhysioNetDataBase):
             the annotations with items: ref. `self.ann_items`
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         tranche = self._get_tranche(rec)
         ann_fp = self.get_ann_filepath(rec, with_ext=True)
         header_data = Path(ann_fp).read_text().splitlines()
@@ -590,13 +603,13 @@ class CINC2020(PhysioNetDataBase):
             )
         return ann_dict
 
-    def _load_ann_wfdb(self, rec: str, header_data: List[str]) -> dict:
+    def _load_ann_wfdb(self, rec: Union[str, int], header_data: List[str]) -> dict:
         """
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         header_data: list of str,
             list of lines read directly from a header file,
             complementary to data read using `wfdb.rdheader` if applicable,
@@ -608,6 +621,8 @@ class CINC2020(PhysioNetDataBase):
             the annotations with items: ref. `self.ann_items`
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         header_fp = self.get_header_filepath(rec, with_ext=False)
         header_reader = wfdb.rdheader(header_fp)
         ann_dict = {}
@@ -903,14 +918,19 @@ class CINC2020(PhysioNetDataBase):
         df_leads.index.name = None
         return df_leads
 
-    def load_header(self, rec: str, raw: bool = False) -> Union[dict, str]:
+    @add_docstring(load_ann.__doc__)
+    def load_header(self, rec: Union[str, int], raw: bool = False) -> Union[dict, str]:
         """
         alias for `load_ann`, as annotations are also stored in header files
         """
         return self.load_ann(rec, raw)
 
     def get_labels(
-        self, rec: str, scored_only: bool = True, fmt: str = "s", normalize: bool = True
+        self,
+        rec: Union[str, int],
+        scored_only: bool = True,
+        fmt: str = "s",
+        normalize: bool = True,
     ) -> List[str]:
         """
 
@@ -918,8 +938,8 @@ class CINC2020(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         scored_only: bool, default True,
             only get the labels that are scored in the CINC2020 official phase
         fmt: str, default "a",
@@ -954,15 +974,15 @@ class CINC2020(PhysioNetDataBase):
             labels = [self.label_trans_dict.get(item, item) for item in labels]
         return labels
 
-    def get_fs(self, rec: str) -> Real:
+    def get_fs(self, rec: Union[str, int]) -> Real:
         """
 
         get the sampling frequency of a record
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
 
         Returns
         -------
@@ -973,15 +993,17 @@ class CINC2020(PhysioNetDataBase):
         fs = self.fs[tranche]
         return fs
 
-    def get_subject_info(self, rec: str, items: Optional[List[str]] = None) -> dict:
+    def get_subject_info(
+        self, rec: Union[str, int], items: Optional[List[str]] = None
+    ) -> dict:
         """
 
         read auxiliary information of a subject (a record) stored in the header files
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         items: list of str, optional,
             items of the subject's information (e.g. sex, age, etc.)
 
@@ -1008,7 +1030,7 @@ class CINC2020(PhysioNetDataBase):
 
     def save_challenge_predictions(
         self,
-        rec: str,
+        rec: Union[str, int],
         output_dir: Union[str, Path],
         scores: List[Real],
         labels: List[int],
@@ -1030,7 +1052,10 @@ class CINC2020(PhysioNetDataBase):
             0 or 1, binary predictions
         classes: list of str,
             SNOMED CT Code of binary predictions
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         new_file = f"{rec}.csv"
         output_file = Path(output_dir) / new_file
 
@@ -1046,7 +1071,7 @@ class CINC2020(PhysioNetDataBase):
 
     def plot(
         self,
-        rec: str,
+        rec: Union[str, int],
         data: Optional[np.ndarray] = None,
         ann: Optional[Dict[str, np.ndarray]] = None,
         ticks_granularity: int = 0,
@@ -1063,8 +1088,8 @@ class CINC2020(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         data: ndarray, optional,
             (12-lead) ECG signal to plot,
             should be of the format "channel_first", and compatible with `leads`
@@ -1098,7 +1123,10 @@ class CINC2020(PhysioNetDataBase):
         if not modifying this number, at most 40 seconds of signal could be plotted once
 
         Contributors: Jeethan, and WEN Hao
+
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         tranche = self._get_tranche(rec)
         if tranche in "CDE":
             physionet_lightwave_suffix = CFG(
@@ -1351,7 +1379,10 @@ class CINC2020(PhysioNetDataBase):
                 print("*" * 110)
 
     def load_resampled_data(
-        self, rec: str, data_format: str = "channel_first", siglen: Optional[int] = None
+        self,
+        rec: Union[str, int],
+        data_format: str = "channel_first",
+        siglen: Optional[int] = None,
     ) -> np.ndarray:
         """
 
@@ -1360,8 +1391,8 @@ class CINC2020(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         data_format: str, default "channel_first",
             format of the ECG data,
             "channel_last" (alias "lead_last"), or
@@ -1377,6 +1408,8 @@ class CINC2020(PhysioNetDataBase):
             the resampled (and perhaps sliced) signal data
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         tranche = self._get_tranche(rec)
         if siglen is None:
             rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz.npy"
@@ -1402,7 +1435,7 @@ class CINC2020(PhysioNetDataBase):
             data = data.T
         return data
 
-    def load_raw_data(self, rec: str, backend: str = "scipy") -> np.ndarray:
+    def load_raw_data(self, rec: Union[str, int], backend: str = "scipy") -> np.ndarray:
         """
 
         load raw data from corresponding files with no further processing,
@@ -1410,8 +1443,8 @@ class CINC2020(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            name or index of the record
         backend: str, default "scipy",
             the backend data reader, can also be "wfdb",
             note that "scipy" provides data in the format of "lead_first",
@@ -1424,6 +1457,8 @@ class CINC2020(PhysioNetDataBase):
             without subtracting baseline nor dividing ADC gain
 
         """
+        if isinstance(rec, int):
+            rec = self[rec]
         tranche = self._get_tranche(rec)
         if backend.lower() == "wfdb":
             rec_fp = self.get_data_filepath(rec, with_ext=False)
