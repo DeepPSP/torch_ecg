@@ -47,8 +47,6 @@ python -m pip install git+https://github.com/DeepPSP/torch_ecg.git
 ```
 
 ## Main Modules
-<details>
-<summary>Click to expand!</summary>
 
 ### [Augmenters](/torch_ecg/augmenters)
 <details>
@@ -322,8 +320,9 @@ for evaluation on the validation set during training and perhaps further for mod
 :point_right: [Back to TOC](#torch_ecg)
 
 </details>
-  
-</details>
+
+:point_right: [Back to TOC](#torch_ecg)
+
 
 ## Other Useful Tools
 <details>
