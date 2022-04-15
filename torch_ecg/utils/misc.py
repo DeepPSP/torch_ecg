@@ -3,7 +3,6 @@
 import datetime
 import logging
 import os
-import random
 import re
 import sys
 from collections import namedtuple
@@ -1408,7 +1407,7 @@ def uniform(low: Real, high: Real, num: int) -> List[float]:
         array of randomly generated numbers with uniform distribution
 
     """
-    arr = [random.uniform(low, high) for _ in range(num)]
+    arr = [DEFAULTS.RNG.uniform(low, high) for _ in range(num)]
     return arr
 
 
@@ -1508,7 +1507,7 @@ def stratified_train_test_split(
         for n in item_names
     }
     for n in item_names:
-        random.shuffle(item_indices[n])
+        DEFAULTS.RNG.shuffle(item_indices[n])
 
     test_indices = []
     for n in item_names:

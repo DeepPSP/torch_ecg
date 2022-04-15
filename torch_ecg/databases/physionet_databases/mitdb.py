@@ -17,6 +17,7 @@ try:
 except ModuleNotFoundError:
     from tqdm import tqdm
 
+from ...cfg import CFG
 from ...utils.misc import get_record_list_recursive3
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (
@@ -533,7 +534,7 @@ class MITDB(PhysioNetDataBase):
         for btn_dict in self._stats["beat_type_num"]:
             for k, v in btn_dict.items():
                 beat_type_num[k] += v
-        return dict(rhythm_len=dict(rhythm_len), beat_type_num=dict(beat_type_num))
+        return CFG(rhythm_len=dict(rhythm_len), beat_type_num=dict(beat_type_num))
 
     def plot(
         self,

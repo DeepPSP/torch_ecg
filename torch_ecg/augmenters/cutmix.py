@@ -13,6 +13,7 @@ import torch
 from torch import Tensor
 
 from .base import Augmenter
+from ..cfg import DEFAULTS
 
 __all__ = [
     "CutMix",
@@ -60,7 +61,7 @@ class CutMix(Augmenter):
         """ """
         batch, lead, siglen = sig.shape
         lam = torch.from_numpy(
-            np.random.beta(self.alpha, self.beta, size=batch),
+            DEFAULTS.RNG.beta(self.alpha, self.beta, size=batch),
             dtype=sig.dtype,
             device=sig.device,
         )
@@ -84,7 +85,7 @@ class CutMix(Augmenter):
         _lam = (lam.numpy() * siglen).astype(int)
         intervals = np.zeros((lam.shape[0], 2), dtype=int)
         intervals[:, 0] = np.minimum(
-            np.random.randint(0, siglen, size=lam.shape[0]), siglen - _lam
+            DEFAULTS.RNG_randint(0, siglen, size=lam.shape[0]), siglen - _lam
         )
         intervals[:, 1] = intervals[:, 0] + _lam
         return intervals

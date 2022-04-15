@@ -12,6 +12,7 @@ import numpy as np
 import torch
 from torch import Tensor
 
+from ..cfg import DEFAULTS
 from ..utils.utils_signal import get_ampl
 from .base import Augmenter
 
@@ -55,6 +56,7 @@ class BaselineWanderAugmenter(Augmenter):
         inplace: bool, default True,
             if True, ECG signal tensors will be modified inplace
         kwargs: Keyword arguments.
+
         """
         super().__init__()
         self.fs = fs
@@ -150,6 +152,7 @@ class BaselineWanderAugmenter(Augmenter):
             label tensor of the augmented ECGs, unchanged
         extra_tensors: sequence of Tensors, optional,
             if set in the input arguments, unchanged
+
         """
         if not self.inplace:
             sig = sig.clone()
@@ -185,6 +188,7 @@ def _get_ampl(sig: Tensor, fs: int) -> Tensor:
     -------
     ampl: Tensor,
         amplitude of each lead, of shape (batch, lead, 1)
+
     """
     with mp.Pool(processes=max(1, mp.cpu_count() - 2)) as pool:
         ampl = pool.starmap(
@@ -213,8 +217,9 @@ def _gen_gaussian_noise(siglen: int, mean: Real = 0, std: Real = 0) -> np.ndarra
     -------
     gn: ndarray,
         the gaussian noise of given length, mean, and standard deviation
+
     """
-    gn = np.random.normal(mean, std, siglen)
+    gn = DEFAULTS.RNG.normal(mean, std, siglen)
     return gn
 
 
@@ -249,6 +254,7 @@ def _gen_sinusoidal_noise(
     -------
     sn: ndarray,
         the sinusoidal noise of given length, amplitude, start phase, and end phase
+
     """
     sn = np.linspace(start_phase, end_phase, siglen)
     sn = amplitude * np.sin(np.pi * sn / 180)
@@ -288,6 +294,7 @@ def _gen_baseline_wander(
     Example
     -------
     >>> _gen_baseline_wander(4000, 400, [0.4,0.1,0.05], [0.1,0.2,0.4])
+
     """
     bw = _gen_gaussian_noise(siglen, amplitude_gaussian[0], amplitude_gaussian[1])
     if isinstance(bw_fs, Real):
@@ -301,7 +308,7 @@ def _gen_baseline_wander(
     assert len(_bw_fs) == len(_amplitude)
     duration = siglen / fs
     for bf, a in zip(_bw_fs, _amplitude):
-        start_phase = np.random.randint(0, 360)
+        start_phase = DEFAULTS.RNG_randint(0, 360)
         end_phase = duration * bf * 360 + start_phase
         bw += _gen_sinusoidal_noise(siglen, start_phase, end_phase, a, 0, 0)
     return bw
@@ -338,6 +345,7 @@ def gen_baseline_wander(
     bw: ndarray,
         the baseline wander of given length, amplitude, frequency,
         of shape (batch, lead, siglen)
+
     """
     batch, lead, siglen = sig.shape
     sig_ampl = _get_ampl(sig, fs)

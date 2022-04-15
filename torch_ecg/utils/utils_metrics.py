@@ -58,7 +58,8 @@ def top_n_accuracy(
 
     Examples
     --------
-    >>> labels, outputs = np.random.randint(0, 10, (100)), np.random.uniform(0, 1, (100, 10))  # 100 samples, 10 classes
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> labels, outputs = DEFAULTS.RNG_randint(0, 10, (100)), DEFAULTS.RNG.uniform(0, 1, (100, 10))  # 100 samples, 10 classes
     >>> top_n_accuracy(labels, outputs, 3)
     0.32
     >>> top_n_accuracy(labels, outputs, [1,3,5])
@@ -225,7 +226,8 @@ def metrics_from_confusion_matrix(
 
     Examples
     --------
-    >>> labels, outputs = np.random.randint(0,2,(100,10)), np.random.randint(0,2,(100,10))
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> labels, outputs = DEFAULTS.RNG_randint(0,2,(100,10)), DEFAULTS.RNG_randint(0,2,(100,10))
     >>> metrics = metrics_from_confusion_matrix(labels, outputs)
 
     References

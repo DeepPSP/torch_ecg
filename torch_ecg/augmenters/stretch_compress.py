@@ -12,6 +12,7 @@ import torch.nn.functional as F
 from scipy.signal import resample, resample_poly  # noqa: F401
 from torch import Tensor
 
+from ..cfg import DEFAULTS
 from ..utils.misc import ReprMixin
 from .base import Augmenter
 
@@ -174,7 +175,7 @@ class StretchCompress(Augmenter):
     def _sample_ratio(self) -> float:
         """ """
         return np.clip(
-            np.random.normal(self.ratio, 0.382 * self.ratio), 0, 2 * self.ratio
+            DEFAULTS.RNG.normal(self.ratio, 0.382 * self.ratio), 0, 2 * self.ratio
         )
 
     def _generate(
@@ -270,7 +271,7 @@ def _stretch_compress_one_batch_element(
             )
         label_len.append(ll)
     sign = choice([-1, 1])
-    ratio = np.clip(np.random.normal(ratio, 0.382 * ratio), 0, 2 * ratio)
+    ratio = np.clip(DEFAULTS.RNG.normal(ratio, 0.382 * ratio), 0, 2 * ratio)
     # print(f"batch_idx = {batch_idx}, sign = {sign}, ratio = {ratio}")
     new_len = int(round((1 + sign * ratio) * siglen))
     diff_len = abs(new_len - siglen)
@@ -544,11 +545,11 @@ class StretchCompressOffline(ReprMixin):
 
     def _sample_ratio(self) -> float:
         """ """
-        if np.random.uniform() >= self.prob:
+        if DEFAULTS.RNG.uniform() >= self.prob:
             return 0
         else:
             return np.clip(
-                np.random.normal(self.ratio, 0.382 * self.ratio),
+                DEFAULTS.RNG.normal(self.ratio, 0.382 * self.ratio),
                 0.01 * self.ratio,
                 2 * self.ratio,
             )

@@ -11,6 +11,7 @@ import torch
 from torch import Tensor
 
 from .base import Augmenter
+from ..cfg import DEFAULTS
 
 __all__ = [
     "Mixup",
@@ -95,9 +96,9 @@ class Mixup(Augmenter):
         """
         batch, lead, siglen = sig.shape
         # TODO: make `lam` different for each batch element, using
-        # lam = torch.from_numpy(np.random.beta(self.alpha, self.beta, batch), dtype=sig.dtype, device=sig.device)
+        # lam = torch.from_numpy(DEFAULTS.RNG.beta(self.alpha, self.beta, batch), dtype=sig.dtype, device=sig.device)
         # of shape (batch,)
-        lam = np.random.beta(self.alpha, self.beta)
+        lam = DEFAULTS.RNG.beta(self.alpha, self.beta)
         indices = np.arange(batch, dtype=int)
         ori = self.get_indices(prob=self.prob, pop_size=batch)
         # print(f"ori = {ori}, len(ori) = {len(ori)}")

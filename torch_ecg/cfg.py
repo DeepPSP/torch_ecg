@@ -1,6 +1,8 @@
 """
 """
 
+import random
+from functools import partial
 from pathlib import Path
 from typing import MutableMapping, NoReturn, Optional, Any
 
@@ -10,6 +12,7 @@ import torch
 __all__ = [
     "CFG",
     "DEFAULTS",
+    "set_seed",
 ]
 
 
@@ -136,3 +139,30 @@ DEFAULTS.device = (
 )
 
 DEFAULTS.eps = 1e-7
+
+DEFAULTS.SEED = 42
+DEFAULTS.RNG = np.random.default_rng(seed=DEFAULTS.SEED)
+DEFAULTS.RNG_sample = partial(DEFAULTS.RNG.choice, replace=False, shuffle=False)
+DEFAULTS.RNG_randint = partial(DEFAULTS.RNG.integers, endpoint=True)
+
+
+def set_seed(seed: int) -> NoReturn:
+    """
+    set the seed of the random number generator
+
+    Parameters
+    ----------
+    seed: int,
+        the seed to be set
+
+    """
+
+    global DEFAULTS
+    DEFAULTS.SEED = seed
+    DEFAULTS.RNG = np.random.default_rng(seed=seed)
+    DEFAULTS.RNG_sample = partial(DEFAULTS.RNG.choice, replace=False, shuffle=False)
+    DEFAULTS.RNG_randint = partial(DEFAULTS.RNG.integers, endpoint=True)
+
+    random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)

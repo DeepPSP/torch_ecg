@@ -3,7 +3,6 @@
 """
 
 import math
-import random
 from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
@@ -11,7 +10,7 @@ from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
 import numpy as np
 from scipy.io import loadmat
 
-from ...cfg import CFG
+from ...cfg import CFG, DEFAULTS
 from ...utils.download import http_get
 from ...utils.ecg_arrhythmia_knowledge import PVC, SPB  # noqa: F401
 from ...utils.utils_interval import get_optimal_covering
@@ -397,19 +396,21 @@ class CPSC2020(CPSCDataBase):
             with items `train`, `test`, both being list of record names
         """
         if test_rec_num == 1:
-            test_records = random.sample(self.subgroups.VS, 1)
+            test_records = DEFAULTS.RNG_sample(self.subgroups.VS, 1).tolist()
         elif test_rec_num == 2:
-            test_records = random.sample(self.subgroups.VS, 1) + random.sample(
-                self.subgroups.N, 1
+            test_records = (
+                DEFAULTS.RNG_sample(self.subgroups.VS, 1).tolist()
+                + DEFAULTS.RNG_sample(self.subgroups.N, 1).tolist()
             )
         elif test_rec_num == 3:
-            test_records = random.sample(self.subgroups.VS, 1) + random.sample(
-                self.subgroups.N, 2
+            test_records = (
+                DEFAULTS.RNG_sample(self.subgroups.VS, 1).tolist()
+                + DEFAULTS.RNG_sample(self.subgroups.N, 2).tolist()
             )
         elif test_rec_num == 4:
             test_records = []
             for k in self.subgroups.keys():
-                test_records += random.sample(self.subgroups[k], 1)
+                test_records += DEFAULTS.RNG_sample(self.subgroups[k], 1).tolist()
         else:
             raise ValueError("test data ratio too high")
         train_records = [r for r in self.all_records if r not in test_records]

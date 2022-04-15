@@ -27,6 +27,7 @@ from ....utils.misc import ReprMixin, ensure_siglen, list_sum
 from ....utils.utils_signal import remove_spikes_naive
 from .cinc2020_cfg import CINC2020TrainCfg  # noqa: F401
 
+
 __all__ = [
     "CINC2020Dataset",
 ]

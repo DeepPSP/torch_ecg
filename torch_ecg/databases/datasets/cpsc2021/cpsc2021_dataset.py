@@ -38,7 +38,6 @@ and similarly for the task of `rr_lstm`
 
 import json
 import os
-import random
 import re
 import time
 from copy import deepcopy
@@ -58,12 +57,13 @@ from scipy.io import loadmat, savemat
 from torch.utils.data.dataset import Dataset
 
 from ...._preprocessors import PreprocManager
-from ....cfg import CFG
 from ....databases import CPSC2021 as CR
 from ....utils.misc import ReprMixin, get_record_list_recursive3, list_sum, nildent
 from ....utils.utils_interval import mask_to_intervals
 from ....utils.utils_signal import remove_spikes_naive
+from ....cfg import CFG, DEFAULTS
 from .cpsc2021_cfg import CPSC2021TrainCfg
+
 
 __all__ = [
     "CPSC2021Dataset",
@@ -204,11 +204,11 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 [self.__all_segments[subject] for subject in self.subjects]
             )
             if self.__DEBUG__:
-                self.segments = random.sample(
+                self.segments = DEFAULTS.RNG_sample(
                     self.segments, int(len(self.segments) * 0.01)
-                )
+                ).tolist()
             if self.training:
-                random.shuffle(self.segments)
+                DEFAULTS.RNG.shuffle(self.segments)
             # preload data
             self.fdr = FastDataReader(
                 self.config,
@@ -246,9 +246,11 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 [self.__all_rr_seq[subject] for subject in self.subjects]
             )
             if self.__DEBUG__:
-                self.rr_seq = random.sample(self.rr_seq, int(len(self.rr_seq) * 0.01))
+                self.rr_seq = DEFAULTS.RNG_sample(
+                    self.rr_seq, int(len(self.rr_seq) * 0.01)
+                ).tolist()
             if self.training:
-                random.shuffle(self.rr_seq)
+                DEFAULTS.RNG.shuffle(self.rr_seq)
             # preload data
             self.fdr = FastDataReader(
                 self.config,
@@ -821,7 +823,9 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 0,
                 cp
                 - self.seglen
-                + random.randint(critical_forward_len[0], critical_forward_len[1]),
+                + DEFAULTS.RNG_randint(
+                    critical_forward_len[0], critical_forward_len[1]
+                ),
             )
             while start_idx <= min(cp - critical_forward_len[1], siglen - self.seglen):
                 new_seg = self.__generate_segment(
@@ -830,7 +834,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                     start_idx=start_idx,
                 )
                 segments.append(new_seg)
-                start_idx += random.randint(
+                start_idx += DEFAULTS.RNG_randint(
                     critical_forward_len[0], critical_forward_len[1]
                 )
 
@@ -878,10 +882,12 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         siglen = data.shape[1]
         # offline augmentations are done, including strech-or-compress, ...
         if self.config.stretch_compress != 0:
-            sign = random.sample(self.config.stretch_compress_choices, 1)[0]
+            sign = DEFAULTS.RNG_sample(self.config.stretch_compress_choices, 1)[0]
             if sign != 0:
                 sc_ratio = self.config.stretch_compress
-                sc_ratio = 1 + (random.uniform(sc_ratio / 4, sc_ratio) * sign) / 100
+                sc_ratio = (
+                    1 + (DEFAULTS.RNG.uniform(sc_ratio / 4, sc_ratio) * sign) / 100
+                )
                 sc_len = int(round(sc_ratio * self.seglen))
                 if start_idx is not None:
                     end_idx = start_idx + sc_len
@@ -983,7 +989,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         """
         subject = self.reader.get_subject_id(rec)
         ordering = list(range(len(segments)))
-        random.shuffle(ordering)
+        DEFAULTS.RNG.shuffle(ordering)
         for i, idx in enumerate(ordering):
             seg = segments[idx]
             filename = f"{rec}_{i:07d}.{self.segment_ext}".replace("data", "S")
@@ -1151,7 +1157,9 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 0,
                 cp
                 - self.seglen
-                + random.randint(critical_forward_len[0], critical_forward_len[1]),
+                + DEFAULTS.RNG_randint(
+                    critical_forward_len[0], critical_forward_len[1]
+                ),
             )
             while start_idx <= min(cp - critical_forward_len[1], len(rr) - self.seglen):
                 end_idx = start_idx + self.seglen
@@ -1161,12 +1169,12 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                     interval=[start_idx, end_idx],
                 )
                 rr_seq.append(new_rr_seq)
-                start_idx += random.randint(
+                start_idx += DEFAULTS.RNG_randint(
                     critical_forward_len[0], critical_forward_len[1]
                 )
         # save rr sequences
         ordering = list(range(len(rr_seq)))
-        random.shuffle(ordering)
+        DEFAULTS.RNG.shuffle(ordering)
         for i, idx in enumerate(ordering):
             item = rr_seq[idx]
             filename = f"{rec}_{i:07d}.{self.rr_seq_ext}".replace("data", "R")
@@ -1274,23 +1282,23 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             normal_subjects = all_subjects - afp_subjects - aff_subjects
 
             test_set = (
-                random.sample(
+                DEFAULTS.RNG_sample(
                     afp_subjects,
                     max(1, int(round(len(afp_subjects) * _test_ratio / 100))),
-                )
-                + random.sample(
+                ).tolist()
+                + DEFAULTS.RNG_sample(
                     aff_subjects,
                     max(1, int(round(len(aff_subjects) * _test_ratio / 100))),
-                )
-                + random.sample(
+                ).tolist()
+                + DEFAULTS.RNG_sample(
                     normal_subjects,
                     max(1, int(round(len(normal_subjects) * _test_ratio / 100))),
-                )
+                ).tolist()
             )
             train_set = list(all_subjects - set(test_set))
 
-            random.shuffle(test_set)
-            random.shuffle(train_set)
+            DEFAULTS.RNG.shuffle(test_set)
+            DEFAULTS.RNG.shuffle(train_set)
 
             train_file.write_text(json.dumps(train_set, ensure_ascii=False))
             test_file.write_text(json.dumps(test_set, ensure_ascii=False))
@@ -1541,7 +1549,9 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
                 0,
                 cp
                 - self.seglen
-                + random.randint(critical_forward_len[0], critical_forward_len[1]),
+                + DEFAULTS.RNG_randint(
+                    critical_forward_len[0], critical_forward_len[1]
+                ),
             )
             while start_idx <= min(cp - critical_forward_len[1], siglen - self.seglen):
                 new_seg = self.__generate_segment(
@@ -1550,7 +1560,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
                     start_idx=start_idx,
                 )
                 segments.append(new_seg)
-                start_idx += random.randint(
+                start_idx += DEFAULTS.RNG_randint(
                     critical_forward_len[0], critical_forward_len[1]
                 )
 
@@ -1597,10 +1607,12 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
         siglen = data.shape[1]
         # offline augmentations are done, including strech-or-compress, ...
         if self.config.stretch_compress != 0:
-            sign = random.sample(self.config.stretch_compress_choices, 1)[0]
+            sign = DEFAULTS.RNG_sample(self.config.stretch_compress_choices, 1)[0]
             if sign != 0:
                 sc_ratio = self.config.stretch_compress
-                sc_ratio = 1 + (random.uniform(sc_ratio / 4, sc_ratio) * sign) / 100
+                sc_ratio = (
+                    1 + (DEFAULTS.RNG.uniform(sc_ratio / 4, sc_ratio) * sign) / 100
+                )
                 sc_len = int(round(sc_ratio * self.seglen))
                 if start_idx is not None:
                     end_idx = start_idx + sc_len

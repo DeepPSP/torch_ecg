@@ -2,7 +2,6 @@
 """
 
 from abc import ABC, abstractmethod
-from random import sample
 from typing import Any, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -10,6 +9,7 @@ import torch.nn as nn
 from torch import Tensor
 
 from ..utils.misc import ReprMixin
+from ..cfg import DEFAULTS
 
 __all__ = [
     "Augmenter",
@@ -80,8 +80,8 @@ class Augmenter(ReprMixin, nn.Module, ABC):
         ----
         add parameter `min_dist` so that any 2 selected indices are at least `min_dist` apart
         """
-        k = np.random.normal(pop_size * prob, scale_ratio * pop_size)
+        k = DEFAULTS.RNG.normal(pop_size * prob, scale_ratio * pop_size)
         # print(pop_size * prob, scale_ratio*pop_size)
         k = int(round(np.clip(k, 0, pop_size)))
-        indices = sample(list(range(pop_size)), k=k)
+        indices = DEFAULTS.RNG_sample(list(range(pop_size)), k=k).tolist()
         return indices

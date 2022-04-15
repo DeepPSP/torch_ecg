@@ -7,6 +7,7 @@ from typing import Any, Iterable, List, NoReturn, Optional, Sequence, Tuple
 import numpy as np
 from torch import Tensor
 
+from ..cfg import DEFAULTS
 from ..utils.utils_signal_t import normalize as normalize_t
 from .base import Augmenter
 
@@ -102,17 +103,17 @@ class RandomRenormalize(Augmenter):
             sig = sig.clone()
         indices = self.get_indices(self.prob, pop_size=batch)
         if self.per_channel:
-            mean = np.random.normal(
+            mean = DEFAULTS.RNG.normal(
                 self.mean_mean, self.mean_scale, size=(len(indices), lead, 1)
             )
-            std = np.random.normal(
+            std = DEFAULTS.RNG.normal(
                 self.std_mean, self.std_scale, size=(len(indices), lead, 1)
             )
         else:
-            mean = np.random.normal(
+            mean = DEFAULTS.RNG.normal(
                 self.mean_mean, self.mean_scale, size=(len(indices), 1, 1)
             )
-            std = np.random.normal(
+            std = DEFAULTS.RNG.normal(
                 self.std_mean, self.std_scale, size=(len(indices), 1, 1)
             )
         sig[indices, ...] = normalize_t(

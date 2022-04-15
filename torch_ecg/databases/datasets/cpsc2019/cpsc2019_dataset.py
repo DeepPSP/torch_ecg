@@ -23,6 +23,7 @@ from ....databases import CPSC2019 as CR
 from ....utils.misc import ReprMixin
 from .cpsc2019_cfg import CPSC2019TrainCfg  # noqa: F401
 
+
 __all__ = [
     "CPSC2019Dataset",
 ]
