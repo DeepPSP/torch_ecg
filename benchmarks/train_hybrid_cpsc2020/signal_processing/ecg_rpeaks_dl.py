@@ -22,7 +22,7 @@ except ModuleNotFoundError:
     from pathlib import Path
 
     sys.path.insert(0, str(Path(__file__).absolute().parents[3]))
-from torch_ecg.utils.misc import mask_to_intervals
+from torch_ecg.utils.utils_data import mask_to_intervals
 
 from .ecg_rpeaks_dl_models import load_model
 

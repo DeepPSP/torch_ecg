@@ -24,7 +24,8 @@ from torch_ecg.components.outputs import RPeaksDetectionOutput
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET  # _ECG_SEQ_LAB_NET,
 from torch_ecg.models.unets.ecg_subtract_unet import ECG_SUBTRACT_UNET
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
-from torch_ecg.utils.misc import add_docstring, mask_to_intervals
+from torch_ecg.utils.misc import add_docstring
+from torch_ecg.utils.utils_data import mask_to_intervals
 
 __all__ = [
     "ECG_SEQ_LAB_NET_CPSC2019",

@@ -33,7 +33,8 @@ from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import CINC2021 as CR
 from torch_ecg.utils.ecg_arrhythmia_knowledge import Standard12Leads
-from torch_ecg.utils.misc import ReprMixin, ensure_siglen, list_sum
+from torch_ecg.utils.misc import ReprMixin, list_sum
+from torch_ecg.utils.utils_data import ensure_siglen
 from torch_ecg.utils.utils_signal import remove_spikes_naive
 
 if ModelCfg.torch_dtype == torch.float64:

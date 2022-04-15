@@ -31,7 +31,8 @@ from torch_ecg.databases.cpsc_databases.cpsc2019 import (
 from torch_ecg.databases.datasets.cpsc2019 import CPSC2019Dataset, CPSC2019TrainCfg
 from torch_ecg.model_configs import ECG_SEQ_LAB_NET_CONFIG
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET
-from torch_ecg.utils.misc import add_docstring, mask_to_intervals
+from torch_ecg.utils.misc import add_docstring
+from torch_ecg.utils.utils_data import mask_to_intervals
 from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 

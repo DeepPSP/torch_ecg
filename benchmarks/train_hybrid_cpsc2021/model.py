@@ -33,7 +33,8 @@ from torch_ecg.models.ecg_crnn import ECG_CRNN  # noqa: F401
 from torch_ecg.models.ecg_seq_lab_net import ECG_SEQ_LAB_NET  # noqa: F401
 from torch_ecg.models.rr_lstm import RR_LSTM  # noqa: F401
 from torch_ecg.models.unets import ECG_SUBTRACT_UNET, ECG_UNET  # noqa: F401
-from torch_ecg.utils.misc import add_docstring, mask_to_intervals
+from torch_ecg.utils.misc import add_docstring
+from torch_ecg.utils.utils_data import mask_to_intervals
 from torch_ecg.utils.utils_interval import intervals_union
 
 __all__ = [

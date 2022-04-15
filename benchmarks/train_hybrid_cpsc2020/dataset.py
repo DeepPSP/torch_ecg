@@ -88,8 +88,8 @@ from torch_ecg.utils.misc import (
     ReprMixin,
     get_record_list_recursive3,
     list_sum,
-    mask_to_intervals,
 )
+from torch_ecg.utils.utils_data import mask_to_intervals
 
 from cfg import ModelCfg, PreprocCfg
 

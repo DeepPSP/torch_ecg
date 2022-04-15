@@ -7,7 +7,8 @@ from typing import Any, Callable, List, NoReturn, Optional, Sequence, Union, Dic
 import numpy as np
 from torch import Tensor
 
-from ..utils.misc import ReprMixin, add_docstring, ECGWaveFormNames
+from ..utils.misc import ReprMixin, add_docstring
+from torch_ecg.utils.utils_data import ECGWaveFormNames
 from ..utils.utils_metrics import (  # noqa: F401
     QRS_score,
     metrics_from_confusion_matrix,

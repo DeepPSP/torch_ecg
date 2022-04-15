@@ -28,7 +28,7 @@ except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parents[3]))
 
 from torch_ecg.cfg import CFG
-from torch_ecg.utils.misc import mask_to_intervals
+from torch_ecg.utils.utils_data import mask_to_intervals
 
 
 __all__ = [

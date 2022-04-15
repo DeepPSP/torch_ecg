@@ -553,11 +553,21 @@ class MITDB(PhysioNetDataBase):
             a dict of lists of record names,
 
         """
-        assert by.lower() in ["beat", "rhythm"], f"`by` should be one of 'beat' or 'rhythm', but got {by}"
+        assert by.lower() in [
+            "beat",
+            "rhythm",
+        ], f"`by` should be one of 'beat' or 'rhythm', but got {by}"
         key = dict(beat="beat_type_num", rhythm="rhythm_len")[by.lower()]
-        return CFG({
-            item: [row["record"] for _, row in self.df_stats.iterrows() if item in row[key]] for item in self.db_stats[key]
-        })
+        return CFG(
+            {
+                item: [
+                    row["record"]
+                    for _, row in self.df_stats.iterrows()
+                    if item in row[key]
+                ]
+                for item in self.db_stats[key]
+            }
+        )
 
     @property
     def beat_types_records(self) -> Dict[str, List[str]]:

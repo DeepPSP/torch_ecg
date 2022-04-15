@@ -24,7 +24,7 @@ from torch_ecg.components.outputs import (
     SequenceLabelingOutput,
 )
 from torch_ecg.models import ECG_CRNN, ECG_SEQ_LAB_NET
-from torch_ecg.utils.misc import mask_to_intervals
+from torch_ecg.utils.utils_data import mask_to_intervals
 
 from cfg import ModelCfg
 

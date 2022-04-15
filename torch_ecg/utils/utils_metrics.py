@@ -14,12 +14,8 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from .misc import (
-    add_docstring,
-    ECGWaveForm,
-    ECGWaveFormNames,
-    masks_to_waveforms,
-)
+from .misc import add_docstring
+from .utils_data import ECGWaveForm, ECGWaveFormNames, masks_to_waveforms
 from ..cfg import DEFAULTS
 
 

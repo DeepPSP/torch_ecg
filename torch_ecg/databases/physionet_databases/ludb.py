@@ -12,7 +12,7 @@ import wfdb
 from scipy.signal import resample_poly
 
 from ...cfg import CFG, DEFAULTS
-from ...utils.misc import ECGWaveForm, masks_to_waveforms
+from ...utils.utils_data import ECGWaveForm, masks_to_waveforms
 from ..base import PhysioNetDataBase
 
 __all__ = [

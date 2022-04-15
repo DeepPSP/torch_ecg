@@ -26,11 +26,11 @@ from ...utils.download import http_get
 from ...utils.misc import (
     add_docstring,
     dict_to_str,
-    ensure_siglen,
     get_record_list_recursive3,
     list_sum,
     ms2samples,
 )
+from torch_ecg.utils.utils_data import ensure_siglen
 from ..aux_data.cinc2021_aux_data import (
     df_weights_abbr,
     dx_mapping_all,

@@ -38,9 +38,9 @@ from torch_ecg.utils.misc import (
     dict_to_str,
     get_date_str,
     list_sum,
-    mask_to_intervals,
     str2bool,
 )
+from torch_ecg.utils.utils_data import mask_to_intervals
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 from cfg import ModelCfg, TrainCfg

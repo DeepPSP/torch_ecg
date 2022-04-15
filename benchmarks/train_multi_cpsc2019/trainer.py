@@ -32,7 +32,8 @@ from model import (
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.components.trainer import BaseTrainer
-from torch_ecg.utils.misc import mask_to_intervals, str2bool
+from torch_ecg.utils.misc import str2bool
+from torch_ecg.utils.utils_data import mask_to_intervals
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 ECG_SEQ_LAB_NET_CPSC2019.__DEBUG__ = False

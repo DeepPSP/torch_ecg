@@ -27,7 +27,8 @@ from biosppy.signals.tools import filter_signal
 from scipy.ndimage.filters import median_filter
 
 from ..cfg import CFG
-from .misc import get_mask, list_sum, ms2samples
+from .misc import list_sum, ms2samples
+from .utils_data import get_mask
 from .rpeaks import (
     christov_detect,
     engzee_detect,

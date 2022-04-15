@@ -28,7 +28,7 @@ except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.utils.misc import ECGWaveForm, masks_to_waveforms
+from torch_ecg.utils.utils_data import ECGWaveForm, masks_to_waveforms
 
 __all__ = [
     "compute_metrics",
