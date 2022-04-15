@@ -536,6 +536,39 @@ class MITDB(PhysioNetDataBase):
                 beat_type_num[k] += v
         return CFG(rhythm_len=dict(rhythm_len), beat_type_num=dict(beat_type_num))
 
+    def _categorize_records(self, by: str) -> Dict[str, List[str]]:
+        """
+
+        categorize records by specific attributes
+
+        Parameters
+        ----------
+        by: str,
+            the attribute to categorize the records,
+            can be one of "beat", "rhythm", case insensitive
+
+        Returns
+        -------
+        dict of list of str:
+            a dict of lists of record names,
+
+        """
+        assert by.lower() in ["beat", "rhythm"], f"`by` should be one of 'beat' or 'rhythm', but got {by}"
+        key = dict(beat="beat_type_num", rhythm="rhythm_len")[by.lower()]
+        return CFG({
+            item: [row["record"] for _, row in self.df_stats.iterrows() if item in row[key]] for item in self.db_stats[key]
+        })
+
+    @property
+    def beat_types_records(self) -> Dict[str, List[str]]:
+        """ """
+        return self._categorize_records("beat")
+
+    @property
+    def rhythm_types_records(self) -> Dict[str, List[str]]:
+        """ """
+        return self._categorize_records("rhythm")
+
     def plot(
         self,
         rec: Union[str, int],
