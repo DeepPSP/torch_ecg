@@ -14,6 +14,8 @@ from .cpsc2021.cpsc2021_cfg import CPSC2021TrainCfg
 from .cpsc2021.cpsc2021_dataset import CPSC2021Dataset
 from .ludb.ludb_cfg import LUDBTrainCfg
 from .ludb.ludb_dataset import LUDBDataset
+from .mitdb.mitdb_cfg import MITDBTrainCfg
+from .mitdb.mitdb_dataset import MITDBDataset
 
 __all__ = [
     "CINC2020TrainCfg", "CINC2020Dataset",
@@ -22,5 +24,6 @@ __all__ = [
     # "CPSC2020TrainCfg", "CPSC2020Dataset",
     "CPSC2021TrainCfg", "CPSC2021Dataset",
     "LUDBTrainCfg", "LUDBDataset",
+    "MITDBTrainCfg", "MITDBDataset",
 ]
 # fmt: on
