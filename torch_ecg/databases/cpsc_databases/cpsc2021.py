@@ -631,7 +631,7 @@ class CPSC2021(PhysioNetDataBase):
         ann: Optional[wfdb.Annotation] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        zero_start: bool = False,
+        keep_original: bool = False,
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
@@ -649,10 +649,9 @@ class CPSC2021(PhysioNetDataBase):
             start index of the data to be loaded
         sampto: int, optional,
             end index of the data to be loaded
-        zero_start: bool, default False,
-            if True, (relative) start index is zero,
-            otherwise, (relative) start index is `sampfrom`,
-            works only when `sampfrom` is positive
+        keep_original: bool, default False,
+            if True, indices will keep the same with the annotation file
+            otherwise subtract `sampfrom` if specified
         fs: real number, optional,
             if not None, positions of the loaded rpeaks will be ajusted according to this sampling frequency
 
@@ -672,7 +671,7 @@ class CPSC2021(PhysioNetDataBase):
         critical_points = ann.sample
         symbols = ann.symbol
         rpeaks_valid = np.isin(symbols, list(WFDB_Beat_Annotations.keys()))
-        if sampfrom and zero_start:
+        if sampfrom and not keep_original:
             critical_points = critical_points - sampfrom
         if fs is not None and fs != self.fs:
             critical_points = np.round(
@@ -688,13 +687,13 @@ class CPSC2021(PhysioNetDataBase):
         ann: Optional[wfdb.Annotation] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        zero_start: bool = False,
+        keep_original: bool = False,
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
         alias of `self.load_rpeaks`
         """
-        return self.load_rpeaks(rec, ann, sampfrom, sampto, zero_start, fs)
+        return self.load_rpeaks(rec, ann, sampfrom, sampto, keep_original, fs)
 
     def load_af_episodes(
         self,
@@ -702,7 +701,7 @@ class CPSC2021(PhysioNetDataBase):
         ann: Optional[wfdb.Annotation] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        zero_start: bool = False,
+        keep_original: bool = False,
         fs: Optional[Real] = None,
         fmt: str = "intervals",
     ) -> Union[List[List[int]], np.ndarray]:
@@ -723,10 +722,10 @@ class CPSC2021(PhysioNetDataBase):
         sampto: int, optional,
             end index of the data to be loaded,
             not used when `fmt` is "c_intervals"
-        zero_start: bool, default False,
-            if True, (relative) start index is zero,
-            otherwise, (relative) start index is `sampfrom`,
-            works only when `sampfrom` is positive and `fmt` is not "c_intervals"
+        keep_original: bool, default False,
+            if True, indices will keep the same with the annotation file
+            otherwise subtract `sampfrom` if specified
+            works only when `fmt` is not "c_intervals"
         fs: real number, optional,
             if not None, positions of the loaded intervals or mask will be ajusted according to this sampling frequency
         fmt: str, default "intervals",
@@ -790,7 +789,7 @@ class CPSC2021(PhysioNetDataBase):
                     for itv in intervals
                 ]
 
-        if zero_start:
+        if not keep_original:
             intervals = [[itv[0] - sf, itv[1] - sf] for itv in intervals]
             sf = 0
         af_episodes = intervals

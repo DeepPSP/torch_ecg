@@ -61,6 +61,7 @@ from ....databases import CPSC2021 as CR
 from ....utils.misc import ReprMixin, get_record_list_recursive3, list_sum, nildent
 from ....utils.utils_interval import mask_to_intervals
 from ....utils.utils_signal import remove_spikes_naive
+from ....utils.utils_data import generate_weight_mask
 from ....cfg import CFG, DEFAULTS
 from .cpsc2021_cfg import CPSC2021TrainCfg
 
@@ -292,7 +293,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 self.segments_dirs[item][s].mkdir(parents=True, exist_ok=True)
         if self.segments_json.is_file():
             self.__all_segments = json.loads(self.segments_json.read_text())
-            return
+            # return
         print(
             f"please allow the reader a few minutes to collect the segments from {self.segments_base_dir}..."
         )
@@ -317,7 +318,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             self.rr_seq_dirs[s].mkdir(parents=True, exist_ok=True)
         if self.rr_seq_json.is_file():
             self.__all_rr_seq = json.loads(self.rr_seq_json.read_text())
-            return
+            # return
         print(
             f"please allow the reader a few minutes to collect the rr sequences from {self.rr_seq_base_dir}..."
         )
@@ -731,8 +732,9 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if verbose >= 1:
                 print(f"{idx+1}/{len(self.reader.all_records)} records", end="\r")
         if force_recompute:
-            with open(self.segments_json, "w") as f:
-                json.dump(self.__all_segments, f)
+            self.segments_json.write_text(
+                json.dump(self.__all_segments, ensure_ascii=False)
+            )
 
     def _slice_one_record(
         self,
@@ -931,7 +933,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             rec=rec,
             sampfrom=start_idx,
             sampto=end_idx,
-            zero_start=True,
+            keep_original=False,
         )
         seg_rpeaks = [
             int(round(r / sc_ratio))
@@ -951,7 +953,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             rec=rec,
             sampfrom=start_idx,
             sampto=end_idx,
-            zero_start=True,
+            keep_original=False,
             fmt="intervals",
         )
         seg_af_intervals = [
@@ -995,7 +997,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             filename = f"{rec}_{i:07d}.{self.segment_ext}".replace("data", "S")
             data_path = self.segments_dirs.data[subject] / filename
             savemat(str(data_path), {"ecg": seg.data})
-            self.__all_segments[subject].append(Path(filename).with_suffix(""))
+            self.__all_segments[subject].append(Path(filename).with_suffix("").name)
             ann_path = self.segments_dirs.ann[subject] / filename
             savemat(
                 str(ann_path),
@@ -1042,7 +1044,10 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                     ]:
                         if self._get_rec_name(f) == rec:
                             os.remove(os.path.join(path, f))
-                            self.__all_segments[subject].remove(os.path.splitext(f)[0])
+                            if os.path.splitext(f)[0] in self.__all_segments[subject]:
+                                self.__all_segments[subject].remove(
+                                    os.path.splitext(f)[0]
+                                )
         else:
             for subject in self.reader.all_subjects:
                 for item in [
@@ -1054,7 +1059,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                         n for n in os.listdir(path) if n.endswith(self.segment_ext)
                     ]:
                         os.remove(os.path.join(path, f))
-                        self.__all_segments[subject].remove(os.path.splitext(f)[0])
+                        if os.path.splitext(f)[0] in self.__all_segments[subject]:
+                            self.__all_segments[subject].remove(os.path.splitext(f)[0])
         self.segments = list_sum(
             [self.__all_segments[subject] for subject in self.subjects]
         )
@@ -1087,8 +1093,9 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if verbose >= 1:
                 print(f"{idx+1}/{len(self.reader.all_records)} records", end="\r")
         if force_recompute:
-            with open(self.rr_seq_json, "w") as f:
-                json.dump(self.__all_rr_seq, f)
+            self.rr_seq_json.write_text(
+                json.dumps(self.__all_rr_seq, ensure_ascii=False)
+            )
 
     def _slice_rr_seq_one_record(
         self,
@@ -1142,14 +1149,15 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             )
             rr_seq.append(new_rr_seq)
         # the tail segment
-        end_idx = len(rr)
-        start_idx = start_idx + self.seglen
-        new_rr_seq = CFG(
-            rr=rr[start_idx:end_idx],
-            label=label_seq[start_idx:end_idx],
-            interval=[start_idx, end_idx],
-        )
-        rr_seq.append(new_rr_seq)
+        if end_idx < len(rr):
+            end_idx = len(rr)
+            start_idx = end_idx - self.seglen
+            new_rr_seq = CFG(
+                rr=rr[start_idx:end_idx],
+                label=label_seq[start_idx:end_idx],
+                interval=[start_idx, end_idx],
+            )
+            rr_seq.append(new_rr_seq)
 
         # special segments around critical_points with random forward_len in critical_forward_len
         for cp in critical_points:
@@ -1173,6 +1181,24 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                     critical_forward_len[0], critical_forward_len[1]
                 )
         # save rr sequences
+        self.__save_rr_seq(rec, rr_seq, update_rr_seq_json)
+
+    def __save_rr_seq(
+        self, rec: str, rr_seq: List[CFG], update_rr_seq_json: bool = False
+    ) -> NoReturn:
+        """
+
+        Parameters
+        ----------
+        rec: str,
+            filename of the record
+        rr_seq: list of dict,
+            list of the rr_seq (meta-)data
+        update_rr_seq_json: bool, default False,
+            if True, the file `self.rr_seq_json` will be updated
+
+        """
+        subject = self.reader.get_subject_id(rec)
         ordering = list(range(len(rr_seq)))
         DEFAULTS.RNG.shuffle(ordering)
         for i, idx in enumerate(ordering):
@@ -1180,7 +1206,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             filename = f"{rec}_{i:07d}.{self.rr_seq_ext}".replace("data", "R")
             data_path = self.rr_seq_dirs[subject] / filename
             savemat(str(data_path), item)
-            self.__all_rr_seq[subject].append(Path(filename).with_suffix(""))
+            self.__all_rr_seq[subject].append(Path(filename).with_suffix("").name)
         if update_rr_seq_json:
             self.rr_seq_json.write_text(
                 json.dumps(self.__all_rr_seq, ensure_ascii=False)
@@ -1204,13 +1230,15 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 for f in [n for n in os.listdir(path) if n.endswith(self.rr_seq_ext)]:
                     if self._get_rec_name(f) == rec:
                         os.remove(os.path.join(path, f))
-                        self.__all_rr_seq[subject].remove(os.path.splitext(f)[0])
+                        if os.path.splitext(f)[0] in self.__all_rr_seq[subject]:
+                            self.__all_rr_seq[subject].remove(os.path.splitext(f)[0])
         else:
             for subject in self.reader.all_subjects:
                 path = str(self.rr_seq_dirs[subject])
                 for f in [n for n in os.listdir(path) if n.endswith(self.rr_seq_ext)]:
                     os.remove(os.path.join(path, f))
-                    self.__all_rr_seq[subject].remove(os.path.splitext(f)[0])
+                    if os.path.splitext(f)[0] in self.__all_rr_seq[subject]:
+                        self.__all_rr_seq[subject].remove(os.path.splitext(f)[0])
         self.rr_seq = list_sum(
             [self.__all_rr_seq[subject] for subject in self.subjects]
         )
@@ -1423,7 +1451,7 @@ class FastDataReader(ReprMixin, Dataset):
                 ).squeeze(axis=1)
             seg_data, _ = self.seg_ppm(seg_data, self.config.fs)
             if self.task == "main":
-                weight_mask = _generate_weight_mask(
+                weight_mask = generate_weight_mask(
                     target_mask=seg_label.squeeze(-1),
                     fg_weight=2,
                     fs=self.config.fs,
@@ -1442,7 +1470,7 @@ class FastDataReader(ReprMixin, Dataset):
             rr_seq = loadmat(str(rr_seq_path))
             rr_seq["rr"] = rr_seq["rr"].reshape((self.seglen, 1))
             rr_seq["label"] = rr_seq["label"].reshape((self.seglen, self.n_classes))
-            weight_mask = _generate_weight_mask(
+            weight_mask = generate_weight_mask(
                 target_mask=rr_seq["label"].squeeze(-1),
                 fg_weight=2,
                 fs=1 / 0.8,
@@ -1656,7 +1684,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
             rec=rec,
             sampfrom=start_idx,
             sampto=end_idx,
-            zero_start=True,
+            keep_original=False,
         )
         seg_rpeaks = [
             int(round(r / sc_ratio))
@@ -1676,7 +1704,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
             rec=rec,
             sampfrom=start_idx,
             sampto=end_idx,
-            zero_start=True,
+            keep_original=False,
             fmt="intervals",
         )
         seg_af_intervals = [
@@ -1747,64 +1775,3 @@ def _get_rec_suffix(operations: List[str]) -> str:
     """
     suffix = "-".join(sorted([item.lower() for item in operations]))
     return suffix
-
-
-def _generate_weight_mask(
-    target_mask: np.ndarray,
-    fg_weight: float,
-    fs: int,
-    reduction: int,
-    radius: float,
-    boundary_weight: float,
-    plot: bool = False,
-) -> np.ndarray:
-    """
-
-    generate weight mask for a binary target mask,
-    accounting the foreground weight and boundary weight
-
-    Parameters
-    ----------
-    target_mask: ndarray,
-        the target mask, assumed to be 1d
-    fg_weight: float,
-        foreground weight, usually > 1
-    fs: int,
-        sampling frequency of the signal
-    reduction: int,
-        reduction ratio of the mask w.r.t. the signal
-    boundary_weight: float,
-        weight for the boundaries (positions where values change) of the target map
-    plot: bool, default False,
-        if True, target_mask and the result weight_mask will be plotted
-
-    Returns
-    -------
-    weight_mask: ndarray,
-        the weight mask
-
-    """
-    weight_mask = np.ones_like(target_mask, dtype=float)
-    sigma = int((radius * fs) / reduction)
-    weight = np.full_like(target_mask, fg_weight) - 1
-    weight_mask += (target_mask > 0.5) * weight
-    border = np.where(np.diff(target_mask) != 0)[0]
-    for idx in border:
-        # weight = np.zeros_like(target_mask, dtype=float)
-        # weight[max(0, idx-sigma): (idx+sigma)] = boundary_weight
-        weight = np.full_like(target_mask, boundary_weight, dtype=float)
-        weight = weight * np.exp(
-            -np.power(np.arange(len(target_mask)) - idx, 2) / sigma**2
-        )
-        weight_mask += weight
-    if plot:
-        import matplotlib.pyplot as plt
-
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.plot(target_mask, label="target mask")
-        ax.plot(weight_mask, label="weight mask")
-        ax.set_xlabel("samples")
-        ax.set_ylabel("weight")
-        ax.legend(loc="best")
-        plt.show()
-    return weight_mask

@@ -75,6 +75,7 @@ from torch_ecg.utils.misc import (
 )
 from torch_ecg.utils.utils_interval import mask_to_intervals
 from torch_ecg.utils.utils_signal import remove_spikes_naive
+from torch_ecg.utils.utils_data import generate_weight_mask
 
 if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -927,7 +928,7 @@ class CPSC2021(ReprMixin, Dataset):
             rec=rec,
             sampfrom=start_idx,
             sampto=end_idx,
-            zero_start=True,
+            keep_original=False,
         )
         seg_rpeaks = [
             int(round(r / sc_ratio))
@@ -947,7 +948,7 @@ class CPSC2021(ReprMixin, Dataset):
             rec=rec,
             sampfrom=start_idx,
             sampto=end_idx,
-            zero_start=True,
+            keep_original=False,
             fmt="intervals",
         )
         seg_af_intervals = [
@@ -1135,14 +1136,15 @@ class CPSC2021(ReprMixin, Dataset):
             )
             rr_seq.append(new_rr_seq)
         # the tail segment
-        end_idx = len(rr)
-        start_idx = start_idx + self.seglen
-        new_rr_seq = CFG(
-            rr=rr[start_idx:end_idx],
-            label=label_seq[start_idx:end_idx],
-            interval=[start_idx, end_idx],
-        )
-        rr_seq.append(new_rr_seq)
+        if end_idx < len(rr):
+            end_idx = len(rr)
+            start_idx = end_idx - self.seglen
+            new_rr_seq = CFG(
+                rr=rr[start_idx:end_idx],
+                label=label_seq[start_idx:end_idx],
+                interval=[start_idx, end_idx],
+            )
+            rr_seq.append(new_rr_seq)
 
         # special segments around critical_points with random forward_len in critical_forward_len
         for cp in critical_points:
@@ -1410,7 +1412,7 @@ class FastDataReader(ReprMixin, Dataset):
                 ).squeeze(axis=1)
             seg_data, _ = self.seg_ppm(seg_data, self.config.fs)
             if self.task == "main":
-                weight_mask = _generate_weight_mask(
+                weight_mask = generate_weight_mask(
                     target_mask=seg_label.squeeze(-1),
                     fg_weight=2,
                     fs=self.config.fs,
@@ -1429,7 +1431,7 @@ class FastDataReader(ReprMixin, Dataset):
             rr_seq = loadmat(str(rr_seq_path))
             rr_seq["rr"] = rr_seq["rr"].reshape((self.seglen, 1))
             rr_seq["label"] = rr_seq["label"].reshape((self.seglen, self.n_classes))
-            weight_mask = _generate_weight_mask(
+            weight_mask = generate_weight_mask(
                 target_mask=rr_seq["label"].squeeze(-1),
                 fg_weight=2,
                 fs=1 / 0.8,
@@ -1642,7 +1644,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
             rec=rec,
             sampfrom=start_idx,
             sampto=end_idx,
-            zero_start=True,
+            keep_original=False,
         )
         seg_rpeaks = [
             int(round(r / sc_ratio))
@@ -1662,7 +1664,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
             rec=rec,
             sampfrom=start_idx,
             sampto=end_idx,
-            zero_start=True,
+            keep_original=False,
             fmt="intervals",
         )
         seg_af_intervals = [
@@ -1731,63 +1733,3 @@ def _get_rec_suffix(operations: List[str]) -> str:
     """
     suffix = "-".join(sorted([item.lower() for item in operations]))
     return suffix
-
-
-def _generate_weight_mask(
-    target_mask: np.ndarray,
-    fg_weight: float,
-    fs: int,
-    reduction: int,
-    radius: float,
-    boundary_weight: float,
-    plot: bool = False,
-) -> np.ndarray:
-    """
-
-    generate weight mask for a binary target mask,
-    accounting the foreground weight and boundary weight
-
-    Parameters
-    ----------
-    target_mask: ndarray,
-        the target mask, assumed to be 1d
-    fg_weight: float,
-        foreground weight, usually > 1
-    fs: int,
-        sampling frequency of the signal
-    reduction: int,
-        reduction ratio of the mask w.r.t. the signal
-    boundary_weight: float,
-        weight for the boundaries (positions where values change) of the target map
-    plot: bool, default False,
-        if True, target_mask and the result weight_mask will be plotted
-
-    Returns
-    -------
-    weight_mask: ndarray,
-        the weight mask
-    """
-    weight_mask = np.ones_like(target_mask, dtype=float)
-    sigma = int((radius * fs) / reduction)
-    weight = np.full_like(target_mask, fg_weight) - 1
-    weight_mask += (target_mask > 0.5) * weight
-    border = np.where(np.diff(target_mask) != 0)[0]
-    for idx in border:
-        # weight = np.zeros_like(target_mask, dtype=float)
-        # weight[max(0, idx-sigma): (idx+sigma)] = boundary_weight
-        weight = np.full_like(target_mask, boundary_weight, dtype=float)
-        weight = weight * np.exp(
-            -np.power(np.arange(len(target_mask)) - idx, 2) / sigma**2
-        )
-        weight_mask += weight
-    if plot:
-        import matplotlib.pyplot as plt
-
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.plot(target_mask, label="target mask")
-        ax.plot(weight_mask, label="weight mask")
-        ax.set_xlabel("samples")
-        ax.set_ylabel("weight")
-        ax.legend(loc="best")
-        plt.show()
-    return weight_mask

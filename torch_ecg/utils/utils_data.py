@@ -4,7 +4,8 @@ utilities for convertions of data, labels, masks, etc.
 """
 
 import os
-from collections import namedtuple
+import warnings
+from collections import namedtuple, Counter
 from copy import deepcopy
 from numbers import Real
 from typing import (
@@ -549,6 +550,17 @@ def stratified_train_test_split(
     lie in the test set as well.
 
     """
+    invalid_cols = [
+        col
+        for col in stratified_cols
+        if not all([v > 1 for v in Counter(df[col]).values()])
+    ]
+    if len(invalid_cols) > 0:
+        warnings.warn(
+            f"invalid columns: {invalid_cols}, "
+            "each of which has classes with only one member (row), "
+        )
+    stratified_cols = [col for col in stratified_cols if col not in invalid_cols]
     df_inspection = df[stratified_cols].copy()
     for item in stratified_cols:
         all_entities = df_inspection[item].unique().tolist()
@@ -616,3 +628,64 @@ def cls_to_bin(
         for i in range(shape[0]):
             bin_array[i, cls_array[i]] = 1
     return bin_array
+
+
+def generate_weight_mask(
+    target_mask: np.ndarray,
+    fg_weight: float,
+    fs: int,
+    reduction: int,
+    radius: float,
+    boundary_weight: float,
+    plot: bool = False,
+) -> np.ndarray:
+    """
+
+    generate weight mask for a binary target mask,
+    accounting the foreground weight and boundary weight
+
+    Parameters
+    ----------
+    target_mask: ndarray,
+        the target mask, assumed to be 1d
+    fg_weight: float,
+        foreground weight, usually > 1
+    fs: int,
+        sampling frequency of the signal
+    reduction: int,
+        reduction ratio of the mask w.r.t. the signal
+    boundary_weight: float,
+        weight for the boundaries (positions where values change) of the target map
+    plot: bool, default False,
+        if True, target_mask and the result weight_mask will be plotted
+
+    Returns
+    -------
+    weight_mask: ndarray,
+        the weight mask
+
+    """
+    weight_mask = np.ones_like(target_mask, dtype=float)
+    sigma = int((radius * fs) / reduction)
+    weight = np.full_like(target_mask, fg_weight) - 1
+    weight_mask += (target_mask > 0.5) * weight
+    border = np.where(np.diff(target_mask) != 0)[0]
+    for idx in border:
+        # weight = np.zeros_like(target_mask, dtype=float)
+        # weight[max(0, idx-sigma): (idx+sigma)] = boundary_weight
+        weight = np.full_like(target_mask, boundary_weight, dtype=float)
+        weight = weight * np.exp(
+            -np.power(np.arange(len(target_mask)) - idx, 2) / sigma**2
+        )
+        weight_mask += weight
+    if plot:
+        import matplotlib.pyplot as plt
+
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.plot(target_mask, label="target mask")
+        ax.plot(weight_mask, label="weight mask")
+        ax.set_xlabel("samples")
+        ax.set_ylabel("weight")
+        ax.legend(loc="best")
+        plt.show()
+    return weight_mask
