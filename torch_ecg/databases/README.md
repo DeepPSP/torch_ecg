@@ -15,7 +15,7 @@ After migration, all should be tested again, the progression:
 | CinC2021      | [PhysioNet](https://physionet.org/content/challenge-2021/1.0.2/) | :heavy_check_mark: |
 | LTAFDB        | [PhysioNet](https://physionet.org/content/ltafdb/1.0.0/)         | :x:                |
 | LUDB          | [PhysioNet](https://physionet.org/content/ludb/1.0.1/)           | :heavy_check_mark: |
-| MITDB         | [PhysioNet](https://physionet.org/content/mitdb/1.0.0/)          | :x:                |
+| MITDB         | [PhysioNet](https://physionet.org/content/mitdb/1.0.0/)          | :heavy_check_mark: |
 | SHHS          | [NSRR](https://sleepdata.org/datasets/shhs)                      | :x:                |
 | CPSC2018      | [CPSC](http://2018.icbeb.org/Challenge.html)                     | :heavy_check_mark: |
 | CPSC2019      | [CPSC](http://2019.icbeb.org/Challenge.html)                     | :heavy_check_mark: |

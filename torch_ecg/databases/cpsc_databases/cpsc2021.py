@@ -18,7 +18,12 @@ import wfdb
 from scipy.signal import resample, resample_poly  # noqa: F401
 
 from ...cfg import CFG
-from ...utils.misc import get_record_list_recursive3, list_sum, ms2samples
+from ...utils.misc import (
+    get_record_list_recursive3,
+    list_sum,
+    ms2samples,
+    add_docstring,
+)
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (  # noqa: F401
     DEFAULT_FIG_SIZE_PER_SEC,
@@ -676,6 +681,21 @@ class CPSC2021(PhysioNetDataBase):
         rpeaks = critical_points[rpeaks_valid]
         return rpeaks
 
+    @add_docstring(load_rpeaks.__doc__)
+    def load_rpeak_indices(
+        self,
+        rec: Union[str, int],
+        ann: Optional[wfdb.Annotation] = None,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        zero_start: bool = False,
+        fs: Optional[Real] = None,
+    ) -> np.ndarray:
+        """
+        alias of `self.load_rpeaks`
+        """
+        return self.load_rpeaks(rec, ann, sampfrom, sampto, zero_start, fs)
+
     def load_af_episodes(
         self,
         rec: Union[str, int],
@@ -723,10 +743,6 @@ class CPSC2021(PhysioNetDataBase):
         header = wfdb.rdheader(str(self._get_path(rec)))
         label = self._labels_f2a[header.comments[0]]
         siglen = header.sig_len
-        # if ann is None or fmt.lower() in ["c_intervals",]:
-        #     _ann = wfdb.rdann(str(self._get_path(rec)), extension=self.ann_ext)
-        # else:
-        #     _ann = ann
         _ann = wfdb.rdann(str(self._get_path(rec)), extension=self.ann_ext)
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
         aux_note = np.array(_ann.aux_note)

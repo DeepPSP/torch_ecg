@@ -321,7 +321,6 @@ class MITDB(PhysioNetDataBase):
                 rhythm = ra.lstrip("(")
         if start_idx is not None:
             rhythm_intervals[rhythm].append([start_idx, si])
-            # rhythm_intervals[rhythm].append([start_idx, sig_len])
         rhythm_intervals = {
             k: np.array(generalized_intervals_intersection(v, [[sf, st]]))
             for k, v in rhythm_intervals.items()

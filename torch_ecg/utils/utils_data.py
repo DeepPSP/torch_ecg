@@ -1,4 +1,6 @@
 """
+utilities for convertions of data, labels, masks, etc.
+
 """
 
 import os
@@ -16,6 +18,7 @@ from typing import (
 
 import numpy as np
 import pandas as pd
+from torch import Tensor
 from sklearn.utils import compute_class_weight
 from wfdb import MultiRecord, Record
 from wfdb.io import _header
@@ -35,6 +38,7 @@ __all__ = [
     "mask_to_intervals",
     "uniform",
     "stratified_train_test_split",
+    "cls_to_bin",
 ]
 
 
@@ -573,3 +577,42 @@ def stratified_train_test_split(
     df_test = df.loc[df.index.isin(test_indices)].reset_index(drop=True)
     df_train = df.loc[~df.index.isin(test_indices)].reset_index(drop=True)
     return df_train, df_test
+
+
+def cls_to_bin(
+    cls_array: Union[np.ndarray, Tensor], num_classes: Optional[int] = None
+) -> np.ndarray:
+    """
+
+    converting a categorical (class indices) array of shape (n,)
+    to a one-hot (binary) array of shape (n, num_classes)
+
+    Parameters
+    ----------
+    cls_array: ndarray,
+        class indices array of shape (n,)
+    num_classes: int, optional,
+        number of classes,
+        if not specified, it will be inferred from the values of `cls_array`
+
+    Returns
+    -------
+    bin_array: ndarray,
+        binary array of shape (n, num_classes)
+
+    """
+    if isinstance(cls_array, Tensor):
+        cls_array = cls_array.cpu().numpy()
+    if num_classes is None:
+        num_classes = cls_array.max() + 1
+    assert (
+        num_classes > 0 and num_classes == cls_array.max() + 1
+    ), "num_classes must be greater than 0 and equal to the max value of cls_array"
+    if cls_array.ndim == 2 and cls_array.shape[1] == num_classes:
+        bin_array = cls_array
+    else:
+        shape = (cls_array.shape[0], num_classes)
+        bin_array = np.zeros(shape)
+        for i in range(shape[0]):
+            bin_array[i, cls_array[i]] = 1
+    return bin_array

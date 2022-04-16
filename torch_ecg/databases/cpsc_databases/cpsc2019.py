@@ -5,7 +5,7 @@
 import json
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, NoReturn, Optional, Sequence, Union
+from typing import Any, NoReturn, Optional, Sequence, Union
 
 import numpy as np
 from scipy.io import loadmat
@@ -234,13 +234,20 @@ class CPSC2019(CPSCDataBase):
         return ann
 
     @add_docstring(load_ann.__doc__)
-    def load_rpeaks(
-        self, rec: Union[int, str], keep_dim: bool = True
-    ) -> Dict[str, np.ndarray]:
+    def load_rpeaks(self, rec: Union[int, str], keep_dim: bool = True) -> np.ndarray:
         """
         alias of `self.load_ann`
         """
         return self.load_ann(rec=rec, keep_dim=keep_dim)
+
+    @add_docstring(load_rpeaks.__doc__)
+    def load_rpeak_indices(
+        self, rec: Union[int, str], keep_dim: bool = True
+    ) -> np.ndarray:
+        """
+        alias of `self.load_rpeaks`
+        """
+        return self.load_rpeaks(rec=rec, keep_dim=keep_dim)
 
     def _get_rec_name(self, rec: Union[int, str]) -> str:
         """
