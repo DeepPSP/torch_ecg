@@ -25,6 +25,7 @@ from ..base import (
     PhysioNetDataBase,
     WFDB_Beat_Annotations,
     WFDB_Non_Beat_Annotations,
+    WFDB_Rhythm_Annotations,
 )
 
 __all__ = [
@@ -128,11 +129,10 @@ class MITDB(PhysioNetDataBase):
             "PSE",
             "TS",
         ]
-        self.rhythm_types_map = {
-            item.lstrip("("): i
-            for i, item in enumerate(self.rhythm_types)
-            if item.startswith("(")
-        }
+        self.rhythm_types = [
+            rt.lstrip("(") for rt in self.rhythm_types if rt in WFDB_Rhythm_Annotations
+        ]
+        self.rhythm_types_map = {rt: idx for idx, rt in enumerate(self.rhythm_types)}
         self._rhythm_ignore_index = -100
 
         self.all_leads = ["MLII", "V1", "V2", "V4", "V5"]
@@ -249,8 +249,10 @@ class MITDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rhythm_format: str = "interval",
+        rhythm_format: str = "intervals",
+        rhythm_types: Optional[Sequence[str]] = None,
         beat_format: str = "beat",
+        beat_types: Optional[Sequence[str]] = None,
         extended_beats: bool = False,
         keep_original: bool = False,
     ) -> dict:
@@ -268,10 +270,16 @@ class MITDB(PhysioNetDataBase):
             start index of the annotations to be loaded
         sampto: int, optional,
             end index of the annotations to be loaded
-        rhythm_format: str, default "interval", case insensitive,
+        rhythm_format: str, default "intervals", case insensitive,
             format of returned annotation, can also be "mask"
+        rhythm_types: list of str, optional,
+            defaults to `self.rhythm_types`
+            if not None, only the rhythm annotations with the specified types will be returned
         beat_format: str, default "beat", case insensitive,
             format of returned annotation, can also be "dict"
+        beat_types: list of str, optional,
+            defaults to `self.beat_types`
+            if not None, only the beat annotations with the specified types will be returned
         keep_original: bool, default False,
             if True, indices will keep the same with the annotation file
             otherwise subtract `sampfrom` if specified
@@ -287,9 +295,9 @@ class MITDB(PhysioNetDataBase):
         if isinstance(rec, int):
             rec = self[rec]
         assert rhythm_format.lower() in [
-            "interval",
+            "intervals",
             "mask",
-        ], f"`rhythm_format` must be one of ['interval', 'mask'], got {rhythm_format}"
+        ], f"`rhythm_format` must be one of ['intervals', 'mask'], got {rhythm_format}"
         assert beat_format.lower() in [
             "beat",
             "dict",
@@ -305,16 +313,27 @@ class MITDB(PhysioNetDataBase):
         sample_inds = wfdb_ann.sample
         indices = np.where((sample_inds >= sf) & (sample_inds < st))[0]
 
+        if beat_types is None:
+            beat_types = self.beat_types
+
         beat_ann = [
             BeatAnn(i, s)
             for i, s in zip(sample_inds[indices], np.array(wfdb_ann.symbol)[indices])
+            if s in beat_types
         ]
+
+        if rhythm_types is None:
+            rhythm_types = self.rhythm_types
+            rhythm_types_map = self.rhythm_types_map
+        else:
+            rhythm_types = [rt.lstrip("(") for rt in rhythm_types]
+            rhythm_types_map = {rt: idx for idx, rt in enumerate(rhythm_types)}
 
         rhythm_intervals = defaultdict(list)
         start_idx, rhythm = None, None
         for ra, si in zip(wfdb_ann.aux_note, sample_inds):
-            ra = ra.rstrip("\x00")
-            if ra.startswith("("):
+            ra = ra.rstrip("\x00").lstrip("(")
+            if ra in rhythm_types:
                 if start_idx is not None:
                     rhythm_intervals[rhythm].append([start_idx, si])
                 start_idx = si
@@ -348,7 +367,7 @@ class MITDB(PhysioNetDataBase):
 
         ann = {}
         ann["beat"] = beat_ann
-        if rhythm_format.lower() == "interval":
+        if rhythm_format.lower() == "intervals":
             ann["rhythm"] = rhythm_intervals
         else:
             ann["rhythm"] = rhythm_mask
@@ -359,7 +378,8 @@ class MITDB(PhysioNetDataBase):
         rec: Union[str, int],
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        rhythm_format: str = "interval",
+        rhythm_format: str = "intervals",
+        rhythm_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
         """
@@ -375,10 +395,13 @@ class MITDB(PhysioNetDataBase):
             start index of the annotations to be loaded
         sampto: int, optional,
             end index of the annotations to be loaded
-        rhythm_format: str, default "interval", case insensitive,
+        rhythm_format: str, default "intervals", case insensitive,
             format of returned annotation, can also be "mask"
         beat_format: str, default "beat", case insensitive,
             format of returned annotation, can also be "dict"
+        rhythm_types: list of str, optional,
+            defaults to `self.rhythm_types`
+            if not None, only the rhythm annotations with the specified types will be returned
         keep_original: bool, default False,
             if True, indices will keep the same with the annotation file
             otherwise subtract `sampfrom` if specified
@@ -396,6 +419,7 @@ class MITDB(PhysioNetDataBase):
             sampfrom,
             sampto,
             rhythm_format=rhythm_format,
+            rhythm_types=rhythm_types,
             keep_original=keep_original,
         )["rhythm"]
 
@@ -405,6 +429,7 @@ class MITDB(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         beat_format: str = "beat",
+        beat_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
         """
@@ -422,6 +447,9 @@ class MITDB(PhysioNetDataBase):
             end index of the annotations to be loaded
         beat_format: str, default "beat", case insensitive,
             format of returned annotation, can also be "dict"
+        beat_types: list of str, optional,
+            defaults to `self.beat_types`
+            if not None, only the beat annotations with the specified types will be returned
         keep_original: bool, default False,
             if True, indices will keep the same with the annotation file
             otherwise subtract `sampfrom` if specified
@@ -439,6 +467,7 @@ class MITDB(PhysioNetDataBase):
             sampfrom,
             sampto,
             beat_format=beat_format,
+            beat_types=beat_types,
             keep_original=keep_original,
         )["beat"]
 
@@ -519,6 +548,26 @@ class MITDB(PhysioNetDataBase):
         if self._stats.empty:
             self._aggregate_stats()
         return self._stats
+
+    @property
+    def df_stats_expanded(self) -> pd.DataFrame:
+        """ """
+        df = self.df_stats.copy(deep=True)
+        for bt in self.beat_types:
+            df[f"beat_{bt}"] = df["beat_type_num"].apply(lambda d: d.get(bt, 0))
+        for rt in self.rhythm_types:
+            df[f"rhythm_{rt}"] = df["rhythm_len"].apply(lambda d: d.get(rt, 0))
+        return df.drop(columns=["beat_num", "beat_type_num", "rhythm_len"])
+
+    @property
+    def df_stats_expanded_boolean(self) -> pd.DataFrame:
+        """ """
+        df = self.df_stats_expanded.copy(deep=True)
+        for col in df.columns:
+            if col == "record":
+                continue
+            df[col] = df[col].apply(lambda x: int(x > 0))
+        return df
 
     @property
     def db_stats(self) -> Dict[str, Dict[str, int]]:
