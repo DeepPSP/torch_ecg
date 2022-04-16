@@ -40,6 +40,7 @@ __all__ = [
     "uniform",
     "stratified_train_test_split",
     "cls_to_bin",
+    "generate_weight_mask",
 ]
 
 
