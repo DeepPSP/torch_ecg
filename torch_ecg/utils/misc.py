@@ -6,6 +6,8 @@ import logging
 import os
 import re
 import sys
+import signal
+from contextlib import contextmanager
 from copy import deepcopy
 from functools import reduce, wraps
 from glob import glob
@@ -50,6 +52,7 @@ __all__ = [
     "nildent",
     "isclass",
     "add_docstring",
+    "timeout",
 ]
 
 
@@ -1011,3 +1014,36 @@ def add_docstring(doc: str, mode: str = "replace") -> Callable:
         return wrapper
 
     return decorator
+
+
+@contextmanager
+def timeout(duration: float):
+    """
+    A context manager that raises a `TimeoutError` after a specified time.
+
+    Parameters
+    ----------
+    duration: float,
+        the time duration in seconds,
+        should be non-negative,
+        0 for no timeout
+
+    References
+    ----------
+    https://stackoverflow.com/questions/492519/timeout-on-a-function-call
+
+    """
+    if np.isinf(duration):
+        duration = 0
+    elif duration < 0:
+        raise ValueError("duration must be non-negative")
+    elif duration > 0:  # granularity is 1 second, so round up
+        duration = max(1, int(duration))
+
+    def timeout_handler(signum, frame):
+        raise TimeoutError(f"block timedout after {duration} seconds")
+
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(duration)
+    yield
+    signal.alarm(0)
