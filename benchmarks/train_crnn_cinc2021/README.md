@@ -1,6 +1,8 @@
 # [PhysioNet/CinC Challenge 2021](https://physionetchallenges.github.io/2021/)
 Will Two Do? Varying Dimensions in Electrocardiography: The PhysioNet/Computing in Cardiology Challenge 2021
 
+![docker-ci](https://github.com/DeepPSP/cinc2021/actions/workflows/docker-image.yml/badge.svg)
+
 
 ## Digest of Top Solutions (ranked by [final challenge score](https://docs.google.com/spreadsheets/d/1cTLRmSLS1_TOwx-XnY-QVoUyO2rFyPUGTHRzNm3u8EM/edit?usp=sharing))
 1. [ISIBrno-AIMT](https://www.cinc.org/2021/Program/accepted/14_Preprint.pdf): Custom ResNet + MultiHeadAttention + Custom Loss
@@ -19,7 +21,7 @@ Other teams that are not among official entries, but among [unofficial entries](
 
 
 ## Conference Website and Conference Programme
-[Website](http://www.cinc2021.org/), [Programme](https://www.cinc.org/2021/Program/accepted/PreliminaryProgram.html), [Poster](/images/CinC2021_poster.pdf)
+[Website](http://www.cinc2021.org/), [Programme](https://cinc.org/archives/2021/), [IEEE Xplore](https://ieeexplore.ieee.org/xpl/conhome/9662654/proceeding), [Poster](/images/CinC2021_poster.pdf)
 
 
 ## Data Preparation
@@ -34,6 +36,20 @@ Deep learning models are constructed using [torch_ecg](https://github.com/DeepPS
 ## Final Results
 
 Final results are on the [leaderboard page of the challenge official website](https://physionetchallenges.org/2021/leaderboard/) or one can find in the [offical_results folder](official_results/).
+
+
+## Citation
+```latex
+@inproceedings{wen_cinc2021,
+      title = {{Hybrid Arrhythmia Detection on Varying-Dimensional Electrocardiography: Combining Deep Neural Networks and Clinical Rules}},
+     author = {Hao Wen and Jingsu Kang},
+  booktitle = {{2021 Computing in Cardiology (CinC)}},
+        doi = {10.23919/cinc53138.2021.9662801},
+       year = {2021},
+      month = {9},
+  publisher = {{IEEE}},
+}
+```
 
 
 ## [Original Repository](https://github.com/DeepPSP/cinc2021)
