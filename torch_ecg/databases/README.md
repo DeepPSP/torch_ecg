@@ -5,22 +5,22 @@ Migrated and improved from [DeepPSP/database_reader](https://github.com/DeepPSP/
 
 After migration, all should be tested again, the progression:
 
-| Database      | Source                                                           | Implemented        | Fully Tested[^1]   |
-| ------------- | ---------------------------------------------------------------- | ------------------ | ------------------ |
-| AFDB          | [PhysioNet](https://physionet.org/content/afdb/1.0.0/)           | :heavy_check_mark: | :heavy_check_mark: |
-| ApneaECG      | [PhysioNet](https://physionet.org/content/apnea-ecg/1.0.0/)      | :heavy_check_mark: | :x:                |
-| CinC2017      | [PhysioNet](https://physionet.org/content/challenge-2017/1.0.0/) | :heavy_check_mark: | :x:                |
-| CinC2018      | [PhysioNet](https://physionet.org/content/challenge-2018/1.0.0/) | :x:                | :x:                |
-| CinC2020      | [PhysioNet](https://physionet.org/content/challenge-2020/1.0.1/) | :heavy_check_mark: | :heavy_check_mark: |
-| CinC2021      | [PhysioNet](https://physionet.org/content/challenge-2021/1.0.2/) | :heavy_check_mark: | :heavy_check_mark: |
-| LTAFDB        | [PhysioNet](https://physionet.org/content/ltafdb/1.0.0/)         | :heavy_check_mark: | :x:                |
-| LUDB          | [PhysioNet](https://physionet.org/content/ludb/1.0.1/)           | :heavy_check_mark: | :heavy_check_mark: |
-| MITDB         | [PhysioNet](https://physionet.org/content/mitdb/1.0.0/)          | :heavy_check_mark: | :heavy_check_mark: |
-| SHHS          | [NSRR](https://sleepdata.org/datasets/shhs)                      | :heavy_check_mark: | :x:                |
-| CPSC2018      | [CPSC](http://2018.icbeb.org/Challenge.html)                     | :heavy_check_mark: | :heavy_check_mark: |
-| CPSC2019      | [CPSC](http://2019.icbeb.org/Challenge.html)                     | :heavy_check_mark: | :heavy_check_mark: |
-| CPSC2020      | [CPSC](http://2020.icbeb.org/CSPC2020)                           | :heavy_check_mark: | :heavy_check_mark: |
-| CPSC2021[^2]  | [CPSC](http://2021.icbeb.org/CPSC2021)                           | :heavy_check_mark: | :heavy_check_mark: |
+| Database      | Source                                                           | Implemented        | Fully Tested[^1]   | Has `Dataset`      |
+| ------------- | ---------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| AFDB          | [PhysioNet](https://physionet.org/content/afdb/1.0.0/)           | :heavy_check_mark: | :heavy_check_mark: | :x:                |
+| ApneaECG      | [PhysioNet](https://physionet.org/content/apnea-ecg/1.0.0/)      | :heavy_check_mark: | :x:                | :x:                |
+| CinC2017      | [PhysioNet](https://physionet.org/content/challenge-2017/1.0.0/) | :heavy_check_mark: | :x:                | :x:                |
+| CinC2018      | [PhysioNet](https://physionet.org/content/challenge-2018/1.0.0/) | :x:                | :x:                | :x:                |
+| CinC2020      | [PhysioNet](https://physionet.org/content/challenge-2020/1.0.1/) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| CinC2021      | [PhysioNet](https://physionet.org/content/challenge-2021/1.0.2/) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| LTAFDB        | [PhysioNet](https://physionet.org/content/ltafdb/1.0.0/)         | :heavy_check_mark: | :x:                | :x:                |
+| LUDB          | [PhysioNet](https://physionet.org/content/ludb/1.0.1/)           | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| MITDB         | [PhysioNet](https://physionet.org/content/mitdb/1.0.0/)          | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| SHHS          | [NSRR](https://sleepdata.org/datasets/shhs)                      | :heavy_check_mark: | :x:                | :x:                |
+| CPSC2018      | [CPSC](http://2018.icbeb.org/Challenge.html)                     | :heavy_check_mark: | :heavy_check_mark: | :x:                |
+| CPSC2019      | [CPSC](http://2019.icbeb.org/Challenge.html)                     | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| CPSC2020      | [CPSC](http://2020.icbeb.org/CSPC2020)                           | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| CPSC2021[^2]  | [CPSC](http://2021.icbeb.org/CPSC2021)                           | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 [^1]: Since the classes are migrated from [DeepPSP/database_reader](https://github.com/DeepPSP/database_reader), some are not tested for newly added features.
 [^2]: The dataset `CPSC2021` is also hosted at [PhysioNet](https://www.physionet.org/content/cpsc2021/1.0.0/).

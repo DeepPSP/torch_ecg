@@ -91,6 +91,7 @@ def http_get(
             os.rename(Path(tmp_folder) / _folder, dst_dir)
             shutil.rmtree(tmp_folder)
     else:
+        Path(dst_dir).mkdir(parents=True, exist_ok=True)
         shutil.copyfile(downloaded_file.name, Path(dst_dir) / Path(url).name)
     os.remove(downloaded_file.name)
 
