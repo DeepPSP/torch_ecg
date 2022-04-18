@@ -7,6 +7,7 @@ import os
 import re
 import sys
 import signal
+import time
 from contextlib import contextmanager
 from copy import deepcopy
 from functools import reduce, wraps
@@ -23,6 +24,7 @@ from typing import (
     Optional,
     Sequence,
     Union,
+    Tuple,
 )
 
 import numpy as np
@@ -53,6 +55,7 @@ __all__ = [
     "isclass",
     "add_docstring",
     "timeout",
+    "Timer",
 ]
 
 
@@ -1047,3 +1050,111 @@ def timeout(duration: float):
     signal.alarm(duration)
     yield
     signal.alarm(0)
+
+
+class Timer(ReprMixin):
+    """
+
+    Context manager to time the execution of a block of code.
+
+    Usage
+    -----
+    >>> with Timer("task name", verbose=2) as timer:
+    >>>     do_something()
+    >>>     timer.add_time("subtask 1", level=2)
+    >>>     do_subtask_1()
+    >>>     timer.stop_timer("subtask 1")
+    >>>     timer.add_time("subtask 2", level=2)
+    >>>     do_subtask_2()
+    >>>     timer.stop_timer("subtask 2")
+    >>>     do_something_else()
+
+    """
+
+    __name__ = "Timer"
+
+    def __init__(self, name: Optional[str] = None, verbose: int = 0) -> NoReturn:
+        """
+
+        Parameters
+        ----------
+        name: str, optional
+            the name of the timer, defaults to "default timer"
+        verbose: int, default 0
+            the verbosity level of the timer,
+
+        """
+        self.name = name or "default timer"
+        self.verbose = verbose
+        self.timers = {self.name: 0.0}
+        self.ends = {self.name: 0.0}
+        self.levels = {self.name: 1}
+
+    def __enter__(self) -> "Timer":
+        self.timers = {self.name: time.perf_counter()}
+        self.ends = {self.name: 0.0}
+        self.levels = {self.name: 1}
+        return self
+
+    def __exit__(self, *args) -> NoReturn:
+        for k in self.timers:
+            self.stop_timer(k)
+            self.timers[k] = self.ends[k] - self.timers[k]
+
+    def add_timer(self, name: str, level: int = 1) -> NoReturn:
+        """
+        add a new timer for some subtask
+
+        Parameters
+        ----------
+        name: str,
+            the name of the timer to be added
+        level: int, default 1
+            the verbosity level of the timer,
+
+        """
+        self.timers[name] = time.perf_counter()
+        self.ends[name] = 0
+        self.levels[name] = level
+
+    def stop_timer(self, name: str) -> NoReturn:
+        """
+        stop a timer
+
+        Parameters
+        ----------
+        name: str,
+            the name of the timer to be stopped
+
+        """
+        if self.ends[name] == 0:
+            self.ends[name] = time.perf_counter()
+            if self.verbose >= self.levels[name]:
+                time_cost, unit = self._simplify_time_expr(
+                    self.ends[name] - self.timers[name]
+                )
+                print(f"{name} took {time_cost:.4f} {unit}")
+
+    def _simplify_time_expr(self, time_cost: float) -> Tuple[float, str]:
+        """
+        simplify the time expression
+
+        Parameters
+        ----------
+        time_cost: float,
+            the time cost, with units in seconds
+
+        Returns
+        -------
+        time_cost: float,
+            the time cost,
+        unit: str,
+            the unit of the time cost
+
+        """
+        if time_cost <= 0.1:
+            return 1000 * time_cost, "ms"
+        return time_cost, "s"
+
+    def extra_repr_keys(self) -> List[str]:
+        return ["name", "verbose"]
