@@ -83,5 +83,5 @@ class Augmenter(ReprMixin, nn.Module, ABC):
         k = DEFAULTS.RNG.normal(pop_size * prob, scale_ratio * pop_size)
         # print(pop_size * prob, scale_ratio*pop_size)
         k = int(round(np.clip(k, 0, pop_size)))
-        indices = DEFAULTS.RNG_sample(list(range(pop_size)), k=k).tolist()
+        indices = DEFAULTS.RNG_sample(list(range(pop_size)), k).tolist()
         return indices
