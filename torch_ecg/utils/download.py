@@ -12,6 +12,7 @@ import shutil
 import tarfile
 import tempfile
 import zipfile
+import warnings
 from pathlib import Path
 from typing import NoReturn, Optional, Union
 
@@ -50,10 +51,14 @@ def http_get(
     1. https://github.com/huggingface/transformers/blob/master/src/transformers/file_utils.py
 
     """
-    assert (
-        re.search("(\\.zip)|(\\.tar)", _suffix(url)) is not None
-    ), "URL must be pointing to a `zip` file or a compressed `tar` file."
     print(f"Downloading {url}.")
+    if re.search("(\\.zip)|(\\.tar)", _suffix(url)) is None and extract:
+        warnings.warn(
+            "URL must be pointing to a `zip` file or a compressed `tar` file. "
+            "Automatic decompression is turned off. "
+            "The user is responsible for decompressing the file manually."
+        )
+        extract = False
     parent_dir = Path(dst_dir).parent
     downloaded_file = tempfile.NamedTemporaryFile(
         dir=parent_dir, suffix=_suffix(url), delete=False
