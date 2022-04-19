@@ -9,6 +9,12 @@ Loggers including
 3. tensorboard logger
 are implemented and manipulated uniformly by a manager.
 
+## [Inputs](/torch_ecg/components/inputs.py)
+The `Input` classes implemented in this module serve as transformations between inputs of different domains (time domain, frequency domain, time-frequency (spectro-temporal) domain). This submodule includes a config class `InputConfig`, and the following types of input:
+- `WaveformInput`
+- `FFTInput`
+- `SpectrogramInput`
+
 ## [Outputs](/torch_ecg/components/outputs.py)
 The `Output` classes implemented in this module serve as containers for ECG downstream task model outputs, including
 - `ClassificationOutput`
