@@ -14,6 +14,7 @@ from .misc import (
     nildent,
     isclass,
     add_docstring,
+    deprecate_kwargs,
     timeout,
     Timer,
 )
@@ -89,6 +90,7 @@ __all__ = [
     "nildent",
     "isclass",
     "add_docstring",
+    "deprecate_kwargs",
     "timeout",
     "Timer",
     "get_mask",

@@ -8,6 +8,8 @@ import re
 import sys
 import signal
 import time
+import warnings
+import inspect
 from contextlib import contextmanager
 from copy import deepcopy
 from functools import reduce, wraps
@@ -54,6 +56,7 @@ __all__ = [
     "nildent",
     "isclass",
     "add_docstring",
+    "deprecate_kwargs",
     "timeout",
     "Timer",
 ]
@@ -1016,6 +1019,45 @@ def add_docstring(doc: str, mode: str = "replace") -> Callable:
             raise ValueError(f"mode {mode} is not supported")
         return wrapper
 
+    return decorator
+
+
+def deprecate_kwargs(l_kwargs: Sequence[Sequence[str]]):
+    """
+    
+    decorator to deprecate old kwargs in a function
+
+    Parameters
+    ----------
+    l_kwargs: Sequence[Sequence[str]],
+        a list of kwargs to be deprecated,
+        each element is a sequence of length 2,
+        of the form (new_kwarg, old_kwarg)
+    
+    """
+
+    def decorator(func: Callable) -> Callable:
+        """ """
+
+        @wraps(func)
+        def wrapper(*args, **kwargs) -> Callable:
+            """ """
+            old_kwargs = deepcopy(kwargs)
+            for new_kw, old_kw in l_kwargs:
+                if new_kw in kwargs:
+                    old_kwargs.pop(new_kw, None)
+                    old_kwargs[old_kw] = kwargs[new_kw]
+                elif old_kw in kwargs:
+                    warnings.warn(f"key word argument \042{old_kw}\042 is deprecated, use \042{new_kw}\042 instead")
+            return func(*args, **old_kwargs)
+        func_params = list(inspect.signature(func).parameters.values())
+        func_param_names = list(inspect.signature(func).parameters.keys())
+        for new_kw, old_kw in l_kwargs:
+            idx = func_param_names.index(old_kw)
+            func_params[idx] = func_params[idx].replace(name=new_kw)
+            wrapper.__doc__ = func.__doc__.replace(old_kw, new_kw)
+        wrapper.__signature__ = inspect.Signature(parameters=func_params)
+        return wrapper
     return decorator
 
 
