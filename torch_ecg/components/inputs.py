@@ -304,7 +304,7 @@ class _SpectralInput(BaseInput):
             NOTE that if `to1d` is True,
             then if the convolutions with `groups=1` applied to the `input`
             acts on all the bins, which is "global"
-            w.r.t. the `bins` dimension of the corresponding 2d input,
+            w.r.t. the `bins` dimension of the corresponding 2d input.
 
     """
 
