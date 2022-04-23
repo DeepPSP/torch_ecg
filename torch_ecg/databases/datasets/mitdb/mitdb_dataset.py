@@ -23,8 +23,12 @@ from torch.utils.data.dataset import Dataset
 from ...._preprocessors import PreprocManager
 from ....databases import MITDB as DR
 from ....utils.misc import ReprMixin, get_record_list_recursive3, list_sum
-from ....utils.utils_data import ensure_siglen, cls_to_bin, generate_weight_mask
-from ....utils.utils_interval import mask_to_intervals
+from ....utils.utils_data import (
+    ensure_siglen,
+    cls_to_bin,
+    generate_weight_mask,
+    mask_to_intervals,
+)
 from ....utils.utils_signal import remove_spikes_naive
 from ....cfg import CFG, DEFAULTS
 from .mitdb_cfg import MITDBTrainCfg

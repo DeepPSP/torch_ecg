@@ -59,7 +59,7 @@ from torch.utils.data.dataset import Dataset
 from ...._preprocessors import PreprocManager
 from ....databases import CPSC2021 as CR
 from ....utils.misc import ReprMixin, get_record_list_recursive3, list_sum, nildent
-from ....utils.utils_interval import mask_to_intervals
+from ....utils.utils_data import mask_to_intervals
 from ....utils.utils_signal import remove_spikes_naive
 from ....utils.utils_data import generate_weight_mask
 from ....cfg import CFG, DEFAULTS

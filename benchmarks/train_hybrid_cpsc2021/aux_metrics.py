@@ -22,7 +22,7 @@ except ModuleNotFoundError:
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
 from torch_ecg.models.loss import MaskedBCEWithLogitsLoss
-from torch_ecg.utils.utils_interval import mask_to_intervals
+from torch_ecg.utils.utils_data import mask_to_intervals
 
 __all__ = [
     "compute_rpeak_metric",

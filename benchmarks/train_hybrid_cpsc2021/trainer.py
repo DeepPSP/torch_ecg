@@ -38,7 +38,7 @@ from model import (  # noqa: F401
 from torch_ecg.cfg import CFG
 from torch_ecg.components.trainer import BaseTrainer
 from torch_ecg.utils.misc import str2bool
-from torch_ecg.utils.utils_interval import mask_to_intervals
+from torch_ecg.utils.utils_data import mask_to_intervals
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
 if BaseCfg.torch_dtype == torch.float64:

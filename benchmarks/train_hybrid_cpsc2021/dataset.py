@@ -73,9 +73,8 @@ from torch_ecg.utils.misc import (
     list_sum,
     nildent,
 )
-from torch_ecg.utils.utils_interval import mask_to_intervals
 from torch_ecg.utils.utils_signal import remove_spikes_naive
-from torch_ecg.utils.utils_data import generate_weight_mask
+from torch_ecg.utils.utils_data import generate_weight_mask, mask_to_intervals
 
 if ModelCfg.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
