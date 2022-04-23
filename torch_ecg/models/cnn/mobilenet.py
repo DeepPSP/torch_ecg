@@ -26,7 +26,7 @@ from ...models._nets import (  # noqa: F401
     NonLocalBlock,
     SEBlock,
 )
-from ...utils.misc import dict_to_str
+from ...utils.misc import dict_to_str, deprecate_kwargs
 from ...utils.utils_nn import SizeMixin
 
 if DEFAULTS.torch_dtype == torch.float64:
@@ -61,6 +61,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
     __DEBUG__ = True
     __name__ = "MobileNetSeparableConv"
 
+    @deprecate_kwargs([["norm", "batch_norm"]])
     def __init__(
         self,
         in_channels: int,
@@ -153,7 +154,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
                 dilation=self.__dilation,
                 groups=self.__in_channels,
                 bias=self.__bias,
-                batch_norm=batch_norm,
+                norm=batch_norm,
                 activation=activation,
                 ordering=ordering,
             ),
@@ -169,7 +170,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
                 stride=1,
                 padding=0,
                 dilation=1,
-                batch_norm=batch_norm,
+                norm=batch_norm,
                 activation=activation,
                 ordering=ordering,
             ),
@@ -285,7 +286,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
                 kernel_size=self.config.init_filter_lengths,
                 stride=self.config.init_subsample_lengths,
                 groups=self.config.groups,
-                batch_norm=self.config.batch_norm,
+                norm=self.config.get("norm", self.config.get("batch_norm")),
                 activation=self.config.activation,
                 bias=self.config.bias,
                 width_multiplier=self.config.width_multiplier,
@@ -297,7 +298,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
                 filter_lengths=self.config.init_filter_lengths,
                 subsample_lengths=self.config.init_subsample_lengths,
                 groups=self.config.groups,
-                batch_norm=self.config.batch_norm,
+                norm=self.config.batch_norm,
                 activation=self.config.activation,
                 bias=self.config.bias,
                 width_multiplier=self.config.width_multiplier,
@@ -493,6 +494,7 @@ class InvertedResidual(SizeMixin, nn.Module):
     __DEBUG__ = True
     __name__ = "InvertedResidual"
 
+    @deprecate_kwargs([["norm", "batch_norm"]])
     def __init__(
         self,
         in_channels: int,
@@ -551,7 +553,7 @@ class InvertedResidual(SizeMixin, nn.Module):
                 kernel_size=1,
                 stride=1,
                 groups=self.__groups,
-                batch_norm=batch_norm,
+                norm=batch_norm,
                 activation=activation,
                 # width_multiplier=width_multiplier,
             )
@@ -567,7 +569,7 @@ class InvertedResidual(SizeMixin, nn.Module):
             kernel_size=self.__filter_length,
             stride=self.__stride,
             groups=conv_in_channels,
-            batch_norm=batch_norm,
+            norm=batch_norm,
             activation=activation,
             # width_multiplier=width_multiplier,
         )
@@ -584,7 +586,7 @@ class InvertedResidual(SizeMixin, nn.Module):
             stride=1,
             groups=self.__groups,
             bias=False,
-            batch_norm=batch_norm,
+            norm=batch_norm,
             activation=None,
             width_multiplier=width_multiplier,
         )
@@ -675,7 +677,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
                 kernel_size=self.config.init_filter_lengths,
                 stride=self.config.init_subsample_lengths,
                 groups=self.config.groups,
-                batch_norm=self.config.batch_norm,
+                norm=self.config.get("norm", self.config.get("batch_norm")),
                 activation=self.config.activation,
                 bias=self.config.bias,
                 width_multiplier=self.config.width_multiplier,
@@ -687,7 +689,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
                 filter_lengths=self.config.init_filter_lengths,
                 subsample_lengths=self.config.init_subsample_length,
                 groups=self.config.groups,
-                batch_norm=self.config.batch_norm,
+                norm=self.config.get("norm", self.config.get("batch_norm")),
                 activation=self.config.activation,
                 bias=self.config.bias,
                 width_multiplier=self.config.width_multiplier,
@@ -736,7 +738,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
                 kernel_size=self.config.final_filter_lengths,
                 stride=self.config.final_subsample_lengths,
                 groups=self.config.groups,
-                batch_norm=self.config.batch_norm,
+                norm=self.config.get("norm", self.config.get("batch_norm")),
                 activation=self.config.activation,
                 bias=self.config.bias,
                 width_multiplier=max(1.0, self.config.width_multiplier),
@@ -748,7 +750,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
                 filter_lengths=self.config.final_filter_lengths,
                 subsample_lengths=self.config.final_subsample_length,
                 groups=self.config.groups,
-                batch_norm=self.config.batch_norm,
+                norm=self.config.get("norm", self.config.get("batch_norm")),
                 activation=self.config.activation,
                 bias=self.config.bias,
                 width_multiplier=max(1.0, self.config.width_multiplier),

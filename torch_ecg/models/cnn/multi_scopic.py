@@ -101,7 +101,7 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
                     stride=1,
                     dilation=self.__scopes[idx],
                     groups=self.__groups,
-                    batch_norm=self.config.batch_norm,
+                    norm=self.config.get("norm", self.config.get("batch_norm")),
                     # kw_bn=self.config.kw_bn,
                     activation=self.config.activation,
                     kw_activation=self.config.kw_activation,
@@ -119,7 +119,7 @@ class MultiScopicBasicBlock(SizeMixin, nn.Sequential):
                 in_channels=self.__out_channels[-1],
                 groups=self.__groups,
                 # padding=
-                batch_norm=False,
+                norm=False,
                 mode=self.config.subsample_mode,
             ),
         )

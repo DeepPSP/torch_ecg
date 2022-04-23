@@ -137,7 +137,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
                     kernel_size=self.__kernel_size,
                     stride=(self.__stride if i == 0 else 1),
                     groups=self.__groups,
-                    batch_norm=True,
+                    norm=True,
                     activation=conv_activation,
                     kw_activation=self.config.kw_activation,
                     kernel_initializer=self.config.kernel_initializer,
@@ -182,7 +182,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
                     in_channels=self.__in_channels,
                     out_channels=self.__out_channels,
                     groups=self.__groups,
-                    batch_norm=True,
+                    norm=True,
                     mode=self.config.subsample_mode,
                     filt_size=self.config.get("filt_size", 3),  # for blur pool
                 )
@@ -195,7 +195,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
                         down_scale=self.__down_scale,
                         in_channels=self.__in_channels,
                         out_channels=self.__in_channels,
-                        batch_norm=batch_norm,
+                        norm=batch_norm,
                         mode=self.config.subsample_mode,
                         filt_size=self.config.get("filt_size", 3),  # for blur pool
                     ),
@@ -417,7 +417,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
                     kernel_size=self.__kernel_size[i],
                     stride=(self.__stride if i == self.config.subsample_at else 1),
                     groups=self.__groups[i],
-                    batch_norm=True,
+                    norm=True,
                     activation=conv_activation,
                     kw_activation=self.config.kw_activation,
                     kernel_initializer=self.config.kernel_initializer,
@@ -462,7 +462,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
                     in_channels=self.__in_channels,
                     out_channels=self.__out_channels[-1],
                     groups=self.__base_groups,
-                    batch_norm=True,
+                    norm=True,
                     mode=self.config.subsample_mode,
                     filt_size=self.config.get("filt_size", 3),  # for blur pool
                 )
@@ -475,7 +475,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
                         down_scale=self.__down_scale,
                         in_channels=self.__in_channels,
                         out_channels=self.__in_channels,
-                        batch_norm=batch_norm,
+                        norm=batch_norm,
                         mode=self.config.subsample_mode,
                         filt_size=self.config.get("filt_size", 3),  # for blur pool
                     ),

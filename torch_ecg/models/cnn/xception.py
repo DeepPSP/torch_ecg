@@ -156,7 +156,7 @@ class XceptionMultiConv(SizeMixin, nn.Module):
                 out_channels=self.__num_filters[-1],
                 groups=self.__groups,
                 kernel_size=1,
-                batch_norm=self.config.batch_norm,
+                norm=self.config.get("norm", self.config.get("batch_norm")),
                 mode="conv",
             )
         else:

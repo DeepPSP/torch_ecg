@@ -86,7 +86,7 @@ class VGGBlock(SizeMixin, nn.Sequential):
                 kw_activation=self.config.kw_activation,
                 kernel_initializer=self.config.kernel_initializer,
                 kw_initializer=self.config.kw_initializer,
-                batch_norm=self.config.batch_norm,
+                norm=self.config.get("norm", self.config.get("batch_norm")),
             ),
         )
         for idx in range(num_convs - 1):
@@ -102,7 +102,7 @@ class VGGBlock(SizeMixin, nn.Sequential):
                     kw_activation=self.config.kw_activation,
                     kernel_initializer=self.config.kernel_initializer,
                     kw_initializer=self.config.kw_initializer,
-                    batch_norm=self.config.batch_norm,
+                    norm=self.config.get("norm", self.config.get("batch_norm")),
                 ),
             )
         self.add_module(

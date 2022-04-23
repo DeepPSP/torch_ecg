@@ -1024,7 +1024,7 @@ def add_docstring(doc: str, mode: str = "replace") -> Callable:
 
 def deprecate_kwargs(l_kwargs: Sequence[Sequence[str]]):
     """
-    
+
     decorator to deprecate old kwargs in a function
 
     Parameters
@@ -1033,7 +1033,7 @@ def deprecate_kwargs(l_kwargs: Sequence[Sequence[str]]):
         a list of kwargs to be deprecated,
         each element is a sequence of length 2,
         of the form (new_kwarg, old_kwarg)
-    
+
     """
 
     def decorator(func: Callable) -> Callable:
@@ -1048,8 +1048,11 @@ def deprecate_kwargs(l_kwargs: Sequence[Sequence[str]]):
                     old_kwargs.pop(new_kw, None)
                     old_kwargs[old_kw] = kwargs[new_kw]
                 elif old_kw in kwargs:
-                    warnings.warn(f"key word argument \042{old_kw}\042 is deprecated, use \042{new_kw}\042 instead")
+                    warnings.warn(
+                        f"key word argument \042{old_kw}\042 is deprecated, use \042{new_kw}\042 instead"
+                    )
             return func(*args, **old_kwargs)
+
         func_params = list(inspect.signature(func).parameters.values())
         func_param_names = list(inspect.signature(func).parameters.keys())
         for new_kw, old_kw in l_kwargs:
@@ -1058,6 +1061,7 @@ def deprecate_kwargs(l_kwargs: Sequence[Sequence[str]]):
             wrapper.__doc__ = func.__doc__.replace(old_kw, new_kw)
         wrapper.__signature__ = inspect.Signature(parameters=func_params)
         return wrapper
+
     return decorator
 
 

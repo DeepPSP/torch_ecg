@@ -179,7 +179,7 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
             DownSample(
                 down_scale=self.__down_scale,
                 in_channels=self.__in_channels,
-                batch_norm=False,
+                norm=False,
                 mode=mode,
             ),
         )
@@ -536,7 +536,7 @@ class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
             kernel_size=self.config.out_filter_length,
             stride=1,
             groups=self.config.groups,
-            batch_norm=self.config.out_batch_norm,
+            norm=self.config.get("out_norm", self.config.get("out_batch_norm")),
             activation=None,
             kernel_initializer=self.config.kernel_initializer,
             kw_initializer=self.config.kw_initializer,

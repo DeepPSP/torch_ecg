@@ -18,7 +18,7 @@ from torch.nn import Parameter
 from torch.nn.utils.rnn import PackedSequence
 
 from ..cfg import CFG
-from ..utils.misc import dict_to_str, isclass, list_sum
+from ..utils.misc import dict_to_str, isclass, list_sum, deprecate_kwargs
 from ..utils.utils_nn import SizeMixin  # compute_output_shape,
 from ..utils.utils_nn import (
     compute_avgpool_output_shape,
@@ -293,7 +293,7 @@ def get_normalization(
 # ---------------------------------------------
 
 _DEFAULT_CONV_CONFIGS = CFG(
-    batch_norm=True,
+    norm=True,
     activation="relu",
     kw_activation={"inplace": True},
     kernel_initializer="he_normal",
@@ -315,6 +315,7 @@ class Bn_Activation(SizeMixin, nn.Sequential):
 
     __name__ = "Bn_Activation"
 
+    @deprecate_kwargs([["norm", "batch_norm"]])
     def __init__(
         self,
         num_features: int,
@@ -407,6 +408,7 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
 
     __name__ = "Conv_Bn_Activation"
 
+    @deprecate_kwargs([["norm", "batch_norm"]])
     def __init__(
         self,
         in_channels: int,
@@ -909,7 +911,7 @@ class MultiConv(SizeMixin, nn.Sequential):
                     stride=sd,
                     dilation=dl,
                     groups=groups,
-                    batch_norm=self.config.batch_norm,
+                    norm=self.config.get("norm", self.config.get("batch_norm")),
                     activation=activation,
                     kw_activation=self.config.kw_activation,
                     kernel_initializer=self.config.kernel_initializer,
@@ -1340,6 +1342,7 @@ class DownSample(SizeMixin, nn.Sequential):
         "blur",
     ]
 
+    @deprecate_kwargs([["norm", "batch_norm"]])
     def __init__(
         self,
         down_scale: int,
@@ -1370,7 +1373,7 @@ class DownSample(SizeMixin, nn.Sequential):
         padding: int, default 0,
             zero-padding added to both sides of the input
         batch_norm: bool or Module, default False,
-            batch normalization,
+            (batch) normalization,
             the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
         mode: str, default "max",
             can be one of `self.__MODES__`
@@ -3010,7 +3013,7 @@ class NonLocalBlock(SizeMixin, nn.Module):
                     out_channels=self.__mid_channels,
                     kernel_size=self.__kernel_sizes[k],
                     stride=1,
-                    batch_norm=False,
+                    norm=False,
                     activation=None,
                 ),
             )
@@ -3024,7 +3027,7 @@ class NonLocalBlock(SizeMixin, nn.Module):
             out_channels=self.__out_channels,
             kernel_size=self.__kernel_sizes["W"],
             stride=1,
-            batch_norm=self.config.batch_norm,
+            norm=self.config.get("norm", self.config.get("batch_norm")),
             activation=None,
         )
 
@@ -3523,7 +3526,7 @@ class CBAMBlock(SizeMixin, nn.Module):
                 kernel_size=self.__spatial_conv_kernel_size,
                 stride=1,
                 # groups=self.__groups,
-                batch_norm=self.__spatial_conv_bn,
+                norm=self.__spatial_conv_bn,
                 activation="sigmoid",
             )
 
