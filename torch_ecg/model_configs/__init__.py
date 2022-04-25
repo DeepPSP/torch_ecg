@@ -12,6 +12,7 @@ from .cnn import (  # vgg; ResNet; vanilla resnet; cpsc2018 resnet; smaller resn
     densenet_leadwise,
     densenet_vanilla,
     mobilenet_v1_vanilla,
+    mobilenet_v2_vanilla,
     multi_scopic,
     multi_scopic_block,
     multi_scopic_leadwise,
@@ -155,6 +156,7 @@ __all__ = [
     "xception_leadwise",
     # vanilla mobilenets
     "mobilenet_v1_vanilla",
+    "mobilenet_v2_vanilla",
     # RNN
     "lstm",
     "attention",

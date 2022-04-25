@@ -111,13 +111,15 @@ _inverted_residual_setting = np.array(
         # s: stride
         # k: kernel size
     ]
-)
+).astype(int)
 mobilenet_v2_vanilla.inv_res = CFG()
-mobilenet_v2_vanilla.inv_res.expansions = _inverted_residual_setting[..., 0]
-mobilenet_v2_vanilla.inv_res.out_channels = _inverted_residual_setting[..., 1]
-mobilenet_v2_vanilla.inv_res.n_blocks = _inverted_residual_setting[..., 2]
-mobilenet_v2_vanilla.inv_res.strides = _inverted_residual_setting[..., 3]
-mobilenet_v2_vanilla.inv_res.filter_lengths = _inverted_residual_setting[..., 4]
+mobilenet_v2_vanilla.inv_res.expansions = _inverted_residual_setting[..., 0].tolist()
+mobilenet_v2_vanilla.inv_res.out_channels = _inverted_residual_setting[..., 1].tolist()
+mobilenet_v2_vanilla.inv_res.n_blocks = _inverted_residual_setting[..., 2].tolist()
+mobilenet_v2_vanilla.inv_res.strides = _inverted_residual_setting[..., 3].tolist()
+mobilenet_v2_vanilla.inv_res.filter_lengths = _inverted_residual_setting[
+    ..., 4
+].tolist()
 
 mobilenet_v2_vanilla.final_num_filters = _base_num_filters * 128
 mobilenet_v2_vanilla.final_filter_lengths = 19

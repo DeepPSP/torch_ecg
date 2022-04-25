@@ -38,8 +38,8 @@ __all__ = [
 
 class ResNetBasicBlock(SizeMixin, nn.Module):
     """
-
     building blocks for `ResNet`, as implemented in ref. [2] of `ResNet`
+
     """
 
     __DEBUG__ = False
@@ -86,6 +86,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
             other hyper-parameters, including
             increase channel method, subsample method, dropouts,
             activation choices, weight initializer, and short cut patterns, etc.
+
         """
         super().__init__()
         if dilation > 1:
@@ -217,6 +218,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
         -------
         out: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         identity = input
 
@@ -257,6 +259,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
         -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self.main_stream:
@@ -272,6 +275,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
 
     bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
     as for 1D ECG, should be of the "baby-giant-baby" pattern?
+
     """
 
     __DEBUG__ = False
@@ -331,6 +335,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
             other hyper-parameters, including
             increase channel method, subsample method, dropout,
             activation choices, weight initializer, and short cut patterns, etc.
+
         """
         super().__init__()
         self.__num_convs = 3
@@ -356,7 +361,9 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
         ]
         if self.__DEBUG__:
             print(
-                f"__DEFAULT_BASE_WIDTH__ = {self.__DEFAULT_BASE_WIDTH__}, in_channels = {in_channels}, num_filters = {num_filters}, base_width = {base_width}, neck_num_filters = {neck_num_filters}"
+                f"__DEFAULT_BASE_WIDTH__ = {self.__DEFAULT_BASE_WIDTH__}, "
+                f"in_channels = {in_channels}, num_filters = {num_filters}, "
+                f"base_width = {base_width}, neck_num_filters = {neck_num_filters}."
             )
         self.__base_filter_length = base_filter_length
         self.__kernel_size = [
@@ -497,6 +504,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
         -------
         out: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         identity = input
 
@@ -537,6 +545,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
         -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self.main_stream:
@@ -586,7 +595,33 @@ class ResNetStem(SizeMixin, nn.Sequential):
         groups: int = 1,
         **config,
     ) -> NoReturn:
-        """ """
+        f"""
+
+        Parameters
+        ----------
+        in_channels: int,
+            the number of input channels
+        out_channels: int or sequence of int,
+            the number of output channels
+        filter_lengths: int or sequence of int,
+            the length of the filter, or equivalently,
+            the kernel size(s) of the convolutions
+        conv_stride: int,
+            the stride of the convolution
+        pool_size: int,
+            the size of the pooling window
+        pool_stride: int,
+            the stride of the pooling window
+        subsample_mode: str,
+            the mode of subsampling, can be one of
+            {DownSample.__MODES__},
+            or "s2d" (with aliases "space_to_depth", "SpaceToDepth")
+        groups: int,
+            the number of groups for the convolution
+        config: dict,
+            the other configs for convolution and pooling
+
+        """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -649,6 +684,7 @@ class ResNetStem(SizeMixin, nn.Sequential):
         -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self:
@@ -669,6 +705,7 @@ class ResNet(SizeMixin, nn.Sequential):
     ----
     1. check performances of activations other than "nn.ReLU", especially mish and swish
     2. add functionality of "replace_stride_with_dilation"
+
     """
 
     __DEBUG__ = False
@@ -691,7 +728,7 @@ class ResNet(SizeMixin, nn.Sequential):
             number of channels in the input
         config: dict,
             other hyper-parameters of the Module, ref. corresponding config file
-            key word arguments that have to be set:
+            keyword arguments that have to be set:
             bias: bool,
                 if True, each convolution will have a bias term
             num_blocks: sequence of int,
@@ -712,6 +749,7 @@ class ResNet(SizeMixin, nn.Sequential):
             block: dict,
                 other parameters that can be set for the building blocks
             for a full list of configurable parameters, ref. corr. config file
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -790,18 +828,20 @@ class ResNet(SizeMixin, nn.Sequential):
             )
         else:
             self.__filter_lengths = self.config.filter_lengths
-        assert len(self.__filter_lengths) == len(
-            self.config.num_blocks
-        ), f"`config.filter_lengths` indicates {len(self.__filter_lengths)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        assert len(self.__filter_lengths) == len(self.config.num_blocks), (
+            f"`config.filter_lengths` indicates {len(self.__filter_lengths)} macro blocks, "
+            f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        )
         if isinstance(self.config.subsample_lengths, int):
             self.__subsample_lengths = list(
                 repeat(self.config.subsample_lengths, len(self.config.num_blocks))
             )
         else:
             self.__subsample_lengths = self.config.subsample_lengths
-        assert len(self.__subsample_lengths) == len(
-            self.config.num_blocks
-        ), f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        assert len(self.__subsample_lengths) == len(self.config.num_blocks), (
+            f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)} macro blocks, "
+            f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        )
         self.__num_filters = self.config.get(
             "num_filters",
             [
@@ -809,18 +849,20 @@ class ResNet(SizeMixin, nn.Sequential):
                 for i in range(len(self.config.num_blocks))
             ],
         )
-        assert len(self.__num_filters) == len(
-            self.config.num_blocks
-        ), f"`config.num_filters` indicates {len(self.__num_filters)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        assert len(self.__num_filters) == len(self.config.num_blocks), (
+            f"`config.num_filters` indicates {len(self.__num_filters)} macro blocks, "
+            f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        )
         if isinstance(self.config.dropouts, Real):
             self.__dropouts = list(
                 repeat(self.config.dropouts, len(self.config.num_blocks))
             )
         else:
             self.__dropouts = self.config.dropouts
-        assert len(self.__dropouts) == len(
-            self.config.num_blocks
-        ), f"`config.dropouts` indicates {len(self.__dropouts)} macro blocks, while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        assert len(self.__dropouts) == len(self.config.num_blocks), (
+            f"`config.dropouts` indicates {len(self.__dropouts)} macro blocks, "
+            f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
+        )
 
         # grouped resnet (basic) blocks,
         # number of channels are doubled at the first block of each macro-block
@@ -835,18 +877,20 @@ class ResNet(SizeMixin, nn.Sequential):
                 block_filter_lengths = list(repeat(macro_filter_lengths, nb))
             else:
                 block_filter_lengths = macro_filter_lengths
-            assert (
-                len(block_filter_lengths) == nb
-            ), f"at the {macro_idx}-th macro block, `macro_subsample_lengths` indicates {len(macro_subsample_lengths)} building blocks, while `config.num_blocks[{macro_idx}]` indicates {nb}"
+            assert len(block_filter_lengths) == nb, (
+                f"at the {macro_idx}-th macro block, `macro_subsample_lengths` indicates {len(macro_subsample_lengths)} "
+                f"building blocks, while `config.num_blocks[{macro_idx}]` indicates {nb}"
+            )
             if isinstance(macro_subsample_lengths, int):
                 # subsample at the first building block
                 block_subsample_lengths = list(repeat(1, nb))
                 block_subsample_lengths[0] = macro_subsample_lengths
             else:
                 block_subsample_lengths = macro_subsample_lengths
-            assert (
-                len(block_subsample_lengths) == nb
-            ), f"at the {macro_idx}-th macro block, `macro_subsample_lengths` indicates {len(macro_subsample_lengths)} building blocks, while `config.num_blocks[{macro_idx}]` indicates {nb}"
+            assert len(block_subsample_lengths) == nb, (
+                f"at the {macro_idx}-th macro block, `macro_subsample_lengths` indicates {len(macro_subsample_lengths)} "
+                f"building blocks, while `config.num_blocks[{macro_idx}]` indicates {nb}"
+            )
             if isinstance(self.building_block, Sequence):
                 bb = self.building_block[macro_idx]
                 bb_config = self.config.block[macro_idx]
@@ -885,6 +929,7 @@ class ResNet(SizeMixin, nn.Sequential):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         output = input
         for module in self:
@@ -907,6 +952,7 @@ class ResNet(SizeMixin, nn.Sequential):
         -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self:

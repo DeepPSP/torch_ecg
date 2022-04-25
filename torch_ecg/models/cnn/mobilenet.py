@@ -56,6 +56,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
 
     similar to `_nets.SeparableConv`,
     the difference is that there are normalization and activation between depthwise conv and pointwise conv
+
     """
 
     __DEBUG__ = True
@@ -116,6 +117,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
             multiplier of the number of output channels of the pointwise convolution
         kwargs: dict, optional,
             extra parameters, including `ordering`, etc.
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -203,6 +205,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
         -------
         output: Tensor,
             of shape (batch_size, n_channles, seq_len)
+
         """
         output = super().forward(input)
         return output
@@ -223,6 +226,7 @@ class MobileNetSeparableConv(SizeMixin, nn.Sequential):
         -------
         output_shape: sequence,
             the output shape, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self:
@@ -246,6 +250,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
     ----------
     1. Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017). Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
     2. https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/keras/applications/mobilenet.py
+
     """
 
     __DEBUG__ = True
@@ -274,6 +279,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
             batch_norm: bool or Module,
                 batch normalization,
                 the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -382,6 +388,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
         -------
         flow: nn.Sequential,
             the sequential flow of consecutive separable convolutions, each followed by bn and relu6
+
         """
         n_convs = len(out_channels)
         _filter_lengths = (
@@ -442,6 +449,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         output = super().forward(input)
         return output
@@ -462,6 +470,7 @@ class MobileNetV1(SizeMixin, nn.Sequential):
         -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         _, _, _seq_len = self.init_convs.compute_output_shape(_seq_len, batch_size)
@@ -489,6 +498,7 @@ class InvertedResidual(SizeMixin, nn.Module):
     expansion (via pointwise conv) --> depthwise conv --> pointwise conv (without activation) ---> output
         |                                                                                      |
         |----------------------- shortcut (only under certain condition) ----------------------|
+
     """
 
     __DEBUG__ = True
@@ -529,6 +539,11 @@ class InvertedResidual(SizeMixin, nn.Module):
             (the name of) the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
         activation: str or Module, default "relu6",
             name or Module of the activation, except for the last pointwise convolution
+        width_multiplier: float, default 1.0,
+            multiplier of the number of output channels of the pointwise convolution
+        use_se: bool, default True,
+            whether to use Squeeze-and-Excitation (SE) module
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -588,7 +603,7 @@ class InvertedResidual(SizeMixin, nn.Module):
             bias=False,
             norm=batch_norm,
             activation=None,
-            width_multiplier=width_multiplier,
+            width_multiplier=self.__width_multiplier,
         )
         self.main_stream.add_module(
             "pointwise_conv",
@@ -608,6 +623,7 @@ class InvertedResidual(SizeMixin, nn.Module):
         -------
         out: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         out = self.main_stream(input)
 
@@ -634,6 +650,7 @@ class InvertedResidual(SizeMixin, nn.Module):
         -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self.main_stream:
@@ -650,16 +667,57 @@ class MobileNetV2(SizeMixin, nn.Sequential):
     1. Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
     2. https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv2.py
     3. https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet_v2.py
+
     """
 
     __DEBUG__ = True
     __name__ = "MobileNetV2"
 
     def __init__(self, in_channels: int, **config) -> NoReturn:
-        """NOT finished, NOT checked,
+        """
 
         Parameters
         ----------
+        in_channels: int,
+            number of channels in the input signal
+        config: dict,
+            other hyper-parameters of the Module, ref. corresponding config file
+            keyword arguments that have to be set:
+            init_num_filters: int or sequence of int,
+                number of filters in the first convolutional layer(s)
+            init_filter_lengths: int or sequence of int,
+                filter lengths (kernel sizes) in the first convolutional layer(s)
+            init_subsample_lengths: int or sequence of int,
+                subsample lengths (strides) in the first convolutional layer(s)
+            groups: int,
+                number of groups in the pointwise convolutional layer(s)
+            norm: bool or str or Module,
+                normalization layer
+            activation: str or Module,
+                activation layer
+            bias: bool,
+                whether to use bias in the convolutional layer(s)
+            width_multiplier: float,
+                multiplier of the number of output channels of the pointwise convolution
+            inv_res: CFG,
+                config of the inverted residual blocks, with the following keys:
+                expansions: sequence of int,
+                    expansion ratios of the inverted residual blocks
+                out_channels: sequence of int,
+                    number of output channels in each block
+                n_blocks: sequence of int,
+                    number of inverted residual blocks
+                strides: sequence of int,
+                    strides of the inverted residual blocks
+                filter_lengths: sequence of int,
+                    filter lengths (kernel sizes) in each block
+            final_num_filters: int or sequence of int,
+                number of filters in the final convolutional layer(s)
+            final_filter_lengths: int or sequence of int,
+                filter lengths (kernel sizes) in the final convolutional layer(s)
+            final_subsample_lengths: int or sequence of int,
+                subsample lengths (strides) in the final convolutional layer(s)
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -687,7 +745,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
                 in_channels=self.__in_channels,
                 out_channels=self.config.init_num_filters,
                 filter_lengths=self.config.init_filter_lengths,
-                subsample_lengths=self.config.init_subsample_length,
+                subsample_lengths=self.config.init_subsample_lengths,
                 groups=self.config.groups,
                 norm=self.config.get("norm", self.config.get("batch_norm")),
                 activation=self.config.activation,
@@ -710,6 +768,11 @@ class MobileNetV2(SizeMixin, nn.Sequential):
         _, inv_res_in_channels, _ = init_convs.compute_output_shape()
         idx = 0
         for t, c, n, s, k in inv_res_cfg:
+            # t: expansion
+            # c: output channels
+            # n: number of blocks
+            # s: stride
+            # k: kernel size
             for i in range(n):
                 inv_res_blk = InvertedResidual(
                     inv_res_in_channels,
@@ -718,7 +781,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
                     filter_length=k,
                     stride=s if i == 0 else 1,
                     groups=self.config.groups,
-                    batch_norm=self.config.batch_norm,
+                    norm=self.config.get("norm", self.config.get("batch_norm")),
                     activation=self.config.activation,
                     width_multiplier=self.config.width_multiplier,
                 )
@@ -732,7 +795,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
         # final conv(s)
         # no alpha applied to last conv as stated in the paper
         if isinstance(self.config.final_num_filters, int):
-            init_convs = Conv_Bn_Activation(
+            final_convs = Conv_Bn_Activation(
                 in_channels=inv_res_in_channels,
                 out_channels=self.config.final_num_filters,
                 kernel_size=self.config.final_filter_lengths,
@@ -744,7 +807,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
                 width_multiplier=max(1.0, self.config.width_multiplier),
             )
         else:
-            init_convs = MultiConv(
+            final_convs = MultiConv(
                 in_channels=self.__in_channels,
                 out_channels=self.config.final_num_filters,
                 filter_lengths=self.config.final_filter_lengths,
@@ -755,13 +818,13 @@ class MobileNetV2(SizeMixin, nn.Sequential):
                 bias=self.config.bias,
                 width_multiplier=max(1.0, self.config.width_multiplier),
             )
-        # self.add_module(
-        #     "final_convs",
-        #     init_convs,
-        # )
+        self.add_module(
+            "final_convs",
+            final_convs,
+        )
 
     def forward(self, input: Tensor) -> Tensor:
-        """NOT finished, NOT checked,
+        """
 
         Parameters
         ----------
@@ -772,6 +835,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         output = super().forward(input)
         return output
@@ -792,6 +856,7 @@ class MobileNetV2(SizeMixin, nn.Sequential):
         -------
         output_shape: sequence,
             the output shape of this block, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self:
@@ -811,6 +876,7 @@ class MobileNetV3(SizeMixin, nn.Module):
     ----------
     1. Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019). Searching for mobilenetv3. In Proceedings of the IEEE International Conference on Computer Vision (pp. 1314-1324).
     2. https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv3.py
+
     """
 
     __DEBUG__ = True
