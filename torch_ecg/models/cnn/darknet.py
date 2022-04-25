@@ -34,7 +34,7 @@ __all__ = [
 ]
 
 
-class DarkNet(SizeMixin, nn.Sequential):
+class DarkNet((nn.Sequential, SizeMixin)):
     """ """
 
     __DEBUG__ = True

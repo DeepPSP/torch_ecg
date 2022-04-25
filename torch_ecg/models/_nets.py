@@ -306,7 +306,7 @@ _DEFAULT_CONV_CONFIGS = CFG(
 
 # ---------------------------------------------
 # basic building blocks of CNN
-class Bn_Activation(SizeMixin, nn.Sequential):
+class Bn_Activation(nn.Sequential, SizeMixin):
     """
 
     batch normalization --> activation
@@ -390,14 +390,14 @@ class Bn_Activation(SizeMixin, nn.Sequential):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `Bn_Activation` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         output_shape = (batch_size, self.__num_features, seq_len)
         return output_shape
 
 
-class Conv_Bn_Activation(SizeMixin, nn.Sequential):
+class Conv_Bn_Activation(nn.Sequential, SizeMixin):
     """
 
     1d convolution --> batch normalization (optional) -- > activation (optional),
@@ -730,7 +730,7 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `Conv_Bn_Activation` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         if self.__conv_type is None:
@@ -797,7 +797,7 @@ class Conv_Bn_Activation(SizeMixin, nn.Sequential):
 CBA = Conv_Bn_Activation
 
 
-class MultiConv(SizeMixin, nn.Sequential):
+class MultiConv(nn.Sequential, SizeMixin):
     """
 
     a sequence (stack) of `Conv_Bn_Activation` blocks,
@@ -943,7 +943,7 @@ class MultiConv(SizeMixin, nn.Sequential):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
         """
         _seq_len = seq_len
         for module in self:
@@ -956,7 +956,7 @@ class MultiConv(SizeMixin, nn.Sequential):
         return output_shape
 
 
-class BranchedConv(SizeMixin, nn.Module):
+class BranchedConv(nn.Module, SizeMixin):
     """
 
     branched `MultiConv` blocks
@@ -1091,7 +1091,7 @@ class BranchedConv(SizeMixin, nn.Module):
         return output_shapes
 
 
-class SeparableConv(SizeMixin, nn.Sequential):
+class SeparableConv(nn.Sequential, SizeMixin):
     """
 
     (Super-)Separable Convolution
@@ -1272,7 +1272,7 @@ class SeparableConv(SizeMixin, nn.Sequential):
         return output_shape
 
 
-class DeformConv(SizeMixin, nn.Module):
+class DeformConv(nn.Module, SizeMixin):
     """
 
     Deformable Convolution
@@ -1319,7 +1319,7 @@ class DeformConv(SizeMixin, nn.Module):
         raise NotImplementedError
 
 
-class DownSample(SizeMixin, nn.Sequential):
+class DownSample(nn.Sequential, SizeMixin):
     """
 
     NOTE: this down sampling module allows changement of number of channels,
@@ -1533,7 +1533,7 @@ class DownSample(SizeMixin, nn.Sequential):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `DownSample` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         if self.__mode == "conv":
@@ -1574,7 +1574,7 @@ class DownSample(SizeMixin, nn.Sequential):
         return output_shape
 
 
-class ZeroPad1d(SizeMixin, nn.ConstantPad1d):
+class ZeroPad1d(nn.ConstantPad1d, SizeMixin):
     """Pads the input tensor boundaries with zero.
     do NOT be confused with `ZeroPadding`, which pads along the channel dimension
     """
@@ -1596,7 +1596,7 @@ class ZeroPad1d(SizeMixin, nn.ConstantPad1d):
         super().__init__(padding, 0.0)
 
 
-class BlurPool(SizeMixin, nn.Module):
+class BlurPool(nn.Module, SizeMixin):
     """
 
     Blur Pooling, also named as AntiAliasDownsample
@@ -1738,7 +1738,7 @@ class BlurPool(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `DownSample` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         if self.__filt_size == 1:
@@ -1774,7 +1774,7 @@ class BlurPool(SizeMixin, nn.Module):
         )
 
 
-class AntiAliasConv(SizeMixin, nn.Sequential):
+class AntiAliasConv(nn.Sequential, SizeMixin):
     """ """
 
     __DEBUG__ = False
@@ -1863,7 +1863,7 @@ class AntiAliasConv(SizeMixin, nn.Sequential):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `DownSample` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         output_shape = compute_conv_output_shape(
@@ -1880,7 +1880,7 @@ class AntiAliasConv(SizeMixin, nn.Sequential):
         return output_shape
 
 
-class BidirectionalLSTM(SizeMixin, nn.Module):
+class BidirectionalLSTM(nn.Module, SizeMixin):
     """
     from crnn_torch of references.ati_cnn
     """
@@ -1961,14 +1961,14 @@ class BidirectionalLSTM(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `BidirectionalLSTM` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         output_shape = (seq_len, batch_size, self.__output_size)
         return output_shape
 
 
-class StackedLSTM(SizeMixin, nn.Sequential):
+class StackedLSTM(nn.Sequential, SizeMixin):
     """finished, checked (no bugs, but correctness is left further to check),
 
     stacked LSTM, which allows different hidden sizes for each LSTM layer
@@ -2112,7 +2112,7 @@ class StackedLSTM(SizeMixin, nn.Sequential):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `StackedLSTM` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         output_size = self.__hidden_sizes[-1]
@@ -2128,7 +2128,7 @@ class StackedLSTM(SizeMixin, nn.Sequential):
 # ---------------------------------------------
 # attention mechanisms, from various sources
 @deprecated(reason="not checked yet")
-class AML_Attention(SizeMixin, nn.Module):
+class AML_Attention(nn.Module, SizeMixin):
     """NOT checked,
 
     the feature extraction part is eliminated,
@@ -2160,7 +2160,7 @@ class AML_Attention(SizeMixin, nn.Module):
 
 
 @deprecated(reason="not checked yet")
-class AML_GatedAttention(SizeMixin, nn.Module):
+class AML_GatedAttention(nn.Module, SizeMixin):
     """NOT checked,
 
     the feature extraction part is eliminated,
@@ -2195,7 +2195,7 @@ class AML_GatedAttention(SizeMixin, nn.Module):
         return A
 
 
-class AttentionWithContext(SizeMixin, nn.Module):
+class AttentionWithContext(nn.Module, SizeMixin):
     """finished, checked (might have bugs),
 
     from 0236 of CPSC2018 challenge
@@ -2328,14 +2328,14 @@ class AttentionWithContext(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `AttentionWithContext` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         output_shape = (batch_size, self.__out_channels, seq_len)
         return output_shape
 
 
-class _ScaledDotProductAttention(SizeMixin, nn.Module):
+class _ScaledDotProductAttention(nn.Module, SizeMixin):
     """
     References
     ----------
@@ -2367,7 +2367,7 @@ class _ScaledDotProductAttention(SizeMixin, nn.Module):
         return output
 
 
-class MultiHeadAttention(SizeMixin, nn.Module):
+class MultiHeadAttention(nn.Module, SizeMixin):
     """
 
     Multi-head attention.
@@ -2492,7 +2492,7 @@ class MultiHeadAttention(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `MHA` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         output_shape = (seq_len, batch_size, self.in_features * self.head_num)
@@ -2507,7 +2507,7 @@ class MultiHeadAttention(SizeMixin, nn.Module):
         )
 
 
-class SelfAttention(SizeMixin, nn.Module):
+class SelfAttention(nn.Module, SizeMixin):
     """ """
 
     __DEBUG__ = False
@@ -2583,14 +2583,14 @@ class SelfAttention(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `SelfAttention` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         output_shape = (seq_len, batch_size, self.in_features)
         return output_shape
 
 
-class AttentivePooling(SizeMixin, nn.Module):
+class AttentivePooling(nn.Module, SizeMixin):
     """ """
 
     __DEBUG__ = False
@@ -2666,14 +2666,14 @@ class AttentivePooling(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `AttentivePooling` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         output_shape = (batch_size, self.__in_channels)
         return output_shape
 
 
-class ZeroPadding(SizeMixin, nn.Module):
+class ZeroPadding(nn.Module, SizeMixin):
     """
     zero padding for increasing channels,
     degenerates to `identity` if in and out channels are equal
@@ -2745,14 +2745,14 @@ class ZeroPadding(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `ZeroPadding` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         output_shape = (batch_size, self.__out_channels, seq_len)
         return output_shape
 
 
-class SeqLin(SizeMixin, nn.Sequential):
+class SeqLin(nn.Sequential, SizeMixin):
     """
     Sequential linear,
     might be useful in learning non-linear classifying hyper-surfaces
@@ -2889,7 +2889,7 @@ class SeqLin(SizeMixin, nn.Sequential):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `SeqLin` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         if input_seq:
@@ -2950,7 +2950,7 @@ class MLP(SeqLin):
         )
 
 
-class NonLocalBlock(SizeMixin, nn.Module):
+class NonLocalBlock(nn.Module, SizeMixin):
     """
 
     Non-local Neural Networks
@@ -3078,13 +3078,13 @@ class NonLocalBlock(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `NonLocalBlock` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         return (batch_size, self.__in_channels, seq_len)
 
 
-class SEBlock(SizeMixin, nn.Module):
+class SEBlock(nn.Module, SizeMixin):
     """
 
     Squeeze-and-Excitation Block
@@ -3177,13 +3177,13 @@ class SEBlock(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `SEBlock` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         return (batch_size, self.__in_channels, seq_len)
 
 
-class GEBlock(SizeMixin, nn.Module):
+class GEBlock(nn.Module, SizeMixin):
     """
 
     Gather-excite Network
@@ -3205,7 +3205,7 @@ class GEBlock(SizeMixin, nn.Module):
         raise NotImplementedError
 
 
-class SKBlock(SizeMixin, nn.Module):
+class SKBlock(nn.Module, SizeMixin):
     """
 
     Selective Kernel Networks
@@ -3226,7 +3226,7 @@ class SKBlock(SizeMixin, nn.Module):
         raise NotImplementedError
 
 
-class GlobalContextBlock(SizeMixin, nn.Module):
+class GlobalContextBlock(nn.Module, SizeMixin):
     """
 
     Global Context Block
@@ -3392,13 +3392,13 @@ class GlobalContextBlock(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `GlobalContextBlock` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         return (batch_size, self.__in_channels, seq_len)
 
 
-class BAMBlock(SizeMixin, nn.Module):
+class BAMBlock(nn.Module, SizeMixin):
     """
 
     Bottleneck Attention Module (BMVC2018)
@@ -3420,7 +3420,7 @@ class BAMBlock(SizeMixin, nn.Module):
         raise NotImplementedError
 
 
-class CBAMBlock(SizeMixin, nn.Module):
+class CBAMBlock(nn.Module, SizeMixin):
     """
 
     Convolutional Block Attention Module (ECCV2018)
@@ -3659,13 +3659,13 @@ class CBAMBlock(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         return (batch_size, self.__gate_channels, seq_len)
 
 
-class CoordAttention(SizeMixin, nn.Module):
+class CoordAttention(nn.Module, SizeMixin):
     """
 
     Coordinate attention
@@ -3687,7 +3687,7 @@ class CoordAttention(SizeMixin, nn.Module):
         raise NotImplementedError
 
 
-class CRF(SizeMixin, nn.Module):
+class CRF(nn.Module, SizeMixin):
     """Conditional random field, modified from [1]
 
     This module implements a conditional random field [2]. The forward computation
@@ -4092,7 +4092,7 @@ class CRF(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this `CRF` layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         if self.batch_first:
@@ -4102,7 +4102,7 @@ class CRF(SizeMixin, nn.Module):
         return output_shape
 
 
-class ExtendedCRF(SizeMixin, nn.Sequential):
+class ExtendedCRF(nn.Sequential, SizeMixin):
     """
     (possibly) combination of a linear (projection) layer and a `CRF` layer,
     which allows the input size to be unequal to (usually greater than) num_tags,
@@ -4193,13 +4193,13 @@ class ExtendedCRF(SizeMixin, nn.Sequential):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         return (batch_size, seq_len, self.__num_tags)
 
 
-class SpaceToDepth(SizeMixin, nn.Module):
+class SpaceToDepth(nn.Module, SizeMixin):
     """
 
     References
@@ -4280,7 +4280,7 @@ class SpaceToDepth(SizeMixin, nn.Module):
         Returns
         -------
         tuple,
-            the output shape of this layer, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         if seq_len is not None:
@@ -4306,7 +4306,7 @@ class _GroupFC(object):
             out_extrap[:, i, :] = torch.matmul(h_i, w_i)
 
 
-class MLDecoder(SizeMixin, nn.Module):
+class MLDecoder(nn.Module, SizeMixin):
     """
 
     References
@@ -4470,13 +4470,13 @@ class MLDecoder(SizeMixin, nn.Module):
         Returns
         -------
         tuple,
-            the output shape of this module, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
 
         """
         return (batch_size, self.decoder.out_channels)
 
 
-class DropPath(SizeMixin, nn.Module):
+class DropPath(nn.Module, SizeMixin):
     """
 
     References

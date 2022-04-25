@@ -41,7 +41,7 @@ __all__ = [
 ]
 
 
-class ECG_CRNN(CkptMixin, SizeMixin, nn.Module):
+class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
     """finished, continuously improving,
 
     C(R)NN models modified from the following refs.

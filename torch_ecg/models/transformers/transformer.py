@@ -18,7 +18,7 @@ __all__ = [
 ]
 
 
-class Transformer(SizeMixin, nn.Module):
+class Transformer(nn.Module, SizeMixin):
     """ """
 
     __DEBUG__ = True

@@ -35,7 +35,7 @@ __all__ = [
 ]
 
 
-class MidPointResNet(SizeMixin, nn.Module):
+class MidPointResNet(nn.Module, SizeMixin):
     """ """
 
     def __init__(self, in_channels: int, **config) -> NoReturn:
@@ -43,7 +43,7 @@ class MidPointResNet(SizeMixin, nn.Module):
         raise NotImplementedError
 
 
-class RK4ResNet(SizeMixin, nn.Module):
+class RK4ResNet(nn.Module, SizeMixin):
     """ """
 
     def __init__(self, in_channels: int, **config) -> NoReturn:
@@ -51,7 +51,7 @@ class RK4ResNet(SizeMixin, nn.Module):
         raise NotImplementedError
 
 
-class RK8ResNet(SizeMixin, nn.Module):
+class RK8ResNet(nn.Module, SizeMixin):
     """ """
 
     def __init__(self, in_channels: int, **config) -> NoReturn:

@@ -23,8 +23,14 @@ from ...models._nets import (  # noqa: F401
     DownSample,
     MultiConv,
 )
-from ...utils.misc import dict_to_str
-from ...utils.utils_nn import CkptMixin, SizeMixin, compute_deconv_output_shape
+from ...utils.misc import dict_to_str, add_docstring
+from ...utils.utils_nn import (
+    CkptMixin,
+    SizeMixin,
+    compute_deconv_output_shape,
+    compute_sequential_output_shape,
+    compute_sequential_output_shape_docstring,
+)
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -102,7 +108,7 @@ class TripleConv(MultiConv):
         )
 
 
-class DownTripleConv(SizeMixin, nn.Sequential):
+class DownTripleConv(nn.Sequential, SizeMixin):
     """ """
 
     __DEBUG__ = False
@@ -193,31 +199,15 @@ class DownTripleConv(SizeMixin, nn.Sequential):
         out = super().forward(input)
         return out
 
+    @add_docstring(compute_sequential_output_shape_docstring)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
-        """
-        _seq_len = seq_len
-        for module in self:
-            output_shape = module.compute_output_shape(seq_len=_seq_len)
-            _, _, _seq_len = output_shape
-        return output_shape
+        """ """
+        return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
-class DownBranchedDoubleConv(SizeMixin, nn.Module):
+class DownBranchedDoubleConv(nn.Module, SizeMixin):
     """
     the bottom block of the `subtract_unet`
     """
@@ -343,7 +333,7 @@ class DownBranchedDoubleConv(SizeMixin, nn.Module):
         return output_shape
 
 
-class UpTripleConv(SizeMixin, nn.Module):
+class UpTripleConv(nn.Module, SizeMixin):
     """
     Upscaling then double conv, with input of corr. down layer concatenated
     up sampling --> conv (conv --> (dropout -->) conv --> (dropout -->) conv)
@@ -494,7 +484,7 @@ class UpTripleConv(SizeMixin, nn.Module):
         return output_shape
 
 
-class ECG_SUBTRACT_UNET(CkptMixin, SizeMixin, nn.Module):
+class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
     """
 
     entry 0433 of CPSC2019

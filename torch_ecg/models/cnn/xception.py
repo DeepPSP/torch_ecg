@@ -22,8 +22,12 @@ from ...models._nets import (  # noqa: F401
     SEBlock,
     SeparableConv,
 )
-from ...utils.misc import dict_to_str
-from ...utils.utils_nn import SizeMixin
+from ...utils.misc import dict_to_str, add_docstring
+from ...utils.utils_nn import (
+    SizeMixin,
+    compute_sequential_output_shape,
+    compute_sequential_output_shape_docstring,
+)
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -50,7 +54,7 @@ _DEFAULT_CONV_CONFIGS = CFG(
 )
 
 
-class XceptionMultiConv(SizeMixin, nn.Module):
+class XceptionMultiConv(nn.Module, SizeMixin):
     """
 
     -> n(2 or 3) x (activation -> norm -> sep_conv) (-> optional sub-sample) ->
@@ -210,7 +214,7 @@ class XceptionMultiConv(SizeMixin, nn.Module):
         return output_shape
 
 
-class XceptionEntryFlow(SizeMixin, nn.Sequential):
+class XceptionEntryFlow(nn.Sequential, SizeMixin):
     """
 
     Entry flow of the Xception model,
@@ -415,7 +419,7 @@ class XceptionEntryFlow(SizeMixin, nn.Sequential):
         return output_shape
 
 
-class XceptionMiddleFlow(SizeMixin, nn.Sequential):
+class XceptionMiddleFlow(nn.Sequential, SizeMixin):
     """
 
     Middle flow of the Xception model,
@@ -563,7 +567,7 @@ class XceptionMiddleFlow(SizeMixin, nn.Sequential):
         return output_shape
 
 
-class XceptionExitFlow(SizeMixin, nn.Sequential):
+class XceptionExitFlow(nn.Sequential, SizeMixin):
     """
 
     Exit flow of the Xception model,
@@ -762,7 +766,7 @@ class XceptionExitFlow(SizeMixin, nn.Sequential):
         return output_shape
 
 
-class Xception(SizeMixin, nn.Sequential):
+class Xception(nn.Sequential, SizeMixin):
     """
 
     References
@@ -833,28 +837,12 @@ class Xception(SizeMixin, nn.Sequential):
         output = super().forward(input)
         return output
 
+    @add_docstring(compute_sequential_output_shape_docstring)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
-        """
-        _seq_len = seq_len
-        for module in self:
-            output_shape = module.compute_output_shape(_seq_len, batch_size)
-            _, _, _seq_len = output_shape
-        return output_shape
+        """ """
+        return compute_sequential_output_shape(self, seq_len, batch_size)
 
     @property
     def in_channels(self) -> int:

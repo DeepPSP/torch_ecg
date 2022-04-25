@@ -33,7 +33,7 @@ __all__ = [
 ]
 
 
-class EfficientNet(SizeMixin, nn.Module):
+class EfficientNet(nn.Module, SizeMixin):
     """
 
     Reference
@@ -63,7 +63,7 @@ class EfficientNet(SizeMixin, nn.Module):
         raise NotImplementedError
 
 
-class EfficientNetV2(SizeMixin, nn.Module):
+class EfficientNetV2(nn.Module, SizeMixin):
     """
 
     Reference

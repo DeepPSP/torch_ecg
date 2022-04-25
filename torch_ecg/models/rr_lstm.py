@@ -39,7 +39,7 @@ __all__ = [
 ]
 
 
-class RR_LSTM(CkptMixin, SizeMixin, nn.Module):
+class RR_LSTM(nn.Module, CkptMixin, SizeMixin):
     """
     classification or sequence labeling using LSTM and using RR intervals as input
     """

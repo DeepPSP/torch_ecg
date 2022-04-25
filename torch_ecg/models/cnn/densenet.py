@@ -27,8 +27,12 @@ from ...models._nets import (  # noqa: F401
     NonLocalBlock,
     SEBlock,
 )
-from ...utils.misc import dict_to_str, list_sum
-from ...utils.utils_nn import SizeMixin
+from ...utils.misc import dict_to_str, list_sum, add_docstring
+from ...utils.utils_nn import (
+    SizeMixin,
+    compute_sequential_output_shape,
+    compute_sequential_output_shape_docstring,
+)
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -43,12 +47,13 @@ __all__ = [
 ]
 
 
-class DenseBasicBlock(SizeMixin, nn.Module):
+class DenseBasicBlock(nn.Module, SizeMixin):
     """
 
     the basic building block for DenseNet,
     consisting of normalization -> activation -> convolution (-> dropout (optional)),
     the output Tensor is the concatenation of old features (input) with new features
+
     """
 
     __DEBUG__ = True
@@ -91,6 +96,7 @@ class DenseBasicBlock(SizeMixin, nn.Module):
         config: dict,
             other hyper-parameters, including
             activation choices, memory_efficient choices, etc.
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -131,6 +137,7 @@ class DenseBasicBlock(SizeMixin, nn.Module):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         new_features = self.bac(input)
         if self.dropout:
@@ -173,14 +180,15 @@ class DenseBasicBlock(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
+
         """
         out_channels = self.__in_channels + self.__growth_rate
         output_shape = (batch_size, out_channels, seq_len)
         return output_shape
 
 
-class DenseBottleNeck(SizeMixin, nn.Module):
+class DenseBottleNeck(nn.Module, SizeMixin):
     """
 
     bottleneck modification of `DenseBasicBlock`,
@@ -231,6 +239,7 @@ class DenseBottleNeck(SizeMixin, nn.Module):
         config: dict,
             other hyper-parameters, including
             activation choices, memory_efficient choices, etc.
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -287,6 +296,7 @@ class DenseBottleNeck(SizeMixin, nn.Module):
         -------
         bottleneck_output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         bottleneck_output = self.neck_conv(input)
         return bottleneck_output
@@ -303,6 +313,7 @@ class DenseBottleNeck(SizeMixin, nn.Module):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         if self.config.memory_efficient:
             raise NotImplementedError
@@ -349,18 +360,20 @@ class DenseBottleNeck(SizeMixin, nn.Module):
         Returns
         -------
         output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
+            the output shape, given `seq_len` and `batch_size`
+
         """
         out_channels = self.__in_channels + self.__growth_rate
         output_shape = (batch_size, out_channels, seq_len)
         return output_shape
 
 
-class DenseMacroBlock(SizeMixin, nn.Sequential):
+class DenseMacroBlock(nn.Sequential, SizeMixin):
     """
 
     macro blocks for `DenseNet`,
     stacked sequence of builing blocks of similar pattern
+
     """
 
     __DEBUG__ = True
@@ -407,6 +420,7 @@ class DenseMacroBlock(SizeMixin, nn.Sequential):
             other hyper-parameters, including
             extra kw for `DenseBottleNeck`, and
             activation choices, memory_efficient choices, etc.
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -444,52 +458,21 @@ class DenseMacroBlock(SizeMixin, nn.Sequential):
                 ),
             )
 
-    def forward(self, input: Tensor) -> Tensor:
-        """
-
-        Parameters
-        ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-
-        Returns
-        -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-        """
-        output = super().forward(input)
-        return output
-
+    @add_docstring(compute_sequential_output_shape_docstring)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
-        """
-        _seq_len = seq_len
-        for module in self:
-            output_shape = module.compute_output_shape(_seq_len, batch_size)
-            _, _, _seq_len = output_shape
-        return output_shape
+        """ """
+        return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
-class DenseTransition(SizeMixin, nn.Sequential):
+class DenseTransition(nn.Sequential, SizeMixin):
     """
 
     transition blocks between `DenseMacroBlock`s,
     used to perform sub-sampling,
     and compression of channels if specified
+
     """
 
     __DEBUG__ = True
@@ -528,6 +511,7 @@ class DenseTransition(SizeMixin, nn.Sequential):
         config: dict,
             other parameters, including
             activation choices, subsampling mode (method), etc.
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -569,47 +553,15 @@ class DenseTransition(SizeMixin, nn.Sequential):
             ),
         )
 
-    def forward(self, input: Tensor) -> Tensor:
-        """
-
-        Parameters
-        ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-
-        Returns
-        -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-        """
-        output = super().forward(input)
-        return output
-
+    @add_docstring(compute_sequential_output_shape_docstring)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
-        """
-        _seq_len = seq_len
-        for module in self:
-            output_shape = module.compute_output_shape(_seq_len, batch_size)
-            _, _, _seq_len = output_shape
-        return output_shape
+        """ """
+        return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
-class DenseNet(SizeMixin, nn.Sequential):
+class DenseNet(nn.Sequential, SizeMixin):
     """
 
     The core part of the SOTA model (framework) of CPSC2020
@@ -631,6 +583,7 @@ class DenseNet(SizeMixin, nn.Sequential):
     ----
     1. for `groups` > 1, the concatenated output should be re-organized in the channel dimension?
     2. memory-efficient mode, i.e. storing the `new_features` in a shared memory instead of stacking in newly created `Tensor`s after each mini-block
+
     """
 
     __DEBUG__ = True
@@ -687,6 +640,7 @@ class DenseNet(SizeMixin, nn.Sequential):
             block: dict,
                 other parameters that can be set for the building blocks
             for a full list of configurable parameters, ref. corr. config file
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -779,44 +733,12 @@ class DenseNet(SizeMixin, nn.Sequential):
                 _, macro_in_channels, _ = dt.compute_output_shape()
                 self.add_module(f"transition_{idx}", dt)
 
-    def forward(self, input: Tensor) -> Tensor:
-        """
-
-        Parameters
-        ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-
-        Returns
-        -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-        """
-        output = super().forward(input)
-        return output
-
+    @add_docstring(compute_sequential_output_shape_docstring)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
-        """
-        _seq_len = seq_len
-        for module in self:
-            output_shape = module.compute_output_shape(_seq_len, batch_size)
-            _, _, _seq_len = output_shape
-        return output_shape
+        """ """
+        return compute_sequential_output_shape(self, seq_len, batch_size)
 
     @property
     def in_channels(self) -> int:

@@ -23,8 +23,14 @@ from ...models._nets import (
     MultiConv,
     ZeroPadding,
 )
-from ...utils.misc import dict_to_str
-from ...utils.utils_nn import CkptMixin, SizeMixin, compute_deconv_output_shape
+from ...utils.misc import dict_to_str, add_docstring
+from ...utils.utils_nn import (
+    CkptMixin,
+    SizeMixin,
+    compute_deconv_output_shape,
+    compute_sequential_output_shape,
+    compute_sequential_output_shape_docstring,
+)
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -104,7 +110,7 @@ class DoubleConv(MultiConv):
         )
 
 
-class DownDoubleConv(SizeMixin, nn.Sequential):
+class DownDoubleConv(nn.Sequential, SizeMixin):
     """
     Downscaling with maxpool then double conv
     down sample (maxpool) --> double conv (conv --> conv)
@@ -214,32 +220,15 @@ class DownDoubleConv(SizeMixin, nn.Sequential):
         out = super().forward(input)
         return out
 
+    @add_docstring(compute_sequential_output_shape_docstring)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
-
-        """
-        _seq_len = seq_len
-        for module in self:
-            output_shape = module.compute_output_shape(seq_len=_seq_len)
-            _, _, _seq_len = output_shape
-        return output_shape
+        """ """
+        return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
-class UpDoubleConv(SizeMixin, nn.Module):
+class UpDoubleConv(nn.Module, SizeMixin):
     """
     Upscaling then double conv, with input of corr. down layer concatenated
     up sampling --> conv (conv --> conv)
@@ -425,7 +414,7 @@ class UpDoubleConv(SizeMixin, nn.Module):
         return output_shape
 
 
-class ECG_UNET(CkptMixin, SizeMixin, nn.Module):
+class ECG_UNET(nn.Module, CkptMixin, SizeMixin):
     """
 
     UNet for (multi-lead) ECG wave delineation

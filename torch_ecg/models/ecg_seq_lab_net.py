@@ -165,7 +165,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         ).permute(0, 2, 1)
 
 
-class _ECG_SEQ_LAB_NET(CkptMixin, SizeMixin, nn.Module):
+class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
     """
 
     SOTA model from CPSC2019 challenge (entry 0416), legacy version

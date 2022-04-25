@@ -22,8 +22,12 @@ from ...models._nets import (  # noqa: F401
     ZeroPadding,
     make_attention_layer,
 )
-from ...utils.misc import dict_to_str
-from ...utils.utils_nn import SizeMixin
+from ...utils.misc import dict_to_str, add_docstring
+from ...utils.utils_nn import (
+    SizeMixin,
+    compute_sequential_output_shape,
+    compute_sequential_output_shape_docstring,
+)
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -36,7 +40,7 @@ __all__ = [
 ]
 
 
-class ResNetBasicBlock(SizeMixin, nn.Module):
+class ResNetBasicBlock(nn.Module, SizeMixin):
     """
     building blocks for `ResNet`, as implemented in ref. [2] of `ResNet`
 
@@ -270,7 +274,7 @@ class ResNetBasicBlock(SizeMixin, nn.Module):
         return output_shape
 
 
-class ResNetBottleNeck(SizeMixin, nn.Module):
+class ResNetBottleNeck(nn.Module, SizeMixin):
     """
 
     bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
@@ -556,7 +560,7 @@ class ResNetBottleNeck(SizeMixin, nn.Module):
         return output_shape
 
 
-class ResNetMacroBlock(SizeMixin, nn.Sequential):
+class ResNetMacroBlock(nn.Sequential, SizeMixin):
     """NOT finished, NOT checked,"""
 
     __DEBUG__ = True
@@ -571,12 +575,12 @@ class ResNetMacroBlock(SizeMixin, nn.Sequential):
         """ """
         raise NotImplementedError
 
-    def compute_output_shape():
+    def compute_output_shape(self):
         """ """
         raise NotImplementedError
 
 
-class ResNetStem(SizeMixin, nn.Sequential):
+class ResNetStem(nn.Sequential, SizeMixin):
     """
     the input stem of ResNet
     """
@@ -668,32 +672,15 @@ class ResNetStem(SizeMixin, nn.Sequential):
                 ),
             )
 
+    @add_docstring(compute_sequential_output_shape_docstring)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
-
-        """
-        _seq_len = seq_len
-        for module in self:
-            output_shape = module.compute_output_shape(_seq_len, batch_size)
-            _, _, _seq_len = output_shape
-        return output_shape
+        """ """
+        return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
-class ResNet(SizeMixin, nn.Sequential):
+class ResNet(nn.Sequential, SizeMixin):
     """
 
     References
@@ -917,48 +904,12 @@ class ResNet(SizeMixin, nn.Sequential):
                 block_in_channels = block_num_filters * bb.expansion
             macro_in_channels = macro_num_filters * bb.expansion
 
-    def forward(self, input: Tensor) -> Tensor:
-        """
-
-        Parameters
-        ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-
-        Returns
-        -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-
-        """
-        output = input
-        for module in self:
-            output = module(output)
-        return output
-
+    @add_docstring(compute_sequential_output_shape_docstring)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
-
-        """
-        _seq_len = seq_len
-        for module in self:
-            output_shape = module.compute_output_shape(_seq_len, batch_size)
-            _, _, _seq_len = output_shape
-        return output_shape
+        """ """
+        return compute_sequential_output_shape(self, seq_len, batch_size)
 
     @property
     def in_channels(self) -> int:
