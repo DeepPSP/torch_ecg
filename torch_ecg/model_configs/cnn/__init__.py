@@ -6,7 +6,11 @@ from .cpsc import cpsc_2018_leadwise  # cpsc2018 SOTA
 from .cpsc import cpsc_2018, cpsc_block_basic, cpsc_block_mish, cpsc_block_swish
 from .densenet import densenet_leadwise  # vanilla densenet; custom densenet
 from .densenet import densenet_vanilla
-from .mobilenet import mobilenet_v1_vanilla, mobilenet_v2_vanilla  # vanilla mobilenets
+from .mobilenet import (
+    mobilenet_v1_vanilla,
+    mobilenet_v2_vanilla,
+    mobilenet_v3_small,
+)  # vanilla mobilenets
 from .multi_scopic import multi_scopic, multi_scopic_block, multi_scopic_leadwise
 from .resnet import (  # building blocks; vanilla resnet; cpsc2018 resnet; smaller resnets; stanford resnet; ResNet Nature Communications; TResNet
     resnet_block_basic,
@@ -135,4 +139,5 @@ __all__ = [
     # vanilla mobilenets
     "mobilenet_v1_vanilla",
     "mobilenet_v2_vanilla",
+    "mobilenet_v3_small",
 ]

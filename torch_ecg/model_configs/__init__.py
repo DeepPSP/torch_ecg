@@ -13,6 +13,7 @@ from .cnn import (  # vgg; ResNet; vanilla resnet; cpsc2018 resnet; smaller resn
     densenet_vanilla,
     mobilenet_v1_vanilla,
     mobilenet_v2_vanilla,
+    mobilenet_v3_small,
     multi_scopic,
     multi_scopic_block,
     multi_scopic_leadwise,
@@ -157,6 +158,7 @@ __all__ = [
     # vanilla mobilenets
     "mobilenet_v1_vanilla",
     "mobilenet_v2_vanilla",
+    "mobilenet_v3_small",
     # RNN
     "lstm",
     "attention",

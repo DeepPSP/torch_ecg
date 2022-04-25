@@ -25,10 +25,11 @@ from ._nets import (  # noqa: F401
     MLP,
     StackedLSTM,
 )
-from .cnn.densenet import DenseNet  # noqa: F401
-from .cnn.multi_scopic import MultiScopicCNN  # noqa: F401
-from .cnn.resnet import ResNet  # noqa: F401
-from .cnn.vgg import VGG16  # noqa: F401
+from .cnn.densenet import DenseNet
+from .cnn.multi_scopic import MultiScopicCNN
+from .cnn.resnet import ResNet
+from .cnn.mobilenet import MobileNetV1, MobileNetV2, MobileNetV3
+from .cnn.vgg import VGG16
 from .cnn.xception import Xception  # noqa: F401
 from .transformers import Transformer  # noqa: F401
 
@@ -96,14 +97,23 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
 
         cnn_choice = self.config.cnn.name.lower()
         cnn_config = self.config.cnn[self.config.cnn.name]
-        if "vgg16" in cnn_choice:
-            self.cnn = VGG16(self.n_leads, **cnn_config)
-        elif "resnet" in cnn_choice:
+        if "resnet" in cnn_choice:
             self.cnn = ResNet(self.n_leads, **cnn_config)
         elif "multi_scopic" in cnn_choice:
             self.cnn = MultiScopicCNN(self.n_leads, **cnn_config)
+        elif "mobile_net" in cnn_choice or "mobilenet" in cnn_choice:
+            if "v1" in cnn_choice:
+                self.cnn = MobileNetV1(self.n_leads, **cnn_config)
+            elif "v2" in cnn_choice:
+                self.cnn = MobileNetV2(self.n_leads, **cnn_config)
+            elif "v3" in cnn_choice:
+                self.cnn = MobileNetV3(self.n_leads, **cnn_config)
+            else:
+                raise ValueError(f"{cnn_choice} is not supported for {self.__name__}")
         elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
             self.cnn = DenseNet(self.n_leads, **cnn_config)
+        elif "vgg16" in cnn_choice:
+            self.cnn = VGG16(self.n_leads, **cnn_config)
         else:
             raise NotImplementedError(
                 f"the CNN \042{cnn_choice}\042 not implemented yet"

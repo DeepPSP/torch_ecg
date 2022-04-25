@@ -8,10 +8,12 @@ import numpy as np
 
 from ...cfg import CFG
 
+
 __all__ = [
     # vanilla mobilenets
     "mobilenet_v1_vanilla",
     "mobilenet_v2_vanilla",
+    "mobilenet_v3_small",
 ]
 
 

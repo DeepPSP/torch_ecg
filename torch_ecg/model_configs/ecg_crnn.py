@@ -18,6 +18,9 @@ from .cnn import (  # noqa: F401
     multi_scopic,
     multi_scopic_block,
     multi_scopic_leadwise,
+    mobilenet_v1_vanilla,
+    mobilenet_v2_vanilla,
+    mobilenet_v3_small,
     resnet_block_basic,
     resnet_block_stanford,
     resnet_bottle_neck,
@@ -211,6 +214,18 @@ ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise = deepcopy(multi_scopic_leadwise)
 ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise.block = deepcopy(multi_scopic_block)
 ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise = adjust_cnn_filter_lengths(
     ECG_CRNN_CONFIG.cnn.multi_scopic_leadwise, ECG_CRNN_CONFIG.fs
+)
+ECG_CRNN_CONFIG.cnn.mobilenet_v1 = deepcopy(mobilenet_v1_vanilla)
+ECG_CRNN_CONFIG.cnn.mobilenet_v1 = adjust_cnn_filter_lengths(
+    ECG_CRNN_CONFIG.cnn.mobilenet_v1, ECG_CRNN_CONFIG.fs
+)
+ECG_CRNN_CONFIG.cnn.mobilenet_v2 = deepcopy(mobilenet_v2_vanilla)
+ECG_CRNN_CONFIG.cnn.mobilenet_v2 = adjust_cnn_filter_lengths(
+    ECG_CRNN_CONFIG.cnn.mobilenet_v2, ECG_CRNN_CONFIG.fs
+)
+ECG_CRNN_CONFIG.cnn.mobilenet_v3 = deepcopy(mobilenet_v3_small)
+ECG_CRNN_CONFIG.cnn.mobilenet_v3 = adjust_cnn_filter_lengths(
+    ECG_CRNN_CONFIG.cnn.mobilenet_v3, ECG_CRNN_CONFIG.fs
 )
 
 ECG_CRNN_CONFIG.cnn.xception_vanilla = deepcopy(xception_vanilla)

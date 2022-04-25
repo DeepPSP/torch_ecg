@@ -176,6 +176,7 @@ Activations = CFG()
 Activations.mish = Mish
 Activations.swish = Swish
 Activations.hardswish = Hardswish
+Activations.hard_swish = Hardswish
 Activations.relu = nn.ReLU
 Activations.relu6 = nn.ReLU6
 Activations.rrelu = nn.RReLU

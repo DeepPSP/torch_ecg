@@ -8,6 +8,7 @@ from .cnn import (
     DenseNet,
     MobileNetV1,
     MobileNetV2,
+    MobileNetV3,
     MultiScopicCNN,
 )
 from .unets import ECG_UNET, ECG_SUBTRACT_UNET
@@ -28,6 +29,7 @@ __all__ = [
     "DenseNet",
     "MobileNetV1",
     "MobileNetV2",
+    "MobileNetV3",
     "MultiScopicCNN",
     # downstream task models
     "ECG_UNET",
