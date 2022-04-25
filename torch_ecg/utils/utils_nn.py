@@ -27,6 +27,8 @@ __all__ = [
     "compute_deconv_output_shape",
     "compute_maxpool_output_shape",
     "compute_avgpool_output_shape",
+    "compute_sequential_output_shape",
+    "compute_sequential_output_shape_docstring",
     "compute_module_size",
     "default_collate_fn",
     "compute_receptive_field",
@@ -498,6 +500,57 @@ def compute_deconv_output_shape(
         dilation,
         channel_last,
     )
+    return output_shape
+
+
+compute_sequential_output_shape_docstring = """
+
+    Parameters
+    ----------
+    seq_len: int,
+        length of the 1d sequence
+    batch_size: int, optional,
+        the batch size, can be None
+
+    Returns
+    -------
+    output_shape: sequence,
+        the output shape, given `seq_len` and `batch_size`
+
+    """
+
+
+def compute_sequential_output_shape(
+    model: nn.Sequential,
+    seq_len: Optional[int] = None,
+    batch_size: Optional[int] = None,
+) -> Sequence[Union[int, None]]:
+    """
+
+    compute the output shape of a sequential model
+
+    Parameters
+    ----------
+    model: nn.Sequential,
+        the sequential model
+    seq_len: int,
+        length of the 1d sequence
+    batch_size: int, optional,
+        the batch size, can be None
+
+    Returns
+    -------
+    output_shape: sequence,
+        the output shape, given `seq_len` and `batch_size`
+
+    """
+    assert issubclass(
+        type(model), nn.Sequential
+    ), f"model should be nn.Sequential, but got {type(model)}"
+    _seq_len = seq_len
+    for module in model:
+        output_shape = module.compute_output_shape(_seq_len, batch_size)
+        _, _, _seq_len = output_shape
     return output_shape
 
 
