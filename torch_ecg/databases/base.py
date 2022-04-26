@@ -542,9 +542,15 @@ class PhysioNetDataBase(_DataBase):
             return self._url_compressed
         domain = "https://physionet.org/static/published-projects/"
         punct = re.sub("[\\-:]", "", punctuation)
-        db_desc = self.df_all_db_info[
-            self.df_all_db_info["db_name"] == self.db_name
-        ].iloc[0]["db_description"]
+        try:
+            db_desc = self.df_all_db_info[
+                self.df_all_db_info["db_name"] == self.db_name
+            ].iloc[0]["db_description"]
+        except IndexError:
+            print(
+                f"\042{self.db_name}\042 is not in the database list hosted at PhysioNet!"
+            )
+            return ""
         db_desc = re.sub(f"[{punct}]+", "", db_desc).lower()
         db_desc = re.sub("[\\s:]+", "-", db_desc)
         url = posixpath.join(domain, f"{self.db_name}/{db_desc}-{self.version}.zip")

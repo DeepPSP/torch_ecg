@@ -3,8 +3,10 @@
 """
 
 import math
+import zipfile
+import warnings
 from pathlib import Path
-from typing import Any, NoReturn, Optional, Sequence, Union
+from typing import Any, NoReturn, Optional, Sequence, Union, List
 
 import numpy as np
 import pandas as pd
@@ -86,27 +88,12 @@ class CINC2017(PhysioNetDataBase):
         self.ann_ext = "hea"
 
         self._all_records = []
+        self._df_ann = pd.DataFrame()
+        self._df_ann_ori = pd.DataFrame()
+        self._all_ann = []
+        self.data_dir = None
         self._ls_rec()
 
-        self._df_ann = pd.read_csv(self.db_dir / "REFERENCE.csv", header=None)
-        self._df_ann.columns = [
-            "rec",
-            "ann",
-        ]
-        self._df_ann_ori = pd.read_csv(
-            self.db_dir / "REFERENCE-original.csv", header=None
-        )
-        self._df_ann_ori.columns = [
-            "rec",
-            "ann",
-        ]
-        # ["N", "A", "O", "~"]
-        self._all_ann = list(
-            set(
-                self._df_ann.ann.unique().tolist()
-                + self._df_ann_ori.ann.unique().tolist()
-            )
-        )
         self.d_ann_names = {
             "N": "Normal rhythm",
             "A": "AF rhythm",
@@ -120,16 +107,52 @@ class CINC2017(PhysioNetDataBase):
             "~": "blue",
         }
 
+        self._url_compressed = (
+            "https://physionet.org/static/published-projects/challenge-2017/"
+            "af-classification-from-a-short-single-lead-ecg-recording-"
+            "the-physionetcomputing-in-cardiology-challenge-2017-1.0.0.zip"
+        )
+
     def _ls_rec(self) -> NoReturn:
         """ """
         fp = self.db_dir / "RECORDS"
         if fp.exists():
             self._all_records = fp.read_text().splitlines()
-            return
+            # return
         self._all_records = get_record_list_recursive3(
             db_dir=str(self.db_dir), rec_patterns=f"A[\\d]{{5}}.{self.rec_ext}"
         )
-        fp.write_text("\n".join(self._all_records) + "\n")
+        parent_dir = set([str(Path(item).parent) for item in self.all_records])
+        if len(parent_dir) > 1:
+            raise ValueError("all records should be in the same directory")
+        self.data_dir = self.db_dir / parent_dir.pop()
+        self._all_records = [Path(item).name for item in self.all_records]
+        # fp.write_text("\n".join(self._all_records) + "\n")
+        if len(self._all_records) == 0:
+            warnings.warn(
+                f"No record found in {self.db_dir}. "
+                "Perhaps the user should call the `download` method to download the database first."
+            )
+            return
+        self._df_ann = pd.read_csv(self.data_dir / "REFERENCE.csv", header=None)
+        self._df_ann.columns = [
+            "rec",
+            "ann",
+        ]
+        self._df_ann_ori = pd.read_csv(
+            self.data_dir / "REFERENCE-original.csv", header=None
+        )
+        self._df_ann_ori.columns = [
+            "rec",
+            "ann",
+        ]
+        # ["N", "A", "O", "~"]
+        self._all_ann = list(
+            set(
+                self._df_ann.ann.unique().tolist()
+                + self._df_ann_ori.ann.unique().tolist()
+            )
+        )
 
     def load_data(
         self,
@@ -170,7 +193,7 @@ class CINC2017(PhysioNetDataBase):
             "uv",
             "μv",
         ]
-        wr = wfdb.rdrecord(str(self.db_dir / rec))
+        wr = wfdb.rdrecord(str(self.data_dir / rec))
         data = wr.p_signal
 
         if wr.units[0].lower() == units.lower():
@@ -310,3 +333,47 @@ class CINC2017(PhysioNetDataBase):
             ax.set_xlabel("Time [s]")
             ax.set_ylabel("Voltage [μV]")
             plt.show()
+
+    def download(self, compressed: bool = False) -> NoReturn:
+        """ """
+        super().download(compressed=compressed)
+        if compressed:
+            with zipfile.ZipFile(str(self.db_dir / "training2017.zip")) as zip_ref:
+                zip_ref.extractall()
+
+    def _validation_set(self) -> List[str]:
+        """
+        the validation set specified at https://physionet.org/content/challenge-2017/1.0.0/
+        """
+        return (
+            "A00001,A00002,A00003,A00004,A00005,A00006,A00007,A00008,A00009,A00010,"
+            "A00011,A00012,A00013,A00014,A00015,A00016,A00017,A00018,A00019,A00020,"
+            "A00021,A00022,A00023,A00024,A00025,A00026,A00027,A00028,A00029,A00030,"
+            "A00031,A00032,A00033,A00034,A00035,A00036,A00037,A00038,A00039,A00040,"
+            "A00041,A00042,A00043,A00044,A00045,A00046,A00047,A00048,A00049,A00050,"
+            "A00051,A00052,A00053,A00054,A00055,A00056,A00057,A00058,A00059,A00060,"
+            "A00061,A00062,A00063,A00064,A00065,A00066,A00067,A00068,A00069,A00070,"
+            "A00071,A00072,A00073,A00074,A00075,A00076,A00077,A00078,A00079,A00080,"
+            "A00081,A00082,A00083,A00084,A00085,A00086,A00087,A00088,A00089,A00090,"
+            "A00091,A00092,A00093,A00094,A00095,A00096,A00097,A00098,A00099,A00100,"
+            "A00101,A00102,A00103,A00104,A00105,A00106,A00107,A00108,A00109,A00110,"
+            "A00111,A00112,A00113,A00114,A00115,A00116,A00117,A00118,A00119,A00120,"
+            "A00121,A00122,A00123,A00124,A00125,A00126,A00127,A00128,A00129,A00130,"
+            "A00131,A00132,A00133,A00134,A00135,A00136,A00137,A00138,A00139,A00140,"
+            "A00141,A00142,A00143,A00144,A00145,A00146,A00147,A00148,A00149,A00150,"
+            "A00151,A00152,A00153,A00154,A00155,A00156,A00157,A00158,A00159,A00160,"
+            "A00161,A00162,A00163,A00164,A00165,A00166,A00167,A00168,A00169,A00170,"
+            "A00171,A00172,A00173,A00174,A00175,A00176,A00177,A00178,A00179,A00180,"
+            "A00181,A00182,A00183,A00184,A00185,A00186,A00187,A00188,A00189,A00190,"
+            "A00191,A00192,A00193,A00194,A00195,A00196,A00197,A00198,A00199,A00200,"
+            "A00201,A00202,A00203,A00204,A00205,A00206,A00207,A00208,A00209,A00210,"
+            "A00211,A00212,A00213,A00214,A00215,A00216,A00217,A00218,A00219,A00220,"
+            "A00221,A00222,A00223,A00224,A00225,A00226,A00227,A00228,A00229,A00230,"
+            "A00231,A00232,A00233,A00234,A00235,A00236,A00237,A00238,A00239,A00240,"
+            "A00241,A00242,A00244,A00245,A00247,A00248,A00249,A00253,A00267,A00271,"
+            "A00301,A00321,A00375,A00395,A00397,A00405,A00422,A00432,A00438,A00439,"
+            "A00441,A00456,A00465,A00473,A00486,A00509,A00519,A00520,A00524,A00542,"
+            "A00551,A00585,A01006,A01070,A01246,A01299,A01521,A01567,A01707,A01727,"
+            "A01772,A01833,A02168,A02372,A02772,A02785,A02833,A03549,A03738,A04086,"
+            "A04137,A04170,A04186,A04216,A04282,A04452,A04522,A04701,A04735,A04805"
+        ).split(",")
