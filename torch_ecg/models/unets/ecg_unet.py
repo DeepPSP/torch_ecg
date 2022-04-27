@@ -21,7 +21,6 @@ from ...models._nets import (
     Conv_Bn_Activation,
     DownSample,
     MultiConv,
-    ZeroPadding,
 )
 from ...utils.misc import dict_to_str, add_docstring
 from ...utils.utils_nn import (
@@ -331,13 +330,8 @@ class UpDoubleConv(nn.Module, SizeMixin):
                 scale_factor=self.__up_scale,
                 mode=mode,
             )
-        self.zero_pad = ZeroPadding(
-            in_channels=self.__in_channels,
-            out_channels=self.__in_channels + self.__in_channels // 2,
-            loc="head",
-        )
         self.conv = DoubleConv(
-            in_channels=2 * self.__in_channels,
+            in_channels=self.__in_channels + self.__in_channels // 2,
             out_channels=self.__out_channels,
             filter_lengths=filter_lengths,
             subsample_lengths=1,
@@ -365,11 +359,10 @@ class UpDoubleConv(nn.Module, SizeMixin):
 
         """
         output = self.up(input)
-        output = self.zero_pad(output)
 
         diff_sig_len = down_output.shape[-1] - output.shape[-1]
-
         output = F.pad(output, [diff_sig_len // 2, diff_sig_len - diff_sig_len // 2])
+
         # TODO: consider the case `groups` > 1 when concatenating
         output = torch.cat(
             [down_output, output], dim=1
