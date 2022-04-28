@@ -401,8 +401,6 @@ class UpDoubleConv(nn.Module, SizeMixin):
         else:
             output_shape = [batch_size, self.__in_channels, self.__up_scale * _sep_len]
         _, _, _seq_len = output_shape
-        output_shape = self.zero_pad.compute_output_shape(_seq_len, batch_size)
-        _, _, _seq_len = output_shape
         output_shape = self.conv.compute_output_shape(_seq_len, batch_size)
         return output_shape
 
