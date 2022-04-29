@@ -24,7 +24,7 @@ from ...._preprocessors import PreprocManager
 from ....cfg import CFG
 from ....databases import CINC2020 as CR
 from ....utils.misc import ReprMixin, list_sum
-from torch_ecg.utils.utils_data import ensure_siglen
+from ....utils.utils_data import ensure_siglen
 from ....utils.utils_signal import remove_spikes_naive
 from .cinc2020_cfg import CINC2020TrainCfg  # noqa: F401
 

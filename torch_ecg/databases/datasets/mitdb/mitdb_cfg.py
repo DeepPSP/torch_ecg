@@ -2,17 +2,9 @@
 """
 
 from copy import deepcopy
-from pathlib import Path
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
-
-from torch_ecg.cfg import CFG, DEFAULTS
-from torch_ecg.model_configs import (  # noqa: F401
+from ....cfg import CFG, DEFAULTS
+from ....model_configs import (  # noqa: F401
     ECG_SEQ_LAB_NET_CONFIG,
     ECG_SUBTRACT_UNET_CONFIG,
     ECG_UNET_VANILLA_CONFIG,

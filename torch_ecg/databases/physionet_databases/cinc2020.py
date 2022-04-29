@@ -29,7 +29,7 @@ from ...utils.misc import (
     list_sum,
     ms2samples,
 )
-from torch_ecg.utils.utils_data import ensure_siglen
+from ...utils.utils_data import ensure_siglen
 from ..aux_data.cinc2020_aux_data import (
     df_weights_abbr,
     dx_mapping_all,

@@ -25,7 +25,7 @@ from ....cfg import CFG
 from ....databases import CINC2021 as CR
 from ....utils.ecg_arrhythmia_knowledge import Standard12Leads
 from ....utils.misc import ReprMixin, list_sum
-from torch_ecg.utils.utils_data import ensure_siglen
+from ....utils.utils_data import ensure_siglen
 from ....utils.utils_signal import remove_spikes_naive
 from .cinc2021_cfg import CINC2021TrainCfg  # noqa: F401
 
