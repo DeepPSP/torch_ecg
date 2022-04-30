@@ -354,11 +354,7 @@ class LTAFDB(PhysioNetDataBase):
                 for k, l_itv in ann.items()
             }
         )
-        ann = CFG(
-            {
-                k: l_itv for k, l_itv in ann.items() if len(l_itv) > 0
-            }
-        )
+        ann = CFG({k: l_itv for k, l_itv in ann.items() if len(l_itv) > 0})
         if rhythm_format.lower() == "mask":
             tmp = deepcopy(ann)
             ann = np.full(
