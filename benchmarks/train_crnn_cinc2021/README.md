@@ -49,6 +49,15 @@ Final results are on the [leaderboard page of the challenge official website](ht
       month = {9},
   publisher = {{IEEE}},
 }
+@article{Kang_2022_cinc2021_iop,
+     author = {Jingsu Kang and Hao Wen},
+      title = {{A Study on Several Critical Problems on Arrhythmia Detection using Varying-Dimensional Electrocardiography}},
+    journal = {Physiological Measurement},
+        doi = {10.1088/1361-6579/ac6aa3},
+       year = {2022},
+      month = {4},
+  publisher = {{IOP} Publishing}
+}
 ```
 
 
