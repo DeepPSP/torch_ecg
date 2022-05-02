@@ -6,6 +6,9 @@ Paroxysmal Atrial Fibrillation Events Detection from Dynamic ECG Recordings: The
 
 [CPSC2021-sliced](https://www.kaggle.com/wenh06/cpsc2021-sliced) on Kaggle.
 
+## Graphical Abstract of the Solution
+![res_pht](/images/graphical-abstract.svg)
+
 ## Results (Rankings)
 
 ### Results on the full hidden test set (only the top 5 of the official entries are included)
