@@ -956,6 +956,10 @@ class MultiConv(nn.Sequential, SizeMixin):
                 _, _, _seq_len = output_shape
         return output_shape
 
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
 
 class BranchedConv(nn.Module, SizeMixin):
     """
@@ -1090,6 +1094,10 @@ class BranchedConv(nn.Module, SizeMixin):
             ].compute_output_shape(seq_len, batch_size)
             output_shapes.append(branch_output_shape)
         return output_shapes
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
 
 
 class SeparableConv(nn.Sequential, SizeMixin):
@@ -1271,6 +1279,10 @@ class SeparableConv(nn.Sequential, SizeMixin):
             dilation=1,
         )
         return output_shape
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
 
 
 class DeformConv(nn.Module, SizeMixin):
@@ -1574,6 +1586,10 @@ class DownSample(nn.Sequential, SizeMixin):
         output_shape = (batch_size, self.__out_channels, out_seq_len)
         return output_shape
 
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
 
 class ZeroPad1d(nn.ConstantPad1d, SizeMixin):
     """Pads the input tensor boundaries with zero.
@@ -1774,6 +1790,10 @@ class BlurPool(nn.Module, SizeMixin):
             self.__pad_off,
         )
 
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
 
 class AntiAliasConv(nn.Sequential, SizeMixin):
     """ """
@@ -1879,6 +1899,10 @@ class AntiAliasConv(nn.Sequential, SizeMixin):
         if self.__stride > 1:
             output_shape = self.aa.compute_output_shape(output_shape[-1], batch_size)
         return output_shape
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
 
 
 class BidirectionalLSTM(nn.Module, SizeMixin):
@@ -2673,6 +2697,10 @@ class AttentivePooling(nn.Module, SizeMixin):
         output_shape = (batch_size, self.__in_channels)
         return output_shape
 
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
 
 class ZeroPadding(nn.Module, SizeMixin):
     """
@@ -2899,6 +2927,10 @@ class SeqLin(nn.Sequential, SizeMixin):
             output_shape = (batch_size, self.__out_channels[-1])
         return output_shape
 
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
 
 class MLP(SeqLin):
     """
@@ -3084,6 +3116,10 @@ class NonLocalBlock(nn.Module, SizeMixin):
         """
         return (batch_size, self.__in_channels, seq_len)
 
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
 
 class SEBlock(nn.Module, SizeMixin):
     """
@@ -3182,6 +3218,10 @@ class SEBlock(nn.Module, SizeMixin):
 
         """
         return (batch_size, self.__in_channels, seq_len)
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
 
 
 class GEBlock(nn.Module, SizeMixin):
@@ -3397,6 +3437,10 @@ class GlobalContextBlock(nn.Module, SizeMixin):
 
         """
         return (batch_size, self.__in_channels, seq_len)
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
 
 
 class BAMBlock(nn.Module, SizeMixin):
@@ -4199,6 +4243,10 @@ class ExtendedCRF(nn.Sequential, SizeMixin):
         """
         return (batch_size, seq_len, self.__num_tags)
 
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
 
 class SpaceToDepth(nn.Module, SizeMixin):
     """
@@ -4288,6 +4336,10 @@ class SpaceToDepth(nn.Module, SizeMixin):
             return (batch_size, self.__out_channels, seq_len // self.bs)
         else:
             return (batch_size, self.__out_channels, None)
+
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
 
 
 @torch.jit.script
@@ -4476,6 +4528,10 @@ class MLDecoder(nn.Module, SizeMixin):
         """
         return (batch_size, self.decoder.out_channels)
 
+    @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
 
 class DropPath(nn.Module, SizeMixin):
     """
@@ -4491,6 +4547,7 @@ class DropPath(nn.Module, SizeMixin):
 
     def __init__(self, p: float = 0.2, inplace: bool = False) -> NoReturn:
         """
+
         Parameters
         ----------
         p: float, default 0.2,

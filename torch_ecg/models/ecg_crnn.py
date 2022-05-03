@@ -9,7 +9,7 @@ from typing import Any, NoReturn, Optional, Sequence, Union
 import numpy as np
 import torch
 from torch import Tensor, nn
-from einops import rearrange  # noqa: F401
+from einops import rearrange
 
 from ..cfg import CFG, DEFAULTS
 from ..components.outputs import BaseOutput
@@ -309,7 +309,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
         return features
 
     def forward(self, input: Tensor) -> Tensor:
-        """finished, partly checked (rnn part might have bugs),
+        """
 
         Parameters
         ----------
@@ -320,6 +320,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
         -------
         pred: Tensor,
             of shape (batch_size, n_classes)
+
         """
         features = self.extract_features(input)
 
