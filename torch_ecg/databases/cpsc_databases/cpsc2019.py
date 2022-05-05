@@ -3,6 +3,7 @@
 """
 
 import json
+import warnings
 from numbers import Real
 from pathlib import Path
 from typing import Any, NoReturn, Optional, Sequence, Union
@@ -372,6 +373,12 @@ class CPSC2019(CPSCDataBase):
 
     def download(self) -> NoReturn:
         """download the database from self.url"""
+        warnings.warn(
+            "The original database is in .rar format, "
+            "consider manually downloading from "
+            "https://mega.nz/file/0NhhiYRb#BvS0Wj6dfccX-PUWMAMCMw4lWGZ0wQqkgMRTfOriFaE "
+            "a .zip file converted from the .rar file."
+        )
         http_get(self.url, self.db_dir, extract=False)
 
 
