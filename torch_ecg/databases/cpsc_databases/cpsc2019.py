@@ -3,7 +3,7 @@
 """
 
 import json
-import warnings
+import warnings  # noqa: F401
 from numbers import Real
 from pathlib import Path
 from typing import Any, NoReturn, Optional, Sequence, Union
@@ -369,17 +369,18 @@ class CPSC2019(CPSCDataBase):
 
     @property
     def url(self) -> str:
-        return "http://2019.icbeb.org/file/train.rar"
+        # return "http://2019.icbeb.org/file/train.rar"
+        return "https://www.dropbox.com/s/75nee0pqdy3f9r2/CPSC2019-train.zip?dl=1"
 
     def download(self) -> NoReturn:
         """download the database from self.url"""
-        warnings.warn(
-            "The original database is in .rar format, "
-            "consider manually downloading from "
-            "https://mega.nz/file/0NhhiYRb#BvS0Wj6dfccX-PUWMAMCMw4lWGZ0wQqkgMRTfOriFaE "
-            "a .zip file converted from the .rar file."
-        )
-        http_get(self.url, self.db_dir, extract=False)
+        # warnings.warn(
+        #     "The original database is in .rar format, "
+        #     "consider manually downloading from "
+        #     "https://mega.nz/file/0NhhiYRb#BvS0Wj6dfccX-PUWMAMCMw4lWGZ0wQqkgMRTfOriFaE "
+        #     "a .zip file converted from the .rar file."
+        # )
+        http_get(self.url, self.db_dir, extract=True)
 
 
 def compute_metrics(

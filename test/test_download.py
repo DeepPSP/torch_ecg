@@ -20,6 +20,8 @@ from torch_ecg.databases import LTAFDB  # noqa: F401
 from torch_ecg.databases import LUDB  # noqa: F401
 from torch_ecg.databases import MITDB  # noqa: F401
 from torch_ecg.databases import ApneaECG  # noqa: F401
+from torch_ecg.databases import CPSC2019  # noqa: F401
+
 
 ###############################################################################
 # set paths
@@ -71,6 +73,19 @@ def test_download_afdb():
     db.download(compressed=True)
     db._ls_rec()
     assert len(db) == 23
+    shutil.rmtree(db_dir)
+
+
+def test_download_cpsc2019():
+    """ """
+    # download cpsc2019
+    db_dir = _CWD / "cpsc2019"
+    db_dir.mkdir(parents=True, exist_ok=True)
+    db = CPSC2019(db_dir)
+    assert len(db) == 0
+    db.download()
+    db._ls_rec()
+    assert len(db) == 2000
     shutil.rmtree(db_dir)
 
 
