@@ -19,4 +19,4 @@ requests
 xmltodict
 einops
 matplotlib
-protobuf==3.20.1  # https://github.com/lanpa/tensorboardX/issues/663
+protobuf==3.19.4  # https://github.com/lanpa/tensorboardX/issues/663
