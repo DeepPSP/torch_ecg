@@ -45,7 +45,7 @@ setuptools.setup(
             "references*",
             "docs*",
             "benchmarks*",
-            "tests*",
+            "test*",
             "sample*",
         ]
     ),

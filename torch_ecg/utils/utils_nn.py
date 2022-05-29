@@ -813,11 +813,7 @@ def adjust_cnn_filter_lengths(
 
 
 class SizeMixin(object):
-    """
-
-    mixin class for size related methods
-
-    """
+    """Mixin class for size related methods"""
 
     @property
     def module_size(self) -> int:
@@ -862,10 +858,7 @@ class SizeMixin(object):
 
 
 class CkptMixin(object):
-    """
-
-    mixin class for loading from checkpoint class methods
-    """
+    """Mixin class for loading from checkpoint class methods"""
 
     @classmethod
     def from_checkpoint(
