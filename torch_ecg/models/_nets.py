@@ -12,13 +12,14 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from deprecated import deprecated
+from deprecate_kwargs import deprecate_kwargs
 from packaging import version
 from torch import Tensor, nn
 from torch.nn import Parameter
 from torch.nn.utils.rnn import PackedSequence
 
 from ..cfg import CFG
-from ..utils.misc import dict_to_str, isclass, list_sum, deprecate_kwargs
+from ..utils.misc import dict_to_str, isclass, list_sum
 from ..utils.utils_nn import SizeMixin  # compute_output_shape,
 from ..utils.utils_nn import (
     compute_avgpool_output_shape,

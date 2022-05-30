@@ -16,6 +16,7 @@ from numbers import Real
 
 import torch
 from torch import Tensor, nn
+from deprecate_kwargs import deprecate_kwargs
 
 from ...cfg import CFG, DEFAULTS
 from ...models._nets import (  # noqa: F401
@@ -25,7 +26,7 @@ from ...models._nets import (  # noqa: F401
     MultiConv,
     make_attention_layer,
 )
-from ...utils.misc import dict_to_str, deprecate_kwargs, add_docstring
+from ...utils.misc import dict_to_str, add_docstring
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,

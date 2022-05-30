@@ -12,6 +12,7 @@ torchsummary
 tensorboardX
 tqdm
 deprecated
+deprecate-kwargs
 pyEDFlib
 PyWavelets
 torch_optimizer
