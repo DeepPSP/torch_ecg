@@ -8,8 +8,6 @@ import re
 import sys
 import signal
 import time
-import warnings
-import inspect
 from contextlib import contextmanager
 from copy import deepcopy
 from functools import reduce, wraps
@@ -54,7 +52,6 @@ __all__ = [
     "ReprMixin",
     "MovingAverage",
     "nildent",
-    "isclass",
     "add_docstring",
     "timeout",
     "Timer",
@@ -952,26 +949,6 @@ def nildent(text: str) -> str:
         "\n" if text.endswith("\n") else ""
     )
     return new_text
-
-
-def isclass(obj: Any) -> bool:
-    """
-
-    Parameters
-    ----------
-    obj: any object,
-        any object, including class, instance of class, etc
-
-    Returns
-    -------
-    bool:
-        True if `obj` is a class, False otherwise
-
-    """
-    try:
-        return issubclass(obj, object)
-    except TypeError:
-        return False
 
 
 def add_docstring(doc: str, mode: str = "replace") -> Callable:

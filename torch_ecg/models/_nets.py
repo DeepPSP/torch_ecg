@@ -4,6 +4,7 @@ basic building blocks, for 1d signal (time series)
 
 from copy import deepcopy
 from itertools import repeat
+from inspect import isclass
 from math import sqrt
 from numbers import Real
 from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
@@ -19,7 +20,7 @@ from torch.nn import Parameter
 from torch.nn.utils.rnn import PackedSequence
 
 from ..cfg import CFG
-from ..utils.misc import dict_to_str, isclass, list_sum
+from ..utils.misc import dict_to_str, list_sum
 from ..utils.utils_nn import SizeMixin  # compute_output_shape,
 from ..utils.utils_nn import (
     compute_avgpool_output_shape,
