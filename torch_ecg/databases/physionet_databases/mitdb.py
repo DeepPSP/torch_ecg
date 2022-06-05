@@ -196,7 +196,7 @@ class MITDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         leads: str or list of str, optional,
             the leads to load
         sampfrom: int, optional,
@@ -218,9 +218,7 @@ class MITDB(PhysioNetDataBase):
             the ECG data
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        fp = str(self.db_dir / rec)
+        fp = str(self.get_absolute_path(rec))
         if not leads:
             _leads = self._get_lead_names(rec)
         elif isinstance(leads, str):
@@ -265,7 +263,7 @@ class MITDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -292,8 +290,6 @@ class MITDB(PhysioNetDataBase):
             `beat` annotations in the format of `dict` or `BeatAnn`
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         assert rhythm_format.lower() in [
             "intervals",
             "mask",
@@ -302,7 +298,7 @@ class MITDB(PhysioNetDataBase):
             "beat",
             "dict",
         ], f"`beat_format` must be one of ['beat', 'dict'], got {beat_format}"
-        fp = str(self.db_dir / rec)
+        fp = str(self.get_absolute_path(rec))
         wfdb_ann = wfdb.rdann(fp, extension=self.ann_ext)
         header = wfdb.rdheader(fp)
         sig_len = header.sig_len
@@ -390,7 +386,7 @@ class MITDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -412,8 +408,6 @@ class MITDB(PhysioNetDataBase):
             the annotations in the format of intervals, or in the format of mask
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         return self.load_ann(
             rec,
             sampfrom,
@@ -440,7 +434,7 @@ class MITDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -460,8 +454,6 @@ class MITDB(PhysioNetDataBase):
             locations (indices) of the all the beat types ("A", "N", "Q", "V",)
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         return self.load_ann(
             rec,
             sampfrom,
@@ -487,7 +479,7 @@ class MITDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -502,9 +494,7 @@ class MITDB(PhysioNetDataBase):
             locations (indices) of the all the rpeaks (qrs complexes)
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        fp = str(self.db_dir / rec)
+        fp = str(self.get_absolute_path(rec))
         wfdb_ann = wfdb.rdann(fp, extension=self.ann_ext)
         header = wfdb.rdheader(fp)
         sig_len = header.sig_len
@@ -529,7 +519,7 @@ class MITDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -537,10 +527,7 @@ class MITDB(PhysioNetDataBase):
             a list of names of the leads contained in the record
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        fp = str(self.db_dir / rec)
-        return wfdb.rdheader(fp).sig_name
+        return wfdb.rdheader(str(self.get_absolute_path(rec))).sig_name
 
     @property
     def df_stats(self) -> pd.DataFrame:

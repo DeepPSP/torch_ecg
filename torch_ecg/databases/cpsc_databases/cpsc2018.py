@@ -185,7 +185,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec: int or str,
-            name or index of the record
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -206,7 +206,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec: int or str,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         data_format: str, default "channel_first",
             format of the ECG data, "channels_last" or "channels_first" (original)
         units: str, default "mV",
@@ -220,7 +220,7 @@ class CPSC2018(CPSCDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        rec_fp = self.db_dir / f"{rec}.{self.rec_ext}"
+        rec_fp = self.get_absolute_path(rec, self.rec_ext)
         data = loadmat(str(rec_fp))
         data = np.asarray(data["val"], dtype=np.float64)
         if data_format == "channels_last":
@@ -246,7 +246,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec: int or str,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         keep_original: bool, default True,
             keep the original annotations or not,
             mainly concerning "N" and "Normal" ("SNR" for the newer version)
@@ -257,9 +257,7 @@ class CPSC2018(CPSCDataBase):
             the annotations with items: ref. self.ann_items
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        ann_fp = self.db_dir / f"{rec}.{self.ann_ext}"
+        ann_fp = self.get_absolute_path(rec, self.ann_ext)
         header_data = ann_fp.read_text().splitlines()
 
         ann_dict = {}
@@ -460,7 +458,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec: int or str,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         keep_original: bool, default False,
             keep the original annotations or not,
             mainly concerning "N" and "Normal"
@@ -471,8 +469,6 @@ class CPSC2018(CPSCDataBase):
             the list of labels (abbr. diagnosis)
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         ann_dict = self.load_ann(rec, keep_original=keep_original)
         labels = ann_dict["diagnosis"]
         return labels
@@ -483,7 +479,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec: int or str,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         full_name: bool, default True,
             full name of the diagnosis or short name of it (ref. self.diagnosis_abbr_to_full)
 
@@ -493,8 +489,6 @@ class CPSC2018(CPSCDataBase):
             the list of (full) diagnosis
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         diagonosis = self.get_labels(rec)
         if full_name:
             diagonosis = diagonosis["diagnosis_fullname"]
@@ -510,7 +504,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec: int or str,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         items: list of str, optional,
             items of the subject information (e.g. sex, age, etc.)
 
@@ -519,8 +513,6 @@ class CPSC2018(CPSCDataBase):
         subject_info, dict,
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         if items is None or len(items) == 0:
             info_items = [
                 "age",
@@ -549,7 +541,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec: int or str,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         output_dir: str or Path,
             directory to save the predictions
         scores: list of real,
@@ -588,7 +580,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec: int or str,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         ticks_granularity: int, default 0,
             the granularity to plot axis ticks, the higher the more,
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)

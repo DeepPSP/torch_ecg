@@ -208,7 +208,7 @@ class LUDB(PhysioNetDataBase):
         >>> all_symbols = set()
         >>> for rec in data_gen.all_records:
         ...     for ext in data_gen.beat_ann_ext:
-        ...         ann = wfdb.rdann(data_gen._get_path(rec), extension=ext)
+        ...         ann = wfdb.rdann(data_gen.get_absolute_path(rec), extension=ext)
         ...         all_symbols.update(ann.symbol)
         """
         self._symbol_to_wavename = CFG(N="qrs", p="pwave", t="twave")
@@ -247,30 +247,34 @@ class LUDB(PhysioNetDataBase):
 
         self._ls_rec()
 
-    def get_subject_id(self, rec: str) -> int:
+    def get_subject_id(self, rec: Union[str, int]) -> int:
         """ """
         raise NotImplementedError
 
-    def _get_path(self, rec: Union[str, int]) -> str:
+    def get_absolute_path(
+        self, rec: Union[str, int], extension: Optional[str] = None
+    ) -> Path:
         """
-
-        get the path of a record, without file extension
+        get the absolute path of the record `rec`
 
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
+        extension: str, optional,
+            extension of the file
 
         Returns
         -------
-        rec_fp: str,
-            path of the record, without file extension
+        Path,
+            absolute path of the file
 
         """
         if isinstance(rec, int):
             rec = self[rec]
-        rec_fp = str(self.db_dir / "data" / rec)
-        return rec_fp
+        if extension is not None and not extension.startswith("."):
+            extension = f".{extension}"
+        return self.db_dir / "data" / f"{rec}{extension or ''}"
 
     def load_data(
         self,
@@ -288,7 +292,7 @@ class LUDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         leads: str or list of str, optional,
             the leads to load
         data_format: str, default "channel_first",
@@ -316,7 +320,7 @@ class LUDB(PhysioNetDataBase):
         ]
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=True)
 
-        rec_fp = self._get_path(rec)
+        rec_fp = str(self.get_absolute_path(rec))
         wfdb_rec = wfdb.rdrecord(rec_fp, physical=True, channel_names=_leads)
         # p_signal of "lead_last" format
         # ref. ISSUES 1. (fixed in version 1.0.1)
@@ -347,7 +351,7 @@ class LUDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         leads: str or list of str, optional,
             the leads to load
         metadata: bool, default False,
@@ -360,7 +364,7 @@ class LUDB(PhysioNetDataBase):
         if isinstance(rec, int):
             rec = self[rec]
         ann_dict = CFG()
-        rec_fp = self._get_path(rec)
+        rec_fp = str(self.get_absolute_path(rec))
 
         # wave delineation annotations
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
@@ -435,7 +439,7 @@ class LUDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -460,7 +464,7 @@ class LUDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         leads: str or list of str, optional,
             the leads to load
         mask_format: str, default "channel_first",
@@ -599,7 +603,7 @@ class LUDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -607,10 +611,8 @@ class LUDB(PhysioNetDataBase):
             the header data
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         header_dict = CFG({})
-        rec_fp = self._get_path(rec)
+        rec_fp = str(self.get_absolute_path(rec))
         header_reader = wfdb.rdheader(rec_fp)
         header_dict["units"] = header_reader.units
         header_dict["baseline"] = header_reader.baseline
@@ -686,7 +688,7 @@ class LUDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         fields: str or sequence of str, optional,
             field(s) of the subject info of record `rec`,
             if not specified, all fields of the subject info will be returned
@@ -733,7 +735,7 @@ class LUDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         data: ndarray, optional,
             12-lead ECG signal to plot,
             if given, data of `rec` will not be used,

@@ -139,12 +139,12 @@ class CPSC2019(CPSCDataBase):
         self._all_records = [
             rec
             for rec in self._all_records
-            if (self.rec_dir / f"{rec}.{self.rec_ext}").is_file()
+            if self.get_absolute_path(rec, self.rec_ext).is_file()
         ]
         self._all_annotations = [
             ann
             for ann in self._all_annotations
-            if (self.ann_dir / f"{ann}.{self.ann_ext}").is_file()
+            if self.get_absolute_path(ann, self.ann_ext).is_file()
         ]
         common = set([rec.split("_")[1] for rec in self._all_records]) & set(
             [ann.split("_")[1] for ann in self._all_annotations]
@@ -171,7 +171,7 @@ class CPSC2019(CPSCDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -182,6 +182,34 @@ class CPSC2019(CPSCDataBase):
         pid = 0
         raise NotImplementedError
 
+    def get_absolute_path(
+        self, rec: Union[str, int], extension: Optional[str] = None
+    ) -> Path:
+        """
+        get the absolute path of the record `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name or index of the record in `self.all_records`
+        extension: str, optional,
+            extension of the file
+
+        Returns
+        -------
+        Path,
+            absolute path of the file
+
+        """
+        if isinstance(rec, int):
+            rec = self[rec]
+        if extension is not None and not extension.startswith("."):
+            extension = f".{extension}"
+        if extension == f".{self.ann_ext}":
+            rec = rec.replace("data", "R")
+            return self.ann_dir / f"{rec}{extension}"
+        return self.data_dir / f"{rec}{extension or ''}"
+
     def load_data(
         self, rec: Union[int, str], units: str = "mV", keep_dim: bool = True
     ) -> np.ndarray:
@@ -190,7 +218,7 @@ class CPSC2019(CPSCDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         keep_dim: bool, default True,
             whether or not to flatten the data of shape (n,1)
 
@@ -200,9 +228,7 @@ class CPSC2019(CPSCDataBase):
             the ECG data
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        fp = self.data_dir / f"{self._get_rec_name(rec)}.{self.rec_ext}"
+        fp = self.get_absolute_path(rec, self.rec_ext)
         data = loadmat(str(fp))["ecg"]
         if units.lower() in [
             "uv",
@@ -219,7 +245,7 @@ class CPSC2019(CPSCDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         keep_dim: bool, default True,
             whether or not to flatten the data of shape (n,1)
 
@@ -229,9 +255,7 @@ class CPSC2019(CPSCDataBase):
             array of indices of R peaks
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        fp = self.ann_dir / f"{self._get_ann_name(rec)}.{self.ann_ext}"
+        fp = self.get_absolute_path(rec, self.ann_ext)
         ann = loadmat(str(fp))["R_peak"].astype(int)
         if not keep_dim:
             ann = ann.flatten()
@@ -253,45 +277,6 @@ class CPSC2019(CPSCDataBase):
         """
         return self.load_rpeaks(rec=rec, keep_dim=keep_dim)
 
-    def _get_rec_name(self, rec: Union[int, str]) -> str:
-        """
-
-        Parameters
-        ----------
-        rec: str or int,
-            name or index of the record
-
-        Returns
-        -------
-        rec_name: str,
-            filename of the record
-
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        rec_name = rec
-        return rec_name
-
-    def _get_ann_name(self, rec: Union[int, str]) -> str:
-        """
-
-        Parameters
-        ----------
-        rec: str or int,
-            name or index of the record
-
-        Returns
-        -------
-        ann_name: str,
-            filename of annotations of the record `rec`
-
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        rec_name = self._get_rec_name(rec)
-        ann_name = rec_name.replace("data", "R")
-        return ann_name
-
     def plot(
         self,
         rec: Union[int, str],
@@ -305,7 +290,7 @@ class CPSC2019(CPSCDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         data: ndarray, optional,
             ECG signal to plot,
             if given, data of `rec` will not be used,

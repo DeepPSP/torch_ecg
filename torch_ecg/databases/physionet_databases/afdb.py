@@ -132,7 +132,7 @@ class AFDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         leads: str or list of str, optional,
             the leads to load
         sampfrom: int, optional,
@@ -154,9 +154,7 @@ class AFDB(PhysioNetDataBase):
             the ecg data
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        fp = str(self.db_dir / rec)
+        fp = str(self.get_absolute_path(rec))
         if not leads:
             _leads = self.all_leads
         elif isinstance(leads, str):
@@ -193,8 +191,8 @@ class AFDB(PhysioNetDataBase):
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -212,7 +210,7 @@ class AFDB(PhysioNetDataBase):
             the annotations in the format of intervals, or in the format of mask
 
         """
-        fp = str(self.db_dir / rec)
+        fp = str(self.get_absolute_path(rec))
         wfdb_ann = wfdb.rdann(fp, extension=self.ann_ext)
         header = wfdb.rdheader(fp)
         sig_len = header.sig_len
@@ -267,7 +265,7 @@ class AFDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -287,7 +285,7 @@ class AFDB(PhysioNetDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        fp = str(self.db_dir / rec)
+        fp = str(self.get_absolute_path(rec))
         if use_manual and rec in self.qrsc_records:
             ext = self.manual_beat_ann_ext
         else:
@@ -339,7 +337,7 @@ class AFDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         data: ndarray, optional,
             (2-lead) ecg signal to plot,
             should be of the format "channel_first", and compatible with `leads`

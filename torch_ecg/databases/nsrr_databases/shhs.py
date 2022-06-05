@@ -651,7 +651,7 @@ class SHHS(NSRRDataBase):
         }  # TODO: add more
 
     def form_paths(self) -> NoReturn:
-        """finished,"""
+        """ """
         self.psg_data_path = self.db_dir / "polysomnography" / "edfs"
         self.ann_path = self.db_dir / "datasets"
         self.hrv_ann_path = self.ann_path / "hrv-analysis"
@@ -665,7 +665,7 @@ class SHHS(NSRRDataBase):
         )
 
     def update_sleep_stage_names(self) -> NoReturn:
-        """finished,"""
+        """ """
         if self.sleep_stage_protocol == "aasm":
             nb_stages = 5
         elif self.sleep_stage_protocol == "simplified":
@@ -678,7 +678,7 @@ class SHHS(NSRRDataBase):
         self.sleep_stage_names = self.all_sleep_stage_names[:nb_stages]
 
     def get_subject_id(self, rec: str) -> int:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -700,7 +700,7 @@ class SHHS(NSRRDataBase):
         return pid
 
     def get_visit_number(self, rec: str) -> int:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -714,7 +714,7 @@ class SHHS(NSRRDataBase):
         return int(rec.split("-")[0][-1])
 
     def get_nsrrid(self, rec: str) -> int:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -728,7 +728,7 @@ class SHHS(NSRRDataBase):
         return int(rec.split("-")[1])
 
     def get_fs(self, rec: str, sig: str = "ECG", rec_path: Optional[str] = None) -> int:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -755,7 +755,7 @@ class SHHS(NSRRDataBase):
     def get_chn_num(
         self, rec: str, sig: str = "ECG", rec_path: Optional[str] = None
     ) -> int:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -779,7 +779,7 @@ class SHHS(NSRRDataBase):
         return chn_num
 
     def match_channel(self, channel: str) -> str:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -795,13 +795,21 @@ class SHHS(NSRRDataBase):
                 return sig
         raise ValueError(f"No channel named {channel}")
 
+    def get_absolute_path(
+        self, rec: Union[str, int], extension: Optional[str] = None
+    ) -> Path:
+        """
+        Call `match_full_rec_path` instead
+        """
+        raise NotImplementedError("Call `match_full_rec_path` instead")
+
     def match_full_rec_path(
         self,
         rec: str,
         rec_path: Optional[Union[str, Path]] = None,
         rec_type: str = "psg",
     ) -> Path:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -854,7 +862,7 @@ class SHHS(NSRRDataBase):
         raise NotImplementedError
 
     def database_info(self, detailed: bool = False) -> NoReturn:
-        """finished,
+        """
 
         print information about the database
 
@@ -877,7 +885,7 @@ class SHHS(NSRRDataBase):
             print(self.__doc__)
 
     def show_rec_stats(self, rec: str, rec_path: Optional[str] = None) -> NoReturn:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -912,7 +920,7 @@ class SHHS(NSRRDataBase):
     def load_psg_data(
         self, rec: str, channel: str = "all", rec_path: Optional[str] = None
     ) -> Dict[str, np.ndarray]:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -946,7 +954,7 @@ class SHHS(NSRRDataBase):
             return {chn: data_dict[chn]}
 
     def load_ecg_data(self, rec: str, rec_path: Optional[str] = None) -> np.ndarray:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -967,7 +975,7 @@ class SHHS(NSRRDataBase):
     def load_event_ann(
         self, rec: str, event_ann_path: Optional[str] = None, simplify: bool = False
     ) -> pd.DataFrame:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1001,7 +1009,7 @@ class SHHS(NSRRDataBase):
     def load_event_profusion_ann(
         self, rec: str, event_profusion_ann_path: Optional[str] = None
     ) -> dict:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1035,7 +1043,7 @@ class SHHS(NSRRDataBase):
     def load_hrv_summary_ann(
         self, rec: Optional[str] = None, hrv_ann_path: Optional[str] = None
     ) -> pd.DataFrame:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1078,7 +1086,7 @@ class SHHS(NSRRDataBase):
     def load_hrv_detailed_ann(
         self, rec: str, hrv_ann_path: Optional[str] = None
     ) -> pd.DataFrame:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1119,7 +1127,7 @@ class SHHS(NSRRDataBase):
     def load_sleep_ann(
         self, rec: str, source: str, sleep_ann_path: Optional[str] = None
     ) -> Union[pd.DataFrame, dict]:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1173,7 +1181,7 @@ class SHHS(NSRRDataBase):
         sleep_stage_protocol: str = "aasm",
         with_stage_names: bool = True,
     ) -> pd.DataFrame:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1296,7 +1304,7 @@ class SHHS(NSRRDataBase):
         event_types: Optional[List[str]] = None,
         sleep_event_ann_path: Optional[str] = None,
     ) -> pd.DataFrame:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1453,7 +1461,7 @@ class SHHS(NSRRDataBase):
         apnea_types: Optional[List[str]] = None,
         apnea_ann_path: Optional[str] = None,
     ) -> pd.DataFrame:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1489,7 +1497,7 @@ class SHHS(NSRRDataBase):
         rec: str,
         wave_deli_path: Optional[str] = None,
     ) -> pd.DataFrame:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1530,7 +1538,7 @@ class SHHS(NSRRDataBase):
         exclude_abnormal_beats: bool = True,
         to_ts: bool = False,
     ) -> np.ndarray:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1571,7 +1579,7 @@ class SHHS(NSRRDataBase):
         return (np.round(ret)).astype(int)
 
     def load_rr_ann(self, rec: str, rpeak_ann_path: Optional[str] = None) -> np.ndarray:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1598,7 +1606,7 @@ class SHHS(NSRRDataBase):
         return rr
 
     def load_nn_ann(self, rec: str, rpeak_ann_path: Optional[str] = None) -> np.ndarray:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1636,7 +1644,7 @@ class SHHS(NSRRDataBase):
     def locate_artifacts(
         self, rec: str, wave_deli_path: Optional[str] = None
     ) -> np.ndarray:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1669,7 +1677,7 @@ class SHHS(NSRRDataBase):
         wave_deli_path: Optional[str] = None,
         abnormal_type: Optional[str] = None,
     ) -> Dict[str, np.ndarray]:
-        """finished,
+        """
 
         Parameters
         ----------
@@ -1923,7 +1931,7 @@ class SHHS(NSRRDataBase):
             ax_events.tick_params(axis="y", which="both", length=0)
 
     def str_to_real_number(self, s: Union[str, Real]) -> Real:
-        """finished,
+        """
 
         some columns in the annotations might incorrectly been converted from real number to string, using `xmltodict`.
 

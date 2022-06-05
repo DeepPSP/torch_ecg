@@ -132,13 +132,13 @@ class LTAFDB(PhysioNetDataBase):
         ]
         self.palette["qrs"] = "green"
 
-    def get_subject_id(self, rec: str) -> int:
+    def get_subject_id(self, rec: Union[str, int]) -> int:
         """NOT finished,
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -166,7 +166,7 @@ class LTAFDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         leads: int or list of int, optional,
             the lead number(s) to load
         sampfrom: int, optional,
@@ -188,9 +188,7 @@ class LTAFDB(PhysioNetDataBase):
             the ECG data
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        fp = self.db_dir / rec
+        fp = str(self.get_absolute_path(rec))
         if not leads:
             _leads = self.all_leads
         elif isinstance(leads, int):
@@ -232,7 +230,7 @@ class LTAFDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -292,7 +290,7 @@ class LTAFDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -317,7 +315,7 @@ class LTAFDB(PhysioNetDataBase):
             "interval",
             "mask",
         ], f"rhythm_format must be 'interval' or 'mask', got {rhythm_format}"
-        fp = self.db_dir / rec
+        fp = str(self.get_absolute_path(rec))
         header = wfdb.rdheader(str(fp))
         sig_len = header.sig_len
         sf = sampfrom or 0
@@ -385,7 +383,7 @@ class LTAFDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -408,7 +406,7 @@ class LTAFDB(PhysioNetDataBase):
             "beat",
             "dict",
         ], f"beat_format must be 'beat' or 'dict', got {beat_format}"
-        fp = self.db_dir / rec
+        fp = self.get_absolute_path(rec)
         header = wfdb.rdheader(str(fp))
         sig_len = header.sig_len
         sf = sampfrom or 0
@@ -452,7 +450,7 @@ class LTAFDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the annotations to be loaded
         sampto: int, optional,
@@ -470,9 +468,7 @@ class LTAFDB(PhysioNetDataBase):
             locations (indices) of the all the rpeaks (qrs complexes)
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        fp = self.db_dir / rec
+        fp = str(self.get_absolute_path(rec))
         if use_manual:
             ext = self.manual_ann_ext
         else:
@@ -511,7 +507,7 @@ class LTAFDB(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         data: ndarray, optional,
             (2-lead) ECG signal to plot,
             should be of the format "channel_first", and compatible with `leads`

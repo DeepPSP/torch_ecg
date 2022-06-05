@@ -130,7 +130,7 @@ class ApneaECG(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -153,7 +153,7 @@ class ApneaECG(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         lead: int, default 0
             number of the lead, can be 0 or 1
         rec_path: str or Path, optional,
@@ -168,7 +168,7 @@ class ApneaECG(PhysioNetDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        file_path = str(rec_path or (self.db_dir / rec))
+        file_path = str(rec_path or self.get_absolute_path(rec))
         self.wfdb_rec = wfdb.rdrecord(file_path)
         sig = self.wfdb_rec.p_signal
         if not rec.endswith(("r", "er")):
@@ -182,7 +182,7 @@ class ApneaECG(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         lead: int, default 0
             number of the lead, can be 0 or 1
         rec_path: str or Path, optional,
@@ -212,7 +212,7 @@ class ApneaECG(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         lead: int, default 0
             number of the lead, can be 0 or 1
         channels: str or list of str, default None
@@ -253,7 +253,7 @@ class ApneaECG(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         ann_path: str or Path, optional,
             path of the file which contains the annotations,
             if not given, default path will be used
@@ -266,7 +266,7 @@ class ApneaECG(PhysioNetDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        file_path = str(ann_path or (self.db_dir / rec))
+        file_path = str(ann_path or self.get_absolute_path(rec))
         extension = kwargs.get("extension", "apn")
         self.wfdb_ann = wfdb.rdann(file_path, extension=extension)
         detailed_ann = [
@@ -282,7 +282,7 @@ class ApneaECG(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         ann_path: str, optional,
             path of the file which contains the annotations,
             if not given, default path will be used
@@ -347,7 +347,7 @@ class ApneaECG(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         ann_path: str, optional,
             path of the file which contains the annotations,
             if not given, default path will be used

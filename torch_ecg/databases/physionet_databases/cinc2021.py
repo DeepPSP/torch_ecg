@@ -343,7 +343,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -613,7 +613,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -627,7 +627,33 @@ class CINC2021(PhysioNetDataBase):
         tranche = {v: k for k, v in self.rec_prefix.items()}[prefix]
         return tranche
 
-    def get_data_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
+    def get_absolute_path(
+        self, rec: Union[str, int], extension: Optional[str] = None
+    ) -> Path:
+        """
+        get the absolute path of the record `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name or index of the record in `self.all_records`
+        extension: str, optional,
+            extension of the file
+
+        Returns
+        -------
+        Path,
+            absolute path of the file
+
+        """
+        if isinstance(rec, int):
+            rec = self[rec]
+        tranche = self._get_tranche(rec)
+        if extension is not None and not extension.startswith("."):
+            extension = f".{extension}"
+        return self.db_dirs[tranche] / f"{rec}{extension or ''}"
+
+    def get_data_filepath(self, rec: Union[str, int], with_ext: bool = True) -> str:
         """
 
         get the absolute file path of the data file of `rec`
@@ -635,7 +661,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         with_ext: bool, default True,
             if True, the returned file path comes with file extension,
             otherwise without file extension,
@@ -643,27 +669,21 @@ class CINC2021(PhysioNetDataBase):
 
         Returns
         -------
-        fp: str,
+        str,
             absolute file path of the data file of the record
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        tranche = self._get_tranche(rec)
-        fp = self.db_dirs[tranche] / f"{rec}.{self.rec_ext}"
-        if not with_ext:
-            fp = fp.with_suffix("")
-        return fp
+        return str(self.get_absolute_path(rec, self.rec_ext if with_ext else None))
 
-    def get_header_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
+    def get_header_filepath(self, rec: Union[str, int], with_ext: bool = True) -> str:
         """
 
         get the absolute file path of the header file of `rec`
 
         Parameters
         ----------
-        rec: str or int,
-            name or index of the record
+        rec: str,
+            name of the record
         with_ext: bool, default True,
             if True, the returned file path comes with file extension,
             otherwise without file extension,
@@ -671,17 +691,11 @@ class CINC2021(PhysioNetDataBase):
 
         Returns
         -------
-        fp: Path,
+        str,
             absolute file path of the header file of the record
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        tranche = self._get_tranche(rec)
-        fp = self.db_dirs[tranche] / f"{rec}.{self.ann_ext}"
-        if not with_ext:
-            fp = fp.with_suffix("")
-        return fp
+        return str(self.get_absolute_path(rec, self.ann_ext if with_ext else None))
 
     @add_docstring(get_header_filepath.__doc__)
     def get_ann_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
@@ -708,7 +722,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         leads: str or list of str, optional,
             the leads to load
         data_format: str, default "channel_first",
@@ -794,7 +808,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         raw: bool, default False,
             if True, the raw annotations without parsing will be returned
         backend: str, default "wfdb", case insensitive,
@@ -833,7 +847,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         header_data: list of str,
             list of lines read directly from a header file,
             complementary to data read using `wfdb.rdheader` if applicable,
@@ -1202,7 +1216,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         scored_only: bool, default True,
             only get the labels that are scored in the CinC2021 official phase
         fmt: str, default "a",
@@ -1256,7 +1270,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         from_hea: bool, default True,
             if True, get sampling frequency from corresponding header file of the record;
             otherwise from `self.fs`
@@ -1284,7 +1298,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         items: list of str, optional,
             items of the subject"s information (e.g. sex, age, etc.)
 
@@ -1330,7 +1344,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         data: ndarray, optional,
             (12-lead) ECG signal to plot,
             should be of the format "channel_first", and compatible with `leads`
@@ -1634,7 +1648,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         leads: str or list of str, optional,
             the leads to load
         data_format: str, default "channel_first",
@@ -1710,7 +1724,7 @@ class CINC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         backend: str, default "scipy",
             the backend data reader, can also be "wfdb",
             note that "scipy" provides data in the format of "lead_first",

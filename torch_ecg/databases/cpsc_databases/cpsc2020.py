@@ -250,7 +250,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -259,6 +259,34 @@ class CPSC2020(CPSCDataBase):
         """
         pid = 0
         raise NotImplementedError
+
+    def get_absolute_path(
+        self, rec: Union[str, int], extension: Optional[str] = None
+    ) -> Path:
+        """
+        get the absolute path of the record `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name or index of the record in `self.all_records`
+        extension: str, optional,
+            extension of the file
+
+        Returns
+        -------
+        Path,
+            absolute path of the file
+
+        """
+        if isinstance(rec, int):
+            rec = self[rec]
+        if extension is not None and not extension.startswith("."):
+            extension = f".{extension}"
+        if extension == f".{self.ann_ext}":
+            rec = rec.replace("A", "R")
+            return self.ann_dir / f"{rec}{extension}"
+        return self.data_dir / f"{rec}{extension or ''}"
 
     def load_data(
         self,
@@ -273,7 +301,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         units: str, default "mV",
             units of the output signal, can also be "μV", with an alias of "uV"
         sampfrom: int, optional,
@@ -289,8 +317,7 @@ class CPSC2020(CPSCDataBase):
             the ECG data
 
         """
-        rec_name = self._get_rec_name(rec)
-        rec_fp = self.data_dir / f"{rec_name}.{self.rec_ext}"
+        rec_fp = self.get_absolute_path(rec, self.rec_ext)
         data = loadmat(str(rec_fp))["ecg"]
         if units.lower() in ["uv", "μv"]:
             data = (1000 * data).astype(int)
@@ -311,7 +338,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the data to be loaded
         sampto: int, optional,
@@ -323,10 +350,7 @@ class CPSC2020(CPSCDataBase):
             with items (ndarray) "SPB_indices" and "PVC_indices",
             which record the indices of SPBs and PVCs
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        ann_name = self._get_ann_name(rec)
-        ann_fp = self.ann_dir / f"{ann_name}.{self.ann_ext}"
+        ann_fp = self.get_absolute_path(rec, self.ann_ext)
         ann = loadmat(str(ann_fp))["ref"]
         sf, st = (sampfrom or 0), (sampto or np.inf)
         spb_indices = ann["S_ref"][0, 0].flatten().astype(int)
@@ -342,43 +366,6 @@ class CPSC2020(CPSCDataBase):
             "PVC_indices": pvc_indices,
         }
         return ann
-
-    def _get_ann_name(self, rec: Union[int, str]) -> str:
-        """
-
-        Parameters
-        ----------
-        rec: str or int,
-            name or index of the record
-
-        Returns
-        -------
-        ann_name: str,
-            filename of the annotation file
-
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        ann_name = rec.replace("A", "R")
-        return ann_name
-
-    def _get_rec_name(self, rec: Union[int, str]) -> str:
-        """
-
-        Parameters
-        ----------
-        rec: str or int,
-            name or index of the record
-
-        Returns
-        -------
-        rec_name: str,
-            filename of the record
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        rec_name = rec
-        return rec_name
 
     def train_test_split_rec(self, test_rec_num: int = 2) -> Dict[str, List[str]]:
         """
@@ -441,7 +428,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         premature_type: str, optional,
             premature beat type, can be one of "SPB", "PVC"
         window: int, default 10000,
@@ -455,9 +442,8 @@ class CPSC2020(CPSCDataBase):
         -------
         premature_intervals: list,
             list of intervals of premature beats
+
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         ann = self.load_ann(rec)
         if premature_type:
             premature_inds = ann[f"{premature_type.upper()}_indices"]
@@ -495,7 +481,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         data: ndarray, optional,
             ECG signal to plot,
             if given, data of `rec` will not be used,

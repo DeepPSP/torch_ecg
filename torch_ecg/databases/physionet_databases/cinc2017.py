@@ -154,6 +154,31 @@ class CINC2017(PhysioNetDataBase):
             )
         )
 
+    def get_absolute_path(
+        self, rec: Union[str, int], extension: Optional[str] = None
+    ) -> Path:
+        """
+        get the absolute path of the record `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name or index of the record in `self.all_records`
+        extension: str, optional,
+            extension of the file
+
+        Returns
+        -------
+        Path,
+            absolute path of the file
+
+        """
+        if isinstance(rec, int):
+            rec = self[rec]
+        if extension is not None and not extension.startswith("."):
+            extension = f".{extension}"
+        return self.data_dir / f"{rec}{extension or ''}"
+
     def load_data(
         self,
         rec: Union[str, int],
@@ -165,7 +190,7 @@ class CINC2017(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         data_format: str, default "channel_first",
             format of the ecg data, case insensitive, can be
             "channel_last" (alias "lead_last"), or
@@ -193,7 +218,7 @@ class CINC2017(PhysioNetDataBase):
             "uv",
             "μv",
         ]
-        wr = wfdb.rdrecord(str(self.data_dir / rec))
+        wr = wfdb.rdrecord(str(self.get_absolute_path(rec)))
         data = wr.p_signal
 
         if wr.units[0].lower() == units.lower():
@@ -218,7 +243,7 @@ class CINC2017(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         original: bool, default False,
             if True, load annotations from the file `REFERENCE-original.csv`,
             otherwise from `REFERENCE.csv`
@@ -259,7 +284,7 @@ class CINC2017(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         data: ndarray, optional,
             ecg signal to plot,
             if given, data of `rec` will not be used,

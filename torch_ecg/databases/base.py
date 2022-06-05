@@ -214,11 +214,36 @@ class _DataBase(ReprMixin, ABC):
         return units
 
     @property
-    def all_records(self):
+    def all_records(self) -> List[str]:
         """ """
         if self._all_records is None:
             self._ls_rec()
         return self._all_records
+
+    def get_absolute_path(
+        self, rec: Union[str, int], extension: Optional[str] = None
+    ) -> Path:
+        """
+        get the absolute path of the record `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name or index of the record in `self.all_records`
+        extension: str, optional,
+            extension of the file
+
+        Returns
+        -------
+        Path,
+            absolute path of the file
+
+        """
+        if isinstance(rec, int):
+            rec = self[rec]
+        if extension is not None and not extension.startswith("."):
+            extension = f".{extension}"
+        return self.db_dir / f"{rec}{extension or ''}"
 
     # @abstractmethod
     # def train_test_split(self):
@@ -390,14 +415,14 @@ class PhysioNetDataBase(_DataBase):
         print(f"Done in {time.time() - start:.3f} seconds!")
         # record_list_fp.write_text("\n".join(self._all_records) + "\n")
 
-    def get_subject_id(self, rec: str) -> int:
+    def get_subject_id(self, rec: Union[str, int]) -> int:
         """
         Attach a `subject_id` to the record, in order to facilitate further uses
 
         Parameters
         ----------
-        rec: str,
-            record name
+        rec: str or int,
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -675,14 +700,14 @@ class NSRRDataBase(_DataBase):
         else:
             raise ValueError("Illegal operation")
 
-    def get_subject_id(self, rec: str) -> int:
+    def get_subject_id(self, rec: Union[str, int]) -> int:
         """
         Attach a `subject_id` to the record, in order to facilitate further uses
 
         Parameters
         ----------
-        rec: str,
-            record name
+        rec: str or int,
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -691,14 +716,14 @@ class NSRRDataBase(_DataBase):
         """
         raise NotImplementedError
 
-    def show_rec_stats(self, rec: str) -> NoReturn:
+    def show_rec_stats(self, rec: Union[str, int]) -> NoReturn:
         """
         print the statistics about the record `rec`
 
         Parameters
         ----------
-        rec: str,
-            record name
+        rec: str or int,
+            record name or index of the record in `self.all_records`
 
         """
         raise NotImplementedError
@@ -799,14 +824,14 @@ class CPSCDataBase(_DataBase):
 
         self.kwargs = kwargs
 
-    def get_subject_id(self, rec: str) -> int:
+    def get_subject_id(self, rec: Union[str, int]) -> int:
         """
         Attach a `subject_id` to the record, in order to facilitate further uses
 
         Parameters
         ----------
-        rec: str,
-            record name
+        rec: str or int,
+            record name or index of the record in `self.all_records`
 
         Returns
         -------

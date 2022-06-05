@@ -333,7 +333,7 @@ class CPSC2021(PhysioNetDataBase):
             )
             self._stats["fs"] = self.fs
             self._stats["sig_len"] = self._stats["record"].apply(
-                lambda s: wfdb.rdheader(str(self._get_path(s))).sig_len
+                lambda s: wfdb.rdheader(str(self.get_absolute_path(s))).sig_len
             )
             self._stats["sig_len_sec"] = self._stats["sig_len"] / self._stats["fs"]
             self._stats["revised"] = self._stats["record"].apply(
@@ -407,7 +407,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
 
         Returns
         -------
@@ -420,27 +420,30 @@ class CPSC2021(PhysioNetDataBase):
         sid = rec.split("_")[1]
         return sid
 
-    def _get_path(self, rec: Union[str, int], ext: Optional[str] = None) -> Path:
+    def get_absolute_path(
+        self, rec: Union[str, int], extension: Optional[str] = None
+    ) -> Path:
         """
+        get the absolute path of the record `rec`
 
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
-        ext: str, optional,
-            file extension of the path
+            record name or index of the record in `self.all_records`
+        extension: str, optional,
+            extension of the file
 
         Returns
         -------
-        p: Path,
-            path (with or without file extension) of the record
+        Path,
+            absolute path of the file
+
         """
         if isinstance(rec, int):
             rec = self[rec]
-        if ext:
-            rec += f".{ext}"
-        p = self.db_dirs[self._all_records_inv[rec]] / rec
-        return p
+        if extension is not None and not extension.startswith("."):
+            extension = f".{extension}"
+        return self.db_dirs[self._all_records_inv[rec]] / f"{rec}{extension or ''}"
 
     def _validate_samp_interval(
         self,
@@ -454,7 +457,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         sampfrom: int, optional,
             start index of the data to be loaded
         sampto: int, optional,
@@ -497,7 +500,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         leads: str or list of str, optional,
             the leads to load
         data_format: str, default "channel_first",
@@ -519,8 +522,6 @@ class CPSC2021(PhysioNetDataBase):
             the ECG data
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         assert data_format.lower() in [
             "channel_first",
             "lead_first",
@@ -535,7 +536,7 @@ class CPSC2021(PhysioNetDataBase):
             _leads = leads
         assert all([ld in self.all_leads for ld in _leads])
 
-        rec_fp = self._get_path(rec)
+        rec_fp = self.get_absolute_path(rec)
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
         wfdb_rec = wfdb.rdrecord(
             str(rec_fp), sampfrom=sf, sampto=st, physical=True, channel_names=_leads
@@ -569,7 +570,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         field: str, optional
             field of the annotation, can be one of "rpeaks", "af_episodes", "label", "raw", "wfdb",
             if not specified, all fields of the annotation will be returned in the form of a dict,
@@ -593,11 +594,12 @@ class CPSC2021(PhysioNetDataBase):
         ann: dict, or list, or ndarray, or str,
             annotaton of the record
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
         ann = wfdb.rdann(
-            str(self._get_path(rec)), extension=self.ann_ext, sampfrom=sf, sampto=st
+            str(self.get_absolute_path(rec)),
+            extension=self.ann_ext,
+            sampfrom=sf,
+            sampto=st,
         )
         # `load_af_episodes` should not use sampfrom, sampto
         func = {
@@ -641,7 +643,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         ann: Annotation, optional,
             the wfdb Annotation of the record,
             if None, corresponding annotation file will be read
@@ -661,12 +663,13 @@ class CPSC2021(PhysioNetDataBase):
             position (in terms of samples) of rpeaks of the record
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
         if ann is None:
             sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
             ann = wfdb.rdann(
-                str(self._get_path(rec)), extension=self.ann_ext, sampfrom=sf, sampto=st
+                str(self.get_absolute_path(rec)),
+                extension=self.ann_ext,
+                sampfrom=sf,
+                sampto=st,
             )
         critical_points = ann.sample
         symbols = ann.symbol
@@ -712,7 +715,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         ann: Annotation, optional,
             the wfdb Annotation of the record,
             if None, corresponding annotation file will be read
@@ -737,12 +740,10 @@ class CPSC2021(PhysioNetDataBase):
             episodes of atrial fibrillation, in terms of intervals or mask
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        header = wfdb.rdheader(str(self._get_path(rec)))
+        header = wfdb.rdheader(str(self.get_absolute_path(rec)))
         label = self._labels_f2a[header.comments[0]]
         siglen = header.sig_len
-        _ann = wfdb.rdann(str(self._get_path(rec)), extension=self.ann_ext)
+        _ann = wfdb.rdann(str(self.get_absolute_path(rec)), extension=self.ann_ext)
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
         aux_note = np.array(_ann.aux_note)
         critical_points = _ann.sample
@@ -823,7 +824,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         ann: Annotation, optional,
             not used, to keep in accordance with other methods
         sampfrom: int, optional,
@@ -842,9 +843,7 @@ class CPSC2021(PhysioNetDataBase):
             classifying label of the record
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        header = wfdb.rdheader(str(self._get_path(rec)))
+        header = wfdb.rdheader(str(self.get_absolute_path(rec)))
         label = header.comments[0]
         if fmt.lower() in ["a", "abbr", "abbreviation"]:
             label = self._labels_f2a[label]
@@ -864,7 +863,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         bias: dict, default {1:1, 2:0.5},
             keys are bias (with ±) in terms of number of rpeaks
             values are corresponding scores
@@ -885,7 +884,7 @@ class CPSC2021(PhysioNetDataBase):
         masks = gen_endpoint_score_mask(
             siglen=self.df_stats[self.df_stats.record == rec].iloc[0].sig_len,
             critical_points=wfdb.rdann(
-                str(self._get_path(rec)), extension=self.ann_ext
+                str(self.get_absolute_path(rec)), extension=self.ann_ext
             ).sample,
             af_intervals=self.load_af_episodes(rec, fmt="c_intervals"),
             bias=bias,
@@ -914,7 +913,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec: str or int,
-            name or index of the record
+            record name or index of the record in `self.all_records`
         data: ndarray, optional,
             (2-lead) ECG signal to plot,
             should be of the format "channel_first", and compatible with `leads`
