@@ -113,14 +113,14 @@ class CPSC2019(CPSCDataBase):
         self.rec_dir = self.db_dir / "data"
         self.ann_dir = self.db_dir / "ref"
 
+        # aliases
+        self.data_dir = self.rec_dir
+        self.ref_dir = self.ann_dir
+
         self.n_records = 2000
         self._all_records = [f"data_{i:05d}" for i in range(1, 1 + self.n_records)]
         self._all_annotations = [f"R_{i:05d}" for i in range(1, 1 + self.n_records)]
         self._ls_rec()
-
-        # aliases
-        self.data_dir = self.rec_dir
-        self.ref_dir = self.ann_dir
 
     def _ls_rec(self) -> NoReturn:
         """ """
@@ -144,7 +144,7 @@ class CPSC2019(CPSCDataBase):
         self._all_annotations = [
             ann
             for ann in self._all_annotations
-            if self.get_absolute_path(ann, self.ann_ext).is_file()
+            if self.get_absolute_path(ann, self.ann_ext, ann=True).is_file()
         ]
         common = set([rec.split("_")[1] for rec in self._all_records]) & set(
             [ann.split("_")[1] for ann in self._all_annotations]
@@ -183,7 +183,10 @@ class CPSC2019(CPSCDataBase):
         raise NotImplementedError
 
     def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
+        self,
+        rec: Union[str, int],
+        extension: Optional[str] = None,
+        ann: bool = False,
     ) -> Path:
         """
         get the absolute path of the record `rec`
@@ -194,6 +197,8 @@ class CPSC2019(CPSCDataBase):
             record name or index of the record in `self.all_records`
         extension: str, optional,
             extension of the file
+        ann: bool, default False,
+            whether to get the annotation file path or not
 
         Returns
         -------
@@ -205,9 +210,9 @@ class CPSC2019(CPSCDataBase):
             rec = self[rec]
         if extension is not None and not extension.startswith("."):
             extension = f".{extension}"
-        if extension == f".{self.ann_ext}":
+        if ann:
             rec = rec.replace("data", "R")
-            return self.ann_dir / f"{rec}{extension}"
+            return self.ann_dir / f"{rec}{extension or ''}"
         return self.data_dir / f"{rec}{extension or ''}"
 
     def load_data(
@@ -229,6 +234,7 @@ class CPSC2019(CPSCDataBase):
 
         """
         fp = self.get_absolute_path(rec, self.rec_ext)
+        print(fp)
         data = loadmat(str(fp))["ecg"]
         if units.lower() in [
             "uv",
@@ -255,7 +261,7 @@ class CPSC2019(CPSCDataBase):
             array of indices of R peaks
 
         """
-        fp = self.get_absolute_path(rec, self.ann_ext)
+        fp = self.get_absolute_path(rec, self.ann_ext, ann=True)
         ann = loadmat(str(fp))["R_peak"].astype(int)
         if not keep_dim:
             ann = ann.flatten()

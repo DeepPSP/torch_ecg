@@ -200,15 +200,16 @@ class CPSC2020(CPSCDataBase):
         self.rec_ext = "mat"
         self.ann_ext = "mat"
 
-        self.n_records = 10
-        self._all_records = None
-        self._all_annotations = None
-        self._ls_rec()
         self.rec_dir = self.db_dir / "data"
         self.ann_dir = self.db_dir / "ref"
         # aliases
         self.data_dir = self.rec_dir
         self.ref_dir = self.ann_dir
+
+        self.n_records = 10
+        self._all_records = None
+        self._all_annotations = None
+        self._ls_rec()
 
         self.subgroups = CFG(
             {
@@ -261,7 +262,10 @@ class CPSC2020(CPSCDataBase):
         raise NotImplementedError
 
     def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
+        self,
+        rec: Union[str, int],
+        extension: Optional[str] = None,
+        ann: bool = False,
     ) -> Path:
         """
         get the absolute path of the record `rec`
@@ -272,6 +276,8 @@ class CPSC2020(CPSCDataBase):
             record name or index of the record in `self.all_records`
         extension: str, optional,
             extension of the file
+        ann: bool, default False,
+            whether to get the annotation file path or not
 
         Returns
         -------
@@ -283,9 +289,9 @@ class CPSC2020(CPSCDataBase):
             rec = self[rec]
         if extension is not None and not extension.startswith("."):
             extension = f".{extension}"
-        if extension == f".{self.ann_ext}":
+        if ann:
             rec = rec.replace("A", "R")
-            return self.ann_dir / f"{rec}{extension}"
+            return self.ann_dir / f"{rec}{extension or ''}"
         return self.data_dir / f"{rec}{extension or ''}"
 
     def load_data(
@@ -350,7 +356,7 @@ class CPSC2020(CPSCDataBase):
             with items (ndarray) "SPB_indices" and "PVC_indices",
             which record the indices of SPBs and PVCs
         """
-        ann_fp = self.get_absolute_path(rec, self.ann_ext)
+        ann_fp = self.get_absolute_path(rec, self.ann_ext, ann=True)
         ann = loadmat(str(ann_fp))["ref"]
         sf, st = (sampfrom or 0), (sampto or np.inf)
         spb_indices = ann["S_ref"][0, 0].flatten().astype(int)

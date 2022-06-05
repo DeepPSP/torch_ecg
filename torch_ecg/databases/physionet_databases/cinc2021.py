@@ -653,7 +653,7 @@ class CINC2021(PhysioNetDataBase):
             extension = f".{extension}"
         return self.db_dirs[tranche] / f"{rec}{extension or ''}"
 
-    def get_data_filepath(self, rec: Union[str, int], with_ext: bool = True) -> str:
+    def get_data_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
         """
 
         get the absolute file path of the data file of `rec`
@@ -669,21 +669,21 @@ class CINC2021(PhysioNetDataBase):
 
         Returns
         -------
-        str,
+        Path,
             absolute file path of the data file of the record
 
         """
-        return str(self.get_absolute_path(rec, self.rec_ext if with_ext else None))
+        return self.get_absolute_path(rec, self.rec_ext if with_ext else None)
 
-    def get_header_filepath(self, rec: Union[str, int], with_ext: bool = True) -> str:
+    def get_header_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
         """
 
         get the absolute file path of the header file of `rec`
 
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec: str or int,
+            record name or index of the record in `self.all_records`
         with_ext: bool, default True,
             if True, the returned file path comes with file extension,
             otherwise without file extension,
@@ -691,11 +691,11 @@ class CINC2021(PhysioNetDataBase):
 
         Returns
         -------
-        str,
+        Path,
             absolute file path of the header file of the record
 
         """
-        return str(self.get_absolute_path(rec, self.ann_ext if with_ext else None))
+        return self.get_absolute_path(rec, self.ann_ext if with_ext else None)
 
     @add_docstring(get_header_filepath.__doc__)
     def get_ann_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:

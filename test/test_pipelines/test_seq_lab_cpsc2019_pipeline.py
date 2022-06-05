@@ -212,7 +212,6 @@ def _inference_post_process(
     dist_thr: Union[int, Sequence[int]] = 200,
 ) -> List[np.ndarray]:
     """
-
     prob --> qrs mask --> qrs intervals --> rpeaks
 
     Parameters: ref. `inference` method of the models
