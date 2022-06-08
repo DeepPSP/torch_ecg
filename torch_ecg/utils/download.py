@@ -13,6 +13,7 @@ import tarfile
 import tempfile
 import zipfile
 import warnings
+import urllib
 from pathlib import Path
 from typing import NoReturn, Optional, Union
 
@@ -59,9 +60,12 @@ def http_get(
             "The user is responsible for decompressing the file manually."
         )
         extract = False
+    # for example "https://www.dropbox.com/s/xxx/test%3F.zip??dl=1"
+    # produces pure_url = "https://www.dropbox.com/s/xxx/test?.zip"
+    pure_url = urllib.parse.unquote(url.split("?")[0])
     parent_dir = Path(dst_dir).parent
     downloaded_file = tempfile.NamedTemporaryFile(
-        dir=parent_dir, suffix=_suffix(url), delete=False
+        dir=parent_dir, suffix=_suffix(pure_url), delete=False
     )
     req = requests.get(url, stream=True, proxies=proxies)
     content_length = req.headers.get("Content-Length")
@@ -76,15 +80,15 @@ def http_get(
     progress.close()
     downloaded_file.close()
     if extract:
-        if ".zip" in _suffix(url):
+        if ".zip" in _suffix(pure_url):
             _unzip_file(str(downloaded_file.name), str(dst_dir))
-        elif ".tar" in _suffix(url):  # tar files
+        elif ".tar" in _suffix(pure_url):  # tar files
             _untar_file(str(downloaded_file.name), str(dst_dir))
         else:
             os.remove(downloaded_file.name)
-            raise Exception(f"Unknown file type {_suffix(url)}.")
+            raise Exception(f"Unknown file type {_suffix(pure_url)}.")
         # avoid the case the compressed file is a folder with the same name
-        _folder = Path(url).name.replace(_suffix(url), "")
+        _folder = _stem(Path(pure_url))
         if _folder in os.listdir(dst_dir):
             tmp_folder = str(dst_dir).rstrip(os.sep) + "_tmp"
             os.rename(dst_dir, tmp_folder)
@@ -92,7 +96,7 @@ def http_get(
             shutil.rmtree(tmp_folder)
     else:
         Path(dst_dir).mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(downloaded_file.name, Path(dst_dir) / Path(url).name)
+        shutil.copyfile(downloaded_file.name, Path(dst_dir) / Path(pure_url).name)
     os.remove(downloaded_file.name)
 
 

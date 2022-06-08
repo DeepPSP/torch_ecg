@@ -561,7 +561,7 @@ class PhysioNetDataBase(_DataBase):
         )
 
     @property
-    def url_(self) -> str:
+    def url_(self) -> Union[str, type(None)]:
         """URL of the compressed database file"""
         if self._url_compressed is not None:
             return self._url_compressed
@@ -575,7 +575,7 @@ class PhysioNetDataBase(_DataBase):
             print(
                 f"\042{self.db_name}\042 is not in the database list hosted at PhysioNet!"
             )
-            return ""
+            return None
         db_desc = re.sub(f"[{punct}]+", "", db_desc).lower()
         db_desc = re.sub("[\\s:]+", "-", db_desc)
         url = posixpath.join(domain, f"{self.db_name}/{db_desc}-{self.version}.zip")
