@@ -14,6 +14,8 @@ from scipy.io import loadmat
 
 from ..aux_data.cinc2020_aux_data import dx_mapping_all, dx_mapping_scored
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase
+from ...utils.misc import get_record_list_recursive
+
 
 __all__ = [
     "CPSC2018",
@@ -175,9 +177,15 @@ class CPSC2018(CPSCDataBase):
 
     def _ls_rec(self) -> NoReturn:
         """ """
-        self._all_records = [
-            item.with_suffix("").name for item in self.db_dir.glob(f"*.{self.rec_ext}")
-        ]
+        self._df_records = pd.DataFrame()
+        self._df_records["path"] = get_record_list_recursive(
+            self.db_dir, self.rec_ext, relative=False
+        )
+        self._df_records["record"] = self._df_records["path"].apply(
+            lambda x: x.name
+        )
+        self._df_records.set_index("record", inplace=True)
+        self._all_records = self._df_records.index.values.tolist()
 
     def get_subject_id(self, rec: Union[int, str]) -> int:
         """not finished,

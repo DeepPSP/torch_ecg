@@ -307,6 +307,7 @@ class CINC2020(PhysioNetDataBase):
         """
         fn = "record_list.json"
         record_list_fp = self.db_dir_base / fn
+        self._df_records = pd.DataFrame()
         if record_list_fp.is_file():
             self._all_records = {
                 k: v
@@ -345,11 +346,18 @@ class CINC2020(PhysioNetDataBase):
                         continue
                 self.db_dirs[tranche] = self.db_dir_base / tmp_dirname[0]
                 self._all_records[tranche] = [
-                    Path(f).parent for f in self._all_records[tranche]
+                    Path(f).name for f in self._all_records[tranche]
                 ]
             print(f"Done in {time.time() - start:.5f} seconds!")
             record_list_fp.write_text(json.dumps(to_save))
         self.__all_records = list_sum(self._all_records.values())
+        for tranche in self.db_tranches:
+            df_tmp = pd.DataFrame()
+            df_tmp["record"] = self._all_records[tranche]
+            df_tmp["path"] = df_tmp["record"].apply(lambda x: self.db_dirs[tranche] / x)
+            df_tmp["tranche"] = tranche
+            self._df_records = pd.concat((self._df_records,df_tmp), ignore_index=True)
+        self._df_records.set_index("record", inplace=True)
 
     def _ls_diagnoses_records(self) -> NoReturn:
         """list all the records for all diagnoses"""

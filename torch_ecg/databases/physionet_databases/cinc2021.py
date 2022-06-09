@@ -20,6 +20,11 @@ import wfdb
 from scipy.io import loadmat
 from scipy.signal import resample, resample_poly  # noqa: F401
 
+try:
+    from tqdm.auto import tqdm
+except ModuleNotFoundError:
+    from tqdm import tqdm
+
 from ...cfg import CFG, DEFAULTS
 from ...utils import ecg_arrhythmia_knowledge as EAK
 from ...utils.download import http_get
@@ -339,7 +344,6 @@ class CINC2021(PhysioNetDataBase):
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
         """
-
         Parameters
         ----------
         rec: str or int,
@@ -376,6 +380,7 @@ class CINC2021(PhysioNetDataBase):
         """
         filename = "record_list.json"
         record_list_fp = self.db_dir_base / filename
+        self._df_records = pd.DataFrame()
         if record_list_fp.is_file():
             self._all_records = {
                 k: v
@@ -406,7 +411,7 @@ class CINC2021(PhysioNetDataBase):
             )
             to_save = deepcopy(self._all_records)
             for tranche in self.db_tranches:
-                tmp_dirname = [Path(f).name for f in self._all_records[tranche]]
+                tmp_dirname = [Path(f).parent for f in self._all_records[tranche]]
                 if len(set(tmp_dirname)) != 1:
                     if len(set(tmp_dirname)) > 1:
                         print(
@@ -425,10 +430,16 @@ class CINC2021(PhysioNetDataBase):
             record_list_fp.write_text(json.dumps(to_save))
         self._all_records = CFG(self._all_records)
         self.__all_records = list_sum(self._all_records.values())
+        for tranche in self.db_tranches:
+            df_tmp = pd.DataFrame()
+            df_tmp["record"] = self._all_records[tranche]
+            df_tmp["path"] = df_tmp["record"].apply(lambda x: self.db_dirs[tranche] / x)
+            df_tmp["tranche"] = tranche
+            self._df_records = pd.concat((self._df_records,df_tmp), ignore_index=True)
+        self._df_records.set_index("record", inplace=True)
 
     def _aggregate_stats(self, fast: bool = False) -> NoReturn:
         """
-
         aggregate stats on the whole dataset
 
         Parameters
@@ -450,12 +461,10 @@ class CINC2021(PhysioNetDataBase):
                 "Please wait patiently to let the reader collect statistics on the whole dataset..."
             )
             start = time.time()
-            self._stats = pd.DataFrame(
-                list_sum(self._all_records.values()), columns=["record"]
-            )
-            self._stats["tranche"] = self._stats["record"].apply(
-                lambda rec: self._get_tranche(rec)
-            )
+            self._stats = self._df_records.copy(deep=True)
+            self._stats["record"] = self._stats.index
+            self._stats = self._stats.reset_index(drop=True)
+            self._stats.drop(columns="path", inplace=True)
             self._stats["tranche_name"] = self._stats["tranche"].apply(
                 lambda t: self.tranche_names[t]
             )
@@ -466,27 +475,25 @@ class CINC2021(PhysioNetDataBase):
                 self._stats[
                     k
                 ] = ""  # otherwise cells in the first row would be str instead of list
-            for idx, row in self._stats.iterrows():
-                ann_dict = self.load_ann(row["record"])
-                for k in [
-                    "nb_leads",
-                    "fs",
-                    "nb_samples",
-                    "age",
-                    "sex",
-                    "medical_prescription",
-                    "history",
-                    "symptom_or_surgery",
-                ]:
-                    self._stats.at[idx, k] = ann_dict[k]
-                for k in [
-                    "diagnosis",
-                    "diagnosis_scored",
-                ]:
-                    self._stats.at[idx, k] = ann_dict[k]["diagnosis_abbr"]
-                print(
-                    f"stats of {row.tranche_name} -- {row.record} --> ({idx+1} / {len(self._stats)}) gathered"
-                )
+            with tqdm(self._stats.iterrows(), total=len(self._stats), desc="Aggregating stats", unit="records") as pbar:
+                for idx, row in pbar:
+                    ann_dict = self.load_ann(row["record"])
+                    for k in [
+                        "nb_leads",
+                        "fs",
+                        "nb_samples",
+                        "age",
+                        "sex",
+                        "medical_prescription",
+                        "history",
+                        "symptom_or_surgery",
+                    ]:
+                        self._stats.at[idx, k] = ann_dict[k]
+                    for k in [
+                        "diagnosis",
+                        "diagnosis_scored",
+                    ]:
+                        self._stats.at[idx, k] = ann_dict[k]["diagnosis_abbr"]
             for k in ["nb_leads", "fs", "nb_samples"]:
                 self._stats[k] = self._stats[k].astype(int)
             _stats_to_save = self._stats.copy()
@@ -512,7 +519,6 @@ class CINC2021(PhysioNetDataBase):
 
     def _find_dir(self, root: Union[str, Path], tranche: str, level: int = 0) -> Path:
         """
-
         Parameters
         ----------
         root: str,
@@ -576,25 +582,17 @@ class CINC2021(PhysioNetDataBase):
             print(
                 "Please wait several minutes patiently to let the reader list records for each diagnosis..."
             )
-            start = time.time()
             self._diagnoses_records_list = {
                 d: [] for d in df_weights_abbr.columns.values.tolist()
             }
-            if not self._stats.empty:
-                for d in df_weights_abbr.columns.values.tolist():
-                    self._diagnoses_records_list[d] = sorted(
-                        self._stats[
-                            self._stats["diagnosis_scored"].apply(lambda lst: d in lst)
-                        ]["record"].tolist()
-                    )
-            else:
-                for tranche, l_rec in self.all_records.items():
-                    for rec in l_rec:
-                        ann = self.load_ann(rec)
-                        ld = ann["diagnosis_scored"]["diagnosis_abbr"]
-                        for d in ld:
-                            self._diagnoses_records_list[d].append(rec)
-            print(f"Done in {time.time() - start:.5f} seconds!")
+            if self._stats.empty:
+                self._aggregate_stats()
+            for d in df_weights_abbr.columns.values.tolist():
+                self._diagnoses_records_list[d] = sorted(
+                    self._stats[
+                        self._stats["diagnosis_scored"].apply(lambda lst: d in lst)
+                    ]["record"].tolist()
+                )
             dr_fp.write_text(json.dumps(self._diagnoses_records_list))
         self._diagnoses_records_list = CFG(self._diagnoses_records_list)
 
@@ -607,7 +605,6 @@ class CINC2021(PhysioNetDataBase):
 
     def _get_tranche(self, rec: Union[str, int]) -> str:
         """
-
         get the tranche's symbol (one of "A","B","C","D","E","F") of a record via its name
 
         Parameters
@@ -655,7 +652,6 @@ class CINC2021(PhysioNetDataBase):
 
     def get_data_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
         """
-
         get the absolute file path of the data file of `rec`
 
         Parameters
@@ -677,7 +673,6 @@ class CINC2021(PhysioNetDataBase):
 
     def get_header_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
         """
-
         get the absolute file path of the header file of `rec`
 
         Parameters

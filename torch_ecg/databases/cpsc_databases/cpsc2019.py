@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, NoReturn, Optional, Sequence, Union
 
 import numpy as np
+import pandas as pd
 from scipy.io import loadmat
 
 from ...utils.download import http_get
@@ -125,16 +126,35 @@ class CPSC2019(CPSCDataBase):
     def _ls_rec(self) -> NoReturn:
         """ """
         records_fn = self.db_dir / "records.json"
+        self._df_records = pd.DataFrame()
         if records_fn.is_file():
             records_json = json.loads(records_fn.read_text())
-            self._all_records = records_json["rec"]
-            self._all_annotations = records_json["ann"]
+            self._df_records["record"] = records_json["rec"]
+            self._df_records["path"] = self._df_records["record"].apply(
+                lambda x: self.data_dir / x
+            )
+            self._df_records["annotation"] = self._df_records["record"].apply(
+                lambda x: x.replace("data", "R")
+            )
+            self._df_records.set_index("record", inplace=True)
+            self._all_records = self._df_records.index.values.tolist()
+            self._all_annotations = self._df_records["annotation"].values.tolist()
             if len(self._all_records) == self.n_records:
                 return
         print(
             "Please allow some time for the reader to confirm the existence of corresponding data files and annotation files..."
         )
-        self._all_records = [f"data_{i:05d}" for i in range(1, 1 + self.n_records)]
+        self._df_records["record"] = [
+            f"data_{i:05d}" for i in range(1, 1 + self.n_records)
+        ]
+        self._df_records["path"] = self._df_records["record"].apply(
+            lambda x: self.data_dir / x
+        )
+        self._df_records["annotation"] = records_json["rec"].apply(
+            lambda x: x.replace("data", "R")
+        )
+        self._df_records.index = self._df_records["record"]
+        self._df_records = self._df_records.drop(columns="records")
         self._all_annotations = [f"R_{i:05d}" for i in range(1, 1 + self.n_records)]
         self._all_records = [
             rec
@@ -152,6 +172,7 @@ class CPSC2019(CPSCDataBase):
         common = sorted(list(common))
         self._all_records = [f"data_{item}" for item in common]
         self._all_annotations = [f"R_{item}" for item in common]
+        self._df_records = self._df_records.loc[self._all_records]
         records_json = {"rec": self._all_records, "ann": self._all_annotations}
         records_fn.write_text(json.dumps(records_json, ensure_ascii=False))
 

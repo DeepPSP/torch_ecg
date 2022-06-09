@@ -109,22 +109,6 @@ class ApneaECG(PhysioNetDataBase):
             "Obstructive Apnea": "yellow",
         }
 
-    def _ls_rec(self, local: bool = True) -> NoReturn:
-        """
-        find all records (relative path without file extension),
-        and save into `self._all_records` for further use
-
-        Parameters
-        ----------
-        local: bool, default True,
-            if True, read from local storage, prior to using `wfdb.get_record_list`
-
-        """
-        try:
-            super()._ls_rec(local=local)
-        except Exception:
-            self._all_records = wfdb.get_record_list(self.db_name)
-
     def get_subject_id(self, rec: Union[str, int]) -> int:
         """
         Parameters

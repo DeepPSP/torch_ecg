@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
 
 import numpy as np
+import pandas as pd
 from scipy.io import loadmat
 
 from ...cfg import CFG, DEFAULTS
@@ -234,6 +235,13 @@ class CPSC2020(CPSCDataBase):
         """ """
         self._all_records = [f"A{i:02d}" for i in range(1, 1 + self.n_records)]
         self._all_annotations = [f"R{i:02d}" for i in range(1, 1 + self.n_records)]
+        self._df_records = pd.DataFrame()
+        self._df_records["record"] = self._all_records
+        self._df_records["path"] = self._df_records["record"].apply(
+            lambda x: self.get_absolute_path(x)
+        )
+        self._df_records["annotation"] = self._all_annotations
+        self._df_records.set_index("record", inplace=True)
 
     @property
     def all_annotations(self):

@@ -115,6 +115,7 @@ class CINC2017(PhysioNetDataBase):
 
     def _ls_rec(self) -> NoReturn:
         """ """
+        self._df_records = pd.DataFrame()
         fp = self.db_dir / "RECORDS"
         if fp.exists():
             self._all_records = fp.read_text().splitlines()
@@ -127,6 +128,11 @@ class CINC2017(PhysioNetDataBase):
             raise ValueError("all records should be in the same directory")
         self.data_dir = self.db_dir / parent_dir.pop()
         self._all_records = [Path(item).name for item in self.all_records]
+        self._df_records["record"] = self._all_records
+        self._df_records["path"] = self._df_records["record"].apply(
+            lambda x: self.data_dir / x
+        )
+        self._df_records.set_index("record", inplace=True)
         # fp.write_text("\n".join(self._all_records) + "\n")
         if len(self._all_records) == 0:
             warnings.warn(

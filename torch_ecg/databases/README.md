@@ -142,3 +142,6 @@ MIT-BIH Arrhythmia Database
     '(VFL': 'Ventricular flutter',
     '(VT': 'Ventricular tachycardia'}
 ```
+
+## TODO
+1. use the attribute `_df_records` to maintain paths, etc. uniformly

@@ -349,6 +349,11 @@ class CPSC2021(PhysioNetDataBase):
             pass  # currently no need to parse the loaded csv file
         self._stats["subject_id"] = self._stats["subject_id"].apply(lambda s: str(s))
         self.__all_records = self._stats["record"].tolist()
+        self._df_records = self._stats[["record", "tranche", "subject_id"]]
+        self._df_records["path"] = self._df_records["record"].apply(
+            lambda x: self.get_absolute_path(x)
+        )
+        self._df_records.set_index("record", inplace=True)
 
     @property
     def all_subjects(self) -> List[str]:

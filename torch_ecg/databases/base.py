@@ -33,7 +33,7 @@ from pyedflib import EdfReader
 
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa: F401
 from ..utils.download import http_get
-from ..utils.misc import ReprMixin, dict_to_str, get_record_list_recursive3
+from ..utils.misc import ReprMixin, dict_to_str, get_record_list_recursive
 from .aux_data import get_physionet_dbs
 
 __all__ = [
@@ -158,6 +158,7 @@ class _DataBase(ReprMixin, ABC):
         self.ann_ext = None
         self.header_ext = "hea"
         self.verbose = verbose
+        self._df_records = pd.DataFrame()
         self._all_records = None
 
     @abstractmethod
@@ -235,21 +236,16 @@ class _DataBase(ReprMixin, ABC):
 
         Returns
         -------
-        Path,
+        path: Path,
             absolute path of the file
 
         """
         if isinstance(rec, int):
             rec = self[rec]
-        if extension is not None and not extension.startswith("."):
-            extension = f".{extension}"
-        return self.db_dir / f"{rec}{extension or ''}"
-
-    # @abstractmethod
-    # def train_test_split(self):
-    #     """
-    #     """
-    #     raise NotImplementedError
+        path = self._df_records.loc[rec].path
+        if extension is not None:
+            path = path.with_suffix(extension if extension.startswith(".") else f".{extension}")
+        return path
 
     @property
     def database_info(self) -> NoReturn:
@@ -372,7 +368,6 @@ class PhysioNetDataBase(_DataBase):
 
     def _ls_rec(self, db_name: Optional[str] = None, local: bool = True) -> NoReturn:
         """
-
         find all records (relative path without file extension),
         and save into `self._all_records` for further use
 
@@ -389,31 +384,48 @@ class PhysioNetDataBase(_DataBase):
             self._ls_rec_local()
             return
         try:
-            self._all_records = wfdb.get_record_list(db_name or self.db_name)
-            self._all_records = [Path(item).name for item in self._all_records]
+            self._df_records = pd.DataFrame()
+            self._df_records["record"] = wfdb.get_record_list(db_name or self.db_name)
+            self._df_records["path"] = self._df_records["record"].apply(
+                lambda x: (self.db_dir / x).resolve()
+            )
+            self._df_records["record"] = self._df_records["path"].apply(
+                lambda x: x.name
+            )  # remove relative path, leaving only the record name
+            self._df_records.set_index("record", inplace=True)
+            self._all_records = self._df_records.index.values.tolist()
         except Exception:
             self._ls_rec_local()
 
     def _ls_rec_local(self) -> NoReturn:
         """
-
         find all records in `self.db_dir`
 
         """
         record_list_fp = self.db_dir / "RECORDS"
+        self._df_records = pd.DataFrame()
         if record_list_fp.is_file():
-            self._all_records = record_list_fp.read_text().splitlines()
-            self._all_records = [
-                Path(item).name for item in self._all_records if len(item) > 0
+            self._df_records["record"] = [
+                item
+                for item in record_list_fp.read_text().splitlines()
+                if len(item) > 0
             ]
-            return
-        print(
-            "Please wait patiently to let the reader find all records of the database from local storage..."
-        )
-        start = time.time()
-        self._all_records = get_record_list_recursive3(self.db_dir, self.data_ext)
-        print(f"Done in {time.time() - start:.3f} seconds!")
-        # record_list_fp.write_text("\n".join(self._all_records) + "\n")
+            self._df_records["path"] = self._df_records["record"].apply(
+                lambda x: (self.db_dir / x).resolve()
+            )
+            self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
+        else:
+            print(
+                "Please wait patiently to let the reader find all records of the database from local storage..."
+            )
+            start = time.time()
+            self._df_records["path"] = get_record_list_recursive(
+                self.db_dir, self.data_ext, relative=False
+            )
+            print(f"Done in {time.time() - start:.3f} seconds!")
+            self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
+        self._df_records.set_index("record", inplace=True)
+        self._all_records = self._df_records.index.values.tolist()
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
         """
