@@ -244,7 +244,9 @@ class _DataBase(ReprMixin, ABC):
             rec = self[rec]
         path = self._df_records.loc[rec].path
         if extension is not None:
-            path = path.with_suffix(extension if extension.startswith(".") else f".{extension}")
+            path = path.with_suffix(
+                extension if extension.startswith(".") else f".{extension}"
+            )
         return path
 
     @property
@@ -413,7 +415,9 @@ class PhysioNetDataBase(_DataBase):
             self._df_records["path"] = self._df_records["record"].apply(
                 lambda x: (self.db_dir / x).resolve()
             )
-            self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
+            self._df_records["record"] = self._df_records["path"].apply(
+                lambda x: x.name
+            )
         else:
             print(
                 "Please wait patiently to let the reader find all records of the database from local storage..."
@@ -423,7 +427,9 @@ class PhysioNetDataBase(_DataBase):
                 self.db_dir, self.data_ext, relative=False
             )
             print(f"Done in {time.time() - start:.3f} seconds!")
-            self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
+            self._df_records["record"] = self._df_records["path"].apply(
+                lambda x: x.name
+            )
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()
 

@@ -435,7 +435,7 @@ class CINC2021(PhysioNetDataBase):
             df_tmp["record"] = self._all_records[tranche]
             df_tmp["path"] = df_tmp["record"].apply(lambda x: self.db_dirs[tranche] / x)
             df_tmp["tranche"] = tranche
-            self._df_records = pd.concat((self._df_records,df_tmp), ignore_index=True)
+            self._df_records = pd.concat((self._df_records, df_tmp), ignore_index=True)
         self._df_records.set_index("record", inplace=True)
 
     def _aggregate_stats(self, fast: bool = False) -> NoReturn:
@@ -475,7 +475,12 @@ class CINC2021(PhysioNetDataBase):
                 self._stats[
                     k
                 ] = ""  # otherwise cells in the first row would be str instead of list
-            with tqdm(self._stats.iterrows(), total=len(self._stats), desc="Aggregating stats", unit="records") as pbar:
+            with tqdm(
+                self._stats.iterrows(),
+                total=len(self._stats),
+                desc="Aggregating stats",
+                unit="records",
+            ) as pbar:
                 for idx, row in pbar:
                     ann_dict = self.load_ann(row["record"])
                     for k in [

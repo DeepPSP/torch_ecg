@@ -356,7 +356,7 @@ class CINC2020(PhysioNetDataBase):
             df_tmp["record"] = self._all_records[tranche]
             df_tmp["path"] = df_tmp["record"].apply(lambda x: self.db_dirs[tranche] / x)
             df_tmp["tranche"] = tranche
-            self._df_records = pd.concat((self._df_records,df_tmp), ignore_index=True)
+            self._df_records = pd.concat((self._df_records, df_tmp), ignore_index=True)
         self._df_records.set_index("record", inplace=True)
 
     def _ls_diagnoses_records(self) -> NoReturn:
