@@ -90,3 +90,10 @@ def test_download_cpsc2019():
 
 
 # other databases are very large, hence currently not being tested
+
+
+if __name__ == "__main__":
+    test_download_afdb()
+    test_download_ludb()
+    test_download_mitdb()
+    test_download_cpsc2019()
