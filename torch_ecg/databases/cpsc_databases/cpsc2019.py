@@ -127,20 +127,20 @@ class CPSC2019(CPSCDataBase):
         """ """
         records_fn = self.db_dir / "records.json"
         self._df_records = pd.DataFrame()
-        if records_fn.is_file():
-            records_json = json.loads(records_fn.read_text())
-            self._df_records["record"] = records_json["rec"]
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: self.data_dir / x
-            )
-            self._df_records["annotation"] = self._df_records["record"].apply(
-                lambda x: x.replace("data", "R")
-            )
-            self._df_records.set_index("record", inplace=True)
-            self._all_records = self._df_records.index.values.tolist()
-            self._all_annotations = self._df_records["annotation"].values.tolist()
-            if len(self._all_records) == self.n_records:
-                return
+        # if records_fn.is_file():
+        #     records_json = json.loads(records_fn.read_text())
+        #     self._df_records["record"] = records_json["rec"]
+        #     self._df_records["path"] = self._df_records["record"].apply(
+        #         lambda x: self.data_dir / x
+        #     )
+        #     self._df_records["annotation"] = self._df_records["record"].apply(
+        #         lambda x: x.replace("data", "R")
+        #     )
+        #     self._df_records.set_index("record", inplace=True)
+        #     self._all_records = self._df_records.index.values.tolist()
+        #     self._all_annotations = self._df_records["annotation"].values.tolist()
+        #     if len(self._all_records) == self.n_records:
+        #         return
         print(
             "Please allow some time for the reader to confirm the existence of corresponding data files and annotation files..."
         )
@@ -150,11 +150,11 @@ class CPSC2019(CPSCDataBase):
         self._df_records["path"] = self._df_records["record"].apply(
             lambda x: self.data_dir / x
         )
-        self._df_records["annotation"] = records_json["rec"].apply(
+        self._df_records["annotation"] = self._df_records["record"].apply(
             lambda x: x.replace("data", "R")
         )
         self._df_records.index = self._df_records["record"]
-        self._df_records = self._df_records.drop(columns="records")
+        self._df_records = self._df_records.drop(columns="record")
         self._all_annotations = [f"R_{i:05d}" for i in range(1, 1 + self.n_records)]
         self._all_records = [
             rec

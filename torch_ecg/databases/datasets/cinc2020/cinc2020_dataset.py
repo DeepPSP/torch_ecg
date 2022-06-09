@@ -121,7 +121,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
         """ """
         fdr = FastDataReader(self.reader, self.records, self.config, self.ppm)
         self._signals, self._labels = [], []
-        with tqdm(range(len(fdr)), desc="Loading data", unit="records") as pbar:
+        with tqdm(range(len(fdr)), desc="Loading data", unit="record") as pbar:
             for idx in pbar:
                 sig, lb = fdr[idx]
                 self._signals.append(sig)

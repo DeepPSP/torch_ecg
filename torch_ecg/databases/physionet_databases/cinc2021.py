@@ -479,7 +479,7 @@ class CINC2021(PhysioNetDataBase):
                 self._stats.iterrows(),
                 total=len(self._stats),
                 desc="Aggregating stats",
-                unit="records",
+                unit="record",
             ) as pbar:
                 for idx, row in pbar:
                     ann_dict = self.load_ann(row["record"])

@@ -160,7 +160,7 @@ class MITDB(PhysioNetDataBase):
     def _aggregate_stats(self) -> NoReturn:
         """ """
         self._stats = pd.DataFrame(columns=self._stats_columns)
-        with tqdm(range(len(self)), desc="Aggregating stats", unit="records") as pbar:
+        with tqdm(range(len(self)), desc="Aggregating stats", unit="record") as pbar:
             for idx in pbar:
                 rec_ann = self.load_ann(idx)
                 beat_type_num = {

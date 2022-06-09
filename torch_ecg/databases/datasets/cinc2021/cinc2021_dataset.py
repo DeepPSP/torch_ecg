@@ -135,11 +135,11 @@ class CINC2021Dataset(ReprMixin, Dataset):
 
         fdr = FastDataReader(self.reader, self.records, self.config, self.ppm)
 
-        # with tqdm(self.records, desc="Loading data", unit="records") as pbar:
+        # with tqdm(self.records, desc="Loading data", unit="record") as pbar:
         #     for rec in pbar:
         # s, l = self._load_one_record(rec)  # self._load_one_record is much slower than FastDataReader
         self._signals, self._labels = [], []
-        with tqdm(desc="Loading data", total=len(fdr), unit="records") as pbar:
+        with tqdm(desc="Loading data", total=len(fdr), unit="record") as pbar:
             for idx in range(len(fdr)):
                 sig, lb = fdr[idx]
                 # np.concatenate slows down the process severely
