@@ -29,6 +29,7 @@ from typing import (
 
 import numpy as np
 import pandas as pd
+from deprecated import deprecated
 
 from ..cfg import DEFAULTS
 
@@ -58,7 +59,9 @@ __all__ = [
 ]
 
 
-def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str) -> List[str]:
+def get_record_list_recursive(
+    db_dir: Union[str, Path], rec_ext: str, relative: bool = True
+) -> List[str]:
     """
 
     get the list of records in `db_dir` recursively,
@@ -73,6 +76,8 @@ def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str) -> List[st
         the parent (root) path of the whole database
     rec_ext: str,
         extension of the record files
+    relative: bool,
+        if True, the output is relative to `db_dir`, otherwise absolute paths
 
     Returns
     -------
@@ -80,25 +85,21 @@ def get_record_list_recursive(db_dir: Union[str, Path], rec_ext: str) -> List[st
         list of records, in lexicographical order
 
     """
-    res = []
-    roots = [str(db_dir)]
-    while len(roots) > 0:
-        new_roots = []
-        for r in roots:
-            tmp = [os.path.join(r, item) for item in os.listdir(r)]
-            res += [item for item in tmp if os.path.isfile(item)]
-            new_roots += [item for item in tmp if os.path.isdir(item)]
-        roots = deepcopy(new_roots)
+    if not rec_ext.startswith("."):
+        res = Path(db_dir).rglob(f"*.{rec_ext}")
+    else:
+        res = Path(db_dir).rglob(f"*{rec_ext}")
     res = [
-        os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep)
+        str((item.relative_to(db_dir) if relative else item).with_suffix(""))
         for item in res
-        if item.endswith(rec_ext)
+        if str(item).endswith(rec_ext)
     ]
     res = sorted(res)
 
     return res
 
 
+@deprecated(reason="use `get_record_list_recursive3` instead")
 def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> List[str]:
     """
 
@@ -140,7 +141,9 @@ def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> Li
 
 
 def get_record_list_recursive3(
-    db_dir: Union[str, Path], rec_patterns: Union[str, Dict[str, str]]
+    db_dir: Union[str, Path],
+    rec_patterns: Union[str, Dict[str, str]],
+    relative: bool = True,
 ) -> Union[List[str], Dict[str, List[str]]]:
     r"""
 
@@ -157,6 +160,8 @@ def get_record_list_recursive3(
     rec_patterns: str or dict,
         pattern of the record filenames, e.g. "A(?:\d+).mat",
         or patterns of several subsets, e.g. `{"A": "A(?:\d+).mat"}`
+    relative: bool,
+        if True, the output is relative to `db_dir`, otherwise absolute paths
 
     Returns
     -------
@@ -168,39 +173,34 @@ def get_record_list_recursive3(
         res = []
     elif isinstance(rec_patterns, dict):
         res = {k: [] for k in rec_patterns.keys()}
-    roots = [str(db_dir)]
+    _db_dir = Path(db_dir).resolve()  # make absolute
+    roots = [_db_dir]
     while len(roots) > 0:
         new_roots = []
         for r in roots:
-            # tmp = [os.path.join(r, item) for item in os.listdir(r)]
             tmp = os.listdir(r)
             if isinstance(rec_patterns, str):
                 res += [
-                    os.path.join(r, item)
-                    for item in filter(re.compile(rec_patterns).search, tmp)
+                    r / item for item in filter(re.compile(rec_patterns).search, tmp)
                 ]
             elif isinstance(rec_patterns, dict):
                 for k in rec_patterns.keys():
                     res[k] += [
-                        os.path.join(r, item)
+                        r / item
                         for item in filter(re.compile(rec_patterns[k]).search, tmp)
                     ]
-            new_roots += [
-                os.path.join(r, item)
-                for item in tmp
-                if os.path.isdir(os.path.join(r, item))
-            ]
+            new_roots += [r / item for item in tmp if (r / item).is_dir()]
         roots = deepcopy(new_roots)
     if isinstance(rec_patterns, str):
         res = [
-            os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep)
+            str((item.relative_to(_db_dir) if relative else item).with_suffix(""))
             for item in res
         ]
         res = sorted(res)
     elif isinstance(rec_patterns, dict):
         for k in rec_patterns.keys():
             res[k] = [
-                os.path.splitext(item)[0].replace(str(db_dir), "").strip(os.sep)
+                str((item.relative_to(_db_dir) if relative else item).with_suffix(""))
                 for item in res[k]
             ]
             res[k] = sorted(res[k])
