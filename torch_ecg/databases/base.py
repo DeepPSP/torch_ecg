@@ -426,6 +426,7 @@ class PhysioNetDataBase(_DataBase):
             self._df_records["path"] = get_record_list_recursive(
                 self.db_dir, self.data_ext, relative=False
             )
+            self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
             print(f"Done in {time.time() - start:.3f} seconds!")
             self._df_records["record"] = self._df_records["path"].apply(
                 lambda x: x.name

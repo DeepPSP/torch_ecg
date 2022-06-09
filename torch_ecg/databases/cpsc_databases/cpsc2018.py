@@ -181,6 +181,7 @@ class CPSC2018(CPSCDataBase):
         self._df_records["path"] = get_record_list_recursive(
             self.db_dir, self.rec_ext, relative=False
         )
+        self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()

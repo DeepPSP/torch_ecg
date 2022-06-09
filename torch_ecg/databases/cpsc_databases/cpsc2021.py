@@ -206,7 +206,6 @@ class CPSC2021(PhysioNetDataBase):
 
     def _ls_rec(self) -> NoReturn:
         """
-
         list all the records and load into `self._all_records`,
         facilitating further uses
 
@@ -266,7 +265,6 @@ class CPSC2021(PhysioNetDataBase):
 
     def _ls_rec_split(self) -> NoReturn:
         """
-
         list all the records assuming the records
         are split into two folders (training_I and training_II)
 
@@ -349,9 +347,11 @@ class CPSC2021(PhysioNetDataBase):
             pass  # currently no need to parse the loaded csv file
         self._stats["subject_id"] = self._stats["subject_id"].apply(lambda s: str(s))
         self.__all_records = self._stats["record"].tolist()
-        self._df_records = self._stats[["record", "tranche", "subject_id"]]
+        self._df_records = self._stats[["record", "tranche", "subject_id"]].copy(
+            deep=True
+        )
         self._df_records["path"] = self._df_records["record"].apply(
-            lambda x: self.get_absolute_path(x)
+            lambda s: self.db_dirs[self._all_records_inv[s]] / s
         )
         self._df_records.set_index("record", inplace=True)
 
@@ -408,7 +408,6 @@ class CPSC2021(PhysioNetDataBase):
 
     def get_subject_id(self, rec: Union[str, int]) -> str:
         """
-
         Parameters
         ----------
         rec: str or int,
@@ -498,7 +497,6 @@ class CPSC2021(PhysioNetDataBase):
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
-
         load physical (converted from digital) ECG data,
         which is more understandable for humans
 
@@ -569,7 +567,6 @@ class CPSC2021(PhysioNetDataBase):
         **kwargs: Any,
     ) -> Union[dict, np.ndarray, List[List[int]], str]:
         """
-
         load annotations of the record
 
         Parameters
@@ -642,7 +639,6 @@ class CPSC2021(PhysioNetDataBase):
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
-
         load position (in terms of samples) of rpeaks
 
         Parameters
@@ -714,7 +710,6 @@ class CPSC2021(PhysioNetDataBase):
         fmt: str = "intervals",
     ) -> Union[List[List[int]], np.ndarray]:
         """
-
         load the episodes of atrial fibrillation, in terms of intervals or mask
 
         Parameters
@@ -819,7 +814,6 @@ class CPSC2021(PhysioNetDataBase):
         fmt: str = "a",
     ) -> str:
         """
-
         load (classifying) label of the record,
         among the following three classes:
         "non atrial fibrillation",
@@ -862,7 +856,6 @@ class CPSC2021(PhysioNetDataBase):
         self, rec: Union[str, int], bias: dict = {1: 1, 2: 0.5}
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
-
         generate the scoring mask for the onsets and offsets of af episodes,
 
         Parameters
