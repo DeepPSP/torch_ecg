@@ -170,7 +170,6 @@ class _DataBase(ReprMixin, ABC):
     def load_data(self, rec: Union[str, int], **kwargs) -> Any:
         """
         load data from the record `rec`
-
         """
         raise NotImplementedError
 
@@ -186,7 +185,6 @@ class _DataBase(ReprMixin, ABC):
 
     def _auto_infer_units(self, sig: np.ndarray, sig_type: str = "ECG") -> str:
         """
-
         automatically infer the units of `sig`,
         under the assumption that `sig` not being raw signal, with baseline removed
 
@@ -260,7 +258,6 @@ class _DataBase(ReprMixin, ABC):
         cls, arrhythmias: Union[str, List[str]], **kwargs: Any
     ) -> NoReturn:
         """
-
         knowledge about ECG features of specific arrhythmias,
 
         Parameters
@@ -290,21 +287,18 @@ class _DataBase(ReprMixin, ABC):
     def url(self) -> Union[str, List[str]]:
         """
         URL(s) for downloading the database
-
         """
         raise NotImplementedError
 
     def __len__(self) -> int:
         """
         number of records in the database
-
         """
         return len(self.all_records)
 
     def __getitem__(self, index: int) -> str:
         """
         get the record name by index
-
         """
         return self.all_records[index]
 
@@ -402,7 +396,6 @@ class PhysioNetDataBase(_DataBase):
     def _ls_rec_local(self) -> NoReturn:
         """
         find all records in `self.db_dir`
-
         """
         record_list_fp = self.db_dir / "RECORDS"
         self._df_records = pd.DataFrame()
@@ -455,9 +448,12 @@ class PhysioNetDataBase(_DataBase):
         """
         print the information about the database
 
+        Parameters
+        ----------
         detailed: bool, default False,
             if False, an short introduction of the database will be printed,
             if True, then docstring of the class will be printed additionally
+
         """
         if not detailed:
             try:
@@ -610,7 +606,6 @@ class PhysioNetDataBase(_DataBase):
     def download(self, compressed: bool = False) -> NoReturn:
         """
         download the database from PhysioNet
-
         """
         if compressed:
             if self.url_ is not None:
@@ -631,7 +626,6 @@ class PhysioNetDataBase(_DataBase):
 class NSRRDataBase(_DataBase):
     """
     https://sleepdata.org/
-
     """
 
     def __init__(
@@ -698,7 +692,6 @@ class NSRRDataBase(_DataBase):
         full_file_path: Optional[Union[str, Path]] = None,
     ) -> NoReturn:
         """
-
         Parameters
         ----------
         operation: str, default "close",

@@ -715,7 +715,6 @@ class CINC2021(PhysioNetDataBase):
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
-
         load physical (converted from digital) ECG data,
         which is more understandable for humans
 
@@ -1320,7 +1319,7 @@ class CINC2021(PhysioNetDataBase):
         else:
             info_items = items
         ann_dict = self.load_ann(rec)
-        subject_info = [ann_dict[item] for item in info_items]
+        subject_info = {item: ann_dict[item] for item in info_items}
 
         return subject_info
 

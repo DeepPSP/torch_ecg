@@ -1028,7 +1028,7 @@ class CINC2020(PhysioNetDataBase):
         else:
             info_items = items
         ann_dict = self.load_ann(rec)
-        subject_info = [ann_dict[item] for item in info_items]
+        subject_info = {item: ann_dict[item] for item in info_items}
 
         return subject_info
 
