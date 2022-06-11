@@ -33,8 +33,10 @@ def http_get(
     dst_dir: Union[str, Path],
     proxies: Optional[dict] = None,
     extract: bool = True,
+    filename: Optional[str] = None,
 ) -> NoReturn:
-    """Get contents of a URL and save to a file.
+    """
+    Get contents of a URL and save to a file.
 
     Parameters
     ----------
@@ -46,26 +48,44 @@ def http_get(
         Dictionary of proxy settings.
     extract: bool, default True,
         Whether to extract the downloaded file.
+    filename: str, optional,
+        Name of the file to save.
+        If None, the filename will be the same as the URL.
 
     References
     ----------
     1. https://github.com/huggingface/transformers/blob/master/src/transformers/file_utils.py
 
     """
+    if filename is not None:
+        assert not (Path(dst_dir) / filename).exists(), "file already exists"
     print(f"Downloading {url}.")
-    if re.search("(\\.zip)|(\\.tar)", _suffix(url)) is None and extract:
-        warnings.warn(
-            "URL must be pointing to a `zip` file or a compressed `tar` file. "
-            "Automatic decompression is turned off. "
-            "The user is responsible for decompressing the file manually."
-        )
-        extract = False
+    if not is_compressed_file(url) and extract:
+        if filename is not None:
+            if not is_compressed_file(filename):
+                warnings.warn(
+                    "filename is given, and it is not a `zip` file or a compressed `tar` file. "
+                    "Automatic decompression is turned off."
+                )
+                extract = False
+            else:
+                pass
+        else:
+            warnings.warn(
+                "URL must be pointing to a `zip` file or a compressed `tar` file. "
+                "Automatic decompression is turned off. "
+                "The user is responsible for decompressing the file manually."
+            )
+            extract = False
     # for example "https://www.dropbox.com/s/xxx/test%3F.zip??dl=1"
     # produces pure_url = "https://www.dropbox.com/s/xxx/test?.zip"
     pure_url = urllib.parse.unquote(url.split("?")[0])
     parent_dir = Path(dst_dir).parent
+    df_suffix = _suffix(pure_url) if filename is None else _suffix(filename)
     downloaded_file = tempfile.NamedTemporaryFile(
-        dir=parent_dir, suffix=_suffix(pure_url), delete=False
+        dir=parent_dir,
+        suffix=df_suffix,
+        delete=False,
     )
     req = requests.get(url, stream=True, proxies=proxies)
     content_length = req.headers.get("Content-Length")
@@ -80,16 +100,19 @@ def http_get(
     progress.close()
     downloaded_file.close()
     if extract:
-        if ".zip" in _suffix(pure_url):
+        if ".zip" in df_suffix:
             _unzip_file(str(downloaded_file.name), str(dst_dir))
-        elif ".tar" in _suffix(pure_url):  # tar files
+        elif ".tar" in df_suffix:  # tar files
             _untar_file(str(downloaded_file.name), str(dst_dir))
         else:
             os.remove(downloaded_file.name)
-            raise Exception(f"Unknown file type {_suffix(pure_url)}.")
+            raise Exception(f"Unknown file type {df_suffix}")
         # avoid the case the compressed file is a folder with the same name
         # DO NOT use _stem(Path(pure_url))
-        _folder = Path(url).name.replace(_suffix(url), "")
+        if filename is None:
+            _folder = Path(url).name.replace(_suffix(url), "")
+        else:
+            _folder = _stem(Path(filename))
         if _folder in os.listdir(dst_dir):
             tmp_folder = str(dst_dir).rstrip(os.sep) + "_tmp"
             os.rename(dst_dir, tmp_folder)
@@ -97,7 +120,10 @@ def http_get(
             shutil.rmtree(tmp_folder)
     else:
         Path(dst_dir).mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(downloaded_file.name, Path(dst_dir) / Path(pure_url).name)
+        if filename is None:
+            shutil.copyfile(downloaded_file.name, Path(dst_dir) / Path(pure_url).name)
+        else:  # filename is not None
+            shutil.copyfile(downloaded_file.name, Path(dst_dir) / filename)
     os.remove(downloaded_file.name)
 
 
@@ -140,6 +166,25 @@ def _suffix(
 
     """
     return "".join(Path(re.sub(ignore_pattern, "", str(path))).suffixes)
+
+
+def is_compressed_file(path: Union[str, Path]) -> bool:
+    """
+    check if the file is a valid compressed file
+
+    Parameters
+    ----------
+    path: str or Path,
+        path to the file
+
+    Returns
+    -------
+    bool,
+        True if the file is a valid compressed file, False otherwise.
+
+    """
+    compressed_file_pattern = "(\\.zip)|(\\.tar)"
+    return re.search(compressed_file_pattern, _suffix(path)) is not None
 
 
 def _unzip_file(
