@@ -67,9 +67,9 @@ class MITDBDataset(ReprMixin, Dataset):
         """
         super().__init__()
         self.config = deepcopy(config)
-        assert self.config.db_dir is not None, "db_dir must be specified"
-        self.config.db_dir = Path(self.config.db_dir)
         self.reader = DR(db_dir=self.config.db_dir)
+        # assert self.config.db_dir is not None, "db_dir must be specified"
+        self.config.db_dir = self.reader.db_dir
         if self.config.torch_dtype == torch.float64:
             self.dtype = np.float64
         else:

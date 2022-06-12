@@ -171,7 +171,7 @@ class CPSC2020(CPSCDataBase):
 
     def __init__(
         self,
-        db_dir: Union[str, Path],
+        db_dir: Optional[Union[str, Path]] = None,
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
@@ -180,7 +180,7 @@ class CPSC2020(CPSCDataBase):
 
         Parameters
         ----------
-        db_dir: str or Path,
+        db_dir: str or Path, optional,
             storage path of the database
         working_dir: str or Path, optional,
             working directory, to store intermediate files and log file

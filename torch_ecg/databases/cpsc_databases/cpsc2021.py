@@ -116,8 +116,8 @@ class CPSC2021(PhysioNetDataBase):
 
     def __init__(
         self,
-        db_dir: str,
-        working_dir: Optional[str] = None,
+        db_dir: Optional[Union[str, Path]] = None,
+        working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
     ) -> NoReturn:
@@ -125,9 +125,9 @@ class CPSC2021(PhysioNetDataBase):
 
         Parameters
         ----------
-        db_dir: str,
+        db_dir: str or Path, optional,
             storage path of the database
-        working_dir: str, optional,
+        working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
         verbose: int, default 2,
             log verbosity

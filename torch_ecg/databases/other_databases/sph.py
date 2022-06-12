@@ -29,7 +29,6 @@ class SPHDataBase(_DataBase):
 
     def __init__(
         self,
-        db_name: str,
         db_dir: Optional[Union[str, Path]] = None,
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
@@ -38,8 +37,6 @@ class SPHDataBase(_DataBase):
         """
         Parameters
         ----------
-        db_name: str,
-            name of the database
         db_dir: str or Path, optional,
             storage path of the database,
             if not specified, `wfdb` will fetch data from the website of PhysioNet
@@ -51,7 +48,7 @@ class SPHDataBase(_DataBase):
 
         """
         super().__init__(
-            db_name=db_name,
+            db_name="SPH",
             db_dir=db_dir,
             working_dir=working_dir,
             verbose=verbose,

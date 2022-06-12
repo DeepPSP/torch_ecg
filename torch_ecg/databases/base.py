@@ -31,6 +31,7 @@ import requests
 import wfdb
 from pyedflib import EdfReader
 
+from ..cfg import _DATA_CACHE
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa: F401
 from ..utils.download import http_get
 from ..utils.misc import ReprMixin, dict_to_str, get_record_list_recursive
@@ -144,6 +145,12 @@ class _DataBase(ReprMixin, ABC):
 
         """
         self.db_name = db_name
+        if db_dir is None:
+            db_dir = _DATA_CACHE / db_name
+            warnings.warn(
+                f"db_dir is not specified, "
+                f"using default {db_dir} as the storage path"
+            )
         self.db_dir = Path(db_dir)
         if not self.db_dir.exists():
             self.db_dir.mkdir(parents=True, exist_ok=True)
@@ -631,7 +638,7 @@ class NSRRDataBase(_DataBase):
     def __init__(
         self,
         db_name: str,
-        db_dir: str,
+        db_dir: Optional[Union[str, Path]] = None,
         working_dir: Optional[str] = None,
         verbose: int = 2,
         **kwargs: Any,
@@ -641,7 +648,7 @@ class NSRRDataBase(_DataBase):
         ----------
         db_name: str,
             name of the database
-        db_dir: str,
+        db_dir: str or Path, optional,
             storage path of the database
         working_dir: str, optional,
             working directory, to store intermediate files and log file
@@ -804,7 +811,7 @@ class CPSCDataBase(_DataBase):
     def __init__(
         self,
         db_name: str,
-        db_dir: str,
+        db_dir: Optional[Union[str, Path]] = None,
         working_dir: Optional[str] = None,
         verbose: int = 2,
         **kwargs: Any,
@@ -814,7 +821,7 @@ class CPSCDataBase(_DataBase):
         ----------
         db_name: str,
             name of the database
-        db_dir: str,
+        db_dir: str or Path, optional,
             storage path of the database
         working_dir: str, optional,
             working directory, to store intermediate files and log file

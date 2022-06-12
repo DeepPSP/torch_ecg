@@ -61,6 +61,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         super().__init__()
         self.config = deepcopy(config)
         self.reader = CR(db_dir=config.db_dir)
+        self.config.db_dir = self.reader.db_dir
         self.training = training
         self.n_classes = 1
         self.lazy = lazy

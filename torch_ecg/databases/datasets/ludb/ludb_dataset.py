@@ -55,6 +55,7 @@ class LUDBDataset(ReprMixin, Dataset):
         super().__init__()
         self.config = deepcopy(config)
         self.reader = LR(db_dir=self.config.db_dir)
+        self.config.db_dir = self.reader.db_dir
         self.training = training
         if self.config.torch_dtype == torch.float64:
             self.dtype = np.float64

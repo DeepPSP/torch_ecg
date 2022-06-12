@@ -6,7 +6,6 @@ import json
 import time
 from copy import deepcopy
 from functools import reduce
-from pathlib import Path
 from random import sample, shuffle
 from typing import List, NoReturn, Optional, Sequence, Set, Tuple
 
@@ -62,12 +61,12 @@ class CINC2020Dataset(ReprMixin, Dataset):
         """
         super().__init__()
         self.config = deepcopy(config)
-        assert self.config.db_dir is not None, "db_dir must be specified"
-        self.config.db_dir = Path(self.config.db_dir)
+        # assert self.config.db_dir is not None, "db_dir must be specified"
+        self.reader = CR(db_dir=self.config.db_dir)
+        self.config.db_dir = self.reader.db_dir
         self._TRANCHES = (
             self.config.tranche_classes.keys()
         )  # ["A", "B", "AB", "E", "F"]
-        self.reader = CR(db_dir=self.config.db_dir)
         self.tranches = self.config.tranches_for_training
         self.training = training
         if self.config.torch_dtype == torch.float64:

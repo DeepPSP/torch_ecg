@@ -16,9 +16,11 @@ __all__ = [
 ]
 
 
-_PROJECT_ROOT = Path(__file__).parent.absolute()
+_PROJECT_ROOT = Path(__file__).parent.resolve()
 _PROJECT_CACHE = Path("~").expanduser() / ".cache" / "torch_ecg"
 _PROJECT_CACHE.mkdir(parents=True, exist_ok=True)
+_DATA_CACHE = _PROJECT_CACHE / "data"
+_DATA_CACHE.mkdir(parents=True, exist_ok=True)
 
 
 class CFG(dict):
