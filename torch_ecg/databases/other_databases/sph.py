@@ -12,20 +12,20 @@ import pandas as pd
 import h5py
 
 from ...utils.download import http_get
-from ...utils.misc import get_record_list_recursive3
+from ...utils.misc import get_record_list_recursive3, ms2samples
 from ...utils import EAK
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, _DataBase  # noqa: F401
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, _DataBase, _PlotCfg
 
 
 __all__ = [
-    "SPHDataBase",
+    "SPH",
 ]
 
 
-class SPHDataBase(_DataBase):
+class SPH(_DataBase):
     """ """
 
-    __name__ = "SPHDataBase"
+    __name__ = "SPH"
 
     def __init__(
         self,
@@ -68,10 +68,9 @@ class SPHDataBase(_DataBase):
         self._all_records = None
         self._ls_rec()
 
-    def _ls_rec_local(self) -> NoReturn:
+    def _ls_rec(self) -> NoReturn:
         """
         find all records in `self.db_dir`
-
         """
         record_list_fp = self.db_dir / "RECORDS"
         self._df_records = pd.DataFrame()
@@ -134,7 +133,9 @@ class SPHDataBase(_DataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        sid = self._df_metadata.loc[self._df_metadata["ECG_ID"] == rec]["Patient_ID"][0]
+        sid = self._df_metadata.loc[self._df_metadata["ECG_ID"] == rec][
+            "Patient_ID"
+        ].iloc[0]
         return sid
 
     def load_data(
@@ -183,7 +184,7 @@ class SPHDataBase(_DataBase):
         else:
             _leads = [self.all_leads.index(lead) for lead in leads]
 
-        with h5py.File(self.get_absolute_path(rec), "r") as f:
+        with h5py.File(self.get_absolute_path(rec, extension=self.data_ext), "r") as f:
             data = f["ecg"][_leads].astype(np.float32)
 
         if units.lower() in ["uv", "μv"]:
@@ -194,7 +195,7 @@ class SPHDataBase(_DataBase):
 
         return data
 
-    def load_ann(self, rec: Union[str, int], ann_format: str = "a") -> List[str]:
+    def load_ann(self, rec: Union[str, int], ann_format: str = "c") -> List[str]:
         """
         load annotation from the metadata file
 
@@ -218,19 +219,19 @@ class SPHDataBase(_DataBase):
             rec = self[rec]
         labels = [
             lb.strip()
-            for lb in self._df_metadata[self._df_metadata["ECG_ID"] == rec]["AHA_Code"][
-                0
-            ].split(";")
+            for lb in self._df_metadata[self._df_metadata["ECG_ID"] == rec]["AHA_Code"]
+            .iloc[0]
+            .split(";")
         ]
-        if ann_format.lower() == "f":
+        if ann_format.lower() == "c":
+            pass  # default format
+        elif ann_format.lower() == "f":
             labels = [
-                self._df_code[self._df_code["Code"] == lb]["Description"][0]
+                self._df_code[self._df_code["Code"] == lb]["Description"].iloc[0]
                 for lb in labels
             ]
         elif ann_format.lower() == "a":
             raise NotImplementedError("Abbreviations are not supported yet")
-        elif ann_format.lower() == "c":
-            pass
         else:
             raise ValueError(f"Unknown annotation format: {ann_format}")
         return labels
@@ -276,7 +277,7 @@ class SPHDataBase(_DataBase):
             ]
         else:
             info_items = items
-        subject_info = {item: row[item] for item in info_items}
+        subject_info = {item: row[item.capitalize()] for item in info_items}
 
         return subject_info
 
@@ -297,7 +298,7 @@ class SPHDataBase(_DataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        age = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["Age"][0]
+        age = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["Age"].iloc[0]
         return age
 
     def get_sex(self, rec: Union[str, int]) -> str:
@@ -317,7 +318,7 @@ class SPHDataBase(_DataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        sex = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["Sex"][0]
+        sex = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["Sex"].iloc[0]
         return sex
 
     def get_siglen(self, rec: Union[str, int]) -> str:
@@ -337,7 +338,7 @@ class SPHDataBase(_DataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        siglen = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["N"][0]
+        siglen = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["N"].iloc[0]
         return siglen
 
     @property
@@ -366,6 +367,7 @@ class SPHDataBase(_DataBase):
         self,
         rec: Union[str, int],
         data: Optional[np.ndarray] = None,
+        ann: Optional[Sequence[str]] = None,
         ticks_granularity: int = 0,
         leads: Optional[Union[str, List[str]]] = None,
         same_range: bool = False,
@@ -414,4 +416,173 @@ class SPHDataBase(_DataBase):
         Contributors: Jeethan, and WEN Hao
 
         """
-        raise NotImplementedError
+        if isinstance(rec, int):
+            rec = self[rec]
+
+        if "plt" not in dir():
+            import matplotlib.pyplot as plt
+
+            plt.MultipleLocator.MAXTICKS = 3000
+        if leads is None or leads == "all":
+            _leads = self.all_leads
+        elif isinstance(leads, str):
+            _leads = [leads]
+        else:
+            _leads = leads
+
+        lead_indices = [self.all_leads.index(ld) for ld in _leads]
+        if data is None:
+            _data = self.load_data(rec, data_format="channel_first", units="μV")[
+                lead_indices
+            ]
+        else:
+            units = self._auto_infer_units(data)
+            print(f"input data is auto detected to have units in {units}")
+            if units.lower() == "mv":
+                _data = 1000 * data
+            else:
+                _data = data
+            assert _data.shape[0] == len(
+                _leads
+            ), f"number of leads from data of shape ({_data.shape[0]}) does not match the length ({len(_leads)}) of `leads`"
+
+        if same_range:
+            y_ranges = np.ones((_data.shape[0],)) * np.max(np.abs(_data)) + 100
+        else:
+            y_ranges = np.max(np.abs(_data), axis=1) + 100
+
+        if waves:
+            if waves.get("p_onsets", None) and waves.get("p_offsets", None):
+                p_waves = [
+                    [onset, offset]
+                    for onset, offset in zip(waves["p_onsets"], waves["p_offsets"])
+                ]
+            elif waves.get("p_peaks", None):
+                p_waves = [
+                    [
+                        max(0, p + ms2samples(_PlotCfg.p_onset, fs=self.get_fs(rec))),
+                        min(
+                            _data.shape[1],
+                            p + ms2samples(_PlotCfg.p_offset, fs=self.get_fs(rec)),
+                        ),
+                    ]
+                    for p in waves["p_peaks"]
+                ]
+            else:
+                p_waves = []
+            if waves.get("q_onsets", None) and waves.get("s_offsets", None):
+                qrs = [
+                    [onset, offset]
+                    for onset, offset in zip(waves["q_onsets"], waves["s_offsets"])
+                ]
+            elif waves.get("q_peaks", None) and waves.get("s_peaks", None):
+                qrs = [
+                    [
+                        max(0, q + ms2samples(_PlotCfg.q_onset, fs=self.get_fs(rec))),
+                        min(
+                            _data.shape[1],
+                            s + ms2samples(_PlotCfg.s_offset, fs=self.get_fs(rec)),
+                        ),
+                    ]
+                    for q, s in zip(waves["q_peaks"], waves["s_peaks"])
+                ]
+            elif waves.get("r_peaks", None):
+                qrs = [
+                    [
+                        max(
+                            0, r + ms2samples(_PlotCfg.qrs_radius, fs=self.get_fs(rec))
+                        ),
+                        min(
+                            _data.shape[1],
+                            r + ms2samples(_PlotCfg.qrs_radius, fs=self.get_fs(rec)),
+                        ),
+                    ]
+                    for r in waves["r_peaks"]
+                ]
+            else:
+                qrs = []
+            if waves.get("t_onsets", None) and waves.get("t_offsets", None):
+                t_waves = [
+                    [onset, offset]
+                    for onset, offset in zip(waves["t_onsets"], waves["t_offsets"])
+                ]
+            elif waves.get("t_peaks", None):
+                t_waves = [
+                    [
+                        max(0, t + ms2samples(_PlotCfg.t_onset, fs=self.get_fs(rec))),
+                        min(
+                            _data.shape[1],
+                            t + ms2samples(_PlotCfg.t_offset, fs=self.get_fs(rec)),
+                        ),
+                    ]
+                    for t in waves["t_peaks"]
+                ]
+            else:
+                t_waves = []
+        else:
+            p_waves, qrs, t_waves = [], [], []
+        palette = {
+            "p_waves": "green",
+            "qrs": "red",
+            "t_waves": "pink",
+        }
+        plot_alpha = 0.4
+
+        if ann is None or data is None:
+            ann = self.load_ann(rec, ann_format="f")
+
+        nb_leads = len(_leads)
+
+        seg_len = self.fs * 25  # 25 seconds
+        nb_segs = _data.shape[1] // seg_len
+
+        t = np.arange(_data.shape[1]) / self.fs
+        duration = len(t) / self.fs
+        fig_sz_w = int(round(DEFAULT_FIG_SIZE_PER_SEC * duration))
+        fig_sz_h = 6 * np.maximum(y_ranges, 750) / 1500
+        fig, axes = plt.subplots(
+            nb_leads, 1, sharex=False, figsize=(fig_sz_w, np.sum(fig_sz_h))
+        )
+        if nb_leads == 1:
+            axes = [axes]
+        for idx in range(nb_leads):
+            axes[idx].plot(
+                t,
+                _data[idx],
+                color="black",
+                linewidth="2.0",
+                label=f"lead - {_leads[idx]}",
+            )
+            axes[idx].axhline(y=0, linestyle="-", linewidth="1.0", color="red")
+            # NOTE that `Locator` has default `MAXTICKS` equal to 1000
+            if ticks_granularity >= 1:
+                axes[idx].xaxis.set_major_locator(plt.MultipleLocator(0.2))
+                axes[idx].yaxis.set_major_locator(plt.MultipleLocator(500))
+                axes[idx].grid(
+                    which="major", linestyle="-", linewidth="0.4", color="red"
+                )
+            if ticks_granularity >= 2:
+                axes[idx].xaxis.set_minor_locator(plt.MultipleLocator(0.04))
+                axes[idx].yaxis.set_minor_locator(plt.MultipleLocator(100))
+                axes[idx].grid(
+                    which="minor", linestyle=":", linewidth="0.2", color="gray"
+                )
+            # add extra info. to legend
+            # https://stackoverflow.com/questions/16826711/is-it-possible-to-add-a-string-as-a-legend-item-in-matplotlib
+            axes[idx].plot([], [], " ", label=f"labels - {','.join(ann)}")
+            for w in ["p_waves", "qrs", "t_waves"]:
+                for itv in eval(w):
+                    axes[idx].axvspan(
+                        itv[0], itv[1], color=palette[w], alpha=plot_alpha
+                    )
+            axes[idx].legend(loc="upper left", fontsize=14)
+            axes[idx].set_xlim(t[0], t[-1])
+            axes[idx].set_ylim(min(-600, -y_ranges[idx]), max(600, y_ranges[idx]))
+            axes[idx].set_xlabel("Time [s]", fontsize=16)
+            axes[idx].set_ylabel("Voltage [μV]", fontsize=16)
+        plt.subplots_adjust(hspace=0.05)
+        fig.tight_layout()
+        if kwargs.get("save_path", None):
+            plt.savefig(kwargs["save_path"], dpi=200, bbox_inches="tight")
+        else:
+            plt.show()

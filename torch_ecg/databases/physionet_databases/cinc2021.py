@@ -44,27 +44,13 @@ from ..aux_data.cinc2021_aux_data import (
     load_weights,
     normalize_class,
 )
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, _PlotCfg
 
 __all__ = [
     "CINC2021",
     "compute_metrics",
     "compute_metrics_detailed",
 ]
-
-
-# configurations for visualization
-PlotCfg = CFG()
-# default const for the plot function in dataset.py
-# used only when corr. values are absent
-# all values are time bias w.r.t. corr. peaks, with units in ms
-PlotCfg.p_onset = -40
-PlotCfg.p_offset = 40
-PlotCfg.q_onset = -20
-PlotCfg.s_offset = 40
-PlotCfg.qrs_radius = 60
-PlotCfg.t_onset = -100
-PlotCfg.t_offset = 60
 
 
 class CINC2021(PhysioNetDataBase):
@@ -1327,9 +1313,9 @@ class CINC2021(PhysioNetDataBase):
         self,
         rec: Union[str, int],
         data: Optional[np.ndarray] = None,
-        ann: Optional[Dict[str, np.ndarray]] = None,
+        ann: Optional[Dict[str, Sequence[str]]] = None,
         ticks_granularity: int = 0,
-        leads: Optional[Union[str, List[str]]] = None,
+        leads: Optional[Union[str, Sequence[str]]] = None,
         same_range: bool = False,
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs: Any,
@@ -1438,10 +1424,10 @@ class CINC2021(PhysioNetDataBase):
             elif waves.get("p_peaks", None):
                 p_waves = [
                     [
-                        max(0, p + ms2samples(PlotCfg.p_onset, fs=self.get_fs(rec))),
+                        max(0, p + ms2samples(_PlotCfg.p_onset, fs=self.get_fs(rec))),
                         min(
                             _data.shape[1],
-                            p + ms2samples(PlotCfg.p_offset, fs=self.get_fs(rec)),
+                            p + ms2samples(_PlotCfg.p_offset, fs=self.get_fs(rec)),
                         ),
                     ]
                     for p in waves["p_peaks"]
@@ -1456,10 +1442,10 @@ class CINC2021(PhysioNetDataBase):
             elif waves.get("q_peaks", None) and waves.get("s_peaks", None):
                 qrs = [
                     [
-                        max(0, q + ms2samples(PlotCfg.q_onset, fs=self.get_fs(rec))),
+                        max(0, q + ms2samples(_PlotCfg.q_onset, fs=self.get_fs(rec))),
                         min(
                             _data.shape[1],
-                            s + ms2samples(PlotCfg.s_offset, fs=self.get_fs(rec)),
+                            s + ms2samples(_PlotCfg.s_offset, fs=self.get_fs(rec)),
                         ),
                     ]
                     for q, s in zip(waves["q_peaks"], waves["s_peaks"])
@@ -1467,10 +1453,12 @@ class CINC2021(PhysioNetDataBase):
             elif waves.get("r_peaks", None):
                 qrs = [
                     [
-                        max(0, r + ms2samples(PlotCfg.qrs_radius, fs=self.get_fs(rec))),
+                        max(
+                            0, r + ms2samples(_PlotCfg.qrs_radius, fs=self.get_fs(rec))
+                        ),
                         min(
                             _data.shape[1],
-                            r + ms2samples(PlotCfg.qrs_radius, fs=self.get_fs(rec)),
+                            r + ms2samples(_PlotCfg.qrs_radius, fs=self.get_fs(rec)),
                         ),
                     ]
                     for r in waves["r_peaks"]
@@ -1485,10 +1473,10 @@ class CINC2021(PhysioNetDataBase):
             elif waves.get("t_peaks", None):
                 t_waves = [
                     [
-                        max(0, t + ms2samples(PlotCfg.t_onset, fs=self.get_fs(rec))),
+                        max(0, t + ms2samples(_PlotCfg.t_onset, fs=self.get_fs(rec))),
                         min(
                             _data.shape[1],
-                            t + ms2samples(PlotCfg.t_offset, fs=self.get_fs(rec)),
+                            t + ms2samples(_PlotCfg.t_offset, fs=self.get_fs(rec)),
                         ),
                     ]
                     for t in waves["t_peaks"]

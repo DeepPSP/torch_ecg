@@ -31,7 +31,7 @@ import requests
 import wfdb
 from pyedflib import EdfReader
 
-from ..cfg import _DATA_CACHE
+from ..cfg import CFG, _DATA_CACHE
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa: F401
 from ..utils.download import http_get
 from ..utils.misc import ReprMixin, dict_to_str, get_record_list_recursive
@@ -908,3 +908,16 @@ class BeatAnn:
         if self.symbol in WFDB_Beat_Annotations:
             return WFDB_Beat_Annotations[self.symbol]
         return WFDB_Non_Beat_Annotations.get(self.symbol, self.symbol)
+
+
+# configurations for visualization
+_PlotCfg = CFG()
+# used only when corr. values are absent
+# all values are time bias w.r.t. corr. peaks, with units in ms
+_PlotCfg.p_onset = -40
+_PlotCfg.p_offset = 40
+_PlotCfg.q_onset = -20
+_PlotCfg.s_offset = 40
+_PlotCfg.qrs_radius = 60
+_PlotCfg.t_onset = -100
+_PlotCfg.t_offset = 60

@@ -1,9 +1,9 @@
 """
 """
 
-from .sph import SPHDataBase
+from .sph import SPH
 
 
 __all__ = [
-    "SPHDataBase",
+    "SPH",
 ]
