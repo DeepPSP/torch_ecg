@@ -902,40 +902,44 @@ class DataBaseInfo:
 
     title: str
     about: Union[str, Sequence[str]]
-    note: Union[str, Sequence[str]]
     usage: Sequence[str]
-    issues: Union[str, Sequence[str]]
     references: Sequence[str]
-    status: str = ""  # not used yet
+    note: Optional[Union[str, Sequence[str]]] = None
+    issues: Optional[Union[str, Sequence[str]]] = None
+    status: Optional[str] = None
 
     def format_database_docstring(self, indent: Optional[str] = None) -> str:
         """ """
         if indent is None:
             indent = " " * 4
-        title = textwrap.dedent(self.title)
+        title = textwrap.dedent(self.title).strip("\n ")
         if isinstance(self.about, str):
-            about = "ABOUT\n-----\n" + textwrap.dedent(self.about.strip("\n"))
+            about = "ABOUT\n-----\n" + textwrap.dedent(self.about).strip("\n ")
         else:
             about = ["ABOUT", "-----"] + [
                 f"{idx+1}. {line}" for idx, line in enumerate(self.about)
             ]
             about = "\n".join(about)
-        if isinstance(self.note, str):
-            note = "NOTE\n----\n" + textwrap.dedent(self.note.strip("\n"))
+        if self.note is None:
+            note = "NOTE\n----"
+        elif isinstance(self.note, str):
+            note = "NOTE\n----\n" + textwrap.dedent(self.note).strip("\n ")
         else:
             note = ["NOTE", "----"] + [
                 f"{idx+1}. {line}" for idx, line in enumerate(self.note)
             ]
             note = "\n".join(note)
-        if isinstance(self.issues, str):
-            issues = "Issues\n------\n" + textwrap.dedent(self.issues.strip("\n"))
+        if self.issues is None:
+            issues = "ISSUES\n------"
+        elif isinstance(self.issues, str):
+            issues = "Issues\n------\n" + textwrap.dedent(self.issues).strip("\n ")
         else:
             issues = ["Issues", "-" * 6] + [
                 f"{idx+1}. {line}" for idx, line in enumerate(self.issues)
             ]
             issues = "\n".join(issues)
         references = ["References", "-" * 10] + [
-            f"""{idx+1}. <a name="ref1"></a> {line}"""
+            f"""{idx+1}. <a name="ref{idx+1}"></a> {line}"""
             for idx, line in enumerate(self.references)
         ]
         references = "\n".join(references)
@@ -945,9 +949,13 @@ class DataBaseInfo:
         usage = "\n".join(usage)
 
         docstring = textwrap.indent(
-            f"""\n{title}\n\n{about}\n\n{note}\n\n{usage}\n\n{issues}\n\n{references}\n\n""",
+            f"""\n{title}\n\n{about}\n\n{note}\n\n{usage}\n\n{issues}\n\n{references}\n""",
             indent,
         )
+
+        if self.status is not None and len(self.status) > 0:
+            docstring = f"{self.status}\n{docstring}"
+
         return docstring
 
 
