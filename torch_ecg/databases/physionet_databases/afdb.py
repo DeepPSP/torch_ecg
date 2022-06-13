@@ -15,20 +15,19 @@ from scipy.signal import resample_poly
 from ...cfg import CFG
 from ...utils.misc import add_docstring, get_record_list_recursive
 from ...utils.utils_interval import generalized_intervals_intersection
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo
+
 
 __all__ = [
     "AFDB",
 ]
 
 
-class AFDB(PhysioNetDataBase):
-    """
-
+_AFDB_INFO = DataBaseInfo(
+    title="""
     MIT-BIH Atrial Fibrillation Database
-
-    ABOUT afdb
-    ----------
+    """,
+    about="""
     1. contains 25 long-term (each 10 hours) ECG recordings of human subjects with atrial fibrillation (mostly paroxysmal)
     2. 23 records out of 25 include the two ECG signals, the left 2 records 00735 and 03665 are represented only by the rhythm (.atr) and unaudited beat (.qrs) annotation files
     3. signals are sampled at 250 samples per second with 12-bit resolution over a range of ±10 millivolts, with a typical recording bandwidth of approximately 0.1 Hz to 40 Hz
@@ -38,26 +37,27 @@ class AFDB(PhysioNetDataBase):
         - J:     AV junctional rhythm
         - N:     all other rhythms
     5. rhythm annotations almost all start with "(N", except for 4 which start with '(AFIB', which are all within 1 second (250 samples)
-
-    NOTE
-    ----
+    """,
+    note="""
     1. beat annotation files (.qrs files) were prepared using an automated detector and have NOT been corrected manually
     2. for some records, manually corrected beat annotation files (.qrsc files) are available
     3. one should never use wfdb.rdann with arguments `sampfrom`, since one has to know the `aux_note` (with values in ["(N", "(J", "(AFL", "(AFIB"]) before the index at `sampfrom`
+    """,
+    usage=[
+        "Atrial fibrillation (AF) detection",
+    ],
+    references=[
+        "https://physionet.org/content/afdb/1.0.0/",
+        "Moody GB, Mark RG. A new method for detecting atrial fibrillation using R-R intervals. Computers in Cardiology. 10:227-230 (1983).",
+    ],
+)
 
-    ISSUES
-    ------
 
-    Usage
-    -----
-    1. AF detection
+@add_docstring(_AFDB_INFO.format_database_docstring())
+class AFDB(PhysioNetDataBase):
+    """ """
 
-    References
-    ----------
-    1. <a name="ref1"></a> https://physionet.org/content/afdb/1.0.0/
-    2. <a name="ref2"></a> Moody GB, Mark RG. A new method for detecting atrial fibrillation using R-R intervals. Computers in Cardiology. 10:227-230 (1983).
-
-    """
+    __name__ = "AFDB"
 
     def __init__(
         self,

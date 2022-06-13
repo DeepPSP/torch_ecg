@@ -27,6 +27,7 @@ from ...utils.misc import (
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (  # noqa: F401
     DEFAULT_FIG_SIZE_PER_SEC,
+    DataBaseInfo,
     CPSCDataBase,
     PhysioNetDataBase,
     WFDB_Beat_Annotations,
@@ -35,20 +36,19 @@ from ..base import (  # noqa: F401
     _PlotCfg,
 )
 
+
 __all__ = [
     "CPSC2021",
     "compute_metrics",
 ]
 
 
-class CPSC2021(PhysioNetDataBase):
-    r"""
-
+_CPSC2021_INFO = DataBaseInfo(
+    title="""
     The 4th China Physiological Signal Challenge 2021:
     Paroxysmal Atrial Fibrillation Events Detection from Dynamic ECG Recordings
-
-    ABOUT CPSC2021
-    --------------
+    """,
+    about=r"""
     1. source ECG data are recorded from 12-lead Holter or 3-lead wearable ECG monitoring devices
     2. dataset provides variable-length ECG fragments extracted from lead I and lead II of the long-term source ECG data, each sampled at 200 Hz
     3. AF event is limited to be no less than 5 heart beats
@@ -71,35 +71,31 @@ class CPSC2021(PhysioNetDataBase):
         (3) final score (U):
         U = \dfrac{1}{N} \sum\limits_{i=1}^N \left( Ur_i + \dfrac{Ma_i}{\max\{Mr_i, Ma_i\}} \right)
         where N is the number of records, Ma is the number of annotated AF episodes, Mr the number of predicted AF episodes
-
-    NOTE
-    ----
+    """,
+    note="""
     1. if an ECG record is classified as AFf, the provided onset and offset locations should be the first and last record points. If an ECG record is classified as N, the answer should be an empty list
     2. it can be inferred from the classification scoring matrix that the punishment of false negatives of AFf is very heavy, while mixing-up of AFf and AFp is not punished
     3. flag of atrial fibrillation and atrial flutter ("AFIB" and "AFL") in annotated information are seemed as the same type when scoring the method
     4. the 3 classes can coexist in ONE subject (not one record). For example, subject 61 has 6 records with label "N", 1 with label "AFp", and 2 with label "AFf"
     5. rhythm change annotations ("(AFIB", "(AFL", "(N" in the `aux_note` field or "+" in the `symbol` field of the annotation files) are inserted 0.15s ahead of or behind (onsets or offset resp.) of corresponding R peaks.
     6. some records are revised if there are heart beats of the AF episode or the pause between adjacent AF episodes less than 5. The id numbers of the revised records are summarized in the attached REVISED_RECORDS
+    """,
+    usage=[
+        "AF (event, fine) detection",
+    ],
+    references=[
+        "http://www.icbeb.org/CPSC2021",
+        "https://www.physionet.org/content/cpsc2021/1.0.0/",
+        "https://archive.physionet.org/physiobank/annotations.shtml",
+    ],
+)
 
-    ISSUES
-    ------
-    1.
 
-    TODO
-    ----
-    1.
+@add_docstring(_CPSC2021_INFO.format_database_docstring())
+class CPSC2021(PhysioNetDataBase):
+    """ """
 
-    Usage
-    -----
-    1. AF (event, fine) detection
-
-    References
-    ----------
-    1. <a name="ref1"></a> http://www.icbeb.org/CPSC2021
-    2. <a name="ref2"></a> https://www.physionet.org/content/cpsc2021/1.0.0/
-    3. <a name="ref3"></a> https://archive.physionet.org/physiobank/annotations.shtml
-
-    """
+    __name__ = "CPSC2021"
 
     def __init__(
         self,

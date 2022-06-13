@@ -44,7 +44,7 @@ from ..aux_data.cinc2021_aux_data import (
     load_weights,
     normalize_class,
 )
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, _PlotCfg
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo, _PlotCfg
 
 __all__ = [
     "CINC2021",
@@ -53,6 +53,131 @@ __all__ = [
 ]
 
 
+_CINC2021_INFO = DataBaseInfo(
+    title="""
+    Will Two Do? Varying Dimensions in Electrocardiography:
+    The PhysioNet/Computing in Cardiology Challenge 2021
+    """,
+    about="""
+    0. goal: build an algorithm that can classify cardiac abnormalities from either
+        - twelve-lead (I, II, III, aVR, aVL, aVF, V1, V2, V3, V4, V5, V6)
+        - six-lead (I, II, III, aVL, aVR, aVF),
+        - four-lead (I, II, III, V2)
+        - three-lead (I, II, V2)
+        - two-lead (I, II)
+    ECG recordings.
+    1. tranches of data:
+        - CPSC2018 (tranches A and B of CinC2020):
+            contains 13,256 ECGs (6,877 from tranche A, 3,453 from tranche B),
+            10,330 ECGs shared as training data, 1,463 retained as validation data,
+            and 1,463 retained as test data.
+            Each recording is between 6 and 144 seconds long with a sampling frequency of 500 Hz
+        - INCARTDB (tranche C of CinC2020):
+            contains 75 annotated ECGs,
+            all shared as training data, extracted from 32 Holter monitor recordings.
+            Each recording is 30 minutes long with a sampling frequency of 257 Hz
+        - PTB (PTB and PTB-XL, tranches D and E of CinC2020):
+            contains 22,353 ECGs,
+            516 + 21,837, all shared as training data.
+            Each recording is between 10 and 120 seconds long,
+            with a sampling frequency of either 500 (PTB-XL) or 1,000 (PTB) Hz
+        - Georgia (tranche F of CinC2020):
+            contains 20,678 ECGs,
+            10,334 ECGs shared as training data, 5,167 retained as validation data,
+            and 5,167 retained as test data.
+            Each recording is between 5 and 10 seconds long with a sampling frequency of 500 Hz
+        - American (NEW, UNDISCLOSED):
+            contains 10,000 ECGs,
+            all retained as test data,
+            geographically distinct from the Georgia database.
+            Perhaps is the main part of the hidden test set of CinC2020
+        - CUSPHNFH (NEW, the Chapman University, Shaoxing People’s Hospital and Ningbo First Hospital database)
+            contains 45,152 ECGS,
+            all shared as training data.
+            Each recording is 10 seconds long with a sampling frequency of 500 Hz
+            this tranche contains two subsets:
+            - Chapman_Shaoxing: "JS00001" - "JS10646"
+            - Ningbo: "JS10647" - "JS45551"
+    2. only a part of diagnosis_abbr (diseases that appear in the labels of the 6 tranches of training data) are used in the scoring function, while others are ignored. The scored diagnoses were chosen based on prevalence of the diagnoses in the training data, the severity of the diagnoses, and the ability to determine the diagnoses from ECG recordings. The ignored diagnosis_abbr can be put in a a "non-class" group.
+    3. the (updated) scoring function has a scoring matrix with nonzero off-diagonal elements. This scoring function reflects the clinical reality that some misdiagnoses are more harmful than others and should be scored accordingly. Moreover, it reflects the fact that confusing some classes is much less harmful than confusing other classes.
+    4. all data are recorded in the leads ordering of
+        ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]
+    using for example the following code:
+    >>> db_dir = "/media/cfs/wenhao71/data/CinC2021/"
+    >>> working_dir = "./working_dir"
+    >>> dr = CINC2021(db_dir=db_dir,working_dir=working_dir)
+    >>> set_leads = []
+    >>> for tranche, l_rec in dr.all_records.items():
+    ...     for rec in l_rec:
+    ...         ann = dr.load_ann(rec)
+    ...         leads = ann["df_leads"]["lead_name"].values.tolist()
+    ...     if leads not in set_leads:
+    ...         set_leads.append(leads)
+    """,
+    note="""
+    1. The datasets have been roughly processed to have a uniform format, hence differ from their original resource (e.g. differe in sampling frequency, sample duration, etc.)
+    2. The original datasets might have richer metadata (especially those from PhysioNet), which can be fetched from corresponding reader's docstring or website of the original source
+    3. Each sub-dataset might have its own organizing scheme of data, which should be carefully dealt with
+    4. There are few "absolute" diagnoses in 12 lead ECGs, where large discrepancies in the interpretation of the ECG can be found even inspected by experts. There is inevitably something lost in translation, especially when you do not have the context. This doesn"t mean making an algorithm isn't important
+    5. The labels are noisy, which one has to deal with in all real world data
+    6. each line of the following classes are considered the same (in the scoring matrix):
+        - RBBB, CRBBB (NOT including IRBBB)
+        - PAC, SVPB
+        - PVC, VPB
+    7. unfortunately, the newly added tranches (C - F) have baseline drift and are much noisier. In contrast, CPSC data have had baseline removed and have higher SNR
+    8. on Aug. 1, 2020, adc gain (including "resolution", "ADC"? in .hea files) of datasets INCART, PTB, and PTB-xl (tranches C, D, E) are corrected. After correction, (the .tar files of) the 3 datasets are all put in a "WFDB" subfolder. In order to keep the structures consistant, they are moved into "Training_StPetersburg", "Training_PTB", "WFDB" as previously. Using the following code, one can check the adc_gain and baselines of each tranche:
+    >>> db_dir = "/media/cfs/wenhao71/data/CinC2021/"
+    >>> working_dir = "./working_dir"
+    >>> dr = CINC2021(db_dir=db_dir,working_dir=working_dir)
+    >>> resolution = {tranche: set() for tranche in "ABCDEF"}
+    >>> baseline = {tranche: set() for tranche in "ABCDEF"}
+    >>> for tranche, l_rec in dr.all_records.items():
+    ...     for rec in l_rec:
+    ...         ann = dr.load_ann(rec)
+    ...         resolution[tranche] = resolution[tranche].union(set(ann["df_leads"]["adc_gain"]))
+    ...         baseline[tranche] = baseline[tranche].union(set(ann["df_leads"]["baseline"]))
+    >>> print(resolution, baseline)
+    {"A": {1000.0}, "B": {1000.0}, "C": {1000.0}, "D": {1000.0}, "E": {1000.0}, "F": {1000.0}} {"A": {0}, "B": {0}, "C": {0}, "D": {0}, "E": {0}, "F": {0}}
+    9. the .mat files all contain digital signals, which has to be converted to physical values using adc gain, basesline, etc. in corresponding .hea files. `wfdb.rdrecord` has already done this conversion, hence greatly simplifies the data loading process.
+    NOTE that there"s a difference when using `wfdb.rdrecord`: data from `loadmat` are in "channel_first" format, while `wfdb.rdrecord.p_signal` produces data in the "channel_last" format
+    10. there"re 3 equivalent (2 classes are equivalent if the corr. value in the scoring matrix is 1):
+        (RBBB, CRBBB), (PAC, SVPB), (PVC, VPB)
+    11. in the newly (Feb., 2021) created dataset (ref. [7]), header files of each subset were gathered into one separate compressed file. This is due to the fact that updates on the dataset are almost always done in the header files. The correct usage of ref. [7], after uncompressing, is replacing the header files in the folder `All_training_WFDB` by header files from the 6 folders containing all header files from the 6 subsets. This procedure has to be done, since `All_training_WFDB` contains the very original headers with baselines: {"A": {1000.0}, "B": {1000.0}, "C": {1000.0}, "D": {2000000.0}, "E": {200.0}, "F": {4880.0}} (the last 3 are NOT correct)
+    12. IMPORTANT: organization of the total dataset:
+    either one moves all training records into ONE folder,
+    or at least one moves the subsets Chapman_Shaoxing (WFDB_ChapmanShaoxing) and Ningbo (WFDB_Ningbo) into ONE folder, or use the data WFDB_ShaoxingUniv which is the union of WFDB_ChapmanShaoxing and WFDB_Ningbo
+    """,
+    usage=[
+        "ECG arrhythmia detection",
+    ],
+    issues="""
+    1. reading the .hea files, baselines of all records are 0, however it is not the case if one plot the signal
+    2. about half of the LAD records satisfy the "2-lead" criteria, but fail for the "3-lead" criteria, which means that their axis is (-30°, 0°) which is not truely LAD
+    3. (Aug. 15, 2020; resolved, and changed to 1000) tranche F, the Georgia subset, has ADC gain 4880 which might be too high. Thus obtained voltages are too low. 1000 might be a suitable (correct) value of ADC gain for this tranche just as the other tranches.
+    4. "E04603" (all leads), "E06072" (chest leads, epecially V1-V3), "E06909" (lead V2), "E07675" (lead V3), "E07941" (lead V6), "E08321" (lead V6) has exceptionally large values at rpeaks, reading (`load_data`) these two records using `wfdb` would bring in `nan` values. One can check using the following code
+    >>> rec = "E04603"
+    >>> dr.plot(rec, dr.load_data(rec, backend="scipy", units="uv"))  # currently raising error
+    5. many records (headers) have duplicate labels. For example, many records in the Georgia subset has duplicate "PAC" ("284470004") label
+    6. some records in tranche G has #Dx ending with "," (at least "JS00344"), or consecutive "," (at least "JS03287") in corresponding .hea file
+    7. tranche G has 2 Dx ("251238007", "6180003") which are listed in neither of dx_mapping_scored.csv nor dx_mapping_unscored.csv
+    8. about 68 records from tranche G has `nan` values loaded via `wfdb.rdrecord`, which might be caused by motion artefact in some leads
+    9. "Q0400", "Q2961" are completely flat (constant), while many other records have flat leads, especially V1-V6 leads
+    """,
+    references=[
+        "https://physionetchallenges.github.io/2021/",
+        "https://physionet.org/content/challenge-2021/1.0.2/",
+        "https://physionetchallenges.github.io/2020/",
+        "http://2018.icbeb.org/#",
+        "https://physionet.org/content/incartdb/1.0.0/",
+        "https://physionet.org/content/ptbdb/1.0.0/",
+        "https://physionet.org/content/ptb-xl/1.0.1/",
+        "(deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ECG-public/",
+        "(recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/",
+    ],
+)
+
+
+@add_docstring(_CINC2021_INFO.format_database_docstring())
 class CINC2021(PhysioNetDataBase):
     """to improve,
 

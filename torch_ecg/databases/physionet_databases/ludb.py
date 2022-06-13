@@ -12,8 +12,10 @@ import wfdb
 from scipy.signal import resample_poly
 
 from ...cfg import CFG, DEFAULTS
+from ...utils.misc import add_docstring
 from ...utils.utils_data import ECGWaveForm, masks_to_waveforms
-from ..base import PhysioNetDataBase
+from ..base import PhysioNetDataBase, DataBaseInfo
+
 
 __all__ = [
     "LUDB",
@@ -21,13 +23,11 @@ __all__ = [
 ]
 
 
-class LUDB(PhysioNetDataBase):
-    """finished, to be improved,
-
+_LUDB_INFO = DataBaseInfo(
+    title="""
     Lobachevsky University Electrocardiography Database
-
-    ABOUT ludb
-    ----------
+    """,
+    about="""
     1. consist of 200 10-second conventional 12-lead (i, ii, iii, avr, avl, avf, v1, v2, v3, v4, v5, v6) ECG signal records, with sampling frequency 500 Hz
     2. boundaries of P, T waves and QRS complexes were manually annotated by cardiologists, and with the corresponding diagnosis
     3. annotated are 16797 P waves, 21966 QRS complexes, 19666 T waves (in total, 58429 annotated waves)
@@ -129,26 +129,26 @@ class LUDB(PhysioNetDataBase):
         4.9. there are also 9 records with early repolarization syndrome
         there might well be records with multiple conditions.
     5. ludb.csv stores information about the subjects (gender, age, rhythm type, direction of the electrical axis of the heart, the presence of a cardiac pacemaker, etc.)
-
-
-    NOTE
-    ----
-
-    ISSUES
-    ------
+    """,
+    usage=[
+        "ECG wave delineation",
+        "ECG arrhythmia classification",
+    ],
+    issues="""
     1. (version 1.0.0, fixed in version 1.0.1) ADC gain might be wrong, either `units` should be μV, or `adc_gain` should be 1000 times larger
+    """,
+    references=[
+        "https://physionet.org/content/ludb/1.0.1/",
+        "Kalyakulina, A., Yusipov, I., Moskalenko, V., Nikolskiy, A., Kozlov, A., Kosonogov, K., Zolotykh, N., & Ivanchenko, M. (2020). Lobachevsky University Electrocardiography Database (version 1.0.1).",
+    ],
+)
 
-    Usage
-    -----
-    1. ECG wave delineation
-    2. ECG arrhythmia classification
 
-    References
-    ----------
-    1. <a name="ref1"></a> https://physionet.org/content/ludb/1.0.1/
-    2. <a name="ref2"></a> Kalyakulina, A., Yusipov, I., Moskalenko, V., Nikolskiy, A., Kozlov, A., Kosonogov, K., Zolotykh, N., & Ivanchenko, M. (2020). Lobachevsky University Electrocardiography Database (version 1.0.1).
+@add_docstring(_LUDB_INFO.format_database_docstring())
+class LUDB(PhysioNetDataBase):
+    """ """
 
-    """
+    __name__ = "LUDB"
 
     def __init__(
         self,

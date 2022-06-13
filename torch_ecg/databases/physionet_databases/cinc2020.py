@@ -38,7 +38,8 @@ from ..aux_data.cinc2020_aux_data import (
     load_weights,
     normalize_class,
 )
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, _PlotCfg
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo, _PlotCfg
+
 
 __all__ = [
     "CINC2020",
@@ -47,26 +48,24 @@ __all__ = [
 ]
 
 
-class CINC2020(PhysioNetDataBase):
-    """finished, under improving,
-
+_CINC2020_INFO = DataBaseInfo(
+    title="""
     Classification of 12-lead ECGs: the PhysioNet/Computing in Cardiology Challenge 2020
-
-    ABOUT CINC2020
-    --------------
+    """,
+    about=r"""
     0. There are 6 difference tranches of training data, listed as follows:
         A. 6,877
-        recordings from China Physiological Signal Challenge in 2018 (CPSC2018): PhysioNetChallenge2020_Training_CPSC.tar.gz in ref. [6]
+        recordings from China Physiological Signal Challenge in 2018 (CPSC2018): PhysioNetChallenge2020_Training_CPSC.tar.gz in ref. \[(6)[#ref6]\]
         B. 3,453 recordings
-        from China 12-Lead ECG Challenge Database (unused data from CPSC2018 and NOT the CPSC2018 test data): PhysioNetChallenge2020_Training_2.tar.gz in ref. [6]
+        from China 12-Lead ECG Challenge Database (unused data from CPSC2018 and NOT the CPSC2018 test data): PhysioNetChallenge2020_Training_2.tar.gz in ref. \[(6)[#ref6]\]
         C. 74 recordings
-        from the St Petersburg INCART 12-lead Arrhythmia Database: PhysioNetChallenge2020_Training_StPetersburg.tar.gz in ref. [6]
+        from the St Petersburg INCART 12-lead Arrhythmia Database: PhysioNetChallenge2020_Training_StPetersburg.tar.gz in ref. \[(6)[#ref6]\]
         D. 516 recordings
-        from the PTB Diagnostic ECG Database: PhysioNetChallenge2020_Training_PTB.tar.gz in ref. [6]
+        from the PTB Diagnostic ECG Database: PhysioNetChallenge2020_Training_PTB.tar.gz in ref. \[(6)[#ref6]\]
         E. 21,837 recordings
-        from the PTB-XL electrocardiography Database: PhysioNetChallenge2020_PTB-XL.tar.gz in ref. [6]
+        from the PTB-XL electrocardiography Database: PhysioNetChallenge2020_PTB-XL.tar.gz in ref. \[(6)[#ref6]\]
         F. 10,344 recordings
-        from a Georgia 12-Lead ECG Challenge Database: PhysioNetChallenge2020_Training_E.tar.gz in ref. [6]
+        from a Georgia 12-Lead ECG Challenge Database: PhysioNetChallenge2020_Training_E.tar.gz in ref. \[(6)[#ref6]\]
     In total, 43,101 labeled recordings of 12-lead ECGs from four countries (China, Germany, Russia, and the USA) across 3 continents have been posted publicly for this Challenge, with approximately the same number hidden for testing, representing the largest public collection of 12-lead ECGs
 
     1. the A tranche training data comes from CPSC2018, whose folder name is `Training_WFDB`. The B tranche training data are unused training data of CPSC2018, having folder name `Training_2`. For these 2 tranches, ref. the docstring of `database_reader.cpsc_databases.cpsc2018.CPSC2018`
@@ -99,9 +98,8 @@ class CINC2020(PhysioNetDataBase):
     ...         leads = ann["df_leads"]["lead_name"].values.tolist()
     ...     if leads not in set_leads:
     ...         set_leads.append(leads)
-
-    NOTE
-    ----
+    """,
+    note=r"""
     1. The datasets have been roughly processed to have a uniform format, hence differ from their original resource (e.g. differe in sampling frequency, sample duration, etc.)
     2. The original datasets might have richer metadata (especially those from PhysioNet), which can be fetched from corresponding reader's docstring or website of the original source
     3. Each sub-dataset might have its own organizing scheme of data, which should be carefully dealt with
@@ -129,33 +127,35 @@ class CINC2020(PhysioNetDataBase):
     NOTE that there"s a difference when using `wfdb.rdrecord`: data from `loadmat` are in "channel_first" format, while `wfdb.rdrecord.p_signal` produces data in the "channel_last" format
     10. there"re 3 equivalent (2 classes are equivalent if the corr. value in the scoring matrix is 1):
         (RBBB, CRBBB), (PAC, SVPB), (PVC, VPB)
-    11. in the newly (Feb., 2021) created dataset (ref. [7]), header files of each subset were gathered into one separate compressed file. This is due to the fact that updates on the dataset are almost always done in the header files. The correct usage of ref. [7], after uncompressing, is replacing the header files in the folder `All_training_WFDB` by header files from the 6 folders containing all header files from the 6 subsets.
-
-    ISSUES
-    ------
+    11. in the newly (Feb., 2021) created dataset (ref. \[(7)[#ref7]\]), header files of each subset were gathered into one separate compressed file. This is due to the fact that updates on the dataset are almost always done in the header files. The correct usage of ref. \[(7)[#ref7]\], after uncompressing, is replacing the header files in the folder `All_training_WFDB` by header files from the 6 folders containing all header files from the 6 subsets.
+    """,
+    usage=[
+        "ECG arrhythmia detection",
+    ],
+    issues="""
     1. reading the .hea files, baselines of all records are 0, however it is not the case if one plot the signal
     2. about half of the LAD records satisfy the "2-lead" criteria, but fail for the "3-lead" criteria, which means that their axis is (-30°, 0°) which is not truely LAD
     3. (Aug. 15, 2020; resolved, and changed to 1000) tranche F, the Georgia subset, has ADC gain 4880 which might be too high. Thus obtained voltages are too low. 1000 might be a suitable (correct) value of ADC gain for this tranche just as the other tranches.
     4. "E04603" (all leads), "E06072" (chest leads, epecially V1-V3), "E06909" (lead V2), "E07675" (lead V3), "E07941" (lead V6), "E08321" (lead V6) has exceptionally large values at rpeaks, reading (`load_data`) these two records using `wfdb` would bring in `nan` values. One can check using the following code
     >>> rec = "E04603"
     >>> dr.plot(rec, dr.load_data(rec, backend="scipy", units="uv"))  # currently raising error
+    """,
+    references=[
+        "https://physionetchallenges.github.io/2020/",
+        "https://physionet.org/content/challenge-2020/1.0.1/",
+        "http://2018.icbeb.org/#",
+        "https://physionet.org/content/incartdb/1.0.0/",
+        "https://physionet.org/content/ptbdb/1.0.0/",
+        "https://physionet.org/content/ptb-xl/1.0.1/",
+        "(deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ECG-public/",
+        "(recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/",
+    ],
+)
 
-    Usage
-    -----
-    1. ECG arrhythmia detection
 
-    References
-    ----------
-    1. <a name="ref1"></a> https://physionetchallenges.github.io/2020/
-    2. <a name="ref2"></a> https://physionet.org/content/challenge-2020/1.0.1/
-    3. <a name="ref3"></a> http://2018.icbeb.org/#
-    4. <a name="ref4"></a> https://physionet.org/content/incartdb/1.0.0/
-    5. <a name="ref5"></a> https://physionet.org/content/ptbdb/1.0.0/
-    6. <a name="ref6"></a> https://physionet.org/content/ptb-xl/1.0.1/
-    7. <a name="ref7"></a> (deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ECG-public/
-    8. <a name="ref8"></a> (recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/
-
-    """
+@add_docstring(_CINC2020_INFO.format_database_docstring())
+class CINC2020(PhysioNetDataBase):
+    """ """
 
     def __init__(
         self,

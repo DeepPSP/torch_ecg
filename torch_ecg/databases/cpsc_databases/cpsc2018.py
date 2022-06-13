@@ -12,9 +12,9 @@ import numpy as np
 import pandas as pd
 from scipy.io import loadmat
 
+from ...utils.misc import get_record_list_recursive, add_docstring
 from ..aux_data.cinc2020_aux_data import dx_mapping_all, dx_mapping_scored
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase
-from ...utils.misc import get_record_list_recursive
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase, DataBaseInfo
 
 
 __all__ = [
@@ -23,14 +23,12 @@ __all__ = [
 ]
 
 
-class CPSC2018(CPSCDataBase):
-    """
-
+_CPSC2018_INFO = DataBaseInfo(
+    title="""
     The China Physiological Signal Challenge 2018:
     Automatic identification of the rhythm/morphology abnormalities in 12-lead ECGs
-
-    ABOUT CPSC2018
-    --------------
+    """,
+    about="""
     1. training set contains 6,877 (female: 3178; male: 3699) 12 leads ECG recordings lasting from 6 s to just 60 s
     2. ECG recordings were sampled as 500 Hz
     3. the training data can be downloaded using links in Ref.[1], but the link in Ref.[2] is recommended. File structure will be assumed to follow Ref.[2]
@@ -50,29 +48,27 @@ class CPSC2018(CPSCDataBase):
         ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]
     7. meanings in the .hea files: to write
     8. knowledge about the abnormal rhythms: ref. cls.get_disease_knowledge
-
-    Update
-    ------
-    CINC2020 (ref. [2]) released totally 3453 unused training data of CPSC2018, whose filenames start with "Q".
-    These file names are not "continuous". The last record is "Q3581"
-
-    NOTE
-    ----
+    """,
+    note=r"""
     1. Ages of records A0608, A1549, A1876, A2299, A5990 are "NaN"
+    2. CINC2020 (ref. \[(2)[#ref2]\]) released totally 3453 unused training data of CPSC2018, whose filenames start with "Q".
+    These file names are not "continuous". The last record is "Q3581"
+    """,
+    usage=[
+        "ECG arrythmia detection",
+    ],
+    references=[
+        "http://2018.icbeb.org/#",
+        "https://physionetchallenges.github.io/2020/",
+    ],
+)
 
-    ISSUES
-    ------
 
-    Usage
-    -----
-    1. ECG arrythmia detection
+@add_docstring(_CPSC2018_INFO.format_database_docstring())
+class CPSC2018(CPSCDataBase):
+    """ """
 
-    References
-    ----------
-    1. <a name="ref1"></a> http://2018.icbeb.org/#
-    2. <a name="ref2"></a> https://physionetchallenges.github.io/2020/
-
-    """
+    __name__ = "CPSC2018"
 
     def __init__(
         self,

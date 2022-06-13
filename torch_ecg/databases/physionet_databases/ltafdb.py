@@ -14,50 +14,51 @@ import wfdb
 from scipy.signal import resample_poly
 
 from ...cfg import CFG
+from ...utils.misc import add_docstring
 from ...utils.utils_interval import generalized_intervals_intersection
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, BeatAnn, PhysioNetDataBase
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, BeatAnn, PhysioNetDataBase, DataBaseInfo
+
 
 __all__ = [
     "LTAFDB",
 ]
 
 
-class LTAFDB(PhysioNetDataBase):
-    """
-
+_LTAFDB_INFO = DataBaseInfo(
+    title="""
     Long Term AF Database
-
-    ABOUT ltafdb
-    ------------
+    """,
+    about="""
     1. contains 84 long-term ECG recordings of subjects with paroxysmal or sustained atrial fibrillation
     2. each record contains two simultaneously recorded ECG signals digitized at 128 Hz
     3. records have duration 24 - 25 hours
     4. qrs annotations (.qrs files) were produced by an automated QRS detector, in which detected beats (including occasional ventricular ectopic beats) are labelled "N", detected artifacts are labelled "|", and AF terminations are labelled "T" (inserted manually)
     5. atr annotations (.atr files) were obtained by manual review of the output of an automated ECG analysis system; in these annotation files, all detected beats are labelled by type ('"', "+", "A", "N", "Q", "V"), and rhythm changes ("\x01 Aux", "(AB", "(AFIB", "(B", "(IVR", "(N", "(SBR", "(SVTA", "(T", "(VT", "M", "MB", "MISSB", "PSE") are also annotated
-
-    NOTE
-    ----
+    """,
+    note="""
     1. both channels of the signals have name "ECG"
     2. the automatically generated qrs annotations (.qrs files) contains NO rhythm annotations
     3. `aux_note` of .atr files of all but one ("64") record start with valid rhythms, all but one end with "" ("30" ends with "\x01 Aux")
-    4. for more statistics on the whole database, see ref. [3]
+    4. for more statistics on the whole database, see [ref 3](#ref3)
+    """,
+    usage=[
+        "Atrial fibrillation (AF) detection",
+        "(3 or 4) beat type classification",
+        "Rhythm classification",
+    ],
+    references=[
+        "https://physionet.org/content/ltafdb/1.0.0/",
+        "Petrutiu S, Sahakian AV, Swiryn S. Abrupt changes in fibrillatory wave characteristics at the termination of paroxysmal atrial fibrillation in humans. Europace 9:466-470 (2007).",
+        "https://physionet.org/files/ltafdb/1.0.0/tables.shtml",
+    ],
+)
 
-    ISSUES
-    ------
 
-    Usage
-    -----
-    1. AF detection
-    2. (3 or 4) beat type classification
-    3. rhythm classification
+@add_docstring(_LTAFDB_INFO.format_database_docstring())
+class LTAFDB(PhysioNetDataBase):
+    """ """
 
-    References
-    ----------
-    1. <a name="ref1"></a> https://physionet.org/content/ltafdb/1.0.0/
-    2. <a name="ref2"></a> Petrutiu S, Sahakian AV, Swiryn S. Abrupt changes in fibrillatory wave characteristics at the termination of paroxysmal atrial fibrillation in humans. Europace 9:466-470 (2007).
-    3. <a name="ref3"></a> https://physionet.org/files/ltafdb/1.0.0/tables.shtml
-
-    """
+    __name__ = "LTAFDB"
 
     def __init__(
         self,
@@ -67,7 +68,6 @@ class LTAFDB(PhysioNetDataBase):
         **kwargs: Any,
     ) -> NoReturn:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -159,7 +159,6 @@ class LTAFDB(PhysioNetDataBase):
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
-
         load physical (converted from digital) ECG data,
         which is more understandable for humans
 
@@ -222,7 +221,6 @@ class LTAFDB(PhysioNetDataBase):
         keep_original: bool = False,
     ) -> dict:
         """
-
         load rhythm and beat annotations,
         which are stored in the `aux_note`, `symbol` attributes of corresponding annotation files.
         NOTE that qrs annotations (.qrs files) do NOT contain any rhythm annotations
@@ -282,7 +280,6 @@ class LTAFDB(PhysioNetDataBase):
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
         """
-
         load rhythm annotations,
         which are stored in the `aux_note` attribute of corresponding annotation files.
         NOTE that qrs annotations (.qrs files) do NOT contain any rhythm annotations
@@ -376,7 +373,6 @@ class LTAFDB(PhysioNetDataBase):
         keep_original: bool = False,
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
         """
-
         load beat annotations,
         which are stored in the `symbol` attribute of corresponding annotation files
 
@@ -442,7 +438,6 @@ class LTAFDB(PhysioNetDataBase):
         keep_original: bool = False,
     ) -> np.ndarray:
         """
-
         load rpeak indices, or equivalently qrs complex locations,
         which are stored in the `symbol` attribute of corresponding annotation files,
         regardless of their beat types,
@@ -499,7 +494,6 @@ class LTAFDB(PhysioNetDataBase):
         **kwargs: Any,
     ) -> NoReturn:
         """
-
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
         possibly also along with wave delineations

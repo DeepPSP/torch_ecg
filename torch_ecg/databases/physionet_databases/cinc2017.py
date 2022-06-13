@@ -12,48 +12,45 @@ import numpy as np
 import pandas as pd
 import wfdb
 
-from ...utils.misc import get_record_list_recursive3
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase
+from ...utils.misc import get_record_list_recursive3, add_docstring
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo
 
 __all__ = [
     "CINC2017",
 ]
 
 
-class CINC2017(PhysioNetDataBase):
-    """
-
+_CINC2017_INFO = DataBaseInfo(
+    title="""
     AF Classification from a Short Single Lead ECG Recording
-    - The PhysioNet Computing in Cardiology Challenge 2017
-
-    ABOUT CINC2017
-    --------------
+    -- The PhysioNet Computing in Cardiology Challenge 2017
+    """,
+    about="""
     1. training set contains 8,528 single lead ECG recordings lasting from 9 s to just over 60 s, and the test set contains 3,658 ECG recordings of similar lengths
     2. records are of frequency 300 Hz and have been band pass filtered
     3. data distribution:
-        Type	        	                    Time length (s)
-                        # recording     Mean	SD	    Max	    Median	Min
-        Normal	        5154	        31.9	10.0	61.0	30	    9.0
-        AF              771             31.6	12.5	60	    30	    10.0
-        Other rhythm	2557	        34.1	11.8	60.9	30	    9.1
-        Noisy	        46	            27.1	9.0	    60	    30	    10.2
-        Total	        8528	        32.5	10.9	61.0	30	    9.0
+        Type            # recording             Time length (s)
+                                        Mean    SD      Max     Median  Min
+        Normal          5154            31.9    10.0    61.0    30      9.0
+        AF              771             31.6    12.5    60      30      10.0
+        Other rhythm    2557            34.1    11.8    60.9    30      9.1
+        Noisy           46              27.1    9.0     60      30      10.2
+        Total           8528            32.5    10.9    61.0    30      9.0
+    """,
+    usage=[
+        "Atrial fibrillation (AF) detection",
+    ],
+    references=[
+        "https://physionet.org/content/challenge-2017/1.0.0/",
+    ],
+)
 
-    NOTE
-    ----
 
-    ISSUES
-    ------
+@add_docstring(_CINC2017_INFO.format_database_docstring())
+class CINC2017(PhysioNetDataBase):
+    """ """
 
-    Usage
-    -----
-    1. atrial fibrillation (AF) detection
-
-    References
-    ----------
-    1. <a name="ref1"></a> https://physionet.org/content/challenge-2017/1.0.0/
-
-    """
+    __name__ = "CINC2017"
 
     def __init__(
         self,
@@ -63,7 +60,6 @@ class CINC2017(PhysioNetDataBase):
         **kwargs: Any,
     ) -> NoReturn:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -192,6 +188,7 @@ class CINC2017(PhysioNetDataBase):
         units: str = "mV",
     ) -> np.ndarray:
         """
+        load the ECG data of the record `rec`
 
         Parameters
         ----------
@@ -245,6 +242,7 @@ class CINC2017(PhysioNetDataBase):
         self, rec: Union[str, int], original: bool = False, ann_format: str = "a"
     ) -> str:
         """
+        load the annotation of the record `rec`
 
         Parameters
         ----------
@@ -286,7 +284,6 @@ class CINC2017(PhysioNetDataBase):
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
     ) -> NoReturn:
         """
-
         Parameters
         ----------
         rec: str or int,

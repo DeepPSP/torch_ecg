@@ -12,9 +12,9 @@ import pandas as pd
 import h5py
 
 from ...utils.download import http_get
-from ...utils.misc import get_record_list_recursive3, ms2samples
+from ...utils.misc import get_record_list_recursive3, ms2samples, add_docstring
 from ...utils import EAK
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, _DataBase, _PlotCfg
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, _DataBase, DataBaseInfo, _PlotCfg
 
 
 __all__ = [
@@ -22,6 +22,24 @@ __all__ = [
 ]
 
 
+_SPH_INFO = DataBaseInfo(  # NOT finished yet
+    title="""
+    Shandong Provincial Hospital Database
+    """,
+    about="""
+    to write
+    """,
+    usage=[
+        "ECG arrhythmia detection",
+    ],
+    references=[
+        "https://www.nature.com/articles/s41597-022-01403-5",
+        "Liu, H., Chen, D., Chen, D. et al. A large-scale multi-label 12-lead electrocardiogram database with standardized diagnostic statements. Sci Data 9, 272 (2022). https://doi.org/10.1038/s41597-022-01403-5",
+    ],
+)
+
+
+@add_docstring(_SPH_INFO.format_database_docstring())
 class SPH(_DataBase):
     """ """
 

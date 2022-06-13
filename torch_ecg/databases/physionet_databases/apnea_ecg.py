@@ -10,20 +10,20 @@ import numpy as np
 import pandas as pd
 import wfdb
 
-from ..base import PhysioNetDataBase
+from ...utils import add_docstring
+from ..base import PhysioNetDataBase, DataBaseInfo
+
 
 __all__ = [
     "ApneaECG",
 ]
 
 
-class ApneaECG(PhysioNetDataBase):
-    """finished, to be improved,
-
-    Apnea-ECG Database
-
-    ABOUT apnea-ecg (CinC 2000)
-    ---------------------------
+_ApneaECG_INFO = DataBaseInfo(
+    title="""
+    Apnea-ECG Database - The PhysioNet Computing in Cardiology Challenge 2000
+    """,
+    about="""
     1. consist of 70 single lead ECG records, divided into a learning set of 35 records (a01 through a20, b01 through b05, and c01 through c10), and a test set of 35 records (x01 through x35)
     2. recordings vary in length from slightly less than 7 hours to nearly 10 hours (401 - 578 min) each
     3. control group (c01 through c10): records having fewer than 5 min of disorder breathing
@@ -37,23 +37,22 @@ class ApneaECG(PhysioNetDataBase):
         10.1. *r.dat files contains respiration signals correspondingly, with 4 channels: "Resp C", "Resp A", "Resp N", "SpO2"
         10.2. *er.* files only contain annotations
         10.3. annotations for the respiration signals are identical to the corresponding ECG signals
+    """,
+    usage=[
+        "Sleep apnea analysis",
+    ],
+    references=[
+        "https://physionet.org/content/apnea-ecg/1.0.0/",
+        "T Penzel, GB Moody, RG Mark, AL Goldberger, JH Peter. The Apnea-ECG Database. Computers in Cardiology 2000;27:255-258",
+    ],
+)
 
-    NOTE
-    ----
 
-    ISSUES
-    ------
+@add_docstring(_ApneaECG_INFO.format_database_docstring())
+class ApneaECG(PhysioNetDataBase):
+    """ """
 
-    Usage
-    -----
-    1. sleep apnea
-
-    References
-    ----------
-    1. <a name="ref1"></a> https://physionet.org/content/apnea-ecg/1.0.0/
-    2. <a name="ref2"></a> T Penzel, GB Moody, RG Mark, AL Goldberger, JH Peter. The Apnea-ECG Database. Computers in Cardiology 2000;27:255-258
-
-    """
+    __name__ = "ApneaECG"
 
     def __init__(
         self,
@@ -63,7 +62,6 @@ class ApneaECG(PhysioNetDataBase):
         **kwargs: Any,
     ) -> NoReturn:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,

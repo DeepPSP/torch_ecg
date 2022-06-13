@@ -18,51 +18,50 @@ except ModuleNotFoundError:
     from tqdm import tqdm
 
 from ...cfg import CFG
-from ...utils.misc import get_record_list_recursive3
+from ...utils.misc import get_record_list_recursive3, add_docstring
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (
     BeatAnn,
+    DataBaseInfo,
     PhysioNetDataBase,
     WFDB_Beat_Annotations,
     WFDB_Non_Beat_Annotations,
     WFDB_Rhythm_Annotations,
 )
 
+
 __all__ = [
     "MITDB",
 ]
 
 
-class MITDB(PhysioNetDataBase):
-    """NOT finished,
-
+_MITDB_INFO = DataBaseInfo(
+    title="""
     MIT-BIH Arrhythmia Database
-
-    ABOUT mitdb
-    -----------
+    """,
+    about="""
     1. contains 48 half-hour excerpts of two-channel ambulatory ECG recordings, obtained from 47 subjects.
     2. recordings were digitized at 360 samples per second per channel with 11-bit resolution over a 10 mV range.
     3. annotations contains:
         - beat-wise or finer (e.g. annotations of flutter wave) annotations, accessed via the `symbol` attribute of an `Annotation`.
         - rhythm annotations, accessed via the `aux_note` attribute of an `Annotation`.
+    """,
+    usage=[
+        "Beat classification",
+        "Rhythm classification (segmentation)",
+        "R peaks detection",
+    ],
+    references=[
+        "https://physionet.org/content/mitdb/1.0.0/",
+    ],
+)
 
-    NOTE
-    ----
 
-    ISSUES
-    ------
+@add_docstring(_MITDB_INFO.format_database_docstring())
+class MITDB(PhysioNetDataBase):
+    """ """
 
-    Usage
-    -----
-    1. Beat classification
-    2. rhythm classification (segmentation)
-    3. R peaks detection
-
-    References
-    ----------
-    1. <a name="ref1"></a> https://physionet.org/content/mitdb/1.0.0/
-
-    """
+    __name__ = "MITDB"
 
     def __init__(
         self,
@@ -72,7 +71,6 @@ class MITDB(PhysioNetDataBase):
         **kwargs: Any,
     ) -> NoReturn:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -195,7 +193,6 @@ class MITDB(PhysioNetDataBase):
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
-
         load physical (converted from digital) ECG data,
         which is more understandable for humans
 
@@ -261,7 +258,6 @@ class MITDB(PhysioNetDataBase):
         keep_original: bool = False,
     ) -> dict:
         """
-
         load rhythm and beat annotations,
         which are stored in the `aux_note`, `symbol` attributes of corresponding annotation files.
         NOTE that qrs annotations (.qrs files) do NOT contain any rhythm annotations
@@ -385,7 +381,6 @@ class MITDB(PhysioNetDataBase):
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
         """
-
         load rhythm annotations,
         which are stored in the `aux_note` attribute of corresponding annotation files.
 
@@ -433,7 +428,6 @@ class MITDB(PhysioNetDataBase):
         keep_original: bool = False,
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
         """
-
         load beat annotations,
         which are stored in the `symbol` attribute of corresponding annotation files
 
@@ -477,7 +471,6 @@ class MITDB(PhysioNetDataBase):
         keep_original: bool = False,
     ) -> np.ndarray:
         """
-
         load rpeak indices, or equivalently qrs complex locations,
         which are stored in the `symbol` attribute of corresponding annotation files,
         regardless of their beat types,
@@ -521,7 +514,6 @@ class MITDB(PhysioNetDataBase):
 
     def _get_lead_names(self, rec: Union[str, int]) -> List[str]:
         """
-
         Parameters
         ----------
         rec: str or int,
@@ -579,7 +571,6 @@ class MITDB(PhysioNetDataBase):
 
     def _categorize_records(self, by: str) -> Dict[str, List[str]]:
         """
-
         categorize records by specific attributes
 
         Parameters

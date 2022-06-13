@@ -12,10 +12,12 @@ import pandas as pd
 from scipy.io import loadmat
 
 from ...cfg import CFG, DEFAULTS
+from ...utils.misc import add_docstring
 from ...utils.download import http_get
 from ...utils.ecg_arrhythmia_knowledge import PVC, SPB  # noqa: F401
 from ...utils.utils_interval import get_optimal_covering
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase, DataBaseInfo
+
 
 __all__ = [
     "CPSC2020",
@@ -23,20 +25,17 @@ __all__ = [
 ]
 
 
-class CPSC2020(CPSCDataBase):
-    """
-
+_CPSC2020_INFO = DataBaseInfo(
+    title="""
     The 3rd China Physiological Signal Challenge 2020:
     Searching for Premature Ventricular Contraction (PVC) and Supraventricular Premature Beat (SPB) from Long-term ECGs
-
-    ABOUT CPSC2020
-    --------------
+    """,
+    about="""
     1. training data consists of 10 single-lead ECG recordings collected from arrhythmia patients, each of the recording last for about 24 hours
     2. data and annotations are stored in v5 .mat files
     3. A02, A03, A08 are patient with atrial fibrillation
     4. sampling frequency = 400 Hz
     5. Detailed information:
-        -------------------------------------------------------------------------
         rec   ?AF   Length(h)   # N beats   # V beats   # S beats   # Total beats
         A01   No	25.89       109,062     0           24          109,086
         A02   Yes	22.83       98,936      4,554       0           103,490
@@ -50,76 +49,77 @@ class CPSC2020(CPSCDataBase):
         A10   No	23.64	    72,821	    169	        9,071	    82,061
     6. challenging factors for accurate detection of SPB and PVC:
         amplitude variation; morphological variation; noise
-
-    NOTE
-    ----
+    """,
+    note="""
     1. the records can roughly be classified into 4 groups:
         N:  A01, A03, A05, A06
         V:  A02, A08
         S:  A09, A10
         VS: A04, A07
     2. as premature beats and atrial fibrillation can co-exists
-    (via the following code, and data from CINC2020),
-    the situation becomes more complicated.
-    >>> from utils.scoring_aux_data import dx_cooccurrence_all
-    >>> dx_cooccurrence_all.loc["AF", ["PAC","PVC","SVPB","VPB"]]
-    PAC     20
-    PVC     19
-    SVPB     4
-    VPB     20
-    Name: AF, dtype: int64
-    this could also be seen from this dataset, via the following code as an example:
-    >>> from data_reader import CPSC2020Reader as CR
-    >>> db_dir = "/media/cfs/wenhao71/data/CPSC2020/TrainingSet/"
-    >>> dr = CR(db_dir)
-    >>> rec = dr.all_records[1]
-    >>> dr.plot(rec, sampfrom=0, sampto=4000, ticks_granularity=2)
+        (via the following code, and data from CINC2020),
+        the situation becomes more complicated.
+        >>> from utils.scoring_aux_data import dx_cooccurrence_all
+        >>> dx_cooccurrence_all.loc["AF", ["PAC","PVC","SVPB","VPB"]]
+        PAC     20
+        PVC     19
+        SVPB     4
+        VPB     20
+        Name: AF, dtype: int64
+        this could also be seen from this dataset, via the following code as an example:
+        >>> from data_reader import CPSC2020Reader as CR
+        >>> db_dir = "/media/cfs/wenhao71/data/CPSC2020/TrainingSet/"
+        >>> dr = CR(db_dir)
+        >>> rec = dr.all_records[1]
+        >>> dr.plot(rec, sampfrom=0, sampto=4000, ticks_granularity=2)
     3. PVC and SPB can also co-exist, as illustrated via the following code (from CINC2020):
-    >>> from utils.scoring_aux_data import dx_cooccurrence_all
-    >>> dx_cooccurrence_all.loc[["PVC","VPB"], ["PAC","SVPB",]]
-    PAC	SVPB
-    PVC	14	1
-    VPB	27	0
-    and also from the following code:
-    >>> for rec in dr.all_records:
-    >>>     ann = dr.load_ann(rec)
-    >>>     spb = ann["SPB_indices"]
-    >>>     pvc = ann["PVC_indices"]
-    >>>     if len(np.diff(spb)) > 0:
-    >>>         print(f"{rec}: min dist among SPB = {np.min(np.diff(spb))}")
-    >>>     if len(np.diff(pvc)) > 0:
-    >>>         print(f"{rec}: min dist among PVC = {np.min(np.diff(pvc))}")
-    >>>     diff = [s-p for s,p in product(spb, pvc)]
-    >>>     if len(diff) > 0:
-    >>>         print(f"{rec}: min dist between SPB and PVC = {np.min(np.abs(diff))}")
-    A01: min dist among SPB = 630
-    A02: min dist among SPB = 696
-    A02: min dist among PVC = 87
-    A02: min dist between SPB and PVC = 562
-    A03: min dist among SPB = 7044
-    A03: min dist among PVC = 151
-    A03: min dist between SPB and PVC = 3750
-    A04: min dist among SPB = 175
-    A04: min dist among PVC = 156
-    A04: min dist between SPB and PVC = 178
-    A05: min dist among SPB = 182
-    A05: min dist between SPB and PVC = 22320
-    A06: min dist among SPB = 455158
-    A07: min dist among SPB = 603
-    A07: min dist among PVC = 153
-    A07: min dist between SPB and PVC = 257
-    A08: min dist among SPB = 2903029
-    A08: min dist among PVC = 106
-    A08: min dist between SPB and PVC = 350
-    A09: min dist among SPB = 180
-    A09: min dist among PVC = 7719290
-    A09: min dist between SPB and PVC = 1271
-    A10: min dist among SPB = 148
-    A10: min dist among PVC = 708
-    A10: min dist between SPB and PVC = 177
-
-    ISSUES
-    ------
+        >>> from utils.scoring_aux_data import dx_cooccurrence_all
+        >>> dx_cooccurrence_all.loc[["PVC","VPB"], ["PAC","SVPB",]]
+        PAC	SVPB
+        PVC	14	1
+        VPB	27	0
+        and also from the following code:
+        >>> for rec in dr.all_records:
+        >>>     ann = dr.load_ann(rec)
+        >>>     spb = ann["SPB_indices"]
+        >>>     pvc = ann["PVC_indices"]
+        >>>     if len(np.diff(spb)) > 0:
+        >>>         print(f"{rec}: min dist among SPB = {np.min(np.diff(spb))}")
+        >>>     if len(np.diff(pvc)) > 0:
+        >>>         print(f"{rec}: min dist among PVC = {np.min(np.diff(pvc))}")
+        >>>     diff = [s-p for s,p in product(spb, pvc)]
+        >>>     if len(diff) > 0:
+        >>>         print(f"{rec}: min dist between SPB and PVC = {np.min(np.abs(diff))}")
+        A01: min dist among SPB = 630
+        A02: min dist among SPB = 696
+        A02: min dist among PVC = 87
+        A02: min dist between SPB and PVC = 562
+        A03: min dist among SPB = 7044
+        A03: min dist among PVC = 151
+        A03: min dist between SPB and PVC = 3750
+        A04: min dist among SPB = 175
+        A04: min dist among PVC = 156
+        A04: min dist between SPB and PVC = 178
+        A05: min dist among SPB = 182
+        A05: min dist between SPB and PVC = 22320
+        A06: min dist among SPB = 455158
+        A07: min dist among SPB = 603
+        A07: min dist among PVC = 153
+        A07: min dist between SPB and PVC = 257
+        A08: min dist among SPB = 2903029
+        A08: min dist among PVC = 106
+        A08: min dist between SPB and PVC = 350
+        A09: min dist among SPB = 180
+        A09: min dist among PVC = 7719290
+        A09: min dist between SPB and PVC = 1271
+        A10: min dist among SPB = 148
+        A10: min dist among PVC = 708
+        A10: min dist between SPB and PVC = 177
+    """,
+    usage=[
+        "ECG arrhythmia (PVC, SPB) detection",
+    ],
+    issues="""
     1. currently, using `xqrs` as qrs detector,
        a lot more (more than 1000) rpeaks would be detected for A02, A07, A08,
        which might be caused by motion artefacts (or AF?);
@@ -137,8 +137,7 @@ class CPSC2020(CPSCDataBase):
        A08   Yes    126908              118,311
        A09   No     89972               89,693
        A10   No     83509               82,061
-    2. (fixed by an official update)
-    A04 has duplicate "PVC_indices" (13534856,27147621,35141190 all appear twice):
+    2. (fixed by an official update) A04 has duplicate "PVC_indices" (13534856,27147621,35141190 all appear twice):
        before correction of `load_ann`:
        >>> from collections import Counter
        >>> db_dir = "/mnt/wenhao71/data/CPSC2020/TrainingSet/"
@@ -153,21 +152,17 @@ class CPSC2020(CPSCDataBase):
        for `y_values[n] = (y_values[n] - y_min) / (y_max - y_min)`.
        this is caused by the 13882273-th sample, which is contained in "PVC_indices",
        however, whether it is a PVC beat, or just motion artefact, is in doubt!
+    """,
+    references=[
+        "http://www.icbeb.org/CPSC2020.html",
+        "https://github.com/PIA-Group/BioSPPy",
+    ],
+)
 
-    TODO
-    ----
-    1. use SNR to filter out too noisy segments?
-    2. for ML, consider more features
 
-    Usage
-    -----
-    1. ECG arrhythmia (PVC, SPB) detection
-
-    References
-    ----------
-    [1] http://www.icbeb.org/CPSC2020.html
-    [2] https://github.com/PIA-Group/BioSPPy
-    """
+@add_docstring(_CPSC2020_INFO.format_database_docstring())
+class CPSC2020(CPSCDataBase):
+    """ """
 
     def __init__(
         self,
@@ -176,7 +171,7 @@ class CPSC2020(CPSCDataBase):
         verbose: int = 2,
         **kwargs: Any,
     ) -> NoReturn:
-        """finished, to be improved,
+        """
 
         Parameters
         ----------

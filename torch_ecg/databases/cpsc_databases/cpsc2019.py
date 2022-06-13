@@ -14,7 +14,8 @@ from scipy.io import loadmat
 
 from ...utils.download import http_get
 from ...utils.misc import add_docstring
-from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase
+from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase, DataBaseInfo
+
 
 __all__ = [
     "CPSC2019",
@@ -22,59 +23,52 @@ __all__ = [
 ]
 
 
-class CPSC2019(CPSCDataBase):
-    """
-
+_CPSC2019_INFO = DataBaseInfo(
+    title="""
     The 2nd China Physiological Signal Challenge (CPSC 2019):
     Challenging QRS Detection and Heart Rate Estimation from Single-Lead ECG Recordings
-
-    ABOUT CPSC2019
-    --------------
+    """,
+    about="""
     1. Training data consists of 2,000 single-lead ECG recordings collected from patients with cardiovascular disease (CVD)
     2. Each of the recording last for 10 s
     3. Sampling rate = 500 Hz
-
-    NOTE
-    ----
-
-    ISSUES
-    ------
+    """,
+    usage=[
+        "ECG wave delineation",
+    ],
+    issues="""
     1. there're 13 records with unusual large values (> 20 mV):
         data_00098, data_00167, data_00173, data_00223, data_00224, data_00245, data_00813,
         data_00814, data_00815, data_00833, data_00841, data_00949, data_00950
-    >>> for rec in dr.all_records:
-    >>>     data = dr.load_data(rec)
-    >>>     if np.max(data) > 20:
-    >>>         print(f"{rec} has max value ({np.max(data)} mV) > 20 mV")
-    data_00173 has max value (32.72031811111111 mV) > 20 mV
-    data_00223 has max value (32.75516713333333 mV) > 20 mV
-    data_00224 has max value (32.7519272 mV) > 20 mV
-    data_00245 has max value (32.75305293939394 mV) > 20 mV
-    data_00813 has max value (32.75865595876289 mV) > 20 mV
-    data_00814 has max value (32.75865595876289 mV) > 20 mV
-    data_00815 has max value (32.75558282474227 mV) > 20 mV
-    data_00833 has max value (32.76330123809524 mV) > 20 mV
-    data_00841 has max value (32.727626558139534 mV) > 20 mV
-    data_00949 has max value (32.75699667692308 mV) > 20 mV
-    data_00950 has max value (32.769551661538465 mV) > 20 mV
-    2. rpeak references (annotations) loaded from files has dtype = uint16,
-    which would produce unexpected large positive values when subtracting values larger than it,
-    rather than the correct negative value.
-    This might cause confusion in computing metrics when using annotations subtracting
-    (instead of being subtracted by) predictions.
-    3. official scoring function has errors,
-    which would falsely omit the interval between the 0-th and the 1-st ref rpeaks,
-    thus potentially missing false positive
+        >>> for rec in dr.all_records:
+        >>>     data = dr.load_data(rec)
+        >>>     if np.max(data) > 20:
+        >>>         print(f"{rec} has max value ({np.max(data)} mV) > 20 mV")
+        data_00173 has max value (32.72031811111111 mV) > 20 mV
+        data_00223 has max value (32.75516713333333 mV) > 20 mV
+        data_00224 has max value (32.7519272 mV) > 20 mV
+        data_00245 has max value (32.75305293939394 mV) > 20 mV
+        data_00813 has max value (32.75865595876289 mV) > 20 mV
+        data_00814 has max value (32.75865595876289 mV) > 20 mV
+        data_00815 has max value (32.75558282474227 mV) > 20 mV
+        data_00833 has max value (32.76330123809524 mV) > 20 mV
+        data_00841 has max value (32.727626558139534 mV) > 20 mV
+        data_00949 has max value (32.75699667692308 mV) > 20 mV
+        data_00950 has max value (32.769551661538465 mV) > 20 mV
+    2. rpeak references (annotations) loaded from files has dtype = uint16, which would produce unexpected large positive values when subtracting values larger than it, rather than the correct negative value. This might cause confusion in computing metrics when using annotations subtracting (instead of being subtracted by) predictions.
+    3. official scoring function has errors, which would falsely omit the interval between the 0-th and the 1-st ref rpeaks, thus potentially missing false positive
+    """,
+    references=[
+        "http://2019.icbeb.org/Challenge.html",
+    ],
+)
 
-    Usage
-    -----
-    1. ECG wave delineation
 
-    References
-    ----------
-    1. <a name="ref1"></a> http://2019.icbeb.org/Challenge.html
+@add_docstring(_CPSC2019_INFO.format_database_docstring())
+class CPSC2019(CPSCDataBase):
+    """ """
 
-    """
+    __name__ = "CPSC2019"
 
     def __init__(
         self,

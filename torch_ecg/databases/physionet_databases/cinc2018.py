@@ -7,20 +7,20 @@ from typing import Any, NoReturn, Optional, Union
 
 import numpy as np
 
-from ..base import PhysioNetDataBase
+from ...utils import add_docstring
+from ..base import PhysioNetDataBase, DataBaseInfo
+
 
 __all__ = [
     "CINC2018",
 ]
 
 
-class CINC2018(PhysioNetDataBase):
-    """NOT Finished,
-
+_CINC2018_INFO = DataBaseInfo(
+    title="""
     You Snooze You Win - The PhysioNet Computing in Cardiology Challenge 2018
-
-    ABOUT CINC2018
-    --------------
+    """,
+    about="""
     1. includes 1,985 subjects, partitioned into balanced training (n = 994), and test sets (n = 989)
     2. signals include
         electrocardiogram (ECG),
@@ -52,23 +52,23 @@ class CINC2018(PhysioNetDataBase):
         periodic leg movements,
         Cheyne-Stokes breathing,
         partial airway obstructions
+    """,
+    usage=[
+        "sleep stage",
+        "sleep apnea",
+    ],
+    references=[
+        "https://physionet.org/content/challenge-2018/1.0.0/",
+    ],
+    status="NOT Finished",
+)
 
-    NOTE
-    ----
 
-    ISSUES
-    ------
+@add_docstring(_CINC2018_INFO.format_database_docstring())
+class CINC2018(PhysioNetDataBase):
+    """ """
 
-    Usage
-    -----
-    1. sleep stage
-    2. sleep apnea
-
-    References
-    ----------
-    1. <a name="ref1"></a> https://physionet.org/content/challenge-2018/1.0.0/
-
-    """
+    __name__ = "CINC2018"
 
     def __init__(
         self,
