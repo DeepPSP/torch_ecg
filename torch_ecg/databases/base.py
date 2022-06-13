@@ -18,12 +18,13 @@ import pprint
 import re
 import time
 import warnings
+import textwrap
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from string import punctuation
-from typing import Any, List, NoReturn, Optional, Union
+from typing import Any, List, NoReturn, Optional, Union, Sequence
 
 import numpy as np
 import pandas as pd
@@ -37,6 +38,7 @@ from ..utils.download import http_get
 from ..utils.misc import ReprMixin, dict_to_str, get_record_list_recursive
 from .aux_data import get_physionet_dbs
 
+
 __all__ = [
     "WFDB_Beat_Annotations",
     "WFDB_Non_Beat_Annotations",
@@ -46,6 +48,7 @@ __all__ = [
     "CPSCDataBase",
     "DEFAULT_FIG_SIZE_PER_SEC",
     "BeatAnn",
+    "DataBaseInfo",
 ]
 
 
@@ -891,6 +894,61 @@ class CPSCDataBase(_DataBase):
         if "methods" in _items:
             print("--- helpler - methods ---")
             pp.pprint(methods)
+
+
+@dataclass
+class DataBaseInfo:
+    """ """
+
+    title: str
+    about: Union[str, Sequence[str]]
+    note: Union[str, Sequence[str]]
+    usage: Sequence[str]
+    issues: Union[str, Sequence[str]]
+    references: Sequence[str]
+    status: str = ""  # not used yet
+
+    def format_database_docstring(self, indent: Optional[str] = None) -> str:
+        """ """
+        if indent is None:
+            indent = " " * 4
+        title = textwrap.dedent(self.title)
+        if isinstance(self.about, str):
+            about = "ABOUT\n-----\n" + textwrap.dedent(self.about.strip("\n"))
+        else:
+            about = ["ABOUT", "-----"] + [
+                f"{idx+1}. {line}" for idx, line in enumerate(self.about)
+            ]
+            about = "\n".join(about)
+        if isinstance(self.note, str):
+            note = "NOTE\n----\n" + textwrap.dedent(self.note.strip("\n"))
+        else:
+            note = ["NOTE", "----"] + [
+                f"{idx+1}. {line}" for idx, line in enumerate(self.note)
+            ]
+            note = "\n".join(note)
+        if isinstance(self.issues, str):
+            issues = "Issues\n------\n" + textwrap.dedent(self.issues.strip("\n"))
+        else:
+            issues = ["Issues", "-" * 6] + [
+                f"{idx+1}. {line}" for idx, line in enumerate(self.issues)
+            ]
+            issues = "\n".join(issues)
+        references = ["References", "-" * 10] + [
+            f"""{idx+1}. <a name="ref1"></a> {line}"""
+            for idx, line in enumerate(self.references)
+        ]
+        references = "\n".join(references)
+        usage = ["Usage", "------"] + [
+            f"{idx+1}. {line}" for idx, line in enumerate(self.usage)
+        ]
+        usage = "\n".join(usage)
+
+        docstring = textwrap.indent(
+            f"""\n{title}\n\n{about}\n\n{note}\n\n{usage}\n\n{issues}\n\n{references}\n\n""",
+            indent,
+        )
+        return docstring
 
 
 DEFAULT_FIG_SIZE_PER_SEC = 4.8

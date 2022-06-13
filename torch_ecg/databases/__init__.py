@@ -3,6 +3,7 @@
 
 from . import aux_data
 from .base import (
+    DataBaseInfo,
     BeatAnn,
     WFDB_Beat_Annotations,
     WFDB_Non_Beat_Annotations,
@@ -45,4 +46,5 @@ __all__ = [
     "WFDB_Non_Beat_Annotations",
     "WFDB_Rhythm_Annotations",
     "BeatAnn",
+    "DataBaseInfo",
 ]
