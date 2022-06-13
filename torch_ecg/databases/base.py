@@ -907,6 +907,11 @@ class DataBaseInfo:
     note: Optional[Union[str, Sequence[str]]] = None
     issues: Optional[Union[str, Sequence[str]]] = None
     status: Optional[str] = None
+    doi: Optional[Union[str, Sequence[str]]] = None
+
+    from bib_lookup import BibLookup
+
+    bl = BibLookup()
 
     def format_database_docstring(self, indent: Optional[str] = None) -> str:
         """ """
@@ -956,7 +961,36 @@ class DataBaseInfo:
         if self.status is not None and len(self.status) > 0:
             docstring = f"{self.status}\n{docstring}"
 
+        if self.doi is not None:
+            if isinstance(self.doi, str):
+                doi = [self.doi]
+            else:
+                doi = self.doi
+            try:
+                citation = self.bl(doi)
+            except Exception:
+                citation = ""
+        else:
+            citation = ""
+        if citation.startswith("@"):
+            citation = textwrap.indent(
+                f"""Citation\n--------\n```latex\n{citation}\n```""", indent
+            )
+            docstring = f"{docstring}\n{citation}\n"
+
         return docstring
+
+    def citation(self) -> NoReturn:
+        """ """
+        if self.doi is not None:
+            if isinstance(self.doi, str):
+                doi = [self.doi]
+            else:
+                doi = self.doi
+            try:
+                print(self.bl(doi))
+            except Exception:
+                pass
 
 
 DEFAULT_FIG_SIZE_PER_SEC = 4.8

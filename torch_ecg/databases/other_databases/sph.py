@@ -36,6 +36,7 @@ _SPH_INFO = DataBaseInfo(  # NOT finished yet
         "https://www.nature.com/articles/s41597-022-01403-5",
         "Liu, H., Chen, D., Chen, D. et al. A large-scale multi-label 12-lead electrocardiogram database with standardized diagnostic statements. Sci Data 9, 272 (2022). https://doi.org/10.1038/s41597-022-01403-5",
     ],
+    doi="10.1038/s41597-022-01403-5",
 )
 
 
