@@ -43,6 +43,9 @@ _CINC2017_INFO = DataBaseInfo(
     references=[
         "https://physionet.org/content/challenge-2017/1.0.0/",
     ],
+    doi=[
+        "10.22489/CinC.2017.065-469",
+    ],
 )
 
 

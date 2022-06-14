@@ -141,6 +141,10 @@ _LUDB_INFO = DataBaseInfo(
         "https://physionet.org/content/ludb/1.0.1/",
         "Kalyakulina, A., Yusipov, I., Moskalenko, V., Nikolskiy, A., Kozlov, A., Kosonogov, K., Zolotykh, N., & Ivanchenko, M. (2020). Lobachevsky University Electrocardiography Database (version 1.0.1).",
     ],
+    doi=[
+        "10.1109/ACCESS.2020.3029211",
+        "10.13026/eegm-h675",
+    ],
 )
 
 

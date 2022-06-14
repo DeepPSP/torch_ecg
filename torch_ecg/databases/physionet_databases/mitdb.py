@@ -54,6 +54,10 @@ _MITDB_INFO = DataBaseInfo(
     references=[
         "https://physionet.org/content/mitdb/1.0.0/",
     ],
+    doi=[
+        "10.1109/51.932724",
+        "10.13026/C2F305",
+    ],
 )
 
 

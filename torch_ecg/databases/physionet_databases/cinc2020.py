@@ -150,6 +150,11 @@ _CINC2020_INFO = DataBaseInfo(
         "(deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ECG-public/",
         "(recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/",
     ],
+    doi=[
+        "10.1088/1361-6579/abc960",
+        "10.22489/cinc.2020.236",
+        "10.13026/F4AB-0814",
+    ],
 )
 
 

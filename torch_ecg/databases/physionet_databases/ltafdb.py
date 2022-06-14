@@ -51,6 +51,10 @@ _LTAFDB_INFO = DataBaseInfo(
         "Petrutiu S, Sahakian AV, Swiryn S. Abrupt changes in fibrillatory wave characteristics at the termination of paroxysmal atrial fibrillation in humans. Europace 9:466-470 (2007).",
         "https://physionet.org/files/ltafdb/1.0.0/tables.shtml",
     ],
+    doi=[
+        "10.1093/europace/eum096",
+        "10.13026/C2QG6Q",
+    ],
 )
 
 

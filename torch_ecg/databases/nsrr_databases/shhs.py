@@ -191,6 +191,9 @@ _SHHS_INFO = DataBaseInfo(
         "http://healthysleep.med.harvard.edu/sleep-apnea/diagnosing-osa/understanding-results",
         "https://sleepdata.org/datasets/shhs/pages/full-description.md",
     ],
+    doi=[
+        "10.1093/jamia/ocy064",
+    ],  # PMID: 9493915 not added
 )
 
 

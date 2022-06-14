@@ -5,6 +5,7 @@
 ![formatting](https://github.com/DeepPSP/torch_ecg/actions/workflows/check-formatting.yml/badge.svg)
 ![PyPI](https://img.shields.io/pypi/v/torch-ecg?style=flat-square)
 [![DOI](https://zenodo.org/badge/298482237.svg)](https://zenodo.org/badge/latestdoi/298482237)
+![downloads](https://img.shields.io/pypi/dm/torch-ecg?style=flat-square)
 
 ECG Deep Learning Framework Implemented using PyTorch.
 

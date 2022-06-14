@@ -61,6 +61,7 @@ _CPSC2019_INFO = DataBaseInfo(
     references=[
         "http://2019.icbeb.org/Challenge.html",
     ],
+    doi="10.1166/jmihi.2019.2800",
 )
 
 

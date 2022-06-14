@@ -50,6 +50,9 @@ _AFDB_INFO = DataBaseInfo(
         "https://physionet.org/content/afdb/1.0.0/",
         "Moody GB, Mark RG. A new method for detecting atrial fibrillation using R-R intervals. Computers in Cardiology. 10:227-230 (1983).",
     ],
+    doi=[
+        "10.13026/C2MW2D",
+    ],
 )
 
 

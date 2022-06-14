@@ -157,6 +157,7 @@ _CPSC2020_INFO = DataBaseInfo(
         "http://www.icbeb.org/CPSC2020.html",
         "https://github.com/PIA-Group/BioSPPy",
     ],
+    doi="10.1166/jmihi.2020.3289",
 )
 
 

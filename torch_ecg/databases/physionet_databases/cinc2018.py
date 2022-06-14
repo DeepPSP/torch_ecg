@@ -61,6 +61,10 @@ _CINC2018_INFO = DataBaseInfo(
         "https://physionet.org/content/challenge-2018/1.0.0/",
     ],
     status="NOT Finished",
+    doi=[
+        "10.22489/CinC.2018.049",
+        "10.13026/6phb-r450",
+    ],
 )
 
 

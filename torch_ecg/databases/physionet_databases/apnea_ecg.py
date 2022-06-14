@@ -45,6 +45,10 @@ _ApneaECG_INFO = DataBaseInfo(
         "https://physionet.org/content/apnea-ecg/1.0.0/",
         "T Penzel, GB Moody, RG Mark, AL Goldberger, JH Peter. The Apnea-ECG Database. Computers in Cardiology 2000;27:255-258",
     ],
+    doi=[
+        "10.1109/cic.2000.898505",
+        "10.13026/C23W2R",
+    ],
 )
 
 
