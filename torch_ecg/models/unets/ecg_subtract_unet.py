@@ -694,7 +694,7 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5
     ) -> Tensor:
         """ """
-        NotImplementedError("implement a task specific inference method")
+        raise NotImplementedError("implement a task specific inference method")
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None

@@ -1246,7 +1246,6 @@ class MITDBDataset(ReprMixin, Dataset):
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
 
         """
-        raise NotImplementedError
         seg_data = self._load_seg_data(seg)
         print(f"seg_data.shape = {seg_data.shape}")
         seg_ann = self._load_seg_ann(seg)

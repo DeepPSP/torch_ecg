@@ -742,7 +742,7 @@ class BaseTrainer(ReprMixin, ABC):
                 "epoch",
             ]
         ).issubset(ckpt.keys()), insufficient_msg
-        if not self._check_model_config_compatability(self, ckpt["model_config"]):
+        if not self._check_model_config_compatability(ckpt["model_config"]):
             raise ValueError(
                 "model config of the checkpoint is not compatible with the config of the current model"
             )

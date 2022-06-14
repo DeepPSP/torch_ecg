@@ -155,7 +155,7 @@ class MinMaxNormalize(Normalize):
         """
         return [
             "per_channel",
-        ] + super(PreProcessor, self).extra_repr_keys()
+        ] + super().extra_repr_keys()
 
 
 class NaiveNormalize(Normalize):
@@ -201,7 +201,7 @@ class NaiveNormalize(Normalize):
             "mean",
             "std",
             "per_channel",
-        ] + super(PreProcessor, self).extra_repr_keys()
+        ] + super().extra_repr_keys()
 
 
 class ZScoreNormalize(Normalize):
@@ -249,4 +249,4 @@ class ZScoreNormalize(Normalize):
             "mean",
             "std",
             "per_channel",
-        ] + super(PreProcessor, self).extra_repr_keys()
+        ] + super().extra_repr_keys()

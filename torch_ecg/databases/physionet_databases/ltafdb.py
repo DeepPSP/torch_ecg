@@ -573,11 +573,11 @@ class LTAFDB(PhysioNetDataBase):
                 _data = data
             _leads = list(range(_data.shape[0]))
         if ann is None and data is None:
-            _ann = self.load_ann(
+            _ann = self.load_rhythm_ann(
                 rec,
                 sampfrom=sampfrom,
                 sampto=sampto,
-                ann_format="interval",
+                rhythm_format="interval",
                 keep_original=False,
             )
         else:

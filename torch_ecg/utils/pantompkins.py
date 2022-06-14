@@ -57,7 +57,7 @@ class PanTompkins(object):
         self.mwi(plotsteps=False)
 
         # Align the filtered and integrated signal with the original
-        self.alignsignals()
+        # self.alignsignals()
 
         # Let's do some investigating!
         # Compare sig, sig_F, and sig_I
@@ -237,12 +237,12 @@ class PanTompkins(object):
         return
 
     # Align the filtered and integrated signal with the original
-    def alignsignals(self):
-        self.sig_F = self.sig_F
+    # def alignsignals(self):
+    #     self.sig_F = self.sig_F
 
-        self.sig_I = self.sig_I
+    #     self.sig_I = self.sig_I
 
-        return
+    #     return
 
     def learnparams(self):
         """

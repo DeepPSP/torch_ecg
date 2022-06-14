@@ -153,6 +153,7 @@ def resample_irregular_timeseries(
     pandas also has the function to regularly resample irregular timeseries
 
     """
+    _interp_kw = deepcopy(interp_kw)
     if method.lower() not in ["spline", "interp1d"]:
         raise ValueError("method {} not implemented".format(method))
 
@@ -182,13 +183,13 @@ def resample_irregular_timeseries(
         w = interp_kw.get("w", np.ones(shape=(m,)))
         # s = interp_kw.get("s", np.random.uniform(m-np.sqrt(2*m),m+np.sqrt(2*m)))
         s = interp_kw.get("s", m - np.sqrt(2 * m))
-        interp_kw.update(w=w, s=s)
+        _interp_kw.update(w=w, s=s)
 
-        tck = interpolate.splrep(time_series[:, 0], time_series[:, 1], **interp_kw)
+        tck = interpolate.splrep(time_series[:, 0], time_series[:, 1], **_interp_kw)
 
         regular_timeseries = interpolate.splev(xnew, tck)
     elif method.lower() == "interp1d":
-        f = interpolate.interp1d(time_series[:, 0], time_series[:, 1], **interp_kw)
+        f = interpolate.interp1d(time_series[:, 0], time_series[:, 1], **_interp_kw)
 
         regular_timeseries = f(xnew)
 
@@ -691,10 +692,6 @@ def get_ampl(
     _window = int(round(window * fs))
     half_window = _window // 2
     _window = half_window * 2
-    if _sig.ndim == 1:
-        ampl = 0
-    else:
-        ampl = np.zeros((_sig.shape[0],))
     if critical_points is not None:
         s = np.stack(
             [

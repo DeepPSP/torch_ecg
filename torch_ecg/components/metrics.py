@@ -129,6 +129,7 @@ class ClassificationMetrics(Metrics):
         num_classes: Optional[int] = None,
         weights: Optional[np.ndarray] = None,
     ) -> "ClassificationMetrics":
+        """ """
         self._cm = confusion_matrix(labels, outputs, num_classes)
         self._cm_ovr = ovr_confusion_matrix(labels, outputs, num_classes)
         self._metrics = metrics_from_confusion_matrix(
@@ -563,7 +564,7 @@ class WaveDelineationMetrics(Metrics):
         )
         # sample-wise metrics
         clf_mtx = ClassificationMetrics()
-        swm = clf_mtx(
+        swm = clf_mtx.compute(
             truth_masks.reshape((-1)).copy(),
             pred_masks.reshape((-1)).copy(),
             len(class_map),

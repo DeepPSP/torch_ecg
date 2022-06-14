@@ -3242,7 +3242,7 @@ class GEBlock(nn.Module, SizeMixin):
     __DEBUG__ = True
     __name__ = "GEBlock"
 
-    def __init__(self) -> NoReturn:
+    def __init__(self, **kwargs: Any) -> NoReturn:
         """ """
         super().__init__()
         raise NotImplementedError
@@ -3263,7 +3263,7 @@ class SKBlock(nn.Module, SizeMixin):
     __DEBUG__ = True
     __name__ = "SKBlock"
 
-    def __init__(self) -> NoReturn:
+    def __init__(self, **kwargs: Any) -> NoReturn:
         """ """
         super().__init__()
         raise NotImplementedError
@@ -3729,6 +3729,7 @@ class CoordAttention(nn.Module, SizeMixin):
 
     def __init__(
         self,
+        **kwargs: Any,
     ):
         """ """
         raise NotImplementedError
@@ -4413,7 +4414,7 @@ class MLDecoder(nn.Module, SizeMixin):
             query_embed.requires_grad_(False)
         else:
             raise NotImplementedError
-            query_embed = None
+            # query_embed = None
 
         # decoder
         decoder_dropout = 0.1

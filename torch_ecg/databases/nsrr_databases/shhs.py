@@ -1078,8 +1078,6 @@ class SHHS(NSRRDataBase):
         file_path = self.match_full_rec_path(rec, hrv_ann_path, rec_type="hrv_summary")
 
         df_hrv_ann = pd.read_csv(file_path, engine="python")
-        if rec is None:
-            return df_hrv_ann
 
         df_hrv_ann = df_hrv_ann[
             df_hrv_ann["nsrrid"] == self.get_nsrrid(rec)

@@ -167,7 +167,8 @@ def preprocess_multi_lead_signal(
             rpeak_fn=rpeak_fn,
             verbose=verbose,
         )
-    rpeaks = merge_rpeaks(rpeaks_candidates, raw_sig, fs, verbose)
+    else:
+        rpeaks = merge_rpeaks(rpeaks_candidates, raw_sig, fs, verbose)
     retval = CFG(
         {
             "filtered_ecg": filtered_ecg,

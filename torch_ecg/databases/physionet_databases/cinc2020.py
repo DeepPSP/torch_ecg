@@ -329,18 +329,21 @@ class CINC2020(PhysioNetDataBase):
                 tmp_dirname = [Path(f).parent for f in self._all_records[tranche]]
                 if len(set(tmp_dirname)) != 1:
                     if len(set(tmp_dirname)) > 1:
-                        raise ValueError(
+                        print(
                             f"records of tranche {tranche} are stored in several folders!"
                         )
+                        # raise ValueError(f"records of tranche {tranche} are stored in several folders!")
                     else:
-                        raise ValueError(f"no record found for tranche {tranche}!")
+                        print(f"no record found for tranche {tranche}!")
                         continue
+                        # raise ValueError(f"no record found for tranche {tranche}!")
                 self.db_dirs[tranche] = self.db_dir_base / tmp_dirname[0]
                 self._all_records[tranche] = [
                     Path(f).name for f in self._all_records[tranche]
                 ]
             print(f"Done in {time.time() - start:.5f} seconds!")
             record_list_fp.write_text(json.dumps(to_save))
+        self._all_records = CFG(self._all_records)
         self.__all_records = list_sum(self._all_records.values())
         for tranche in self.db_tranches:
             df_tmp = pd.DataFrame()

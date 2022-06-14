@@ -226,7 +226,7 @@ class ClassificationOutput(BaseOutput):
             self, "label"
         ), "`labels` or `label` must be stored in the output for computing metrics"
         clf_met = ClassificationMetrics(multi_label=False, macro=True)
-        return clf_met(
+        return clf_met.compute(
             self.get("labels", self.get("label")), self.pred, len(self.classes)
         )
 
@@ -305,7 +305,7 @@ class MultiLabelClassificationOutput(BaseOutput):
             self, "label"
         ), "`labels` or `label` must be stored in the output for computing metrics"
         clf_met = ClassificationMetrics(multi_label=True, macro=macro)
-        return clf_met(
+        return clf_met.compute(
             self.get("labels", self.get("label")), self.pred, len(self.classes)
         )
 
@@ -378,7 +378,7 @@ class SequenceTaggingOutput(BaseOutput):
         ), "`labels` or `label` must be stored in the output for computing metrics"
         clf_met = ClassificationMetrics(multi_label=False, macro=macro)
         labels = self.get("labels", self.get("label"))
-        return clf_met(
+        return clf_met.compute(
             labels.reshape((-1, labels.shape[-1])),
             self.pred.reshape((-1, self.pred.shape[-1])),
             len(self.classes),
@@ -466,7 +466,7 @@ class WaveDelineationOutput(SequenceTaggingOutput):
         ), "`labels` or `label` must be stored in the output for computing metrics"
         wd_met = WaveDelineationMetrics(macro=macro, tol=tol)
         labels = self.get("labels", self.get("label"))
-        return wd_met(
+        return wd_met.compute(
             labels.reshape((-1, labels.shape[-1])),
             self.mask.reshape((-1, self.mask.shape[-1])),
             len(self.classes),
@@ -536,4 +536,6 @@ class RPeaksDetectionOutput(BaseOutput):
             self, "label"
         ), "`labels` or `label` must be stored in the output for computing metrics"
         rpd_met = RPeaksDetectionMetrics(thr=thr)
-        return rpd_met(self.get("labels", self.get("label")), self.rpeak_indices)
+        return rpd_met.compute(
+            self.get("labels", self.get("label")), self.rpeak_indices
+        )

@@ -569,7 +569,7 @@ class LoggerManager(ReprMixin):
     def _add_wandb_logger(self, **kwargs: dict) -> NoReturn:
         """ """
         raise NotImplementedError("NOT tested yet!")
-        self.loggers.append(WandbLogger(self._log_dir, self._log_suffix, **kwargs))
+        # self.loggers.append(WandbLogger(self._log_dir, self._log_suffix, **kwargs))
 
     def log_metrics(
         self,
