@@ -17,7 +17,7 @@ import scipy.io as sio
 import wfdb
 from scipy.signal import resample, resample_poly  # noqa: F401
 
-from ...cfg import CFG
+from ...cfg import CFG, DEFAULTS
 from ...utils.misc import (
     get_record_list_recursive3,
     list_sum,
@@ -527,14 +527,14 @@ class CPSC2021(PhysioNetDataBase):
         wfdb_rec = wfdb.rdrecord(
             str(rec_fp), sampfrom=sf, sampto=st, physical=True, channel_names=_leads
         )
-        data = np.asarray(wfdb_rec.p_signal.T)
+        data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.np_dtype)
         # lead_units = np.vectorize(lambda s: s.lower())(wfdb_rec.units)
 
         if units.lower() in ["uv", "μv"]:
             data = data * 1000
 
         if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=1)
+            data = resample_poly(data, fs, self.fs, axis=1).astype(DEFAULTS.np_dtype)
 
         if data_format.lower() in ["channel_last", "lead_last"]:
             data = data.T
@@ -578,6 +578,7 @@ class CPSC2021(PhysioNetDataBase):
         -------
         ann: dict, or list, or ndarray, or str,
             annotaton of the record
+
         """
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
         ann = wfdb.rdann(

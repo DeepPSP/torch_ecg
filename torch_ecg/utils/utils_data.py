@@ -116,7 +116,7 @@ def class_weight_to_sample_weight(
 
     """
     if not class_weight:
-        sample_weight = np.ones_like(y, dtype=float)
+        sample_weight = np.ones_like(y, dtype=y.dtype)
         return sample_weight
 
     try:
@@ -250,7 +250,11 @@ def ensure_lead_fmt(
         ECG signal in the format of `fmt`
 
     """
-    out_values = np.array(values)
+    if isinstance(values, np.ndarray):
+        dtype = values.dtype
+    else:
+        dtype = np.dtype(type(values[0]))
+    out_values = np.array(values, dtype=dtype)
     lead_dim = np.where(np.array(out_values.shape) == n_leads)[0]
     if not any([[0] == lead_dim or [1] == lead_dim]):
         raise ValueError(f"not valid {n_leads}-lead signal")
@@ -297,10 +301,14 @@ def ensure_siglen(
         of ndim=3 if `tolerence` is given, otherwise ndim=2
 
     """
-    if fmt.lower() in ["channel_last", "lead_last"]:
-        _values = np.array(values).T
+    if isinstance(values, np.ndarray):
+        dtype = values.dtype
     else:
-        _values = np.array(values).copy()
+        dtype = np.dtype(type(values[0]))
+    if fmt.lower() in ["channel_last", "lead_last"]:
+        _values = np.array(values, dtype=dtype).T
+    else:
+        _values = np.array(values, dtype=dtype).copy()
     original_siglen = _values.shape[1]
     n_leads = _values.shape[0]
 
@@ -315,9 +323,9 @@ def ensure_siglen(
             pad_right = pad_len - pad_left
             out_values = np.concatenate(
                 [
-                    np.zeros((n_leads, pad_left)),
+                    np.zeros((n_leads, pad_left), dtype=dtype),
                     _values,
-                    np.zeros((n_leads, pad_right)),
+                    np.zeros((n_leads, pad_right), dtype=dtype),
                 ],
                 axis=1,
             )
@@ -334,11 +342,12 @@ def ensure_siglen(
         [
             _values[..., idx * forward_len : idx * forward_len + siglen]
             for idx in range((original_siglen - siglen) // forward_len + 1)
-        ]
+        ],
+        dtype=dtype,
     )
     if fmt.lower() in ["channel_last", "lead_last"]:
         out_values = np.moveaxis(out_values, 1, -1)
-    return out_values
+    return out_values.astype(dtype)
 
 
 ECGWaveForm = namedtuple(
@@ -666,15 +675,15 @@ def generate_weight_mask(
         the weight mask
 
     """
-    weight_mask = np.ones_like(target_mask, dtype=float)
+    weight_mask = np.ones_like(target_mask, dtype=DEFAULTS.np_dtype)
     sigma = int((radius * fs) / reduction)
     weight = np.full_like(target_mask, fg_weight) - 1
     weight_mask += (target_mask > 0.5) * weight
     border = np.where(np.diff(target_mask) != 0)[0]
     for idx in border:
-        # weight = np.zeros_like(target_mask, dtype=float)
+        # weight = np.zeros_like(target_mask, dtype=DEFAULTS.np_dtype)
         # weight[max(0, idx-sigma): (idx+sigma)] = boundary_weight
-        weight = np.full_like(target_mask, boundary_weight, dtype=float)
+        weight = np.full_like(target_mask, boundary_weight, dtype=DEFAULTS.np_dtype)
         weight = weight * np.exp(
             -np.power(np.arange(len(target_mask)) - idx, 2) / sigma**2
         )

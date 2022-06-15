@@ -7,6 +7,7 @@ from typing import Any, NoReturn, Optional, Union
 
 import numpy as np
 
+from ...cfg import DEFAULTS  # noqa: F401
 from ...utils import add_docstring
 from ..base import PhysioNetDataBase, DataBaseInfo
 

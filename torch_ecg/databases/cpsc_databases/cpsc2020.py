@@ -328,7 +328,7 @@ class CPSC2020(CPSCDataBase):
 
         """
         rec_fp = self.get_absolute_path(rec, self.rec_ext)
-        data = loadmat(str(rec_fp))["ecg"]
+        data = loadmat(str(rec_fp))["ecg"].astype(DEFAULTS.np_dtype)
         if units.lower() in ["uv", "μv"]:
             data = (1000 * data).astype(int)
         sf, st = (sampfrom or 0), (sampto or len(data))

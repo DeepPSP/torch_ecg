@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import wfdb
 
+from ...cfg import DEFAULTS
 from ...utils import add_docstring
 from ..base import PhysioNetDataBase, DataBaseInfo
 
@@ -156,7 +157,7 @@ class ApneaECG(PhysioNetDataBase):
             rec = self[rec]
         file_path = str(rec_path or self.get_absolute_path(rec))
         self.wfdb_rec = wfdb.rdrecord(file_path)
-        sig = self.wfdb_rec.p_signal
+        sig = self.wfdb_rec.p_signal.astype(DEFAULTS.np_dtype)
         if not rec.endswith(("r", "er")):
             sig = sig[:, 0]  # flatten ECG signal
         return sig

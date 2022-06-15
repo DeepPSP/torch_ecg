@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 from scipy.io import loadmat
 
+from ...cfg import DEFAULTS
 from ...utils.misc import get_record_list_recursive, add_docstring
 from ..aux_data.cinc2020_aux_data import dx_mapping_all, dx_mapping_scored
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase, DataBaseInfo
@@ -226,7 +227,7 @@ class CPSC2018(CPSCDataBase):
             rec = self[rec]
         rec_fp = self.get_absolute_path(rec, self.rec_ext)
         data = loadmat(str(rec_fp))
-        data = np.asarray(data["val"], dtype=np.float64)
+        data = np.asarray(data["val"], dtype=DEFAULTS.np_dtype)
         if data_format == "channels_last":
             data = data.T
 

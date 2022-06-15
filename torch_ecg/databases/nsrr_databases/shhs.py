@@ -14,6 +14,7 @@ import pandas as pd
 import xmltodict as xtd
 from pyedflib import EdfReader  # noqa: F401
 
+from ...cfg import DEFAULTS
 from ...utils.misc import add_docstring
 from ...utils.utils_interval import intervals_union
 from ..base import NSRRDataBase, DataBaseInfo
@@ -973,7 +974,7 @@ class SHHS(NSRRDataBase):
         """
         return self.load_psg_data(rec=rec, channel="ecg", rec_path=rec_path)[
             self.match_channel("ecg")
-        ]
+        ].astype(DEFAULTS.np_dtype)
 
     def load_event_ann(
         self, rec: str, event_ann_path: Optional[str] = None, simplify: bool = False

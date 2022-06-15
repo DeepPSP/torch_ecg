@@ -163,7 +163,11 @@ def resample_irregular_timeseries(
     if len(s) == 0:
         return np.array([])
 
-    time_series = np.atleast_2d(s)
+    if isinstance(s, np.ndarray):
+        dtype = s.dtype
+    else:
+        dtype = np.dtype(type(s[0]))
+    time_series = np.atleast_2d(s).astype(dtype)
     step_ts = 1000 / output_fs
     tot_len = int((time_series[-1][0] - time_series[0][0]) / step_ts) + 1
     if tnew is None:
@@ -194,9 +198,9 @@ def resample_irregular_timeseries(
         regular_timeseries = f(xnew)
 
     if return_with_time:
-        return np.column_stack((xnew, regular_timeseries))
+        return np.column_stack((xnew, regular_timeseries)).astype(dtype)
     else:
-        return regular_timeseries
+        return regular_timeseries.astype(dtype)
 
 
 def detect_peaks(
@@ -492,7 +496,6 @@ def remove_spikes_naive(
     sig: np.ndarray, threshold: Real = 20, inplace: bool = True
 ) -> np.ndarray:
     """
-
     remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
 
     `spikes` here refers to abrupt large bumps with (abs) value larger than the given threshold,
@@ -512,6 +515,7 @@ def remove_spikes_naive(
         signal with `spikes` removed
 
     """
+    dtype = sig.dtype
     b = list(
         filter(
             lambda k: k > 0,
@@ -524,7 +528,7 @@ def remove_spikes_naive(
         sig = sig.copy()
     for k in b:
         sig[k] = sig[k - 1]
-    return sig
+    return sig.astype(dtype)
 
 
 def butter_bandpass(
@@ -632,10 +636,11 @@ def butter_bandpass_filter(
     [2] https://dsp.stackexchange.com/questions/19084/applying-filter-in-scipy-signal-use-lfilter-or-filtfilt
 
     """
+    dtype = data.dtype
     if btype is None:
         b, a = butter_bandpass(lowcut, highcut, fs, order=order, verbose=verbose)
         y = filtfilt(b, a, data)
-        return y
+        return y.astype(dtype)
     if btype.lower() == "lohi":
         b, a = butter_bandpass(0, highcut, fs, order=order, verbose=verbose)
         y = filtfilt(b, a, data)
@@ -648,7 +653,7 @@ def butter_bandpass_filter(
         y = filtfilt(b, a, y)
     else:
         raise ValueError(f"special btype {btype} is not supported")
-    return y
+    return y.astype(dtype)
 
 
 def get_ampl(
@@ -659,7 +664,6 @@ def get_ampl(
     critical_points: Optional[Sequence] = None,
 ) -> Union[float, np.ndarray]:
     """
-
     get amplitude of a signal (near critical points if given)
 
     Parameters
@@ -685,6 +689,7 @@ def get_ampl(
         amplitude of the signal
 
     """
+    dtype = sig.dtype
     if fmt.lower() in ["channel_last", "lead_last"]:
         _sig = sig.T
     else:
@@ -706,7 +711,7 @@ def get_ampl(
                 for p in critical_points
             ],
             axis=-1,
-        )
+        ).astype(dtype)
         # the following is much slower
         # for p in critical_points:
         #     s = _sig[...,max(0,p-half_window):min(_sig.shape[-1],p+half_window)]
@@ -718,7 +723,7 @@ def get_ampl(
                 for idx in range(_sig.shape[-1] // half_window - 1)
             ],
             axis=-1,
-        )
+        ).astype(dtype)
         # the following is much slower
         # for idx in range(_sig.shape[-1]//half_window-1):
         #     s = _sig[..., idx*half_window: idx*half_window+_window]
@@ -783,6 +788,7 @@ def normalize(
     only the mean value will be shifted
 
     """
+    dtype = sig.dtype
     _method = method.lower()
     assert _method in [
         "z-score",
@@ -809,9 +815,9 @@ def normalize(
             "channel_first",
             "lead_first",
         ]:
-            _mean = np.array(mean)[..., np.newaxis]
+            _mean = np.array(mean, dtype=dtype)[..., np.newaxis]
         else:
-            _mean = np.array(mean)[np.newaxis, ...]
+            _mean = np.array(mean, dtype=dtype)[np.newaxis, ...]
     else:
         _mean = mean
     if isinstance(std, Iterable):
@@ -819,15 +825,15 @@ def normalize(
             "channel_first",
             "lead_first",
         ]:
-            _std = np.array(std)[..., np.newaxis]
+            _std = np.array(std, dtype=dtype)[..., np.newaxis]
         else:
-            _std = np.array(std)[np.newaxis, ...]
+            _std = np.array(std, dtype=dtype)[np.newaxis, ...]
     else:
         _std = std
 
     if _method == "naive":
         nm_sig = (sig - _mean) / _std
-        return nm_sig
+        return nm_sig.astype(dtype)
 
     eps = 1e-7  # to avoid dividing by zero
     if sig.ndim == 3:  # the first dimension is the batch dimension
@@ -853,10 +859,11 @@ def normalize(
 
     if _method == "z-score":
         nm_sig = (
-            (sig - np.mean(sig, **options)) / (np.std(sig, **options) + eps)
+            (sig - np.mean(sig, dtype=dtype, **options))
+            / (np.std(sig, dtype=dtype, **options) + eps)
         ) * _std + _mean
     elif _method == "min-max":
         nm_sig = (sig - np.amin(sig, **options)) / (
             np.amax(sig, **options) - np.amin(sig, **options) + eps
         )
-    return nm_sig
+    return nm_sig.astype(dtype)

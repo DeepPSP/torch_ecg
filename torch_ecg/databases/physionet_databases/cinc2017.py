@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import wfdb
 
+from ...cfg import DEFAULTS
 from ...utils.misc import get_record_list_recursive3, add_docstring
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo
 
@@ -225,7 +226,7 @@ class CINC2017(PhysioNetDataBase):
             "μv",
         ]
         wr = wfdb.rdrecord(str(self.get_absolute_path(rec)))
-        data = wr.p_signal
+        data = wr.p_signal.astype(DEFAULTS.np_dtype)
 
         if wr.units[0].lower() == units.lower():
             pass

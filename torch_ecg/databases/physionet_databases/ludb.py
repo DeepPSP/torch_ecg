@@ -289,7 +289,6 @@ class LUDB(PhysioNetDataBase):
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
-
         load physical (converted from digital) ECG data,
         which is more understandable for humans
 
@@ -329,13 +328,13 @@ class LUDB(PhysioNetDataBase):
         # p_signal of "lead_last" format
         # ref. ISSUES 1. (fixed in version 1.0.1)
         # data = np.asarray(wfdb_rec.p_signal.T / 1000, dtype=np.float64)
-        data = np.asarray(wfdb_rec.p_signal.T, dtype=np.float64)
+        data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.np_dtype)
 
         if units.lower() in ["uv", "μv"]:
             data = data * 1000
 
         if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=1)
+            data = resample_poly(data, fs, self.fs, axis=1).astype(DEFAULTS.np_dtype)
 
         if data_format.lower() in ["channel_last", "lead_last"]:
             data = data.T
@@ -349,7 +348,6 @@ class LUDB(PhysioNetDataBase):
         metadata: bool = False,
     ) -> dict:
         """
-
         load the wave delineation, along with metadata if specified
 
         Parameters
@@ -364,6 +362,8 @@ class LUDB(PhysioNetDataBase):
         Returns
         -------
         ann_dict: dict,
+            the wave delineation
+
         """
         if isinstance(rec, int):
             rec = self[rec]
@@ -513,7 +513,6 @@ class LUDB(PhysioNetDataBase):
         fs: Optional[Real] = None,
     ) -> Dict[str, List[ECGWaveForm]]:
         """
-
         convert masks into lists of waveforms
 
         Parameters

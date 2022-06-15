@@ -13,7 +13,7 @@ import numpy as np
 import wfdb
 from scipy.signal import resample_poly
 
-from ...cfg import CFG
+from ...cfg import CFG, DEFAULTS
 from ...utils.misc import add_docstring
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, BeatAnn, PhysioNetDataBase, DataBaseInfo
@@ -206,11 +206,11 @@ class LTAFDB(PhysioNetDataBase):
             sampto=sampto,
             physical=True,
             channels=_leads,
-        ).p_signal
+        ).p_signal.astype(DEFAULTS.np_dtype)
         if units.lower() in ["μv", "uv"]:
             data = 1000 * data
         if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=0)
+            data = resample_poly(data, fs, self.fs, axis=0).astype(DEFAULTS.np_dtype)
         if data_format.lower() in ["channel_first", "lead_first"]:
             data = data.T
         return data

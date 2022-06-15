@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import h5py
 
+from ...cfg import DEFAULTS
 from ...utils.download import http_get
 from ...utils.misc import get_record_list_recursive3, ms2samples, add_docstring
 from ...utils import EAK
@@ -207,7 +208,7 @@ class SPH(_DataBase):
             _leads = [self.all_leads.index(lead) for lead in leads]
 
         with h5py.File(self.get_absolute_path(rec, extension=self.data_ext), "r") as f:
-            data = f["ecg"][_leads].astype(np.float32)
+            data = f["ecg"][_leads].astype(DEFAULTS.np_dtype)
 
         if units.lower() in ["uv", "μv"]:
             data = data * 1000
