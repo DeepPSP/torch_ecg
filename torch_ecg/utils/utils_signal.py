@@ -132,7 +132,7 @@ def resample_irregular_timeseries(
 
     Parameters
     ----------
-    s: array_like,
+    s: ndarray,
         the 2d irregular timeseries
     output_fs: Real, default 2,
         the frequency of the output 1d regular timeseries
@@ -162,11 +162,8 @@ def resample_irregular_timeseries(
 
     if len(s) == 0:
         return np.array([])
-
-    if isinstance(s, np.ndarray):
-        dtype = s.dtype
-    else:
-        dtype = np.dtype(type(s[0]))
+    
+    dtype = s.dtype
     time_series = np.atleast_2d(s).astype(dtype)
     step_ts = 1000 / output_fs
     tot_len = int((time_series[-1][0] - time_series[0][0]) / step_ts) + 1

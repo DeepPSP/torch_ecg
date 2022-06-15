@@ -228,7 +228,7 @@ def rdheader(header_data: Union[str, Sequence[str]]) -> Union[Record, MultiRecor
 
 
 def ensure_lead_fmt(
-    values: Sequence[Real], n_leads: int = 12, fmt: str = "lead_first"
+    values: np.ndarray, n_leads: int = 12, fmt: str = "lead_first"
 ) -> np.ndarray:
     """
 
@@ -236,7 +236,7 @@ def ensure_lead_fmt(
 
     Parameters
     ----------
-    values: sequence,
+    values: ndarray,
         values of the `n_leads`-lead (ECG) signal
     n_leads: int, default 12,
         number of leads
@@ -250,10 +250,7 @@ def ensure_lead_fmt(
         ECG signal in the format of `fmt`
 
     """
-    if isinstance(values, np.ndarray):
-        dtype = values.dtype
-    else:
-        dtype = np.dtype(type(values[0]))
+    dtype = values.dtype
     out_values = np.array(values, dtype=dtype)
     lead_dim = np.where(np.array(out_values.shape) == n_leads)[0]
     if not any([[0] == lead_dim or [1] == lead_dim]):
@@ -268,7 +265,7 @@ def ensure_lead_fmt(
 
 
 def ensure_siglen(
-    values: Sequence[Real],
+    values: np.ndarray,
     siglen: int,
     fmt: str = "lead_first",
     tolerance: Optional[float] = None,
@@ -301,10 +298,7 @@ def ensure_siglen(
         of ndim=3 if `tolerence` is given, otherwise ndim=2
 
     """
-    if isinstance(values, np.ndarray):
-        dtype = values.dtype
-    else:
-        dtype = np.dtype(type(values[0]))
+    dtype = values.dtype
     if fmt.lower() in ["channel_last", "lead_last"]:
         _values = np.array(values, dtype=dtype).T
     else:
@@ -321,14 +315,9 @@ def ensure_siglen(
             pad_len = siglen - original_siglen
             pad_left = pad_len // 2
             pad_right = pad_len - pad_left
-            out_values = np.concatenate(
-                [
-                    np.zeros((n_leads, pad_left), dtype=dtype),
-                    _values,
-                    np.zeros((n_leads, pad_right), dtype=dtype),
-                ],
-                axis=1,
-            )
+            out_values = np.pad(
+                _values, ((0, 0), (pad_left, pad_right)), "constant", constant_values=0
+            ).astype(dtype)
 
         if fmt.lower() in ["channel_last", "lead_last"]:
             out_values = out_values.T

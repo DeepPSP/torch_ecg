@@ -911,7 +911,7 @@ class DataBaseInfo:
 
     from bib_lookup import BibLookup
 
-    bl = BibLookup(timeout=2.0, ignore_errors=True)
+    _bl = BibLookup(timeout=1.0, ignore_errors=True)
 
     def format_database_docstring(self, indent: Optional[str] = None) -> str:
         """ """
@@ -961,17 +961,7 @@ class DataBaseInfo:
         if self.status is not None and len(self.status) > 0:
             docstring = f"{self.status}\n{docstring}"
 
-        if self.doi is not None:
-            if isinstance(self.doi, str):
-                doi = [self.doi]
-            else:
-                doi = self.doi
-            try:
-                citation = self.bl(doi)
-            except Exception:
-                citation = ""
-        else:
-            citation = ""
+        citation = self.get_citation()
         if citation.startswith("@"):
             citation = textwrap.indent(
                 f"""Citation\n--------\n```latex\n{citation}\n```""", indent
@@ -980,17 +970,37 @@ class DataBaseInfo:
 
         return docstring
 
-    def citation(self) -> NoReturn:
+    def get_citation(self) -> NoReturn:
         """ """
+        citation_cache = _DATA_CACHE / "database_citation.csv"
+        if citation_cache.exists():
+            df_cc = pd.read_csv(citation_cache)
+        else:
+            df_cc = pd.DataFrame(columns=["doi", "citation"])
+            df_cc.to_csv(citation_cache, index=False)
+
         if self.doi is not None:
             if isinstance(self.doi, str):
                 doi = [self.doi]
             else:
                 doi = self.doi
-            try:
-                print(self.bl(doi))
-            except Exception:
-                pass
+            citation = "\n".join(df_cc[df_cc["doi"].isin(doi)]["citation"].tolist())
+            doi = [item for item in doi if item not in df_cc["doi"].tolist()]
+            if len(doi) > 0:
+                new_citations = []
+                for item in doi:
+                    try:
+                        new_citations.append({"doi":item, "citation": self._bl(item)})
+                    except Exception:
+                        pass
+                new_citations = [item for item in new_citations if item["citation"] is not None and item["citation"].startswith("@")]
+                df_new = pd.DataFrame(new_citations)
+                if len(df_new) > 0:
+                    df_new.to_csv(citation_cache, mode="a", header=False, index=False)
+                    citation += "\n" + "\n".join(df_new["citation"].tolist())
+        else:
+            citation = ""
+        return citation
 
 
 DEFAULT_FIG_SIZE_PER_SEC = 4.8
