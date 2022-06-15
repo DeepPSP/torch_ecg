@@ -162,7 +162,7 @@ def resample_irregular_timeseries(
 
     if len(s) == 0:
         return np.array([])
-    
+
     dtype = s.dtype
     time_series = np.atleast_2d(s).astype(dtype)
     step_ts = 1000 / output_fs

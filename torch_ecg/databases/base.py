@@ -990,10 +990,14 @@ class DataBaseInfo:
                 new_citations = []
                 for item in doi:
                     try:
-                        new_citations.append({"doi":item, "citation": self._bl(item)})
+                        new_citations.append({"doi": item, "citation": self._bl(item)})
                     except Exception:
                         pass
-                new_citations = [item for item in new_citations if item["citation"] is not None and item["citation"].startswith("@")]
+                new_citations = [
+                    item
+                    for item in new_citations
+                    if item["citation"] is not None and item["citation"].startswith("@")
+                ]
                 df_new = pd.DataFrame(new_citations)
                 if len(df_new) > 0:
                     df_new.to_csv(citation_cache, mode="a", header=False, index=False)
