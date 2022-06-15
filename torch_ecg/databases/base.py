@@ -911,7 +911,7 @@ class DataBaseInfo:
 
     from bib_lookup import BibLookup
 
-    bl = BibLookup()
+    bl = BibLookup(timeout=2.0, ignore_errors=True)
 
     def format_database_docstring(self, indent: Optional[str] = None) -> str:
         """ """

@@ -4,7 +4,7 @@
 import random
 from functools import partial
 from pathlib import Path
-from typing import MutableMapping, NoReturn, Optional, Any
+from typing import MutableMapping, NoReturn, Optional, Any, Union
 
 import numpy as np
 import torch
@@ -12,7 +12,6 @@ import torch
 __all__ = [
     "CFG",
     "DEFAULTS",
-    "set_seed",
 ]
 
 
@@ -159,7 +158,6 @@ def set_seed(seed: int) -> NoReturn:
 
     """
 
-    global DEFAULTS
     DEFAULTS.SEED = seed
     DEFAULTS.RNG = np.random.default_rng(seed=seed)
     DEFAULTS.RNG_sample = partial(DEFAULTS.RNG.choice, replace=False, shuffle=False)
@@ -168,3 +166,45 @@ def set_seed(seed: int) -> NoReturn:
     random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
+
+
+DEFAULTS.set_seed = set_seed
+
+
+def change_dtype(dtype: Union[str, np.dtype, torch.dtype]) -> NoReturn:
+    """
+    change the dtype of the defaults
+
+    Parameters
+    ----------
+    dtype: str or np.dtype or torch.dtype,
+        the dtype to be set
+
+    """
+    # fmt: off
+    _dtypes = [
+        "float32", "float64", "float16",
+        "int32", "int64", "int16", "int8", "uint8", "long",
+    ]
+    # fmt: on
+    if isinstance(dtype, torch.dtype):
+        _dtype = str(dtype).replace("torch.", "")
+    elif isinstance(dtype, np.dtype):
+        _dtype = str(dtype)
+    elif isinstance(dtype, str):
+        _dtype = dtype
+    else:  # for example, dtype=np.float64
+        try:
+            _dtype = dtype.__name__
+        except AttributeError:
+            raise TypeError(
+                f"dtype must be a str or np.dtype or torch.dtype, got {type(dtype)}"
+            )
+    assert _dtype in _dtypes, f"dtype must be one of {_dtypes}, got {_dtype}"
+    DEFAULTS.str_dtype = _dtype
+    DEFAULTS.np_dtype = np.dtype(_dtype)
+    DEFAULTS.torch_dtype = eval(f"torch.{_dtype}")
+    DEFAULTS.dtype = DEFAULTS.torch_dtype
+
+
+DEFAULTS.change_dtype = change_dtype
