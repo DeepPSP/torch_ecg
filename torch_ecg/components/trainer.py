@@ -36,7 +36,7 @@ from ..models.loss import (
     FocalLoss,
     MaskedBCEWithLogitsLoss,
 )
-from ..utils.misc import ReprMixin, dict_to_str, dicts_equal, get_date_str
+from ..utils.misc import ReprMixin, dict_to_str, dicts_equal, get_date_str, get_kwargs
 from ..utils.utils_nn import default_collate_fn as collate_fn  # noqa: F401
 from .loggers import LoggerManager
 
@@ -608,28 +608,45 @@ class BaseTrainer(ReprMixin, ABC):
     def _setup_optimizer(self) -> NoReturn:
         """ """
         if self.train_config.optimizer.lower() == "adam":
+            optimizer_kwargs = get_kwargs(optim.Adam)
+            optimizer_kwargs.update(
+                {k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()}
+            )
+            optimizer_kwargs.update(dict(lr=self.lr))
             self.optimizer = optim.Adam(
                 params=self.model.parameters(),
-                lr=self.lr,
+                **optimizer_kwargs,
             )
         elif self.train_config.optimizer.lower() in ["adamw", "adamw_amsgrad"]:
+            optimizer_kwargs = get_kwargs(optim.AdamW)
+            optimizer_kwargs.update(
+                {k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()}
+            )
+            optimizer_kwargs.update(
+                dict(
+                    lr=self.lr,
+                    amsgrad=self.train_config.optimizer.lower().endswith("amsgrad"),
+                )
+            )
             self.optimizer = optim.AdamW(
                 params=self.model.parameters(),
-                lr=self.lr,
-                weight_decay=self.train_config.decay,
-                eps=1e-08,  # default
-                amsgrad=self.train_config.optimizer.lower().endswith("amsgrad"),
+                **optimizer_kwargs,
             )
         elif self.train_config.optimizer.lower() == "sgd":
+            optimizer_kwargs = get_kwargs(optim.SGD)
+            optimizer_kwargs.update(
+                {k: self.train_config.get(k, v) for k, v in optimizer_kwargs.items()}
+            )
+            optimizer_kwargs.update(dict(lr=self.lr))
             self.optimizer = optim.SGD(
                 params=self.model.parameters(),
-                lr=self.lr,
-                momentum=self.train_config.momentum,
-                weight_decay=self.train_config.decay,
+                **optimizer_kwargs,
             )
         else:
             raise NotImplementedError(
-                f"optimizer `{self.train_config.optimizer}` not implemented!"
+                f"optimizer `{self.train_config.optimizer}` not implemented! "
+                "Please use one of the following: `adam`, `adamw`, `adamw_amsgrad`, `sgd`, "
+                "or override this method to setup your own optimizer."
             )
 
     def _setup_scheduler(self) -> NoReturn:
@@ -665,9 +682,11 @@ class BaseTrainer(ReprMixin, ABC):
                 steps_per_epoch=len(self.train_loader),
                 # verbose=False,
             )
-        else:
+        else:  # TODO: add linear and linear with warmup schedulers
             raise NotImplementedError(
-                f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training"
+                f"lr scheduler `{self.train_config.lr_scheduler.lower()}` not implemented for training! "
+                "Please use one of the following: `none`, `plateau`, `step`, `one_cycle`, "
+                "or override this method to setup your own lr scheduler."
             )
 
     def _setup_criterion(self) -> NoReturn:
@@ -694,7 +713,10 @@ class BaseTrainer(ReprMixin, ABC):
             self.criterion = nn.CrossEntropyLoss(**loss_kw)
         else:
             raise NotImplementedError(
-                f"loss `{self.train_config.loss}` not implemented!"
+                f"loss `{self.train_config.loss}` not implemented! "
+                "Please use one of the following: `BCEWithLogitsLoss`, `BCEWithLogitsWithClassWeightLoss`, "
+                "`BCELoss`, `MaskedBCEWithLogitsLoss`, `MaskedBCEWithLogitsLoss`, `FocalLoss`, "
+                "`AsymmetricLoss`, `CrossEntropyLoss`, or override this method to setup your own criterion."
             )
 
     def _check_model_config_compatability(self, model_config: dict) -> bool:
