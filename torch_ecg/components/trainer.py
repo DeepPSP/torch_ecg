@@ -13,13 +13,12 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Dict, List, NoReturn, Optional, Tuple, Union
 
-import numpy as np
-
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
     from tqdm import tqdm
 
+import numpy as np
 import torch
 import torch_optimizer as extra_optim  # noqa: F401
 from torch import nn, optim
@@ -286,7 +285,6 @@ class BaseTrainer(ReprMixin, ABC):
 
     def train_one_epoch(self, pbar: tqdm) -> NoReturn:
         """
-
         train one epoch, and update the progress bar
 
         Parameters
@@ -462,7 +460,6 @@ class BaseTrainer(ReprMixin, ABC):
 
     def _setup_from_config(self, train_config: dict) -> NoReturn:
         """
-
         Parameters
         ----------
         train_config: dict,
@@ -552,7 +549,6 @@ class BaseTrainer(ReprMixin, ABC):
         val_dataset: Optional[Dataset] = None,
     ) -> NoReturn:
         """
-
         setup the dataloaders for training and validation
 
         Parameters

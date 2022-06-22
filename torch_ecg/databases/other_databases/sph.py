@@ -27,8 +27,14 @@ _SPH_INFO = DataBaseInfo(  # NOT finished yet
     title="""
     Shandong Provincial Hospital Database
     """,
-    about="""
-    to write
+    about=r"""
+    1. contains 25770 ECG records from 24666 patients (55.36% male and 44.64% female), with between 10 and 60 seconds
+    2. sampling frequency is 500 Hz
+    3. records were acquired from Shandong Provincial Hospital (SPH) between 2019/08 and 2020/08
+    4. diagnostic statements of all ECG records are in full compliance with the AHA/ACC/HRS recommendations, consisting of 44 primary statements and 15 modifiers
+    5. 46.04% records in the dataset contain ECG abnormalities, and 14.45% records have multiple diagnostic statements
+    6. (IMPORTANT) noises caused by the power line interference, baseline wander, and muscle contraction have been removed by the machine
+    7. (Label production) The ECG analysis system automatically calculate nine ECG features for reference, which include heart rate, P wave duration, P-R interval, QRS duration, QT interval, corrected QT (QTc) interval, QRS axis, the amplitude of the R wave in lead V5 (RV5), and the amplitude of the S wave in lead V1 (SV1). A cardiologist made the final diagnosis in consideration of the patient health record.
     """,
     usage=[
         "ECG arrhythmia detection",
@@ -36,6 +42,7 @@ _SPH_INFO = DataBaseInfo(  # NOT finished yet
     references=[
         "https://www.nature.com/articles/s41597-022-01403-5",
         "Liu, H., Chen, D., Chen, D. et al. A large-scale multi-label 12-lead electrocardiogram database with standardized diagnostic statements. Sci Data 9, 272 (2022). https://doi.org/10.1038/s41597-022-01403-5",
+        "Mason, J. W., Hancock, E. W. & Gettes, L. S. Recommendations for the standardization and interpretation of the electrocardiogram. Circulation 115, 1325–1332, https://doi.org/10.1161/CIRCULATIONAHA.106.180201 (2007).",
     ],
     doi=[
         "10.1038/s41597-022-01403-5",
