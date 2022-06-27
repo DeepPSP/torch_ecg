@@ -43,6 +43,7 @@ _SPH_INFO = DataBaseInfo(  # NOT finished yet
         "https://www.nature.com/articles/s41597-022-01403-5",
         "Liu, H., Chen, D., Chen, D. et al. A large-scale multi-label 12-lead electrocardiogram database with standardized diagnostic statements. Sci Data 9, 272 (2022). https://doi.org/10.1038/s41597-022-01403-5",
         "Mason, J. W., Hancock, E. W. & Gettes, L. S. Recommendations for the standardization and interpretation of the electrocardiogram. Circulation 115, 1325–1332, https://doi.org/10.1161/CIRCULATIONAHA.106.180201 (2007).",
+        "https://springernature.figshare.com/collections/A_large-scale_multi-label_12-lead_electrocardiogram_database_with_standardized_diagnostic_statements/5779802/1",
     ],
     doi=[
         "10.1038/s41597-022-01403-5",
