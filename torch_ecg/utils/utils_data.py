@@ -516,7 +516,10 @@ def uniform(low: Real, high: Real, num: int) -> List[float]:
 
 
 def stratified_train_test_split(
-    df: pd.DataFrame, stratified_cols: Sequence[str], test_ratio: float = 0.2
+    df: pd.DataFrame,
+    stratified_cols: Sequence[str],
+    test_ratio: float = 0.2,
+    reset_index: bool = True,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     Do stratified train-test split on the dataframe,
@@ -531,6 +534,8 @@ def stratified_train_test_split(
         split into train and test sets with an approximate ratio of `test_ratio`
     test_ratio: float, default 0.2,
         ratio of test set to the whole dataframe
+    reset_index: bool, default True,
+        whether to reset the index of the dataframes
 
     Returns
     -------
@@ -585,8 +590,11 @@ def stratified_train_test_split(
     for n in item_names:
         item_test_indices = item_indices[n][: round(test_ratio * len(item_indices[n]))]
         test_indices += item_test_indices
-    df_test = df.loc[df.index.isin(test_indices)].reset_index(drop=True)
-    df_train = df.loc[~df.index.isin(test_indices)].reset_index(drop=True)
+    df_test = df.loc[df.index.isin(test_indices)]
+    df_train = df.loc[~df.index.isin(test_indices)]
+    if reset_index:
+        df_train = df_train.reset_index(drop=True)
+        df_test = df_test.reset_index(drop=True)
     return df_train, df_test
 
 
