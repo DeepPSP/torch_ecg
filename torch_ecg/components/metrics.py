@@ -32,7 +32,7 @@ class Metrics(ReprMixin, ABC):
     __name__ = "Metrics"
 
     def __call__(self, *args: Any, **kwargs: Any) -> "Metrics":
-        return self.compute()
+        return self.compute(*args, **kwargs)
 
     @abstractmethod
     def compute(self, *args: Any, **kwargs: Any) -> "Metrics":

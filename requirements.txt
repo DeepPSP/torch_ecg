@@ -1,6 +1,5 @@
 numpy
 scipy
-joblib
 Cython
 pandas
 scikit-learn
@@ -15,10 +14,11 @@ deprecated
 deprecate-kwargs
 pyEDFlib
 PyWavelets
-torch_optimizer
+torch-optimizer
 requests
 xmltodict
 einops
 matplotlib
 protobuf==3.19.4  # https://github.com/lanpa/tensorboardX/issues/663
 bib-lookup
+typing-extensions
