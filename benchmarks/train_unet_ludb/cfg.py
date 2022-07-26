@@ -19,7 +19,7 @@ from torch_ecg.model_configs import (  # noqa: F401
     ECG_SUBTRACT_UNET_CONFIG,
     ECG_UNET_VANILLA_CONFIG,
 )
-from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
+from torch_ecg.utils import EAK
 
 __all__ = [
     "TrainCfg",
@@ -51,6 +51,7 @@ BaseCfg.bias_thr = int(0.075 * BaseCfg.fs)  # TODO: renew this const
 # detected waves that are within `skip_dist` from two ends of the signal will be ignored,
 BaseCfg.skip_dist = int(0.5 * BaseCfg.fs)
 BaseCfg.torch_dtype = DEFAULTS.torch_dtype
+BaseCfg.np_dtype = DEFAULTS.np_dtype
 
 
 TrainCfg = CFG()
@@ -63,6 +64,7 @@ TrainCfg.log_dir.mkdir(parents=True, exist_ok=True)
 TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 TrainCfg.keep_checkpoint_max = 20
 TrainCfg.torch_dtype = BaseCfg.torch_dtype
+TrainCfg.np_dtype = BaseCfg.np_dtype
 
 TrainCfg.fs = 500
 TrainCfg.train_ratio = 0.8

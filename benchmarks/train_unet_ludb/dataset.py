@@ -14,7 +14,6 @@ try:
 except ModuleNotFoundError:
     from tqdm import tqdm
 
-import torch
 from torch.utils.data.dataset import Dataset
 
 try:
@@ -24,18 +23,10 @@ except ModuleNotFoundError:
 
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
-from cfg import TrainCfg
-
 from torch_ecg._preprocessors import PreprocManager
 from torch_ecg.cfg import CFG
 from torch_ecg.databases import LUDB as LR
 from torch_ecg.utils.misc import ReprMixin
-
-if TrainCfg.torch_dtype == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
-    _DTYPE = np.float64
-else:
-    _DTYPE = np.float32
 
 
 __all__ = [
@@ -238,7 +229,7 @@ class FastDataReader(ReprMixin, Dataset):
             rec,
             data_format="channel_first",
             units="mV",
-        ).astype(_DTYPE)
+        ).astype(self.config.np_dtype)
         if self.ppm:
             signals, _ = self.ppm(signals, self.config.fs)
         masks = self.reader.load_masks(
@@ -246,16 +237,18 @@ class FastDataReader(ReprMixin, Dataset):
             leads=self.leads,
             mask_format="channel_first",
             class_map=self.config.class_map,
-        ).astype(_DTYPE)
+        ).astype(self.config.np_dtype)
         if self.config.loss == "CrossEntropyLoss":
             return signals, masks
         # expand masks to have n vectors, with n = n_classes
-        labels = np.ones((*masks.shape, len(self.config.mask_class_map)), dtype=_DTYPE)
+        labels = np.ones(
+            (*masks.shape, len(self.config.mask_class_map)), dtype=self.config.np_dtype
+        )
         for i in range(len(self.leads)):
             for key, val in self.config.mask_class_map.items():
                 labels[i, ..., val] = (
                     masks[i, ...] == self.config.class_map[key]
-                ).astype(_DTYPE)
+                ).astype(self.config.np_dtype)
         return signals, labels
 
     def extra_repr_keys(self) -> List[str]:
