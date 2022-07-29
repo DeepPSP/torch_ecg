@@ -22,7 +22,7 @@ import torch.nn.functional as F
 from torch import Tensor, nn
 
 from ..cfg import CFG, DEFAULTS
-from ..components.outputs import SequenceLabelingOutput
+from ..components.outputs import SequenceLabellingOutput
 from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
 from ..utils.misc import dict_to_str
 from ..utils.utils_nn import CkptMixin, SizeMixin
@@ -385,7 +385,7 @@ class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
     @torch.no_grad()
     def inference(
         self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5
-    ) -> SequenceLabelingOutput:
+    ) -> SequenceLabellingOutput:
         """ """
         raise NotImplementedError("implement a task specific inference method")
 

@@ -21,7 +21,7 @@ __all__ = [
     "ClassificationOutput",
     "MultiLabelClassificationOutput",
     "SequenceTaggingOutput",
-    "SequenceLabelingOutput",
+    "SequenceLabellingOutput",
     "WaveDelineationOutput",
     "RPeaksDetectionOutput",
 ]
@@ -386,8 +386,8 @@ class SequenceTaggingOutput(BaseOutput):
 
 
 # alias
-SequenceLabelingOutput = SequenceTaggingOutput
-SequenceLabelingOutput.__name__ = "SequenceLabelingOutput"
+SequenceLabellingOutput = SequenceTaggingOutput
+SequenceLabellingOutput.__name__ = "SequenceLabellingOutput"
 
 
 class WaveDelineationOutput(SequenceTaggingOutput):

@@ -21,7 +21,7 @@ except ModuleNotFoundError:
 from torch_ecg.cfg import CFG
 from torch_ecg.components.outputs import (
     MultiLableClassificationOutput,
-    SequenceLabelingOutput,
+    SequenceLabellingOutput,
 )
 from torch_ecg.models import ECG_CRNN, ECG_SEQ_LAB_NET
 from torch_ecg.utils.utils_data import mask_to_intervals
@@ -179,7 +179,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         input: Union[Sequence[float], np.ndarray, Tensor],
         bin_pred_thr: float = 0.5,
         rpeak_inds: Optional[List[np.ndarray]] = None,
-    ) -> SequenceLabelingOutput:
+    ) -> SequenceLabellingOutput:
         """
 
         auxiliary function to `forward`, for CPSC2020,
@@ -250,7 +250,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
             else []
             for l_itv in PVC_intervals
         ]
-        return SequenceLabelingOutput(
+        return SequenceLabellingOutput(
             classes=self.classes,
             prob=prob,
             pred=pred,
@@ -261,7 +261,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
     @torch.no_grad()
     def inference_CPSC2020(
         self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5
-    ) -> SequenceLabelingOutput:
+    ) -> SequenceLabellingOutput:
         """
         alias for `self.inference`
         """
