@@ -725,14 +725,14 @@ def _adjust_cnn_filter_lengths(
     pattern: str = "filter_length|filt_size",
 ) -> dict:
     """
-
     adjust the filter lengths (kernel sizes) in the config for convolutional neural networks,
     according to the new sampling frequency
 
     Parameters
     ----------
     config: dict,
-        the config dictionary
+        the config dictionary,
+        this dict is NOT modified
     fs: int,
         the new sampling frequency
     ensure_odd: bool, default True,
@@ -751,9 +751,13 @@ def _adjust_cnn_filter_lengths(
     for k, v in config.items():
         if isinstance(v, dict):
             tmp_config = v
+            original_fs = tmp_config.get("fs", None)
             tmp_config.update({"fs": config["fs"]})
             config[k] = _adjust_cnn_filter_lengths(tmp_config, fs, ensure_odd, pattern)
-            config[k].pop("fs", None)
+            if original_fs is None:
+                config[k].pop("fs", None)
+            else:
+                config[k]["fs"] = fs
         elif re.findall(pattern, k):
             if isinstance(v, (Sequence, np.ndarray)):  # DO NOT use `Iterable`
                 config[k] = [
@@ -786,14 +790,14 @@ def adjust_cnn_filter_lengths(
     pattern: str = "filter_length|filt_size",
 ) -> dict:
     """
-
     adjust the filter lengths in the config for convolutional neural networks,
     according to the new sampling frequency
 
     Parameters
     ----------
     config: dict,
-        the config dictionary
+        the config dictionary,
+        this dict is NOT modified
     fs: int,
         the new sampling frequency
     ensure_odd: bool, default True,
