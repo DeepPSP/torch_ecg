@@ -809,6 +809,7 @@ def _ann_to_beat_ann_epoch_v3(
     def download(self) -> NoReturn:
         """download the database from self.url"""
         http_get(self.url, self.db_dir, extract=True)
+        self._ls_rec()
 
 
 def compute_metrics(

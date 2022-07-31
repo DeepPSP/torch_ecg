@@ -393,6 +393,7 @@ class SPH(_DataBase):
             url = self.url[filename]
             if not (self.db_dir / filename).is_file():
                 http_get(url, self.db_dir, filename=filename)
+        self._ls_rec()
 
     def plot(
         self,

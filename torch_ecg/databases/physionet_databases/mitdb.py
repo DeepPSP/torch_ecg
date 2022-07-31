@@ -258,7 +258,6 @@ class MITDB(PhysioNetDataBase):
         rhythm_types: Optional[Sequence[str]] = None,
         beat_format: str = "beat",
         beat_types: Optional[Sequence[str]] = None,
-        extended_beats: bool = False,
         keep_original: bool = False,
     ) -> dict:
         """
@@ -357,8 +356,8 @@ class MITDB(PhysioNetDataBase):
             for b in beat_ann:
                 b.index -= sf
 
-        if not extended_beats:
-            beat_ann = [b for b in beat_ann if b.symbol in self.beat_types]
+        # if not extended_beats:
+        #     beat_ann = [b for b in beat_ann if b.symbol in self.beat_types]
 
         if beat_format.lower() == "dict":
             beat_ann = {
@@ -398,8 +397,6 @@ class MITDB(PhysioNetDataBase):
             end index of the annotations to be loaded
         rhythm_format: str, default "intervals", case insensitive,
             format of returned annotation, can also be "mask"
-        beat_format: str, default "beat", case insensitive,
-            format of returned annotation, can also be "dict"
         rhythm_types: list of str, optional,
             defaults to `self.rhythm_types`
             if not None, only the rhythm annotations with the specified types will be returned
@@ -493,7 +490,7 @@ class MITDB(PhysioNetDataBase):
 
         Returns
         -------
-        rpeak_inds, ndarray,
+        rpeak_inds: ndarray,
             locations (indices) of the all the rpeaks (qrs complexes)
 
         """

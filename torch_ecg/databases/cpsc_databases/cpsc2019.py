@@ -380,6 +380,7 @@ class CPSC2019(CPSCDataBase):
         #     "a .zip file converted from the .rar file."
         # )
         http_get(self.url, self.db_dir, extract=True)
+        self._ls_rec()
 
 
 def compute_metrics(

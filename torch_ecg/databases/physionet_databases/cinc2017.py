@@ -372,6 +372,7 @@ class CINC2017(PhysioNetDataBase):
         if compressed:
             with zipfile.ZipFile(str(self.db_dir / "training2017.zip")) as zip_ref:
                 zip_ref.extractall()
+        self._ls_rec()
 
     def _validation_set(self) -> List[str]:
         """

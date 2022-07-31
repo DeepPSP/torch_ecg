@@ -1509,6 +1509,7 @@ class CINC2020(PhysioNetDataBase):
         """ """
         for url in self.url:
             http_get(url, self.db_dir_base / _stem(url), extract=True)
+        self._ls_rec()
 
     def __len__(self) -> int:
         """

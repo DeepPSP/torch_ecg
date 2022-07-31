@@ -2031,6 +2031,7 @@ class CINC2021(PhysioNetDataBase):
         for url in self.url:
             http_get(url, self.db_dir_base, extract=False)
         prepare_dataset(self.db_dir_base, verbose=True)
+        self._ls_rec()
 
     def __len__(self) -> int:
         """

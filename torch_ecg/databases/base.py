@@ -631,6 +631,7 @@ class PhysioNetDataBase(_DataBase):
             keep_subdirs=True,
             overwrite=False,
         )
+        self._ls_rec()
 
 
 class NSRRDataBase(_DataBase):
