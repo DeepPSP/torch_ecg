@@ -147,7 +147,7 @@ class LTAFDB(PhysioNetDataBase):
         Returns
         -------
         sid: int,
-            the `get_subject_id` corr. to `rec`
+            the `subject_id` corr. to `rec`
 
         """
         raise NotImplementedError
