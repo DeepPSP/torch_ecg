@@ -11,7 +11,7 @@ except ModuleNotFoundError:
 
     sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
 
-from torch_ecg.databases import AFDB  # noqa: F401; noqa: F401
+from torch_ecg.databases import AFDB  # noqa: F401
 from torch_ecg.databases import CINC2017  # noqa: F401
 from torch_ecg.databases import CINC2018  # noqa: F401
 from torch_ecg.databases import CINC2020  # noqa: F401
@@ -21,6 +21,7 @@ from torch_ecg.databases import LUDB  # noqa: F401
 from torch_ecg.databases import MITDB  # noqa: F401
 from torch_ecg.databases import ApneaECG  # noqa: F401
 from torch_ecg.databases import CPSC2019  # noqa: F401
+from torch_ecg.databases import QTDB  # noqa: F401
 
 
 ###############################################################################
@@ -86,6 +87,19 @@ def test_download_cpsc2019():
     db.download()
     db._ls_rec()
     assert len(db) == 2000
+    shutil.rmtree(db_dir)
+
+
+def test_download_qtdb():
+    """ """
+    # download qtdb
+    db_dir = _CWD / "qtdb"
+    db_dir.mkdir(parents=True, exist_ok=True)
+    db = QTDB(db_dir)
+    assert len(db) == 0
+    db.download(compressed=True)
+    db._ls_rec()
+    assert len(db) == 105
     shutil.rmtree(db_dir)
 
 

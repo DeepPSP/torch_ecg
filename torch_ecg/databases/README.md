@@ -16,6 +16,7 @@ After migration, all should be tested again, the progression:
 | LTAFDB        | [PhysioNet](https://physionet.org/content/ltafdb/1.0.0/)         | :heavy_check_mark: | :x:                | :x:                |
 | LUDB          | [PhysioNet](https://physionet.org/content/ludb/1.0.1/)           | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | MITDB         | [PhysioNet](https://physionet.org/content/mitdb/1.0.0/)          | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| QTDB          | [PhysioNet](https://physionet.org/content/qtdb/1.0.0/)           | :heavy_check_mark: | :heavy_check_mark: | :x:                |
 | SHHS          | [NSRR](https://sleepdata.org/datasets/shhs)                      | :heavy_check_mark: | :x:                | :x:                |
 | CPSC2018      | [CPSC](http://2018.icbeb.org/Challenge.html)                     | :heavy_check_mark: | :heavy_check_mark: | :x:                |
 | CPSC2019      | [CPSC](http://2019.icbeb.org/Challenge.html)                     | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |

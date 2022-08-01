@@ -11,8 +11,10 @@ from .base import (
 )
 from .cpsc_databases import CPSC2018, CPSC2019, CPSC2020, CPSC2021
 from .nsrr_databases import SHHS
+from .other_databases import SPH
 from .physionet_databases import (
     AFDB,
+    ApneaECG,
     CINC2017,
     CINC2018,
     CINC2020,
@@ -20,7 +22,7 @@ from .physionet_databases import (
     LTAFDB,
     LUDB,
     MITDB,
-    ApneaECG,
+    QTDB,
 )
 
 __all__ = [
@@ -34,6 +36,7 @@ __all__ = [
     "LTAFDB",
     "LUDB",
     "MITDB",
+    "QTDB",
     # from CPSC
     "CPSC2018",
     "CPSC2019",
@@ -41,6 +44,9 @@ __all__ = [
     "CPSC2021",
     # from NSRR
     "SHHS",
+    # other databases
+    "SPH",
+    # auxilliary data, functions and classes
     "aux_data",
     "WFDB_Beat_Annotations",
     "WFDB_Non_Beat_Annotations",
