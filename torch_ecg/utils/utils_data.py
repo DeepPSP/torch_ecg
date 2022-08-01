@@ -5,8 +5,9 @@ utilities for convertions of data, labels, masks, etc.
 
 import os
 import warnings
-from collections import namedtuple, Counter
+from collections import namedtuple, Counter  # noqa: F401
 from copy import deepcopy
+from dataclasses import dataclass
 from numbers import Real
 from typing import (
     Dict,
@@ -339,10 +340,56 @@ def ensure_siglen(
     return out_values.astype(dtype)
 
 
-ECGWaveForm = namedtuple(
-    typename="ECGWaveForm",
-    field_names=["name", "onset", "offset", "peak", "duration"],
-)
+@dataclass
+class ECGWaveForm:
+    """
+    ECG waveform object
+
+    Parameters
+    ----------
+    name: str,
+        name of the wave, e.g. "N", "p", "t", etc.
+    onset: real number,
+        onset index of the wave,
+        np.nan for unknown/unannotated onset
+    offset: real number,
+        offset index of the wave,
+        np.nan for unknown/unannotated offset
+    peak: real number,
+        peak index of the wave,
+        np.nan for unknown/unannotated peak
+    duration: real number,
+        duration of the wave, with units in milliseconds,
+        np.nan for unknown/unannotated duration
+
+    TODO:
+    -----
+    add `fs` field to indicate the sampling rate of the waveform,
+    and make `duration` a property computed from `fs`, `onset`, and `offset`
+    """
+
+    name: str
+    onset: Real
+    offset: Real
+    peak: Real
+    duration: Real
+
+    @property
+    def duration_(self) -> Real:
+        """
+        duration of the wave, with units in number of samples
+        """
+        try:
+            return self.offset - self.onset
+        except TypeError:
+            return np.nan
+
+
+# ECGWaveForm = namedtuple(
+#     typename="ECGWaveForm",
+#     field_names=["name", "onset", "offset", "peak", "duration"],
+# )
+
 ECGWaveFormNames = [
     "pwave",
     "qrs",
