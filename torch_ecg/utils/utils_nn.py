@@ -8,7 +8,7 @@ from copy import deepcopy
 from itertools import repeat
 from math import floor
 from numbers import Real
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import List, Optional, Sequence, Tuple, Union, Dict
 
 import numpy as np
 import torch
@@ -675,9 +675,37 @@ def compute_receptive_field(
     return receptive_field
 
 
-def default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, ...]:
+def default_collate_fn(
+    batch: Sequence[Union[Tuple[np.ndarray, ...], Dict[str, np.ndarray]]]
+) -> Union[Tuple[Tensor, ...], Dict[str, Tensor]]:
     """
+    collate functions for model training
 
+    the data generator (`Dataset`) should generate (`__getitem__`) n-tuples `signals, labels, ...`,
+    or dictionaries of tensors
+
+    Parameters
+    ----------
+    batch: sequence,
+        sequence of n-tuples,
+        in which the first element is the signal, the second is the label, ...;
+        or sequence of dictionaries of tensors
+
+    Returns
+    -------
+    tuple or dict of Tensor,
+        the concatenated values to feed into neural networks
+    """
+    if isinstance(batch[0], dict):
+        keys = batch[0].keys()
+        collated = _default_collate_fn([tuple(b[k] for k in keys) for b in batch])
+        return {k: collated[i] for i, k in enumerate(keys)}
+    else:
+        return _default_collate_fn(batch)
+
+
+def _default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, ...]:
+    """
     collate functions for model training
 
     the data generator (`Dataset`) should generate (`__getitem__`) n-tuples `signals, labels, ...`
