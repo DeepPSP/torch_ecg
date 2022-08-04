@@ -187,7 +187,7 @@ TrainCfg.bandpass = None
 #     highcut=60,
 # )
 
-# configs of data aumentation
+# configs of data augmentation
 # TrainCfg.label_smooth = CFG(
 #     prob=0.8,
 #     smoothing=0.1,

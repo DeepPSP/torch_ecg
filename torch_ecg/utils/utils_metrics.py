@@ -650,7 +650,30 @@ def cls_to_bin(
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """ """
+    """
+    Convert categorical (of shape (n_samples,)) labels and outputs
+    to binary (of shape (n_samples, n_classes)) labels and outputs if applicable.
+
+    Parameters
+    ----------
+    labels: ndarray or Tensor,
+        categorical labels of shape (n_samples,)
+        or binary labels of shape (n_samples, n_classes)
+    outputs: ndarray or Tensor,
+        categorical outputs of shape (n_samples,)
+        or binary outputs of shape (n_samples, n_classes)
+    num_classes: int, optional,
+        number of classes,
+        required if both `labels` and `outputs` are categorical
+
+    Returns
+    -------
+    labels: ndarray,
+        binary labels of shape (n_samples, n_classes)
+    outputs: ndarray,
+        binary outputs of shape (n_samples, n_classes)
+
+    """
     if isinstance(labels, Tensor):
         labels = labels.cpu().numpy()
     if isinstance(outputs, Tensor):
@@ -670,7 +693,22 @@ def cls_to_bin(
 
 
 def _cls_to_bin(cls: np.ndarray, shape: Tuple[int]) -> np.ndarray:
-    """ """
+    """
+    Convert categorical array to binary array.
+
+    Parameters
+    ----------
+    cls: ndarray,
+        categorical array of shape (n_samples,)
+    shape: tuple,
+        shape of binary array
+
+    Returns
+    -------
+    bin_: ndarray,
+        binarized array of `cls` of shape (n_samples, n_classes)
+
+    """
     bin_ = np.zeros(shape)
     for i in range(shape[0]):
         bin_[i, cls[i]] = 1
