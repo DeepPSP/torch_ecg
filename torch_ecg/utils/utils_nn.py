@@ -729,7 +729,7 @@ def _default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor
     ret = []
     for i in range(n_fields):
         values = [[item[i]] for item in batch]
-        values = np.concatenate(values, axis=0).astype(DEFAULTS.np_dtype)
+        values = np.concatenate(values, axis=0)
         values = torch.from_numpy(values)
         ret.append(values)
     return tuple(ret)
