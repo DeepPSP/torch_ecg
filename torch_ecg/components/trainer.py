@@ -36,7 +36,7 @@ from ..models.loss import (
     MaskedBCEWithLogitsLoss,
 )
 from ..utils.misc import ReprMixin, dict_to_str, dicts_equal, get_date_str, get_kwargs
-from ..utils.utils_nn import default_collate_fn as collate_fn  # noqa: F401
+from ..utils.utils_nn import default_collate_fn
 from .loggers import LoggerManager
 
 __all__ = [
@@ -63,6 +63,7 @@ class BaseTrainer(ReprMixin, ABC):
         dataset_cls: Dataset,
         model_config: dict,
         train_config: dict,
+        collate_fn: Optional[callable] = None,
         device: Optional[torch.device] = None,
         lazy: bool = False,
     ) -> NoReturn:
@@ -96,6 +97,9 @@ class BaseTrainer(ReprMixin, ABC):
                 "optimizer": str,
                     "decay": float, optional, depending on the optimizer
                     "momentum": float, optional, depending on the optimizer
+        collate_fn: callable, optional,
+            the collate function for the data loader,
+            defaults to `default_collate_fn`
         device: torch.device, optional,
             the device to be used for training
         lazy: bool, default False,
@@ -118,6 +122,7 @@ class BaseTrainer(ReprMixin, ABC):
         self.dtype = next(self._model.parameters()).dtype
         self.model.to(self.device)
         self.lazy = lazy
+        self.collate_fn = collate_fn or default_collate_fn
 
         self.log_manager = None
         self.augmenter_manager = None
@@ -573,7 +578,7 @@ class BaseTrainer(ReprMixin, ABC):
             num_workers=num_workers,
             pin_memory=True,
             drop_last=False,
-            collate_fn=collate_fn,
+            collate_fn=self.collate_fn,
         )
         self.val_loader = DataLoader(
             dataset=val_dataset,
@@ -582,7 +587,7 @@ class BaseTrainer(ReprMixin, ABC):
             num_workers=num_workers,
             pin_memory=True,
             drop_last=False,
-            collate_fn=collate_fn,
+            collate_fn=self.collate_fn,
         )
         ```
 
