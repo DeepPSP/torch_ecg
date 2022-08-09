@@ -1684,6 +1684,10 @@ class BlurPool(nn.Module, SizeMixin):
             a = np.array([1.0, 5.0, 10.0, 10.0, 5.0, 1.0])
         elif self.__filt_size == 7:
             a = np.array([1.0, 6.0, 15.0, 20.0, 15.0, 6.0, 1.0])
+        else:
+            raise NotImplementedError(
+                f"Filter size of {self.__filt_size} is not implemented"
+            )
 
         # saved and restored in the state_dict, but not trained by the optimizer
         filt = Tensor(a)
