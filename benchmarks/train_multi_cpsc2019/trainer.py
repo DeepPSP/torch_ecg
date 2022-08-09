@@ -96,7 +96,14 @@ class CPSC2019Trainer(BaseTrainer):
         lazy: bool, default True,
             whether to initialize the data loader lazily
         """
-        super().__init__(model, CPSC2019, model_config, train_config, device, lazy)
+        super().__init__(
+            model=model,
+            dataset_cls=CPSC2019,
+            model_config=model_config,
+            train_config=train_config,
+            device=device,
+            lazy=lazy,
+        )
 
     def _setup_dataloaders(
         self,
