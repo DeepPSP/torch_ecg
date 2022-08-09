@@ -750,7 +750,7 @@ def _adjust_cnn_filter_lengths(
     config: dict,
     fs: int,
     ensure_odd: bool = True,
-    pattern: str = "filter_length|filt_size",
+    pattern: str = "filter_length|filter_size",
 ) -> dict:
     """
     adjust the filter lengths (kernel sizes) in the config for convolutional neural networks,
@@ -765,7 +765,7 @@ def _adjust_cnn_filter_lengths(
         the new sampling frequency
     ensure_odd: bool, default True,
         if True, the new filter lengths are ensured to be odd
-    pattern: str, default "filter_length|filt_size",
+    pattern: str, default "filter_length|filter_size",
         the pattern to search for in the config items related to filter lengths
 
     Returns
@@ -778,7 +778,7 @@ def _adjust_cnn_filter_lengths(
     config = deepcopy(config)
     for k, v in config.items():
         if isinstance(v, dict):
-            tmp_config = v
+            tmp_config = deepcopy(v)
             original_fs = tmp_config.get("fs", None)
             tmp_config.update({"fs": config["fs"]})
             config[k] = _adjust_cnn_filter_lengths(tmp_config, fs, ensure_odd, pattern)
@@ -815,7 +815,7 @@ def adjust_cnn_filter_lengths(
     config: dict,
     fs: int,
     ensure_odd: bool = True,
-    pattern: str = "filter_length|filt_size",
+    pattern: str = "filter_length|filter_size",
 ) -> dict:
     """
     adjust the filter lengths in the config for convolutional neural networks,
@@ -830,7 +830,7 @@ def adjust_cnn_filter_lengths(
         the new sampling frequency
     ensure_odd: bool, default True,
         if True, the new filter lengths are ensured to be odd
-    pattern: str, default "filter_length|filt_size",
+    pattern: str, default "filter_length|filter_size",
         the pattern to search for in the config items related to filter lengths
 
     Returns
