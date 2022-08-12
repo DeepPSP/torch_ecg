@@ -16,8 +16,7 @@ from ..components.outputs import BaseOutput
 from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
 from ..utils.misc import dict_to_str
 from ..utils.utils_nn import CkptMixin, SizeMixin
-from ._nets import (  # noqa: F401
-    DownSample,
+from ._nets import (
     GlobalContextBlock,
     NonLocalBlock,
     SEBlock,
@@ -30,8 +29,8 @@ from .cnn.multi_scopic import MultiScopicCNN
 from .cnn.resnet import ResNet
 from .cnn.mobilenet import MobileNetV1, MobileNetV2, MobileNetV3
 from .cnn.vgg import VGG16
-from .cnn.xception import Xception  # noqa: F401
-from .transformers import Transformer  # noqa: F401
+from .cnn.xception import Xception
+from .transformers import Transformer
 
 if DEFAULTS.torch_dtype == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -114,6 +113,8 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
             self.cnn = DenseNet(self.n_leads, **cnn_config)
         elif "vgg16" in cnn_choice:
             self.cnn = VGG16(self.n_leads, **cnn_config)
+        elif "xception" in cnn_choice:
+            self.cnn = Xception(self.n_leads, **cnn_config)
         else:
             raise NotImplementedError(
                 f"the CNN \042{cnn_choice}\042 not implemented yet"
