@@ -1,7 +1,7 @@
 """custom loss functions"""
 
 from numbers import Real
-from typing import Any, NoReturn, Optional, Union
+from typing import Any, NoReturn, Optional
 
 import torch
 import torch.nn.functional as F
@@ -25,7 +25,6 @@ def weighted_binary_cross_entropy(
     reduce: bool = True,
 ) -> Tensor:
     """
-
     Parameters
     ----------
     sigmoid_x: Tensor,
@@ -42,6 +41,7 @@ def weighted_binary_cross_entropy(
     Reference (original source):
     ----------------------------
     https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
+
     """
     if not (targets.size() == sigmoid_x.size()):
         raise ValueError(
@@ -83,8 +83,7 @@ class WeightedBCELoss(nn.Module):
         size_average: bool = True,
         reduce: bool = True,
     ) -> NoReturn:
-        """checked,
-
+        """
         Parameters
         ----------
         pos_weight: Tensor, default 1,
@@ -99,6 +98,7 @@ class WeightedBCELoss(nn.Module):
             If `weight` is None, then it remains None.
         size_average: bool, default True,
         reduce: bool, default True,
+
         """
         super().__init__()
 
@@ -110,7 +110,6 @@ class WeightedBCELoss(nn.Module):
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -122,6 +121,7 @@ class WeightedBCELoss(nn.Module):
         -------
         loss: Tensor,
             the loss w.r.t. `input` and `target`
+
         """
         if self.PosWeightIsDynamic:
             positive_counts = target.sum(dim=0)
@@ -141,22 +141,21 @@ class WeightedBCELoss(nn.Module):
 class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
     """ """
 
-    __name__ = "BCEWithLogitsWithClassWeightsLoss"
+    __name__ = "BCEWithLogitsWithClassWeightLoss"
 
     def __init__(self, class_weight: Tensor) -> NoReturn:
         """
-
         Parameters
         ----------
         class_weight: Tensor,
             class weight, of shape (1, n_classes)
+
         """
         super().__init__(reduction="none")
-        self.class_weight = class_weight
+        self.register_buffer("class_weight", class_weight)
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -168,6 +167,7 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
         -------
         loss: Tensor,
             the loss (scalar tensor) w.r.t. `input` and `target`
+
         """
         loss = super().forward(input, target)
         loss = torch.mean(loss * self.class_weight)
@@ -185,7 +185,6 @@ class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
 
     def forward(self, input: Tensor, target: Tensor, weight_mask: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -203,6 +202,7 @@ class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
         NOTE
         ----
         `input`, `target`, and `weight_mask` should be 3-D tensors of the same shape
+
         """
         loss = super().forward(input, target)
         loss = torch.mean(loss * weight_mask)
@@ -211,7 +211,6 @@ class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
 
 class FocalLoss(nn.modules.loss._WeightedLoss):
     r"""
-
     the focal loss is computed as follows:
     .. math::
         \operatorname{FL}(p_t) = -\alpha_t (1 - p_t)^{\gamma} \, \log(p_t)
@@ -224,6 +223,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
     2. https://github.com/kornia/kornia/blob/master/kornia/losses/focal.py
     3. https://github.com/clcarwin/focal_loss_pytorch/blob/master/focalloss.py
     4. https://discuss.pytorch.org/t/is-this-a-correct-implementation-for-focal-loss-in-pytorch/43327
+
     """
     __name__ = "FocalLoss"
 
@@ -239,7 +239,6 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         **kwargs: Any
     ) -> NoReturn:
         """
-
         Parameters
         ----------
         gamma: float, default 2.0,
@@ -258,6 +257,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         reduction: str, default "mean",
             the reduction to apply to the output, can be one of
             "none", "mean", "sum"
+
         """
         if multi_label or weight is not None:
             w = weight
@@ -276,7 +276,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
             self.entropy_func = F.binary_cross_entropy_with_logits
             # for `binary_cross_entropy_with_logits`,
             # its parameter `weight` is a manual rescaling weight given to the loss of each batch element
-            self.class_weight = class_weight
+            self.register_buffer("class_weight", class_weight)
         else:
             self.entropy_func = F.cross_entropy
             # for `cross_entropy`,
@@ -289,7 +289,6 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -302,6 +301,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         -------
         fl: Tensor,
             the focal loss w.r.t. `input` and `target`
+
         """
         entropy = self.entropy_func(
             input,
@@ -344,20 +344,19 @@ class AsymmetricLoss(nn.Module):
 
     def __init__(
         self,
-        gamma_neg: Union[Real, torch.Tensor] = 4,
-        gamma_pos: Union[Real, torch.Tensor] = 1,
+        gamma_neg: Real = 4,
+        gamma_pos: Real = 1,
         prob_margin: float = 0.05,
         disable_torch_grad_focal_loss: bool = False,
         reduction: str = "mean",
         implementation: str = "alibaba-miil",
     ) -> NoReturn:
         """
-
         Parameters
         ----------
-        gamma_neg: real number or Tensor, default 4,
+        gamma_neg: real number, default 4,
             exponent of the multiplier to the negative loss
-        gamma_pos: real number or Tensor, default 1,
+        gamma_pos: real number, default 1,
             exponent of the multiplier to the positive loss
         prob_margin: float, default 0.05,
             the probability margin
@@ -379,6 +378,7 @@ class AsymmetricLoss(nn.Module):
         ----
         1. evaluate `gamma_neg`, `gamma_pos` be set as tensors, of shape (1, n_classes),
         one ratio of positive to negative for each class
+
         """
         super().__init__()
         self.implementation = implementation.lower()
@@ -412,7 +412,6 @@ class AsymmetricLoss(nn.Module):
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -424,6 +423,7 @@ class AsymmetricLoss(nn.Module):
         -------
         loss: Tensor,
             the loss w.r.t. `input` and `target`
+
         """
         if self.implementation == "alibaba-miil":
             return self._forward_alibaba_miil(input, target)
@@ -432,7 +432,6 @@ class AsymmetricLoss(nn.Module):
 
     def _forward_deep_psp(self, input: Tensor, target: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -444,6 +443,7 @@ class AsymmetricLoss(nn.Module):
         -------
         loss: Tensor,
             the loss w.r.t. `input` and `target`
+
         """
         self.targets = target
         self.anti_targets = 1 - target
@@ -479,7 +479,6 @@ class AsymmetricLoss(nn.Module):
 
     def _forward_alibaba_miil(self, input: Tensor, target: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -491,6 +490,7 @@ class AsymmetricLoss(nn.Module):
         -------
         loss: Tensor,
             the loss w.r.t. `input` and `target`
+
         """
         self.targets = target
         self.anti_targets = 1 - target
