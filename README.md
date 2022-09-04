@@ -12,7 +12,7 @@ ECG Deep Learning Framework Implemented using PyTorch.
 
 The system design is depicted as follows
 
-<!-- ![system_design](/images/system_design.jpg) -->
+<!-- ![system_design](images/system_design.jpg) -->
 <p align="middle">
   <img src="/images/system_design.jpg" width="80%" />
 </p>
@@ -71,12 +71,12 @@ python -m pip install git+https://github.com/DeepPSP/torch_ecg.git
 
 ## Main Modules
 
-### [Augmenters](/torch_ecg/augmenters)
+### [Augmenters](torch_ecg/augmenters)
 
 <details>
 <summary>Click to expand!</summary>
 
-Augmenters are classes (subclasses of `torch` `Module`) that perform data augmentation in a uniform way and are managed by the [`AugmenterManager`](/torch_ecg/augmenters/augmenter_manager.py) (also a subclass of `torch` `Module`). Augmenters and the manager share a common signature of the `formward` method:
+Augmenters are classes (subclasses of `torch` `Module`) that perform data augmentation in a uniform way and are managed by the [`AugmenterManager`](torch_ecg/augmenters/augmenter_manager.py) (also a subclass of `torch` `Module`). Augmenters and the manager share a common signature of the `formward` method:
 
 ```python
 forward(self, sig:Tensor, label:Optional[Tensor]=None, *extra_tensors:Sequence[Tensor], **kwargs:Any) -> Tuple[Tensor, ...]:
@@ -116,18 +116,18 @@ sig, label, mask = torch.rand(2,12,5000), torch.rand(2,26), torch.rand(2,5000,1)
 sig, label, mask = am(sig, label, mask)
 ```
 
-Augmenters can be stochastic along the batch dimension and (or) the channel dimension (ref. the `get_indices` method of the [`Augmenter`](/torch_ecg/augmenters/base.py) base class).
+Augmenters can be stochastic along the batch dimension and (or) the channel dimension (ref. the `get_indices` method of the [`Augmenter`](torch_ecg/augmenters/base.py) base class).
 
 :point_right: [Back to TOC](#torch_ecg)
 
 </details>
   
-### [Preprocessors](/torch_ecg/preprocessors)
+### [Preprocessors](torch_ecg/preprocessors)
 
 <details>
 <summary>Click to expand!</summary>
 
-Also [preprecessors](/torch_ecg/_preprocessors) acting on `numpy` `array`s. Similarly, preprocessors are monitored by a manager
+Also [preprecessors](torch_ecg/_preprocessors) acting on `numpy` `array`s. Similarly, preprocessors are monitored by a manager
 
 ```python
 import torch
@@ -152,13 +152,13 @@ The following preprocessors are implemented
 3. bandpass
 4. resample
 
-For more examples, see the [README file](/torch_ecg/preprocessors/README.md)) of the `preprecessors` module.
+For more examples, see the [README file](torch_ecg/preprocessors/README.md)) of the `preprecessors` module.
 
 :point_right: [Back to TOC](#torch_ecg)
 
 </details>
 
-### [Databases](/torch_ecg/databases)
+### [Databases](torch_ecg/databases)
 
 <details>
 <summary>Click to expand!</summary>
@@ -185,9 +185,9 @@ After migration, all should be tested again, the progression:
 | CPSC2021      | [CPSC](http://2021.icbeb.org/CPSC2021)                           | :heavy_check_mark: |
 | SPH           | [Figshare](https://doi.org/10.6084/m9.figshare.c.5779802.v1)     | :heavy_check_mark: |
 
-NOTE that these classes should not be confused with a `torch` `Dataset`, which is strongly related to the task (or the model). However, one can build `Dataset`s based on these classes, for example the [`Dataset`](/benchmarks/train_hybrid_cpsc2021/dataset.py) for the The 4th China Physiological Signal Challenge 2021 (CPSC2021).
+NOTE that these classes should not be confused with a `torch` `Dataset`, which is strongly related to the task (or the model). However, one can build `Dataset`s based on these classes, for example the [`Dataset`](benchmarks/train_hybrid_cpsc2021/dataset.py) for the The 4th China Physiological Signal Challenge 2021 (CPSC2021).
 
-One can use the built-in `Dataset`s in [`torch_ecg.databases.datasets`](/torch_ecg/databases/datasets) as follows
+One can use the built-in `Dataset`s in [`torch_ecg.databases.datasets`](torch_ecg/databases/datasets) as follows
 
 ```python
 from torch_ecg.databases.datasets.cinc2021 import CINC2021Dataset, CINC2021TrainCfg
@@ -200,7 +200,7 @@ dataset = CINC2021Dataset(config, training=True, lazy=False)
 
 </details>
 
-### [Implemented Neural Network Architectures](/torch_ecg/models)
+### [Implemented Neural Network Architectures](torch_ecg/models)
 
 <details>
 <summary>Click to expand!</summary>
@@ -215,7 +215,7 @@ A typical signature of the instantiation (`__init__`) function of a model is as 
 __init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn
 ```
 
-if a `config` is not specified, then the default config will be used (stored in the [`model_configs`](/torch_ecg/model_configs) module).
+if a `config` is not specified, then the default config will be used (stored in the [`model_configs`](torch_ecg/model_configs) module).
 
 #### Quick Example
 
@@ -297,7 +297,7 @@ model = ECG_CRNN(["NSR", "AF", "PVC", "SPB"], 12, my_model_config)
 
 </details>
 
-### [CNN Backbones](/torch_ecg/models/cnn)
+### [CNN Backbones](torch_ecg/models/cnn)
 
 <details>
 <summary>Click to expand!</summary>
@@ -326,20 +326,20 @@ In general, variants of ResNet are the most commonly used architectures, as can 
 4. U-Squared Net
 5. etc.
 
-More details and a list of references can be found in the [README file](/torch_ecg/models/cnn/README.md) of this module.
+More details and a list of references can be found in the [README file](torch_ecg/models/cnn/README.md) of this module.
 
 :point_right: [Back to TOC](#torch_ecg)
 
 </details>
 
-### [Components](/torch_ecg/components/)
+### [Components](torch_ecg/components/)
 
 <details>
 <summary>Click to expand!</summary>
 
 This module consists of frequently used components such as loggers, trainers, etc.
 
-#### [Loggers](/torch_ecg/components/loggers.py)
+#### [Loggers](torch_ecg/components/loggers.py)
 
 Loggers including
 
@@ -348,7 +348,7 @@ Loggers including
 3. tensorboard logger
 are implemented and manipulated uniformly by a manager.
 
-#### [Outputs](/torch_ecg/components/outputs.py)
+#### [Outputs](torch_ecg/components/outputs.py)
 
 The `Output` classes implemented in this module serve as containers for ECG downstream task model outputs, including
 
@@ -360,7 +360,7 @@ The `Output` classes implemented in this module serve as containers for ECG down
 
 each having some required fields (keys), and is able to hold an arbitrary number of custom fields. These classes are useful for the computation of metrics.
 
-#### [Metrics](/torch_ecg/components/metrics.py)
+#### [Metrics](torch_ecg/components/metrics.py)
 
 This module has the following pre-defined (built-in) `Metrics` classes:
 
@@ -370,7 +370,7 @@ This module has the following pre-defined (built-in) `Metrics` classes:
 
 These metrics are computed according to either [Wikipedia](https://en.wikipedia.org/wiki/Precision_and_recall), or some published literatures.
 
-#### [Trainer](/torch_ecg/components/trainer.py)
+#### [Trainer](torch_ecg/components/trainer.py)
 
 An abstract base class `BaseTrainer` is implemented, in which some common steps in building a training pipeline (workflow) are impemented. A few task specific methods are assigned as `abstractmethod`s, for example the method
 
@@ -391,7 +391,7 @@ for evaluation on the validation set during training and perhaps further for mod
 <details>
 <summary>Click to expand!</summary>
 
-### [R peaks detection algorithms](/torch_ecg/utils/rpeaks.py)
+### [R peaks detection algorithms](torch_ecg/utils/rpeaks.py)
 
 This is a collection of traditional (non deep learning) algorithms for R peaks detection collected from [WFDB](https://github.com/MIT-LCP/wfdb-python) and [BioSPPy](https://github.com/PIA-Group/BioSPPy).
 
@@ -404,22 +404,22 @@ This is a collection of traditional (non deep learning) algorithms for R peaks d
 <details>
 <summary>Click to expand!</summary>
 
-See case studies in the [benchmarks folder](/benchmarks/).
+See case studies in the [benchmarks folder](benchmarks/).
 
 a large part of the case studies are migrated from other DeepPSP repositories, some are implemented in the old fasion, being inconsistent with the new system architecture of `torch_ecg`, hence need updating and testing
 
 | Benchmark                          | Architecture              | Source                                                  | Finished           | Updated            | Tested             |
 | ---------------------------------- | ------------------------- | ------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| [CinC2020](/benchmarks/train_crnn_cinc2020/)   | CRNN                      | [DeepPSP/cinc2020](https://github.com/DeepPSP/cinc2020) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| [CinC2021](/benchmarks/train_crnn_cinc2021/)   | CRNN                      | [DeepPSP/cinc2021](https://github.com/DeepPSP/cinc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| [CPSC2019](/benchmarks/train_multi_cpsc2019/)  | SequenceTagging/U-Net     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| [CPSC2020](/benchmarks/train_hybrid_cpsc2020/) | CRNN/SequenceTagging      | [DeepPSP/cpsc2020](https://github.com/DeepPSP/cpsc2020) | :heavy_check_mark: | :x:                | :x:                |
-| [CPSC2021](/benchmarks/train_hybrid_cpsc2021/) | CRNN/SequenceTagging/LSTM | [DeepPSP/cpsc2021](https://github.com/DeepPSP/cpsc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| [LUDB](/benchmarks/train_unet_ludb/)           | U-Net                     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| [CinC2020](benchmarks/train_crnn_cinc2020/)   | CRNN                      | [DeepPSP/cinc2020](https://github.com/DeepPSP/cinc2020) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| [CinC2021](benchmarks/train_crnn_cinc2021/)   | CRNN                      | [DeepPSP/cinc2021](https://github.com/DeepPSP/cinc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| [CPSC2019](benchmarks/train_multi_cpsc2019/)  | SequenceTagging/U-Net     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| [CPSC2020](benchmarks/train_hybrid_cpsc2020/) | CRNN/SequenceTagging      | [DeepPSP/cpsc2020](https://github.com/DeepPSP/cpsc2020) | :heavy_check_mark: | :x:                | :x:                |
+| [CPSC2021](benchmarks/train_hybrid_cpsc2021/) | CRNN/SequenceTagging/LSTM | [DeepPSP/cpsc2021](https://github.com/DeepPSP/cpsc2021) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| [LUDB](benchmarks/train_unet_ludb/)           | U-Net                     | NA                                                      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
-Taking [CPSC2021](/benchmarks/train_hybrid_cpsc2021) for example, the steps are
+Taking [CPSC2021](benchmarks/train_hybrid_cpsc2021) for example, the steps are
 
-1. Write a [`Dataset`](/benchmarks/train_hybrid_cpsc2021/dataset.py) to fit the training data for the model(s) and the training workflow. Or directly use the built-in `Dataset`s in [`torch_ecg.databases.datasets`](/torch_ecg/databases/datasets). In this example, 3 tasks are considered, 2 of which use a [`MaskedBCEWithLogitsLoss`](/torch_ecg/models/loss.py) function, hence the `Dataset` produces an extra tensor for these 2 tasks
+1. Write a [`Dataset`](benchmarks/train_hybrid_cpsc2021/dataset.py) to fit the training data for the model(s) and the training workflow. Or directly use the built-in `Dataset`s in [`torch_ecg.databases.datasets`](torch_ecg/databases/datasets). In this example, 3 tasks are considered, 2 of which use a [`MaskedBCEWithLogitsLoss`](torch_ecg/models/loss.py) function, hence the `Dataset` produces an extra tensor for these 2 tasks
 
     ```python
     def __getitem__(self, index:int) -> Tuple[np.ndarray, ...]:
@@ -435,8 +435,8 @@ Taking [CPSC2021](/benchmarks/train_hybrid_cpsc2021) for example, the steps are
                 return self._all_data[index], self._all_labels[index], self._all_masks[index]
     ```
 
-2. Inherit a [base model](/torch_ecg/models/ecg_seq_lab_net.py) to create [task specific models](/benchmarks/train_hybrid_cpsc2021/model.py), along with [tailored model configs](/benchmarks/train_hybrid_cpsc2021/cfg.py)
-3. Inherit the [`BaseTrainer`](/torch_ecg/components/trainer.py) to build the [training pipeline](/benchmarks/train_hybrid_cpsc2021/trainer.py), with the `abstractmethod`s (`_setup_dataloaders`, `run_one_step`, `evaluate`, `batch_dim`, etc.) implemented.
+2. Inherit a [base model](torch_ecg/models/ecg_seq_lab_net.py) to create [task specific models](benchmarks/train_hybrid_cpsc2021/model.py), along with [tailored model configs](benchmarks/train_hybrid_cpsc2021/cfg.py)
+3. Inherit the [`BaseTrainer`](torch_ecg/components/trainer.py) to build the [training pipeline](benchmarks/train_hybrid_cpsc2021/trainer.py), with the `abstractmethod`s (`_setup_dataloaders`, `run_one_step`, `evaluate`, `batch_dim`, etc.) implemented.
 
 :point_right: [Back to TOC](#torch_ecg)
 
@@ -444,7 +444,7 @@ Taking [CPSC2021](/benchmarks/train_hybrid_cpsc2021) for example, the steps are
 
 ## CAUTION
 
-For the most of the time, but not always, after updates, I will run the notebooks in the [benchmarks](/benchmarks/) manually. If someone finds some bug, please raise an issue. The test workflow is to be enhanced and automated, see [this project](https://github.com/DeepPSP/torch_ecg/projects/8).
+For the most of the time, but not always, after updates, I will run the notebooks in the [benchmarks](benchmarks/) manually. If someone finds some bug, please raise an issue. The test workflow is to be enhanced and automated, see [this project](https://github.com/DeepPSP/torch_ecg/projects/8).
 
 :point_right: [Back to TOC](#torch_ecg)
 

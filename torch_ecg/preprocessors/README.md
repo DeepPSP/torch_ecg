@@ -3,7 +3,9 @@
 Also [preprocessors](/torch_ecg/_preprocessors) acting on `numpy` `array`s.
 
 ## Basic Usage
+
 `Preprocessor`s do the job of ECG signal preprocessing before fed into some neural network and are monitored by a manager. A short example is as follows
+
 ```python
 import torch
 from torch_ecg.cfg import CFG
@@ -21,6 +23,7 @@ sig = ppm(sig)
 ```
 
 For `Preprocessor`s that operate on the `numpy` `array`s, see the following example
+
 ```python
 import torch
 from torch_ecg.cfg import CFG
@@ -41,6 +44,7 @@ sig, fs = ppm(sig, 200)
 ## Custom Preprocessors
 
 One can create custom preprocessors to be maintained by the manager. The following is a simple example
+
 ```python
 import torch
 from torch_ecg.cfg import CFG
@@ -69,7 +73,9 @@ ppm.add_(dp, pos=1)
 sig = torch.rand(2,12,8000)
 sig = ppm(sig)
 ```
+
 Here is another example for `numpy` version custom preprocessors
+
 ```python
 from numbers import Real
 from typing import Tuple
@@ -108,22 +114,26 @@ sig, fs = ppm(sig, 200)
 ```
 
 The following preprocessors are implemented
+
 1. [baseline removal (detrend)](#baseline-removal)
 2. [normalize (z-score, min-max, naïve)](#normalize)
 3. [bandpass](#bandpass)
 4. [resample](#resample)
 
-
 ## baseline removal
+
 Also known as detrending, via median filter, which removes baseline drifts.
 
 ## normalize
+
 Normalization methods including z-score normalization, min-max normalization, etc. are implemented. Refer to [wikipedia](https://en.wikipedia.org/wiki/Feature_scaling#Methods) for more details.
 
 ## bandpass
+
 This procedure is performed using finite impulse response (FIR) filters, Butterworth filters, etc., which removes noises of frequencies outside the given pass band.
 
 ## resample
+
 Resampling to a fixed sampling rate is done using the `interpolate` function from `torch.nn.functional` or using `resample_poly` function from `scipy.signal`.
 
 ## Issues
