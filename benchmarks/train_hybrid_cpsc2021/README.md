@@ -7,6 +7,7 @@ Paroxysmal Atrial Fibrillation Events Detection from Dynamic ECG Recordings: The
 [CPSC2021-sliced](https://www.kaggle.com/wenh06/cpsc2021-sliced) on Kaggle.
 
 ## Graphical Abstract of the Solution
+
 ![res_pht](images/graphical-abstract.svg)
 
 ## Results (Rankings)
@@ -32,6 +33,7 @@ Raw results are gathered into one zip file, the `val_res.zip` in the [`results`]
 | **LSTM + SeqTag** | **New Union** |   **1.9972**                     | **2.2179**             |
 
 ### Confusion matrices of the LSTM model and the SeqTag model on the validation set
+
 <p align="middle">
   <img src="images/rr-lstm-confusion-matrix.svg" width="33%" />
   &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;
@@ -39,12 +41,14 @@ Raw results are gathered into one zip file, the `val_res.zip` in the [`results`]
 </p>
 
 ### More detailed analysis using `pandas` on the validation set
+
 <p align="middle">
   <img src="images/res_ana_1.png" width="60%" />
   <img src="images/res_ana_2.png" width="110%" />
 </p>
 
 ## References
+
 to add ...
 
 ## [original repository](https://github.com/DeepPSP/cpsc2021)

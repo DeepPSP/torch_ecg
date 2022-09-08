@@ -1,9 +1,9 @@
 
 # [CPSC2019](http://2019.icbeb.org/Challenge.html)
 
-re-production of SOTA model of [CPSC2019](http://2019.icbeb.org/Challenge.html)
+Re-production of SOTA model of [CPSC2019](http://2019.icbeb.org/Challenge.html).
 
-original code can be downloaded [here](https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/CPSC2019-opensource.zip)
+Original code can be downloaded [here](https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/CPSC2019-opensource.zip).
 
 ## evaluation result of the sequence labeling CNN model
 

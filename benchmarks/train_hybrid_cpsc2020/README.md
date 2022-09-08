@@ -3,10 +3,10 @@
 
 Searching for Premature Ventricular Contraction and Supraventricular Premature Beat from Long-term ECGs: The 3rd China Physiological Signal Challenge 2020
 
-
 ## Update on 2020/12/31
 
 Tests are done on a 60s segment (median-filtered and bandpassed, `sample1_fs250.mat` in [this folder](sample_data/)) of a subject with frequent PVC.
+
 * r peak detections are done using [this function](https://github.com/DeepPSP/cpsc2020/blob/master/signal_processing/ecg_rpeaks_dl.py#L33).
 * PVC beats are labeled using red vertical lines.
 * missed PVC beats are labeled using yellow boxes.
@@ -18,6 +18,7 @@ Tests are done on a 60s segment (median-filtered and bandpassed, `sample1_fs250.
 * the last image is the result of the sequence labeling deep learning model with probability threshold 0.5, and filtered by a deep learning classifier.
 
 ### Observations
+
 * an effective and robust rpeak (qrs complex) detector is crucial.
 * the sequence labeling deep learning model (trained only for a dozen epochs because of the approaching deadline) tends to make false positive predictions but seldom has false negatives; while the deep learning classifier (trained only for several hundred epochs) has few false positives but has slightly higher probability to have false negatives.
 * given a good rpeak detector, machine learning models might well be competitive against deep learning models.
@@ -31,8 +32,7 @@ not fully listed
 
 ![final_eval_img](images/CPSC2020_final_result.png)
 
-
-## References:
+## References
 
 [1] [ecg-classification](https://github.com/mondejar/ecg-classification)
 
@@ -42,8 +42,7 @@ not fully listed
 
 [4] [torch_ecg](https://github.com/DeepPSP/torch_ecg)
 
-
-## TODO:
+## TODO
 
 [1] more robust qrs detector (finished)
 
@@ -55,12 +54,8 @@ not fully listed
 
 [5] etc....
 
-
-
 ## [original repository](https://github.com/DeepPSP/cpsc2020)
-
 
 ## NOTE
 
 if you find [this function](https://github.com/DeepPSP/cpsc2020/blob/master/signal_processing/ecg_rpeaks_dl.py#L33) useful, please cite Reference [3]
-
