@@ -44,8 +44,8 @@ _QTDB_INFO = DataBaseInfo(
         | .man:  | reference beat annotations for selected beats only |
         | .q1c:  | manually determined waveform boundary measurements for selected beats (annotator 1 only -- second pass) |
         | .q2c:  | manually determined waveform boundary measurements for selected beats (annotator 2 only -- second pass; available for only 11 records) |
-        | .q1t:  | manually determined waveform boundary measurements for selected beats (annotator 1 only -- first pass) |
-        | .q2t:  | manually determined waveform boundary measurements for selected beats (annotator 2 only -- first pass; available for only 11 records) |
+        | .qt1:  | manually determined waveform boundary measurements for selected beats (annotator 1 only -- first pass) |
+        | .qt2:  | manually determined waveform boundary measurements for selected beats (annotator 2 only -- first pass; available for only 11 records) |
         | .pu:   | automatically determined waveform boundary measurements for all beats (based on both signals) |
         | .pu0:  | automatically determined waveform boundary measurements for all beats (based on signal 0 only) |
         | .pu1:  | automatically determined waveform boundary measurements for all beats (based on signal 1 only) |
