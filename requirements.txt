@@ -1,7 +1,7 @@
 numpy
 scipy
 Cython
-pandas
+pandas<=1.4.4
 scikit-learn
 packaging
 wfdb==3.2.0
