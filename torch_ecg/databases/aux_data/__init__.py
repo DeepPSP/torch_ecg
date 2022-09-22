@@ -18,6 +18,6 @@ __all__ = [
 def get_physionet_dbs() -> pd.DataFrame:
     """
     load the list of PhysioNet databases,
-    locally stored in the file "./physionet_dbs.csv.tar.gz"
+    locally stored in the file "./physionet_dbs.csv.gz"
     """
-    return pd.read_csv(Path(__file__).absolute().parent / "physionet_dbs.csv.tar.gz")
+    return pd.read_csv(Path(__file__).absolute().parent / "physionet_dbs.csv.gz")
