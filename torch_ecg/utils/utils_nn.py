@@ -42,7 +42,6 @@ def extend_predictions(
     preds: Sequence, classes: List[str], extended_classes: List[str]
 ) -> np.ndarray:
     """
-
     extend the prediction arrays to prediction arrays in larger range of classes
 
     Parameters
@@ -67,9 +66,10 @@ def extend_predictions(
     assert _preds.shape[1] == len(
         classes
     ), f"`pred` indicates {_preds.shape[1]} classes, while `classes` has {len(classes)}"
-    assert (
-        len(set(classes) - set(extended_classes)) == 0
-    ), f"`extended_classes` is not a superset of `classes`, with {set(classes)-set(extended_classes)} in `classes` but not in `extended_classes`"
+    assert len(set(classes) - set(extended_classes)) == 0, (
+        "`extended_classes` is not a superset of `classes`, "
+        f"with {set(classes)-set(extended_classes)} in `classes` but not in `extended_classes`"
+    )
 
     extended_preds = np.zeros((_preds.shape[0], len(extended_classes)))
 
@@ -96,7 +96,6 @@ def compute_output_shape(
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
     """
-
     compute the output shape of a (transpose) convolution/maxpool/avgpool layer
 
     Parameters
@@ -186,9 +185,10 @@ def compute_output_shape(
     ]:
         out_channels = num_filters
     dim = len(input_shape) - 2
-    assert (
-        dim > 0
-    ), "input_shape should be a sequence of length at least 3, to be a valid (with batch and channel) shape of a non-degenerate Tensor"
+    assert dim > 0, (
+        "input_shape should be a sequence of length at least 3, "
+        "to be a valid (with batch and channel) shape of a non-degenerate Tensor"
+    )
 
     # none_dim_msg = "only batch and channel dimension can be `None`"
     # if channel_last:
@@ -315,8 +315,7 @@ def compute_conv_output_shape(
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
-    """finished, cheched,
-
+    """
     compute the output shape of a convolution/maxpool/avgpool layer
 
     input_shape: sequence of int or None,
@@ -364,8 +363,7 @@ def compute_maxpool_output_shape(
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
-    """finished, cheched,
-
+    """
     compute the output shape of a maxpool layer
 
     input_shape: sequence of int or None,
@@ -410,8 +408,7 @@ def compute_avgpool_output_shape(
     padding: Union[Sequence[int], int] = 0,
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
-    """finished, cheched,
-
+    """
     compute the output shape of a avgpool layer
 
     input_shape: sequence of int or None,
@@ -458,7 +455,6 @@ def compute_deconv_output_shape(
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
     """
-
     compute the output shape of a transpose convolution layer
 
     Parameters
@@ -526,7 +522,6 @@ def compute_sequential_output_shape(
     batch_size: Optional[int] = None,
 ) -> Sequence[Union[int, None]]:
     """
-
     compute the output shape of a sequential model
 
     Parameters
@@ -558,7 +553,6 @@ def compute_module_size(
     module: nn.Module, human: bool = False, dtype: str = "float32"
 ) -> Union[int, str]:
     """
-
     compute the size (number of parameters) of a module
 
     Parameters
@@ -600,7 +594,6 @@ def compute_receptive_field(
     input_len: Optional[int] = None,
 ) -> Union[int, float]:
     r"""
-
     computes the (generic) receptive field of feature map of certain channel,
     from certain flow (if not merged, different flows, e.g. shortcut, must be computed separately),
     for convolutions, (non-global) poolings.
@@ -897,7 +890,6 @@ class CkptMixin(object):
         cls, path: str, device: Optional[torch.device] = None
     ) -> Tuple[nn.Module, dict]:
         """
-
         load a model from a checkpoint
 
         Parameters

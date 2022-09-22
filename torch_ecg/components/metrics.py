@@ -81,14 +81,14 @@ class ClassificationMetrics(Metrics):
             k: np.nan
             for k in [
                 "sens",  # sensitivity, recall, hit rate, or true positive rate
-                "spec",  # specificity, selectivity or true negative rate
-                "prec",  # precision or positive predictive value
+                "spec",  # specificity, selectivity, or true negative rate
+                "prec",  # precision, or positive predictive value
                 "npv",  # negative predictive value
                 "jac",  # jaccard index, threat score, or critical success index
                 "acc",  # accuracy
                 "phi",  # phi coefficient, or matthews correlation coefficient
-                "fnr",  # false negative rate, miss rate
-                "fpr",  # false positive rate, fall-out
+                "fnr",  # false negative rate, or miss rate
+                "fpr",  # false positive rate, or fall-out
                 "fdr",  # false discovery rate
                 "for",  # false omission rate
                 "plr",  # positive likelihood ratio
