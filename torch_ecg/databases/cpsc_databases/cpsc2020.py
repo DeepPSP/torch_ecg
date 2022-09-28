@@ -5,7 +5,7 @@
 import math
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -171,9 +171,8 @@ class CPSC2020(CPSCDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -183,6 +182,7 @@ class CPSC2020(CPSCDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="cpsc2020",
@@ -227,7 +227,7 @@ class CPSC2020(CPSCDataBase):
             "pvc": "red",
         }
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """ """
         self._all_records = [f"A{i:02d}" for i in range(1, 1 + self.n_records)]
         self._all_annotations = [f"R{i:02d}" for i in range(1, 1 + self.n_records)]
@@ -261,6 +261,7 @@ class CPSC2020(CPSCDataBase):
         -------
         pid: int,
             the `subject_id` corr. to `rec_no`
+
         """
         pid = 0
         raise NotImplementedError
@@ -307,7 +308,6 @@ class CPSC2020(CPSCDataBase):
         keep_dim: bool = True,
     ) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str or int,
@@ -344,7 +344,6 @@ class CPSC2020(CPSCDataBase):
         sampto: Optional[int] = None,
     ) -> Dict[str, np.ndarray]:
         """
-
         Parameters
         ----------
         rec: str or int,
@@ -359,6 +358,7 @@ class CPSC2020(CPSCDataBase):
         ann: dict,
             with items (ndarray) "SPB_indices" and "PVC_indices",
             which record the indices of SPBs and PVCs
+
         """
         ann_fp = self.get_absolute_path(rec, self.ann_ext, ann=True)
         ann = loadmat(str(ann_fp))["ref"]
@@ -379,7 +379,6 @@ class CPSC2020(CPSCDataBase):
 
     def train_test_split_rec(self, test_rec_num: int = 2) -> Dict[str, List[str]]:
         """
-
         split the records into train set and test set
 
         Parameters
@@ -391,6 +390,7 @@ class CPSC2020(CPSCDataBase):
         -------
         split_res: dict,
             with items `train`, `test`, both being list of record names
+
         """
         if test_rec_num == 1:
             test_records = DEFAULTS.RNG_sample(self.subgroups.VS, 1).tolist()
@@ -430,7 +430,6 @@ class CPSC2020(CPSCDataBase):
         sampto: Optional[int] = None,
     ) -> List[List[int]]:
         """
-
         locate the sample indices of premature beats in a record,
         in the form of a list of lists,
         each list contains the interval of sample indices of premature beats
@@ -485,9 +484,8 @@ class CPSC2020(CPSCDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         rec: str or int,
@@ -510,6 +508,7 @@ class CPSC2020(CPSCDataBase):
         rpeak_inds: array_like, optional,
             indices of R peaks,
             if `data` is None, then indices should be the absolute indices in the record
+
         """
         if isinstance(rec, int):
             rec = self[rec]
@@ -640,7 +639,6 @@ def _ann_to_beat_ann_epoch_v1(
     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
 ) -> dict:
     """
-
     the naive method to label beat types using annotations provided by the dataset
 
     Parameters
@@ -750,7 +748,6 @@ def _ann_to_beat_ann_epoch_v3(
     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
 ) -> dict:
     """
-
     similar to `_ann_to_beat_ann_epoch_v2`, but more reasonable
 
     Parameters
@@ -806,7 +803,7 @@ def _ann_to_beat_ann_epoch_v3(
             "https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/TrainingSet.zip"
         )
 
-    def download(self) -> NoReturn:
+    def download(self) -> None:
         """download the database from self.url"""
         http_get(self.url, self.db_dir, extract=True)
         self._ls_rec()
@@ -820,7 +817,6 @@ def compute_metrics(
     verbose: int = 0,
 ) -> Union[Tuple[int], dict]:
     """
-
     Score Function for all (test) records
 
     Parameters

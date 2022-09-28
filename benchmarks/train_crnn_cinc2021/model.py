@@ -2,7 +2,7 @@
 """
 
 from copy import deepcopy
-from typing import NoReturn, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -37,9 +37,8 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
 
     def __init__(
         self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         classes: list,
@@ -63,7 +62,6 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
         bin_pred_thr: float = 0.5,
     ) -> MultiLabelClassificationOutput:
         """
-
         auxiliary function to `forward`, for CINC2021,
 
         Parameters

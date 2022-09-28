@@ -5,7 +5,7 @@ note that highpass filters also have the effect of baseline removal
 
 import warnings
 from numbers import Real
-from typing import Any, List, NoReturn, Tuple
+from typing import Any, List, Tuple
 
 import numpy as np
 
@@ -23,15 +23,15 @@ class BaselineRemove(PreProcessor):
 
     def __init__(
         self, window1: float = 0.2, window2: float = 0.6, **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         window1: float, default 0.2,
             the smaller window size of the median filter, with units in seconds
         highcut: float, default 0.6,
             the larger window size of the median filter, with units in seconds
+
         """
         self.window1 = window1
         self.window2 = window2
@@ -41,7 +41,6 @@ class BaselineRemove(PreProcessor):
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """
-
         apply the preprocessor to `sig`
 
         Parameters
@@ -60,6 +59,7 @@ class BaselineRemove(PreProcessor):
             the median filtered (hence baseline removed) ECG signal
         fs: int,
             the sampling frequency of the filtered ECG signal
+
         """
         self._check_sig(sig)
         filtered_sig = preprocess_multi_lead_signal(

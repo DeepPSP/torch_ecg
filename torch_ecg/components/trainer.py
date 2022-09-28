@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 from collections import OrderedDict, deque
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, List, NoReturn, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 try:
     from tqdm.auto import tqdm
@@ -66,9 +66,8 @@ class BaseTrainer(ReprMixin, ABC):
         collate_fn: Optional[callable] = None,
         device: Optional[torch.device] = None,
         lazy: bool = False,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         model: Module,
@@ -288,7 +287,7 @@ class BaseTrainer(ReprMixin, ABC):
 
         return self.best_state_dict
 
-    def train_one_epoch(self, pbar: tqdm) -> NoReturn:
+    def train_one_epoch(self, pbar: tqdm) -> None:
         """
         train one epoch, and update the progress bar
 
@@ -352,7 +351,6 @@ class BaseTrainer(ReprMixin, ABC):
         """
         batch dimension, usually 0,
         but can be 1 for some models, e.g. RR_LSTM
-
         """
         raise NotImplementedError
 
@@ -376,7 +374,7 @@ class BaseTrainer(ReprMixin, ABC):
             "learning_rate",
         ] + self.extra_required_train_config_fields
 
-    def _validate_train_config(self) -> NoReturn:
+    def _validate_train_config(self) -> None:
         """ """
         for field in self.required_train_config_fields:
             if field not in self.train_config:
@@ -435,7 +433,7 @@ class BaseTrainer(ReprMixin, ABC):
         """
         raise NotImplementedError
 
-    def _update_lr(self, eval_res: Optional[dict] = None) -> NoReturn:
+    def _update_lr(self, eval_res: Optional[dict] = None) -> None:
         """finished, NOT checked,
 
         update learning rate using lr_scheduler, perhaps based on the eval_res
@@ -463,7 +461,7 @@ class BaseTrainer(ReprMixin, ABC):
         ]:
             self.scheduler.step()
 
-    def _setup_from_config(self, train_config: dict) -> NoReturn:
+    def _setup_from_config(self, train_config: dict) -> None:
         """
         Parameters
         ----------
@@ -507,13 +505,13 @@ class BaseTrainer(ReprMixin, ABC):
         """ """
         return f"{self._model.__name__}_{self.train_config.optimizer}_LR_{self.lr}_BS_{self.batch_size}"
 
-    def _setup_log_manager(self) -> NoReturn:
+    def _setup_log_manager(self) -> None:
         """ """
         config = {"log_suffix": self.extra_log_suffix()}
         config.update(self.train_config)
         self.log_manager = LoggerManager.from_config(config=config)
 
-    def _setup_directories(self) -> NoReturn:
+    def _setup_directories(self) -> None:
         """ """
         if not self.train_config.get("model_dir", None):
             self._train_config.model_dir = self.train_config.checkpoints
@@ -521,7 +519,7 @@ class BaseTrainer(ReprMixin, ABC):
         self.train_config.checkpoints.mkdir(parents=True, exist_ok=True)
         self.train_config.model_dir.mkdir(parents=True, exist_ok=True)
 
-    def _setup_callbacks(self) -> NoReturn:
+    def _setup_callbacks(self) -> None:
         """ """
         self._train_config.monitor = self.train_config.get("monitor", None)
         if self.train_config.monitor is None:
@@ -543,7 +541,7 @@ class BaseTrainer(ReprMixin, ABC):
                 level=logging.WARNING,
             )
 
-    def _setup_augmenter_manager(self) -> NoReturn:
+    def _setup_augmenter_manager(self) -> None:
         """ """
         self.augmenter_manager = AugmenterManager.from_config(config=self.train_config)
 
@@ -552,7 +550,7 @@ class BaseTrainer(ReprMixin, ABC):
         self,
         train_dataset: Optional[Dataset] = None,
         val_dataset: Optional[Dataset] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
         setup the dataloaders for training and validation
 
@@ -606,7 +604,7 @@ class BaseTrainer(ReprMixin, ABC):
             return len(self.val_loader.dataset)
         return 0
 
-    def _setup_optimizer(self) -> NoReturn:
+    def _setup_optimizer(self) -> None:
         """ """
         if self.train_config.optimizer.lower() == "adam":
             optimizer_kwargs = get_kwargs(optim.Adam)
@@ -650,7 +648,7 @@ class BaseTrainer(ReprMixin, ABC):
                 "or override this method to setup your own optimizer."
             )
 
-    def _setup_scheduler(self) -> NoReturn:
+    def _setup_scheduler(self) -> None:
         """ """
         if (
             self.train_config.lr_scheduler is None
@@ -690,7 +688,7 @@ class BaseTrainer(ReprMixin, ABC):
                 "or override this method to setup your own lr scheduler."
             )
 
-    def _setup_criterion(self) -> NoReturn:
+    def _setup_criterion(self) -> None:
         """ """
         loss_kw = self.train_config.get("loss_kw", {})
         for k, v in loss_kw.items():
@@ -722,7 +720,6 @@ class BaseTrainer(ReprMixin, ABC):
 
     def _check_model_config_compatability(self, model_config: dict) -> bool:
         """
-
         Parameters
         ----------
         model_config: dict,
@@ -737,7 +734,7 @@ class BaseTrainer(ReprMixin, ABC):
         """
         return dicts_equal(self.model_config, model_config)
 
-    def resume_from_checkpoint(self, checkpoint: Union[str, dict]) -> NoReturn:
+    def resume_from_checkpoint(self, checkpoint: Union[str, dict]) -> None:
         """NOT finished, NOT checked,
 
         resume a training process from a checkpoint
@@ -774,9 +771,8 @@ class BaseTrainer(ReprMixin, ABC):
         self._setup_from_config(ckpt["train_config"])
         # TODO: resume optimizer, etc.
 
-    def save_checkpoint(self, path: str) -> NoReturn:
+    def save_checkpoint(self, path: str) -> None:
         """
-
         Parameters
         ----------
         path: str,
@@ -796,7 +792,6 @@ class BaseTrainer(ReprMixin, ABC):
 
     def extra_repr_keys(self) -> List[str]:
         """
-
         Returns
         -------
         list of str,

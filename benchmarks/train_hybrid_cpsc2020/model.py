@@ -3,7 +3,7 @@
 
 from copy import deepcopy
 from functools import reduce
-from typing import Any, List, NoReturn, Optional, Sequence, Union
+from typing import Any, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -47,9 +47,8 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         n_leads: int,
         config: Optional[CFG] = None,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         classes: list,
@@ -59,6 +58,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         model_config = deepcopy(ModelCfg.crnn)
         model_config.update(deepcopy(config) or {})
@@ -72,7 +72,6 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
         bin_pred_thr: float = 0.5,
     ) -> MultiLableClassificationOutput:
         """
-
         auxiliary function to `forward`, for CPSC2020,
 
         Parameters
@@ -96,6 +95,7 @@ class ECG_CRNN_CPSC2020(ECG_CRNN):
                 scalar predictions, (and binary predictions if `class_names` is True)
             prob: ndarray,
                 the array (with values 0, 1 for each class) of binary prediction
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)
@@ -151,9 +151,8 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         n_leads: int,
         config: Optional[CFG] = None,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         classes: list,
@@ -163,6 +162,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         model_config = deepcopy(ModelCfg.seq_lab)
         model_config.update(deepcopy(config) or {})
@@ -181,7 +181,6 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
         rpeak_inds: Optional[List[np.ndarray]] = None,
     ) -> SequenceLabellingOutput:
         """
-
         auxiliary function to `forward`, for CPSC2020,
 
         Parameters
@@ -201,6 +200,7 @@ class ECG_SEQ_LAB_NET_CPSC2020(ECG_SEQ_LAB_NET):
             list of predicted indices of SPB
         PVC_indices: list,
             list of predicted indices of PVC
+
         """
         self.eval()
         _input = torch.as_tensor(input, dtype=self.dtype, device=self.device)

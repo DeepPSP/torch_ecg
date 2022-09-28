@@ -7,7 +7,7 @@ along with some constants
 """
 
 from copy import deepcopy
-from typing import List, NoReturn
+from typing import List
 
 from ....cfg import CFG, DEFAULTS
 from ....utils import ecg_arrhythmia_knowledge as EAK
@@ -24,7 +24,7 @@ _SPECIAL_CLASSES = []
 _NAME = "cinc2020"
 
 
-def _assign_classes(cfg: CFG, special_classes: List[str]) -> NoReturn:
+def _assign_classes(cfg: CFG, special_classes: List[str]) -> None:
     """ """
     cfg.special_classes = deepcopy(special_classes)
     cfg.tranche_class_weights = CFG(

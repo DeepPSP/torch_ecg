@@ -9,8 +9,6 @@ References
 
 """
 
-from typing import NoReturn
-
 import torch
 from torch import nn
 
@@ -35,19 +33,19 @@ __all__ = [
 
 class EfficientNet(nn.Module, SizeMixin):
     """
-
     Reference
     ---------
     1. Tan, M., & Le, Q. V. (2019). Efficientnet: Rethinking model scaling for convolutional neural networks. arXiv preprint arXiv:1905.11946.
     2. https://github.com/lukemelas/EfficientNet-PyTorch/blob/master/efficientnet_pytorch/model.py
     3. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/efficientnet.py
     3. https://github.com/google/automl
+
     """
 
     __DEBUG__ = True
     __name__ = "EfficientNet"
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """ """
         super().__init__()
         raise NotImplementedError
@@ -65,7 +63,6 @@ class EfficientNet(nn.Module, SizeMixin):
 
 class EfficientNetV2(nn.Module, SizeMixin):
     """
-
     Reference
     ---------
     1. Tan, M., & Le, Q. V. (2021). Efficientnetv2: Smaller models and faster training. arXiv preprint arXiv:2104.00298.
@@ -73,12 +70,13 @@ class EfficientNetV2(nn.Module, SizeMixin):
     3. https://github.com/lukemelas/EfficientNet-PyTorch/blob/master/efficientnet_pytorch/model.py
     4. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/efficientnet.py
     5. https://github.com/google/automl
+
     """
 
     __DEBUG__ = True
     __name__ = "EfficientNetV2"
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """ """
         super().__init__()
         raise NotImplementedError

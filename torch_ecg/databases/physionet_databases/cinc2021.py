@@ -12,7 +12,7 @@ from copy import deepcopy
 from datetime import datetime
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -317,7 +317,7 @@ class CINC2021(PhysioNetDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -487,7 +487,7 @@ class CINC2021(PhysioNetDataBase):
         sid = int(f"{s2d[prefix]}{'0'*(8-len(n))}{n}")
         return sid
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """
         list all the records and load into `self._all_records`,
         facilitating further uses
@@ -553,7 +553,7 @@ class CINC2021(PhysioNetDataBase):
             self._df_records = pd.concat((self._df_records, df_tmp), ignore_index=True)
         self._df_records.set_index("record", inplace=True)
 
-    def _aggregate_stats(self, fast: bool = False) -> NoReturn:
+    def _aggregate_stats(self, fast: bool = False) -> None:
         """
         aggregate stats on the whole dataset
 
@@ -692,7 +692,7 @@ class CINC2021(PhysioNetDataBase):
             warnings.warn("the dataframe of stats is empty, try using _aggregate_stats")
         return self._stats
 
-    def _ls_diagnoses_records(self) -> NoReturn:
+    def _ls_diagnoses_records(self) -> None:
         """list all the records for all diagnoses"""
         filename = "diagnoses_records_list.json"
         dr_fp = self.db_dir_base / filename
@@ -1448,7 +1448,7 @@ class CINC2021(PhysioNetDataBase):
         same_range: bool = False,
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """to improve,
 
         plot the signals of a record or external signals (units in μV),
@@ -1720,7 +1720,7 @@ class CINC2021(PhysioNetDataBase):
     @staticmethod
     def get_arrhythmia_knowledge(
         arrhythmias: Union[str, List[str]], **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
 
         knowledge about ECG features of specific arrhythmias,
@@ -2026,7 +2026,7 @@ class CINC2021(PhysioNetDataBase):
         "Ningbo-Headers.tar.gz",
     ]
 
-    def download(self) -> NoReturn:
+    def download(self) -> None:
         """ """
         for url in self.url:
             http_get(url, self.db_dir_base, extract=False)
@@ -2490,7 +2490,7 @@ def prepare_dataset(
     output_directory: Optional[Union[str, Path]] = None,
     tranches: Optional[Sequence[str]] = None,
     verbose: bool = False,
-) -> NoReturn:
+) -> None:
     """
 
     Parameters

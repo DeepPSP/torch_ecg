@@ -6,7 +6,7 @@ import io
 from datetime import datetime
 from numbers import Real
 from pathlib import Path
-from typing import Any, List, NoReturn, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -78,7 +78,7 @@ class CPSC2018(CPSCDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """finished, to be improved,
 
         Parameters
@@ -173,7 +173,7 @@ class CPSC2018(CPSCDataBase):
             "df_leads",
         ]
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """ """
         self._df_records = pd.DataFrame()
         self._df_records["path"] = get_record_list_recursive(
@@ -207,7 +207,6 @@ class CPSC2018(CPSCDataBase):
         units: str = "mV",
     ) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: int or str,
@@ -247,7 +246,6 @@ class CPSC2018(CPSCDataBase):
 
     def load_ann(self, rec: Union[int, str], keep_original: bool = True) -> dict:
         """
-
         Parameters
         ----------
         rec: int or str,
@@ -329,7 +327,6 @@ class CPSC2018(CPSCDataBase):
 
     def _parse_diagnosis(self, l_Dx: List[str]) -> Tuple[dict, dict]:
         """
-
         Parameters
         ----------
         l_Dx: list of str,
@@ -389,7 +386,6 @@ class CPSC2018(CPSCDataBase):
 
     def _parse_leads(self, l_leads_data: List[str]) -> pd.DataFrame:
         """
-
         Parameters
         ----------
         l_leads_data: list of str,
@@ -459,7 +455,6 @@ class CPSC2018(CPSCDataBase):
         self, rec: Union[int, str], keep_original: bool = False
     ) -> List[str]:
         """
-
         Parameters
         ----------
         rec: int or str,
@@ -480,7 +475,6 @@ class CPSC2018(CPSCDataBase):
 
     def get_diagnosis(self, rec: Union[int, str], full_name: bool = True) -> List[str]:
         """
-
         Parameters
         ----------
         rec: int or str,
@@ -505,7 +499,6 @@ class CPSC2018(CPSCDataBase):
         self, rec: Union[int, str], items: Optional[List[str]] = None
     ) -> dict:
         """
-
         Parameters
         ----------
         rec: int or str,
@@ -540,9 +533,8 @@ class CPSC2018(CPSCDataBase):
         scores: List[Real],
         labels: List[int],
         classes: List[str],
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         rec: int or str,
@@ -579,9 +571,8 @@ class CPSC2018(CPSCDataBase):
         ticks_granularity: int = 0,
         leads: Optional[Union[str, List[str]]] = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         rec: int or str,

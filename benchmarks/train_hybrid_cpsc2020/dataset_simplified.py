@@ -13,7 +13,7 @@ import json
 from copy import deepcopy
 from pathlib import Path
 from random import randint, sample, shuffle, uniform
-from typing import Dict, NoReturn, Tuple
+from typing import Dict, Tuple
 
 import numpy as np
 from scipy.io import loadmat
@@ -67,9 +67,8 @@ class CPSC2020(Dataset):
     __DEBUG__ = False
     __name__ = "CPSC2020"
 
-    def __init__(self, config: CFG, training: bool = True) -> NoReturn:
+    def __init__(self, config: CFG, training: bool = True) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -77,6 +76,7 @@ class CPSC2020(Dataset):
             ref. `cfg.TrainCfg`
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
+
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -131,7 +131,7 @@ class CPSC2020(Dataset):
             self._n_bw_choices = len(self.config.bw_ampl_ratio)
             self._n_gn_choices = len(self.config.bw_gaussian)
 
-    def _ls_segments(self) -> NoReturn:
+    def _ls_segments(self) -> None:
         """ """
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()

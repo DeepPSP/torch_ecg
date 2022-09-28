@@ -3,7 +3,7 @@
 
 from numbers import Real
 from random import choice, randint
-from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -35,15 +35,15 @@ class StretchCompress(Augmenter):
     mask = torch.ones((32, 5000, 1))
     sig, lb, mask = sc(sig, lb, mask)
     ```
+
     """
 
     __name__ = "StretchCompress"
 
     def __init__(
         self, ratio: Real = 6, prob: float = 0.5, inplace: bool = True, **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         ratio: real number, default 6,
@@ -55,6 +55,7 @@ class StretchCompress(Augmenter):
         inplace: bool, default True,
             if True, the input ECGs will be modified inplace,
         kwargs: keyword arguments
+
         """
         super().__init__()
         self.prob = prob
@@ -71,7 +72,6 @@ class StretchCompress(Augmenter):
         self, sig: Tensor, *labels: Optional[Sequence[Tensor]], **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """
-
         Parameters
         ----------
         sig: Tensor,
@@ -89,6 +89,7 @@ class StretchCompress(Augmenter):
             the stretched or compressed ECG tensors
         labels: sequence of Tensors, optional,
             the stretched or compressed label tensors
+
         """
         batch, lead, siglen = sig.shape
         if not self.inplace:
@@ -200,6 +201,7 @@ class StretchCompress(Augmenter):
             the stretched or compressed ECG tensors
         labels: sequence of Tensors, optional,
             the stretched or compressed label tensors
+
         """
         batch, lead, siglen = sig.shape
         if not self.inplace:
@@ -255,6 +257,7 @@ def _stretch_compress_one_batch_element(
         the stretched or compressed ECG tensor
     labels: Tensors, optional, of shapes (label_len, channels)
         the stretched or compressed label tensors
+
     """
     labels = list(labels)
     label_len = []
@@ -339,6 +342,7 @@ class StretchCompressOffline(ReprMixin):
     masks = torch.ones((60000, 1)).numpy().astype(int)
     segments = sco(600, sig, labels, masks, critical_points=[10000,30000])
     ```
+
     """
 
     __name__ = "StretchCompressOffline"
@@ -349,9 +353,8 @@ class StretchCompressOffline(ReprMixin):
         prob: float = 0.5,
         overlap: float = 0.5,
         critical_overlap: float = 0.85,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         ratio: real number, default 6,
@@ -364,6 +367,7 @@ class StretchCompressOffline(ReprMixin):
             the overlap of offline generated data
         critical_overlap: float, default 0.85,
             the overlap of the critical region of the ECG
+
         """
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
@@ -390,7 +394,6 @@ class StretchCompressOffline(ReprMixin):
         critical_points: Optional[Sequence[int]] = None,
     ) -> List[Tuple[Union[np.ndarray, int], ...]]:
         """
-
         Parameters
         ----------
         seglen: int,
@@ -410,6 +413,7 @@ class StretchCompressOffline(ReprMixin):
         -------
         list of generated segments,
         with segments consists of (seg, label1, label2, ..., start_idx, end_idx)
+
         """
         siglen = sig.shape[1]
         forward_len = int(round(seglen - seglen * self.overlap))
@@ -469,7 +473,6 @@ class StretchCompressOffline(ReprMixin):
         end_idx: Optional[int] = None,
     ) -> Tuple[Union[np.ndarray, int], ...]:
         """
-
         Parameters
         ----------
         seglen: int,
@@ -492,6 +495,7 @@ class StretchCompressOffline(ReprMixin):
         -------
         tuple of generated segment,
         consists of (seg, label1, label2, ..., start_idx, end_idx)
+
         """
         assert not all(
             [start_idx is None, end_idx is None]

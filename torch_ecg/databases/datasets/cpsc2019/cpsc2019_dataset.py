@@ -6,7 +6,7 @@ import json
 import math
 from copy import deepcopy
 from random import shuffle
-from typing import List, NoReturn, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -40,9 +40,8 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         config: CFG,
         training: bool = True,
         lazy: bool = False,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -98,7 +97,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         """ """
         return len(self.fdr)
 
-    def _load_all_data(self) -> NoReturn:
+    def _load_all_data(self) -> None:
         """ """
         self._signals, self._labels = [], []
         with tqdm(self.fdr, desc="loading data", unit="record") as pbar:
@@ -180,7 +179,7 @@ class FastDataReader(ReprMixin, Dataset):
         records: Sequence[str],
         config: CFG,
         ppm: Optional[PreprocManager] = None,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.reader = reader
         self.records = records

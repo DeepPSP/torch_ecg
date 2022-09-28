@@ -3,7 +3,7 @@
 
 from numbers import Real
 from random import randint
-from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -31,9 +31,8 @@ class RandomMasking(Augmenter):
         prob: Union[Sequence[Real], Real] = [0.3, 0.15],
         inplace: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         fs: int,
@@ -50,6 +49,7 @@ class RandomMasking(Augmenter):
         inplace: bool, default True,
             whether to mask inplace or not
         kwargs: Keyword arguments.
+
         """
         super().__init__()
         self.fs = fs
@@ -74,7 +74,6 @@ class RandomMasking(Augmenter):
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """
-
         Parameters
         ----------
         sig: Tensor,
@@ -98,6 +97,7 @@ class RandomMasking(Augmenter):
             the label tensor of the augmented ECGs, unchanged
         extra_tensors: sequence of Tensors, optional,
             if set in the input arguments, unchanged
+
         """
         batch, lead, siglen = sig.shape
         if not self.inplace:

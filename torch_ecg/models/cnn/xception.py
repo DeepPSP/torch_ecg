@@ -7,7 +7,7 @@ however seems not have been used in physiological signal processing tasks
 from copy import deepcopy
 from itertools import repeat
 from numbers import Real
-from typing import NoReturn, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import torch
 from torch import Tensor, nn
@@ -56,7 +56,6 @@ _DEFAULT_CONV_CONFIGS = CFG(
 
 class XceptionMultiConv(nn.Module, SizeMixin):
     """
-
     -> n(2 or 3) x (activation -> norm -> sep_conv) (-> optional sub-sample) ->
     |-------------------------------- shortcut ------------------------------|
     """
@@ -75,9 +74,8 @@ class XceptionMultiConv(nn.Module, SizeMixin):
         groups: int = 1,
         dropouts: Union[Sequence[float], float] = 0.0,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -103,6 +101,7 @@ class XceptionMultiConv(nn.Module, SizeMixin):
             activation choices, weight initializer, batch normalization choices, etc.,
             for the convolutional layers,
             and subsampling modes for subsampling layers, etc.
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -169,7 +168,6 @@ class XceptionMultiConv(nn.Module, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -179,6 +177,7 @@ class XceptionMultiConv(nn.Module, SizeMixin):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         main_out = self.main_stream_conv(input)
         if self.subsample:
@@ -193,7 +192,6 @@ class XceptionMultiConv(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -205,6 +203,7 @@ class XceptionMultiConv(nn.Module, SizeMixin):
         -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+
         """
         output_shape = self.main_stream_conv.compute_output_shape(seq_len, batch_size)
         if self.subsample is not None:
@@ -216,10 +215,10 @@ class XceptionMultiConv(nn.Module, SizeMixin):
 
 class XceptionEntryFlow(nn.Sequential, SizeMixin):
     """
-
     Entry flow of the Xception model,
     consisting of 2 initial convolutions which subsamples at the first one,
     followed by several Xception blocks of 2 convolutions and of sub-sampling size 2
+
     """
 
     __DEBUG__ = False
@@ -240,9 +239,8 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         dropouts: Union[float, Sequence[float], Sequence[Sequence[float]]] = 0.0,
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -274,6 +272,7 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers,
             and subsampling modes for subsampling layers, etc.
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -379,7 +378,6 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -389,6 +387,7 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         output = super().forward(input)
         return output
@@ -397,7 +396,6 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -409,6 +407,7 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self:
@@ -421,9 +420,9 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
 
 class XceptionMiddleFlow(nn.Sequential, SizeMixin):
     """
-
     Middle flow of the Xception model,
     consisting of several Xception blocks of 3 convolutions and without sub-sampling
+
     """
 
     __DEBUG__ = False
@@ -439,9 +438,8 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         dropouts: Union[float, Sequence[float], Sequence[Sequence[float]]] = 0.0,
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -463,6 +461,7 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers,
             and subsampling modes for subsampling layers, etc.
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -527,7 +526,6 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -537,6 +535,7 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         output = super().forward(input)
         return output
@@ -545,7 +544,6 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -557,6 +555,7 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self:
@@ -569,10 +568,10 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
 
 class XceptionExitFlow(nn.Sequential, SizeMixin):
     """
-
     Exit flow of the Xception model,
     consisting of several Xception blocks of 2 convolutions,
     followed by several separable convolutions
+
     """
 
     __DEBUG__ = False
@@ -592,9 +591,8 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         dropouts: Union[float, Sequence[float], Sequence[Sequence[float]]] = 0.0,
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -626,6 +624,7 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers,
             and subsampling modes for subsampling layers, etc.
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -726,7 +725,6 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -736,6 +734,7 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         output = super().forward(input)
         return output
@@ -744,7 +743,6 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -756,6 +754,7 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         -------
         output_shape: sequence,
             the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         for module in self:
@@ -768,20 +767,19 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
 
 class Xception(nn.Sequential, SizeMixin):
     """
-
     References
     ----------
     [1] Chollet, François. "Xception: Deep learning with depthwise separable convolutions." Proceedings of the IEEE conference on computer vision and pattern recognition. 2017.
     [2] https://github.com/keras-team/keras-applications/blob/master/keras_applications/xception.py
     [3] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
+
     """
 
     __DEBUG__ = False
     __name__ = "Xception"
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -791,6 +789,7 @@ class Xception(nn.Sequential, SizeMixin):
             key word arguments that have to be set in 3 sub-dict,
             namely in "entry_flow", "middle_flow", and "exit_flow",
             ref. corresponding docstring of each class
+
         """
         super().__init__()
         self.__in_channels = in_channels
@@ -823,7 +822,6 @@ class Xception(nn.Sequential, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -833,6 +831,7 @@ class Xception(nn.Sequential, SizeMixin):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         output = super().forward(input)
         return output

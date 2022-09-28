@@ -7,7 +7,7 @@ References
 https://github.com/jacobgil/pytorch-grad-cam
 """
 
-from typing import List, NoReturn, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -30,19 +30,19 @@ class FeatureExtractor(object):
     registering gradients from targetted intermediate layers
     """
 
-    def __init__(self, model: nn.Module, target_layers: Sequence[str]) -> NoReturn:
+    def __init__(self, model: nn.Module, target_layers: Sequence[str]) -> None:
         """
-
         Parameters
         ----------
         model: Module,
         target_layers: sequence of str,
+
         """
         self.model = model
         self.target_layers = target_layers
         self.gradients = []
 
-    def save_gradient(self, grad: Tensor) -> NoReturn:
+    def save_gradient(self, grad: Tensor) -> None:
         """ """
         self.gradients.append(grad)
 
@@ -65,11 +65,12 @@ class ModelOutputs(object):
     1. The network output.
     2. Activations from intermeddiate targetted layers.
     3. Gradients from intermeddiate targetted layers.
+
     """
 
     def __init__(
         self, model: nn.Module, feature_module: nn.Module, target_layers: Sequence[str]
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.model = model
         self.feature_module = feature_module
@@ -107,9 +108,8 @@ class GradCam(object):
         target_layer_names: Sequence[str],
         target_channel_last: bool = False,
         device: str = "cpu",
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         to write

@@ -4,7 +4,7 @@
 from copy import deepcopy
 from numbers import Real
 from random import shuffle
-from typing import Any, List, NoReturn, Optional, Sequence, Tuple
+from typing import Any, List, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -27,6 +27,7 @@ class Mixup(Augmenter):
     1. Zhang, Hongyi, et al. "mixup: Beyond Empirical Risk Minimization." International Conference on Learning Representations. 2018.
     2. https://arxiv.org/abs/1710.09412
     3. https://github.com/facebookresearch/mixup-cifar10/blob/master/train.py
+
     """
 
     __name__ = "Mixup"
@@ -39,9 +40,8 @@ class Mixup(Augmenter):
         prob: float = 0.5,
         inplace: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         fs: int, optional,
@@ -56,6 +56,7 @@ class Mixup(Augmenter):
         inplace: bool, default True,
             if True, ECG signal tensors will be modified inplace
         kwargs: Keyword arguments.
+
         """
         super().__init__()
         self.fs = fs
@@ -73,7 +74,6 @@ class Mixup(Augmenter):
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """
-
         Parameters
         ----------
         sig: Tensor,
@@ -93,6 +93,7 @@ class Mixup(Augmenter):
             the augmented label
         extra_tensors: sequence of Tensors, optional,
             if set in the input arguments, unchanged
+
         """
         batch, lead, siglen = sig.shape
         # TODO: make `lam` different for each batch element, using

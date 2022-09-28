@@ -2,7 +2,7 @@
 """
 
 from copy import deepcopy
-from typing import Any, NoReturn, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union
 
 import numpy as np
 import torch
@@ -37,9 +37,8 @@ class ECG_UNET_LUDB(ECG_UNET):
 
     def __init__(
         self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         n_leads: int,
@@ -66,7 +65,6 @@ class ECG_UNET_LUDB(ECG_UNET):
         bin_pred_thr: float = 0.5,
     ) -> WaveDelineationOutput:
         """
-
         Parameters
         ----------
         input: array-like,

@@ -2,7 +2,6 @@
 """
 
 import time
-from typing import NoReturn
 
 import torch
 
@@ -56,7 +55,7 @@ _TEST_DELI_CLASSES = [
 
 
 @torch.no_grad()
-def test_tasks() -> NoReturn:
+def test_tasks() -> None:
     """ """
     start = time.time()
     print("\n" + " Test downstream task configs ".center(80, "#") + "\n")

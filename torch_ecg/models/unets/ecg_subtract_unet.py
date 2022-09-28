@@ -10,7 +10,7 @@ the main differences to a normal Unet are that
 
 from copy import deepcopy
 from itertools import repeat
-from typing import NoReturn, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import torch
@@ -43,7 +43,6 @@ __all__ = [
 
 class TripleConv(MultiConv):
     """
-
     CBA --> (Dropout) --> CBA --> (Dropout) --> CBA --> (Dropout)
     """
 
@@ -60,9 +59,8 @@ class TripleConv(MultiConv):
         dropouts: Union[Sequence[float], float] = 0.0,
         out_activation: bool = True,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -84,6 +82,7 @@ class TripleConv(MultiConv):
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers
+
         """
         _num_convs = 3
         if isinstance(out_channels, int):
@@ -125,9 +124,8 @@ class DownTripleConv(nn.Sequential, SizeMixin):
         dropouts: Union[Sequence[float], float] = 0.0,
         mode: str = "max",
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         down_scale: int,
@@ -148,6 +146,7 @@ class DownTripleConv(nn.Sequential, SizeMixin):
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers
+
         """
         super().__init__()
         self.__mode = mode.lower()
@@ -185,7 +184,6 @@ class DownTripleConv(nn.Sequential, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -195,6 +193,7 @@ class DownTripleConv(nn.Sequential, SizeMixin):
         -------
         out: Tensor,
             of shape (batch_size, channels, seq_len)
+
         """
         out = super().forward(input)
         return out
@@ -227,9 +226,8 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
         dropouts: Union[Sequence[float], float] = 0.0,
         mode: str = "max",
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         down_scale: int,
@@ -250,6 +248,7 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
             for the convolutional layers
+
         """
         super().__init__()
         self.__mode = mode.lower()
@@ -282,7 +281,6 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -292,6 +290,7 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
         -------
         out: Tensor,
             of shape (batch_size, channels, seq_len)
+
         """
         out = self.down_sample(input)
         out = self.branched_conv(out)
@@ -306,7 +305,6 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -318,6 +316,7 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
         -------
         output_shape: sequence,
             the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
+
         """
         _seq_len = seq_len
         output_shape = self.down_sample.compute_output_shape(seq_len=_seq_len)
@@ -342,6 +341,7 @@ class UpTripleConv(nn.Module, SizeMixin):
     extra input
 
     channels are shrinked after up sampling
+
     """
 
     __DEBUG__ = False
@@ -364,7 +364,7 @@ class UpTripleConv(nn.Module, SizeMixin):
         dropouts: Union[Sequence[float], float] = 0.0,
         mode: str = "deconv",
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """finished, NOT checked,
 
         Parameters
@@ -390,6 +390,7 @@ class UpTripleConv(nn.Module, SizeMixin):
             other parameters, including
             activation choices, weight initializer, batch normalization choices, etc.
             for the deconvolutional layers
+
         """
         super().__init__()
         self.__up_scale = up_scale
@@ -435,13 +436,13 @@ class UpTripleConv(nn.Module, SizeMixin):
 
     def forward(self, input: Tensor, down_output: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
             input tensor from the previous layer
         down_output:Tensor: Tensor,
             input tensor of the last layer of corr. down block
+
         """
         output = self.up(input)
         output = torch.cat(
@@ -455,7 +456,6 @@ class UpTripleConv(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -467,6 +467,7 @@ class UpTripleConv(nn.Module, SizeMixin):
         -------
         output_shape: sequence,
             the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
+
         """
         _sep_len = seq_len
         if self.__mode == "deconv":
@@ -486,16 +487,14 @@ class UpTripleConv(nn.Module, SizeMixin):
 
 class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
     """
-
     entry 0433 of CPSC2019
     """
 
     __DEBUG__ = False
     __name__ = "ECG_SUBTRACT_UNET"
 
-    def __init__(self, classes: Sequence[str], n_leads: int, config: dict) -> NoReturn:
+    def __init__(self, classes: Sequence[str], n_leads: int, config: dict) -> None:
         """
-
         Parameters
         ----------
         classes: sequence of int,
@@ -505,6 +504,7 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         config: dict,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         super().__init__()
         self.classes = list(classes)
@@ -639,7 +639,6 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -649,6 +648,7 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         -------
         output: Tensor,
             of shape (batch_size, n_channels, seq_len)
+
         """
         if self.config.init_batch_norm:
             x = self.init_bn(input)
@@ -700,7 +700,6 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -712,6 +711,7 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         -------
         output_shape: sequence,
             the output shape of this model, given `seq_len` and `batch_size`
+
         """
         output_shape = (batch_size, seq_len, self.n_classes)
         return output_shape

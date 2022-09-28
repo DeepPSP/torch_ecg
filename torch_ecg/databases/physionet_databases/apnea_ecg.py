@@ -4,7 +4,7 @@
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any, List, NoReturn, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -65,7 +65,7 @@ class ApneaECG(PhysioNetDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -327,9 +327,7 @@ class ApneaECG(PhysioNetDataBase):
 
         return df_apnea_ann
 
-    def plot_ann(
-        self, rec: Union[str, int], ann_path: Optional[str] = None
-    ) -> NoReturn:
+    def plot_ann(self, rec: Union[str, int], ann_path: Optional[str] = None) -> None:
         """
         Parameters
         ----------
@@ -343,7 +341,7 @@ class ApneaECG(PhysioNetDataBase):
         df_apnea_ann = self.load_apnea_event(rec, ann_path)
         self._plot_ann(df_apnea_ann)
 
-    def _plot_ann(self, df_apnea_ann: pd.DataFrame) -> NoReturn:
+    def _plot_ann(self, df_apnea_ann: pd.DataFrame) -> None:
         """
         Parameters
         ----------

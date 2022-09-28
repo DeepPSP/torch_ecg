@@ -4,7 +4,7 @@ validated C(R)NN structure models, for classifying ECG arrhythmias
 """
 
 from copy import deepcopy
-from typing import Any, NoReturn, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union
 
 import numpy as np
 import torch
@@ -67,9 +67,8 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
         n_leads: int,
         config: Optional[CFG] = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         classes: list,
@@ -257,7 +256,6 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
 
     def extract_features(self, input: Tensor) -> Tensor:
         """
-
         extract feature map before the dense (linear) classifying layer(s)
 
         Parameters
@@ -311,7 +309,6 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -349,7 +346,6 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
         bin_pred_thr: float = 0.5,
     ) -> BaseOutput:
         """
-
         Parameters
         ----------
         input: ndarray or Tensor,
@@ -375,7 +371,6 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,

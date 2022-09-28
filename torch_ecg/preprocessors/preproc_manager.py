@@ -2,7 +2,7 @@
 """
 
 from random import sample
-from typing import List, NoReturn, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import torch
 import torch.nn as nn
@@ -20,6 +20,7 @@ __all__ = [
 
 class PreprocManager(ReprMixin, nn.Module):
     """
+    Manager class for preprocessors
 
     Examples
     --------
@@ -47,9 +48,8 @@ class PreprocManager(ReprMixin, nn.Module):
         *pps: Optional[Tuple[nn.Module, ...]],
         random: bool = False,
         inplace: bool = True,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         pps: tuple of `nn.Module`, optional,
@@ -64,25 +64,24 @@ class PreprocManager(ReprMixin, nn.Module):
         self.random = random
         self._preprocessors = list(pps)
 
-    def _add_bandpass(self, **config: dict) -> NoReturn:
+    def _add_bandpass(self, **config: dict) -> None:
         """ """
         self._preprocessors.append(BandPass(**config))
 
-    def _add_baseline_remove(self, **config: dict) -> NoReturn:
+    def _add_baseline_remove(self, **config: dict) -> None:
         """ """
         self._preprocessors.append(BaselineRemove(**config))
 
-    def _add_normalize(self, **config: dict) -> NoReturn:
+    def _add_normalize(self, **config: dict) -> None:
         """ """
         self._preprocessors.append(Normalize(**config))
 
-    def _add_resample(self, **config: dict) -> NoReturn:
+    def _add_resample(self, **config: dict) -> None:
         """ """
         self._preprocessors.append(Resample(**config))
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
         """
-
         Parameters
         ----------
         sig: Tensor,
@@ -106,7 +105,6 @@ class PreprocManager(ReprMixin, nn.Module):
     @classmethod
     def from_config(cls, config: dict) -> "PreprocManager":
         """
-
         Parameters
         ----------
         config: dict,
@@ -142,9 +140,8 @@ class PreprocManager(ReprMixin, nn.Module):
                 # raise ValueError(f"Unknown preprocessor: {pp_name}")
         return ppm
 
-    def rearrange(self, new_ordering: List[str]) -> NoReturn:
+    def rearrange(self, new_ordering: List[str]) -> None:
         """
-
         Parameters
         ----------
         new_ordering: list of str,
@@ -164,9 +161,8 @@ class PreprocManager(ReprMixin, nn.Module):
             key=lambda aug: new_ordering.index(_mapping[aug.__name__])
         )
 
-    def add_(self, pp: nn.Module, pos: int = -1) -> NoReturn:
+    def add_(self, pp: nn.Module, pos: int = -1) -> None:
         """
-
         add a (custom) preprocessor to the manager,
         this method is preferred against directly manipulating
         the internal list of preprocessors via `PreprocManager.preprocessors.append(pp)`
@@ -199,7 +195,6 @@ class PreprocManager(ReprMixin, nn.Module):
     def extra_repr_keys(self) -> List[str]:
         """
         return the extra keys for `__repr__`
-
         """
         return super().extra_repr_keys() + [
             "random",

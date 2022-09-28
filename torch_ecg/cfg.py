@@ -4,7 +4,7 @@
 import random
 from functools import partial
 from pathlib import Path
-from typing import MutableMapping, NoReturn, Optional, Any, Union
+from typing import MutableMapping, Optional, Any, Union
 
 import numpy as np
 import torch
@@ -24,7 +24,6 @@ _DATA_CACHE.mkdir(parents=True, exist_ok=True)
 
 class CFG(dict):
     """
-
     this class is created in order to renew the `update` method,
     to fit the hierarchical structure of configurations
 
@@ -42,7 +41,7 @@ class CFG(dict):
 
     __name__ = "CFG"
 
-    def __init__(self, *args, **kwargs) -> NoReturn:
+    def __init__(self, *args, **kwargs) -> None:
         """ """
         if len(args) > 1:
             raise TypeError(f"expected at most 1 arguments, got {len(args)}")
@@ -67,7 +66,7 @@ class CFG(dict):
             ):
                 setattr(self, k, getattr(self, k))
 
-    def __setattr__(self, name: str, value: Any) -> NoReturn:
+    def __setattr__(self, name: str, value: Any) -> None:
         if isinstance(value, (list, tuple)):
             value = [self.__class__(x) if isinstance(x, dict) else x for x in value]
         elif isinstance(value, dict) and not isinstance(value, self.__class__):
@@ -77,11 +76,8 @@ class CFG(dict):
 
     __setitem__ = __setattr__
 
-    def update(
-        self, new_cfg: Optional[MutableMapping] = None, **kwargs: Any
-    ) -> NoReturn:
+    def update(self, new_cfg: Optional[MutableMapping] = None, **kwargs: Any) -> None:
         """
-
         the new hierarchical update method
 
         Parameters
@@ -107,7 +103,6 @@ class CFG(dict):
 
     def pop(self, key: str, default: Optional[Any] = None) -> Any:
         """
-
         the updated pop method
 
         Parameters
@@ -147,7 +142,7 @@ DEFAULTS.RNG_sample = partial(DEFAULTS.RNG.choice, replace=False, shuffle=False)
 DEFAULTS.RNG_randint = partial(DEFAULTS.RNG.integers, endpoint=True)
 
 
-def set_seed(seed: int) -> NoReturn:
+def set_seed(seed: int) -> None:
     """
     set the seed of the random number generator
 
@@ -171,7 +166,7 @@ def set_seed(seed: int) -> NoReturn:
 DEFAULTS.set_seed = set_seed
 
 
-def change_dtype(dtype: Union[str, np.dtype, torch.dtype]) -> NoReturn:
+def change_dtype(dtype: Union[str, np.dtype, torch.dtype]) -> None:
     """
     change the dtype of the defaults
 

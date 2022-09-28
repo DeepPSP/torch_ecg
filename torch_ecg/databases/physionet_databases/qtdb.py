@@ -4,7 +4,7 @@
 
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Union  # noqa: F401
+from typing import Any, Dict, List, Optional, Sequence, Union  # noqa: F401
 
 import numpy as np
 import pandas as pd  # noqa: F401
@@ -85,9 +85,8 @@ class QTDB(PhysioNetDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -150,7 +149,6 @@ class QTDB(PhysioNetDataBase):
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
         """
-
         Parameters
         ----------
         rec: str or int,
@@ -629,7 +627,7 @@ class QTDB(PhysioNetDataBase):
         beat_ann: Optional[Dict[str, np.ndarray]] = None,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
@@ -661,8 +659,8 @@ class QTDB(PhysioNetDataBase):
             the rpeak indices
         kwargs: dict,
 
-        TODO:
-        -----
+        TODO
+        ----
         1. slice too long records, and plot separately for each segment
         2. plot waves using `axvspan`
 

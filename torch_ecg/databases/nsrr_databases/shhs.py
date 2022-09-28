@@ -7,7 +7,7 @@ import warnings
 from datetime import datetime
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -210,9 +210,8 @@ class SHHS(NSRRDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -222,6 +221,7 @@ class SHHS(NSRRDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="SHHS",
@@ -654,7 +654,7 @@ class SHHS(NSRRDataBase):
             "Hypopnea": "purple",
         }  # TODO: add more
 
-    def form_paths(self) -> NoReturn:
+    def form_paths(self) -> None:
         """ """
         self.psg_data_path = self.db_dir / "polysomnography" / "edfs"
         self.ann_path = self.db_dir / "datasets"
@@ -668,7 +668,7 @@ class SHHS(NSRRDataBase):
             self.db_dir / "polysomnography" / "annotations-events-profusion"
         )
 
-    def update_sleep_stage_names(self) -> NoReturn:
+    def update_sleep_stage_names(self) -> None:
         """ """
         if self.sleep_stage_protocol == "aasm":
             nb_stages = 5
@@ -683,7 +683,6 @@ class SHHS(NSRRDataBase):
 
     def get_subject_id(self, rec: str) -> int:
         """
-
         Parameters
         ----------
         rec: str,
@@ -692,6 +691,7 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         pid, int, `subject_id` derived from `rec`
+
         """
         head_shhs1, head_shhs2v3, head_shhs2v4 = "30000", "30001", "30002"
         dataset_no, no = rec.split("-")
@@ -705,7 +705,6 @@ class SHHS(NSRRDataBase):
 
     def get_visit_number(self, rec: str) -> int:
         """
-
         Parameters
         ----------
         rec: str,
@@ -714,12 +713,12 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         int, visit number extracted from `rec`
+
         """
         return int(rec.split("-")[0][-1])
 
     def get_nsrrid(self, rec: str) -> int:
         """
-
         Parameters
         ----------
         rec: str,
@@ -728,12 +727,12 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         int, nsrrid extracted from `rec`
+
         """
         return int(rec.split("-")[1])
 
     def get_fs(self, rec: str, sig: str = "ECG", rec_path: Optional[str] = None) -> int:
         """
-
         Parameters
         ----------
         rec: str,
@@ -748,6 +747,7 @@ class SHHS(NSRRDataBase):
         -------
         fs, int,
             the sampling frequency of the signal `sig` of the record `rec`
+
         """
         frp = self.match_full_rec_path(rec, rec_path)
         self.safe_edf_file_operation("open", frp)
@@ -760,7 +760,6 @@ class SHHS(NSRRDataBase):
         self, rec: str, sig: str = "ECG", rec_path: Optional[str] = None
     ) -> int:
         """
-
         Parameters
         ----------
         rec: str,
@@ -775,6 +774,7 @@ class SHHS(NSRRDataBase):
         -------
         chn_num, int,
             the number of channel of the signal `sig` of the record `rec`
+
         """
         frp = self.match_full_rec_path(rec, rec_path)
         self.safe_edf_file_operation("open", frp)
@@ -784,7 +784,6 @@ class SHHS(NSRRDataBase):
 
     def match_channel(self, channel: str) -> str:
         """
-
         Parameters
         ----------
         channel: str,
@@ -793,6 +792,7 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         str, the standard channel name in SHHS
+
         """
         for sig in self.all_signals:
             if sig.lower() == channel.lower():
@@ -814,7 +814,6 @@ class SHHS(NSRRDataBase):
         rec_type: str = "psg",
     ) -> Path:
         """
-
         Parameters
         ----------
         rec: str,
@@ -828,6 +827,7 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         rp: Path,
+
         """
         extension = {
             "psg": ".edf",
@@ -861,13 +861,12 @@ class SHHS(NSRRDataBase):
 
         return rp
 
-    def database_stats(self) -> NoReturn:
+    def database_stats(self) -> None:
         """ """
         raise NotImplementedError
 
-    def database_info(self, detailed: bool = False) -> NoReturn:
+    def database_info(self, detailed: bool = False) -> None:
         """
-
         print information about the database
 
         Parameters
@@ -875,6 +874,7 @@ class SHHS(NSRRDataBase):
         detailed: bool, default False,
             if False, "What","Who","When","Funding" will be printed,
             if True, then docstring of the class will be printed additionally
+
         """
         raw_info = {
             "What": "Multi-cohort study focused on sleep-disordered breathing and cardiovascular outcomes",
@@ -888,9 +888,8 @@ class SHHS(NSRRDataBase):
         if detailed:
             print(self.__doc__)
 
-    def show_rec_stats(self, rec: str, rec_path: Optional[str] = None) -> NoReturn:
+    def show_rec_stats(self, rec: str, rec_path: Optional[str] = None) -> None:
         """
-
         Parameters
         ----------
         rec: str,
@@ -911,11 +910,11 @@ class SHHS(NSRRDataBase):
             print("*" * 40)
         self.safe_edf_file_operation("close")
 
-    def load_data(self, rec: str) -> NoReturn:
+    def load_data(self, rec: str) -> None:
         """ """
         raise ValueError("Please load specific data, for example, psg, ecg, eeg, etc.")
 
-    def load_ann(self, rec: str) -> NoReturn:
+    def load_ann(self, rec: str) -> None:
         """ """
         raise ValueError(
             "Please load specific annotations, for example, event annotations, etc."
@@ -925,7 +924,6 @@ class SHHS(NSRRDataBase):
         self, rec: str, channel: str = "all", rec_path: Optional[str] = None
     ) -> Dict[str, np.ndarray]:
         """
-
         Parameters
         ----------
         rec: str,
@@ -940,6 +938,7 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         dict, psg data
+
         """
         chn = self.match_channel(channel) if channel.lower() != "all" else "all"
         frp = self.match_full_rec_path(rec, rec_path, rec_type="psg")
@@ -959,7 +958,6 @@ class SHHS(NSRRDataBase):
 
     def load_ecg_data(self, rec: str, rec_path: Optional[str] = None) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str,
@@ -970,6 +968,7 @@ class SHHS(NSRRDataBase):
 
         Returns
         -------
+        ndarray
 
         """
         return self.load_psg_data(rec=rec, channel="ecg", rec_path=rec_path)[
@@ -980,7 +979,6 @@ class SHHS(NSRRDataBase):
         self, rec: str, event_ann_path: Optional[str] = None, simplify: bool = False
     ) -> pd.DataFrame:
         """
-
         Parameters
         ----------
         rec: str,
@@ -992,6 +990,7 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         df_events: DataFrame,
+
         """
         file_path = self.match_full_rec_path(rec, event_ann_path, rec_type="event")
         doc = xtd.parse(file_path.read_text())
@@ -1014,7 +1013,6 @@ class SHHS(NSRRDataBase):
         self, rec: str, event_profusion_ann_path: Optional[str] = None
     ) -> dict:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1027,8 +1025,10 @@ class SHHS(NSRRDataBase):
         -------
         dict, with items "sleep_stage_list", "df_events"
 
-        TODO:
-            merge "sleep_stage_list" and "df_events" into one DataFrame
+        TODO
+        ----
+        merge "sleep_stage_list" and "df_events" into one DataFrame
+
         """
         file_path = self.match_full_rec_path(
             rec, event_profusion_ann_path, rec_type="event_profusion"
@@ -1048,7 +1048,6 @@ class SHHS(NSRRDataBase):
         self, rec: Optional[str] = None, hrv_ann_path: Optional[str] = None
     ) -> pd.DataFrame:
         """
-
         Parameters
         ----------
         rec: str, optional,
@@ -1063,6 +1062,7 @@ class SHHS(NSRRDataBase):
             if `rec` is not None, df_hrv_ann is the summary HRV annotations of `rec`;
             if `rec` is None, df_hrv_ann is the summary HRV annotations of all records
             that had HRV annotations (about 10% of all the records in SHHS)
+
         """
         if rec is None:
             file_path = self.match_full_rec_path(
@@ -1089,7 +1089,6 @@ class SHHS(NSRRDataBase):
         self, rec: str, hrv_ann_path: Optional[str] = None
     ) -> pd.DataFrame:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1102,6 +1101,7 @@ class SHHS(NSRRDataBase):
         -------
         df_hrv_ann, DataFrame,
             detailed HRV annotations of `rec`
+
         """
         file_path = self.match_full_rec_path(rec, hrv_ann_path, rec_type="hrv_5min")
 
@@ -1130,7 +1130,6 @@ class SHHS(NSRRDataBase):
         self, rec: str, source: str, sleep_ann_path: Optional[str] = None
     ) -> Union[pd.DataFrame, dict]:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1145,6 +1144,7 @@ class SHHS(NSRRDataBase):
         -------
         df_sleep_ann, DataFrame or dict,
             all annotations on sleep of `rec`
+
         """
         if source.lower() == "hrv":
             df_hrv_ann = self.load_hrv_detailed_ann(
@@ -1184,7 +1184,6 @@ class SHHS(NSRRDataBase):
         with_stage_names: bool = True,
     ) -> pd.DataFrame:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1204,6 +1203,7 @@ class SHHS(NSRRDataBase):
         -------
         df_sleep_stage_ann, DataFrame,
             all annotations on sleep stage of `rec`
+
         """
         self.sleep_stage_protocol = sleep_stage_protocol
         self.update_sleep_stage_names()
@@ -1307,7 +1307,6 @@ class SHHS(NSRRDataBase):
         sleep_event_ann_path: Optional[str] = None,
     ) -> pd.DataFrame:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1327,6 +1326,7 @@ class SHHS(NSRRDataBase):
         -------
         df_sleep_event_ann, DataFrame,
             all annotations on sleep events of `rec`
+
         """
         df_sleep_ann = self.load_sleep_ann(
             rec=rec, source=source, sleep_ann_path=sleep_event_ann_path
@@ -1464,7 +1464,6 @@ class SHHS(NSRRDataBase):
         apnea_ann_path: Optional[str] = None,
     ) -> pd.DataFrame:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1482,6 +1481,7 @@ class SHHS(NSRRDataBase):
         -------
         df_apnea_ann, DataFrame,
             all annotations on apnea events of `rec`
+
         """
         event_types = ["apnea"] if apnea_types is None else apnea_types
         if source not in ["event", "event_profusion"]:
@@ -1500,7 +1500,6 @@ class SHHS(NSRRDataBase):
         wave_deli_path: Optional[str] = None,
     ) -> pd.DataFrame:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1515,6 +1514,7 @@ class SHHS(NSRRDataBase):
             all annotations on wave delineations of `rec`
 
         NOTE: see the part describing wave delineation annotations of the docstring of the class, or call `self.database_info(detailed=True)`
+
         """
         file_path = self.match_full_rec_path(
             rec, wave_deli_path, rec_type="wave_delineation"
@@ -1541,7 +1541,6 @@ class SHHS(NSRRDataBase):
         to_ts: bool = False,
     ) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1557,6 +1556,7 @@ class SHHS(NSRRDataBase):
 
         Returns
         -------
+        ndarray
 
         """
         info_items = ["Type", "rpointadj", "samplingrate"]
@@ -1582,7 +1582,6 @@ class SHHS(NSRRDataBase):
 
     def load_rr_ann(self, rec: str, rpeak_ann_path: Optional[str] = None) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1595,6 +1594,7 @@ class SHHS(NSRRDataBase):
         -------
         rr: ndarray,
             array of rr intervals
+
         """
         rpeaks_ts = self.load_rpeak_ann(
             rec=rec,
@@ -1609,7 +1609,6 @@ class SHHS(NSRRDataBase):
 
     def load_nn_ann(self, rec: str, rpeak_ann_path: Optional[str] = None) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1622,6 +1621,7 @@ class SHHS(NSRRDataBase):
         -------
         nn: ndarray,
             array of nn intervals
+
         """
         info_items = ["Type", "rpointadj", "samplingrate"]
         df_rpeaks_with_type_info = self.load_wave_delineation(rec, rpeak_ann_path)[
@@ -1647,7 +1647,6 @@ class SHHS(NSRRDataBase):
         self, rec: str, wave_deli_path: Optional[str] = None
     ) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1660,6 +1659,7 @@ class SHHS(NSRRDataBase):
         -------
         ndarray,
             indices of artifacts
+
         """
         df_rpeaks_with_type_info = self.load_wave_delineation(rec, wave_deli_path)[
             ["Type", "rpointadj"]
@@ -1680,7 +1680,6 @@ class SHHS(NSRRDataBase):
         abnormal_type: Optional[str] = None,
     ) -> Dict[str, np.ndarray]:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1695,6 +1694,7 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         dict
+
         """
         if abnormal_type is not None and abnormal_type not in ["VE", "SVE"]:
             raise ValueError(
@@ -1744,6 +1744,7 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         to write,
+
         """
         if self.current_version >= "0.15.0":
             print("EEG spectral summary variables are removed in this version")
@@ -1766,6 +1767,7 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         to write,
+
         """
         if self.current_version >= "0.15.0":
             print("EEG spectral summary variables are removed in this version")
@@ -1782,9 +1784,8 @@ class SHHS(NSRRDataBase):
         stage_kw: dict = {},
         event_source: Optional[str] = None,
         event_kw: dict = {},
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         rec, str,
@@ -1801,6 +1802,7 @@ class SHHS(NSRRDataBase):
             if is None, then annotations of sleep events of `rec` won"t be plotted
         event_kw: dict, default {},
             arguments to the function `self.load_sleep_event_ann`
+
         """
         if all([stage_source is None, event_source is None]):
             raise ValueError("No input data!")
@@ -1824,7 +1826,7 @@ class SHHS(NSRRDataBase):
         self,
         df_sleep_stage: Optional[pd.DataFrame] = None,
         df_sleep_event: Optional[pd.DataFrame] = None,
-    ) -> NoReturn:
+    ) -> None:
         """not finished,
 
         Parameters
@@ -1833,6 +1835,7 @@ class SHHS(NSRRDataBase):
             sleep stage annotations
         df_sleep_event: DataFrame, optional,
             sleep event annotations
+
         """
         import matplotlib.patches as mpatches
         import matplotlib.pyplot as plt
@@ -1934,12 +1937,12 @@ class SHHS(NSRRDataBase):
 
     def str_to_real_number(self, s: Union[str, Real]) -> Real:
         """
-
         some columns in the annotations might incorrectly been converted from real number to string, using `xmltodict`.
 
         Parameters
         ----------
         s: str or real number (NaN)
+
         """
         if isinstance(s, str):
             if "." in s:

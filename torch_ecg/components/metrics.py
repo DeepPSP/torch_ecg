@@ -2,7 +2,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, NoReturn, Optional, Sequence, Union, Dict
+from typing import Any, Callable, List, Optional, Sequence, Union, Dict
 
 import numpy as np
 from torch import Tensor
@@ -43,7 +43,6 @@ class Metrics(ReprMixin, ABC):
 class ClassificationMetrics(Metrics):
     """
     Metrics for the task of classification
-
     """
 
     __name__ = "ClassificationMetrics"
@@ -53,9 +52,8 @@ class ClassificationMetrics(Metrics):
         multi_label: bool = True,
         macro: bool = True,
         extra_metrics: Optional[Callable] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         multi_label: bool,
@@ -108,9 +106,8 @@ class ClassificationMetrics(Metrics):
         self._cm = None
         self._cm_ovr = None
 
-    def set_macro(self, macro: bool) -> NoReturn:
+    def set_macro(self, macro: bool) -> None:
         """
-
         Parameters
         ----------
         macro: bool,
@@ -321,7 +318,6 @@ class ClassificationMetrics(Metrics):
 class RPeaksDetectionMetrics(Metrics):
     """
     Metrics for the task of R peaks detection, proposed in CPSC2019
-
     """
 
     __name__ = "RPeaksDetectionMetrics"
@@ -330,9 +326,8 @@ class RPeaksDetectionMetrics(Metrics):
         self,
         thr: float = 0.075,
         extra_metrics: Optional[Callable] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         thr: float, default 0.075,
@@ -418,7 +413,6 @@ class RPeaksDetectionMetrics(Metrics):
 class WaveDelineationMetrics(Metrics):
     """
     Metrics for the task of ECG wave delineation
-
     """
 
     __name__ = "WaveDelineationMetrics"
@@ -428,9 +422,8 @@ class WaveDelineationMetrics(Metrics):
         macro: bool = True,
         tol: float = 0.15,
         extra_metrics: Optional[Callable] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         macro: bool,
@@ -465,9 +458,8 @@ class WaveDelineationMetrics(Metrics):
         }
         self._metrics.update({f"macro_{k}": np.nan for k in self._metrics})
 
-    def set_macro(self, macro: bool) -> NoReturn:
+    def set_macro(self, macro: bool) -> None:
         """
-
         Parameters
         ----------
         macro: bool,
@@ -488,7 +480,6 @@ class WaveDelineationMetrics(Metrics):
         tol: Optional[float] = None,
     ) -> "WaveDelineationMetrics":
         f"""
-
         compute metrics for the task of ECG wave delineation
         (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
         for multiple evaluations

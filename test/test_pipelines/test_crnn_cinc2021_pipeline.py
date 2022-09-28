@@ -7,7 +7,7 @@ import textwrap
 from copy import deepcopy
 from itertools import repeat
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -352,7 +352,7 @@ class ECG_CRNN_CINC2021(ECG_CRNN):
 
     def __init__(
         self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
-    ) -> NoReturn:
+    ) -> None:
         """
 
         Parameters
@@ -474,7 +474,7 @@ class CINC2021Trainer(BaseTrainer):
         device: Optional[torch.device] = None,
         lazy: bool = True,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
 
         Parameters
@@ -515,7 +515,7 @@ class CINC2021Trainer(BaseTrainer):
         self,
         train_dataset: Optional[Dataset] = None,
         val_dataset: Optional[Dataset] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
 
         setup the dataloaders for training and validation
@@ -720,7 +720,7 @@ lead_sets = (twelve_leads, six_leads, four_leads, three_leads, two_leads)
 # fmt: on
 
 
-def test_crnn_cinc2021_pipeline() -> NoReturn:
+def test_crnn_cinc2021_pipeline() -> None:
     """ """
 
     train_config = deepcopy(CINC2021TrainCfg)

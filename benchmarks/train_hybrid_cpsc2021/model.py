@@ -11,7 +11,7 @@ Possible Solutions
 
 from itertools import repeat
 from numbers import Real
-from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -51,9 +51,8 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "ECG_SEQ_LAB_NET_CPSC2021"
 
-    def __init__(self, config: CFG, **kwargs: Any) -> NoReturn:
+    def __init__(self, config: CFG, **kwargs: Any) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -82,7 +81,6 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
         **kwargs: Any,
     ) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
         """
-
         Parameters
         ----------
         input: array_like,
@@ -138,7 +136,6 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
         dist_thr: Union[int, Sequence[int]] = 200,
     ) -> RPeaksDetectionOutput:
         """
-
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
         and normalized to a suitable mean and std
 
@@ -197,7 +194,6 @@ class ECG_SEQ_LAB_NET_CPSC2021(ECG_SEQ_LAB_NET):
         episode_len_thr: int = 5,
     ) -> SequenceTaggingOutput:
         """
-
         Parameters
         ----------
         input: array_like,
@@ -256,9 +252,8 @@ class ECG_UNET_CPSC2021(ECG_UNET):
     __DEBUG__ = True
     __name__ = "ECG_UNET_CPSC2021"
 
-    def __init__(self, config: CFG, **kwargs: Any) -> NoReturn:
+    def __init__(self, config: CFG, **kwargs: Any) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -287,7 +282,6 @@ class ECG_UNET_CPSC2021(ECG_UNET):
         **kwargs: Any,
     ) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
         """
-
         Parameters
         ----------
         input: array_like,
@@ -343,7 +337,6 @@ class ECG_UNET_CPSC2021(ECG_UNET):
         dist_thr: Union[int, Sequence[int]] = 200,
     ) -> RPeaksDetectionOutput:
         """
-
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
         and normalized to a suitable mean and std
 
@@ -402,7 +395,6 @@ class ECG_UNET_CPSC2021(ECG_UNET):
         episode_len_thr: int = 5,
     ) -> SequenceTaggingOutput:
         """
-
         Parameters
         ----------
         input: array_like,
@@ -461,9 +453,8 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
     __DEBUG__ = True
     __name__ = "ECG_SUBTRACT_UNET_CPSC2021"
 
-    def __init__(self, config: CFG, **kwargs: Any) -> NoReturn:
+    def __init__(self, config: CFG, **kwargs: Any) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -492,7 +483,6 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
         **kwargs: Any,
     ) -> Union[SequenceTaggingOutput, RPeaksDetectionOutput]:
         """
-
         Parameters
         ----------
         input: array_like,
@@ -548,7 +538,6 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
         dist_thr: Union[int, Sequence[int]] = 200,
     ) -> RPeaksDetectionOutput:
         """
-
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
         and normalized to a suitable mean and std
 
@@ -607,7 +596,6 @@ class ECG_SUBTRACT_UNET_CPSC2021(ECG_SUBTRACT_UNET):
         episode_len_thr: int = 5,
     ) -> SequenceTaggingOutput:
         """
-
         Parameters
         ----------
         input: array_like,
@@ -666,9 +654,8 @@ class RR_LSTM_CPSC2021(RR_LSTM):
     __DEBUG__ = True
     __name__ = "RR_LSTM_CPSC2021"
 
-    def __init__(self, config: CFG, **kwargs: Any) -> NoReturn:
+    def __init__(self, config: CFG, **kwargs: Any) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -695,7 +682,6 @@ class RR_LSTM_CPSC2021(RR_LSTM):
         episode_len_thr: int = 5,
     ) -> SequenceTaggingOutput:
         """
-
         Parameters
         ----------
         input: array_like,
@@ -789,7 +775,6 @@ class RR_LSTM_CPSC2021(RR_LSTM):
         path: str, device: Optional[torch.device] = None
     ) -> Tuple[torch.nn.Module, dict]:
         """
-
         Parameters
         ----------
         path: str,
@@ -829,7 +814,6 @@ def _qrs_detection_post_process(
     dist_thr: Union[int, Sequence[int]] = 200,
 ) -> List[np.ndarray]:
     """
-
     prob --> qrs mask --> qrs intervals --> rpeaks
 
     Parameters
@@ -964,7 +948,6 @@ def _main_task_post_process(
     episode_len_thr: int = 5,
 ) -> Tuple[List[List[List[int]]], np.ndarray]:
     """
-
     post processing of the main task,
     converting mask into list of af episodes,
     and doing filtration, eliminating (both af and normal) episodes that are too short

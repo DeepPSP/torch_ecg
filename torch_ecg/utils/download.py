@@ -15,7 +15,7 @@ import zipfile
 import warnings
 import urllib
 from pathlib import Path
-from typing import NoReturn, Optional, Union
+from typing import Optional, Union
 
 import requests
 import tqdm
@@ -34,7 +34,7 @@ def http_get(
     proxies: Optional[dict] = None,
     extract: bool = True,
     filename: Optional[str] = None,
-) -> NoReturn:
+) -> None:
     """
     Get contents of a URL and save to a file.
 
@@ -187,9 +187,7 @@ def is_compressed_file(path: Union[str, Path]) -> bool:
     return re.search(compressed_file_pattern, _suffix(path)) is not None
 
 
-def _unzip_file(
-    path_to_zip_file: Union[str, Path], dst_dir: Union[str, Path]
-) -> NoReturn:
+def _unzip_file(path_to_zip_file: Union[str, Path], dst_dir: Union[str, Path]) -> None:
     """
     Unzips a .zip file to folder path.
 
@@ -206,9 +204,7 @@ def _unzip_file(
         zip_ref.extractall(str(dst_dir))
 
 
-def _untar_file(
-    path_to_tar_file: Union[str, Path], dst_dir: Union[str, Path]
-) -> NoReturn:
+def _untar_file(path_to_tar_file: Union[str, Path], dst_dir: Union[str, Path]) -> None:
     """
     Decompress a .tar.xx file to folder path.
 

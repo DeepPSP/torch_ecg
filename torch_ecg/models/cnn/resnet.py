@@ -6,7 +6,7 @@ whose performance however seems exceeded by newer networks
 from copy import deepcopy
 from itertools import repeat
 from numbers import Real
-from typing import NoReturn, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import torch
 import torch.nn.functional as F
@@ -60,9 +60,8 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         dilation: int = 1,
         attn: Optional[dict] = None,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -212,7 +211,6 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -251,7 +249,6 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -276,7 +273,6 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
 
 class ResNetBottleNeck(nn.Module, SizeMixin):
     """
-
     bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
     as for 1D ECG, should be of the "baby-giant-baby" pattern?
 
@@ -300,9 +296,8 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         base_filter_length: int = 1,
         attn: Optional[dict] = None,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -498,7 +493,6 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -537,7 +531,6 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -566,7 +559,7 @@ class ResNetMacroBlock(nn.Sequential, SizeMixin):
     __DEBUG__ = True
     __name__ = "ResNetMacroBlock"
 
-    def __init__(self) -> NoReturn:
+    def __init__(self) -> None:
         """ """
         super().__init__()
         raise NotImplementedError
@@ -598,9 +591,8 @@ class ResNetStem(nn.Sequential, SizeMixin):
         subsample_mode: str = "max",
         groups: int = 1,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         f"""
-
         Parameters
         ----------
         in_channels: int,
@@ -682,7 +674,6 @@ class ResNetStem(nn.Sequential, SizeMixin):
 
 class ResNet(nn.Sequential, SizeMixin):
     """
-
     References
     ----------
     [1] https://github.com/awni/ecg
@@ -706,9 +697,8 @@ class ResNet(nn.Sequential, SizeMixin):
         dropouts=0,
     )
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,

@@ -2,7 +2,7 @@
 """
 
 from numbers import Real
-from typing import Any, Iterable, NoReturn, Union
+from typing import Any, Iterable, Union
 
 import torch
 
@@ -43,9 +43,8 @@ class Normalize(torch.nn.Module):
         per_channel: bool = False,
         inplace: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         method: str, default "z-score",
@@ -81,7 +80,6 @@ class Normalize(torch.nn.Module):
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
         """
-
         Parameters
         ----------
         sig: Tensor,
@@ -119,9 +117,8 @@ class MinMaxNormalize(Normalize):
     def __init__(
         self,
         per_channel: bool = False,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         per_channel: bool, default False,
@@ -148,9 +145,8 @@ class NaiveNormalize(Normalize):
         std: Union[Real, Iterable[Real]] = 1.0,
         per_channel: bool = False,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         mean: real number or array_like, default 0.0,
@@ -186,9 +182,8 @@ class ZScoreNormalize(Normalize):
         std: Union[Real, Iterable[Real]] = 1.0,
         per_channel: bool = False,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         mean: real number or array_like, default 0.0,

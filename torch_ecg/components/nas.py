@@ -3,7 +3,7 @@ neural architecture search
 
 """
 
-from typing import NoReturn, Sequence
+from typing import Sequence
 
 import torch
 import torch.nn as nn
@@ -34,9 +34,8 @@ class NAS:
         train_config: dict,
         model_configs: Sequence[dict],
         lazy: bool = False,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         trainer_cls: BaseTrainer,
@@ -70,7 +69,7 @@ class NAS:
             self.ds_train = None
             self.ds_val = None
 
-    def search(self) -> NoReturn:
+    def search(self) -> None:
         """ """
         if self.ds_train is None or self.ds_val is None:
             raise ValueError("training dataset or validation dataset is not set")
@@ -101,9 +100,8 @@ class NAS:
             del trainer
             torch.cuda.empty_cache()
 
-    def _setup_dataset(self, ds_train: Dataset, ds_val: Dataset) -> NoReturn:
+    def _setup_dataset(self, ds_train: Dataset, ds_val: Dataset) -> None:
         """
-
         Parameters
         ----------
         ds_train: Dataset,

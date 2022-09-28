@@ -3,7 +3,7 @@
 """
 
 from pathlib import Path
-from typing import Any, NoReturn, Optional, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 
@@ -81,7 +81,7 @@ class CINC2018(PhysioNetDataBase):
         working_dir: Optional[str] = None,
         verbose: int = 2,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """NOT finished, NOT checked,
 
         Parameters
@@ -93,6 +93,7 @@ class CINC2018(PhysioNetDataBase):
         verbose: int, default 2,
             log verbosity
         kwargs: auxilliary key word arguments
+
         """
         super().__init__(
             db_name="challenge-2018",
@@ -110,7 +111,6 @@ class CINC2018(PhysioNetDataBase):
 
     def get_subject_id(self, rec: str) -> int:
         """
-
         Parameters
         ----------
         rec: str,
@@ -120,6 +120,7 @@ class CINC2018(PhysioNetDataBase):
         -------
         pid: int,
             the `subject_id` corr. to `rec`
+
         """
         head = "2018"
         mid = rec[2:4]
@@ -135,6 +136,6 @@ class CINC2018(PhysioNetDataBase):
         """ """
         raise NotImplementedError
 
-    def plot(self) -> NoReturn:
+    def plot(self) -> None:
         """ """
         raise NotImplementedError

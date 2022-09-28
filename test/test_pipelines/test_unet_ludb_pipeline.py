@@ -4,7 +4,7 @@
 import shutil
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -87,9 +87,8 @@ class ECG_UNET_LUDB(ECG_UNET):
 
     def __init__(
         self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         n_leads: int,
@@ -116,7 +115,6 @@ class ECG_UNET_LUDB(ECG_UNET):
         bin_pred_thr: float = 0.5,
     ) -> WaveDelineationOutput:
         """
-
         Parameters
         ----------
         input: array-like,
@@ -188,9 +186,8 @@ class LUDBTrainer(BaseTrainer):
         device: Optional[torch.device] = None,
         lazy: bool = True,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         model: Module,
@@ -219,6 +216,7 @@ class LUDBTrainer(BaseTrainer):
             the device to be used for training
         lazy: bool, default True,
             whether to initialize the data loader lazily
+
         """
         super().__init__(model, LUDBDataset, model_config, train_config, device, lazy)
 
@@ -226,9 +224,8 @@ class LUDBTrainer(BaseTrainer):
         self,
         train_dataset: Optional[Dataset] = None,
         val_dataset: Optional[Dataset] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         setup the dataloaders for training and validation
 
         Parameters
@@ -237,6 +234,7 @@ class LUDBTrainer(BaseTrainer):
             the training dataset
         val_dataset: Dataset, optional,
             the validation dataset
+
         """
         if train_dataset is None:
             train_dataset = self.dataset_cls(
@@ -294,7 +292,6 @@ class LUDBTrainer(BaseTrainer):
         self, *data: Tuple[torch.Tensor, torch.Tensor]
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
-
         Parameters
         ----------
         data: tuple of Tensors,
@@ -308,6 +305,7 @@ class LUDBTrainer(BaseTrainer):
             the predictions of the model for the given data
         labels: Tensor,
             the labels of the given data
+
         """
         signals, labels = data
         signals = signals.to(self.device)
@@ -410,7 +408,7 @@ class LUDBTrainer(BaseTrainer):
         return []
 
 
-def test_unet_ludb_pipeline() -> NoReturn:
+def test_unet_ludb_pipeline() -> None:
     """ """
     train_cfg_fl = deepcopy(LUDBTrainCfg)
     train_cfg_fl.use_single_lead = False

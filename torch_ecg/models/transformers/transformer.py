@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Any, NoReturn, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union
 
 import torch
 import torch.nn as nn
@@ -32,9 +32,8 @@ class Transformer(nn.Module, SizeMixin):
         num_layers: int = 1,
         dropout: float = 0.1,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         input_size: int,
@@ -81,7 +80,6 @@ class Transformer(nn.Module, SizeMixin):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
-
         Parameters
         ----------
         x: torch.Tensor,
@@ -100,7 +98,6 @@ class Transformer(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,

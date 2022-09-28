@@ -2,7 +2,7 @@
 """
 
 from random import sample
-from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import torch
 from torch import Tensor
@@ -24,7 +24,6 @@ __all__ = [
 
 class AugmenterManager(torch.nn.Module):
     """
-
     The `Module` to manage the augmenters
 
     Examples
@@ -49,45 +48,46 @@ class AugmenterManager(torch.nn.Module):
     sig, label, mask = torch.rand(2,12,5000), torch.rand(2,26), torch.rand(2,5000,1)
     sig, label, mask = am(sig, label, mask)
     ```
+
     """
 
     __name__ = "AugmenterManager"
 
     def __init__(
         self, *augs: Optional[Tuple[Augmenter, ...]], random: bool = False
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         aug: tuple of `Augmenter`, optional,
             the augmenters to be added to the manager
         random: bool, default False,
             whether to apply the augmenters in random order
+
         """
         super().__init__()
         self.random = random
         self._augmenters = list(augs)
 
-    def _add_baseline_wander(self, **config: dict) -> NoReturn:
+    def _add_baseline_wander(self, **config: dict) -> None:
         self._augmenters.append(BaselineWanderAugmenter(**config))
 
-    def _add_label_smooth(self, **config: dict) -> NoReturn:
+    def _add_label_smooth(self, **config: dict) -> None:
         self._augmenters.append(LabelSmooth(**config))
 
-    def _add_mixup(self, **config: dict) -> NoReturn:
+    def _add_mixup(self, **config: dict) -> None:
         self._augmenters.append(Mixup(**config))
 
-    def _add_random_flip(self, **config: dict) -> NoReturn:
+    def _add_random_flip(self, **config: dict) -> None:
         self._augmenters.append(RandomFlip(**config))
 
-    def _add_random_masking(self, **config: dict) -> NoReturn:
+    def _add_random_masking(self, **config: dict) -> None:
         self._augmenters.append(RandomMasking(**config))
 
-    def _add_random_renormalize(self, **config: dict) -> NoReturn:
+    def _add_random_renormalize(self, **config: dict) -> None:
         self._augmenters.append(RandomRenormalize(**config))
 
-    def _add_stretch_compress(self, **config: dict) -> NoReturn:
+    def _add_stretch_compress(self, **config: dict) -> None:
         self._augmenters.append(StretchCompress(**config))
 
     def forward(
@@ -98,7 +98,6 @@ class AugmenterManager(torch.nn.Module):
         **kwargs: Any,
     ) -> Union[Tensor, Tuple[Tensor]]:
         """
-
         Parameters
         ----------
         sig: Tensor,
@@ -112,6 +111,7 @@ class AugmenterManager(torch.nn.Module):
         Returns
         -------
         Tensor(s), the augmented ECGs, labels, and optional extra tensors
+
         """
         if len(self.augmenters) == 0:
             # raise ValueError("No augmenters added to the manager.")
@@ -143,7 +143,6 @@ class AugmenterManager(torch.nn.Module):
     @classmethod
     def from_config(cls, config: dict) -> "AugmenterManager":
         """
-
         Parameters
         ----------
         config: dict,
@@ -154,6 +153,7 @@ class AugmenterManager(torch.nn.Module):
         -------
         am: AugmenterManager,
             a new instance of `AugmenterManager`
+
         """
         am = cls(random=config.get("random", False))
         _mapping = {
@@ -179,13 +179,13 @@ class AugmenterManager(torch.nn.Module):
                 # raise ValueError(f"Unknown augmenter name: {aug_name}")
         return am
 
-    def rearrange(self, new_ordering: List[str]) -> NoReturn:
+    def rearrange(self, new_ordering: List[str]) -> None:
         """
-
         Parameters
         ----------
         new_ordering: list of str,
             the list of augmenter names in the new order
+
         """
         _mapping = {
             "".join([w.capitalize() for w in k.split("_")]): k

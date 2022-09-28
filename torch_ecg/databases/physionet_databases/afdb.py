@@ -6,7 +6,7 @@ import math
 from copy import deepcopy
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import wfdb
@@ -68,9 +68,8 @@ class AFDB(PhysioNetDataBase):
         working_dir: Optional[str] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -154,7 +153,7 @@ class AFDB(PhysioNetDataBase):
         Returns
         -------
         data: ndarray,
-            the ecg data
+            the ECG data
 
         """
         fp = str(self.get_absolute_path(rec))
@@ -330,9 +329,8 @@ class AFDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         same_range: bool = False,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
         possibly also along with wave delineations

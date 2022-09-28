@@ -2,7 +2,7 @@
 """
 
 from copy import deepcopy
-from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import biosppy.signals.ecg as BSE
 import numpy as np
@@ -41,9 +41,8 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
 
     def __init__(
         self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         n_leads: int,
@@ -68,7 +67,6 @@ class ECG_SEQ_LAB_NET_CPSC2019(ECG_SEQ_LAB_NET):
         correction: bool = False,
     ) -> RPeaksDetectionOutput:
         """
-
         auxiliary function to `forward`, for CPSC2019,
 
         NOTE: each segment of input be better filtered using `remove_spikes_naive`,
@@ -160,9 +158,8 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
 
     def __init__(
         self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         n_leads: int,
@@ -186,7 +183,6 @@ class ECG_SUBTRACT_UNET_CPSC2019(ECG_SUBTRACT_UNET):
         correction: bool = False,
     ) -> RPeaksDetectionOutput:
         """
-
         auxiliary function to `forward`, for CPSC2019,
 
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
@@ -276,9 +272,8 @@ class ECG_UNET_CPSC2019(ECG_UNET):
 
     def __init__(
         self, n_leads: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         n_leads: int,
@@ -302,7 +297,6 @@ class ECG_UNET_CPSC2019(ECG_UNET):
         correction: bool = False,
     ) -> RPeaksDetectionOutput:
         """
-
         auxiliary function to `forward`, for CPSC2019,
 
         NOTE: each segment of input be better filtered using `_remove_spikes_naive`,
@@ -393,7 +387,6 @@ def _inference_post_process(
     dist_thr: Union[int, Sequence[int]] = 200,
 ) -> List[np.ndarray]:
     """
-
     prob --> qrs mask --> qrs intervals --> rpeaks
 
     Parameters: ref. `inference` method of the models

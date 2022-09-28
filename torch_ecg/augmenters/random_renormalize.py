@@ -2,7 +2,7 @@
 """
 
 from numbers import Real
-from typing import Any, Iterable, List, NoReturn, Optional, Sequence, Tuple
+from typing import Any, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 from torch import Tensor
@@ -32,9 +32,8 @@ class RandomRenormalize(Augmenter):
         prob: float = 0.5,
         inplace: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         mean: array_like, default [-0.05,0.1],
@@ -50,6 +49,7 @@ class RandomRenormalize(Augmenter):
         inplace: bool, default True,
             Whether to apply the random re-normalization augmenter in-place.
         kwargs: keyword arguments
+
         """
         super().__init__()
         self.mean = np.array(mean)
@@ -72,7 +72,6 @@ class RandomRenormalize(Augmenter):
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """
-
         Parameters
         ----------
         sig: Tensor,
@@ -93,6 +92,7 @@ class RandomRenormalize(Augmenter):
             the label tensor of the augmented ECGs, unchanged
         extra_tensors: sequence of Tensors, optional,
             if set in the input arguments, unchanged
+
         """
         batch, lead, siglen = sig.shape
         if self.mean.ndim == 2:

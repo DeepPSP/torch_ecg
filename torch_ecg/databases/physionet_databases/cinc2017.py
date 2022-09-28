@@ -6,7 +6,7 @@ import math
 import zipfile
 import warnings
 from pathlib import Path
-from typing import Any, NoReturn, Optional, Sequence, Union, List
+from typing import Any, Optional, Sequence, Union, List
 
 import numpy as np
 import pandas as pd
@@ -62,7 +62,7 @@ class CINC2017(PhysioNetDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -113,7 +113,7 @@ class CINC2017(PhysioNetDataBase):
             "the-physionetcomputing-in-cardiology-challenge-2017-1.0.0.zip"
         )
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """ """
         self._df_records = pd.DataFrame()
         fp = self.db_dir / "RECORDS"
@@ -210,6 +210,7 @@ class CINC2017(PhysioNetDataBase):
         -------
         data: ndarray,
             data loaded from `rec`, with given units and format
+
         """
         if isinstance(rec, int):
             rec = self[rec]
@@ -286,7 +287,7 @@ class CINC2017(PhysioNetDataBase):
         ann: Optional[str] = None,
         ticks_granularity: int = 0,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -366,7 +367,7 @@ class CINC2017(PhysioNetDataBase):
             ax.set_ylabel("Voltage [μV]")
             plt.show()
 
-    def download(self, compressed: bool = False) -> NoReturn:
+    def download(self, compressed: bool = False) -> None:
         """ """
         super().download(compressed=compressed)
         if compressed:

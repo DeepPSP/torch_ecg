@@ -1,7 +1,7 @@
 """custom loss functions"""
 
 from numbers import Real
-from typing import Any, NoReturn, Optional
+from typing import Any, Optional
 
 import torch
 import torch.nn.functional as F
@@ -67,7 +67,6 @@ def weighted_binary_cross_entropy(
 
 class WeightedBCELoss(nn.Module):
     """
-
     Reference (original source):
     https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
     """
@@ -82,7 +81,7 @@ class WeightedBCELoss(nn.Module):
         WeightIsDynamic: bool = False,
         size_average: bool = True,
         reduce: bool = True,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -143,7 +142,7 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
 
     __name__ = "BCEWithLogitsWithClassWeightLoss"
 
-    def __init__(self, class_weight: Tensor) -> NoReturn:
+    def __init__(self, class_weight: Tensor) -> None:
         """
         Parameters
         ----------
@@ -179,7 +178,7 @@ class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
 
     __name__ = "MaskedBCEWithLogitsLoss"
 
-    def __init__(self) -> NoReturn:
+    def __init__(self) -> None:
         """ """
         super().__init__(reduction="none")
 
@@ -237,7 +236,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         reduction: str = "mean",
         multi_label: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -322,7 +321,6 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
 class AsymmetricLoss(nn.Module):
     r"""
-
     The asymmetric loss is defined as
 
         .. math::
@@ -338,6 +336,7 @@ class AsymmetricLoss(nn.Module):
     ----------
     1. Ridnik, Tal, et al. "Asymmetric Loss for Multi-Label Classification." Proceedings of the IEEE/CVF International Conference on Computer Vision. 2021.
     2. https://github.com/Alibaba-MIIL/ASL/
+
     """
 
     __name__ = "AsymmetricLoss"
@@ -350,7 +349,7 @@ class AsymmetricLoss(nn.Module):
         disable_torch_grad_focal_loss: bool = False,
         reduction: str = "mean",
         implementation: str = "alibaba-miil",
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------

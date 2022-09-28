@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import tensorboardX
@@ -34,7 +34,6 @@ __all__ = [
 class BaseLogger(ReprMixin, ABC):
     """
     the abstract base class of all loggers
-
     """
 
     __name__ = "BaseLogger"
@@ -46,9 +45,8 @@ class BaseLogger(ReprMixin, ABC):
         step: Optional[int] = None,
         epoch: Optional[int] = None,
         part: str = "train",
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         metrics: dict,
@@ -65,7 +63,7 @@ class BaseLogger(ReprMixin, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def log_message(self, msg: str, level: int = logging.INFO) -> NoReturn:
+    def log_message(self, msg: str, level: int = logging.INFO) -> None:
         """
         log a message
 
@@ -81,12 +79,12 @@ class BaseLogger(ReprMixin, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def flush(self) -> NoReturn:
+    def flush(self) -> None:
         """ """
         raise NotImplementedError
 
     @abstractmethod
-    def close(self) -> NoReturn:
+    def close(self) -> None:
         """ """
         raise NotImplementedError
 
@@ -96,7 +94,7 @@ class BaseLogger(ReprMixin, ABC):
         """ """
         raise NotImplementedError
 
-    def epoch_start(self, epoch: int) -> NoReturn:
+    def epoch_start(self, epoch: int) -> None:
         """
         actions to be performed at the start of each epoch
 
@@ -108,7 +106,7 @@ class BaseLogger(ReprMixin, ABC):
         """
         pass
 
-    def epoch_end(self, epoch: int) -> NoReturn:
+    def epoch_end(self, epoch: int) -> None:
         """
         actions to be performed at the end of each epoch
 
@@ -134,7 +132,6 @@ class BaseLogger(ReprMixin, ABC):
     def extra_repr_keys(self) -> List[str]:
         """
         extra keys to be displayed in the repr of the logger
-
         """
         return super().extra_repr_keys() + [
             "filename",
@@ -150,9 +147,8 @@ class TxtLogger(BaseLogger):
         self,
         log_dir: Optional[Union[str, Path]] = None,
         log_suffix: Optional[str] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         log_dir: str or Path, optional,
@@ -176,9 +172,8 @@ class TxtLogger(BaseLogger):
         step: Optional[int] = None,
         epoch: Optional[int] = None,
         part: str = "train",
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         metrics: dict,
@@ -216,7 +211,7 @@ class TxtLogger(BaseLogger):
         )
         self.log_message(msg)
 
-    def log_message(self, msg: str, level: int = logging.INFO) -> NoReturn:
+    def log_message(self, msg: str, level: int = logging.INFO) -> None:
         """
         log a message
 
@@ -241,7 +236,7 @@ class TxtLogger(BaseLogger):
         """ """
         return "-" * 50
 
-    def epoch_start(self, epoch: int) -> NoReturn:
+    def epoch_start(self, epoch: int) -> None:
         """
         message logged at the start of each epoch
 
@@ -253,7 +248,7 @@ class TxtLogger(BaseLogger):
         """
         self.logger.info(f"Train epoch_{epoch}:\n{self.long_sep}")
 
-    def epoch_end(self, epoch: int) -> NoReturn:
+    def epoch_end(self, epoch: int) -> None:
         """
         message logged at the end of each epoch
 
@@ -265,13 +260,13 @@ class TxtLogger(BaseLogger):
         """
         self.logger.info(f"{self.long_sep}\n")
 
-    def flush(self) -> NoReturn:
+    def flush(self) -> None:
         """ """
         for h in self.logger.handlers:
             if hasattr(h, "flush"):
                 h.flush()
 
-    def close(self) -> NoReturn:
+    def close(self) -> None:
         """ """
         for h in self.logger.handlers:
             h.close()
@@ -298,9 +293,8 @@ class CSVLogger(BaseLogger):
         self,
         log_dir: Optional[Union[str, Path]] = None,
         log_suffix: Optional[str] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         log_dir: str or Path, optional,
@@ -325,9 +319,8 @@ class CSVLogger(BaseLogger):
         step: Optional[int] = None,
         epoch: Optional[int] = None,
         part: str = "train",
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         metrics: dict,
@@ -357,16 +350,16 @@ class CSVLogger(BaseLogger):
         self.logger = self.logger.append(row, ignore_index=True)
         self._flushed = False
 
-    def log_message(self, msg: str, level: int = logging.INFO) -> NoReturn:
+    def log_message(self, msg: str, level: int = logging.INFO) -> None:
         pass
 
-    def flush(self) -> NoReturn:
+    def flush(self) -> None:
         """ """
         if not self._flushed:
             self.logger.to_csv(self.filename, quoting=csv.QUOTE_NONNUMERIC, index=False)
             self._flushed = True
 
-    def close(self) -> NoReturn:
+    def close(self) -> None:
         """ """
         self.flush()
 
@@ -395,9 +388,8 @@ class TensorBoardXLogger(BaseLogger):
         self,
         log_dir: Optional[Union[str, Path]] = None,
         log_suffix: Optional[str] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         log_dir: str, optional,
@@ -419,9 +411,8 @@ class TensorBoardXLogger(BaseLogger):
         step: Optional[int] = None,
         epoch: Optional[int] = None,
         part: str = "train",
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         metrics: dict,
@@ -444,14 +435,14 @@ class TensorBoardXLogger(BaseLogger):
                 v = v.item()
             self.logger.add_scalar(f"{part}/{k}", v, self.step)
 
-    def log_message(self, msg: str, level: int = logging.INFO) -> NoReturn:
+    def log_message(self, msg: str, level: int = logging.INFO) -> None:
         pass
 
-    def flush(self) -> NoReturn:
+    def flush(self) -> None:
         """ """
         self.logger.flush()
 
-    def close(self) -> NoReturn:
+    def close(self) -> None:
         """ """
         self.logger.close()
 
@@ -478,7 +469,7 @@ class WandbLogger(BaseLogger):
         project: Optional[str] = None,
         entity: Optional[str] = None,
         hyperparameters: Optional[dict] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
         to write docstring
         """
@@ -498,18 +489,18 @@ class WandbLogger(BaseLogger):
 
     def log_metrics(
         self, metrics: Dict[str, float], step: Optional[int] = None
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.__wandb.log(metrics, step=step)
 
-    def log_message(self, msg: str, level: int = logging.INFO) -> NoReturn:
+    def log_message(self, msg: str, level: int = logging.INFO) -> None:
         pass
 
-    def flush(self) -> NoReturn:
+    def flush(self) -> None:
         """ """
         pass
 
-    def close(self) -> NoReturn:
+    def close(self) -> None:
         """ """
         self.__wandb.finish()
 
@@ -539,9 +530,8 @@ class LoggerManager(ReprMixin):
         self,
         log_dir: Optional[Union[str, Path]] = None,
         log_suffix: Optional[str] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         log_dir: str or Path, optional,
@@ -554,19 +544,19 @@ class LoggerManager(ReprMixin):
         self._log_suffix = log_suffix
         self._loggers = []
 
-    def _add_txt_logger(self) -> NoReturn:
+    def _add_txt_logger(self) -> None:
         """ """
         self.loggers.append(TxtLogger(self._log_dir, self._log_suffix))
 
-    def _add_csv_logger(self) -> NoReturn:
+    def _add_csv_logger(self) -> None:
         """ """
         self.loggers.append(CSVLogger(self._log_dir, self._log_suffix))
 
-    def _add_tensorboardx_logger(self) -> NoReturn:
+    def _add_tensorboardx_logger(self) -> None:
         """ """
         self.loggers.append(TensorBoardXLogger(self._log_dir, self._log_suffix))
 
-    def _add_wandb_logger(self, **kwargs: dict) -> NoReturn:
+    def _add_wandb_logger(self, **kwargs: dict) -> None:
         """ """
         raise NotImplementedError("NOT tested yet!")
         # self.loggers.append(WandbLogger(self._log_dir, self._log_suffix, **kwargs))
@@ -577,9 +567,8 @@ class LoggerManager(ReprMixin):
         step: Optional[int] = None,
         epoch: Optional[int] = None,
         part: str = "train",
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         metrics: dict,
@@ -596,7 +585,7 @@ class LoggerManager(ReprMixin):
         for lgs in self.loggers:
             lgs.log_metrics(metrics, step, epoch, part)
 
-    def log_message(self, msg: str, level: int = logging.INFO) -> NoReturn:
+    def log_message(self, msg: str, level: int = logging.INFO) -> None:
         """
         log a message
 
@@ -612,7 +601,7 @@ class LoggerManager(ReprMixin):
         for lgs in self.loggers:
             lgs.log_message(msg, level)
 
-    def epoch_start(self, epoch: int) -> NoReturn:
+    def epoch_start(self, epoch: int) -> None:
         """
         action at the start of an epoch
 
@@ -625,7 +614,7 @@ class LoggerManager(ReprMixin):
         for lgs in self.loggers:
             lgs.epoch_start(epoch)
 
-    def epoch_end(self, epoch: int) -> NoReturn:
+    def epoch_end(self, epoch: int) -> None:
         """
         action at the end of an epoch
 
@@ -638,12 +627,12 @@ class LoggerManager(ReprMixin):
         for lgs in self.loggers:
             lgs.epoch_end(epoch)
 
-    def flush(self) -> NoReturn:
+    def flush(self) -> None:
         """ """
         for lgs in self.loggers:
             lgs.flush()
 
-    def close(self) -> NoReturn:
+    def close(self) -> None:
         """ """
         for lgs in self.loggers:
             lgs.close()
@@ -666,7 +655,6 @@ class LoggerManager(ReprMixin):
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "LoggerManager":
         """
-
         Parameters
         ----------
         config: dict,
@@ -692,7 +680,6 @@ class LoggerManager(ReprMixin):
     def extra_repr_keys(self) -> List[str]:
         """
         extra keys to be displayed in the repr of the logger
-
         """
         return super().extra_repr_keys() + [
             "loggers",

@@ -4,7 +4,7 @@
 import json
 from copy import deepcopy
 from random import randint, shuffle
-from typing import List, NoReturn, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -38,9 +38,8 @@ class LUDBDataset(ReprMixin, Dataset):
         config: CFG,
         training: bool = True,
         lazy: bool = False,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -121,7 +120,7 @@ class LUDBDataset(ReprMixin, Dataset):
 
         return signals, labels
 
-    def _load_all_data(self) -> NoReturn:
+    def _load_all_data(self) -> None:
         """ """
         self._signals, self._labels = [], []
 
@@ -147,7 +146,6 @@ class LUDBDataset(ReprMixin, Dataset):
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> List[str]:
         """
-
         Parameters
         ----------
         train_ratio: float, default 0.8,
@@ -204,7 +202,7 @@ class FastDataReader(ReprMixin, Dataset):
         records: Sequence[str],
         config: CFG,
         ppm: Optional[PreprocManager] = None,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.reader = reader
         self.records = records

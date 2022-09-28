@@ -42,7 +42,7 @@ import re
 import time
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from scipy import signal as SS
@@ -85,9 +85,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def __init__(
         self, config: CFG, task: str, training: bool = True, lazy: bool = True
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -154,13 +153,12 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         self._all_masks = None
         self.__set_task(task, lazy=self.lazy)
 
-    def _load_all_data(self) -> NoReturn:
+    def _load_all_data(self) -> None:
         """ """
         self.__set_task(self.task, lazy=False)
 
-    def __set_task(self, task: str, lazy: bool = True) -> NoReturn:
+    def __set_task(self, task: str, lazy: bool = True) -> None:
         """
-
         Parameters
         ----------
         task: str,
@@ -276,11 +274,11 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 f"data generator for task \042{self.task}\042 not implemented"
             )
 
-    def reset_task(self, task: str, lazy: bool = True) -> NoReturn:
+    def reset_task(self, task: str, lazy: bool = True) -> None:
         """ """
         self.__set_task(task, lazy)
 
-    def _ls_segments(self) -> NoReturn:
+    def _ls_segments(self) -> None:
         """list all the segments"""
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
@@ -307,7 +305,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 json.dumps(self.__all_segments, ensure_ascii=False)
             )
 
-    def _ls_rr_seq(self) -> NoReturn:
+    def _ls_rr_seq(self) -> None:
         """list all the rr sequences"""
         for s in self.reader.all_subjects:
             self.rr_seq_dirs[s] = self.rr_seq_base_dir / s
@@ -372,7 +370,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def _get_seg_data_path(self, seg: str) -> Path:
         """
-
         Parameters
         ----------
         seg: str,
@@ -390,7 +387,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def _get_seg_ann_path(self, seg: str) -> Path:
         """
-
         Parameters
         ----------
         seg: str,
@@ -408,7 +404,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def _load_seg_data(self, seg: str) -> np.ndarray:
         """
-
         Parameters
         ----------
         seg: str,
@@ -426,7 +421,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def _load_seg_ann(self, seg: str) -> dict:
         """
-
         Parameters
         ----------
         seg: str,
@@ -454,7 +448,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         self, seg: str, task: Optional[str] = None
     ) -> Union[np.ndarray, Dict[str, np.ndarray]]:
         """
-
         Parameters
         ----------
         seg: str,
@@ -494,7 +487,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def _load_seg_seq_lab(self, seg: str, reduction: int) -> np.ndarray:
         """
-
         Parameters
         ----------
         seg: str,
@@ -527,7 +519,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def _get_rr_seq_path(self, seq_name: str) -> Path:
         """
-
         Parameters
         ----------
         seq_name: str,
@@ -545,7 +536,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def _load_rr_seq(self, seq_name: str) -> Dict[str, np.ndarray]:
         """
-
         Parameters
         ----------
         seq_name: str,
@@ -569,9 +559,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         rr_seq["interval"] = rr_seq["interval"].flatten()
         return rr_seq
 
-    def persistence(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
+    def persistence(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
-
         make the dataset persistent w.r.t. the ratios in `self.config`
 
         Parameters
@@ -601,11 +590,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             verbose=verbose,
         )
 
-    def _preprocess_data(
-        self, force_recompute: bool = False, verbose: int = 0
-    ) -> NoReturn:
+    def _preprocess_data(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
-
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
 
@@ -628,9 +614,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def _preprocess_one_record(
         self, rec: str, force_recompute: bool = False, verbose: int = 0
-    ) -> NoReturn:
+    ) -> None:
         """
-
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
 
@@ -654,7 +639,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def load_preprocessed_data(self, rec: str) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str,
@@ -680,7 +664,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def _get_rec_suffix(self, operations: List[str]) -> str:
         """
-
         Parameters
         ----------
         operations: list of str,
@@ -696,9 +679,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         suffix = "-".join(sorted([item.lower() for item in operations]))
         return suffix
 
-    def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
+    def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
-
         slice all records into segments of length `self.seglen`,
         and perform data augmentations specified in `self.config`
 
@@ -738,9 +720,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         force_recompute: bool = False,
         update_segments_json: bool = False,
         verbose: int = 0,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         slice one record into segments of length `self.seglen`,
         and perform data augmentations specified in `self.config`
 
@@ -847,7 +828,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         end_idx: Optional[int] = None,
     ) -> CFG:
         """
-
         generate segment, with possible data augmentation
 
         Parameter
@@ -972,9 +952,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def __save_segments(
         self, rec: str, segments: List[CFG], update_segments_json: bool = False
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1011,9 +990,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 json.dumps(self.__all_segments, ensure_ascii=False)
             )
 
-    def _clear_cached_segments(self, recs: Optional[Sequence[str]] = None) -> NoReturn:
+    def _clear_cached_segments(self, recs: Optional[Sequence[str]] = None) -> None:
         """
-
         Parameters
         ----------
         recs: sequence of str, optional
@@ -1061,11 +1039,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             [self.__all_segments[subject] for subject in self.subjects]
         )
 
-    def _slice_rr_seq(
-        self, force_recompute: bool = False, verbose: int = 0
-    ) -> NoReturn:
+    def _slice_rr_seq(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
-
         slice sequences of rr intervals into fixed length (sub)sequences
 
         Parameters
@@ -1099,7 +1074,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         force_recompute: bool = False,
         update_rr_seq_json: bool = False,
         verbose: int = 0,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.__assert_task(["rr_lstm"])
         subject = self.reader.get_subject_id(rec)
@@ -1181,9 +1156,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def __save_rr_seq(
         self, rec: str, rr_seq: List[CFG], update_rr_seq_json: bool = False
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1208,9 +1182,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 json.dumps(self.__all_rr_seq, ensure_ascii=False)
             )
 
-    def _clear_cached_rr_seq(self, recs: Optional[Sequence[str]] = None) -> NoReturn:
+    def _clear_cached_rr_seq(self, recs: Optional[Sequence[str]] = None) -> None:
         """
-
         Parameters
         ----------
         recs: sequence of str, optional
@@ -1241,7 +1214,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
     def _get_rec_name(self, seg_or_rr: str) -> str:
         """
-
         Parameters
         ----------
         seg_or_rr: str,
@@ -1260,7 +1232,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> Dict[str, List[str]]:
         """
-
         do train test split,
         it is ensured that both the train and the test set contain all classes
 
@@ -1348,15 +1319,14 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         )
         return split_res
 
-    def __assert_task(self, tasks: List[str]) -> NoReturn:
+    def __assert_task(self, tasks: List[str]) -> None:
         """ """
         assert (
             self.task in tasks
         ), f"DO NOT call this method when the current task is {self.task}. Switch task using `reset_task`"
 
-    def plot_seg(self, seg: str, ticks_granularity: int = 0) -> NoReturn:
+    def plot_seg(self, seg: str, ticks_granularity: int = 0) -> None:
         """
-
         Parameters
         ----------
         seg: str,
@@ -1398,7 +1368,7 @@ class FastDataReader(ReprMixin, Dataset):
         file_dirs: dict,
         files: List[str],
         file_ext: str,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.config = config
         self.task = task
@@ -1504,7 +1474,7 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
         allowed_preproc: List[str],
         segment_ext: str,
         preprocess_dir: str,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.reader = reader
         self.config = config
@@ -1598,7 +1568,6 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
         end_idx: Optional[int] = None,
     ) -> CFG:
         """
-
         generate segment, with possible data augmentation
 
         Parameter
@@ -1723,7 +1692,6 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
 
     def load_preprocessed_data(self, rec: str) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1757,7 +1725,6 @@ class StandaloneSegmentSlicer(ReprMixin, Dataset):
 
 def _get_rec_suffix(operations: List[str]) -> str:
     """
-
     Parameters
     ----------
     operations: list of str,

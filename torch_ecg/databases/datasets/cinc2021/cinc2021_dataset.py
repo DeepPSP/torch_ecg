@@ -7,7 +7,7 @@ import textwrap
 import time
 from copy import deepcopy
 from random import sample, shuffle
-from typing import List, NoReturn, Optional, Sequence, Set, Tuple
+from typing import List, Optional, Sequence, Set, Tuple
 
 import numpy as np
 
@@ -42,9 +42,8 @@ class CINC2021Dataset(ReprMixin, Dataset):
 
     def __init__(
         self, config: Optional[CFG] = None, training: bool = True, lazy: bool = True
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -122,7 +121,7 @@ class CINC2021Dataset(ReprMixin, Dataset):
         if not self.lazy:
             self._load_all_data()
 
-    def _load_all_data(self) -> NoReturn:
+    def _load_all_data(self) -> None:
         """ """
         # self.reader can not be pickled
         # with mp.Pool(processes=max(1, mp.cpu_count()-2)) as pool:
@@ -152,7 +151,6 @@ class CINC2021Dataset(ReprMixin, Dataset):
 
     def _load_one_record(self, rec: str) -> Tuple[np.ndarray, np.ndarray]:
         """
-
         load a record from the database using data reader
 
         NOTE
@@ -201,14 +199,14 @@ class CINC2021Dataset(ReprMixin, Dataset):
 
         return values, labels
 
-    def to(self, leads: Sequence[str]) -> NoReturn:
+    def to(self, leads: Sequence[str]) -> None:
         """ """
         prev_leads = self.config.leads
         self.config.leads = leads
         self._indices = [prev_leads.index(ld) for ld in leads]
         self._signals = self._signals[:, self._indices, :]
 
-    def emtpy(self, leads: Optional[Sequence[str]] = None) -> NoReturn:
+    def emtpy(self, leads: Optional[Sequence[str]] = None) -> None:
         """ """
         if leads is None:
             leads = self.config.leads
@@ -227,7 +225,7 @@ class CINC2021Dataset(ReprMixin, Dataset):
         new_ds._labels = ext_ds._labels.copy()
         return new_ds
 
-    def reload_from_extern(self, ext_ds: "CINC2021Dataset") -> NoReturn:
+    def reload_from_extern(self, ext_ds: "CINC2021Dataset") -> None:
         """ """
         indices = [ext_ds.config.leads.index(ld) for ld in self.config.leads]
         self._signals = ext_ds._signals[:, indices, :]
@@ -255,7 +253,6 @@ class CINC2021Dataset(ReprMixin, Dataset):
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> List[str]:
         """
-
         do train test split,
         it is ensured that both the train and the test set contain all classes
 
@@ -363,7 +360,6 @@ class CINC2021Dataset(ReprMixin, Dataset):
         self, train_set: List[str], test_set: List[str], all_classes: Set[str]
     ) -> bool:
         """
-
         the train-test split is valid iff
         records in both `train_set` and `test` contain all classes in `all_classes`
 
@@ -403,10 +399,9 @@ class CINC2021Dataset(ReprMixin, Dataset):
         )
         return is_valid
 
-    def persistence(self) -> NoReturn:
+    def persistence(self) -> None:
         """
         make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
-
         """
         _TRANCHES = "ABEFG"
         if self.training:
@@ -435,7 +430,7 @@ class CINC2021Dataset(ReprMixin, Dataset):
         np.save(self.reader.db_dir_base / filename, y)
         print(f"y saved to {filename}")
 
-    def _check_nan(self) -> NoReturn:
+    def _check_nan(self) -> None:
         """
         during training, sometimes nan values are encountered,
         which ruins the whole training process
@@ -464,7 +459,7 @@ class FastDataReader(ReprMixin, Dataset):
         records: Sequence[str],
         config: CFG,
         ppm: Optional[PreprocManager] = None,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.reader = reader
         self.records = records

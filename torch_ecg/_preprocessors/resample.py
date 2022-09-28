@@ -3,7 +3,7 @@ resample the signal into fixed sampling frequency or length
 """
 
 from numbers import Real
-from typing import Any, List, NoReturn, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 import numpy as np
 import scipy.signal as SS
@@ -22,9 +22,8 @@ class Resample(PreProcessor):
 
     def __init__(
         self, fs: Optional[int] = None, siglen: Optional[int] = None, **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         fs: int, optional,
@@ -33,6 +32,7 @@ class Resample(PreProcessor):
             number of samples in the resampled ECG
 
         NOTE that one and only one of `fs` and `siglen` should be set
+
         """
         self.fs = fs
         self.siglen = siglen
@@ -42,7 +42,6 @@ class Resample(PreProcessor):
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """
-
         apply the preprocessor to `sig`
 
         Parameters
@@ -61,6 +60,7 @@ class Resample(PreProcessor):
             the resampled ECG signal
         new_fs: int,
             the sampling frequency of the resampled ECG signal
+
         """
         self._check_sig(sig)
         if self.fs is not None:

@@ -3,7 +3,7 @@ the most basic CNN
 """
 
 from copy import deepcopy
-from typing import NoReturn, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import torch
 from torch import nn
@@ -46,9 +46,8 @@ class VGGBlock(nn.Sequential, SizeMixin):
         out_channels: int,
         groups: int = 1,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         num_convs: int,
@@ -116,7 +115,6 @@ class VGGBlock(nn.Sequential, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -128,6 +126,7 @@ class VGGBlock(nn.Sequential, SizeMixin):
         -------
         output_shape: sequence,
             the output shape, given `seq_len` and `batch_size`
+
         """
         num_layers = 0
         for module in self:
@@ -147,16 +146,14 @@ class VGGBlock(nn.Sequential, SizeMixin):
 
 class VGG16(nn.Sequential, SizeMixin):
     """
-
     CNN feature extractor of the CRNN models proposed in refs of `ECG_CRNN`
     """
 
     __DEBUG__ = False
     __name__ = "VGG16"
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,

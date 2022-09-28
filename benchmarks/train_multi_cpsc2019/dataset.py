@@ -7,7 +7,7 @@ import math
 from copy import deepcopy
 from pathlib import Path
 from random import shuffle
-from typing import List, NoReturn, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -53,9 +53,8 @@ class CPSC2019(ReprMixin, Dataset):
         config: CFG,
         training: bool = True,
         lazy: bool = False,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -64,7 +63,8 @@ class CPSC2019(ReprMixin, Dataset):
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,
-            if True, the data will not be loaded immediately,
+            if True, the data will not be loaded immediately
+
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -105,7 +105,7 @@ class CPSC2019(ReprMixin, Dataset):
         """ """
         return len(self.fdr)
 
-    def _load_all_data(self) -> NoReturn:
+    def _load_all_data(self) -> None:
         """ """
         self._signals, self._labels = [], []
         with tqdm(self.fdr, desc="loading data", unit="records") as pbar:
@@ -129,7 +129,6 @@ class CPSC2019(ReprMixin, Dataset):
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> List[str]:
         """
-
         do train test split,
         it is ensured that both the train and the test set contain all classes
 
@@ -145,6 +144,7 @@ class CPSC2019(ReprMixin, Dataset):
         -------
         records: list of str,
             list of the records split for training or validation
+
         """
         assert 0 < train_ratio < 100
         _train_ratio = train_ratio if train_ratio < 1 else train_ratio / 100
@@ -186,7 +186,7 @@ class FastDataReader(ReprMixin, Dataset):
         records: Sequence[str],
         config: CFG,
         ppm: Optional[PreprocManager] = None,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.reader = reader
         self.records = records

@@ -24,7 +24,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from string import punctuation
-from typing import Any, List, NoReturn, Optional, Union, Sequence
+from typing import Any, List, Optional, Union, Sequence
 
 import numpy as np
 import pandas as pd
@@ -120,7 +120,6 @@ WFDB_Rhythm_Annotations = {
 
 class _DataBase(ReprMixin, ABC):
     """
-
     universal abstract base class for all databases
     """
 
@@ -131,7 +130,7 @@ class _DataBase(ReprMixin, ABC):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -172,7 +171,7 @@ class _DataBase(ReprMixin, ABC):
         self._all_records = None
 
     @abstractmethod
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """ """
         raise NotImplementedError
 
@@ -258,7 +257,7 @@ class _DataBase(ReprMixin, ABC):
         return path
 
     @property
-    def database_info(self) -> NoReturn:
+    def database_info(self) -> None:
         """ """
         info = "\n".join(self.__doc__.split("\n")[1:])
         print(info)
@@ -266,7 +265,7 @@ class _DataBase(ReprMixin, ABC):
     @classmethod
     def get_arrhythmia_knowledge(
         cls, arrhythmias: Union[str, List[str]], **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
         knowledge about ECG features of specific arrhythmias,
 
@@ -326,7 +325,7 @@ class PhysioNetDataBase(_DataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -372,7 +371,7 @@ class PhysioNetDataBase(_DataBase):
                 .reset_index(drop=True)
             )
 
-    def _ls_rec(self, db_name: Optional[str] = None, local: bool = True) -> NoReturn:
+    def _ls_rec(self, db_name: Optional[str] = None, local: bool = True) -> None:
         """
         find all records (relative path without file extension),
         and save into `self._all_records` for further use
@@ -403,7 +402,7 @@ class PhysioNetDataBase(_DataBase):
         except Exception:
             self._ls_rec_local()
 
-    def _ls_rec_local(self) -> NoReturn:
+    def _ls_rec_local(self) -> None:
         """
         find all records in `self.db_dir`
         """
@@ -454,7 +453,7 @@ class PhysioNetDataBase(_DataBase):
         raise NotImplementedError
 
     @property
-    def database_info(self, detailed: bool = False) -> NoReturn:
+    def database_info(self, detailed: bool = False) -> None:
         """
         print the information about the database
 
@@ -477,9 +476,7 @@ class PhysioNetDataBase(_DataBase):
         info = "\n".join(self.__doc__.split("\n")[1:])
         print(info)
 
-    def helper(
-        self, items: Union[List[str], str, type(None)] = None, **kwargs
-    ) -> NoReturn:
+    def helper(self, items: Union[List[str], str, type(None)] = None, **kwargs) -> None:
         """to be improved,
 
         print corr. meanings of symbols belonging to `items`
@@ -613,7 +610,7 @@ class PhysioNetDataBase(_DataBase):
             print(f"{url} is not available, try {new_url} instead")
         return self._url_compressed
 
-    def download(self, compressed: bool = False) -> NoReturn:
+    def download(self, compressed: bool = False) -> None:
         """
         download the database from PhysioNet
         """
@@ -646,7 +643,7 @@ class NSRRDataBase(_DataBase):
         working_dir: Optional[str] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -701,7 +698,7 @@ class NSRRDataBase(_DataBase):
         self,
         operation: str = "close",
         full_file_path: Optional[Union[str, Path]] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -739,7 +736,7 @@ class NSRRDataBase(_DataBase):
         """
         raise NotImplementedError
 
-    def show_rec_stats(self, rec: Union[str, int]) -> NoReturn:
+    def show_rec_stats(self, rec: Union[str, int]) -> None:
         """
         print the statistics about the record `rec`
 
@@ -752,7 +749,7 @@ class NSRRDataBase(_DataBase):
         raise NotImplementedError
 
     @property
-    def database_info(self, detailed: bool = False) -> NoReturn:
+    def database_info(self, detailed: bool = False) -> None:
         """
         print the information about the database
 
@@ -775,9 +772,7 @@ class NSRRDataBase(_DataBase):
             return
         print(self.__doc__)
 
-    def helper(
-        self, items: Union[List[str], str, type(None)] = None, **kwargs
-    ) -> NoReturn:
+    def helper(self, items: Union[List[str], str, type(None)] = None, **kwargs) -> None:
         """ """
         pp = pprint.PrettyPrinter(indent=4)
 
@@ -819,7 +814,7 @@ class CPSCDataBase(_DataBase):
         working_dir: Optional[str] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         r"""
         Parameters
         ----------
@@ -863,9 +858,7 @@ class CPSCDataBase(_DataBase):
         """
         raise NotImplementedError
 
-    def helper(
-        self, items: Union[List[str], str, type(None)] = None, **kwargs
-    ) -> NoReturn:
+    def helper(self, items: Union[List[str], str, type(None)] = None, **kwargs) -> None:
         """ """
         pp = pprint.PrettyPrinter(indent=4)
 
@@ -971,7 +964,7 @@ class DataBaseInfo:
 
         return docstring
 
-    def get_citation(self) -> NoReturn:
+    def get_citation(self) -> None:
         """ """
         citation_cache = _DATA_CACHE / "database_citation.csv"
         if citation_cache.exists():

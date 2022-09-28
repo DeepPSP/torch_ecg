@@ -5,7 +5,7 @@
 import time
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, NoReturn, Optional, Sequence, Dict, List, Union
+from typing import Any, Optional, Sequence, Dict, List, Union
 
 import numpy as np
 import pandas as pd
@@ -64,7 +64,7 @@ class SPH(_DataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -99,7 +99,7 @@ class SPH(_DataBase):
         self._all_records = None
         self._ls_rec()
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """
         find all records in `self.db_dir`
         """
@@ -271,7 +271,6 @@ class SPH(_DataBase):
         self, rec_or_sid: Union[str, int], items: Optional[List[str]] = None
     ) -> dict:
         """
-
         read auxiliary information of a subject (a record) stored in the header files
 
         Parameters
@@ -380,7 +379,7 @@ class SPH(_DataBase):
             "records.tar": "https://springernature.figshare.com/ndownloader/files/32630684",
         }
 
-    def download(self, files: Optional[Union[str, Sequence[str]]]) -> NoReturn:
+    def download(self, files: Optional[Union[str, Sequence[str]]]) -> None:
         """
         download the database from the figshare website
         """
@@ -405,7 +404,7 @@ class SPH(_DataBase):
         same_range: bool = False,
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """to improve,
 
         plot the signals of a record or external signals (units in μV),

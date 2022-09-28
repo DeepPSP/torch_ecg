@@ -2,7 +2,7 @@
 """
 
 from numbers import Real
-from typing import Any, List, NoReturn, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 import numpy as np
 
@@ -25,9 +25,8 @@ class BandPass(PreProcessor):
         filter_type: str = "butter",
         filter_order: Optional[int] = None,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         lowcut: real number, optional,
@@ -37,7 +36,8 @@ class BandPass(PreProcessor):
         filter_type: str, default "butter",
             type of the bandpass filter, can be "butter" or "fir"
         filter_order: int, optional,
-            order of the bandpass filter,
+            order of the bandpass filter
+
         """
         self.lowcut = lowcut
         self.highcut = highcut
@@ -53,7 +53,6 @@ class BandPass(PreProcessor):
 
     def apply(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
         """
-
         apply the preprocessor to `sig`
 
         Parameters
@@ -72,6 +71,7 @@ class BandPass(PreProcessor):
             the bandpass filtered ECG signal
         fs: int,
             the sampling frequency of the filtered ECG signal
+
         """
         self._check_sig(sig)
         filtered_sig = preprocess_multi_lead_signal(

@@ -21,7 +21,6 @@ from typing import (
     Dict,
     Iterable,
     List,
-    NoReturn,
     Optional,
     Sequence,
     Union,
@@ -66,7 +65,6 @@ def get_record_list_recursive(
     db_dir: Union[str, Path], rec_ext: str, relative: bool = True
 ) -> List[str]:
     """
-
     get the list of records in `db_dir` recursively,
     for example, there are two folders "patient1", "patient2" in `db_dir`,
     and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
@@ -105,7 +103,6 @@ def get_record_list_recursive(
 @deprecated(reason="use `get_record_list_recursive3` instead")
 def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> List[str]:
     """
-
     get the list of records in `db_dir` recursively,
     for example, there are two folders "patient1", "patient2" in `db_dir`,
     and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
@@ -149,7 +146,6 @@ def get_record_list_recursive3(
     relative: bool = True,
 ) -> Union[List[str], Dict[str, List[str]]]:
     r"""
-
     get the list of records in `db_dir` recursively,
     for example, there are two folders "patient1", "patient2" in `db_dir`,
     and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
@@ -214,7 +210,6 @@ def dict_to_str(
     d: Union[dict, list, tuple], current_depth: int = 1, indent_spaces: int = 4
 ) -> str:
     """
-
     convert a (possibly) nested dict into a `str` of json-like formatted form,
     this nested dict might also contain lists or tuples of dict (and of str, int, etc.)
 
@@ -295,7 +290,6 @@ def dict_to_str(
 
 def str2bool(v: Union[str, bool]) -> bool:
     """
-
     converts a "boolean" value possibly in the format of str to bool
 
     Parameters
@@ -326,7 +320,6 @@ def str2bool(v: Union[str, bool]) -> bool:
 
 def diff_with_step(a: np.ndarray, step: int = 1, **kwargs) -> np.ndarray:
     """
-
     compute a[n+step] - a[n] for all valid n
 
     Parameters
@@ -353,7 +346,6 @@ def diff_with_step(a: np.ndarray, step: int = 1, **kwargs) -> np.ndarray:
 
 def ms2samples(t: Real, fs: Real) -> int:
     """
-
     convert time `t` with units in ms to number of samples
 
     Parameters
@@ -375,7 +367,6 @@ def ms2samples(t: Real, fs: Real) -> int:
 
 def samples2ms(n_samples: int, fs: Real) -> Real:
     """
-
     inverse function of `ms2samples`
 
     Parameters
@@ -401,7 +392,7 @@ def plot_single_lead(
     ax: Optional[Any] = None,
     ticks_granularity: int = 0,
     **kwargs,
-) -> NoReturn:
+) -> None:
     """finished, NOT checked,
 
     Parameters
@@ -466,7 +457,6 @@ def init_logger(
     verbose: int = 0,
 ) -> logging.Logger:
     """
-
     Parameters
     ----------
     log_dir: str or Path,
@@ -528,7 +518,6 @@ def init_logger(
 
 def get_date_str(fmt: Optional[str] = None):
     """
-
     Parameters
     ----------
     fmt: str, optional,
@@ -547,7 +536,6 @@ def get_date_str(fmt: Optional[str] = None):
 
 def list_sum(lst: Sequence[list]) -> list:
     """
-
     Parameters
     ----------
     lst: sequence of list,
@@ -570,7 +558,6 @@ def read_log_txt(
     scalar_startswith: Union[str, Iterable[str]] = "train/|test/",
 ) -> pd.DataFrame:
     """
-
     read from log txt file, in case tensorboard not working
 
     Parameters
@@ -617,7 +604,6 @@ def read_event_scalars(
     fp: str, keys: Optional[Union[str, Iterable[str]]] = None
 ) -> Union[pd.DataFrame, Dict[str, pd.DataFrame]]:
     """
-
     read scalars from event file, in case tensorboard not working
 
     Parameters
@@ -666,7 +652,6 @@ def read_event_scalars(
 
 def dicts_equal(d1: dict, d2: dict) -> bool:
     """
-
     Parameters
     ----------
     d1, d2: dict,
@@ -732,7 +717,6 @@ def dicts_equal(d1: dict, d2: dict) -> bool:
 
 def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
     """
-
     Parameters
     ----------
     c: object,
@@ -773,7 +757,6 @@ def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
 class ReprMixin(object):
     """
     Mixin for enhanced __repr__ and __str__ methods.
-
     """
 
     def __repr__(self) -> str:
@@ -797,7 +780,7 @@ class MovingAverage(object):
 
     """
 
-    def __init__(self, data: Optional[Sequence] = None, **kwargs: Any) -> NoReturn:
+    def __init__(self, data: Optional[Sequence] = None, **kwargs: Any) -> None:
         """
         Parameters
         ----------
@@ -904,7 +887,6 @@ class MovingAverage(object):
     def _cma(self, **kwargs) -> np.ndarray:
         """
         cumulative moving average
-
         """
         smoothed = []
         prev = 0
@@ -933,7 +915,6 @@ class MovingAverage(object):
 
 def nildent(text: str) -> str:
     """
-
     kill all leading white spaces in each line of `text`,
     while keeping all lines (including empty)
 
@@ -1115,7 +1096,6 @@ def timeout(duration: float):
 
 class Timer(ReprMixin):
     """
-
     Context manager to time the execution of a block of code.
 
     Usage
@@ -1134,9 +1114,8 @@ class Timer(ReprMixin):
 
     __name__ = "Timer"
 
-    def __init__(self, name: Optional[str] = None, verbose: int = 0) -> NoReturn:
+    def __init__(self, name: Optional[str] = None, verbose: int = 0) -> None:
         """
-
         Parameters
         ----------
         name: str, optional
@@ -1157,12 +1136,12 @@ class Timer(ReprMixin):
         self.levels = {self.name: 1}
         return self
 
-    def __exit__(self, *args) -> NoReturn:
+    def __exit__(self, *args) -> None:
         for k in self.timers:
             self.stop_timer(k)
             self.timers[k] = self.ends[k] - self.timers[k]
 
-    def add_timer(self, name: str, level: int = 1) -> NoReturn:
+    def add_timer(self, name: str, level: int = 1) -> None:
         """
         add a new timer for some subtask
 
@@ -1178,7 +1157,7 @@ class Timer(ReprMixin):
         self.ends[name] = 0
         self.levels[name] = level
 
-    def stop_timer(self, name: str) -> NoReturn:
+    def stop_timer(self, name: str) -> None:
         """
         stop a timer
 

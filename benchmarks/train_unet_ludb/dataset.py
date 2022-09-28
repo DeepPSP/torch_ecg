@@ -5,7 +5,7 @@ import json
 from copy import deepcopy
 from pathlib import Path
 from random import randint, shuffle
-from typing import List, NoReturn, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -45,9 +45,8 @@ class LUDB(ReprMixin, Dataset):
         config: CFG,
         training: bool = True,
         lazy: bool = False,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -56,7 +55,8 @@ class LUDB(ReprMixin, Dataset):
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,
-            if True, the data will not be loaded immediately,
+            if True, the data will not be loaded immediately
+
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -122,7 +122,7 @@ class LUDB(ReprMixin, Dataset):
 
         return signals, labels
 
-    def _load_all_data(self) -> NoReturn:
+    def _load_all_data(self) -> None:
         """ """
         self._signals, self._labels = [], []
 
@@ -148,7 +148,6 @@ class LUDB(ReprMixin, Dataset):
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> List[str]:
         """
-
         Parameters
         ----------
         train_ratio: float, default 0.8,
@@ -161,6 +160,7 @@ class LUDB(ReprMixin, Dataset):
         -------
         records: list of str,
             list of the records split for training or validation
+
         """
         _train_ratio = int(train_ratio * 100)
         _test_ratio = 100 - _train_ratio
@@ -204,7 +204,7 @@ class FastDataReader(ReprMixin, Dataset):
         records: Sequence[str],
         config: CFG,
         ppm: Optional[PreprocManager] = None,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.reader = reader
         self.records = records

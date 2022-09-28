@@ -14,7 +14,7 @@ References
 """
 
 from copy import deepcopy
-from typing import NoReturn, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import torch
@@ -45,7 +45,6 @@ __all__ = [
 
 class ECG_SEQ_LAB_NET(ECG_CRNN):
     """
-
     SOTA model from CPSC2019 challenge (entry 0416)
 
     pipeline
@@ -55,6 +54,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
     References
     ----------
     [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
+
     """
 
     __DEBUG__ = False
@@ -64,9 +64,8 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
     def __init__(
         self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         classes: list,
@@ -76,6 +75,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         _config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         _config.update(deepcopy(config) or {})
@@ -84,7 +84,6 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
     def extract_features(self, input: Tensor) -> Tensor:
         """
-
         extract feature map before the dense (linear) classifying layer(s)
 
         Parameters
@@ -96,6 +95,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         -------
         features: Tensor,
             of shape (batch_size, seq_len, channels)
+
         """
         # cnn
         cnn_output = self.cnn(input)  # (batch_size, channels, seq_len)
@@ -115,7 +115,6 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -125,6 +124,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         -------
         pred: Tensor,
             of shape (batch_size, seq_len, n_classes)
+
         """
         batch_size, channels, seq_len = input.shape
 
@@ -142,7 +142,6 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
     def _recover_length(self, pred: Tensor, seq_len: int) -> Tensor:
         """
-
         recover the length of `pred` to `seq_len`
 
         Parameters
@@ -156,6 +155,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         -------
         Tensor,
             of shape (batch_size, seq_len, n_classes)
+
         """
         return F.interpolate(
             pred.permute(0, 2, 1),
@@ -167,7 +167,6 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
 class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
     """
-
     SOTA model from CPSC2019 challenge (entry 0416), legacy version
 
     pipeline
@@ -177,6 +176,7 @@ class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
     References
     ----------
     [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
+
     """
 
     __DEBUG__ = False
@@ -186,9 +186,8 @@ class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
 
     def __init__(
         self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         classes: list,
@@ -198,6 +197,7 @@ class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         super().__init__()
         self.classes = list(classes)
@@ -295,7 +295,6 @@ class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
 
     def extract_features(self, input: Tensor) -> Tensor:
         """
-
         extract feature map before the dense (linear) classifying layer(s)
 
         Parameters
@@ -307,6 +306,7 @@ class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
         -------
         features: Tensor,
             of shape (batch_size, seq_len, channels)
+
         """
         # cnn
         cnn_output = self.cnn(input)  # (batch_size, channels, seq_len)
@@ -326,7 +326,6 @@ class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -357,7 +356,6 @@ class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
 
     def _recover_length(self, pred: Tensor, seq_len: int) -> Tensor:
         """
-
         recover the length of `pred` to `seq_len`
 
         Parameters
@@ -393,7 +391,6 @@ class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,

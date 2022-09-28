@@ -2,7 +2,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, NoReturn, Sequence, Set, Union
+from typing import Any, Sequence, Set, Union
 
 import numpy as np
 import pandas as pd
@@ -98,14 +98,12 @@ _RPeaksDetectionOutput_ISSUE_EXAMPLE = """
 
 class BaseOutput(CFG, ABC):
     """
-
     Base class for all outputs
-
     """
 
     __name__ = "BaseOutput"
 
-    def __init__(self, *args: Any, **kwargs: Any) -> NoReturn:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """ """
         super().__init__(*args, **kwargs)
         pop_fields = [
@@ -129,9 +127,8 @@ class BaseOutput(CFG, ABC):
         """ """
         raise NotImplementedError
 
-    def append(self, values: Union["BaseOutput", Sequence["BaseOutput"]]) -> NoReturn:
+    def append(self, values: Union["BaseOutput", Sequence["BaseOutput"]]) -> None:
         """
-
         append other `Output`s to self
 
         Parameters
@@ -169,9 +166,7 @@ class BaseOutput(CFG, ABC):
 
 class ClassificationOutput(BaseOutput):
     """
-
     Class that maintains the output of a (typically single-label) classification task.
-
     """
 
     __name__ = "ClassificationOutput"
@@ -184,9 +179,8 @@ class ClassificationOutput(BaseOutput):
         prob: np.ndarray = None,
         pred: np.ndarray = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         classification output
 
         Parameters
@@ -198,7 +192,9 @@ class ClassificationOutput(BaseOutput):
             of shape (batch_size, num_classes)
         pred : np.ndarray,
             predicted class indices, or binary predictions,
-            of shape (batch_size,) or (batch_size, num_classes)"""
+            of shape (batch_size,) or (batch_size, num_classes)
+
+        """
         super().__init__(*args, classes=classes, prob=prob, pred=pred, **kwargs)
 
     def required_fields(self) -> Set[str]:
@@ -213,7 +209,6 @@ class ClassificationOutput(BaseOutput):
 
     def compute_metrics(self) -> ClassificationMetrics:
         """
-
         compute metrics from the output
 
         Returns
@@ -233,9 +228,7 @@ class ClassificationOutput(BaseOutput):
 
 class MultiLabelClassificationOutput(BaseOutput):
     """
-
     Class that maintains the output of a multi-label classification task.
-
     """
 
     __name__ = "MultiLabelClassificationOutput"
@@ -251,9 +244,8 @@ class MultiLabelClassificationOutput(BaseOutput):
         prob: np.ndarray = None,
         pred: np.ndarray = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         multi-label classification output
 
         Parameters
@@ -287,7 +279,6 @@ class MultiLabelClassificationOutput(BaseOutput):
 
     def compute_metrics(self, macro: bool = True) -> ClassificationMetrics:
         """
-
         compute metrics from the output
 
         Parameters
@@ -312,9 +303,7 @@ class MultiLabelClassificationOutput(BaseOutput):
 
 class SequenceTaggingOutput(BaseOutput):
     """
-
     Class that maintains the output of a sequence tagging task.
-
     """
 
     __name__ = "SequenceTaggingOutput"
@@ -327,9 +316,8 @@ class SequenceTaggingOutput(BaseOutput):
         prob: np.ndarray = None,
         pred: np.ndarray = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         sequence tagging output
 
         Parameters
@@ -359,7 +347,6 @@ class SequenceTaggingOutput(BaseOutput):
 
     def compute_metrics(self, macro: bool = True) -> ClassificationMetrics:
         """
-
         compute metrics from the output
 
         Parameters
@@ -392,9 +379,7 @@ SequenceLabellingOutput.__name__ = "SequenceLabellingOutput"
 
 class WaveDelineationOutput(SequenceTaggingOutput):
     """
-
     Class that maintains the output of a wave delineation task.
-
     """
 
     __name__ = "WaveDelineationOutput"
@@ -407,9 +392,8 @@ class WaveDelineationOutput(SequenceTaggingOutput):
         prob: np.ndarray = None,
         mask: np.ndarray = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         wave delineation output
 
         Parameters
@@ -444,7 +428,6 @@ class WaveDelineationOutput(SequenceTaggingOutput):
         self, macro: bool = True, tol: float = 0.15
     ) -> ClassificationMetrics:
         """
-
         compute metrics from the output
 
         Parameters
@@ -475,9 +458,7 @@ class WaveDelineationOutput(SequenceTaggingOutput):
 
 class RPeaksDetectionOutput(BaseOutput):
     """
-
     Class that maintains the output of an R peaks detection task.
-
     """
 
     __name__ = "RPeaksDetectionOutput"
@@ -490,9 +471,8 @@ class RPeaksDetectionOutput(BaseOutput):
         prob: np.ndarray = None,
         pred: np.ndarray = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         r-peaks detection output
 
         Parameters
@@ -517,7 +497,6 @@ class RPeaksDetectionOutput(BaseOutput):
 
     def compute_metrics(self, thr: float = 0.15) -> ClassificationMetrics:
         """
-
         compute metrics from the output
 
         Parameters

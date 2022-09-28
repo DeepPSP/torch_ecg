@@ -7,7 +7,7 @@ along with some constants
 
 from copy import deepcopy
 from pathlib import Path
-from typing import List, NoReturn
+from typing import List
 
 try:
     import torch_ecg  # noqa: F401
@@ -112,7 +112,7 @@ PlotCfg.t_onset = -100
 PlotCfg.t_offset = 60
 
 
-def _assign_classes(cfg: CFG, special_classes: List[str]) -> NoReturn:
+def _assign_classes(cfg: CFG, special_classes: List[str]) -> None:
     """ """
     cfg.special_classes = deepcopy(special_classes)
     cfg.tranche_class_weights = CFG(

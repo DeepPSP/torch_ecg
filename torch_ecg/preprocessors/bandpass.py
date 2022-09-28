@@ -2,7 +2,7 @@
 """
 
 from numbers import Real
-from typing import Any, NoReturn, Optional
+from typing import Any, Optional
 
 import torch
 
@@ -25,9 +25,8 @@ class BandPass(torch.nn.Module):
         highcut: Optional[Real] = 45,
         inplace: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         fs: real number,
@@ -56,7 +55,6 @@ class BandPass(torch.nn.Module):
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
         """
-
         apply the preprocessor to `sig`
 
         Parameters

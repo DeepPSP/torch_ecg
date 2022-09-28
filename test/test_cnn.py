@@ -2,7 +2,6 @@
 """
 
 import time
-from typing import NoReturn
 
 try:
     import torch_ecg  # noqa: F401
@@ -88,7 +87,7 @@ _TEST_CLF_CLASSES = [
 
 
 @torch.no_grad()
-def test_cnn() -> NoReturn:
+def test_cnn() -> None:
     """ """
     start = time.time()
     print("\n" + " Test CNN configs ".center(80, "#") + "\n")
@@ -179,7 +178,7 @@ def test_cnn() -> NoReturn:
 
 
 @torch.no_grad()
-def _test_cnn(model_name: str, cfg: CFG) -> NoReturn:
+def _test_cnn(model_name: str, cfg: CFG) -> None:
     """ """
     try:
         test_model = eval(

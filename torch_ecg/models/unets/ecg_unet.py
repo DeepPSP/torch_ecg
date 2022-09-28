@@ -10,7 +10,7 @@ References
 """
 
 from copy import deepcopy
-from typing import NoReturn, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import torch
 import torch.nn.functional as F
@@ -42,7 +42,6 @@ __all__ = [
 
 class DoubleConv(MultiConv):
     """
-
     building blocks of UNet
 
     References
@@ -65,9 +64,8 @@ class DoubleConv(MultiConv):
         out_activation: bool = True,
         mid_channels: Optional[int] = None,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -137,9 +135,8 @@ class DownDoubleConv(nn.Sequential, SizeMixin):
         mid_channels: Optional[int] = None,
         mode: str = "max",
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         down_scale: int,
@@ -204,7 +201,6 @@ class DownDoubleConv(nn.Sequential, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -261,9 +257,8 @@ class UpDoubleConv(nn.Module, SizeMixin):
         mode: str = "deconv",
         mid_channels: Optional[int] = None,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         up_scale: int,
@@ -342,7 +337,6 @@ class UpDoubleConv(nn.Module, SizeMixin):
 
     def forward(self, input: Tensor, down_output: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -375,7 +369,6 @@ class UpDoubleConv(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -407,7 +400,6 @@ class UpDoubleConv(nn.Module, SizeMixin):
 
 class ECG_UNET(nn.Module, CkptMixin, SizeMixin):
     """
-
     UNet for (multi-lead) ECG wave delineation
 
     References
@@ -420,9 +412,8 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin):
     __DEBUG__ = False
     __name__ = "ECG_UNET"
 
-    def __init__(self, classes: Sequence[str], n_leads: int, config: dict) -> NoReturn:
+    def __init__(self, classes: Sequence[str], n_leads: int, config: dict) -> None:
         """
-
         Parameters
         ----------
         classes: sequence of int,
@@ -535,7 +526,6 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -585,7 +575,6 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,

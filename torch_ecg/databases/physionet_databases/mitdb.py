@@ -5,7 +5,7 @@
 from collections import defaultdict, Counter
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -73,7 +73,7 @@ class MITDB(PhysioNetDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -145,7 +145,7 @@ class MITDB(PhysioNetDataBase):
         self._stats_columns = ["record", "beat_num", "beat_type_num", "rhythm_len"]
         self._aggregate_stats()
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """ """
         super()._ls_rec()
         if len(self._all_records) == 0:
@@ -159,7 +159,7 @@ class MITDB(PhysioNetDataBase):
             )
             self._df_records.set_index("record", inplace=True)
 
-    def _aggregate_stats(self) -> NoReturn:
+    def _aggregate_stats(self) -> None:
         """ """
         self._stats = pd.DataFrame(columns=self._stats_columns)
         with tqdm(range(len(self)), desc="Aggregating stats", unit="record") as pbar:
@@ -625,6 +625,6 @@ class MITDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         same_range: bool = False,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         raise NotImplementedError

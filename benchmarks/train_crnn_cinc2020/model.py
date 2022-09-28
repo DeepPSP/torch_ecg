@@ -2,7 +2,7 @@
 """
 
 from copy import deepcopy
-from typing import Any, NoReturn, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -40,9 +40,8 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         n_leads: int,
         config: Optional[CFG] = None,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         classes: list,
@@ -52,6 +51,7 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         model_config = deepcopy(ModelCfg)
         model_config.update(deepcopy(config) or {})
@@ -66,7 +66,6 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
         bin_pred_thr: float = 0.5,
     ) -> MultiLabelClassificationOutput:
         """
-
         auxiliary function to `forward`, for CINC2020,
 
         Parameters
@@ -90,6 +89,7 @@ class ECG_CRNN_CINC2020(ECG_CRNN):
                 scalar predictions, (and binary predictions if `class_names` is True)
             prob: ndarray,
                 the array (with values 0, 1 for each class) of binary prediction
+
         """
         if "NSR" in self.classes:
             nsr_cid = self.classes.index("NSR")

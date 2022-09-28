@@ -9,7 +9,7 @@ import time
 import warnings
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -103,9 +103,8 @@ class CPSC2021(PhysioNetDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -187,7 +186,7 @@ class CPSC2021(PhysioNetDataBase):
             self._ls_rec()
         return self.__all_records
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """
         list all the records and load into `self._all_records`,
         facilitating further uses
@@ -246,7 +245,7 @@ class CPSC2021(PhysioNetDataBase):
             list_sum(self._all_subjects.values()), key=lambda s: int(s)
         )
 
-    def _ls_rec_split(self) -> NoReturn:
+    def _ls_rec_split(self) -> None:
         """
         list all the records assuming the records
         are split into two folders (training_I and training_II)
@@ -285,7 +284,7 @@ class CPSC2021(PhysioNetDataBase):
             if record_list_fp.is_file():
                 self.__revised_records.extend(record_list_fp.read_text().splitlines())
 
-    def _aggregate_stats(self) -> NoReturn:
+    def _aggregate_stats(self) -> None:
         """aggregate stats on the whole dataset"""
         stats_file = "stats.csv"
         stats_file_fp = self.db_dir_base / stats_file
@@ -353,7 +352,7 @@ class CPSC2021(PhysioNetDataBase):
         """ """
         return self._stats
 
-    def _ls_diagnoses_records(self) -> NoReturn:
+    def _ls_diagnoses_records(self) -> None:
         """list all the records for all diagnoses"""
         fn = "diagnoses_records_list.json"
         dr_fp = self.db_dir_base / fn
@@ -885,7 +884,7 @@ class CPSC2021(PhysioNetDataBase):
         leads: Optional[Union[str, List[str]]] = None,
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs,
-    ) -> NoReturn:
+    ) -> None:
         """to improve,
 
         plot the signals of a record or external signals (units in μV),

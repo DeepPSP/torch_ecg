@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Any, NoReturn, Optional
+from typing import Any, Optional
 
 import torch
 
@@ -29,9 +29,8 @@ class Resample(torch.nn.Module):
         siglen: Optional[int] = None,
         inplace: bool = False,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         fs: int, optional,
@@ -61,7 +60,6 @@ class Resample(torch.nn.Module):
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
         """
-
         Parameters
         ----------
         sig: Tensor,

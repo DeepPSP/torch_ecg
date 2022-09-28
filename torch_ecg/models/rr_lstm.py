@@ -9,7 +9,7 @@ References
 """
 
 from copy import deepcopy
-from typing import Any, NoReturn, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union
 
 import torch
 from torch import Tensor, nn
@@ -49,9 +49,8 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin):
 
     def __init__(
         self, classes: Sequence[str], config: Optional[CFG] = None, **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         classes: list,
@@ -59,6 +58,7 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin):
         config: dict, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
+
         """
         super().__init__()
         self.classes = list(classes)
@@ -178,7 +178,6 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -188,6 +187,7 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin):
         -------
         output: Tensor,
             of shape (batch_size, seq_len, n_classes) or (batch_size, n_classes)
+
         """
         # (batch_size, n_channels, seq_len) --> (seq_len, batch_size, n_channels)
         # x = input.permute(1,2,0)
@@ -235,7 +235,6 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int, optional,
@@ -248,6 +247,7 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin):
         -------
         output_shape: sequence,
             the output shape of this model, given `seq_len` and `batch_size`
+
         """
         if self.config.clf.name.lower() == "crf":
             output_shape = (batch_size, seq_len, self.n_classes)

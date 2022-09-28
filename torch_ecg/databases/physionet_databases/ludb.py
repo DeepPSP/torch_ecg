@@ -4,7 +4,7 @@
 
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -168,9 +168,8 @@ class LUDB(PhysioNetDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -736,7 +735,7 @@ class LUDB(PhysioNetDataBase):
         same_range: bool = False,
         waves: Optional[ECGWaveForm] = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """to improve,
 
         plot the signals of a record or external signals (units in μV),

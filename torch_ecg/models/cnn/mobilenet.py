@@ -11,7 +11,7 @@ References
 
 from copy import deepcopy
 from itertools import repeat
-from typing import Any, NoReturn, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union
 from numbers import Real
 
 import torch
@@ -57,7 +57,6 @@ _DEFAULT_CONV_CONFIGS_MobileNetV1 = CFG(
 
 class MobileNetSeparableConv(nn.Sequential, SizeMixin):
     """
-
     similar to `_nets.SeparableConv`,
     the difference is that there are normalization and activation between depthwise conv and pointwise conv
 
@@ -83,9 +82,8 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
         depth_multiplier: int = 1,
         width_multiplier: float = 1.0,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -207,7 +205,6 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
 
 class MobileNetV1(nn.Sequential, SizeMixin):
     """
-
     Similar to Xception, but without skip connections,
     separable convolutions are slightly different too
 
@@ -226,9 +223,8 @@ class MobileNetV1(nn.Sequential, SizeMixin):
     __DEBUG__ = True
     __name__ = "MobileNetV1"
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -329,7 +325,6 @@ class MobileNetV1(nn.Sequential, SizeMixin):
         ordering: str = "cba",
     ) -> nn.Sequential:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -411,7 +406,6 @@ class MobileNetV1(nn.Sequential, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -445,7 +439,6 @@ class MobileNetV1(nn.Sequential, SizeMixin):
 
 class InvertedResidual(nn.Module, SizeMixin):
     """
-
     inverted residual block
 
     expansion (via pointwise conv) --> depthwise conv --> pointwise conv (without activation) ---> output
@@ -471,9 +464,8 @@ class InvertedResidual(nn.Module, SizeMixin):
         activation: Optional[Union[str, nn.Module]] = "relu6",
         width_multiplier: float = 1.0,
         attn: Optional[CFG] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -588,9 +580,8 @@ class InvertedResidual(nn.Module, SizeMixin):
         current_pos = self._add_attn_layer_if_needed(conv_in_channels, current_pos)
         _, self.__out_channels, _ = pw_linear.compute_output_shape()
 
-    def _add_attn_layer_if_needed(self, in_channels: int, current_pos: int) -> NoReturn:
+    def _add_attn_layer_if_needed(self, in_channels: int, current_pos: int) -> None:
         """
-
         add attention layer at the position specified by `self.__attn.pos`
 
         Parameters
@@ -611,7 +602,6 @@ class InvertedResidual(nn.Module, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -636,7 +626,6 @@ class InvertedResidual(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -661,7 +650,6 @@ class InvertedResidual(nn.Module, SizeMixin):
 
 class MobileNetV2(nn.Sequential, SizeMixin):
     """
-
     References
     ----------
     1. Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
@@ -673,9 +661,8 @@ class MobileNetV2(nn.Sequential, SizeMixin):
     __DEBUG__ = True
     __name__ = "MobileNetV2"
 
-    def __init__(self, in_channels: int, **config: CFG) -> NoReturn:
+    def __init__(self, in_channels: int, **config: CFG) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -863,9 +850,8 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
         out_channels: Union[int, Sequence[int]] = None,
         attn: Optional[Union[CFG, Sequence[CFG]]] = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -1013,9 +999,8 @@ class MobileNetV3_STEM(nn.Sequential, SizeMixin):
         ] = "relu",
         width_multiplier: Union[float, Sequence[float]] = 1.0,
         **config: CFG,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -1088,7 +1073,6 @@ class MobileNetV3_STEM(nn.Sequential, SizeMixin):
 
 class MobileNetV3(nn.Sequential, SizeMixin):
     """
-
     References
     ----------
     1. Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019). Searching for mobilenetv3. In Proceedings of the IEEE International Conference on Computer Vision (pp. 1314-1324).
@@ -1099,9 +1083,8 @@ class MobileNetV3(nn.Sequential, SizeMixin):
     __DEBUG__ = True
     __name__ = "MobileNetV3"
 
-    def __init__(self, in_channels: int, **config: CFG) -> NoReturn:
+    def __init__(self, in_channels: int, **config: CFG) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,

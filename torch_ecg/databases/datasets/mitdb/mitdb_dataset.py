@@ -6,7 +6,7 @@ import os
 import warnings
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from scipy import signal as SS
@@ -47,9 +47,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def __init__(
         self, config: CFG, task: str, training: bool = True, lazy: bool = True
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -115,13 +114,12 @@ class MITDBDataset(ReprMixin, Dataset):
         self._all_masks = None
         self.__set_task(task, lazy=self.lazy)
 
-    def _load_all_data(self) -> NoReturn:
+    def _load_all_data(self) -> None:
         """ """
         self.__set_task(self.task, lazy=False)
 
-    def __set_task(self, task: str, lazy: bool = True) -> NoReturn:
+    def __set_task(self, task: str, lazy: bool = True) -> None:
         """
-
         Parameters
         ----------
         task: str,
@@ -267,11 +265,11 @@ class MITDBDataset(ReprMixin, Dataset):
                 f"data generator for task \042{self.task}\042 not implemented"
             )
 
-    def reset_task(self, task: str, lazy: bool = True) -> NoReturn:
+    def reset_task(self, task: str, lazy: bool = True) -> None:
         """ """
         self.__set_task(task, lazy)
 
-    def _ls_segments(self) -> NoReturn:
+    def _ls_segments(self) -> None:
         """list all the segments"""
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
@@ -298,7 +296,7 @@ class MITDBDataset(ReprMixin, Dataset):
                 json.dumps(self.__all_segments, ensure_ascii=False)
             )
 
-    def _ls_rr_seq(self) -> NoReturn:
+    def _ls_rr_seq(self) -> None:
         """list all the rr sequences"""
         for rec in self.reader:
             self.rr_seq_dirs[rec] = self.rr_seq_base_dir / rec
@@ -366,7 +364,6 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _get_seg_data_path(self, seg: str) -> Path:
         """
-
         Parameters
         ----------
         seg: str,
@@ -384,7 +381,6 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _get_seg_ann_path(self, seg: str) -> Path:
         """
-
         Parameters
         ----------
         seg: str,
@@ -402,7 +398,6 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _load_seg_data(self, seg: str) -> np.ndarray:
         """
-
         Parameters
         ----------
         seg: str,
@@ -420,7 +415,6 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _load_seg_ann(self, seg: str) -> dict:
         """
-
         Parameters
         ----------
         seg: str,
@@ -448,7 +442,6 @@ class MITDBDataset(ReprMixin, Dataset):
         self, seg: str, task: Optional[str] = None
     ) -> Union[np.ndarray, Dict[str, np.ndarray]]:
         """
-
         Parameters
         ----------
         seg: str,
@@ -486,7 +479,6 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _load_seg_seq_lab(self, seg: str, reduction: int) -> np.ndarray:
         """
-
         Parameters
         ----------
         seg: str,
@@ -519,7 +511,6 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _get_rr_seq_path(self, seq_name: str) -> Path:
         """
-
         Parameters
         ----------
         seq_name: str,
@@ -537,7 +528,6 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _load_rr_seq(self, seq_name: str) -> Dict[str, np.ndarray]:
         """
-
         Parameters
         ----------
         seq_name: str,
@@ -561,9 +551,8 @@ class MITDBDataset(ReprMixin, Dataset):
         rr_seq["interval"] = rr_seq["interval"].flatten()
         return rr_seq
 
-    def persistence(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
+    def persistence(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
-
         make the dataset persistent w.r.t. the ratios in `self.config`
 
         Parameters
@@ -595,7 +584,6 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _get_rec_suffix(self, operations: List[str]) -> str:
         """
-
         Parameters
         ----------
         operations: list of str,
@@ -611,9 +599,8 @@ class MITDBDataset(ReprMixin, Dataset):
         suffix = "-".join(sorted([item.lower() for item in operations]))
         return suffix
 
-    def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
+    def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
-
         slice all records into segments of length `self.seglen`,
         and perform data augmentations specified in `self.config`
 
@@ -660,9 +647,8 @@ class MITDBDataset(ReprMixin, Dataset):
         force_recompute: bool = False,
         update_segments_json: bool = False,
         verbose: int = 0,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         slice one record into segments of length `self.seglen`,
         and perform data augmentations specified in `self.config`
 
@@ -783,7 +769,6 @@ class MITDBDataset(ReprMixin, Dataset):
         end_idx: Optional[int] = None,
     ) -> CFG:
         """
-
         generate segment, with possible data augmentation
 
         Parameter
@@ -915,9 +900,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def __save_segments(
         self, rec: str, segments: List[CFG], update_segments_json: bool = False
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         rec: str,
@@ -953,9 +937,8 @@ class MITDBDataset(ReprMixin, Dataset):
                 json.dumps(self.__all_segments, ensure_ascii=False)
             )
 
-    def _clear_cached_segments(self, recs: Optional[Sequence[str]] = None) -> NoReturn:
+    def _clear_cached_segments(self, recs: Optional[Sequence[str]] = None) -> None:
         """
-
         Parameters
         ----------
         recs: sequence of str, optional
@@ -984,11 +967,8 @@ class MITDBDataset(ReprMixin, Dataset):
                         self.__all_segments[rec].remove(os.path.splitext(f)[0])
         self.segments = list_sum([self.__all_segments[rec] for rec in self.records])
 
-    def _slice_rr_seq(
-        self, force_recompute: bool = False, verbose: int = 0
-    ) -> NoReturn:
+    def _slice_rr_seq(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
-
         slice sequences of rr intervals into fixed length (sub)sequences
 
         Parameters
@@ -1028,7 +1008,7 @@ class MITDBDataset(ReprMixin, Dataset):
         force_recompute: bool = False,
         update_rr_seq_json: bool = False,
         verbose: int = 0,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.__assert_task(["rr_lstm"])
         rec_rr_seq = self.__all_rr_seq[rec]
@@ -1128,9 +1108,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def __save_rr_seq(
         self, rec: str, rr_seq: List[CFG], update_rr_seq_json: bool = False
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         rec: str,
@@ -1154,9 +1133,8 @@ class MITDBDataset(ReprMixin, Dataset):
                 json.dumps(self.__all_rr_seq, ensure_ascii=False)
             )
 
-    def _clear_cached_rr_seq(self, recs: Optional[Sequence[str]] = None) -> NoReturn:
+    def _clear_cached_rr_seq(self, recs: Optional[Sequence[str]] = None) -> None:
         """
-
         Parameters
         ----------
         recs: sequence of str, optional
@@ -1177,7 +1155,6 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _get_rec_name(self, seg_or_rr: str) -> str:
         """
-
         Parameters
         ----------
         seg_or_rr: str,
@@ -1194,7 +1171,6 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _train_test_split(self, task: str) -> Dict[str, List[str]]:
         """
-
         do train test split,
         it is ensured that both the train and the test set contain all classes
 
@@ -1228,15 +1204,14 @@ class MITDBDataset(ReprMixin, Dataset):
         )
         return split_res
 
-    def __assert_task(self, tasks: List[str]) -> NoReturn:
+    def __assert_task(self, tasks: List[str]) -> None:
         """ """
         assert (
             self.task in tasks
         ), f"DO NOT call this method when the current task is {self.task}. Switch task using `reset_task`"
 
-    def plot_seg(self, seg: str, ticks_granularity: int = 0) -> NoReturn:
+    def plot_seg(self, seg: str, ticks_granularity: int = 0) -> None:
         """
-
         Parameters
         ----------
         seg: str,
@@ -1278,7 +1253,7 @@ class FastDataReader(ReprMixin, Dataset):
         file_dirs: dict,
         files: List[str],
         file_ext: str,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.config = config
         self.task = task
@@ -1379,7 +1354,6 @@ class FastDataReader(ReprMixin, Dataset):
 
 def _get_rec_suffix(operations: List[str]) -> str:
     """
-
     Parameters
     ----------
     operations: list of str,

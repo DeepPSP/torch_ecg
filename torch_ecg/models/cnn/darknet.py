@@ -10,8 +10,6 @@ References
 [5] Wang, C. Y., Bochkovskiy, A., & Liao, H. Y. M. (2020). Scaled-YOLOv4: Scaling Cross Stage Partial Network. arXiv preprint arXiv:2011.08036.
 """
 
-from typing import NoReturn
-
 import torch
 from torch import nn
 
@@ -40,7 +38,7 @@ class DarkNet(nn.Sequential, SizeMixin):
     __DEBUG__ = True
     __name__ = "DarkNet"
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """ """
         super().__init__()
         raise NotImplementedError

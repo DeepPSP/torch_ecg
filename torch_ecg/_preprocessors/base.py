@@ -4,7 +4,7 @@
 from abc import ABC, abstractmethod
 from itertools import repeat
 from numbers import Real
-from typing import List, NoReturn, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 
@@ -44,6 +44,7 @@ class PreProcessor(ReprMixin, ABC):
             3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)
         fs: real number,
             sampling frequency of the ECG signal
+
         """
         raise NotImplementedError
 
@@ -53,7 +54,7 @@ class PreProcessor(ReprMixin, ABC):
         """
         return self.apply(sig, fs)
 
-    def _check_sig(self, sig: np.ndarray) -> NoReturn:
+    def _check_sig(self, sig: np.ndarray) -> None:
         """
         check validity of the signal
 
@@ -64,6 +65,7 @@ class PreProcessor(ReprMixin, ABC):
             1d array, which is a single-lead ECG
             2d array, which is a multi-lead ECG of "lead_first" format
             3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)
+
         """
         if sig.ndim not in [1, 2, 3]:
             raise ValueError(
@@ -84,7 +86,6 @@ def preprocess_multi_lead_signal(
     filter_order: Optional[int] = None,
 ) -> np.ndarray:
     """
-
     perform preprocessing for multi-lead ecg signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
     also works for single-lead ecg signal (sig_fmt="channel_first")
@@ -119,6 +120,7 @@ def preprocess_multi_lead_signal(
     filtered_ecg: ndarray,
         the array of the processed ecg signal,
         the format of the signal is kept the same with the original signal, i.e. `sig_fmt`
+
     """
     assert sig_fmt.lower() in [
         "channel_first",
@@ -192,7 +194,6 @@ def preprocess_single_lead_signal(
     band_fs: Optional[List[Real]] = None,
 ) -> np.ndarray:
     """
-
     perform preprocessing for single lead ecg signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
 
@@ -222,6 +223,7 @@ def preprocess_single_lead_signal(
     ----
     bandpass filter uses FIR filters, an alternative can be Butterworth filter,
     e.g. `butter_bandpass_filter` in `utils.utils_singal`
+
     """
     filtered_ecg = raw_sig
 

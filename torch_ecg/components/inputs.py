@@ -6,7 +6,7 @@ import inspect
 import math
 from copy import deepcopy
 from abc import ABC, abstractmethod
-from typing import NoReturn, Union, List, Sequence, Tuple
+from typing import Union, List, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -39,9 +39,8 @@ class InputConfig(CFG):
         n_channels: int,
         n_samples: int = -1,
         **kwargs: dict
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         input_type : str,
@@ -81,7 +80,7 @@ class BaseInput(ReprMixin, ABC):
 
     __name__ = "BaseInput"
 
-    def __init__(self, config: InputConfig) -> NoReturn:
+    def __init__(self, config: InputConfig) -> None:
         """ """
         assert isinstance(config, InputConfig)
         self._config = deepcopy(config)
@@ -92,7 +91,6 @@ class BaseInput(ReprMixin, ABC):
 
     def __call__(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
         """
-
         Parameters
         ----------
         waveform : np.ndarray or torch.Tensor,
@@ -112,7 +110,7 @@ class BaseInput(ReprMixin, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         raise NotImplementedError
 
@@ -146,7 +144,6 @@ class BaseInput(ReprMixin, ABC):
         self, waveform_shape: Union[Sequence[int], torch.Size]
     ) -> Tuple[Union[type(None), int], ...]:
         """
-
         computes the input shape of the model based on the input type and the waveform shape
 
         Parameters
@@ -194,13 +191,12 @@ class WaveformInput(BaseInput):
 
     __name__ = "WaveformInput"
 
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         assert self.input_type == "waveform"
 
     def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
         """
-
         Parameters
         ----------
         waveform : np.ndarray or torch.Tensor,
@@ -218,7 +214,6 @@ class WaveformInput(BaseInput):
 
 class FFTInput(BaseInput):
     """
-
     Inputs from the FFT, via concatenating the amplitudes and the phases.
 
     One can set the following optional parameters for initialization:
@@ -237,7 +232,7 @@ class FFTInput(BaseInput):
 
     __name__ = "FFTInput"
 
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         assert self.input_type == "fft"
         self.nfft = self._config.get("nfft", None)
@@ -250,7 +245,6 @@ class FFTInput(BaseInput):
 
     def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
         """
-
         Parameters
         ----------
         waveform : np.ndarray or torch.Tensor,
@@ -282,7 +276,6 @@ class FFTInput(BaseInput):
 
 class _SpectralInput(BaseInput):
     """
-
     Inputs from the spectro-temporal domain.
 
     One has to set the following parameters for initialization:
@@ -310,7 +303,7 @@ class _SpectralInput(BaseInput):
 
     __name__ = "_SpectralInput"
 
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         assert "n_bins" in self._config
         self.fs = self._config.get("fs", self._config.get("sample_rate", None))
@@ -361,7 +354,7 @@ class SpectrogramInput(_SpectralInput):
     __doc__ = _SpectralInput.__doc__ + """"""
     __name__ = "SpectrogramInput"
 
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         super()._post_init()
         assert self.input_type in ["spectrogram"]
@@ -384,7 +377,6 @@ class SpectrogramInput(_SpectralInput):
 
     def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
         """
-
         Parameters
         ----------
         waveform : np.ndarray or torch.Tensor,

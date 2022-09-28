@@ -57,7 +57,7 @@ from copy import deepcopy
 from itertools import repeat
 from pathlib import Path
 from random import randint, sample, shuffle, uniform
-from typing import Dict, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from scipy import signal as SS
@@ -107,7 +107,6 @@ __all__ = [
 
 class CPSC2020(ReprMixin, Dataset):
     """
-
     data generator for deep learning models,
 
     strategy
@@ -115,14 +114,14 @@ class CPSC2020(ReprMixin, Dataset):
     1. slice each record into short segments of length `TrainCfg.input_len`,
     and of overlap length `TrainCfg.overlap_len` around premature beats
     2. do augmentations for premature segments
+
     """
 
     __DEBUG__ = False
     __name__ = "CPSC2020"
 
-    def __init__(self, config: CFG, training: bool = True) -> NoReturn:
+    def __init__(self, config: CFG, training: bool = True) -> None:
         """
-
         Parameters
         ----------
         config: dict,
@@ -130,6 +129,7 @@ class CPSC2020(ReprMixin, Dataset):
             ref. `cfg.TrainCfg`
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
+
         """
         super().__init__()
         self.config = deepcopy(config)
@@ -191,7 +191,7 @@ class CPSC2020(ReprMixin, Dataset):
             self._n_bw_choices = len(self.config.bw_ampl_ratio)
             self._n_gn_choices = len(self.config.bw_gaussian)
 
-    def _ls_segments(self) -> NoReturn:
+    def _ls_segments(self) -> None:
         """ """
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
@@ -290,7 +290,6 @@ class CPSC2020(ReprMixin, Dataset):
 
     def _get_seg_ampl(self, seg_data: np.ndarray, window: int = 80) -> float:
         """
-
         get amplitude of a segment
 
         Parameters
@@ -304,6 +303,7 @@ class CPSC2020(ReprMixin, Dataset):
         -------
         ampl: float,
             amplitude of `seg_data`
+
         """
         half_window = window // 2
         ampl = 0
@@ -314,7 +314,6 @@ class CPSC2020(ReprMixin, Dataset):
 
     def _get_seg_data_path(self, seg: str) -> Path:
         """
-
         Parameters
         ----------
         seg: str,
@@ -324,6 +323,7 @@ class CPSC2020(ReprMixin, Dataset):
         -------
         fp: Path,
             path of the data file of the segment
+
         """
         rec = seg.split("_")[0].replace("S", "A")
         fp = self.segments_dir / "data" / rec / f"{seg}{self.reader.rec_ext}"
@@ -331,7 +331,6 @@ class CPSC2020(ReprMixin, Dataset):
 
     def _get_seg_ann_path(self, seg: str) -> Path:
         """
-
         Parameters
         ----------
         seg: str,
@@ -341,6 +340,7 @@ class CPSC2020(ReprMixin, Dataset):
         -------
         fp: Path,
             path of the annotation file of the segment
+
         """
         rec = seg.split("_")[0].replace("S", "A")
         fp = self.segments_dir / "ann" / rec / f"{seg}{self.reader.rec_ext}"
@@ -348,7 +348,6 @@ class CPSC2020(ReprMixin, Dataset):
 
     def _load_seg_data(self, seg: str) -> np.ndarray:
         """
-
         Parameters
         ----------
         seg: str,
@@ -358,6 +357,7 @@ class CPSC2020(ReprMixin, Dataset):
         -------
         seg_data: ndarray,
             data of the segment, of shape (self.seglen,)
+
         """
         seg_data_fp = self._get_seg_data_path(seg)
         seg_data = loadmat(str(seg_data_fp))["ecg"].squeeze()
@@ -365,7 +365,6 @@ class CPSC2020(ReprMixin, Dataset):
 
     def _load_seg_label(self, seg: str) -> np.ndarray:
         """
-
         Parameters
         ----------
         seg: str,
@@ -375,6 +374,7 @@ class CPSC2020(ReprMixin, Dataset):
         -------
         seg_label: ndarray,
             label of the segment, of shape (self.n_classes,)
+
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
         seg_label = loadmat(str(seg_ann_fp))["label"].squeeze()
@@ -382,7 +382,6 @@ class CPSC2020(ReprMixin, Dataset):
 
     def _load_seg_beat_ann(self, seg: str) -> Dict[str, np.ndarray]:
         """
-
         Parameters
         ----------
         seg: str,
@@ -392,6 +391,7 @@ class CPSC2020(ReprMixin, Dataset):
         -------
         seg_beat_ann: dict,
             "SPB_indices", "PVC_indices", each of ndarray values
+
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
         seg_beat_ann = loadmat(str(seg_ann_fp))
@@ -404,7 +404,6 @@ class CPSC2020(ReprMixin, Dataset):
 
     def _load_seg_seq_lab(self, seg: str, reduction: int = 8) -> np.ndarray:
         """
-
         Parameters
         ----------
         seg: str,
@@ -418,6 +417,7 @@ class CPSC2020(ReprMixin, Dataset):
         seq_lab: np.ndarray,
             label of the sequence,
             of shape (self.seglen//reduction, self.n_classes)
+
         """
         seg_beat_ann = {
             k: np.round(v / reduction).astype(int)
@@ -439,17 +439,16 @@ class CPSC2020(ReprMixin, Dataset):
 
         return seq_lab
 
-    def disable_data_augmentation(self) -> NoReturn:
+    def disable_data_augmentation(self) -> None:
         """ """
         self.__data_aug = False
 
-    def enable_data_augmentation(self) -> NoReturn:
+    def enable_data_augmentation(self) -> None:
         """ """
         self.__data_aug = True
 
-    def persistence(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
+    def persistence(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
-
         make the dataset persistent w.r.t. the ratios in `self.config`
 
         Parameters
@@ -458,6 +457,7 @@ class CPSC2020(ReprMixin, Dataset):
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
+
         """
         # if force_recompute:
         #     self.__all_segments = CFG({rec: [] for rec in self.reader.all_records})
@@ -473,9 +473,8 @@ class CPSC2020(ReprMixin, Dataset):
 
     def _preprocess_data(
         self, preproc: List[str], force_recompute: bool = False, verbose: int = 0
-    ) -> NoReturn:
+    ) -> None:
         """
-
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
 
@@ -488,6 +487,7 @@ class CPSC2020(ReprMixin, Dataset):
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
+
         """
         preproc = self._normalize_preprocess_names(preproc, True)
         config = deepcopy(PreprocCfg)
@@ -508,9 +508,8 @@ class CPSC2020(ReprMixin, Dataset):
         config: dict,
         force_recompute: bool = False,
         verbose: int = 0,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         preprocesses the ecg data in advance for further use,
         offline for `self.persistence`
 
@@ -525,6 +524,7 @@ class CPSC2020(ReprMixin, Dataset):
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
+
         """
         # format save path
         save_fp = CFG()
@@ -554,8 +554,7 @@ class CPSC2020(ReprMixin, Dataset):
     def _normalize_preprocess_names(
         self, preproc: List[str], ensure_nonempty: bool
     ) -> List[str]:
-        """finished, checked
-
+        """
         to transform all preproc into lower case,
         and keep them in a specific ordering
 
@@ -572,6 +571,7 @@ class CPSC2020(ReprMixin, Dataset):
         -------
         _p: list of str,
             'normalized' list of preprocess types
+
         """
         _p = [item.lower() for item in preproc] if preproc else []
         if ensure_nonempty:
@@ -583,7 +583,6 @@ class CPSC2020(ReprMixin, Dataset):
 
     def _get_rec_suffix(self, operations: List[str]) -> str:
         """
-
         Parameters
         ----------
         operations: list of str,
@@ -593,14 +592,14 @@ class CPSC2020(ReprMixin, Dataset):
         Returns
         -------
         suffix: str,
-            suffix of the filename of the preprocessed ecg signal
+            suffix of the filename of the preprocessed ECG signal
+
         """
         suffix = "-".join(sorted([item.lower() for item in operations]))
         return suffix
 
-    def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> NoReturn:
+    def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
-
         slice all records into segments of length `self.config.input_len`, i.e. `self.seglen`,
         and perform data augmentations specified in `self.config`
 
@@ -610,6 +609,7 @@ class CPSC2020(ReprMixin, Dataset):
             if True, recompute regardless of possible existing files
         verbose: int, default 0,
             print verbosity
+
         """
         for idx, rec in enumerate(self.reader.all_records):
             self._slice_one_record(
@@ -631,9 +631,8 @@ class CPSC2020(ReprMixin, Dataset):
         force_recompute: bool = False,
         update_segments_json: bool = False,
         verbose: int = 0,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         slice one record into segments of length `self.config.input_len`, i.e. `self.seglen`,
         and perform data augmentations specified in `self.config`
 
@@ -650,6 +649,7 @@ class CPSC2020(ReprMixin, Dataset):
             useful when slicing not all records
         verbose: int, default 0,
             print verbosity
+
         """
         rec_name = self.reader._get_rec_name(rec)
         self.segments_dirs.data[rec_name].mkdir(parents=True, exist_ok=True)
@@ -803,9 +803,8 @@ class CPSC2020(ReprMixin, Dataset):
         seg: str,
         ticks_granularity: int = 0,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         seg: str,
@@ -814,7 +813,8 @@ class CPSC2020(ReprMixin, Dataset):
             the granularity to plot axis ticks, the higher the more,
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
         rpeak_inds: array_like, optional,
-            indices of R peaks,
+            indices of R peaks
+
         """
         seg_data = self._load_seg_data(seg)
         seg_beat_ann = self._load_seg_beat_ann(seg)

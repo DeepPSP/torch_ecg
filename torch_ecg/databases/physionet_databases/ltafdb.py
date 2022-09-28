@@ -7,7 +7,7 @@ import math
 from copy import deepcopy
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import wfdb
@@ -70,7 +70,7 @@ class LTAFDB(PhysioNetDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -496,7 +496,7 @@ class LTAFDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         same_range: bool = False,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),

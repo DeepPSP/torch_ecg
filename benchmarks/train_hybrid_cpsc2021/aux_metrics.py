@@ -310,7 +310,7 @@ def compute_main_task_metric(
 #     """
 #     __name__ = "WeightedBoundaryLoss"
 
-#     def __init__(self, weight_map:Dict[int,Real], sigma:Real, w:Real) -> NoReturn:
+#     def __init__(self, weight_map:Dict[int,Real], sigma:Real, w:Real) -> None:
 #         """
 #         """
 #         self.weight_map = weight_map

@@ -6,7 +6,7 @@ This technique is very successful in CPSC2021 challenge of paroxysmal AF events 
 from copy import deepcopy
 from numbers import Real
 from random import shuffle
-from typing import Any, List, NoReturn, Optional, Sequence, Tuple
+from typing import Any, List, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -29,6 +29,7 @@ class CutMix(Augmenter):
     1. Yun, S., Han, D., Oh, S. J., Chun, S., Choe, J., & Yoo, Y. (2019). CutMix: Regularization strategy to train strong classifiers with localizable features. In Proceedings of the IEEE/CVF International Conference on Computer Vision (pp. 6023-6032).
     2. https://github.com/clovaai/CutMix-PyTorch/blob/master/train.py
     3. https://github.com/ildoonet/cutmix/blob/master/cutmix/cutmix.py
+
     """
 
     __name__ = "CutMix"
@@ -41,7 +42,7 @@ class CutMix(Augmenter):
         prob: float = 0.5,
         inplace: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """ """
         super().__init__()
         self.fs = fs

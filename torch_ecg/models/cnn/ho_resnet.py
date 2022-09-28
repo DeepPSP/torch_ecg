@@ -7,8 +7,6 @@ References
 
 """
 
-from typing import NoReturn
-
 import torch
 from torch import nn
 
@@ -38,7 +36,7 @@ __all__ = [
 class MidPointResNet(nn.Module, SizeMixin):
     """ """
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """ """
         raise NotImplementedError
 
@@ -46,7 +44,7 @@ class MidPointResNet(nn.Module, SizeMixin):
 class RK4ResNet(nn.Module, SizeMixin):
     """ """
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """ """
         raise NotImplementedError
 
@@ -54,6 +52,6 @@ class RK4ResNet(nn.Module, SizeMixin):
 class RK8ResNet(nn.Module, SizeMixin):
     """ """
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """ """
         raise NotImplementedError

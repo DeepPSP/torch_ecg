@@ -3,7 +3,7 @@
 
 import warnings
 from numbers import Real
-from typing import Any, NoReturn
+from typing import Any
 
 import torch
 
@@ -26,9 +26,8 @@ class BaselineRemove(torch.nn.Module):
         window2: float = 0.6,
         inplace: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         fs: real number,
@@ -53,7 +52,6 @@ class BaselineRemove(torch.nn.Module):
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
         """
-
         apply the preprocessor to `sig`
 
         Parameters

@@ -6,7 +6,7 @@ branched, and has different scope (in terms of dilation) in each branch
 from collections import OrderedDict
 from copy import deepcopy
 from itertools import repeat
-from typing import NoReturn, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import torch
@@ -37,7 +37,6 @@ __all__ = [
 
 class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
     """
-
     basic building block of the CNN part of the SOTA model
     from CPSC2019 challenge (entry 0416)
 
@@ -57,9 +56,8 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
         subsample_length: int,
         groups: int = 1,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -136,7 +134,6 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -155,7 +152,6 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -181,7 +177,7 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
 
     def _assign_weights_lead_wise(
         self, other: "MultiScopicBasicBlock", indices: Sequence[int]
-    ) -> NoReturn:
+    ) -> None:
         """ """
         assert not any([isinstance(m, nn.LayerNorm) for m in self]) and not any(
             [isinstance(m, nn.LayerNorm) for m in other]
@@ -213,7 +209,6 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
 
 class MultiScopicBranch(nn.Sequential, SizeMixin):
     """
-
     branch path of the CNN part of the SOTA model
     from CPSC2019 challenge (entry 0416)
 
@@ -231,9 +226,8 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
         subsample_lengths: Union[int, Sequence[int]],
         groups: int = 1,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -313,7 +307,7 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
 
     def _assign_weights_lead_wise(
         self, other: "MultiScopicBranch", indices: Sequence[int]
-    ) -> NoReturn:
+    ) -> None:
         """ """
         for blk, o_blk in zip(self, other):
             blk._assign_weights_lead_wise(o_blk, indices)
@@ -329,9 +323,8 @@ class MultiScopicCNN(nn.Module, SizeMixin):
     __DEBUG__ = False
     __name__ = "MultiScopicCNN"
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -390,7 +383,6 @@ class MultiScopicCNN(nn.Module, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -420,7 +412,6 @@ class MultiScopicCNN(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -446,9 +437,8 @@ class MultiScopicCNN(nn.Module, SizeMixin):
 
     def assign_weights_lead_wise(
         self, other: "MultiScopicCNN", indices: Sequence[int]
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Assign weights to the `other` MultiScopicCNN module in the lead-wise manner
 
         Parameters

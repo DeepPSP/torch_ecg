@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Any, List, NoReturn, Optional, Sequence, Tuple
+from typing import Any, List, Optional, Sequence, Tuple
 
 import torch
 from torch import Tensor
@@ -27,9 +27,8 @@ class LabelSmooth(Augmenter):
         prob: float = 0.5,
         inplace: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         fs: int, optional,
@@ -41,6 +40,7 @@ class LabelSmooth(Augmenter):
         inplace: bool, default True,
             if True, the input tensor will be modified inplace
         kwargs: keyword arguments
+
         """
         super().__init__()
         self.fs = fs
@@ -57,7 +57,6 @@ class LabelSmooth(Augmenter):
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """
-
         Parameters
         ----------
         sig: Tensor,
@@ -80,6 +79,7 @@ class LabelSmooth(Augmenter):
             the output label tensor
         extra_tensors: sequence of Tensors, optional,
             if set in the input arguments, unchanged
+
         """
         if not self.inplace:
             label = label.clone()

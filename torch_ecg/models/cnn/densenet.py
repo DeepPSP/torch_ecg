@@ -14,7 +14,7 @@ Its key points:
 import math
 from copy import deepcopy
 from itertools import repeat
-from typing import NoReturn, Optional, Sequence, Union
+from typing import Optional, Sequence, Union
 
 import torch
 from torch import Tensor, nn
@@ -73,9 +73,8 @@ class DenseBasicBlock(nn.Module, SizeMixin):
         bias: bool = False,
         dropout: float = 0.0,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -127,7 +126,6 @@ class DenseBasicBlock(nn.Module, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -169,7 +167,6 @@ class DenseBasicBlock(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -190,7 +187,6 @@ class DenseBasicBlock(nn.Module, SizeMixin):
 
 class DenseBottleNeck(nn.Module, SizeMixin):
     """
-
     bottleneck modification of `DenseBasicBlock`,
     with an additional prefixed sequence of
     (normalization -> activation -> convolution of kernel size 1)
@@ -214,9 +210,8 @@ class DenseBottleNeck(nn.Module, SizeMixin):
         bias: bool = False,
         dropout: float = 0.0,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -284,7 +279,6 @@ class DenseBottleNeck(nn.Module, SizeMixin):
 
     def bn_function(self, input: Tensor) -> Tensor:
         """
-
         the `not memory_efficient` way
 
         Parameters
@@ -303,7 +297,6 @@ class DenseBottleNeck(nn.Module, SizeMixin):
 
     def forward(self, input: Tensor) -> Tensor:
         """
-
         Parameters
         ----------
         input: Tensor,
@@ -349,7 +342,6 @@ class DenseBottleNeck(nn.Module, SizeMixin):
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
         """
-
         Parameters
         ----------
         seq_len: int,
@@ -370,10 +362,8 @@ class DenseBottleNeck(nn.Module, SizeMixin):
 
 class DenseMacroBlock(nn.Sequential, SizeMixin):
     """
-
     macro blocks for `DenseNet`,
     stacked sequence of builing blocks of similar pattern
-
     """
 
     __DEBUG__ = True
@@ -391,9 +381,8 @@ class DenseMacroBlock(nn.Sequential, SizeMixin):
         bias: bool = False,
         dropout: float = 0.0,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -468,11 +457,9 @@ class DenseMacroBlock(nn.Sequential, SizeMixin):
 
 class DenseTransition(nn.Sequential, SizeMixin):
     """
-
     transition blocks between `DenseMacroBlock`s,
     used to perform sub-sampling,
     and compression of channels if specified
-
     """
 
     __DEBUG__ = True
@@ -491,9 +478,8 @@ class DenseTransition(nn.Sequential, SizeMixin):
         groups: int = 1,
         bias: bool = False,
         **config,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,
@@ -563,7 +549,6 @@ class DenseTransition(nn.Sequential, SizeMixin):
 
 class DenseNet(nn.Sequential, SizeMixin):
     """
-
     The core part of the SOTA model (framework) of CPSC2020
 
     References
@@ -597,9 +582,8 @@ class DenseNet(nn.Sequential, SizeMixin):
         init_subsample_mode="avg",
     )
 
-    def __init__(self, in_channels: int, **config) -> NoReturn:
+    def __init__(self, in_channels: int, **config) -> None:
         """
-
         Parameters
         ----------
         in_channels: int,

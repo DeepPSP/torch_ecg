@@ -6,7 +6,7 @@ import json
 import warnings  # noqa: F401
 from numbers import Real
 from pathlib import Path
-from typing import Any, NoReturn, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -78,7 +78,7 @@ class CPSC2019(CPSCDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """finished, to be improved,
 
         Parameters
@@ -119,7 +119,7 @@ class CPSC2019(CPSCDataBase):
         self._all_annotations = None
         self._ls_rec()
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """ """
         records_fn = self.db_dir / "records.json"
         self._all_records = [f"data_{i:05d}" for i in range(1, 1 + self.n_records)]
@@ -224,7 +224,6 @@ class CPSC2019(CPSCDataBase):
         self, rec: Union[int, str], units: str = "mV", keep_dim: bool = True
     ) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str or int,
@@ -252,7 +251,6 @@ class CPSC2019(CPSCDataBase):
 
     def load_ann(self, rec: Union[int, str], keep_dim: bool = True) -> np.ndarray:
         """
-
         Parameters
         ----------
         rec: str or int,
@@ -295,9 +293,8 @@ class CPSC2019(CPSCDataBase):
         ann: Optional[np.ndarray] = None,
         ticks_granularity: int = 0,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         rec: str or int,
@@ -371,7 +368,7 @@ class CPSC2019(CPSCDataBase):
         # return "http://2019.icbeb.org/file/train.rar"
         return "https://www.dropbox.com/s/75nee0pqdy3f9r2/CPSC2019-train.zip?dl=1"
 
-    def download(self) -> NoReturn:
+    def download(self) -> None:
         """download the database from self.url"""
         # warnings.warn(
         #     "The original database is in .rar format, "
@@ -391,7 +388,6 @@ def compute_metrics(
     verbose: int = 0,
 ) -> float:
     """
-
     metric (scoring) function modified from the official one, with errors fixed
 
     Parameters

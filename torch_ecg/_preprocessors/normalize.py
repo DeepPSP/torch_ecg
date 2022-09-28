@@ -3,7 +3,7 @@ normalization of the signals
 """
 
 from numbers import Real
-from typing import Any, List, NoReturn, Tuple, Union
+from typing import Any, List, Tuple, Union
 
 import numpy as np
 
@@ -32,6 +32,7 @@ class Normalize(PreProcessor):
             \text{Naive normalization:} & \frac{sig - m}{s} \\
             \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
             \end{align*}
+
     """
 
     __name__ = "Normalize"
@@ -43,9 +44,8 @@ class Normalize(PreProcessor):
         std: Union[Real, np.ndarray] = 1.0,
         per_channel: bool = False,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         method: str, default "z-score",
@@ -61,6 +61,7 @@ class Normalize(PreProcessor):
             useless if `method` is "min-max"
         per_channel: bool, default False,
             if True, normalization will be done per channel
+
         """
         self.method = method.lower()
         assert self.method in [
@@ -82,7 +83,6 @@ class Normalize(PreProcessor):
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """
-
         apply the preprocessor to `sig`
 
         Parameters
@@ -102,6 +102,7 @@ class Normalize(PreProcessor):
             the normalized ECG signal
         fs: int,
             the sampling frequency of the normalized ECG signal
+
         """
         self._check_sig(sig)
         normalized_sig = normalize(
@@ -132,6 +133,7 @@ class MinMaxNormalize(Normalize):
 
         .. math::
             \frac{sig - \min(sig)}{\max(sig) - \min(sig)}
+
     """
 
     __name__ = "MinMaxNormalize"
@@ -139,13 +141,13 @@ class MinMaxNormalize(Normalize):
     def __init__(
         self,
         per_channel: bool = False,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         per_channel: bool, default False,
             if True, normalization will be done per channel
+
         """
         super().__init__(method="min-max", per_channel=per_channel)
 
@@ -164,6 +166,7 @@ class NaiveNormalize(Normalize):
 
         .. math::
             \frac{sig - m}{s}
+
     """
 
     __name__ = "NaiveNormalize"
@@ -174,9 +177,8 @@ class NaiveNormalize(Normalize):
         std: Union[Real, np.ndarray] = 1.0,
         per_channel: bool = False,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         mean: real number or ndarray, default 0.0,
@@ -185,6 +187,7 @@ class NaiveNormalize(Normalize):
             value(s) to be divided
         per_channel: bool, default False,
             if True, normalization will be done per channel
+
         """
         super().__init__(
             method="naive",
@@ -210,6 +213,7 @@ class ZScoreNormalize(Normalize):
 
         .. math::
             \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+
     """
 
     __name__ = "ZScoreNormalize"
@@ -220,9 +224,8 @@ class ZScoreNormalize(Normalize):
         std: Union[Real, np.ndarray] = 1.0,
         per_channel: bool = False,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         mean: real number or ndarray, default 0.0,
@@ -233,6 +236,7 @@ class ZScoreNormalize(Normalize):
             or standard deviations for each lead of the normalized signal,
         per_channel: bool, default False,
             if True, normalization will be done per channel
+
         """
         super().__init__(
             method="z-score",

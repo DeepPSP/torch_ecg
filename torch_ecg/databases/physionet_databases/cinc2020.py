@@ -11,7 +11,7 @@ from copy import deepcopy
 from datetime import datetime
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -168,9 +168,8 @@ class CINC2020(PhysioNetDataBase):
         working_dir: Optional[Union[str, Path]] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -290,7 +289,7 @@ class CINC2020(PhysioNetDataBase):
         sid = int(f"{s2d[prefix]}{'0'*(8-len(n))}{n}")
         return sid
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """
         list all the records and load into `self._all_records`,
         facilitating further uses
@@ -353,7 +352,7 @@ class CINC2020(PhysioNetDataBase):
             self._df_records = pd.concat((self._df_records, df_tmp), ignore_index=True)
         self._df_records.set_index("record", inplace=True)
 
-    def _ls_diagnoses_records(self) -> NoReturn:
+    def _ls_diagnoses_records(self) -> None:
         """list all the records for all diagnoses"""
         fn = "diagnoses_records_list.json"
         dr_fp = self.db_dir_base / fn
@@ -1035,7 +1034,7 @@ class CINC2020(PhysioNetDataBase):
         scores: List[Real],
         labels: List[int],
         classes: List[str],
-    ) -> NoReturn:
+    ) -> None:
         """NOT finished, NOT checked, need updating,
 
         TODO: update for the official phase
@@ -1079,7 +1078,7 @@ class CINC2020(PhysioNetDataBase):
         same_range: bool = False,
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """to improve,
 
         plot the signals of a record or external signals (units in μV),
@@ -1348,9 +1347,7 @@ class CINC2020(PhysioNetDataBase):
         return distribution
 
     @staticmethod
-    def get_arrhythmia_knowledge(
-        arrhythmias: Union[str, List[str]], **kwargs
-    ) -> NoReturn:
+    def get_arrhythmia_knowledge(arrhythmias: Union[str, List[str]], **kwargs) -> None:
         """
         knowledge about ECG features of specific arrhythmias,
 
@@ -1471,7 +1468,7 @@ class CINC2020(PhysioNetDataBase):
             raw_data = loadmat(str(rec_fp))["val"].astype(DEFAULTS.np_dtype)
         return raw_data
 
-    def _check_nan(self, tranches: Union[str, Sequence[str]]) -> NoReturn:
+    def _check_nan(self, tranches: Union[str, Sequence[str]]) -> None:
         """
         check if records from `tranches` has nan values
 
@@ -1505,7 +1502,7 @@ class CINC2020(PhysioNetDataBase):
         "PhysioNetChallenge2020_Training_E.tar.gz",
     ]
 
-    def download(self) -> NoReturn:
+    def download(self) -> None:
         """ """
         for url in self.url:
             http_get(url, self.db_dir_base / _stem(url), extract=True)

@@ -2,7 +2,7 @@
 """
 
 from numbers import Real
-from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -27,9 +27,8 @@ class RandomFlip(Augmenter):
         prob: Union[Sequence[float], float] = [0.4, 0.2],
         inplace: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """
-
         Parameters
         ----------
         fs: int, optional,
@@ -43,6 +42,7 @@ class RandomFlip(Augmenter):
         inplace: bool, default True,
             if True, ECG signal tensors will be modified inplace
         kwargs: Keyword arguments.
+
         """
         super().__init__()
         self.fs = fs
@@ -65,7 +65,6 @@ class RandomFlip(Augmenter):
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """
-
         Parameters
         ----------
         sig: Tensor,
@@ -86,6 +85,7 @@ class RandomFlip(Augmenter):
             the label tensor of the augmented ECGs, unchanged
         extra_tensors: sequence of Tensors, optional,
             if set in the input arguments, unchanged
+
         """
         batch, lead, siglen = sig.shape
         if not self.inplace:

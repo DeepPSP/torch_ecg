@@ -6,7 +6,7 @@ import multiprocessing as mp
 from itertools import repeat
 from numbers import Real
 from random import randint
-from typing import Any, List, NoReturn, Optional, Sequence, Tuple, Union
+from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -35,9 +35,8 @@ class BaselineWanderAugmenter(Augmenter):
         prob: float = 0.5,
         inplace: bool = True,
         **kwargs: Any
-    ) -> NoReturn:
-        """finished, checked
-
+    ) -> None:
+        """
         Parameters
         ----------
         fs: int,
@@ -131,7 +130,6 @@ class BaselineWanderAugmenter(Augmenter):
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
         """
-
         Parameters
         ----------
         sig: Tensor,
@@ -175,8 +173,7 @@ class BaselineWanderAugmenter(Augmenter):
 
 
 def _get_ampl(sig: Tensor, fs: int) -> Tensor:
-    """finished, checked
-
+    """
     Parameters
     ----------
     sig: Tensor,
@@ -201,7 +198,6 @@ def _get_ampl(sig: Tensor, fs: int) -> Tensor:
 
 def _gen_gaussian_noise(siglen: int, mean: Real = 0, std: Real = 0) -> np.ndarray:
     """
-
     generate 1d Gaussian noise of given length, mean, and standard deviation
 
     Parameters
@@ -232,7 +228,6 @@ def _gen_sinusoidal_noise(
     amplitude_std: Real = 0,
 ) -> np.ndarray:
     """
-
     generate 1d sinusoidal noise of given length, amplitude, start phase, and end phase
 
     Parameters
@@ -270,7 +265,6 @@ def _gen_baseline_wander(
     amplitude_gaussian: Sequence[Real] = [0, 0],
 ) -> np.ndarray:
     """
-
     generate 1d baseline wander of given length, amplitude, and frequency
 
     Parameters
@@ -322,7 +316,6 @@ def gen_baseline_wander(
     gaussian: np.ndarray,
 ) -> np.ndarray:
     """
-
     generate 1d baseline wander of given length, amplitude, and frequency
 
     Parameters
