@@ -157,9 +157,10 @@ class _DataBase(ReprMixin, ABC):
         if not self.db_dir.exists():
             self.db_dir.mkdir(parents=True, exist_ok=True)
             warnings.warn(
-                f"{self.db_dir} does not exist, created it. "
-                "Please check if it is correct. "
-                "Or you may want to download the database into this folder."
+                f"{self.db_dir} does not exist. It is now created. "
+                "Please check if it is set correctly. "
+                "Or if you may want to download the database into this folder, "
+                "please use the `download()` method."
             )
         self.working_dir = Path(working_dir or os.getcwd())
         self.working_dir.mkdir(parents=True, exist_ok=True)
@@ -610,13 +611,14 @@ class PhysioNetDataBase(_DataBase):
             print(f"{url} is not available, try {new_url} instead")
         return self._url_compressed
 
-    def download(self, compressed: bool = False) -> None:
+    def download(self, compressed: bool = True) -> None:
         """
         download the database from PhysioNet
         """
         if compressed:
             if self.url_ is not None:
                 http_get(self.url_, self.db_dir, extract=True)
+                self._ls_rec()
                 return
             else:
                 print(
