@@ -178,8 +178,8 @@ class CACHET_CADB(_DataBase):
         if len(self._short_format_file) == 1:
             self._short_format_file = self._short_format_file[0]
             with h5py.File(self._short_format_file, "r") as f:
-                self.__short_format_data = f["signal"][:]
-                self.__short_format_ann = f["labels"][:]
+                self.__short_format_data = f["signal"][:].astype(DEFAULTS.np_dtype)
+                self.__short_format_ann = f["labels"][:].astype(int)
         else:
             self._short_format_file = None
 
@@ -387,7 +387,7 @@ class CACHET_CADB(_DataBase):
         data = np.fromfile(data_path, dtype=header["dataType"])
         # digital to analog conversion
         # TODO: check if the conversion is correct:
-        # resolution on paper is 12 bit, but the `adcResolution` field is typically 16 bit
+        # resolution in the paper is 12 bit, but the `adcResolution` field is typically 16 bit
         # data = (data - int(header["baseline"])) / 2**(int(header["adcResolution"]))
         data = (data - int(header["baseline"])) / 2**12
         data = data.astype(DEFAULTS.np_dtype)
@@ -460,7 +460,7 @@ class CACHET_CADB(_DataBase):
         context_data = np.fromfile(context_data_path, dtype=header["dataType"])
         # digital to analog conversion
         # TODO: check if the conversion is correct:
-        # resolution on paper is 12 bit, but the `adcResolution` field is typically 16 bit
+        # resolution in the paper is 12 bit, but the `adcResolution` field is typically 16 bit
         # context_data = (context_data - int(header.get("baseline", 1))) / 2**(int(header["adcResolution"]))
         context_data = (context_data - int(header.get("baseline", 1))) / 2**12
 
@@ -492,8 +492,15 @@ class CACHET_CADB(_DataBase):
 
         """
         if isinstance(rec, int):
-            rec = self[rec]
-        if rec not in self.all_records:
+            if rec == -1:
+                rec = "short_format"
+            else:
+                rec = self[rec]
+        if rec == "short_format":
+            if self._short_format_file is None:
+                raise ValueError("short format file not found")
+            return self.__short_format_ann
+        elif rec not in self.all_records:
             raise ValueError(f"invalid record name: `{rec}`")
         try:
             ann = pd.read_csv(self._df_records.loc[rec, "ann_path"])
@@ -540,7 +547,8 @@ class CACHET_CADB(_DataBase):
         Parameters
         ----------
         rec: str or int,
-            record name or index of the record in `self.all_records`
+            record name or index of the record in `self.all_records`,
+            or "short_format" (-1) to load data from the short format file
 
         Returns
         -------
