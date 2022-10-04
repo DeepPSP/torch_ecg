@@ -1,4 +1,5 @@
 # database_reader
+
 python modules to facilitate the reading of various databaese from [PhysioNet](https://physionet.org/), [CPSC](http://www.icbeb.org/#), [NSRR](https://sleepdata.org/), etc.
 
 Migrated and improved from [DeepPSP/database_reader](https://github.com/DeepPSP/database_reader)
@@ -27,11 +28,11 @@ After migration, all should be tested again, the progression:
 [^1]: Since the classes are migrated from [DeepPSP/database_reader](https://github.com/DeepPSP/database_reader), some are not tested for newly added features.
 [^2]: The dataset `CPSC2021` is also hosted at [PhysioNet](https://www.physionet.org/content/cpsc2021/1.0.0/).
 
-
 ## Basic Usage
+
 ```python
 >>> from torch_ecg.databases import CINC2021
->>> dr = CINC2021("/path/to/the/directory/of/CINC2021-data/)
+>>> dr = CINC2021("/path/to/the/directory/of/CINC2021-data/)  # one should call `dr.download()` if not downloaded yet
 converting dtypes of columns `diagnosis` and `diagnosis_scored`...
 >>> len(dr)
 88253
@@ -88,18 +89,23 @@ array([[ 28.,   7.],
 ## Functionalities
 
 Each `Database` has the following basic functionalities
+
 1. Download from data archive (mainly PhysioNet) using the `download` method
-```python
->>> from torch_ecg.databases import MITDB
->>> dr = MITDB(db_dir="/any/path/even/if/does/not/exists/")
->>> # download the compressed zip file of MITDB
->>> # and extract to `dr.db_dir`
->>> dr.download(compressed=True)
-```
+
+    ```python
+    >>> from torch_ecg.databases import MITDB
+    >>> dr = MITDB(db_dir="/any/path/even/if/does/not/exists/")
+    >>> # download the compressed zip file of MITDB
+    >>> # and extract to `dr.db_dir`
+    >>> dr.download(compressed=True)
+    ```
+
 2. Loading data and annotations using `load_data` and `load_ann` respectively (ref. [Basic Usage](#basic-usage)).
+
 3. `plot` functions.
 
 For a `PhysioNetDataBase`, one has the `helper` function for looking up annotation meanings
+
 ```python
 >>> from torch_ecg.databases import MITDB
 >>> dr = MITDB(db_dir="/any/path/even/if/does/not/exists/")
@@ -146,4 +152,5 @@ MIT-BIH Arrhythmia Database
 ```
 
 ## TODO
+
 1. use the attribute `_df_records` to maintain paths, etc. uniformly
