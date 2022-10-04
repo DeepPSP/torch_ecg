@@ -11,7 +11,7 @@ from .base import (
 )
 from .cpsc_databases import CPSC2018, CPSC2019, CPSC2020, CPSC2021
 from .nsrr_databases import SHHS
-from .other_databases import SPH
+from .other_databases import CACHET_CADB, SPH
 from .physionet_databases import (
     AFDB,
     ApneaECG,
@@ -45,6 +45,7 @@ __all__ = [
     # from NSRR
     "SHHS",
     # other databases
+    "CACHET_CADB",
     "SPH",
     # auxilliary data, functions and classes
     "aux_data",

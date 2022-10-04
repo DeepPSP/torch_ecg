@@ -23,7 +23,7 @@ __all__ = [
 ]
 
 
-_SPH_INFO = DataBaseInfo(  # NOT finished yet
+_SPH_INFO = DataBaseInfo(
     title="""
     Shandong Provincial Hospital Database
     """,
@@ -189,12 +189,8 @@ class SPH(_DataBase):
             format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first")
-        backend: str, default "wfdb",
-            the backend data reader, can also be "scipy"
         units: str, default "mV",
             units of the output signal, can also be "μV", with an alias of "uV"
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
 
         Returns
         -------
@@ -234,7 +230,7 @@ class SPH(_DataBase):
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
-        fmt: str, default "a",
+        ann_format: str, default "a",
             the format of labels, one of the following (case insensitive):
             - "a", abbreviations
             - "f", full names
@@ -387,7 +383,9 @@ class SPH(_DataBase):
             files = self.url.keys()
         if isinstance(files, str):
             files = [files]
-        assert set(files).issubset(self.url)
+        assert set(files).issubset(
+            self.url
+        ), f"`files` should be a subset of {list(self.url)}"
         for filename in files:
             url = self.url[filename]
             if not (self.db_dir / filename).is_file():
