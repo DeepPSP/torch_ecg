@@ -652,6 +652,10 @@ class CPSC2018(CPSCDataBase):
             "http://hhbucket.oss-cn-hongkong.aliyuncs.com/TrainingSet3.zip",
         ]
 
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CPSC2018_INFO
+
 
 def compute_metrics():
     """ """

@@ -888,6 +888,10 @@ class LUDB(PhysioNetDataBase):
         else:
             plt.show()
 
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _LUDB_INFO
+
 
 __TOLERANCE = 150  # ms
 __WaveNames = ["pwave", "qrs", "twave"]

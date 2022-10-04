@@ -620,3 +620,7 @@ class SPH(_DataBase):
             plt.savefig(kwargs["save_path"], dpi=200, bbox_inches="tight")
         else:
             plt.show()
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _SPH_INFO

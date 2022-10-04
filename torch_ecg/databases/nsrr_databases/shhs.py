@@ -865,28 +865,28 @@ class SHHS(NSRRDataBase):
         """ """
         raise NotImplementedError
 
-    def database_info(self, detailed: bool = False) -> None:
-        """
-        print information about the database
+    # def database_info(self, detailed: bool = False) -> None:
+    #     """
+    #     print information about the database
 
-        Parameters
-        ----------
-        detailed: bool, default False,
-            if False, "What","Who","When","Funding" will be printed,
-            if True, then docstring of the class will be printed additionally
+    #     Parameters
+    #     ----------
+    #     detailed: bool, default False,
+    #         if False, "What","Who","When","Funding" will be printed,
+    #         if True, then docstring of the class will be printed additionally
 
-        """
-        raw_info = {
-            "What": "Multi-cohort study focused on sleep-disordered breathing and cardiovascular outcomes",
-            "Who": "5804 adults aged 40 and older",
-            "When": "Two exam cycles, 1995-1998 and 2001-2003. Cardiovascular disease outcomes were tracked until 2010",
-            "Funding": "National Heart, Lung, and Blood Institute",
-        }
+    #     """
+    #     raw_info = {
+    #         "What": "Multi-cohort study focused on sleep-disordered breathing and cardiovascular outcomes",
+    #         "Who": "5804 adults aged 40 and older",
+    #         "When": "Two exam cycles, 1995-1998 and 2001-2003. Cardiovascular disease outcomes were tracked until 2010",
+    #         "Funding": "National Heart, Lung, and Blood Institute",
+    #     }
 
-        print(raw_info)
+    #     print(raw_info)
 
-        if detailed:
-            print(self.__doc__)
+    #     if detailed:
+    #         print(self.__doc__)
 
     def show_rec_stats(self, rec: str, rec_path: Optional[str] = None) -> None:
         """
@@ -1955,6 +1955,10 @@ class SHHS(NSRRDataBase):
     @property
     def url(self) -> str:
         warnings.warn(
-            "one has to apply for a token and uses `nsrr` to download the data"
+            "one has to apply for a token from `sleepdata.org` and uses `nsrr` to download the data"
         )
         return ""
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _SHHS_INFO

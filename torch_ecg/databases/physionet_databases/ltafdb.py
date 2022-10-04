@@ -692,3 +692,7 @@ class LTAFDB(PhysioNetDataBase):
                 axes[idx].set_ylabel("Voltage [μV]")
             plt.subplots_adjust(hspace=0.2)
             plt.show()
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _LTAFDB_INFO

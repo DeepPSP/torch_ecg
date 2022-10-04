@@ -367,3 +367,7 @@ class ApneaECG(PhysioNetDataBase):
             )  # keep ordering
             plt.setp(ax.get_yticklabels(), visible=False)
             ax.tick_params(axis="y", which="both", length=0)
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _ApneaECG_INFO

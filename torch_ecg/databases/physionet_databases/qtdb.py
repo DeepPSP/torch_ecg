@@ -681,3 +681,7 @@ class QTDB(PhysioNetDataBase):
         _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
 
         raise NotImplementedError
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _QTDB_INFO

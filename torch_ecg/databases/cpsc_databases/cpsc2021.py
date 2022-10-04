@@ -1162,6 +1162,10 @@ class CPSC2021(PhysioNetDataBase):
         self._url_compressed = f"https://www.physionet.org/static/published-projects/cpsc2021/paroxysmal-atrial-fibrillation-events-detection-from-dynamic-ECG-recordings-the-4th-china-physiological-signal-challenge-2021-{self.version}.zip"
         return self._url_compressed
 
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CPSC2021_INFO
+
 
 ###################################################################
 # copied and modified from the official scoring code

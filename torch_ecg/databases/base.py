@@ -193,6 +193,35 @@ class _DataBase(ReprMixin, ABC):
         """
         raise NotImplementedError
 
+    @property
+    @abstractmethod
+    def database_info(self) -> "DataBaseInfo":
+        """the `DataBaseInfo` object of the database"""
+        raise NotImplementedError
+
+    def get_citation(
+        self, format: Optional[str] = None, style: Optional[str] = None
+    ) -> None:
+        """
+        Parameters
+        ----------
+        lookup: bool, default True,
+            whether to lookup the citation from the DOI
+        format: str, optional,
+            format of the final output,
+            if specified, the default format ("bib") will be overrided
+        style: str, optional,
+            style of the final output,
+            if specified, the default style ("apa") will be overrided,
+            only valid when `format` is "text"
+        print_result: bool, default False,
+            whether to print the final output instead of returning it
+
+        """
+        return self.database_info.get_citation(
+            lookup=True, format=format, style=style, print_result=True
+        )
+
     def _auto_infer_units(self, sig: np.ndarray, sig_type: str = "ECG") -> str:
         """
         automatically infer the units of `sig`,
@@ -257,12 +286,6 @@ class _DataBase(ReprMixin, ABC):
             )
         return path
 
-    @property
-    def database_info(self) -> None:
-        """ """
-        info = "\n".join(self.__doc__.split("\n")[1:])
-        print(info)
-
     @classmethod
     def get_arrhythmia_knowledge(
         cls, arrhythmias: Union[str, List[str]], **kwargs: Any
@@ -314,10 +337,7 @@ class _DataBase(ReprMixin, ABC):
 
 
 class PhysioNetDataBase(_DataBase):
-    """
-    https://www.physionet.org/
-
-    """
+    """https://www.physionet.org/"""
 
     def __init__(
         self,
@@ -957,17 +977,47 @@ class DataBaseInfo:
         if self.status is not None and len(self.status) > 0:
             docstring = f"{self.status}\n{docstring}"
 
-        citation = self.get_citation()
+        lookup = False
+        citation = self.get_citation(lookup=lookup, print_result=False)
         if citation.startswith("@"):
             citation = textwrap.indent(
                 f"""Citation\n--------\n```latex\n{citation}\n```""", indent
             )
             docstring = f"{docstring}\n{citation}\n"
+        elif not lookup:
+            citation = textwrap.indent(f"""Citation\n--------\n{citation}""", indent)
+            docstring = f"{docstring}\n{citation}\n"
 
         return docstring
 
-    def get_citation(self) -> None:
-        """ """
+    def get_citation(
+        self,
+        lookup: bool = True,
+        format: Optional[str] = None,
+        style: Optional[str] = None,
+        print_result: bool = False,
+    ) -> Union[str, type(None)]:
+        """
+        Parameters
+        ----------
+        lookup: bool, default True,
+            whether to lookup the citation from the DOI
+        format: str, optional,
+            format of the final output,
+            if specified, the default format ("bib") will be overrided
+        style: str, optional,
+            style of the final output,
+            if specified, the default style ("apa") will be overrided,
+            only valid when `format` is "text"
+        print_result: bool, default False,
+            whether to print the final output instead of returning it
+
+        Returns
+        -------
+        str, optional,
+            citation(s) of the database
+
+        """
         citation_cache = _DATA_CACHE / "database_citation.csv"
         if citation_cache.exists():
             df_cc = pd.read_csv(citation_cache)
@@ -980,13 +1030,36 @@ class DataBaseInfo:
                 doi = [self.doi]
             else:
                 doi = self.doi
-            citation = "\n".join(df_cc[df_cc["doi"].isin(doi)]["citation"].tolist())
-            doi = [item for item in doi if item not in df_cc["doi"].tolist()]
+            if not lookup:
+                citation = "\n".join(doi)
+                if print_result:
+                    print(citation)
+                else:
+                    return citation
+            if format is not None and format != self._bl.format:
+                citation = ""  # no cache for format other than bibtex
+            else:
+                citation = "\n".join(df_cc[df_cc["doi"].isin(doi)]["citation"].tolist())
+                doi = [item for item in doi if item not in df_cc["doi"].tolist()]
+                if print_result:
+                    print(citation)
             if len(doi) > 0:
                 new_citations = []
                 for item in doi:
                     try:
-                        new_citations.append({"doi": item, "citation": self._bl(item)})
+                        new_citations.append(
+                            {
+                                "doi": item,
+                                "citation": self._bl(
+                                    item,
+                                    format=format,
+                                    style=style,
+                                    print_result=print_result,
+                                    timeout=10.0,
+                                )
+                                or "",
+                            }
+                        )
                     except Exception:
                         pass
                 new_citations = [
@@ -996,11 +1069,21 @@ class DataBaseInfo:
                 ]
                 df_new = pd.DataFrame(new_citations)
                 if len(df_new) > 0:
-                    df_new.to_csv(citation_cache, mode="a", header=False, index=False)
+                    if format is None or format == self._bl.format:
+                        df_new.to_csv(
+                            citation_cache, mode="a", header=False, index=False
+                        )
                     citation += "\n" + "\n".join(df_new["citation"].tolist())
         else:
             citation = ""
-        return citation
+        citation = citation.strip("\n ")
+        if citation == "" and self.doi is not None:
+            citation = "\n".join(doi)
+            warnings.warn("Lookup failed, default to the DOI(s).")
+            if print_result:
+                print(citation)
+        if not print_result:
+            return citation
 
 
 DEFAULT_FIG_SIZE_PER_SEC = 4.8

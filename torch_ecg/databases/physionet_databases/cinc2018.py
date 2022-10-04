@@ -139,3 +139,7 @@ class CINC2018(PhysioNetDataBase):
     def plot(self) -> None:
         """ """
         raise NotImplementedError
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CINC2018_INFO

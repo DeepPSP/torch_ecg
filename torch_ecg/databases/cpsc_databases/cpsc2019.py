@@ -379,6 +379,10 @@ class CPSC2019(CPSCDataBase):
         http_get(self.url, self.db_dir, extract=True)
         self._ls_rec()
 
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CPSC2019_INFO
+
 
 def compute_metrics(
     rpeaks_truths: Sequence[Union[np.ndarray, Sequence[int]]],

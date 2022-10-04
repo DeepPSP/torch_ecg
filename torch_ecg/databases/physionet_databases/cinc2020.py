@@ -1509,18 +1509,16 @@ class CINC2020(PhysioNetDataBase):
         self._ls_rec()
 
     def __len__(self) -> int:
-        """
-        number of records in the database
-
-        """
+        """number of records in the database"""
         return len(self.__all_records)
 
     def __getitem__(self, index: int) -> str:
-        """
-        get the record name by index
-
-        """
+        """get the record name by index"""
         return self.__all_records[index]
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CINC2020_INFO
 
 
 def compute_all_metrics(

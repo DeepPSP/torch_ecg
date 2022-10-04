@@ -808,6 +808,10 @@ def _ann_to_beat_ann_epoch_v3(
         http_get(self.url, self.db_dir, extract=True)
         self._ls_rec()
 
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CPSC2020_INFO
+
 
 def compute_metrics(
     sbp_true: List[np.ndarray],

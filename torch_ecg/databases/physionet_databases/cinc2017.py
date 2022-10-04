@@ -411,3 +411,7 @@ class CINC2017(PhysioNetDataBase):
             "A01772,A01833,A02168,A02372,A02772,A02785,A02833,A03549,A03738,A04086,"
             "A04137,A04170,A04186,A04216,A04282,A04452,A04522,A04701,A04735,A04805"
         ).split(",")
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CINC2017_INFO

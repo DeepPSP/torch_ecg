@@ -18,7 +18,8 @@ from pathlib import Path
 from typing import Optional, Union
 
 import requests
-import tqdm
+from tqdm.auto import tqdm
+
 
 __all__ = [
     "http_get",
@@ -92,7 +93,7 @@ def http_get(
     total = int(content_length) if content_length is not None else None
     if req.status_code == 403 or req.status_code == 404:
         raise Exception(f"Could not reach {url}.")
-    progress = tqdm.tqdm(unit="B", unit_scale=True, total=total)
+    progress = tqdm(unit="B", unit_scale=True, total=total)
     for chunk in req.iter_content(chunk_size=1024):
         if chunk:  # filter out keep-alive new chunks
             progress.update(len(chunk))

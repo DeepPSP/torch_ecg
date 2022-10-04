@@ -162,6 +162,8 @@ class MITDB(PhysioNetDataBase):
     def _aggregate_stats(self) -> None:
         """ """
         self._stats = pd.DataFrame(columns=self._stats_columns)
+        if len(self) == 0:
+            return
         with tqdm(range(len(self)), desc="Aggregating stats", unit="record") as pbar:
             for idx in pbar:
                 rec_ann = self.load_ann(idx)
@@ -628,3 +630,7 @@ class MITDB(PhysioNetDataBase):
     ) -> None:
         """ """
         raise NotImplementedError
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _MITDB_INFO
