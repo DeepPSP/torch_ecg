@@ -103,7 +103,39 @@ Each `Database` has the following basic functionalities
 
 2. Loading data and annotations using `load_data` and `load_ann` respectively (ref. [Basic Usage](#basic-usage)).
 
-3. `plot` functions.
+3. Visualization using `plot` functions.
+
+4. Get citations of corresponding databases
+
+    ```python
+    >>> from torch_ecg.databases import CINC2021
+    >>> dr = CINC2021(db_dir="/any/path/even/if/does/not/exists/")
+    >>> dr.get_citation()  # default format is `bibtex`
+    @inproceedings{Reyna_2021,
+          title = {Will Two Do? Varying Dimensions in Electrocardiography: The {PhysioNet}/Computing in Cardiology Challenge 2021},
+         author = {Matthew A Reyna and Nadi Sadr and Erick A Perez Alday and Annie Gu and Amit J Shah and Chad Robichaux and Ali Bahrami Rad and Andoni Elola and Salman Seyedi and Sardar Ansari and Hamid Ghanbari and Qiao Li and Ashish Sharma and Gari D Clifford},
+      booktitle = {2021 Computing in Cardiology ({CinC})},
+            doi = {10.23919/cinc53138.2021.9662687},
+           year = {2021},
+          month = {9},
+      publisher = {{IEEE}}
+    }
+    @misc{https://doi.org/10.13026/jz9p-0m02,
+          title = {Will Two Do? Varying Dimensions in Electrocardiography: The PhysioNet/Computing in Cardiology Challenge 2021},
+         author = {Reyna, Matthew and Sadr, Nadi and Gu, Annie and Perez Alday, Erick Andres and Liu, Chengyu and Seyedi, Salman and Shah, Amit and Clifford, Gari D.},
+            doi = {10.13026/JZ9P-0M02},
+      publisher = {PhysioNet},
+           year = {2022}
+    }
+    >>> dr.get_citation(format="text")  # default style "apa"
+    Reyna, M. A., Sadr, N., Alday, E. A. P., Gu, A., Shah, A. J., Robichaux, C., Rad, A. B., Elola, A., Seyedi, S., Ansari, S., Ghanbari, H., Li, Q., Sharma, A., & Clifford, G. D. (2021). Will Two Do? Varying Dimensions in Electrocardiography: The PhysioNet/Computing in Cardiology Challenge 2021. 2021 Computing in Cardiology (CinC). https://doi.org/10.23919/cinc53138.2021.9662687
+
+    Reyna, M., Sadr, N., Gu, A., Perez Alday, E. A., Liu, C., Seyedi, S., Shah, A., &amp; Clifford, G. D. (2022). <i>Will Two Do? Varying Dimensions in Electrocardiography: The PhysioNet/Computing in Cardiology Challenge 2021</i> (Version 1.0.2) [Data set]. PhysioNet. https://doi.org/10.13026/JZ9P-0M02
+    >>> dr.get_citation(format="text", style="mla")
+    Reyna, Matthew A., et al. “Will Two Do? Varying Dimensions in Electrocardiography: The PhysioNet/Computing in Cardiology Challenge 2021.” 2021 Computing in Cardiology (CinC), Sept. 2021. Crossref, https://doi.org/10.23919/cinc53138.2021.9662687.
+
+    Reyna, M., Sadr, N., Gu, A., Perez Alday, E. A., Liu, C., Seyedi, S., Shah, A., &amp; Clifford, G. D. (2022). <i>Will Two Do? Varying Dimensions in Electrocardiography: The PhysioNet/Computing in Cardiology Challenge 2021</i> (Version 1.0.2) [Data set]. PhysioNet. https://doi.org/10.13026/JZ9P-0M02
+    ```
 
 For a `PhysioNetDataBase`, one has the `helper` function for looking up annotation meanings
 
