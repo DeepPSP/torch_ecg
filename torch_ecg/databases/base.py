@@ -911,6 +911,15 @@ class CPSCDataBase(_DataBase):
             print("--- helpler - methods ---")
             pp.pprint(methods)
 
+    def download(self) -> None:
+        """download the database from `self.url`"""
+        if isinstance(self.url, str):
+            http_get(self.url, self.db_dir, extract=True)
+        else:
+            for url in self.url:
+                http_get(url, self.db_dir, extract=True)
+        self._ls_rec()
+
 
 @dataclass
 class DataBaseInfo:

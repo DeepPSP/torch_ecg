@@ -13,8 +13,6 @@ from scipy.io import loadmat
 
 from ...cfg import CFG, DEFAULTS
 from ...utils.misc import add_docstring
-from ...utils.download import http_get
-from ...utils.ecg_arrhythmia_knowledge import PVC, SPB  # noqa: F401
 from ...utils.utils_interval import get_optimal_covering
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase, DataBaseInfo
 
@@ -802,11 +800,6 @@ def _ann_to_beat_ann_epoch_v3(
         return (
             "https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/TrainingSet.zip"
         )
-
-    def download(self) -> None:
-        """download the database from self.url"""
-        http_get(self.url, self.db_dir, extract=True)
-        self._ls_rec()
 
     @property
     def database_info(self) -> DataBaseInfo:

@@ -3,7 +3,6 @@
 """
 
 import json
-import warnings  # noqa: F401
 from numbers import Real
 from pathlib import Path
 from typing import Any, Optional, Sequence, Union
@@ -13,7 +12,6 @@ import pandas as pd
 from scipy.io import loadmat
 
 from ...cfg import DEFAULTS
-from ...utils.download import http_get
 from ...utils.misc import add_docstring
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, CPSCDataBase, DataBaseInfo
 
@@ -367,17 +365,6 @@ class CPSC2019(CPSCDataBase):
     def url(self) -> str:
         # return "http://2019.icbeb.org/file/train.rar"
         return "https://www.dropbox.com/s/75nee0pqdy3f9r2/CPSC2019-train.zip?dl=1"
-
-    def download(self) -> None:
-        """download the database from self.url"""
-        # warnings.warn(
-        #     "The original database is in .rar format, "
-        #     "consider manually downloading from "
-        #     "https://mega.nz/file/0NhhiYRb#BvS0Wj6dfccX-PUWMAMCMw4lWGZ0wQqkgMRTfOriFaE "
-        #     "a .zip file converted from the .rar file."
-        # )
-        http_get(self.url, self.db_dir, extract=True)
-        self._ls_rec()
 
     @property
     def database_info(self) -> DataBaseInfo:
