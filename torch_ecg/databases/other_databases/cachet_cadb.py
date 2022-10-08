@@ -243,6 +243,70 @@ class CACHET_CADB(_DataBase):
         self._df_metadata.set_index("record", inplace=True)
         self._df_metadata = self._df_metadata[self._metadata_cols]
 
+    def get_absolute_path(
+        self, rec: Union[str, int], extension: str = "signal-ecg"
+    ) -> Path:
+        """
+        get the absolute path of the signal folder of the record `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name or index of the record in `self.all_records`
+        extension: str, default "signal-ecg",
+            "extension" of the file, can be one of
+            "header", "annotation", "signal",
+            "annotation-context",
+            "signal-ecg", "signal-acc", "signal-angularrate", "signal-hr_live", "signal-hrvrmssd_live", etc.
+
+        Returns
+        -------
+        path: Path,
+            absolute path of the file
+
+        """
+        if isinstance(rec, int):
+            rec = self[rec]
+        assert rec in self.all_records, f"invalid record name: `{rec}`"
+        if extension == "annotation":
+            return self._df_records.loc[rec, "ann_path"]
+        elif extension == "annotation-context":
+            return self._df_records.loc[rec, "context_ann_path"]
+        elif extension == "signal":
+            return self._df_records.loc[rec, "data_path"].parent
+        elif extension == "header":
+            return self._df_records.loc[rec, "header_path"]
+
+        ext1, ext2 = extension.split("-")
+        assert ext1 == "signal", f"extension `{extension}` not supported"
+        assert ext2 in list(self.context_data_ext) + [
+            "ecg"
+        ], f"extension `{extension}` not supported"
+        if ext2 == "ecg":
+            return self._df_records.loc[rec, "data_path"]
+        else:
+            return self._df_records.loc[rec, f"context_{ext2}_path"]
+
+    def get_subject_id(self, rec: Union[str, int]) -> str:
+        """
+        Attach a `subject_id` to the record, in order to facilitate further uses
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name or index of the record in `self.all_records`
+
+        Returns
+        -------
+        sid: str,
+            a `subject_id` attached to the record `rec`
+
+        """
+        if isinstance(rec, int):
+            rec = self[rec]
+        assert rec in self.all_records, f"record `{rec}` not found"
+        return self._df_records.loc[rec, "subject"]
+
     def _rdheader(
         self, rec: Union[str, int], key: Optional[str] = None, raw: bool = False
     ) -> Union[str, Dict[str, Any]]:
@@ -268,7 +332,7 @@ class CACHET_CADB(_DataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        header_path = self._df_records.loc[rec, "header_path"]
+        header_path = self.get_absolute_path(rec, "header")
         if raw:
             return header_path.read_text()
         tree = ET.parse(header_path)
@@ -301,48 +365,6 @@ class CACHET_CADB(_DataBase):
             return header[key]
         return header
 
-    def get_absolute_path(self, rec: Union[str, int]) -> Path:
-        """
-        get the absolute path of the signal folder of the record `rec`
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        extension: str, optional,
-            extension of the file
-
-        Returns
-        -------
-        path: Path,
-            absolute path of the file
-
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        path = self._df_records.loc[rec].data_path.parent
-        return path
-
-    def get_subject_id(self, rec: Union[str, int]) -> str:
-        """
-        Attach a `subject_id` to the record, in order to facilitate further uses
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-
-        Returns
-        -------
-        sid: str,
-            a `subject_id` attached to the record `rec`
-
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        assert rec in self.all_records, f"record `{rec}` not found"
-        return self._df_records.loc[rec, "subject"]
-
     def load_data(
         self,
         rec: Union[str, int],
@@ -350,7 +372,8 @@ class CACHET_CADB(_DataBase):
         units: str = "mV",
     ) -> np.ndarray:
         """
-        load ECG data from bin file
+        load ECG data from bin file, with baseline removal, digital-to-analog conversion,
+        and conversions to the specified format and units
 
         Parameters
         ----------
@@ -368,7 +391,8 @@ class CACHET_CADB(_DataBase):
         Returns
         -------
         data: ndarray,
-            the ECG data
+            the (physical) ECG data, with baseline removed,
+            and converted to the specified format and units
 
         """
         if isinstance(rec, int):
@@ -385,14 +409,11 @@ class CACHET_CADB(_DataBase):
         data_path = self._df_records.loc[rec, "data_path"]
         header = self._rdheader(rec, key="ecg")
         data = np.fromfile(data_path, dtype=header["dataType"])
-        # digital to analog conversion
-        # TODO: check if the conversion is correct:
-        # resolution in the paper is 12 bit, but the `adcResolution` field is typically 16 bit
-        # data = (data - int(header["baseline"])) / 2**(int(header["adcResolution"]))
-        data = (data - int(header["baseline"])) / 2**12
+        # digital to analog conversion using the field `lsbValue` in the header
+        data = (data - int(header["baseline"])) * float(header["lsbValue"])
         data = data.astype(DEFAULTS.np_dtype)
         units = units.lower()
-        if units in ["μv", "uV"]:
+        if units in ["μv", "uv"]:
             data *= 1e3
         elif units != "mv":
             raise ValueError(f"invalid units: `{units}`")
@@ -408,7 +429,7 @@ class CACHET_CADB(_DataBase):
         self,
         rec: Union[str, int],
         context_name: str,
-        channels: Optional[Union[str, List[str]]] = None,
+        channels: Optional[Union[str, int, List[str], List[int]]] = None,
     ) -> Union[np.ndarray, pd.DataFrame]:
         """
         load context data
@@ -420,13 +441,13 @@ class CACHET_CADB(_DataBase):
         context_name: str,
             context name, can be one of
             "acc", "angularrate", "hr_live", "hrvrmssd_live", "movementacceleration_live", "press", "marker"
-        channels: str or list of str, optional,
+        channels: str or int or list of str or list of int, optional,
             channels to be loaded, if not specified, load all channels
 
         Returns
         -------
         context_data: ndarray or DataFrame,
-            context data
+            context data in the "channel_first" format
 
         NOTE
         ----
@@ -450,7 +471,7 @@ class CACHET_CADB(_DataBase):
                     f"record `{rec}` does not have context data `{context_name}`"
                 )
                 return pd.DataFrame()
-            return pd.read_csv(context_data_path, header=None)
+            return pd.read_csv(context_data_path, header=None, index_col=None)
 
         if not context_data_path.exists():
             warnings.warn(f"record `{rec}` does not have context data `{context_name}`")
@@ -458,19 +479,45 @@ class CACHET_CADB(_DataBase):
 
         header = self._rdheader(rec, key=context_name)
         context_data = np.fromfile(context_data_path, dtype=header["dataType"])
-        # digital to analog conversion
-        # TODO: check if the conversion is correct:
-        # resolution in the paper is 12 bit, but the `adcResolution` field is typically 16 bit
-        # context_data = (context_data - int(header.get("baseline", 1))) / 2**(int(header["adcResolution"]))
-        context_data = (context_data - int(header.get("baseline", 1))) / 2**12
-
+        # digital to analog conversion using the field `lsbValue` in the header
+        context_data = (context_data - int(header.get("baseline", 1))) * float(
+            header["lsbValue"]
+        )
+        context_data = context_data.astype(DEFAULTS.np_dtype)
+        # convert to "channel_first" format
+        context_data = context_data.reshape(-1, len(header["channel"])).T
         if channels is None:
-            channels = header["channel"]
-        elif isinstance(channels, str):
+            return context_data
+        _input_channels = channels
+        if isinstance(channels, str):
+            assert (
+                channels in header["channel"]
+            ), f"channels should be a subset of {header['channel']}, but got {channels}"
+            channels = [header["channel"].index(channels)]
+        elif isinstance(channels, int):
+            assert channels < len(
+                header["channel"]
+            ), f"channels should be less than {len(header['channel'])}, but got {channels}"
             channels = [channels]
-        # TODO: check the usage of `channels`
-
-        return context_data
+        else:
+            assert all(
+                [
+                    ch in header["channel"]
+                    if isinstance(ch, str)
+                    else ch in range(len(header["channel"]))
+                    for ch in channels
+                ]
+            ), f"channels should be a subset of {header['channel']}, but got {_input_channels}"
+            _channels = [
+                header["channel"].index(ch) if isinstance(ch, str) else ch
+                for ch in channels
+            ]
+            channels = list(dict.fromkeys(_channels))
+            if len(channels) != len(_channels):
+                warnings.warn(
+                    f"duplicate channels are removed, {_input_channels} -> {channels}"
+                )
+        return context_data[channels, :]
 
     def load_ann(
         self, rec: Union[str, int], ann_format: str = "pd"
@@ -484,6 +531,7 @@ class CACHET_CADB(_DataBase):
             record name or index of the record in `self.all_records`
         ann_format: str, default "pd",
             format of the annotation,
+            currently only "pd" is supported
 
         Returns
         -------
@@ -507,7 +555,10 @@ class CACHET_CADB(_DataBase):
         except pd.errors.EmptyDataError:
             ann = pd.DataFrame(columns=["Start", "End", "Class"])
         # TODO: adjust return format according to `ann_format`
-        return ann
+        if ann_format == "pd":
+            return ann
+        else:
+            raise ValueError(f"ann_format: `{ann_format}` not supported")
 
     def load_context_ann(
         self, rec: Union[str, int], sheet_name: Optional[str] = None
