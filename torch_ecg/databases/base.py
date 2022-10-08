@@ -219,7 +219,7 @@ class _DataBase(ReprMixin, ABC):
 
         """
         return self.database_info.get_citation(
-            lookup=True, format=format, style=style, print_result=True
+            lookup=True, format=format, style=style, timeout=10.0, print_result=True
         )
 
     def _auto_infer_units(self, sig: np.ndarray, sig_type: str = "ECG") -> str:
@@ -936,7 +936,7 @@ class DataBaseInfo:
 
     from bib_lookup import BibLookup
 
-    _bl = BibLookup(timeout=1.0, ignore_errors=True)
+    _bl = BibLookup(timeout=1.0, ignore_errors=False)
 
     def format_database_docstring(self, indent: Optional[str] = None) -> str:
         """ """
@@ -1004,6 +1004,7 @@ class DataBaseInfo:
         lookup: bool = True,
         format: Optional[str] = None,
         style: Optional[str] = None,
+        timeout: Optional[float] = None,
         print_result: bool = False,
     ) -> Union[str, type(None)]:
         """
@@ -1018,6 +1019,10 @@ class DataBaseInfo:
             style of the final output,
             if specified, the default style ("apa") will be overrided,
             only valid when `format` is "text"
+        timeout: float, optional,
+            timeout for the lookup,
+            only valid when `lookup` is True,
+            if not specified, the default timeout (1.0) will be used
         print_result: bool, default False,
             whether to print the final output instead of returning it
 
@@ -1027,6 +1032,7 @@ class DataBaseInfo:
             citation(s) of the database
 
         """
+        self._bl.clear_cache()
         citation_cache = _DATA_CACHE / "database_citation.csv"
         if citation_cache.exists():
             df_cc = pd.read_csv(citation_cache)
@@ -1043,6 +1049,7 @@ class DataBaseInfo:
                 citation = "\n".join(doi)
                 if print_result:
                     print(citation)
+                    return
                 else:
                     return citation
             if format is not None and format != self._bl.format:
@@ -1056,35 +1063,47 @@ class DataBaseInfo:
                 new_citations = []
                 for item in doi:
                     try:
-                        new_citations.append(
-                            {
-                                "doi": item,
-                                "citation": self._bl(
-                                    item,
-                                    format=format,
-                                    style=style,
-                                    print_result=print_result,
-                                    timeout=10.0,
-                                )
-                                or "",
-                            }
+                        bl_res = self._bl(
+                            item,
+                            format=format,
+                            style=style,
+                            print_result=False,
+                            timeout=timeout,
                         )
+                        if bl_res not in self._bl.lookup_errors:
+                            new_citations.append(
+                                {
+                                    "doi": item,
+                                    "citation": str(bl_res),
+                                }
+                            )
+                            if print_result:
+                                print(bl_res)
+                        elif print_result:
+                            print(f"{bl_res} for {item}")
                     except Exception:
-                        pass
-                new_citations = [
-                    item
-                    for item in new_citations
-                    if item["citation"] is not None and item["citation"].startswith("@")
-                ]
-                df_new = pd.DataFrame(new_citations)
-                if len(df_new) > 0:
-                    if format is None or format == self._bl.format:
+                        if print_result:
+                            print(f"Failed to lookup citation for {item}")
+                if format is None or format == self._bl.format:
+                    # only cache bibtex format
+                    new_citations = [
+                        item
+                        for item in new_citations
+                        if item["citation"] is not None
+                        and item["citation"].startswith("@")
+                    ]
+                    df_new = pd.DataFrame(new_citations)
+                    if len(df_new) > 0:
                         df_new.to_csv(
                             citation_cache, mode="a", header=False, index=False
                         )
+                else:
+                    df_new = pd.DataFrame(new_citations)
+                if len(df_new) > 0:
                     citation += "\n" + "\n".join(df_new["citation"].tolist())
         else:
             citation = ""
+
         citation = citation.strip("\n ")
         if citation == "" and self.doi is not None:
             citation = "\n".join(doi)
