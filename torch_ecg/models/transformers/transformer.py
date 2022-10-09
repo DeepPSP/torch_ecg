@@ -9,7 +9,7 @@ import torch.nn as nn
 from ...cfg import DEFAULTS
 from ...utils.utils_nn import SizeMixin
 
-if DEFAULTS.torch_dtype == torch.float64:
+if DEFAULTS.DTYPE.TORCH == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

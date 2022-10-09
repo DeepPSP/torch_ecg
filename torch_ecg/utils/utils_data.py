@@ -719,15 +719,15 @@ def generate_weight_mask(
         the weight mask
 
     """
-    weight_mask = np.ones_like(target_mask, dtype=DEFAULTS.np_dtype)
+    weight_mask = np.ones_like(target_mask, dtype=DEFAULTS.DTYPE.NP)
     sigma = int((radius * fs) / reduction)
     weight = np.full_like(target_mask, fg_weight) - 1
     weight_mask += (target_mask > 0.5) * weight
     border = np.where(np.diff(target_mask) != 0)[0]
     for idx in border:
-        # weight = np.zeros_like(target_mask, dtype=DEFAULTS.np_dtype)
+        # weight = np.zeros_like(target_mask, dtype=DEFAULTS.DTYPE.NP)
         # weight[max(0, idx-sigma): (idx+sigma)] = boundary_weight
-        weight = np.full_like(target_mask, boundary_weight, dtype=DEFAULTS.np_dtype)
+        weight = np.full_like(target_mask, boundary_weight, dtype=DEFAULTS.DTYPE.NP)
         weight = weight * np.exp(
             -np.power(np.arange(len(target_mask)) - idx, 2) / sigma**2
         )

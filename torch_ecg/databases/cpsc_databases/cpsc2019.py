@@ -237,7 +237,7 @@ class CPSC2019(CPSCDataBase):
         """
         fp = self.get_absolute_path(rec, self.rec_ext)
         print(fp)
-        data = loadmat(str(fp))["ecg"].astype(DEFAULTS.np_dtype)
+        data = loadmat(str(fp))["ecg"].astype(DEFAULTS.DTYPE.NP)
         if units.lower() in [
             "uv",
             "μv",

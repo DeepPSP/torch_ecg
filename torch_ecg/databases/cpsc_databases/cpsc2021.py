@@ -526,14 +526,14 @@ class CPSC2021(PhysioNetDataBase):
         wfdb_rec = wfdb.rdrecord(
             str(rec_fp), sampfrom=sf, sampto=st, physical=True, channel_names=_leads
         )
-        data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.np_dtype)
+        data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.DTYPE.NP)
         # lead_units = np.vectorize(lambda s: s.lower())(wfdb_rec.units)
 
         if units.lower() in ["uv", "μv"]:
             data = data * 1000
 
         if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=1).astype(DEFAULTS.np_dtype)
+            data = resample_poly(data, fs, self.fs, axis=1).astype(DEFAULTS.DTYPE.NP)
 
         if data_format.lower() in ["channel_last", "lead_last"]:
             data = data.T

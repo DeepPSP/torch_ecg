@@ -61,7 +61,7 @@ def _assign_classes(cfg: CFG, special_classes: List[str]) -> None:
 
 # training configurations for machine learning and deep learning
 CINC2020TrainCfg = CFG()
-CINC2020TrainCfg.torch_dtype = DEFAULTS.torch_dtype
+CINC2020TrainCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
 
 # configs of files
 CINC2020TrainCfg.db_dir = None

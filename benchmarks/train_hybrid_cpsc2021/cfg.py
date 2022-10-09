@@ -78,7 +78,7 @@ BaseCfg.model_dir.mkdir(parents=True, exist_ok=True)
 BaseCfg.test_data_dir = _BASE_DIR / "working_dir" / "sample_data"
 BaseCfg.fs = 200
 BaseCfg.n_leads = 2
-BaseCfg.torch_dtype = DEFAULTS.torch_dtype
+BaseCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
 
 BaseCfg.class_fn2abbr = {  # fullname to abbreviation
     "non atrial fibrillation": "N",

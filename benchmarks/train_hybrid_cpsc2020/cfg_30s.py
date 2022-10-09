@@ -44,7 +44,7 @@ BaseCfg.beat_ann_bias_thr = 0.1 * BaseCfg.fs  # half width of broad qrs complex
 BaseCfg.beat_winL = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
 BaseCfg.beat_winR = 250 * BaseCfg.fs // 1000  # corr. to 250 ms
 
-BaseCfg.torch_dtype = DEFAULTS.torch_dtype
+BaseCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
 
 
 PreprocCfg = CFG()

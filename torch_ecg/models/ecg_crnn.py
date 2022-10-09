@@ -32,7 +32,7 @@ from .cnn.vgg import VGG16
 from .cnn.xception import Xception
 from .transformers import Transformer
 
-if DEFAULTS.torch_dtype == torch.float64:
+if DEFAULTS.DTYPE.TORCH == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

@@ -16,7 +16,7 @@ from torch import Tensor, nn
 
 from ..cfg import DEFAULTS
 
-if DEFAULTS.torch_dtype == torch.float64:
+if DEFAULTS.DTYPE.TORCH == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

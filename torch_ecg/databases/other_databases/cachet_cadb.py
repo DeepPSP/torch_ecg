@@ -178,7 +178,7 @@ class CACHET_CADB(_DataBase):
         if len(self._short_format_file) == 1:
             self._short_format_file = self._short_format_file[0]
             with h5py.File(self._short_format_file, "r") as f:
-                self.__short_format_data = f["signal"][:].astype(DEFAULTS.np_dtype)
+                self.__short_format_data = f["signal"][:].astype(DEFAULTS.DTYPE.NP)
                 self.__short_format_ann = f["labels"][:].astype(int)
         else:
             self._short_format_file = None
@@ -411,7 +411,7 @@ class CACHET_CADB(_DataBase):
         data = np.fromfile(data_path, dtype=header["dataType"])
         # digital to analog conversion using the field `lsbValue` in the header
         data = (data - int(header["baseline"])) * float(header["lsbValue"])
-        data = data.astype(DEFAULTS.np_dtype)
+        data = data.astype(DEFAULTS.DTYPE.NP)
         units = units.lower()
         if units in ["μv", "uv"]:
             data *= 1e3
@@ -483,7 +483,7 @@ class CACHET_CADB(_DataBase):
         context_data = (context_data - int(header.get("baseline", 1))) * float(
             header["lsbValue"]
         )
-        context_data = context_data.astype(DEFAULTS.np_dtype)
+        context_data = context_data.astype(DEFAULTS.DTYPE.NP)
         # convert to "channel_first" format
         context_data = context_data.reshape(-1, len(header["channel"])).T
         if channels is None:

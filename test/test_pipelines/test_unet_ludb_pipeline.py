@@ -54,7 +54,7 @@ del dr
 ###############################################################################
 # set up configs
 ModelCfg = CFG()
-ModelCfg.torch_dtype = DEFAULTS.torch_dtype
+ModelCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
 ModelCfg.fs = 500
 ModelCfg.spacing = 1000 / ModelCfg.fs
 

@@ -63,7 +63,7 @@ ModelCfg.bias_thr = (
 # detected rpeaks that are within `skip_dist` from two ends of the signal will be ignored,
 # as in the official entry function
 ModelCfg.skip_dist = 0.5 * ModelCfg.fs
-ModelCfg.torch_dtype = DEFAULTS.torch_dtype
+ModelCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
 
 ModelCfg.seq_lab_crnn = deepcopy(ModelCfg)
 ModelCfg.seq_lab_crnn.update(

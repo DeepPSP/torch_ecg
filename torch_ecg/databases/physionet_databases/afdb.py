@@ -146,7 +146,8 @@ class AFDB(PhysioNetDataBase):
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first")
         units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
+            units of the output signal, can also be "μV", with aliases of "uV", "muV";
+            None for digital data, without digital-to-physical conversion
         fs: real number, optional,
             if not None, the loaded data will be resampled to this frequency
 
@@ -164,18 +165,23 @@ class AFDB(PhysioNetDataBase):
         else:
             _leads = leads
         assert set(_leads).issubset(self.all_leads)
-        # p_signal in the format of "lead_last", and in units "mV"
-        data = wfdb.rdrecord(
+        wfdb_rec = wfdb.rdrecord(
             fp,
             sampfrom=sampfrom or 0,
             sampto=sampto,
-            physical=True,
+            physical=units is not None,
             channel_names=_leads,
-        ).p_signal.astype(DEFAULTS.np_dtype)
-        if units.lower() in ["μv", "uv"]:
-            data = 1000 * data
+        )
+        if units is None:
+            dtype = np.int64
+            data = wfdb_rec.d_signal
+        elif units.lower() == "mv":
+            # p_signal in the format of "lead_last", and in units "mV"
+            data = wfdb_rec.p_signal.astype(DEFAULTS.DTYPE.NP)
+        elif units.lower() in ["μv", "uv", "muv"]:
+            data = 1000 * wfdb_rec.p_signal.astype(DEFAULTS.DTYPE.NP)
         if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=0).astype(DEFAULTS.np_dtype)
+            data = resample_poly(data, fs, self.fs, axis=0).astype(DEFAULTS.DTYPE.NP)
         if data_format.lower() in ["channel_first", "lead_first"]:
             data = data.T
         return data

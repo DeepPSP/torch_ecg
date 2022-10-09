@@ -85,7 +85,7 @@ class BaseInput(ReprMixin, ABC):
         assert isinstance(config, InputConfig)
         self._config = deepcopy(config)
         self._values = None
-        self._dtype = self._config.get("dtype", DEFAULTS.torch_dtype)
+        self._dtype = self._config.get("dtype", DEFAULTS.DTYPE.TORCH)
         self._device = self._config.get("device", DEFAULTS.device)
         self._post_init()
 

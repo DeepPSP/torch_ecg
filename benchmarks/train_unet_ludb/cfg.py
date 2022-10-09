@@ -50,8 +50,8 @@ BaseCfg.db_dir = None
 BaseCfg.bias_thr = int(0.075 * BaseCfg.fs)  # TODO: renew this const
 # detected waves that are within `skip_dist` from two ends of the signal will be ignored,
 BaseCfg.skip_dist = int(0.5 * BaseCfg.fs)
-BaseCfg.torch_dtype = DEFAULTS.torch_dtype
-BaseCfg.np_dtype = DEFAULTS.np_dtype
+BaseCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
+BaseCfg.np_dtype = DEFAULTS.DTYPE.NP
 
 
 TrainCfg = CFG()

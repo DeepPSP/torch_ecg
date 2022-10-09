@@ -973,7 +973,7 @@ class SHHS(NSRRDataBase):
         """
         return self.load_psg_data(rec=rec, channel="ecg", rec_path=rec_path)[
             self.match_channel("ecg")
-        ].astype(DEFAULTS.np_dtype)
+        ].astype(DEFAULTS.DTYPE.NP)
 
     def load_event_ann(
         self, rec: str, event_ann_path: Optional[str] = None, simplify: bool = False

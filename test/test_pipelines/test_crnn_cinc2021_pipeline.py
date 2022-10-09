@@ -310,7 +310,7 @@ _bin_pred_look_again_tol = 0.03
 _bin_pred_nsr_thr = 0.1
 
 ModelCfg = CFG()
-ModelCfg.torch_dtype = DEFAULTS.torch_dtype
+ModelCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
 ModelCfg.fs = 500
 ModelCfg.spacing = 1000 / ModelCfg.fs
 ModelCfg.bin_pred_thr = _bin_pred_thr

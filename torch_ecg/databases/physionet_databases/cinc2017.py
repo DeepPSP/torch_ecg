@@ -227,7 +227,7 @@ class CINC2017(PhysioNetDataBase):
             "μv",
         ]
         wr = wfdb.rdrecord(str(self.get_absolute_path(rec)))
-        data = wr.p_signal.astype(DEFAULTS.np_dtype)
+        data = wr.p_signal.astype(DEFAULTS.DTYPE.NP)
 
         if wr.units[0].lower() == units.lower():
             pass

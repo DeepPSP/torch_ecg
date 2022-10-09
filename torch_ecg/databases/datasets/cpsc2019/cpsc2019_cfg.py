@@ -33,7 +33,7 @@ CPSC2019TrainCfg.bias_thr = (
 # detected rpeaks that are within `skip_dist` from two ends of the signal will be ignored,
 # as in the official entry function
 CPSC2019TrainCfg.skip_dist = 0.5 * CPSC2019TrainCfg.fs
-CPSC2019TrainCfg.torch_dtype = DEFAULTS.torch_dtype
+CPSC2019TrainCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
 
 CPSC2019TrainCfg.final_model_name = None
 CPSC2019TrainCfg.keep_checkpoint_max = 20

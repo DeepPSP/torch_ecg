@@ -2,6 +2,8 @@
 """
 
 import random
+import re
+from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 from typing import MutableMapping, Optional, Any, Union
@@ -118,6 +120,40 @@ class CFG(dict):
         return super().pop(key, default)
 
 
+@dataclass
+class DTYPE:
+
+    STR: str
+    NP: np.dtype = None
+    TORCH: torch.dtype = None
+    INT: int = None  # int representation of the dtype, mainly used for `wfdb.rdrecord`
+
+    def __post_init__(self) -> None:
+        """check consistency"""
+        if self.NP is None:
+            self.NP = np.dtype(self.STR)
+        if self.TORCH is None:
+            self.TORCH = eval(f"torch.{self.STR}")
+        if self.INT is None:
+            self.INT = int(re.search("\\d+", self.STR).group(0))
+        assert all(
+            [
+                self.NP == getattr(np, self.STR),
+                self.TORCH == getattr(torch, self.STR),
+                self.INT == int(re.search("\\d+", self.STR).group(0)),
+            ]
+        ), "inconsistent dtype"
+
+
+FLOAT16 = DTYPE("float16")
+FLOAT32 = DTYPE("float32")
+FLOAT64 = DTYPE("float64")
+INT8 = DTYPE("int8")
+INT16 = DTYPE("int16")
+INT32 = DTYPE("int32")
+INT64 = DTYPE("int64")
+
+
 DEFAULTS = CFG()
 
 DEFAULTS.log_dir = _PROJECT_CACHE / "log"
@@ -125,10 +161,11 @@ DEFAULTS.checkpoints = _PROJECT_CACHE / "checkpoints"
 DEFAULTS.model_dir = _PROJECT_CACHE / "saved_models"
 DEFAULTS.prefix = "TorchECG"
 
-DEFAULTS.torch_dtype = torch.float32  # torch.float64, torch.float16
-DEFAULTS.str_dtype = str(DEFAULTS.torch_dtype).replace("torch.", "")
+DEFAULTS.DTYPE = FLOAT32
+DEFAULTS.DTYPE.TORCH = torch.float32  # torch.float64, torch.float16
+DEFAULTS.str_dtype = str(DEFAULTS.DTYPE.TORCH).replace("torch.", "")
 DEFAULTS.np_dtype = np.dtype(DEFAULTS.str_dtype)
-DEFAULTS.dtype = DEFAULTS.torch_dtype
+DEFAULTS.dtype = DEFAULTS.DTYPE.TORCH
 
 DEFAULTS.device = (
     torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -196,10 +233,8 @@ def change_dtype(dtype: Union[str, np.dtype, torch.dtype]) -> None:
                 f"dtype must be a str or np.dtype or torch.dtype, got {type(dtype)}"
             )
     assert _dtype in _dtypes, f"dtype must be one of {_dtypes}, got {_dtype}"
-    DEFAULTS.str_dtype = _dtype
-    DEFAULTS.np_dtype = np.dtype(_dtype)
-    DEFAULTS.torch_dtype = eval(f"torch.{_dtype}")
-    DEFAULTS.dtype = DEFAULTS.torch_dtype
+    DEFAULTS.DTYPE = DTYPE(_dtype)
+    DEFAULTS.dtype = DEFAULTS.DTYPE.TORCH
 
 
 DEFAULTS.change_dtype = change_dtype

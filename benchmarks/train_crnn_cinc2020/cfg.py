@@ -44,7 +44,7 @@ BaseCfg.model_dir = _BASE_DIR / "saved_models"
 BaseCfg.log_dir.mkdir(parents=True, exist_ok=True)
 BaseCfg.model_dir.mkdir(parents=True, exist_ok=True)
 BaseCfg.fs = 500
-BaseCfg.torch_dtype = DEFAULTS.torch_dtype
+BaseCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
 
 
 SpecialDetectorCfg = CFG()

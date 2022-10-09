@@ -751,7 +751,7 @@ class CINC2021(PhysioNetDataBase):
             rec_fp = self.get_data_filepath(rec, with_ext=False)
             # p_signal of "lead_last" format
             wfdb_rec = wfdb.rdrecord(str(rec_fp), physical=True, channel_names=_leads)
-            data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.np_dtype)
+            data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.DTYPE.NP)
             # lead_units = np.vectorize(lambda s: s.lower())(wfdb_rec.units)
         elif backend.lower() == "scipy":
             # loadmat of "lead_first" format
@@ -760,7 +760,7 @@ class CINC2021(PhysioNetDataBase):
             header_info = self.load_ann(rec, raw=False)["df_leads"]
             baselines = header_info["baseline"].values.reshape(data.shape[0], -1)
             adc_gain = header_info["adc_gain"].values.reshape(data.shape[0], -1)
-            data = np.asarray(data - baselines, dtype=DEFAULTS.np_dtype) / adc_gain
+            data = np.asarray(data - baselines, dtype=DEFAULTS.DTYPE.NP) / adc_gain
             leads_ind = [self.all_leads.index(item) for item in _leads]
             data = data[leads_ind, :]
             # lead_units = np.vectorize(lambda s: s.lower())(header_info["df_leads"]["adc_units"].values)
@@ -777,7 +777,7 @@ class CINC2021(PhysioNetDataBase):
 
         rec_fs = self.get_fs(rec, from_hea=True)
         if fs is not None and fs != rec_fs:
-            data = resample_poly(data, fs, rec_fs, axis=1).astype(DEFAULTS.np_dtype)
+            data = resample_poly(data, fs, rec_fs, axis=1).astype(DEFAULTS.DTYPE.NP)
         # if fs is not None and fs != self.fs[tranche]:
         #     data = resample_poly(data, fs, self.fs[tranche], axis=1)
 
@@ -1682,7 +1682,7 @@ class CINC2021(PhysioNetDataBase):
             rec_fs = self.get_fs(rec, from_hea=True)
             if rec_fs != 500:
                 data = resample_poly(data, 500, rec_fs, axis=1).astype(
-                    DEFAULTS.np_dtype
+                    DEFAULTS.DTYPE.NP
                 )
             # if self.fs[tranche] != 500:
             #     data = resample_poly(data, 500, self.fs[tranche], axis=1)
@@ -1691,14 +1691,14 @@ class CINC2021(PhysioNetDataBase):
                 # slice_end = slice_start + siglen
                 # data = data[..., slice_start:slice_end]
                 data = ensure_siglen(data, siglen=siglen, fmt="channel_first").astype(
-                    DEFAULTS.np_dtype
+                    DEFAULTS.DTYPE.NP
                 )
                 np.save(rec_fp, data)
             elif siglen is None:
                 np.save(rec_fp, data)
         else:
             # print(f"loading from local file...")
-            data = np.load(rec_fp).astype(DEFAULTS.np_dtype)
+            data = np.load(rec_fp).astype(DEFAULTS.DTYPE.NP)
         # choose data of specific leads
         data = data[_leads, ...]
         if data_format.lower() in ["channel_last", "lead_last"]:
@@ -1733,10 +1733,10 @@ class CINC2021(PhysioNetDataBase):
         if backend.lower() == "wfdb":
             rec_fp = self.get_data_filepath(rec, with_ext=False)
             wfdb_rec = wfdb.rdrecord(str(rec_fp), physical=False)
-            raw_data = np.asarray(wfdb_rec.d_signal, dtype=DEFAULTS.np_dtype)
+            raw_data = np.asarray(wfdb_rec.d_signal, dtype=DEFAULTS.DTYPE.NP)
         elif backend.lower() == "scipy":
             rec_fp = self.get_data_filepath(rec, with_ext=True)
-            raw_data = loadmat(str(rec_fp))["val"].astype(DEFAULTS.np_dtype)
+            raw_data = loadmat(str(rec_fp))["val"].astype(DEFAULTS.DTYPE.NP)
         return raw_data
 
     def _check_exceptions(

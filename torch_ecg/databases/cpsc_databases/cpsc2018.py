@@ -226,7 +226,7 @@ class CPSC2018(CPSCDataBase):
             rec = self[rec]
         rec_fp = self.get_absolute_path(rec, self.rec_ext)
         data = loadmat(str(rec_fp))
-        data = np.asarray(data["val"], dtype=DEFAULTS.np_dtype)
+        data = np.asarray(data["val"], dtype=DEFAULTS.DTYPE.NP)
         if data_format == "channels_last":
             data = data.T
 

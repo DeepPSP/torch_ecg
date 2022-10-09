@@ -242,11 +242,11 @@ class MITDB(PhysioNetDataBase):
             sampto=sampto,
             physical=True,
             channel_names=_leads,
-        ).p_signal.astype(DEFAULTS.np_dtype)
+        ).p_signal.astype(DEFAULTS.DTYPE.NP)
         if units.lower() in ["μv", "uv"]:
             data = 1000 * data
         if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=0).astype(DEFAULTS.np_dtype)
+            data = resample_poly(data, fs, self.fs, axis=0).astype(DEFAULTS.DTYPE.NP)
         if data_format.lower() in ["channel_first", "lead_first"]:
             data = data.T
         return data

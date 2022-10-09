@@ -24,7 +24,7 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape_docstring,
 )
 
-if DEFAULTS.torch_dtype == torch.float64:
+if DEFAULTS.DTYPE.TORCH == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
 
 

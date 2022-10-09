@@ -212,7 +212,7 @@ class SPH(_DataBase):
             _leads = [self.all_leads.index(lead) for lead in leads]
 
         with h5py.File(self.get_absolute_path(rec, extension=self.data_ext), "r") as f:
-            data = f["ecg"][_leads].astype(DEFAULTS.np_dtype)
+            data = f["ecg"][_leads].astype(DEFAULTS.DTYPE.NP)
 
         if units.lower() in ["uv", "μv"]:
             data = data * 1000
