@@ -500,7 +500,8 @@ class PhysioNetDataBase(_DataBase):
         rec: str or int,
             record name or index of the record in `self.all_records`
         leads: str or int or sequence of str or int, optional,
-            the leads to load
+            the leads to load,
+            None or "all" for all leads,
         sampfrom: int, optional,
             start index of the data to be loaded
         sampto: int, optional,
@@ -527,7 +528,7 @@ class PhysioNetDataBase(_DataBase):
             all_leads = self.all_leads
         else:
             all_leads = wfdb.rdheader(fp).sig_name
-        if leads is None:
+        if leads is None or leads.lower() == "all":
             _leads = all_leads
         elif isinstance(leads, str):
             _leads = [leads]

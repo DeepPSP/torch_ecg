@@ -740,7 +740,7 @@ class CINC2021(PhysioNetDataBase):
             "lead_last",
         ]
         # tranche = self._get_tranche(rec)
-        if not leads:
+        if leads is None or leads.lower() == "all":
             _leads = self.all_leads
         elif isinstance(leads, str):
             _leads = [leads]
