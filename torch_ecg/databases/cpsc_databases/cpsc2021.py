@@ -15,9 +15,8 @@ import numpy as np
 import pandas as pd
 import scipy.io as sio
 import wfdb
-from scipy.signal import resample, resample_poly  # noqa: F401
 
-from ...cfg import CFG, DEFAULTS
+from ...cfg import CFG
 from ...utils.misc import (
     get_record_list_recursive3,
     list_sum,
@@ -467,78 +466,6 @@ class CPSC2021(PhysioNetDataBase):
         if sf >= st:
             raise ValueError("Invalid `sampfrom` and `sampto`")
         return sf, st
-
-    def load_data(
-        self,
-        rec: Union[str, int],
-        leads: Optional[Union[str, List[str]]] = None,
-        data_format: str = "channel_first",
-        units: str = "mV",
-        sampfrom: Optional[int] = None,
-        sampto: Optional[int] = None,
-        fs: Optional[Real] = None,
-    ) -> np.ndarray:
-        """
-        load physical (converted from digital) ECG data,
-        which is more understandable for humans
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or list of str, optional,
-            the leads to load
-        data_format: str, default "channel_first",
-            format of the ECG data,
-            "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first")
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this sampling frequency
-
-        Returns
-        -------
-        data: ndarray,
-            the ECG data
-
-        """
-        assert data_format.lower() in [
-            "channel_first",
-            "lead_first",
-            "channel_last",
-            "lead_last",
-        ]
-        if not leads:
-            _leads = self.all_leads
-        elif isinstance(leads, str):
-            _leads = [leads]
-        else:
-            _leads = leads
-        assert all([ld in self.all_leads for ld in _leads])
-
-        rec_fp = self.get_absolute_path(rec)
-        sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
-        wfdb_rec = wfdb.rdrecord(
-            str(rec_fp), sampfrom=sf, sampto=st, physical=True, channel_names=_leads
-        )
-        data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.DTYPE.NP)
-        # lead_units = np.vectorize(lambda s: s.lower())(wfdb_rec.units)
-
-        if units.lower() in ["uv", "μv"]:
-            data = data * 1000
-
-        if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=1).astype(DEFAULTS.DTYPE.NP)
-
-        if data_format.lower() in ["channel_last", "lead_last"]:
-            data = data.T
-
-        return data
 
     def load_ann(
         self,

@@ -8,10 +8,12 @@ from copy import deepcopy
 from pathlib import Path
 import xml.etree.ElementTree as ET
 from typing import Any, Optional, Sequence, Dict, List, Union
+from numbers import Real
 
 import numpy as np
 import pandas as pd
 import h5py
+from scipy.signal import resample_poly
 
 from ...cfg import DEFAULTS
 from ...utils.download import http_get
@@ -368,31 +370,41 @@ class CACHET_CADB(_DataBase):
     def load_data(
         self,
         rec: Union[str, int],
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
         data_format: str = "channel_first",
-        units: str = "mV",
+        units: Union[str, type(None)] = "mV",
+        fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
-        load ECG data from bin file, with baseline removal, digital-to-analog conversion,
-        and conversions to the specified format and units
+        load physical (converted from digital) ECG data,
+        which is more understandable for humans;
+        or load digital directly.
 
         Parameters
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`,
             or "short_format" (-1) to load data from the short format file
+        sampfrom: int, optional,
+            start index of the data to be loaded
+        sampto: int, optional,
+            end index of the data to be loaded
         data_format: str, default "channel_first",
             format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first"), or
             "flat" (alias "plain")
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
+        units: str or None, default "mV",
+            units of the output signal, can also be "μV", with aliases of "uV", "muV";
+            None for digital data, without digital-to-physical conversion
+        fs: real number, optional,
+            if not None, the loaded data will be resampled to this frequency
 
         Returns
         -------
         data: ndarray,
-            the (physical) ECG data, with baseline removed,
-            and converted to the specified format and units
+            the ECG data loaded from `rec`, with given units and format
 
         """
         if isinstance(rec, int):
@@ -408,28 +420,39 @@ class CACHET_CADB(_DataBase):
             raise ValueError(f"invalid record name: `{rec}`")
         data_path = self._df_records.loc[rec, "data_path"]
         header = self._rdheader(rec, key="ecg")
-        data = np.fromfile(data_path, dtype=header["dataType"])
-        # digital to analog conversion using the field `lsbValue` in the header
-        data = (data - int(header["baseline"])) * float(header["lsbValue"])
-        data = data.astype(DEFAULTS.DTYPE.NP)
-        units = units.lower()
-        if units in ["μv", "uv"]:
-            data *= 1e3
-        elif units != "mv":
-            raise ValueError(f"invalid units: `{units}`")
+        data = np.fromfile(data_path, dtype=header["dataType"])[
+            sampfrom or 0 : sampto or None
+        ]
+        if units is not None:
+            # digital to analog conversion using the field `lsbValue` in the header
+            data = (data - int(header["baseline"])) * float(header["lsbValue"])
+            data = data.astype(DEFAULTS.DTYPE.NP)
+            units = units.lower()
+            if units in ["μv", "uv"]:
+                data *= 1e3
+            elif units != "mv":
+                raise ValueError(f"invalid units: `{units}`")
         if data_format in ["channel_last", "lead_last"]:
             data = data[:, np.newaxis]
         elif data_format in ["channel_first", "lead_first"]:
             data = data[np.newaxis, :]
         elif data_format not in ["flat", "plain"]:
             raise ValueError(f"invalid data_format: `{data_format}`")
+
+        if fs is not None and fs != self.fs:
+            data = resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+
         return data
 
     def load_context_data(
         self,
         rec: Union[str, int],
         context_name: str,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
         channels: Optional[Union[str, int, List[str], List[int]]] = None,
+        units: Optional[str] = None,
+        fs: Optional[Real] = None,
     ) -> Union[np.ndarray, pd.DataFrame]:
         """
         load context data
@@ -441,8 +464,17 @@ class CACHET_CADB(_DataBase):
         context_name: str,
             context name, can be one of
             "acc", "angularrate", "hr_live", "hrvrmssd_live", "movementacceleration_live", "press", "marker"
+        sampfrom: int, optional,
+            start index of the data to be loaded
+        sampto: int, optional,
+            end index of the data to be loaded
         channels: str or int or list of str or list of int, optional,
             channels to be loaded, if not specified, load all channels
+        units: str, optional,
+            units of the output signal, can be "default";
+            None for digital data, without digital-to-physical conversion
+        fs: real number, optional,
+            if not None, the loaded data will be resampled to this frequency
 
         Returns
         -------
@@ -478,14 +510,23 @@ class CACHET_CADB(_DataBase):
             return np.array([])
 
         header = self._rdheader(rec, key=context_name)
-        context_data = np.fromfile(context_data_path, dtype=header["dataType"])
-        # digital to analog conversion using the field `lsbValue` in the header
-        context_data = (context_data - int(header.get("baseline", 1))) * float(
-            header["lsbValue"]
-        )
-        context_data = context_data.astype(DEFAULTS.DTYPE.NP)
+        context_data = np.fromfile(context_data_path, dtype=header["dataType"])[
+            sampfrom or 0 : sampto or None
+        ]
+        if units is not None:
+            # digital to analog conversion using the field `lsbValue` in the header
+            context_data = (context_data - int(header.get("baseline", 1))) * float(
+                header["lsbValue"]
+            )
+            context_data = context_data.astype(DEFAULTS.DTYPE.NP)
+        elif units.lower() not in ["default", header["unit"]]:
+            raise ValueError(
+                f"`units` should be `default` or `{header['unit']}`, but got `{units}`. "
+                "Currently, units conversion is not supported."
+            )
         # convert to "channel_first" format
         context_data = context_data.reshape(-1, len(header["channel"])).T
+
         if channels is None:
             return context_data
         _input_channels = channels
@@ -517,7 +558,14 @@ class CACHET_CADB(_DataBase):
                 warnings.warn(
                     f"duplicate channels are removed, {_input_channels} -> {channels}"
                 )
-        return context_data[channels, :]
+        context_data = context_data[channels]
+
+        if fs is not None and fs != header["sampleRate"]:
+            context_data = resample_poly(
+                context_data, fs, header["sampleRate"], axis=1
+            ).astype(context_data.dtype)
+
+        return context_data
 
     def load_ann(
         self, rec: Union[str, int], ann_format: str = "pd"
