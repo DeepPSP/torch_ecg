@@ -2,6 +2,7 @@
 """
 """
 
+from copy import deepcopy
 from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Union
@@ -11,6 +12,7 @@ import pandas as pd
 import wfdb
 
 from ...cfg import CFG, DEFAULTS
+from ...utils import EAK
 from ...utils.misc import add_docstring
 from ...utils.utils_data import ECGWaveForm, masks_to_waveforms
 from ..base import PhysioNetDataBase, DataBaseInfo
@@ -193,20 +195,7 @@ class LUDB(PhysioNetDataBase):
         self.fs = 500
         self.spacing = 1000 / self.fs
         self.data_ext = "dat"
-        self.all_leads = [
-            "I",
-            "II",
-            "III",
-            "aVR",
-            "aVL",
-            "aVF",
-            "V1",
-            "V2",
-            "V3",
-            "V4",
-            "V5",
-            "V6",
-        ]
+        self.all_leads = deepcopy(EAK.Standard12Leads)
         self.all_leads_lower = [ld.lower() for ld in self.all_leads]
         # Version 1.0.0 has different beat_ann_ext: [f"atr_{item}" for item in self.all_leads_lower]
         self.beat_ann_ext = [f"{item}" for item in self.all_leads_lower]
@@ -289,7 +278,7 @@ class LUDB(PhysioNetDataBase):
     def load_ann(
         self,
         rec: Union[str, int],
-        leads: Optional[Sequence[str]] = None,
+        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         metadata: bool = False,
     ) -> dict:
         """
@@ -299,7 +288,7 @@ class LUDB(PhysioNetDataBase):
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
-        leads: str or list of str, optional,
+        leads: str or int or list of str or int, optional,
             the leads to load
         metadata: bool, default False,
             if True, load metadata from corresponding head file
@@ -316,7 +305,9 @@ class LUDB(PhysioNetDataBase):
         rec_fp = str(self.get_absolute_path(rec))
 
         # wave delineation annotations
-        _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
+        _leads = self._normalize_leads(
+            leads, standard_ordering=False, lower_cases=False
+        )
         _ann_ext = [
             f"{ld.lower()}" for ld in _leads
         ]  # for Version 1.0.0, it is f"{l.lower()}"
@@ -402,7 +393,7 @@ class LUDB(PhysioNetDataBase):
     def load_masks(
         self,
         rec: Union[str, int],
-        leads: Optional[Sequence[str]] = None,
+        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         mask_format: str = "channel_first",
         class_map: Optional[Dict[str, int]] = None,
     ) -> np.ndarray:
@@ -414,7 +405,7 @@ class LUDB(PhysioNetDataBase):
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
-        leads: str or list of str, optional,
+        leads: str or int or list of str or int, optional,
             the leads to load
         mask_format: str, default "channel_first",
             format of the mask,
@@ -433,10 +424,10 @@ class LUDB(PhysioNetDataBase):
         if isinstance(rec, int):
             rec = self[rec]
         _class_map = CFG(class_map) if class_map is not None else self.class_map
-        _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=True)
-        data = self.load_data(rec, leads=_leads, data_format="channel_first")
+        # _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=True)
+        data = self.load_data(rec, leads=leads, data_format="channel_first")
         masks = np.full_like(data, fill_value=_class_map.i, dtype=int)
-        waves = self.load_ann(rec, leads=_leads, metadata=False)["waves"]
+        waves = self.load_ann(rec, leads=leads, metadata=False)["waves"]
         for idx, (l, l_w) in enumerate(waves.items()):
             for w in l_w:
                 masks[idx, w.onset : w.offset] = _class_map[
@@ -453,7 +444,7 @@ class LUDB(PhysioNetDataBase):
         self,
         masks: np.ndarray,
         mask_format: str = "channel_first",
-        leads: Optional[Sequence[str]] = None,
+        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         class_map: Optional[Dict[str, int]] = None,
         fs: Optional[Real] = None,
     ) -> Dict[str, List[ECGWaveForm]]:
@@ -469,7 +460,7 @@ class LUDB(PhysioNetDataBase):
             format of the mask, used only when `masks.ndim = 2`
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first")
-        leads: str or list of str, optional,
+        leads: str or int or list of str or int, optional,
             the leads to load
         class_map: dict, optional,
             custom class map,
@@ -590,17 +581,17 @@ class LUDB(PhysioNetDataBase):
 
     def _normalize_leads(
         self,
-        leads: Optional[Sequence[str]] = None,
-        standard_ordering: bool = True,
+        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
+        standard_ordering: bool = False,
         lower_cases: bool = False,
     ) -> List[str]:
         """
 
         Parameters
         ----------
-        leads: str or list of str, optional,
+        leads: str or int or list of str or int, optional,
             the (names of) leads to normalize
-        starndard_ordering: bool, default True,
+        standard_ordering: bool, default False,
             if True, the ordering will be re-aranged to be accordance with `self.all_leads`
         lower_cases: bool, default False,
             if True, all names of the leads will be in lower cases
@@ -669,7 +660,7 @@ class LUDB(PhysioNetDataBase):
         rec: Union[str, int],
         data: Optional[np.ndarray] = None,
         ticks_granularity: int = 0,
-        leads: Optional[Union[str, List[str]]] = None,
+        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         same_range: bool = False,
         waves: Optional[ECGWaveForm] = None,
         **kwargs: Any,
@@ -691,7 +682,7 @@ class LUDB(PhysioNetDataBase):
         ticks_granularity: int, default 0,
             the granularity to plot axis ticks, the higher the more,
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        leads: str or list of str, optional,
+        leads: str or int or list of str or int, optional,
             the leads to plot
         same_range: bool, default False,
             if True, forces all leads to have the same y range
@@ -718,7 +709,9 @@ class LUDB(PhysioNetDataBase):
             import matplotlib.pyplot as plt
 
             plt.MultipleLocator.MAXTICKS = 3000
-        _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
+        _leads = self._normalize_leads(
+            leads, standard_ordering=False, lower_cases=False
+        )
 
         # lead_list = self.load_ann(rec)["df_leads"]["lead_name"].tolist()
         # _lead_indices = [lead_list.index(ld) for ld in leads]
