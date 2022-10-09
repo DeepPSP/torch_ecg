@@ -11,6 +11,7 @@ References
 
 import torch
 from torch import nn
+from typing import List
 
 from ...cfg import DEFAULTS
 from ...models._nets import (  # noqa: F401
@@ -20,7 +21,7 @@ from ...models._nets import (  # noqa: F401
     NonLocalBlock,
     SEBlock,
 )
-from ...utils.utils_nn import SizeMixin
+from ...utils import SizeMixin, CitationMixin
 
 if DEFAULTS.DTYPE.TORCH == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -31,7 +32,7 @@ __all__ = [
 ]
 
 
-class EfficientNet(nn.Module, SizeMixin):
+class EfficientNet(nn.Module, SizeMixin, CitationMixin):
     """
     Reference
     ---------
@@ -59,6 +60,10 @@ class EfficientNet(nn.Module, SizeMixin):
     def compute_output_shape(self):
         """ """
         raise NotImplementedError
+
+    @property
+    def doi(self) -> List[str]:
+        return list(set(self.config.get("doi", []) + ["10.48550/ARXIV.1905.11946"]))
 
 
 class EfficientNetV2(nn.Module, SizeMixin):

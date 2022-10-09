@@ -14,7 +14,7 @@ Its key points:
 import math
 from copy import deepcopy
 from itertools import repeat
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, List
 
 import torch
 from torch import Tensor, nn
@@ -27,7 +27,7 @@ from ...models._nets import (  # noqa: F401
     NonLocalBlock,
     SEBlock,
 )
-from ...utils.misc import dict_to_str, list_sum, add_docstring
+from ...utils.misc import dict_to_str, list_sum, add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,
@@ -547,7 +547,7 @@ class DenseTransition(nn.Sequential, SizeMixin):
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
-class DenseNet(nn.Sequential, SizeMixin):
+class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
     """
     The core part of the SOTA model (framework) of CPSC2020
 
@@ -727,3 +727,7 @@ class DenseNet(nn.Sequential, SizeMixin):
     @property
     def in_channels(self) -> int:
         return self.__in_channels
+
+    @property
+    def doi(self) -> List[str]:
+        return list(set(self.config.get("doi", []) + ["10.1109/cvpr.2017.243"]))

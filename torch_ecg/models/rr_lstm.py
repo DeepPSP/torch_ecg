@@ -8,8 +8,9 @@ References
 
 """
 
+import warnings
 from copy import deepcopy
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union, List
 
 import torch
 from torch import Tensor, nn
@@ -27,7 +28,7 @@ from ..models._nets import (  # noqa: F401
     MLP,
     StackedLSTM,
 )
-from ..utils.misc import dict_to_str
+from ..utils.misc import dict_to_str, CitationMixin
 from ..utils.utils_nn import CkptMixin, SizeMixin
 
 if DEFAULTS.DTYPE.TORCH == torch.float64:
@@ -39,7 +40,7 @@ __all__ = [
 ]
 
 
-class RR_LSTM(nn.Module, CkptMixin, SizeMixin):
+class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     """
     classification or sequence labeling using LSTM and using RR intervals as input
     """
@@ -64,6 +65,8 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin):
         self.classes = list(classes)
         self.n_classes = len(classes)
         self.config = deepcopy(RR_LSTM_CONFIG)
+        if not config:
+            warnings.warn("No config is provided, using default config.")
         self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
@@ -255,3 +258,16 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin):
             # clf is "linear" or lstm.retseq is False
             output_shape = (batch_size, self.n_classes)
         return output_shape
+
+    @property
+    def doi(self) -> List[str]:
+        return list(
+            set(
+                self.config.get("doi", [])
+                + [
+                    "10.1162/neco.1997.9.8.1735",
+                    "10.1016/j.compbiomed.2018.07.001",
+                    "10.1142/s0219519421400212",
+                ]
+            )
+        )

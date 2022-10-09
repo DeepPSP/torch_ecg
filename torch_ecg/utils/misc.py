@@ -726,6 +726,48 @@ def dicts_equal(d1: dict, d2: dict) -> bool:
     return True
 
 
+def add_docstring(doc: str, mode: str = "replace") -> Callable:
+    """
+    decorator to add docstring to a function or a class
+
+    Parameters
+    ----------
+    doc: str,
+        the docstring to be added
+    mode: str, default "replace",
+        the mode of the docstring,
+        can be "replace", "append" or "prepend",
+        case insensitive
+
+    """
+
+    def decorator(func_or_cls: Callable) -> Callable:
+        """ """
+
+        pattern = "(\\s^\n){1,}"
+        if mode.lower() == "replace":
+            func_or_cls.__doc__ = doc
+        elif mode.lower() == "append":
+            tmp = re.sub(pattern, "", func_or_cls.__doc__)
+            new_lines = 1 - (len(tmp) - len(tmp.rstrip("\n")))
+            tmp = re.sub(pattern, "", doc)
+            new_lines -= len(tmp) - len(tmp.lstrip("\n"))
+            new_lines = max(0, new_lines) * "\n"
+            func_or_cls.__doc__ += new_lines + doc
+        elif mode.lower() == "prepend":
+            tmp = re.sub(pattern, "", doc)
+            new_lines = 1 - (len(tmp) - len(tmp.rstrip("\n")))
+            tmp = re.sub(pattern, "", func_or_cls.__doc__)
+            new_lines -= len(tmp) - len(tmp.lstrip("\n"))
+            new_lines = max(0, new_lines) * "\n"
+            func_or_cls.__doc__ = doc + new_lines + func_or_cls.__doc__
+        else:
+            raise ValueError(f"mode {mode} is not supported")
+        return func_or_cls
+
+    return decorator
+
+
 def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
     """
     Parameters
@@ -797,6 +839,33 @@ class CitationMixin(_CitationMixin):
         del df_old, df
         # delete the old cache
         (_DATA_CACHE / "database_citation.csv").unlink()
+
+    @add_docstring(
+        _CitationMixin.get_citation.__doc__.replace(
+            "print_result: bool, default False", "print_result: bool, default True"
+        ),
+        mode="prepend",
+    )
+    def get_citation(
+        self,
+        lookup: bool = True,
+        format: Optional[str] = None,
+        style: Optional[str] = None,
+        timeout: Optional[float] = None,
+        print_result: bool = True,
+    ) -> Union[str, type(None)]:
+        """
+        override the default method to make the `print_result` argument
+        have default value `True`.
+
+        """
+        return super().get_citation(
+            lookup=lookup,
+            format=format,
+            style=style,
+            timeout=timeout,
+            print_result=print_result,
+        )
 
 
 class MovingAverage(object):
@@ -963,48 +1032,6 @@ def nildent(text: str) -> str:
         "\n" if text.endswith("\n") else ""
     )
     return new_text
-
-
-def add_docstring(doc: str, mode: str = "replace") -> Callable:
-    """
-    decorator to add docstring to a function or a class
-
-    Parameters
-    ----------
-    doc: str,
-        the docstring to be added
-    mode: str, default "replace",
-        the mode of the docstring,
-        can be "replace", "append" or "prepend",
-        case insensitive
-
-    """
-
-    def decorator(func_or_cls: Callable) -> Callable:
-        """ """
-
-        pattern = "(\\s^\n){1,}"
-        if mode.lower() == "replace":
-            func_or_cls.__doc__ = doc
-        elif mode.lower() == "append":
-            tmp = re.sub(pattern, "", func_or_cls.__doc__)
-            new_lines = 1 - (len(tmp) - len(tmp.rstrip("\n")))
-            tmp = re.sub(pattern, "", doc)
-            new_lines -= len(tmp) - len(tmp.lstrip("\n"))
-            new_lines = max(0, new_lines) * "\n"
-            func_or_cls.__doc__ += new_lines + doc
-        elif mode.lower() == "prepend":
-            tmp = re.sub(pattern, "", doc)
-            new_lines = 1 - (len(tmp) - len(tmp.rstrip("\n")))
-            tmp = re.sub(pattern, "", func_or_cls.__doc__)
-            new_lines -= len(tmp) - len(tmp.lstrip("\n"))
-            new_lines = max(0, new_lines) * "\n"
-            func_or_cls.__doc__ = doc + new_lines + func_or_cls.__doc__
-        else:
-            raise ValueError(f"mode {mode} is not supported")
-        return func_or_cls
-
-    return decorator
 
 
 def remove_parameters_returns_from_docstring(

@@ -6,7 +6,7 @@ branched, and has different scope (in terms of dilation) in each branch
 from collections import OrderedDict
 from copy import deepcopy
 from itertools import repeat
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, List
 
 import numpy as np
 import torch
@@ -17,7 +17,7 @@ from ...models._nets import (  # noqa: F401
     Conv_Bn_Activation,
     DownSample,
 )
-from ...utils.misc import dict_to_str, list_sum, add_docstring
+from ...utils.misc import dict_to_str, list_sum, add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,
@@ -317,7 +317,7 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
         return self.__in_channels
 
 
-class MultiScopicCNN(nn.Module, SizeMixin):
+class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
     """CNN part of the SOTA model from CPSC2019 challenge (entry 0416)"""
 
     __DEBUG__ = False
@@ -517,3 +517,7 @@ class MultiScopicCNN(nn.Module, SizeMixin):
     @property
     def num_branches(self) -> int:
         return self.__num_branches
+
+    @property
+    def doi(self) -> List[str]:
+        return list(set(self.config.get("doi", []) + ["10.1109/access.2020.2997473"]))

@@ -20,7 +20,7 @@ from ...models._nets import (  # noqa: F401
     SEBlock,
     ZeroPadding,
 )
-from ...utils.utils_nn import SizeMixin
+from ...utils import SizeMixin, CitationMixin  # noqa: F401
 
 if DEFAULTS.DTYPE.TORCH == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)

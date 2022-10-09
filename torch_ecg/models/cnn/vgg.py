@@ -3,7 +3,7 @@ the most basic CNN
 """
 
 from copy import deepcopy
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, List
 
 import torch
 from torch import nn
@@ -15,7 +15,7 @@ from ...models._nets import (  # noqa: F401
     NonLocalBlock,
     SEBlock,
 )
-from ...utils.misc import dict_to_str, add_docstring
+from ...utils.misc import dict_to_str, add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_maxpool_output_shape,
@@ -144,7 +144,7 @@ class VGGBlock(nn.Sequential, SizeMixin):
         return output_shape
 
 
-class VGG16(nn.Sequential, SizeMixin):
+class VGG16(nn.Sequential, SizeMixin, CitationMixin):
     """
     CNN feature extractor of the CRNN models proposed in refs of `ECG_CRNN`
     """
@@ -210,3 +210,12 @@ class VGG16(nn.Sequential, SizeMixin):
     @property
     def in_channels(self) -> int:
         return self.__in_channels
+
+    @property
+    def doi(self) -> List[str]:
+        return list(
+            set(
+                self.config.get("doi", [])
+                + ["10.48550/ARXIV.1409.1556", "10.1016/j.inffus.2019.06.024"]
+            )
+        )

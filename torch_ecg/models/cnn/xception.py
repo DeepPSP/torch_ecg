@@ -7,7 +7,7 @@ however seems not have been used in physiological signal processing tasks
 from copy import deepcopy
 from itertools import repeat
 from numbers import Real
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, List
 
 import torch
 from torch import Tensor, nn
@@ -22,7 +22,7 @@ from ...models._nets import (  # noqa: F401
     SEBlock,
     SeparableConv,
 )
-from ...utils.misc import dict_to_str, add_docstring
+from ...utils.misc import dict_to_str, add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,
@@ -54,7 +54,7 @@ _DEFAULT_CONV_CONFIGS = CFG(
 )
 
 
-class XceptionMultiConv(nn.Module, SizeMixin):
+class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
     """
     -> n(2 or 3) x (activation -> norm -> sep_conv) (-> optional sub-sample) ->
     |-------------------------------- shortcut ------------------------------|
@@ -765,7 +765,7 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         return output_shape
 
 
-class Xception(nn.Sequential, SizeMixin):
+class Xception(nn.Sequential, SizeMixin, CitationMixin):
     """
     References
     ----------
@@ -846,3 +846,7 @@ class Xception(nn.Sequential, SizeMixin):
     @property
     def in_channels(self) -> int:
         return self.__in_channels
+
+    @property
+    def doi(self) -> List[str]:
+        return list(set(self.config.get("doi", []) + ["10.1109/cvpr.2017.195"]))

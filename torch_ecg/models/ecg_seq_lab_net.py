@@ -13,8 +13,9 @@ References
 
 """
 
+import warnings
 from copy import deepcopy
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, List
 
 import numpy as np
 import torch
@@ -78,6 +79,8 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
         """
         _config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
+        if not config:
+            warnings.warn("No config is provided, using default config.")
         _config.update(deepcopy(config) or {})
         _config.global_pool = "none"
         super().__init__(classes, n_leads, _config)
@@ -163,6 +166,10 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
             mode="linear",
             align_corners=True,
         ).permute(0, 2, 1)
+
+    @property
+    def doi(self) -> List[str]:
+        return list(set(super().doi + ["10.1109/access.2020.2997473"]))
 
 
 class _ECG_SEQ_LAB_NET(nn.Module, CkptMixin, SizeMixin):

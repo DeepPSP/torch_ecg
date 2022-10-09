@@ -10,6 +10,8 @@ References
 [5] Wang, C. Y., Bochkovskiy, A., & Liao, H. Y. M. (2020). Scaled-YOLOv4: Scaling Cross Stage Partial Network. arXiv preprint arXiv:2011.08036.
 """
 
+from typing import List
+
 import torch
 from torch import nn
 
@@ -21,7 +23,7 @@ from ...models._nets import (  # noqa: F401
     NonLocalBlock,
     SEBlock,
 )
-from ...utils.utils_nn import SizeMixin
+from ...utils import SizeMixin, CitationMixin
 
 if DEFAULTS.DTYPE.TORCH == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -32,7 +34,7 @@ __all__ = [
 ]
 
 
-class DarkNet(nn.Sequential, SizeMixin):
+class DarkNet(nn.Sequential, SizeMixin, CitationMixin):
     """ """
 
     __DEBUG__ = True
@@ -42,3 +44,7 @@ class DarkNet(nn.Sequential, SizeMixin):
         """ """
         super().__init__()
         raise NotImplementedError
+
+    @property
+    def doi(self) -> List[str]:
+        return list(set(self.config.get("doi", []) + ["10.1109/CVPR.2016.91"]))

@@ -3,8 +3,9 @@ validated C(R)NN structure models, for classifying ECG arrhythmias
 
 """
 
+import warnings
 from copy import deepcopy
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union, List
 
 import numpy as np
 import torch
@@ -14,7 +15,7 @@ from einops import rearrange
 from ..cfg import CFG, DEFAULTS
 from ..components.outputs import BaseOutput
 from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
-from ..utils.misc import dict_to_str
+from ..utils.misc import dict_to_str, CitationMixin
 from ..utils.utils_nn import CkptMixin, SizeMixin
 from ._nets import (
     GlobalContextBlock,
@@ -41,8 +42,8 @@ __all__ = [
 ]
 
 
-class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
-    """finished, continuously improving,
+class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
+    """
 
     C(R)NN models modified from the following refs.
 
@@ -85,6 +86,8 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
         self.n_classes = len(classes)
         self.n_leads = n_leads
         self.config = deepcopy(ECG_CRNN_CONFIG)
+        if not config:
+            warnings.warn("No config is provided, using default config.")
         self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
@@ -398,3 +401,24 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin):
                 _seq_len = output_shape[-1]
             output_shape = self.clf.compute_output_shape(_seq_len, batch_size)
             return output_shape
+
+    @property
+    def doi(self) -> List[str]:
+        doi = []
+        candidates = [self.config]
+        while len(candidates) > 0:
+            new_candidates = []
+            for candidate in candidates:
+                if hasattr(candidate, "doi"):
+                    if isinstance(candidate.doi, str):
+                        doi.append(candidate.doi)
+                    else:
+                        doi.extend(list(candidate.doi))
+                for k, v in candidate.items():
+                    if isinstance(v, CFG):
+                        new_candidates.append(v)
+            candidates = new_candidates
+        doi = list(
+            set(doi + ["10.1016/j.inffus.2019.06.024", "10.1088/1361-6579/ac6aa3"])
+        )
+        return doi

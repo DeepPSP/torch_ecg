@@ -6,7 +6,7 @@ whose performance however seems exceeded by newer networks
 from copy import deepcopy
 from itertools import repeat
 from numbers import Real
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, List
 
 import torch
 import torch.nn.functional as F
@@ -22,7 +22,7 @@ from ...models._nets import (  # noqa: F401
     ZeroPadding,
     make_attention_layer,
 )
-from ...utils.misc import dict_to_str, add_docstring
+from ...utils.misc import dict_to_str, add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,
@@ -43,7 +43,6 @@ __all__ = [
 class ResNetBasicBlock(nn.Module, SizeMixin):
     """
     building blocks for `ResNet`, as implemented in ref. [2] of `ResNet`
-
     """
 
     __DEBUG__ = False
@@ -672,7 +671,7 @@ class ResNetStem(nn.Sequential, SizeMixin):
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
-class ResNet(nn.Sequential, SizeMixin):
+class ResNet(nn.Sequential, SizeMixin, CitationMixin):
     """
     References
     ----------
@@ -904,3 +903,17 @@ class ResNet(nn.Sequential, SizeMixin):
     @property
     def in_channels(self) -> int:
         return self.__in_channels
+
+    @property
+    def doi(self) -> List[str]:
+        return list(
+            set(
+                self.config.get("doi", [])
+                + [
+                    "10.1109/cvpr.2016.90",
+                    "10.1038/s41591-018-0268-3",
+                    "10.1038/s41467-020-15432-4",
+                    "10.1088/1361-6579/ac6aa3",
+                ]
+            )
+        )

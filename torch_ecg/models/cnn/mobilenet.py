@@ -11,7 +11,7 @@ References
 
 from copy import deepcopy
 from itertools import repeat
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union, List
 from numbers import Real
 
 import torch
@@ -26,7 +26,7 @@ from ...models._nets import (  # noqa: F401
     MultiConv,
     make_attention_layer,
 )
-from ...utils.misc import dict_to_str, add_docstring
+from ...utils.misc import dict_to_str, add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,
@@ -203,7 +203,7 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
-class MobileNetV1(nn.Sequential, SizeMixin):
+class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
     """
     Similar to Xception, but without skip connections,
     separable convolutions are slightly different too
@@ -436,6 +436,10 @@ class MobileNetV1(nn.Sequential, SizeMixin):
     def in_channels(self) -> int:
         return self.__in_channels
 
+    @property
+    def doi(self) -> List[str]:
+        return list(set(self.config.get("doi", []) + ["10.48550/ARXIV.1704.04861"]))
+
 
 class InvertedResidual(nn.Module, SizeMixin):
     """
@@ -648,7 +652,7 @@ class InvertedResidual(nn.Module, SizeMixin):
         return output_shape
 
 
-class MobileNetV2(nn.Sequential, SizeMixin):
+class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
     """
     References
     ----------
@@ -824,6 +828,10 @@ class MobileNetV2(nn.Sequential, SizeMixin):
     @property
     def in_channels(self) -> int:
         return self.__in_channels
+
+    @property
+    def doi(self) -> List[str]:
+        return list(set(self.config.get("doi", []) + ["10.1109/cvpr.2018.00474"]))
 
 
 class InvertedResidualBlock(nn.Sequential, SizeMixin):
@@ -1071,7 +1079,7 @@ class MobileNetV3_STEM(nn.Sequential, SizeMixin):
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
-class MobileNetV3(nn.Sequential, SizeMixin):
+class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
     """
     References
     ----------
@@ -1235,3 +1243,7 @@ class MobileNetV3(nn.Sequential, SizeMixin):
     ) -> Sequence[Union[int, None]]:
         """ """
         return compute_sequential_output_shape(self, seq_len, batch_size)
+
+    @property
+    def doi(self) -> List[str]:
+        return list(set(self.config.get("doi", []) + ["10.1109/iccv.2019.00140"]))
