@@ -867,7 +867,7 @@ class CPSC2021(PhysioNetDataBase):
             import matplotlib.pyplot as plt
 
             plt.MultipleLocator.MAXTICKS = 3000
-        if leads is None or leads == "all":
+        if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
             _leads = self.all_leads
         elif isinstance(leads, str):
             _leads = [leads]

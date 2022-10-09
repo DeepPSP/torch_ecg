@@ -528,7 +528,7 @@ class PhysioNetDataBase(_DataBase):
             all_leads = self.all_leads
         else:
             all_leads = wfdb.rdheader(fp).sig_name
-        if leads is None or leads.lower() == "all":
+        if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
             _leads = all_leads
         elif isinstance(leads, str):
             _leads = [leads]
