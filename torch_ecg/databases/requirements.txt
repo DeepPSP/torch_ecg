@@ -10,6 +10,7 @@ librosa
 praat-parselmouth
 opencv-contrib-python
 requests
+bib-lookup>=0.0.19
 
 # ipympl
 # ipywidgets

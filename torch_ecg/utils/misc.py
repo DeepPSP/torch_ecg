@@ -2,13 +2,13 @@
 """
 
 import datetime
+import inspect
 import logging
 import os
 import re
 import sys
 import signal
 import time
-import inspect
 from contextlib import contextmanager
 from copy import deepcopy
 from functools import reduce
@@ -31,7 +31,17 @@ import numpy as np
 import pandas as pd
 from deprecated import deprecated
 
-from ..cfg import DEFAULTS
+try:
+    from bib_lookup import CitationMixin as _CitationMixin
+except ImportError:
+    __bib_lookup_lowest_version = "0.0.19"
+    raise ImportError(
+        f"`bib-lookup` requires version {__bib_lookup_lowest_version} or higher. "
+        "Please upgrade it via `pip install -U bib-lookup`."
+    )
+
+from ..cfg import DEFAULTS, _DATA_CACHE
+
 
 __all__ = [
     "get_record_list_recursive",
@@ -51,6 +61,7 @@ __all__ = [
     "dicts_equal",
     "default_class_repr",
     "ReprMixin",
+    "CitationMixin",
     "MovingAverage",
     "nildent",
     "add_docstring",
@@ -756,7 +767,7 @@ def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
 
 class ReprMixin(object):
     """
-    Mixin for enhanced __repr__ and __str__ methods.
+    Mixin class for enhanced __repr__ and __str__ methods.
     """
 
     def __repr__(self) -> str:
@@ -767,6 +778,25 @@ class ReprMixin(object):
     def extra_repr_keys(self) -> List[str]:
         """ """
         return []
+
+
+class CitationMixin(_CitationMixin):
+    """
+    Mixin class for getting citations from DOIs.
+    """
+
+    # backwar compatibility
+    if (_DATA_CACHE / "database_citation.csv").exists():
+        df_old = pd.read_csv(_DATA_CACHE / "database_citation.csv")
+        df = pd.read_csv(_CitationMixin.citation_cache)
+        # merge the old and new tables and drop duplicates
+        df = pd.concat([df, df_old], axis=0, ignore_index=True)
+        df = df.drop_duplicates(subset="doi", keep="first")
+        df = df.reset_index(drop=True)
+        df.to_csv(_CitationMixin.citation_cache, index=False)
+        del df_old, df
+        # delete the old cache
+        (_DATA_CACHE / "database_citation.csv").unlink()
 
 
 class MovingAverage(object):
