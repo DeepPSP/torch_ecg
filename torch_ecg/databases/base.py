@@ -25,14 +25,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from string import punctuation
 from typing import Any, List, Optional, Union, Sequence
+from numbers import Real
 
 import numpy as np
 import pandas as pd
 import requests
 import wfdb
+from scipy.signal import resample_poly
 from pyedflib import EdfReader
 
-from ..cfg import CFG, _DATA_CACHE
+from ..cfg import CFG, DEFAULTS, _DATA_CACHE
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa: F401
 from ..utils.download import http_get
 from ..utils.misc import (
@@ -477,6 +479,119 @@ class PhysioNetDataBase(_DataBase):
 
         """
         raise NotImplementedError
+
+    def load_data(
+        self,
+        rec: Union[str, int],
+        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        data_format: str = "channel_first",
+        units: Union[str, type(None)] = "mV",
+        fs: Optional[Real] = None,
+    ) -> np.ndarray:
+        """
+        load physical (converted from digital) ECG data,
+        which is more understandable for humans;
+        or load digital directly.
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name or index of the record in `self.all_records`
+        leads: str or int or sequence of str or int, optional,
+            the leads to load
+        sampfrom: int, optional,
+            start index of the data to be loaded
+        sampto: int, optional,
+            end index of the data to be loaded
+        data_format: str, default "channel_first",
+            format of the ecg data,
+            "channel_last" (alias "lead_last"), or
+            "channel_first" (alias "lead_first"), or
+            "flat" (alias "plain") which is valid only when `leads` is a single lead
+        units: str or None, default "mV",
+            units of the output signal, can also be "μV", with aliases of "uV", "muV";
+            None for digital data, without digital-to-physical conversion
+        fs: real number, optional,
+            if not None, the loaded data will be resampled to this frequency
+
+        Returns
+        -------
+        data: ndarray,
+            the ECG data loaded from `rec`, with given units and format
+
+        """
+        fp = str(self.get_absolute_path(rec))
+        if hasattr(self, "all_leads"):
+            all_leads = self.all_leads
+        else:
+            all_leads = wfdb.rdheader(fp).sig_name
+        if leads is None:
+            _leads = all_leads
+        elif isinstance(leads, str):
+            _leads = [leads]
+        elif isinstance(leads, int):
+            _leads = [all_leads[leads]]
+        else:
+            _leads = [ld if isinstance(ld, str) else all_leads[ld] for ld in leads]
+        assert set(_leads).issubset(
+            all_leads
+        ), f"leads should be a subset of {all_leads} or integers less than {len(all_leads)}, but got {leads}"
+
+        allowed_data_format = [
+            "channel_first",
+            "lead_first",
+            "channel_last",
+            "lead_last",
+            "flat",
+            "plain",
+        ]
+        assert (
+            data_format.lower() in allowed_data_format
+        ), f"`data_format` should be one of `{allowed_data_format}`, but got `{data_format}`"
+        if len(_leads) > 1:
+            assert data_format.lower() in [
+                "channel_first",
+                "lead_first",
+                "channel_last",
+                "lead_last",
+            ], (
+                "`data_format` should be one of `['channel_first', 'lead_first', 'channel_last', 'lead_last']` "
+                f"when the passed number of `leads` is larger than 1, but got `{data_format}`"
+            )
+
+        allowed_units = ["mv", "uv", "μv", "muv"]
+        assert (
+            units is None or units.lower() in allowed_units
+        ), f"units should be one of `{allowed_units}` or None, but got `{units}`"
+
+        rdrecord_kwargs = dict(
+            sampfrom=sampfrom or 0,
+            sampto=sampto,
+            physical=units is not None,
+            return_res=DEFAULTS.DTYPE.INT,
+            channels=[all_leads.index(ld) for ld in _leads],
+        )  # use `channels` instead of `channel_names` since there're exceptional cases where `channel_names` has duplicates
+        wfdb_rec = wfdb.rdrecord(fp, **rdrecord_kwargs)
+
+        # p_signal or d_signal is in the format of "lead_last", and with units in "mV"
+        if units is None:
+            data = wfdb_rec.d_signal
+        elif units.lower() == "mv":
+            data = wfdb_rec.p_signal
+        elif units.lower() in ["μv", "uv", "muv"]:
+            data = 1000 * wfdb_rec.p_signal
+
+        if fs is not None and hasattr(self, fs) and fs != self.fs:
+            data = resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+
+        if data_format.lower() in ["channel_first", "lead_first"]:
+            data = data.T
+        elif data_format.lower() in ["flat", "plain"]:
+            data = data.flatten()
+
+        return data
 
     @property
     def database_info(self, detailed: bool = False) -> None:

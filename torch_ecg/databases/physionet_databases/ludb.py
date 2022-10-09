@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 import numpy as np
 import pandas as pd
 import wfdb
-from scipy.signal import resample_poly
 
 from ...cfg import CFG, DEFAULTS
 from ...utils.misc import add_docstring
@@ -286,67 +285,6 @@ class LUDB(PhysioNetDataBase):
         if extension is not None and not extension.startswith("."):
             extension = f".{extension}"
         return self.db_dir / "data" / f"{rec}{extension or ''}"
-
-    def load_data(
-        self,
-        rec: Union[str, int],
-        leads: Optional[Union[str, List[str]]] = None,
-        data_format="channel_first",
-        units: str = "mV",
-        fs: Optional[Real] = None,
-    ) -> np.ndarray:
-        """
-        load physical (converted from digital) ECG data,
-        which is more understandable for humans
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or list of str, optional,
-            the leads to load
-        data_format: str, default "channel_first",
-            format of the ECG data,
-            "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first", original)
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
-
-        Returns
-        -------
-        data: ndarray,
-            the ECG data
-
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        assert data_format.lower() in [
-            "channel_first",
-            "lead_first",
-            "channel_last",
-            "lead_last",
-        ]
-        _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=True)
-
-        rec_fp = str(self.get_absolute_path(rec))
-        wfdb_rec = wfdb.rdrecord(rec_fp, physical=True, channel_names=_leads)
-        # p_signal of "lead_last" format
-        # ref. ISSUES 1. (fixed in version 1.0.1)
-        # data = np.asarray(wfdb_rec.p_signal.T / 1000, dtype=np.float64)
-        data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.DTYPE.NP)
-
-        if units.lower() in ["uv", "μv"]:
-            data = data * 1000
-
-        if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=1).astype(DEFAULTS.DTYPE.NP)
-
-        if data_format.lower() in ["channel_last", "lead_last"]:
-            data = data.T
-
-        return data
 
     def load_ann(
         self,

@@ -2,16 +2,14 @@
 """
 """
 
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Union  # noqa: F401
 
 import numpy as np
 import pandas as pd  # noqa: F401
 import wfdb
-from scipy.signal import resample_poly
 
-from ...cfg import CFG, DEFAULTS
+from ...cfg import CFG
 from ...utils.misc import add_docstring
 from ...utils.utils_data import ECGWaveForm
 from ..base import (
@@ -122,7 +120,11 @@ class QTDB(PhysioNetDataBase):
         8. .pu0:    automatically determined waveform boundary measurements for all beats (based on signal 0 only)
         9. .pu1:    automatically determined waveform boundary measurements for all beats (based on signal 1 only)
         """
-        self.all_leads = [
+
+        # records have different lead names
+        # therefore, self.all_leads should not be set
+        # otherwise, it will cause problems when loading data using `self.load_data`
+        self._all_leads = [
             "CC5", "CM2", "CM4", "CM5", "D3", "D4", "ECG1", "ECG2", "ML5", "MLII",
             "V1", "V1-V2", "V2", "V2-V3", "V3", "V4", "V4-V5", "V5", "mod.V1",
         ]
@@ -185,14 +187,14 @@ class QTDB(PhysioNetDataBase):
         leads: Optional[Union[str, int, List[str], List[int]]] = None,
     ) -> List[str]:
         """
-        normalize the lead names to the ones in `self.all_leads`
+        normalize the lead names to the ones in `self._all_leads`
 
         Parameters
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
         leads: str or int or list of str or list of int,
-            lead names or indices of the leads in `self.all_leads`
+            lead names or indices of the leads in `self._all_leads`
 
         Returns
         -------
@@ -225,76 +227,6 @@ class QTDB(PhysioNetDataBase):
         else:
             leads = self.get_lead_names(rec)
         return leads
-
-    def load_data(
-        self,
-        rec: Union[str, int],
-        leads: Optional[Union[str, int, List[str], List[int]]] = None,
-        sampfrom: Optional[int] = None,
-        sampto: Optional[int] = None,
-        data_format="channel_first",
-        units: str = "mV",
-        fs: Optional[Real] = None,
-    ) -> np.ndarray:
-        """
-        load physical (converted from digital) ECG data,
-        which is more understandable for humans
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or int or list of str or list of int, optional,
-            the leads to load
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ECG data,
-            "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first", original)
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
-
-        Returns
-        -------
-        data: ndarray,
-            the ECG data
-
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        assert data_format.lower() in [
-            "channel_first",
-            "lead_first",
-            "channel_last",
-            "lead_last",
-        ]
-        rec_fp = self.get_absolute_path(rec)
-        leads = self._normalize_leads(rec, leads)
-
-        wfdb_rec = wfdb.rdrecord(
-            str(rec_fp),
-            sampfrom=sampfrom or 0,
-            sampto=sampto,
-            physical=True,
-            channel_names=leads,
-        )
-        data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.DTYPE.NP)
-
-        if units.lower() in ["uv", "μv"]:
-            data = data * 1000
-        if fs is not None and fs != wfdb_rec.fs:
-            data = resample_poly(data, fs, wfdb_rec.fs, axis=1).astype(
-                DEFAULTS.DTYPE.NP
-            )
-        if data_format.lower() in ["channel_last", "lead_last"]:
-            data = data.T
-
-        return data
 
     def load_ann(
         self,

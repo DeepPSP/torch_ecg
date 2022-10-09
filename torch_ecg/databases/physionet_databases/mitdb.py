@@ -3,21 +3,19 @@
 """
 
 from collections import defaultdict, Counter
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 import wfdb
-from scipy.signal import resample_poly
 
 try:
     from tqdm.auto import tqdm
 except ModuleNotFoundError:
     from tqdm import tqdm
 
-from ...cfg import CFG, DEFAULTS
+from ...cfg import CFG
 from ...utils.misc import get_record_list_recursive3, add_docstring
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (
@@ -137,7 +135,10 @@ class MITDB(PhysioNetDataBase):
         self.rhythm_types_map = {rt: idx for idx, rt in enumerate(self.rhythm_types)}
         self._rhythm_ignore_index = -100
 
-        self.all_leads = ["MLII", "V1", "V2", "V4", "V5"]
+        # records have different lead names
+        # therefore, self.all_leads should not be set
+        # otherwise, it will cause problems when loading data using `self.load_data`
+        self._all_leads = ["MLII", "V1", "V2", "V4", "V5"]
 
         self._ls_rec()
 
@@ -187,69 +188,6 @@ class MITDB(PhysioNetDataBase):
                     ),
                     ignore_index=True,
                 )
-
-    def load_data(
-        self,
-        rec: Union[str, int],
-        leads: Optional[Union[str, List[str]]] = None,
-        sampfrom: Optional[int] = None,
-        sampto: Optional[int] = None,
-        data_format: str = "channel_first",
-        units: str = "mV",
-        fs: Optional[Real] = None,
-    ) -> np.ndarray:
-        """
-        load physical (converted from digital) ECG data,
-        which is more understandable for humans
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or list of str, optional,
-            the leads to load
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ECG data,
-            "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first")
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
-
-        Returns
-        -------
-        data: ndarray,
-            the ECG data
-
-        """
-        fp = str(self.get_absolute_path(rec))
-        if not leads:
-            _leads = self._get_lead_names(rec)
-        elif isinstance(leads, str):
-            _leads = [leads]
-        else:
-            _leads = leads
-        assert set(_leads).issubset(self.all_leads)
-        # p_signal in the format of "lead_last", and in units "mV"
-        data = wfdb.rdrecord(
-            fp,
-            sampfrom=sampfrom or 0,
-            sampto=sampto,
-            physical=True,
-            channel_names=_leads,
-        ).p_signal.astype(DEFAULTS.DTYPE.NP)
-        if units.lower() in ["μv", "uv"]:
-            data = 1000 * data
-        if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=0).astype(DEFAULTS.DTYPE.NP)
-        if data_format.lower() in ["channel_first", "lead_first"]:
-            data = data.T
-        return data
 
     def load_ann(
         self,

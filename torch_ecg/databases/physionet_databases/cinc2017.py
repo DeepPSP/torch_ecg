@@ -7,12 +7,12 @@ import zipfile
 import warnings
 from pathlib import Path
 from typing import Any, Optional, Sequence, Union, List
+from numbers import Real
 
 import numpy as np
 import pandas as pd
-import wfdb
+import wfdb  # noqa: F401
 
-from ...cfg import DEFAULTS
 from ...utils.misc import get_record_list_recursive3, add_docstring
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo
 
@@ -188,60 +188,50 @@ class CINC2017(PhysioNetDataBase):
     def load_data(
         self,
         rec: Union[str, int],
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
         data_format: str = "channel_first",
         units: str = "mV",
+        fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
-        load the ECG data of the record `rec`
+        load physical (converted from digital) ECG data,
+        which is more understandable for humans;
+        or load digital directly.
 
         Parameters
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
+        sampfrom: int, optional,
+            start index of the data to be loaded
+        sampto: int, optional,
+            end index of the data to be loaded
         data_format: str, default "channel_first",
-            format of the ecg data, case insensitive, can be
+            format of the ecg data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first"), or
-            "flat" (of dimension 1, without channel dimension)
+            "flat" (alias "plain") which is valid only when `leads` is a single lead
         units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
+            units of the output signal, can also be "μV", with aliases of "uV", "muV";
+            None for digital data, without digital-to-physical conversion
+        fs: real number, optional,
+            if not None, the loaded data will be resampled to this frequency
 
         Returns
         -------
         data: ndarray,
-            data loaded from `rec`, with given units and format
+            the ECG data loaded from `rec`, with given units and format
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        assert data_format.lower() in [
-            "channel_first",
-            "lead_first",
-            "channel_last",
-            "lead_last",
-            "flat",
-        ]
-        assert units.lower() in [
-            "mv",
-            "uv",
-            "μv",
-        ]
-        wr = wfdb.rdrecord(str(self.get_absolute_path(rec)))
-        data = wr.p_signal.astype(DEFAULTS.DTYPE.NP)
-
-        if wr.units[0].lower() == units.lower():
-            pass
-        elif wr.units[0].lower() in ["uv", "μv"] and units.lower() == "mv":
-            data = data / 1000
-        elif units.lower() in ["uv", "μv"] and wr.units[0].lower() == "mv":
-            data = data * 1000
-
-        data = data.squeeze()
-        if data_format.lower() in ["channel_first", "lead_first"]:
-            data = data[np.newaxis, ...]
-        elif data_format.lower() in ["channel_last", "lead_last"]:
-            data = data[..., np.newaxis]
-        return data
+        return super().load_data(
+            rec,
+            sampfrom=sampfrom,
+            sampto=sampto,
+            data_format=data_format,
+            units=units,
+            fs=fs,
+        )
 
     def load_ann(
         self, rec: Union[str, int], original: bool = False, ann_format: str = "a"

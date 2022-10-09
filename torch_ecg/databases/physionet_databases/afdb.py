@@ -4,15 +4,13 @@
 
 import math
 from copy import deepcopy
-from numbers import Real
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import wfdb
-from scipy.signal import resample_poly
 
-from ...cfg import CFG, DEFAULTS
+from ...cfg import CFG
 from ...utils.misc import add_docstring, get_record_list_recursive
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo
@@ -100,11 +98,11 @@ class AFDB(PhysioNetDataBase):
             "ECG2",
         ]
 
-        self._ls_rec()
         self.special_records = ["00735", "03665"]
         self.qrsc_records = get_record_list_recursive(
             self.db_dir, self.manual_beat_ann_ext
         )
+        self._ls_rec()
 
         self.class_map = CFG(AFIB=1, AFL=2, J=3, N=0)  # an extra isoelectric
         self.palette = kwargs.get("palette", None)
@@ -117,74 +115,24 @@ class AFDB(PhysioNetDataBase):
                 qrs="green",
             )
 
-    def load_data(
-        self,
-        rec: Union[str, int],
-        leads: Optional[Union[str, List[str]]] = None,
-        sampfrom: Optional[int] = None,
-        sampto: Optional[int] = None,
-        data_format: str = "channel_first",
-        units: str = "mV",
-        fs: Optional[Real] = None,
-    ) -> np.ndarray:
+    def _ls_rec(self, db_name: Optional[str] = None, local: bool = True) -> None:
         """
-        load physical (converted from digital) ecg data,
-        which is more understandable for humans
+        find all records (relative path without file extension),
+        and save into `self._all_records` for further use
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or list of str, optional,
-            the leads to load
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ecg data,
-            "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first")
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with aliases of "uV", "muV";
-            None for digital data, without digital-to-physical conversion
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
-
-        Returns
-        -------
-        data: ndarray,
-            the ECG data
+        db_name: str, optional,
+            name of the database for using `wfdb.get_record_list`,
+            if not set, `self.db_name` will be used
+        local: bool, default True,
+            if True, read from local storage, prior to using `wfdb.get_record_list`
 
         """
-        fp = str(self.get_absolute_path(rec))
-        if not leads:
-            _leads = self.all_leads
-        elif isinstance(leads, str):
-            _leads = [leads]
-        else:
-            _leads = leads
-        assert set(_leads).issubset(self.all_leads)
-        wfdb_rec = wfdb.rdrecord(
-            fp,
-            sampfrom=sampfrom or 0,
-            sampto=sampto,
-            physical=units is not None,
-            channel_names=_leads,
-        )
-        if units is None:
-            dtype = np.int64
-            data = wfdb_rec.d_signal
-        elif units.lower() == "mv":
-            # p_signal in the format of "lead_last", and in units "mV"
-            data = wfdb_rec.p_signal.astype(DEFAULTS.DTYPE.NP)
-        elif units.lower() in ["μv", "uv", "muv"]:
-            data = 1000 * wfdb_rec.p_signal.astype(DEFAULTS.DTYPE.NP)
-        if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=0).astype(DEFAULTS.DTYPE.NP)
-        if data_format.lower() in ["channel_first", "lead_first"]:
-            data = data.T
-        return data
+        super()._ls_rec(db_name=db_name, local=local)
+        self._all_records = [
+            rec for rec in self._all_records if rec not in self.special_records
+        ]
 
     def load_ann(
         self,

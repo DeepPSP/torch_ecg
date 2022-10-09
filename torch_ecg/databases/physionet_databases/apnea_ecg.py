@@ -4,13 +4,13 @@
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, Optional, Union, Sequence
+from numbers import Real
 
 import numpy as np
 import pandas as pd
 import wfdb
 
-from ...cfg import DEFAULTS
 from ...utils import add_docstring
 from ..base import PhysioNetDataBase, DataBaseInfo
 
@@ -130,83 +130,108 @@ class ApneaECG(PhysioNetDataBase):
         stoi = {"a": "1", "b": "2", "c": "3", "x": "4"}
         return int("2000" + stoi[rec[0]] + rec[1:3])
 
+    @add_docstring(
+        PhysioNetDataBase.load_data.__doc__.replace(
+            "ECG data",
+            "ECG data or respiration data",
+        )
+    )
     def load_data(
         self,
         rec: Union[str, int],
-        lead: int = 0,
-        rec_path: Optional[Union[str, Path]] = None,
+        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        data_format: str = "channel_first",
+        units: Union[str, type(None)] = "mV",
+        fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        lead: int, default 0
-            number of the lead, can be 0 or 1
-        rec_path: str or Path, optional,
-            path of the file which contains the ECG data,
-            if not given, default path will be used
-
-        Returns
-        -------
-        sig: np.ndarray,
-            the ECG signal or the respiration signal
-
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        file_path = str(rec_path or self.get_absolute_path(rec))
-        self.wfdb_rec = wfdb.rdrecord(file_path)
-        sig = self.wfdb_rec.p_signal.astype(DEFAULTS.DTYPE.NP)
-        if not rec.endswith(("r", "er")):
-            sig = sig[:, 0]  # flatten ECG signal
-        return sig
+        """ """
+        return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs)
 
     def load_ecg_data(
-        self, rec: Union[str, int], lead: int = 0, rec_path: Optional[str] = None
+        self,
+        rec: Union[str, int],
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        data_format: str = "channel_first",
+        units: Union[str, type(None)] = "mV",
+        fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
+        load physical (converted from digital) ECG data,
+        which is more understandable for humans;
+        or load digital directly.
+
         Parameters
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
-        lead: int, default 0
-            number of the lead, can be 0 or 1
-        rec_path: str or Path, optional,
-            path of the file which contains the ecg data,
-            if not given, default path will be used
+        sampfrom: int, optional,
+            start index of the data to be loaded
+        sampto: int, optional,
+            end index of the data to be loaded
+        data_format: str, default "channel_first",
+            format of the ecg data,
+            "channel_last" (alias "lead_last"), or
+            "channel_first" (alias "lead_first"), or
+            "flat" (alias "plain") which is valid only when `leads` is a single lead
+        units: str or None, default "mV",
+            units of the output signal, can also be "μV", with aliases of "uV", "muV";
+            None for digital data, without digital-to-physical conversion
+        fs: real number, optional,
+            if not None, the loaded data will be resampled to this frequency
 
         Returns
         -------
-        sig: np.ndarray,
-            the ecg signal
+        data: ndarray,
+            the ECG data loaded from `rec`, with given units and format
 
         """
         if isinstance(rec, int):
             rec = self[rec]
         if rec.endswith(("r", "er")):
             raise ValueError(f"{rec} is not a record of ECG signals")
-        return self.load_data(rec=rec, lead=lead, rec_path=rec_path)
+        return self.load_data(
+            rec,
+            sampfrom=sampfrom,
+            sampto=sampto,
+            data_format=data_format,
+            units=units,
+            fs=fs,
+        )
 
     def load_rsp_data(
         self,
         rec: Union[str, int],
-        lead: int = 0,
-        channels: Optional[Union[str, List[str], Tuple[str]]] = None,
-        rec_path: Optional[str] = None,
+        channels: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        data_format: str = "channel_first",
+        units: Union[str, type(None)] = "mV",
+        fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
         Parameters
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
-        lead: int, default 0
-            number of the lead, can be 0 or 1
         channels: str or list of str, default None
             channels to be loaded, if None, all channels will be loaded
-        rec_path: str or Path, optional,
-            path of the file which contains the ecg data,
-            if not given, default path will be used
+        sampfrom: int, optional,
+            start index of the data to be loaded
+        sampto: int, optional,
+            end index of the data to be loaded
+        data_format: str, default "channel_first",
+            format of the ecg data,
+            "channel_last" (alias "lead_last"), or
+            "channel_first" (alias "lead_first"), or
+            "flat" (alias "plain") which is valid only when `leads` is a single lead
+        units: str or None, default "mV",
+            units of the output signal, can also be "μV", with aliases of "uV", "muV";
+            None for digital data, without digital-to-physical conversion
+        fs: real number, optional,
+            if not None, the loaded data will be resampled to this frequency
 
         Returns
         -------
@@ -218,16 +243,15 @@ class ApneaECG(PhysioNetDataBase):
             rec = self[rec]
         if not rec.endswith(("r", "er")):
             raise ValueError(f"{rec} is not a record of RSP signals")
-        sig = self.load_data(rec=rec, lead=lead, rec_path=rec_path)
-        if channels is not None:
-            chns = [channels] if isinstance(channels, str) else list(channels)
-            if any([c not in self.rsp_channels for c in chns]):
-                raise ValueError(
-                    f"Invalid channel(s): {[c for c in chns if c not in self.rsp_channels]}"
-                )
-        else:
-            chns = self.rsp_channels
-        sig = {c: sig[:, self.wfdb_rec.sig_name.index(c)] for c in chns}
+        sig = self.load_data(
+            rec,
+            leads=channels,
+            sampfrom=sampfrom,
+            sampto=sampto,
+            data_format=data_format,
+            units=units,
+            fs=fs,
+        )
         return sig
 
     def load_ann(

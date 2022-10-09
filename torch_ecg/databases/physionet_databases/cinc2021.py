@@ -697,10 +697,10 @@ class CINC2021(PhysioNetDataBase):
     def load_data(
         self,
         rec: Union[str, int],
-        leads: Optional[Union[str, List[str]]] = None,
+        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         data_format: str = "channel_first",
         backend: str = "wfdb",
-        units: str = "mV",
+        units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
@@ -711,7 +711,7 @@ class CINC2021(PhysioNetDataBase):
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
-        leads: str or list of str, optional,
+        leads: str or int or list of str or int, optional,
             the leads to load
         data_format: str, default "channel_first",
             format of the ECG data,
@@ -719,8 +719,9 @@ class CINC2021(PhysioNetDataBase):
             "channel_first" (alias "lead_first")
         backend: str, default "wfdb",
             the backend data reader, can also be "scipy"
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
+        units: str or None, default "mV",
+            units of the output signal, can also be "μV", with aliases of "uV", "muV";
+            None for digital data, without digital-to-physical conversion
         fs: real number, optional,
             if not None, the loaded data will be resampled to this frequency
 
@@ -739,28 +740,39 @@ class CINC2021(PhysioNetDataBase):
             "lead_last",
         ]
         # tranche = self._get_tranche(rec)
-        if leads is None or leads == "all":
+        if not leads:
             _leads = self.all_leads
         elif isinstance(leads, str):
             _leads = [leads]
+        elif isinstance(leads, int):
+            _leads = [self.all_leads[leads]]
         else:
-            _leads = leads
+            _leads = [ld if isinstance(ld, str) else self.all_leads[ld] for ld in leads]
         # if tranche in "CD" and fs == 500:  # resample will be done at the end of the function
         #     data = self.load_resampled_data(rec)
         if backend.lower() == "wfdb":
             rec_fp = self.get_data_filepath(rec, with_ext=False)
-            # p_signal of "lead_last" format
-            wfdb_rec = wfdb.rdrecord(str(rec_fp), physical=True, channel_names=_leads)
-            data = np.asarray(wfdb_rec.p_signal.T, dtype=DEFAULTS.DTYPE.NP)
+            # p_signal or d_signal of "lead_last" format
+            wfdb_rec = wfdb.rdrecord(
+                str(rec_fp),
+                physical=units is not None,
+                channel_names=_leads,
+                return_res=DEFAULTS.DTYPE.INT,
+            )
+            if units is None:
+                data = wfdb_rec.d_signal.T
+            else:
+                data = wfdb_rec.p_signal.T
             # lead_units = np.vectorize(lambda s: s.lower())(wfdb_rec.units)
         elif backend.lower() == "scipy":
             # loadmat of "lead_first" format
             rec_fp = self.get_data_filepath(rec, with_ext=True)
             data = loadmat(str(rec_fp))["val"]
-            header_info = self.load_ann(rec, raw=False)["df_leads"]
-            baselines = header_info["baseline"].values.reshape(data.shape[0], -1)
-            adc_gain = header_info["adc_gain"].values.reshape(data.shape[0], -1)
-            data = np.asarray(data - baselines, dtype=DEFAULTS.DTYPE.NP) / adc_gain
+            if units is not None:
+                header_info = self.load_ann(rec, raw=False)["df_leads"]
+                baselines = header_info["baseline"].values.reshape(data.shape[0], -1)
+                adc_gain = header_info["adc_gain"].values.reshape(data.shape[0], -1)
+                data = np.asarray(data - baselines, dtype=DEFAULTS.DTYPE.NP) / adc_gain
             leads_ind = [self.all_leads.index(item) for item in _leads]
             data = data[leads_ind, :]
             # lead_units = np.vectorize(lambda s: s.lower())(header_info["df_leads"]["adc_units"].values)
@@ -772,12 +784,12 @@ class CINC2021(PhysioNetDataBase):
         # ref. ISSUES 3, for multiplying `value_correction_factor`
         # data = data * self.value_correction_factor[tranche]
 
-        if units.lower() in ["uv", "μv"]:
+        if units is not None and units.lower() in ["uv", "μv"]:
             data = data * 1000
 
         rec_fs = self.get_fs(rec, from_hea=True)
         if fs is not None and fs != rec_fs:
-            data = resample_poly(data, fs, rec_fs, axis=1).astype(DEFAULTS.DTYPE.NP)
+            data = resample_poly(data, fs, rec_fs, axis=1).astype(data.dtype)
         # if fs is not None and fs != self.fs[tranche]:
         #     data = resample_poly(data, fs, self.fs[tranche], axis=1)
 
