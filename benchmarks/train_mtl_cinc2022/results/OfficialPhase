@@ -1,0 +1,14 @@
+# NOTE: the first two submission have bugs for the outcome predictions in `team_code.py`,
+#       which used the the outputs of murmur for the outcome predictions,
+#       hence were all incorrect.
+time,ID,task,tag,outcome,murmur
+8/5/2022 18:25:04 ET,Revenger_1229_1,classification,crnn-resnet_nature_comm_bottle_neck_se-lstm-se,13835.503,0.637
+8/6/2022 23:41:19 ET,Revenger_1243_2,classification,wav2vec2_small-resnet_nature_comm_bottle_neck_se,13835.503,0.367
+8/8/2022 22:46:36 ET,Revenger_1278_1,classification,crnn-resnet_nature_comm_bottle_neck_se-lstm-se,9546.513,0.642
+8/9/2022 8:00:45 ET,Revenger_1287_1,multi_task,crnn-resnet_nature_comm_bottle_neck_se-lstm-se,11032.563,0.657
+8/9/2022 22:20:18 ET,Revenger_1295_1,classification,crnn-resnet_nature_comm_bottle_neck_se-lstm-se-rf,10855.451,0.651
+8/11/2022 4:50:36 ET,Revenger_1316_1,multi_task,crnn-resnet_nature_comm_bottle_neck_se-lstm-se-rf,9471.652,0.633
+8/11/2022 23:17:35 ET,Revenger_1341_1,multi_task,crnn-tresnetF,11233.388,0.626
+8/12/2022 14:37:45 ET,Revenger_1359_1,multi_task,crnn-resnet_nature_comm_bottle_neck_se-lstm-se-weighted_loss,10647.195,0.678
+8/13/2022 9:19:41 ET,Revenger_1374_1,classification,crnn-resnet_nature_comm_bottle_neck_se-lstm-se-weighted_loss,12484.507,0.689
+8/14/2022 21:34:52 ET,Revenger_1401_1,multi_task,crnn-resnet_nature_comm_bottle_neck_se-lstm-se-rf-weighted_loss,10148.015,0.661

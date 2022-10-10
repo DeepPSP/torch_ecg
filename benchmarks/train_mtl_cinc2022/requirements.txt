@@ -1,0 +1,39 @@
+numpy==1.21.0
+scipy==1.6.1
+joblib==1.2.0
+# Cython==0.29.10
+pandas==1.2.2
+scikit-learn==0.24.1
+wfdb==3.2.0
+opencv-python
+packaging
+easydict
+# torch==1.6.0  # see Dockerfile
+# torchaudio==0.6.0  # see Dockerfile
+# torch-audiomentations  # see Dockerfile
+# torch_ecg  # see Dockerfile
+torchsummary
+tensorboardX
+tqdm
+biosppy
+deprecated
+torch_optimizer
+librosa
+IPython
+pyEDFlib
+PyWavelets
+xmltodict
+einops
+matplotlib
+seaborn
+requests
+kaldi_io
+xgboost
+huggingface_hub
+transformers==4.18.0
+datasets
+accelerate
+# requirements from torch-audiomentations,
+# which is installed with --no-deps
+julius>=0.2.3,<0.3
+torch-pitch-shift>=1.2.2
