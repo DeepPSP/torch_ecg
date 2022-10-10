@@ -11,7 +11,7 @@ import signal
 import time
 from contextlib import contextmanager
 from copy import deepcopy
-from functools import reduce
+from functools import reduce, wraps
 from glob import glob
 from numbers import Number, Real
 from pathlib import Path
@@ -69,6 +69,7 @@ __all__ = [
     "timeout",
     "Timer",
     "get_kwargs",
+    "add_kwargs",
 ]
 
 
@@ -1285,3 +1286,31 @@ def get_kwargs(func_or_cls: Callable, kwonly: bool = False) -> Dict[str, Any]:
             {k: v for k, v in zip(fas.args[-len(fas.defaults) :], fas.defaults)}
         )
     return kwargs
+
+
+def add_kwargs(func: Callable, **kwargs: Any) -> Callable:
+    """
+    add keyword arguments to a function,
+    in order to make it compatible with other functions
+
+    Parameters
+    ----------
+    func: Callable,
+        the function to be decorated
+    kwargs: Any,
+        the keyword arguments to be added
+
+    Returns
+    -------
+    Callable,
+        the decorated function
+
+    """
+
+    @wraps(func)
+    def wrapper(*args: Any, **kwargs_: Any) -> Any:
+        """ """
+        filtered_kwargs = {k: v for k, v in kwargs_.items() if k in get_kwargs(func)}
+        return func(*args, **filtered_kwargs)
+
+    return wrapper

@@ -18,6 +18,7 @@ from .misc import (
     timeout,
     Timer,
     get_kwargs,
+    add_kwargs,
 )
 from .utils_data import (
     get_mask,
@@ -95,6 +96,7 @@ __all__ = [
     "timeout",
     "Timer",
     "get_kwargs",
+    "add_kwargs",
     "get_mask",
     "class_weight_to_sample_weight",
     "ensure_lead_fmt",
