@@ -1,6 +1,7 @@
 """
 """
 
+import warnings
 from random import sample
 from typing import List, Optional, Tuple
 
@@ -95,6 +96,7 @@ class PreprocManager(ReprMixin):
         """
         if len(self.preprocessors) == 0:
             # raise ValueError("No preprocessors added to the manager.")
+            # allow dummy (empty) preprocessors
             return sig, fs
         ordering = list(range(len(self.preprocessors)))
         if self.random:
@@ -139,6 +141,10 @@ class PreprocManager(ReprMixin):
                 # just ignore the other items
                 pass
                 # raise ValueError(f"Unknown preprocessor: {pp_name}")
+        if ppm.empty:
+            warnings.warn(
+                "No preprocessors added to the manager. You are using a dummy preprocessor."
+            )
         return ppm
 
     def rearrange(self, new_ordering: List[str]) -> None:
@@ -192,6 +198,10 @@ class PreprocManager(ReprMixin):
     @property
     def preprocessors(self) -> List[PreProcessor]:
         return self._preprocessors
+
+    @property
+    def empty(self) -> bool:
+        return len(self.preprocessors) == 0
 
     def extra_repr_keys(self) -> List[str]:
         """

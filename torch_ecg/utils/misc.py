@@ -1306,11 +1306,17 @@ def add_kwargs(func: Callable, **kwargs: Any) -> Callable:
         the decorated function
 
     """
+    old_kwargs = get_kwargs(func)
+    full_kwargs = {**old_kwargs, **kwargs}
 
     @wraps(func)
     def wrapper(*args: Any, **kwargs_: Any) -> Any:
         """ """
-        filtered_kwargs = {k: v for k, v in kwargs_.items() if k in get_kwargs(func)}
+        assert set(kwargs_).issubset(full_kwargs), (
+            "got unexpected keyword arguments: "
+            f"{list(set(kwargs_).difference(full_kwargs))}"
+        )
+        filtered_kwargs = {k: v for k, v in kwargs_.items() if k in old_kwargs}
         return func(*args, **filtered_kwargs)
 
     return wrapper
