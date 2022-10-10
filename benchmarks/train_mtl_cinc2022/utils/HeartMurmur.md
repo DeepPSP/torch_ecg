@@ -1,4 +1,4 @@
-This file records the facts about heart murmur:
+# This file records the facts about heart murmur
 
 1. A heart murmur is a blowing, whooshing, or rasping sound heard **during a heartbeat**. The sound is caused by turbulent (rough) blood flow through the heart valves or near the heart. ([source](https://medlineplus.gov/ency/article/003266.htm))
 
@@ -6,13 +6,13 @@ This file records the facts about heart murmur:
 
 3. ([Wikipedia](https://en.wikipedia.org/wiki/Heart_murmur)) Heart murmurs may have a distinct pitch, duration and timing. Murmurs have seven main characteristics. These include timing, shape, location, radiation, intensity, pitch and quality
     - Timing refers to whether the murmur is a
-        * systolic murmur
-        * diastolic murmur. Diastolic murmurs are usually abnormal, and may be early, mid or late diastolic ([source](https://www.utmb.edu/pedi_ed/CoreV2/Cardiology/cardiologyV2/cardiologyV24.html))
-        * continuous murmur
+        - systolic murmur
+        - diastolic murmur. Diastolic murmurs are usually abnormal, and may be early, mid or late diastolic ([source](https://www.utmb.edu/pedi_ed/CoreV2/Cardiology/cardiologyV2/cardiologyV24.html))
+        - continuous murmur
     - Shape refers to the intensity over time. Murmurs can be crescendo, decrescendo or crescendo-decrescendo
-        * Crescendo murmurs increase in intensity over time
-        * Decrescendo murmurs decrease in intensity over time
-        * Crescendo-decrescendo murmurs have both shapes over time, resembling a diamond or kite shape
+        - Crescendo murmurs increase in intensity over time
+        - Decrescendo murmurs decrease in intensity over time
+        - Crescendo-decrescendo murmurs have both shapes over time, resembling a diamond or kite shape
     - Location refers to where the heart murmur is usually heard best. There are **four** places on the anterior chest wall to listen for heart murmurs. Each location roughly corresponds to a specific part of the heart.
         | Region    | Location                                  | Heart Valve Association|
         |-----------|-------------------------------------------|------------------------|
@@ -31,15 +31,15 @@ This file records the facts about heart murmur:
         | 5            | loud with a palpable thrill, audible with only the rim of the stethoscope touching the chest            |
         | 6            | loud with a palpable thrill, audible with the stethoscope not touching the chest but lifted just off it |
     - Pitch may be
-        * low
-        * medium
-        * high
+        - low
+        - medium
+        - high
     This depends on whether auscultation is best with the bell or diaphragm of a stethoscope.
     - Quality refers to **unusual characteristics** of a murmur. For example
-        * blowing
-        * harsh
-        * rumbling
-        * musical
+        - blowing
+        - harsh
+        - rumbling
+        - musical
 
 4. Heart sounds usually has frequency lower than 500 Hz (mostly lower than 300 Hz) (inferred from [source](https://biologicalproceduresonline.biomedcentral.com/articles/10.1186/1480-9222-13-7) Figure 2). frequency of heart sounds is low in range between 20 and 150 Hz.
 
