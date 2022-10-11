@@ -831,7 +831,10 @@ class CitationMixin(_CitationMixin):
     # backwar compatibility
     if (_DATA_CACHE / "database_citation.csv").exists():
         df_old = pd.read_csv(_DATA_CACHE / "database_citation.csv")
-        df = pd.read_csv(_CitationMixin.citation_cache)
+        if _CitationMixin.citation_cache.exists():
+            df = pd.read_csv(_CitationMixin.citation_cache)
+        else:
+            df = pd.DataFrame(columns=["doi", "citation"])
         # merge the old and new tables and drop duplicates
         df = pd.concat([df, df_old], axis=0, ignore_index=True)
         df = df.drop_duplicates(subset="doi", keep="first")
