@@ -121,6 +121,14 @@ class CFG(dict):
             delattr(self, key)
         return super().pop(key, default)
 
+    def __repr__(self) -> str:
+        """ """
+        return repr({k: v for k, v in self.items() if not callable(v)})
+
+    def __str__(self) -> str:
+        """ """
+        return str({k: v for k, v in self.items() if not callable(v)})
+
 
 @dataclass
 class DTYPE:
