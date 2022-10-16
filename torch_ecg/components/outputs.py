@@ -28,72 +28,72 @@ __all__ = [
 
 
 _KNOWN_ISSUES = """
-        Known Issues
-        ------------
-        - fields of type `dict` are not well supported, for example:{}
-        """
+    Known Issues
+    ------------
+    - fields of type `dict` are not well supported due to the limitations of the base class `CFG`, for example:{}
+    """
 _ClassificationOutput_ISSUE_EXAMPLE = """
-        >>> output = ClassificationOutput(classes=["AF", "N", "SPB"], pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})
-        >>> output
-        {'classes': ['AF', 'N', 'SPB'],
-         'prob': array([[1., 1., 1.]]),
-         'pred': array([[1., 1., 1.]]),
-         'd': {'d': 1, 'classes': None, 'prob': None, 'pred': None}}
-        >>> output.d
-        AttributeError: 'ClassificationOutput' object has no attribute 'd'
-        """
+    >>> output = ClassificationOutput(classes=["AF", "N", "SPB"], pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})
+    >>> output
+    {'classes': ['AF', 'N', 'SPB'],
+        'prob': array([[1., 1., 1.]]),
+        'pred': array([[1., 1., 1.]]),
+        'd': {'d': 1}}
+    >>> output.d  # has to access via `output["d"]`
+    AttributeError: 'ClassificationOutput' object has no attribute 'd'
+    """
 _MultiLabelClassificationOutput_ISSUE_EXAMPLE = """
-        >>> output = MultiLabelClassificationOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})
-        >>> output
-        {'classes': ['AF', 'N', 'SPB'],
-         'prob': array([[1., 1., 1.]]),
-         'pred': array([[1., 1., 1.]]),
-         'thr': 0.5,
-         'd': {'d': 1, 'classes': None, 'thr': None, 'prob': None, 'pred': None}}
-        >>> output.d
-        AttributeError: 'MultiLabelClassificationOutput' object has no attribute 'd'
-        """
+    >>> output = MultiLabelClassificationOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})
+    >>> output
+    {'classes': ['AF', 'N', 'SPB'],
+        'prob': array([[1., 1., 1.]]),
+        'pred': array([[1., 1., 1.]]),
+        'thr': 0.5,
+        'd': {'d': 1}}
+    >>> output.d  # has to access via `output["d"]`
+    AttributeError: 'MultiLabelClassificationOutput' object has no attribute 'd'
+    """
 _SequenceTaggingOutput_ISSUE_EXAMPLE = """
-        >>> output = SequenceTaggingOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})
-        >>> output
-        {'classes': ['AF', 'N', 'SPB'],
-         'prob': array([[[1., 1., 1.],
-                 [1., 1., 1.],
-                 [1., 1., 1.]]]),
-         'pred': array([[[1., 1., 1.],
-                 [1., 1., 1.],
-                 [1., 1., 1.]]]),
-         'thr': 0.5,
-         'd': {'d': 1, 'classes': None, 'prob': None, 'pred': None}}
-        >>> output.d
-        AttributeError: 'SequenceTaggingOutput' object has no attribute 'd'
-        """
+    >>> output = SequenceTaggingOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})
+    >>> output
+    {'classes': ['AF', 'N', 'SPB'],
+        'prob': array([[[1., 1., 1.],
+                [1., 1., 1.],
+                [1., 1., 1.]]]),
+        'pred': array([[[1., 1., 1.],
+                [1., 1., 1.],
+                [1., 1., 1.]]]),
+        'thr': 0.5,
+        'd': {'d': 1}}
+    >>> output.d  # has to access via `output["d"]`
+    AttributeError: 'SequenceTaggingOutput' object has no attribute 'd'
+    """
 _WaveDelineationOutput_ISSUE_EXAMPLE = """
-        >>> output = WaveDelineationOutput(classes=["N", "P", "Q",], thr=0.5, pred=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})
-        >>> output
-        {'classes': ['AF', 'N', 'SPB'],
-         'prob': array([[[1., 1., 1.],
-                 [1., 1., 1.],
-                 [1., 1., 1.]]]),
-         'mask': array([[[1., 1., 1.],
-                 [1., 1., 1.],
-                 [1., 1., 1.]]]),
-         'd': {'d': 1, 'classes': None, 'prob': None, 'pred': None, 'mask': None}}
-        >>> output.d
-        AttributeError: 'WaveDelineationOutput' object has no attribute 'd'
-        """
+    >>> output = WaveDelineationOutput(classes=["N", "P", "Q",], thr=0.5, mask=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})
+    >>> output
+    {'classes': ['AF', 'N', 'SPB'],
+        'prob': array([[[1., 1., 1.],
+                [1., 1., 1.],
+                [1., 1., 1.]]]),
+        'mask': array([[[1., 1., 1.],
+                [1., 1., 1.],
+                [1., 1., 1.]]]),
+        'd': {'d': 1}}
+    >>> output.d  # has to access via `output["d"]`
+    AttributeError: 'WaveDelineationOutput' object has no attribute 'd'
+    """
 _RPeaksDetectionOutput_ISSUE_EXAMPLE = """
-        >>> output = RPeaksDetectionOutput(rpeak_indices=[[2]], thr=0.5, prob=np.ones((1,3,3)), d={"d":1})
-        >>> output
-        {'rpeak_indices': [[2]],
-         'prob': array([[[1., 1., 1.],
-                 [1., 1., 1.],
-                 [1., 1., 1.]]]),
-         'thr': 0.5,
-         'd': {'d': 1, 'rpeak_indices': None, 'prob': None}}
-        >>> output.d
-        AttributeError: 'RPeaksDetectionOutput' object has no attribute 'd'
-        """
+    >>> output = RPeaksDetectionOutput(rpeak_indices=[[2]], thr=0.5, prob=np.ones((1,3,3)), d={"d":1})
+    >>> output
+    {'rpeak_indices': [[2]],
+        'prob': array([[[1., 1., 1.],
+                [1., 1., 1.],
+                [1., 1., 1.]]]),
+        'thr': 0.5,
+        'd': {'d': 1}}
+    >>> output.d  # has to access via `output["d"]`
+    AttributeError: 'RPeaksDetectionOutput' object has no attribute 'd'
+    """
 
 
 class BaseOutput(CFG, ABC):
@@ -164,38 +164,24 @@ class BaseOutput(CFG, ABC):
                     )
 
 
+@add_docstring(_KNOWN_ISSUES.format(_ClassificationOutput_ISSUE_EXAMPLE), "append")
 class ClassificationOutput(BaseOutput):
     """
     Class that maintains the output of a (typically single-label) classification task.
+
+    Required parameters for `__init__`
+    ----------------------------------
+    classes : sequence of str,
+        class names
+    prob : np.ndarray,
+        probabilities of each class,
+        of shape (batch_size, num_classes)
+    pred : np.ndarray,
+        predicted class indices, or binary predictions,
+        of shape (batch_size,) or (batch_size, num_classes)
     """
 
     __name__ = "ClassificationOutput"
-
-    @add_docstring(_KNOWN_ISSUES.format(_ClassificationOutput_ISSUE_EXAMPLE), "append")
-    def __init__(
-        self,
-        *args: Any,
-        classes: Sequence[str] = None,
-        prob: np.ndarray = None,
-        pred: np.ndarray = None,
-        **kwargs: Any,
-    ) -> None:
-        """
-        classification output
-
-        Parameters
-        ----------
-        classes : sequence of str,
-            class names
-        prob : np.ndarray,
-            probabilities of each class,
-            of shape (batch_size, num_classes)
-        pred : np.ndarray,
-            predicted class indices, or binary predictions,
-            of shape (batch_size,) or (batch_size, num_classes)
-
-        """
-        super().__init__(*args, classes=classes, prob=prob, pred=pred, **kwargs)
 
     def required_fields(self) -> Set[str]:
         """ """
@@ -226,45 +212,28 @@ class ClassificationOutput(BaseOutput):
         )
 
 
+@add_docstring(
+    _KNOWN_ISSUES.format(_MultiLabelClassificationOutput_ISSUE_EXAMPLE), "append"
+)
 class MultiLabelClassificationOutput(BaseOutput):
     """
     Class that maintains the output of a multi-label classification task.
+
+    Required parameters for `__init__`
+    ----------------------------------
+    classes : sequence of str,
+        class names
+    thr : float,
+        threshold for making binary predictions
+    prob : np.ndarray,
+        probabilities of each class,
+        of shape (batch_size, num_classes)
+    pred : np.ndarray,
+        binary predictions,
+        of shape (batch_size, num_classes)
     """
 
     __name__ = "MultiLabelClassificationOutput"
-
-    @add_docstring(
-        _KNOWN_ISSUES.format(_MultiLabelClassificationOutput_ISSUE_EXAMPLE), "append"
-    )
-    def __init__(
-        self,
-        *args: Any,
-        classes: Sequence[str] = None,
-        thr: float = None,
-        prob: np.ndarray = None,
-        pred: np.ndarray = None,
-        **kwargs: Any,
-    ) -> None:
-        """
-        multi-label classification output
-
-        Parameters
-        ----------
-        classes : sequence of str,
-            class names
-        thr : float,
-            threshold for making binary predictions
-        prob : np.ndarray,
-            probabilities of each class,
-            of shape (batch_size, num_classes)
-        pred : np.ndarray,
-            binary predictions,
-            of shape (batch_size, num_classes)
-
-        """
-        super().__init__(
-            *args, classes=classes, thr=thr, prob=prob, pred=pred, **kwargs
-        )
 
     def required_fields(self) -> Set[str]:
         """ """
@@ -301,39 +270,25 @@ class MultiLabelClassificationOutput(BaseOutput):
         )
 
 
+@add_docstring(_KNOWN_ISSUES.format(_SequenceTaggingOutput_ISSUE_EXAMPLE), "append")
 class SequenceTaggingOutput(BaseOutput):
     """
     Class that maintains the output of a sequence tagging task.
+
+    Required parameters for `__init__`
+    ----------------------------------
+    classes : sequence of str,
+        class names
+    prob : np.ndarray,
+        probabilities of each class at each time step (each sample point),
+        of shape (batch_size, signal_length, num_classes)
+    pred : np.ndarray,
+        predicted class indices at each time step (each sample point),
+        or binary predictions at each time step (each sample point),
+        of shape (batch_size, signal_length), or (batch_size, signal_length, num_classes)
     """
 
     __name__ = "SequenceTaggingOutput"
-
-    @add_docstring(_KNOWN_ISSUES.format(_SequenceTaggingOutput_ISSUE_EXAMPLE), "append")
-    def __init__(
-        self,
-        *args: Any,
-        classes: Sequence[str] = None,
-        prob: np.ndarray = None,
-        pred: np.ndarray = None,
-        **kwargs: Any,
-    ) -> None:
-        """
-        sequence tagging output
-
-        Parameters
-        ----------
-        classes : sequence of str,
-            class names
-        prob : np.ndarray,
-            probabilities of each class at each time step (each sample point),
-            of shape (batch_size, signal_length, num_classes)
-        pred : np.ndarray,
-            predicted class indices at each time step (each sample point),
-            or binary predictions at each time step (each sample point),
-            of shape (batch_size, signal_length), or (batch_size, signal_length, num_classes)
-
-        """
-        super().__init__(*args, classes=classes, prob=prob, pred=pred, **kwargs)
 
     def required_fields(self) -> Set[str]:
         """ """
@@ -377,42 +332,25 @@ SequenceLabellingOutput = SequenceTaggingOutput
 SequenceLabellingOutput.__name__ = "SequenceLabellingOutput"
 
 
+@add_docstring(_KNOWN_ISSUES.format(_WaveDelineationOutput_ISSUE_EXAMPLE), "append")
 class WaveDelineationOutput(SequenceTaggingOutput):
     """
     Class that maintains the output of a wave delineation task.
+
+    Required parameters for `__init__`
+    ----------------------------------
+    classes : sequence of str,
+        class names
+    prob : np.ndarray,
+        probabilities of each class at each time step (each sample point),
+        of shape (batch_size, signal_length, num_classes)
+    mask : np.ndarray,
+        predicted class indices at each time step (each sample point),
+        or binary predictions at each time step (each sample point),
+        of shape (batch_size, signal_length), or (batch_size, signal_length, num_classes)
     """
 
     __name__ = "WaveDelineationOutput"
-
-    @add_docstring(_KNOWN_ISSUES.format(_WaveDelineationOutput_ISSUE_EXAMPLE), "append")
-    def __init__(
-        self,
-        *args: Any,
-        classes: Sequence[str] = None,
-        prob: np.ndarray = None,
-        mask: np.ndarray = None,
-        **kwargs: Any,
-    ) -> None:
-        """
-        wave delineation output
-
-        Parameters
-        ----------
-        classes : sequence of str,
-            class names
-        prob : np.ndarray,
-            probabilities of each class at each time step (each sample point),
-            of shape (batch_size, signal_length, num_classes)
-        mask : np.ndarray,
-            predicted class indices at each time step (each sample point),
-            or binary predictions at each time step (each sample point),
-            of shape (batch_size, signal_length), or (batch_size, signal_length, num_classes)
-
-        """
-        super().__init__(
-            *args, classes=classes, prob=prob, pred=mask, mask=mask, **kwargs
-        )
-        self.pop("pred")
 
     def required_fields(self) -> Set[str]:
         """ """
@@ -456,35 +394,21 @@ class WaveDelineationOutput(SequenceTaggingOutput):
         )
 
 
+@add_docstring(_KNOWN_ISSUES.format(_RPeaksDetectionOutput_ISSUE_EXAMPLE), "append")
 class RPeaksDetectionOutput(BaseOutput):
     """
     Class that maintains the output of an R peaks detection task.
+
+    Required parameters for `__init__`
+    ----------------------------------
+    rpeak_indices : sequence of sequence of int,
+        r-peak indices for each batch sample
+    prob : np.ndarray,
+        probabilities at each time step (each sample point),
+        of shape (batch_size, signal_length)
     """
 
     __name__ = "RPeaksDetectionOutput"
-
-    @add_docstring(_KNOWN_ISSUES.format(_RPeaksDetectionOutput_ISSUE_EXAMPLE), "append")
-    def __init__(
-        self,
-        *args: Any,
-        rpeak_indices: Sequence[Sequence[int]] = None,
-        prob: np.ndarray = None,
-        pred: np.ndarray = None,
-        **kwargs: Any,
-    ) -> None:
-        """
-        r-peaks detection output
-
-        Parameters
-        ----------
-        rpeak_indices : sequence of sequence of int,
-            r-peak indices for each batch sample
-        prob : np.ndarray,
-            probabilities at each time step (each sample point),
-            of shape (batch_size, signal_length)
-
-        """
-        super().__init__(*args, rpeak_indices=rpeak_indices, prob=prob, **kwargs)
 
     def required_fields(self) -> Set[str]:
         """ """
