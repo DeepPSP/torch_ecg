@@ -94,9 +94,11 @@ class CFG(dict):
         if len(kwargs) > 0:  # avoid RecursionError
             _new_cfg.update(kwargs)
         for k in _new_cfg:
-            # if _new_cfg[k].__class__.__name__ in ["dict", "EasyDict", "CFG"] and k in self:
             if isinstance(_new_cfg[k], MutableMapping) and k in self:
-                self[k].update(_new_cfg[k])
+                if isinstance(self[k], MutableMapping):
+                    self[k].update(_new_cfg[k])
+                else:  # for example, self[k] is `None`
+                    self[k] = _new_cfg[k]  # deepcopy?
             else:
                 try:
                     setattr(self, k, _new_cfg[k])
