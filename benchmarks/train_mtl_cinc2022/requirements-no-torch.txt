@@ -8,10 +8,6 @@ wfdb==3.2.0
 opencv-python
 packaging
 easydict
-torch==1.10.0
-torchaudio==0.10.0
-torch-audiomentations
-torch_ecg
 torchsummary
 tensorboardX
 tqdm

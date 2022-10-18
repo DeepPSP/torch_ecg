@@ -34,7 +34,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python && ln -s /usr/bin/pip3 /usr/bin/pip
 ## Include the following line if you have a requirements.txt file.
 RUN pip install -r requirements-no-torch.txt
 # torch already installed in the base image
-# RUN pip install torch==1.10.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip install torch==1.10.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 # compatible with torch
 RUN pip install torchaudio==0.10.0+cu113 --no-deps -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip install torch-ecg
@@ -44,7 +44,7 @@ RUN pip install torch-audiomentations --no-deps
 # NOTE: also run test_local.py to test locally
 # since GitHub Actions does not have GPU,
 # one need to run test_local.py to avoid errors related to devices
-RUN python test_docker.py
+# RUN python test_docker.py
 
 
 # commands to run test with docker container:
