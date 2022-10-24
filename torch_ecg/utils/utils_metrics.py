@@ -62,7 +62,9 @@ def top_n_accuracy(
     {'top_1_acc': 0.12, 'top_3_acc': 0.32, 'top_5_acc': 0.52}
 
     """
-    assert outputs.shape[0] == labels.shape[0]
+    assert (
+        outputs.shape[0] == labels.shape[0]
+    ), "outputs and labels must have the same batch size"
     labels, outputs = torch.as_tensor(labels), torch.as_tensor(outputs)
     batch_size, n_classes, *extra_dims = outputs.shape
     if isinstance(n, int):
@@ -114,9 +116,13 @@ def confusion_matrix(
 
     """
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
-    assert np.shape(labels) == np.shape(outputs)
-    assert all(value in (0, 1) for value in np.unique(labels))
-    assert all(value in (0, 1) for value in np.unique(outputs))
+    assert np.shape(labels) == np.shape(
+        outputs
+    ), "labels and outputs must have the same shape"
+    assert all(value in (0, 1) for value in np.unique(labels)), "labels must be binary"
+    assert all(
+        value in (0, 1) for value in np.unique(outputs)
+    ), "outputs must be binary"
 
     num_samples, num_classes = np.shape(labels)
 
@@ -158,9 +164,13 @@ def one_vs_rest_confusion_matrix(
 
     """
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
-    assert np.shape(labels) == np.shape(outputs)
-    assert all(value in (0, 1) for value in np.unique(labels))
-    assert all(value in (0, 1) for value in np.unique(outputs))
+    assert np.shape(labels) == np.shape(
+        outputs
+    ), "labels and outputs must have the same shape"
+    assert all(value in (0, 1) for value in np.unique(labels)), "labels must be binary"
+    assert all(
+        value in (0, 1) for value in np.unique(outputs)
+    ), "outputs must be binary"
 
     num_samples, num_classes = np.shape(labels)
 
@@ -679,7 +689,9 @@ def cls_to_bin(
     if isinstance(outputs, Tensor):
         outputs = outputs.cpu().numpy()
     if labels.ndim == outputs.ndim == 1:
-        assert num_classes is not None
+        assert (
+            num_classes is not None
+        ), "num_classes is required if both labels and outputs are categorical"
         shape = (labels.shape[0], num_classes)
         labels = _cls_to_bin(labels, shape)
         outputs = _cls_to_bin(outputs, shape)
@@ -761,7 +773,9 @@ def compute_wave_delineation_metrics(
         sensitivity, precision, f1_score, mean_error, standard_deviation
 
     """
-    assert len(truth_masks) == len(pred_masks)
+    assert len(truth_masks) == len(
+        pred_masks
+    ), "length of truth_masks and pred_masks should be the same"
     truth_waveforms, pred_waveforms = [], []
     # compute for each element
     for tm, pm in zip(truth_masks, pred_masks):

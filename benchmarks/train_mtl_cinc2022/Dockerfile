@@ -28,15 +28,20 @@ RUN apt install git ffmpeg libsm6 libxext6 vim libsndfile1 -y
 
 RUN ln -s /usr/bin/python3 /usr/bin/python && ln -s /usr/bin/pip3 /usr/bin/pip
 
+# alternative pypi sources
 # http://mirrors.aliyun.com/pypi/simple/
 # http://pypi.douban.com/simple/
 # RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-## Include the following line if you have a requirements.txt file.
-RUN pip install -r requirements-no-torch.txt
+
+# NOTE that torch and torchaudio should be installed first
 # torch already installed in the base image
 # RUN pip install torch==1.10.0+cu113 -f https://download.pytorch.org/whl/torch_stable.html
 # compatible with torch
 RUN pip install torchaudio==0.10.0+cu113 --no-deps -f https://download.pytorch.org/whl/torch_stable.html
+
+## Include the following line if you have a requirements.txt file.
+RUN pip install -r requirements-no-torch.txt
+
 RUN pip install torch-ecg
 RUN pip install torch-audiomentations --no-deps
 
