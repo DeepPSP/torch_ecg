@@ -223,7 +223,7 @@ def _untar_file(path_to_tar_file: Union[str, Path], dst_dir: Union[str, Path]) -
     mode = Path(path_to_tar_file).suffix.replace(".", "r:").replace("tar", "")
     with tarfile.open(str(path_to_tar_file), mode) as tar_ref:
         # tar_ref.extractall(str(dst_dir))
-        # CVE-2007-4559:
+        # CVE-2007-4559 (related to  CVE-2001-1267):
         # directory traversal vulnerability in `extract` and `extractall` in `tarfile` module
         _safe_tar_extract(tar_ref, str(dst_dir))
 
