@@ -54,4 +54,22 @@ __all__ = [
     "WFDB_Rhythm_Annotations",
     "BeatAnn",
     "DataBaseInfo",
+    "list_databases",
 ]
+
+
+def list_databases() -> list:
+    return [
+        db
+        for db in __all__
+        if db
+        not in [
+            "aux_data",
+            "WFDB_Beat_Annotations",
+            "WFDB_Non_Beat_Annotations",
+            "WFDB_Rhythm_Annotations",
+            "BeatAnn",
+            "DataBaseInfo",
+            "list_databases",
+        ]
+    ]

@@ -25,5 +25,10 @@ __all__ = [
     "CPSC2021TrainCfg", "CPSC2021Dataset",
     "LUDBTrainCfg", "LUDBDataset",
     "MITDBTrainCfg", "MITDBDataset",
+    "list_datasets",
 ]
 # fmt: on
+
+
+def list_datasets() -> list:
+    return [item for item in __all__ if item.endswith("Dataset")]
