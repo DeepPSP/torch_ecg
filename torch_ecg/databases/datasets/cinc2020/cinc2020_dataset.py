@@ -10,14 +10,9 @@ from random import sample, shuffle
 from typing import List, Optional, Sequence, Set, Tuple
 
 import numpy as np
-
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
-
 import torch
 from torch.utils.data.dataset import Dataset
+from tqdm.auto import tqdm
 
 from ...._preprocessors import PreprocManager
 from ....cfg import CFG

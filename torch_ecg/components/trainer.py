@@ -13,11 +13,6 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
-
 import numpy as np
 import torch
 import torch_optimizer as extra_optim  # noqa: F401
@@ -26,6 +21,7 @@ from torch.nn.parallel import DataParallel as DP  # noqa: F401
 from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
+from tqdm.auto import tqdm
 
 from ..augmenters import AugmenterManager
 from ..cfg import CFG, DEFAULTS

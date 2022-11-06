@@ -11,11 +11,7 @@ from typing import List, Optional, Sequence, Tuple
 import numpy as np
 import torch
 from torch.utils.data.dataset import Dataset
-
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from ...._preprocessors import PreprocManager
 from ....cfg import CFG
