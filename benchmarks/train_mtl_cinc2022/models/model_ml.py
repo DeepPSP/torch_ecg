@@ -30,11 +30,7 @@ from torch_ecg.components.outputs import ClassificationOutput
 from torch_ecg.components.loggers import LoggerManager
 from torch_ecg.utils.utils_data import stratified_train_test_split
 from torch_ecg.utils.utils_metrics import _cls_to_bin
-
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from cfg import BaseCfg
 from data_reader import CINC2022Reader

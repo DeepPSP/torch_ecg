@@ -7,11 +7,6 @@ https://github.com/huggingface/transformers/blob/main/examples/pytorch/speech-pr
 import re
 from typing import Dict, List, Optional, Any, NoReturn
 
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
-
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
@@ -19,6 +14,7 @@ from torch.nn.parallel import (  # noqa: F401
     DistributedDataParallel as DDP,
     DataParallel as DP,
 )  # noqa: F401
+from tqdm.auto import tqdm
 
 # from accelerate import Accelerator  # noqa: F401
 from transformers import (  # noqa: F401

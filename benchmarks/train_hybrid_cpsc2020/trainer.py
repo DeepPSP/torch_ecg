@@ -18,12 +18,7 @@ from torch import nn, optim
 from torch.nn.parallel import DataParallel as DP
 from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader
-
-# try:
-#     from tqdm.auto import tqdm
-# except ModuleNotFoundError:
-#     from tqdm import tqdm
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 try:
     import torch_ecg  # noqa: F401

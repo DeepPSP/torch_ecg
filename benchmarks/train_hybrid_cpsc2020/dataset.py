@@ -62,12 +62,6 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
-
-try:
-    from tqdm.auto import tqdm  # noqa: F401
-except ModuleNotFoundError:
-    from tqdm import tqdm  # noqa: F401
-
 import torch
 from torch.utils.data.dataset import Dataset
 

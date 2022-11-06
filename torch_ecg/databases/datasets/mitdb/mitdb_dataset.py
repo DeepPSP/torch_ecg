@@ -10,15 +10,10 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from scipy import signal as SS
-
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
-
-import torch
 from scipy.io import loadmat, savemat
+import torch
 from torch.utils.data.dataset import Dataset
+from tqdm.auto import tqdm
 
 from ...._preprocessors import PreprocManager
 from ....databases import MITDB as DR

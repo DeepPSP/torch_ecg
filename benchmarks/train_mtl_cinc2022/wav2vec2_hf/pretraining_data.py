@@ -9,12 +9,6 @@ from random import shuffle
 from typing import Dict, List, Sequence, Optional, Union, NoReturn
 
 import numpy as np
-
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
-
 import torch
 from torch.utils.data import Dataset
 from transformers import Wav2Vec2FeatureExtractor, Wav2Vec2Config, BatchFeature
@@ -27,6 +21,7 @@ from torch_ecg.cfg import CFG
 from torch_ecg.utils.misc import ReprMixin, list_sum
 from torch_ecg.utils.utils_data import stratified_train_test_split
 from torch_ecg._preprocessors import PreprocManager
+from tqdm.auto import tqdm
 
 from .pretraining_cfg import PreTrainModelCfg
 from data_reader import CINC2022Reader, CINC2016Reader, EPHNOGRAMReader, CompositeReader

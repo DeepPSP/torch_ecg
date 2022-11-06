@@ -32,11 +32,8 @@ try:
 except Exception:
     sio_wav = None
 import IPython
+from tqdm.auto import tqdm
 
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
 from torch_ecg.databases.base import PhysioNetDataBase, DataBaseInfo
 from torch_ecg.utils.utils_signal import butter_bandpass_filter
 from torch_ecg.utils.misc import (

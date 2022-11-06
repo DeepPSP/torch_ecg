@@ -8,13 +8,8 @@ from random import randint, shuffle
 from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
-
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
-
 from torch.utils.data.dataset import Dataset
+from tqdm.auto import tqdm
 
 try:
     import torch_ecg  # noqa: F401

@@ -27,11 +27,7 @@ from torch_ecg.models.loss import (
     FocalLoss,
     MaskedBCEWithLogitsLoss,
 )
-
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from models import (  # noqa: F401
     Wav2Vec2_CINC2022,

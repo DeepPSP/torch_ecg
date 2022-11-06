@@ -19,11 +19,7 @@ import pandas as pd
 import wfdb
 from scipy.io import loadmat
 from scipy.signal import resample, resample_poly  # noqa: F401
-
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from ...cfg import CFG, DEFAULTS
 from ...utils import ecg_arrhythmia_knowledge as EAK

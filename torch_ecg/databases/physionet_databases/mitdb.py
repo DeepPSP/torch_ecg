@@ -9,11 +9,7 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 import numpy as np
 import pandas as pd
 import wfdb
-
-try:
-    from tqdm.auto import tqdm
-except ModuleNotFoundError:
-    from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from ...cfg import CFG
 from ...utils.misc import get_record_list_recursive3, add_docstring
