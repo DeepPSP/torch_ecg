@@ -4,8 +4,9 @@ utilities for nn models
 """
 
 import re
+import warnings
 from copy import deepcopy
-from itertools import repeat
+from itertools import repeat, chain
 from math import floor
 from numbers import Real
 from typing import List, Optional, Sequence, Tuple, Union, Dict
@@ -550,7 +551,10 @@ def compute_sequential_output_shape(
 
 
 def compute_module_size(
-    module: nn.Module, human: bool = False, dtype: str = "float32"
+    module: nn.Module,
+    requires_grad: bool = True,
+    include_buffers: bool = False,
+    human: bool = False,
 ) -> Union[int, str]:
     """
     compute the size (number of parameters) of a module
@@ -559,31 +563,82 @@ def compute_module_size(
     ----------
     module: Module,
         a torch Module
+    requires_grad: bool, default True,
+        whether to only count the parameters that require gradients
+    include_buffers: bool, default False,
+        whether to include the buffers,
+        if `requires_grad` is True, `include_buffers` will be ignored
     human: bool, default False,
         return size in a way that is easy to read by a human,
-        by appending a suffix corresponding to the unit (K, M, G, T, P)
-    dtype: str, default "float32",
-        data type of the module parameters, one of "float16", "float32", "float64"
+        by appending a suffix corresponding to the unit (B, K, M, G, T, P)
 
     Returns
     -------
     n_params: int,
         size (number of parameters) of this torch module
 
+    Examples
+    --------
+    ```python
+    >>> import torch
+    >>> class Model(torch.nn.Sequential):
+            def __init__(self):
+                super().__init__()
+                self.add_module("linear", torch.nn.Linear(10, 20, dtype=torch.float16))
+                self.register_buffer("hehe", torch.ones(20, 2, dtype=torch.float64))
+    >>> model = Model()
+    >>> model.linear.weight.requires_grad_(False)
+    >>> compute_module_size(model)
+    20
+    >>> compute_module_size(model, requires_grad=False)
+    220
+    >>> compute_module_size(model, requires_grad=False, include_buffers=True)
+    260
+    >>> compute_module_size(model, requires_grad=False, include_buffers=True, human=True)
+    '0.7K'
+    >>> compute_module_size(model, requires_grad=False, include_buffers=False, human=True)
+    '0.4K'
+    >>> compute_module_size(model, human=True)
+    '40.0B'
+    ```
+
     """
-    module_parameters = filter(lambda p: p.requires_grad, module.parameters())
-    n_params = sum([np.prod(p.size()) for p in module_parameters])
+    if requires_grad:
+        tensor_containers = filter(lambda p: p.requires_grad, module.parameters())
+        if include_buffers:
+            warnings.warn(
+                "`include_buffers` is ignored when `requires_grad` is True",
+                RuntimeWarning,
+            )
+    elif include_buffers:
+        tensor_containers = chain(module.parameters(), module.buffers())
+    else:
+        tensor_containers = module.parameters()
     if human:
-        n_params = (
-            n_params * {"float16": 2, "float32": 4, "float64": 8}[dtype.lower()] / 1024
+        size_dict = {
+            "torch.float16": 2,
+            "torch.float32": 4,
+            "torch.float64": 8,
+            "torch.int8": 1,
+            "torch.int16": 2,
+            "torch.int32": 4,
+            "torch.int64": 8,
+            "torch.uint8": 1,
+        }
+        n_params = sum(
+            [
+                np.prod(item.size()) * size_dict[str(item.dtype)]
+                for item in tensor_containers
+            ]
         )
         div_count = 0
-        while n_params >= 1024:
+        while n_params >= 1024 * 0.1:
             n_params /= 1024
             div_count += 1
-        # cvt_dict = {0:"K", 1:"M", 2:"G", 3:"T", 4:"P"}
-        cvt_dict = {c: u for c, u in enumerate(list("KMGTP"))}
+        cvt_dict = {c: u for c, u in enumerate(list("BKMGTP"))}
         n_params = f"""{n_params:.1f}{cvt_dict[div_count]}"""
+    else:
+        n_params = sum([np.prod(item.size()) for item in tensor_containers])
     return n_params
 
 
@@ -842,17 +897,22 @@ class SizeMixin(object):
 
     @property
     def module_size(self) -> int:
-        return compute_module_size(
-            self,
-            dtype=self.dtype_,
-        )
+        return compute_module_size(self)
 
     @property
     def module_size_(self) -> str:
+        return compute_module_size(self, human=True)
+
+    @property
+    def sizeof(self) -> int:
         return compute_module_size(
-            self,
-            human=True,
-            dtype=self.dtype_,
+            self, requires_grad=False, include_buffers=True, human=False
+        )
+
+    @property
+    def sizeof_(self) -> str:
+        return compute_module_size(
+            self, requires_grad=False, include_buffers=True, human=True
         )
 
     @property
