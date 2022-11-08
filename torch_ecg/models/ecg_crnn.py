@@ -87,7 +87,9 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.n_leads = n_leads
         self.config = deepcopy(ECG_CRNN_CONFIG)
         if not config:
-            warnings.warn("No config is provided, using default config.")
+            warnings.warn(
+                "No config is provided, using default config.", RuntimeWarning
+            )
         self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")

@@ -66,7 +66,9 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.n_classes = len(classes)
         self.config = deepcopy(RR_LSTM_CONFIG)
         if not config:
-            warnings.warn("No config is provided, using default config.")
+            warnings.warn(
+                "No config is provided, using default config.", RuntimeWarning
+            )
         self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")

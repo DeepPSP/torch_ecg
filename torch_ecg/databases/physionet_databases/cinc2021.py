@@ -559,7 +559,10 @@ class CINC2021(PhysioNetDataBase):
     def df_stats(self) -> pd.DataFrame:
         """ """
         if self._stats.empty:
-            warnings.warn("the dataframe of stats is empty, try using _aggregate_stats")
+            warnings.warn(
+                "the dataframe of stats is empty, try using _aggregate_stats",
+                RuntimeWarning,
+            )
         return self._stats
 
     def _ls_diagnoses_records(self) -> None:

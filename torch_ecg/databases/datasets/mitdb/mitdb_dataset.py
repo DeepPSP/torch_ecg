@@ -206,7 +206,8 @@ class MITDBDataset(ReprMixin, Dataset):
             self._all_data, self._all_labels, self._all_masks = [], [], []
             if len(self.fdr) == 0:
                 warnings.warn(
-                    f"No data found for task {self.task}, slice the data first."
+                    f"No data found for task {self.task}, slice the data first.",
+                    RuntimeWarning,
                 )
             with tqdm(range(len(self.fdr)), desc="Loading data", unit="record") as pbar:
                 for idx in pbar:

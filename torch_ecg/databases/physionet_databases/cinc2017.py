@@ -137,7 +137,8 @@ class CINC2017(PhysioNetDataBase):
         if len(self._all_records) == 0:
             warnings.warn(
                 f"No record found in {self.db_dir}. "
-                "Perhaps the user should call the `download` method to download the database first."
+                "Perhaps the user should call the `download` method to download the database first.",
+                RuntimeWarning,
             )
             return
         self._df_ann = pd.read_csv(self.data_dir / "REFERENCE.csv", header=None)

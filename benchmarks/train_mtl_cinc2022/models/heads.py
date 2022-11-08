@@ -108,7 +108,7 @@ class MultiTaskHead(nn.Module, SizeMixin):
 
         """
         if self.empty:
-            warnings.warn("Empty model, DO NOT call forward function!")
+            warnings.warn("Empty model, DO NOT call forward function!", RuntimeWarning)
         out = dict(total_extra_loss=scalar_tensor(0.0))
         if "segmentation" in self.heads:
             out["segmentation"] = self.heads["segmentation"](features.permute(0, 2, 1))

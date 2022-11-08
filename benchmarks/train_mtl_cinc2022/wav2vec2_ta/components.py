@@ -197,7 +197,10 @@ class ConvolutionalPositionalEmbedding(Module):
                 hook.__module__ == "torch.nn.utils.weight_norm"
                 and hook.__class__.__name__ == "WeightNorm"
             ):
-                warnings.warn("Removing weight_norm from %s", self.__class__.__name__)
+                warnings.warn(
+                    f"Removing weight_norm from `{self.__class__.__name__}`",
+                    RuntimeWarning,
+                )
                 torch.nn.utils.remove_weight_norm(self.conv)
         return self
 

@@ -80,7 +80,9 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         """
         _config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         if not config:
-            warnings.warn("No config is provided, using default config.")
+            warnings.warn(
+                "No config is provided, using default config.", RuntimeWarning
+            )
         _config.update(deepcopy(config) or {})
         _config.global_pool = "none"
         super().__init__(classes, n_leads, _config)

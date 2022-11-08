@@ -47,7 +47,7 @@ class BaselineRemove(torch.nn.Module):
         self.window2 = window2
         if self.window2 < self.window1:
             self.window1, self.window2 = self.window2, self.window1
-            warnings.warn("values of window1 and window2 are switched")
+            warnings.warn("values of window1 and window2 are switched", RuntimeWarning)
         self.inplace = inplace
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:

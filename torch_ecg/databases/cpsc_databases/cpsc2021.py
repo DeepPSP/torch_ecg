@@ -523,7 +523,8 @@ class CPSC2021(PhysioNetDataBase):
             ann = {k: f(rec, ann, sf, st) for k, f in func.items()}
             if kwargs:
                 warnings.warn(
-                    f"key word arguments {list(kwargs.keys())} ignored when field is not specified!"
+                    f"key word arguments {list(kwargs.keys())} ignored when field is not specified!",
+                    RuntimeWarning,
                 )
             return ann
         elif field.lower() in [

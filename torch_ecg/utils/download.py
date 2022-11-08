@@ -66,7 +66,8 @@ def http_get(
             if not is_compressed_file(filename):
                 warnings.warn(
                     "filename is given, and it is not a `zip` file or a compressed `tar` file. "
-                    "Automatic decompression is turned off."
+                    "Automatic decompression is turned off.",
+                    RuntimeWarning,
                 )
                 extract = False
             else:
@@ -75,7 +76,8 @@ def http_get(
             warnings.warn(
                 "URL must be pointing to a `zip` file or a compressed `tar` file. "
                 "Automatic decompression is turned off. "
-                "The user is responsible for decompressing the file manually."
+                "The user is responsible for decompressing the file manually.",
+                RuntimeWarning,
             )
             extract = False
     # for example "https://www.dropbox.com/s/xxx/test%3F.zip??dl=1"

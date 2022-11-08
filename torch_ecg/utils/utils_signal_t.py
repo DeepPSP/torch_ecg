@@ -269,7 +269,8 @@ def spectrogram(
             "The use of pseudo complex type in spectrogram is now deprecated."
             "Please migrate to native complex type by providing `return_complex=True`. "
             "Please refer to https://github.com/pytorch/audio/issues/1337 "
-            "for more details about torchaudio's plan to migrate to native complex type."
+            "for more details about torchaudio's plan to migrate to native complex type.",
+            RuntimeWarning,
         )
 
     if pad > 0:

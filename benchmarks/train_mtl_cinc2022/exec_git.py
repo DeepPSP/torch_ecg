@@ -93,7 +93,10 @@ if __name__ == "__main__":
     ]
     if custom:
         if len(args) > 0:
-            warnings.warn("custom command is given, additional arguments are ignored!")
+            warnings.warn(
+                "custom command is given, additional arguments are ignored!",
+                RuntimeWarning,
+            )
         run(custom)
         exit(0)
     if len(args) != 1:

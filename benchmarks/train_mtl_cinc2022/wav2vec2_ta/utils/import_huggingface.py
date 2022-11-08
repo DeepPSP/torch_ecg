@@ -38,7 +38,8 @@ def _build(config, original):
     else:
         warnings.warn(
             "The model is not an instance of Wav2Vec2ForCTC. "
-            '"lm_head" module is not imported.'
+            '"lm_head" module is not imported.',
+            RuntimeWarning,
         )
         aux_num_out = None
         wav2vec2 = original

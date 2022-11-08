@@ -609,7 +609,8 @@ def stratified_train_test_split(
     if len(invalid_cols) > 0:
         warnings.warn(
             f"invalid columns: {invalid_cols}, "
-            "each of which has classes with only one member (row), "
+            "each of which has classes with only one member (row).",
+            RuntimeWarning,
         )
     stratified_cols = [col for col in stratified_cols if col not in invalid_cols]
     df_inspection = df[stratified_cols].copy()

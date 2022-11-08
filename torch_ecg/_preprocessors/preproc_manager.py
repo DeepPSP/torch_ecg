@@ -143,7 +143,8 @@ class PreprocManager(ReprMixin):
                 # raise ValueError(f"Unknown preprocessor: {pp_name}")
         if ppm.empty:
             warnings.warn(
-                "No preprocessors added to the manager. You are using a dummy preprocessor."
+                "No preprocessors added to the manager. You are using a dummy preprocessor.",
+                RuntimeWarning,
             )
         return ppm
 

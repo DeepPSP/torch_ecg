@@ -1955,7 +1955,8 @@ class SHHS(NSRRDataBase):
     @property
     def url(self) -> str:
         warnings.warn(
-            "one has to apply for a token from `sleepdata.org` and uses `nsrr` to download the data"
+            "one has to apply for a token from `sleepdata.org` and uses `nsrr` to download the data",
+            RuntimeWarning,
         )
         return ""
 

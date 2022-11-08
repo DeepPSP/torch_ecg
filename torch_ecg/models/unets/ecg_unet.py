@@ -439,7 +439,9 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.__in_channels = n_leads
         self.config = deepcopy(ECG_UNET_VANILLA_CONFIG)
         if not config:
-            warnings.warn("No config is provided, using default config.")
+            warnings.warn(
+                "No config is provided, using default config.", RuntimeWarning
+            )
         self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(

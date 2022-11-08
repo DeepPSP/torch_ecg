@@ -174,7 +174,8 @@ class PCGDataBase(PhysioNetDataBase):
             self.audio_backend = self.available_backends()[0]
             warnings.warn(
                 f"audio backend {audio_backend.lower()} is not available, "
-                f"using {self.audio_backend} instead"
+                f"using {self.audio_backend} instead",
+                RuntimeWarning,
             )
         if self.audio_backend == "torchaudio":
 
@@ -203,7 +204,8 @@ class PCGDataBase(PhysioNetDataBase):
             self._audio_load_func = scipy_load
         elif self.audio_backend == "wfdb":
             warnings.warn(
-                "loading result using wfdb is inconsistent with other backends"
+                "loading result using wfdb is inconsistent with other backends",
+                RuntimeWarning,
             )
 
             def wfdb_load(file: str, fs: int) -> Tuple[torch.Tensor, int]:

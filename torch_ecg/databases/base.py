@@ -158,7 +158,8 @@ class _DataBase(ReprMixin, ABC):
             db_dir = _DATA_CACHE / db_name
             warnings.warn(
                 f"db_dir is not specified, "
-                f"using default {db_dir} as the storage path"
+                f"using default {db_dir} as the storage path",
+                RuntimeWarning,
             )
         self.db_dir = Path(db_dir).resolve().absolute()
         if not self.db_dir.exists():
@@ -167,7 +168,8 @@ class _DataBase(ReprMixin, ABC):
                 f"{self.db_dir} does not exist. It is now created. "
                 "Please check if it is set correctly. "
                 "Or if you may want to download the database into this folder, "
-                "please use the `download()` method."
+                "please use the `download()` method.",
+                RuntimeWarning,
             )
         self.working_dir = Path(working_dir or os.getcwd())
         self.working_dir.mkdir(parents=True, exist_ok=True)
@@ -707,7 +709,8 @@ class PhysioNetDataBase(_DataBase):
             self._version = wfdb.io.record.get_version(self.db_name)
         except Exception:
             warnings.warn(
-                "Cannot get the version number from PhysioNet! Defaults to '1.0.0'"
+                "Cannot get the version number from PhysioNet! Defaults to '1.0.0'",
+                RuntimeWarning,
             )
             self._version = "1.0.0"
         return self._version

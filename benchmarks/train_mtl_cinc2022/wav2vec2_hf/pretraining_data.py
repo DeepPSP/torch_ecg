@@ -355,7 +355,8 @@ class Wav2Vec2PretrainingDataset(Dataset, ReprMixin):
         """ """
         if kwargs:
             warnings.warn(
-                "CinC2016 has officially prefixed validation set, keyword arguments are ignored."
+                "CinC2016 has officially prefixed validation set, keyword arguments are ignored.",
+                RuntimeWarning,
             )
         if self.training:
             records = [rec for rec in reader if rec not in reader.validation_set]

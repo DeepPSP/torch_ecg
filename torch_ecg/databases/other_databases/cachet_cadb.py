@@ -500,13 +500,17 @@ class CACHET_CADB(_DataBase):
         if context_data_path.suffix == ".csv":
             if not context_data_path.exists():
                 warnings.warn(
-                    f"record `{rec}` does not have context data `{context_name}`"
+                    f"record `{rec}` does not have context data `{context_name}`",
+                    RuntimeWarning,
                 )
                 return pd.DataFrame()
             return pd.read_csv(context_data_path, header=None, index_col=None)
 
         if not context_data_path.exists():
-            warnings.warn(f"record `{rec}` does not have context data `{context_name}`")
+            warnings.warn(
+                f"record `{rec}` does not have context data `{context_name}`",
+                RuntimeWarning,
+            )
             return np.array([])
 
         header = self._rdheader(rec, key=context_name)
@@ -556,7 +560,8 @@ class CACHET_CADB(_DataBase):
             channels = list(dict.fromkeys(_channels))
             if len(channels) != len(_channels):
                 warnings.warn(
-                    f"duplicate channels are removed, {_input_channels} -> {channels}"
+                    f"duplicate channels are removed, {_input_channels} -> {channels}",
+                    RuntimeWarning,
                 )
         context_data = context_data[channels]
 
@@ -723,7 +728,8 @@ class CACHET_CADB(_DataBase):
         """
         warnings.warn(
             "The files are large, and the connections are unstable. "
-            "One might need some downloading tools (e.g. Xunlei) to download the files."
+            "One might need some downloading tools (e.g. Xunlei) to download the files.",
+            RuntimeWarning,
         )
         if files is None:
             files = self.url.keys()
