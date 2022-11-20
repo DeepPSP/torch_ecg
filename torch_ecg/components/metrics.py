@@ -548,7 +548,6 @@ class WaveDelineationMetrics(Metrics):
         raw_metrics = compute_wave_delineation_metrics(
             truth_masks, pred_masks, class_map, fs, mask_format, tol or self.tol
         )
-        print(raw_metrics)
         self._metrics = {
             metric: {
                 f"{wf}_{pos}": raw_metrics[f"{wf}_{pos}"][metric]
@@ -566,7 +565,6 @@ class WaveDelineationMetrics(Metrics):
                 "standard_deviation",
             ]
         }
-        print(self._metrics)
         self._metrics.update(
             {
                 f"macro_{metric}": np.nanmean(list(self._metrics[metric].values()))
