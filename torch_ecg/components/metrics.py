@@ -11,6 +11,7 @@ from ..utils.misc import ReprMixin, add_docstring
 from ..utils.utils_data import ECGWaveFormNames
 from ..utils.utils_metrics import (  # noqa: F401
     QRS_score,
+    cls_to_bin,
     metrics_from_confusion_matrix,
     confusion_matrix,
     ovr_confusion_matrix,
@@ -125,10 +126,17 @@ class ClassificationMetrics(Metrics):
         outputs: Union[np.ndarray, Tensor],
         num_classes: Optional[int] = None,
         weights: Optional[np.ndarray] = None,
+        thr: float = 0.5,
     ) -> "ClassificationMetrics":
         """ """
-        self._cm = confusion_matrix(labels, outputs, num_classes)
-        self._cm_ovr = ovr_confusion_matrix(labels, outputs, num_classes)
+        labels, outputs = cls_to_bin(labels, outputs, num_classes)
+        num_samples, num_classes = np.shape(labels)
+        # probability outputs to binary outputs
+        bin_outputs = np.zeros_like(outputs, dtype=np.int)
+        bin_outputs[outputs >= thr] = 1
+        bin_outputs[outputs < thr] = 0
+        self._cm = confusion_matrix(labels, bin_outputs, num_classes)
+        self._cm_ovr = ovr_confusion_matrix(labels, bin_outputs, num_classes)
         self._metrics = metrics_from_confusion_matrix(
             labels, outputs, num_classes, weights
         )
@@ -159,6 +167,7 @@ class ClassificationMetrics(Metrics):
         outputs: Union[np.ndarray, Tensor],
         num_classes: Optional[int] = None,
         weights: Optional[np.ndarray] = None,
+        thr: float = 0.5,
     ) -> "ClassificationMetrics":
         return self.compute(labels, outputs, num_classes, weights)
 
@@ -303,6 +312,19 @@ class ClassificationMetrics(Metrics):
     @property
     def auprc(self) -> Union[float, np.ndarray]:
         return self._metrics[f"{self.__prefix}auprc"]
+
+    @property
+    def classification_report(self) -> str:
+        if self.__prefix == "macro_":
+            return {
+                k.replace("macro_", ""): v
+                for k, v in self._metrics.items()
+                if k.startswith("macro_")
+            }
+        else:
+            return {
+                k: v for k, v in self._metrics.items() if not k.startswith("macro_")
+            }
 
     @property
     def extra_metrics(self) -> dict:

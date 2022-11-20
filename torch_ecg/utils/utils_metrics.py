@@ -6,6 +6,7 @@ challenge (e.g. CinC, CPSC series) specific metrics are not included.
 
 """
 
+import warnings
 from numbers import Real
 from typing import Dict, Optional, Sequence, Tuple, Union
 
@@ -199,10 +200,11 @@ _METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
     Parameters
     ----------
     labels: np.ndarray or Tensor,
-        binary labels, of shape: (n_samples, n_classes)
+        binary labels, of shape: (n_samples, n_classes),
         or indices of each label class, of shape: (n_samples,)
     outputs: np.ndarray or Tensor,
-        binary outputs, of shape: (n_samples, n_classes)
+        probability outputs, of shape: (n_samples, n_classes),
+        or binary outputs, of shape: (n_samples, n_classes),
         or indices of each class predicted, of shape: (n_samples,)
     num_classes: int, optional,
         number of classes,
@@ -210,7 +212,10 @@ _METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
         then `num_classes` must be specified.
     weights: np.ndarray or Tensor, optional,
         weights for each class, of shape: (n_classes,),
-        used to compute macro {metric},
+        used to compute macro {metric}.
+    thr: float, default: 0.5,
+        threshold for binary classification,
+        valid only if `outputs` is of shape (n_samples, n_classes).
 """
 
 
@@ -223,6 +228,7 @@ def metrics_from_confusion_matrix(
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
+    thr: float = 0.5,
 ) -> Dict[str, Union[float, np.ndarray]]:
     """
     Returns
@@ -233,18 +239,42 @@ def metrics_from_confusion_matrix(
     Examples
     --------
     >>> from torch_ecg.cfg import DEFAULTS
-    >>> labels, outputs = DEFAULTS.RNG_randint(0,2,(100,10)), DEFAULTS.RNG_randint(0,2,(100,10))
+    >>> # binary labels (100 samples, 10 classes, multi-label)
+    >>> labels = DEFAULTS.RNG_randint(0, 1, (100, 10))
+    >>> # probability outputs (100 samples, 10 classes, multi-label)
+    >>> outputs = DEFAULTS.RNG.random((100, 10))
     >>> metrics = metrics_from_confusion_matrix(labels, outputs)
+    >>> # binarize outputs (100 samples, 10 classes, multi-label)
+    >>> outputs = DEFAULTS.RNG_randint(0, 1, (100, 10))
+    >>> # would raise
+    >>> # RuntimeWarning: `outputs` is probably binary, AUC may be incorrect
+    >>> metrics = metrics_from_confusion_matrix(labels, outputs)
+    >>> # categorical outputs (100 samples, 10 classes)
+    >>> outputs = DEFAULTS.RNG_randint(0, 9, (100,))
+    >>> # would raise
+    >>> # RuntimeWarning: `outputs` is probably binary, AUC may be incorrect
+    >>> metrics = metrics_from_confusion_matrix(labels, outputs)
+
 
     References
     ----------
     1. https://en.wikipedia.org/wiki/Precision_and_recall
 
     """
+    outputs_ndim = np.ndim(outputs)
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
     num_samples, num_classes = np.shape(labels)
 
-    ovr_cm = ovr_confusion_matrix(labels, outputs)
+    # probability outputs to binary outputs
+    bin_outputs = np.zeros_like(outputs, dtype=np.int)
+    bin_outputs[outputs >= thr] = 1
+    bin_outputs[outputs < thr] = 0
+    if np.unique(outputs).size == 2:
+        warnings.warn(
+            "`outputs` is probably binary, AUC may be incorrect", RuntimeWarning
+        )
+
+    ovr_cm = ovr_confusion_matrix(labels, bin_outputs)
 
     # sens: sensitivity, recall, hit rate, or true positive rate
     # spec: specificity, selectivity or true negative rate
@@ -292,6 +322,10 @@ def metrics_from_confusion_matrix(
             (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)
         )
 
+        if outputs_ndim == 1:
+            auroc[k] = np.nan
+            auprc[k] = np.nan
+            continue
         thresholds = np.unique(outputs[:, k])
         thresholds = np.append(thresholds, thresholds[-1] + 1)
         thresholds = thresholds[::-1]
@@ -416,6 +450,7 @@ def f_measure(
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
+    thr: float = 0.5,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -426,7 +461,7 @@ def f_measure(
         F1-measures for each class, of shape: (n_classes,)
 
     """
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
 
     return m["macro_f1"], m["f1"]
 
@@ -442,6 +477,7 @@ def sensitivity(
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
+    thr: float = 0.5,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -452,7 +488,7 @@ def sensitivity(
         sensitivities for each class, of shape: (n_classes,)
 
     """
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
 
     return m["macro_sens"], m["sens"]
 
@@ -474,6 +510,7 @@ def precision(
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
+    thr: float = 0.5,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -484,7 +521,7 @@ def precision(
         precisions for each class, of shape: (n_classes,)
 
     """
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
 
     return m["macro_prec"], m["prec"]
 
@@ -504,6 +541,7 @@ def specificity(
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
+    thr: float = 0.5,
 ) -> Tuple[float, np.ndarray]:
     """
     Returns
@@ -514,7 +552,7 @@ def specificity(
         specificities for each class, of shape: (n_classes,)
 
     """
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
 
     return m["macro_spec"], m["spec"]
 
@@ -535,6 +573,7 @@ def auc(
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
+    thr: float = 0.5,
 ) -> Tuple[float, float, np.ndarray, np.ndarray]:
     """
     Returns
@@ -549,7 +588,11 @@ def auc(
         AUPRCs for each class, of shape: (n_classes,)
 
     """
-    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
+    if outputs.ndim == 1:
+        raise ValueError(
+            "outputs must be of shape (n_samples, n_classes) to compute AUC"
+        )
+    m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
 
     return m["macro_auroc"], m["macro_auprc"], m["auroc"], m["auprc"]
 
@@ -565,6 +608,7 @@ def accuracy(
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
     weights: Optional[Union[np.ndarray, Tensor]] = None,
+    thr: float = 0.5,
 ) -> float:
     """
     Returns
