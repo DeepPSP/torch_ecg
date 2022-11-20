@@ -1,6 +1,7 @@
 """
 """
 
+import warnings
 from abc import ABC, abstractmethod
 from typing import Any, Callable, List, Optional, Sequence, Union, Dict
 
@@ -499,6 +500,7 @@ class WaveDelineationMetrics(Metrics):
         outputs: Union[np.ndarray, Tensor],
         class_map: Dict[str, int],
         fs: int,
+        mask_format: str = "channel_first",
         tol: Optional[float] = None,
     ) -> "WaveDelineationMetrics":
         f"""
@@ -544,8 +546,9 @@ class WaveDelineationMetrics(Metrics):
         truth_masks = labels.numpy() if isinstance(labels, Tensor) else labels
         pred_masks = outputs.numpy() if isinstance(outputs, Tensor) else outputs
         raw_metrics = compute_wave_delineation_metrics(
-            truth_masks, pred_masks, class_map, fs, tol or self.tol
+            truth_masks, pred_masks, class_map, fs, mask_format, tol or self.tol
         )
+        print(raw_metrics)
         self._metrics = {
             metric: {
                 f"{wf}_{pos}": raw_metrics[f"{wf}_{pos}"][metric]
@@ -563,9 +566,10 @@ class WaveDelineationMetrics(Metrics):
                 "standard_deviation",
             ]
         }
+        print(self._metrics)
         self._metrics.update(
             {
-                f"macro_{metric}": np.nanmean(self._metrics[metric].values())
+                f"macro_{metric}": np.nanmean(list(self._metrics[metric].values()))
                 for metric in [
                     "sensitivity",
                     "precision",
@@ -576,12 +580,14 @@ class WaveDelineationMetrics(Metrics):
             }
         )
         # sample-wise metrics
+        warnings.simplefilter("ignore")
         clf_mtx = ClassificationMetrics()
         swm = clf_mtx.compute(
             truth_masks.reshape((-1)).copy(),
             pred_masks.reshape((-1)).copy(),
-            len(class_map),
+            max(class_map.values()) + 1,
         )
+        warnings.simplefilter("default")
         self._metrics.update(
             {
                 "jaccard": swm._metrics["jac"],
@@ -598,9 +604,10 @@ class WaveDelineationMetrics(Metrics):
         outputs: Union[np.ndarray, Tensor],
         class_map: Dict[str, int],
         fs: int,
+        mask_format: str = "channel_first",
         tol: Optional[float] = None,
     ) -> "WaveDelineationMetrics":
-        return self.compute(labels, outputs, class_map, fs, tol)
+        return self.compute(labels, outputs, class_map, fs, mask_format, tol)
 
     @property
     def sensitivity(self) -> Union[float, Dict[str, float]]:
