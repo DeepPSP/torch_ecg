@@ -18,7 +18,7 @@ config = CFG(
     normalize={"method": "min-max"},
 )
 ppm = PreprocManager.from_config(config)
-sig = torch.rand(2,12,8000)
+sig = torch.randn(2, 12, 8000)
 sig = ppm(sig)
 ```
 
@@ -37,7 +37,7 @@ config = CFG(
     normalize={"method": "min-max"},
 )
 ppm = PreprocManager.from_config(config)
-sig = torch.rand(12,80000).numpy()
+sig = torch.randn(12, 80000).numpy()
 sig, fs = ppm(sig, 200)
 ```
 
@@ -70,7 +70,7 @@ ppm = PreprocManager.from_config(config)
 dp = DummyPreProcessor()
 ppm.add_(dp, pos=1)
 
-sig = torch.rand(2,12,8000)
+sig = torch.randn(2, 12, 8000)
 sig = ppm(sig)
 ```
 
@@ -109,7 +109,7 @@ ppm = PreprocManager.from_config(config)
 dp = DummyPreProcessor()
 ppm.add_(dp, pos=1)
 
-sig = torch.rand(12,80000).numpy()
+sig = torch.randn(12, 80000).numpy()
 sig, fs = ppm(sig, 200)
 ```
 

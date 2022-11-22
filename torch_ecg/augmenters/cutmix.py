@@ -22,7 +22,16 @@ __all__ = [
 
 class CutMix(Augmenter):
     """
-    CutMix augmentation, for segmentation tasks.
+    CutMix augmentation
+
+    Examples
+    --------
+    ```python
+    cm = CutMix(prob=0.7)
+    sig = torch.randn(32, 12, 5000)
+    lb = torch.randint(0, 2, (32, 5000, 2), dtype=torch.float32)  # 2 classes mask
+    sig, lb = cm(sig, lb)
+    ```
 
     References
     ----------
@@ -43,7 +52,23 @@ class CutMix(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """ """
+        """
+        Parameters
+        ----------
+        fs: int, optional,
+            Sampling frequency, by default None.
+        alpha: float, default 0.5,
+            Beta distribution parameter.
+        beta: float, optional,
+            Beta distribution parameter, by default equal to `alpha`.
+        prob: float, default 0.5,
+            Probability of applying this augmenter.
+        inplace: bool, default True,
+            Whether to perform this augmentation in-place.
+        kwargs: Any,
+            Other arguments for `Augmenter`.
+
+        """
         super().__init__()
         self.fs = fs
         self.alpha = alpha
@@ -54,12 +79,30 @@ class CutMix(Augmenter):
 
     def forward(
         self,
-        sig: Optional[Tensor],
+        sig: Tensor,
         label: Tensor,
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """ """
+        """
+        Parameters
+        ----------
+        sig: Tensor,
+            the ECGs to be augmented, of shape (batch, lead, siglen)
+        label: Tensor,
+            class labels, of shape (batch, num_classes) or (batch,);
+            or segmentation masks, of shape (batch, siglen, num_classes)
+        extra_tensors: Sequence[Tensor], optional,
+            other tensors to be augmented, by default None.
+        kwargs: Any,
+            other arguments.
+
+        Returns
+        -------
+        Tuple[Tensor, ...],
+            augmented tensors.
+
+        """
         batch, lead, siglen = sig.shape
         lam = torch.from_numpy(
             DEFAULTS.RNG.beta(self.alpha, self.beta, size=batch),
@@ -78,6 +121,8 @@ class CutMix(Augmenter):
             sig = sig.clone()
             label = label.clone()
             extra_tensors = [t.clone() for t in extra_tensors]
+
+        # TODO: perform cutmix in batch
 
         raise NotImplementedError
 

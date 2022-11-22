@@ -30,10 +30,11 @@ class StretchCompress(Augmenter):
     -------
     ```python
     sc = StretchCompress()
-    sig = torch.ones((32, 12, 5000))
-    lb = torch.ones((32, 5000, 3))
-    mask = torch.ones((32, 5000, 1))
-    sig, lb, mask = sc(sig, lb, mask)
+    sig = torch.randn((32, 12, 5000))
+    labels = torch.randint(0, 2, (32, 5000, 26))
+    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+    mask = torch.randint(0, 2, (32, 5000, 3), dtype=torch.float32)
+    sig, label, mask = sc(sig, label, mask)
     ```
 
     """
@@ -211,15 +212,17 @@ class StretchCompress(Augmenter):
         indices = self.get_indices(prob=self.prob, pop_size=batch)
         with tmp.Pool(processes=4) as pool:
             sig[indices, ...] = torch.as_tensor(
-                pool.starmap(
-                    func=_stretch_compress_one_batch_element,
-                    iterable=[
-                        (
-                            self.ratio,
-                            sig[batch_idx, ...].unsqueeze(0),
-                        )
-                        for batch_idx in indices
-                    ],
+                np.array(
+                    pool.starmap(
+                        func=_stretch_compress_one_batch_element,
+                        iterable=[
+                            (
+                                self.ratio,
+                                sig[batch_idx, ...].unsqueeze(0),
+                            )
+                            for batch_idx in indices
+                        ],
+                    ),
                 ),
                 dtype=sig.dtype,
                 device=sig.device,
@@ -337,7 +340,7 @@ class StretchCompressOffline(ReprMixin):
     ```python
     sco = StretchCompressOffline()
     seglen = 600
-    sig = torch.rand((12, 60000)).numpy()
+    sig = torch.randn((12, 60000)).numpy()
     labels = torch.ones((60000, 3)).numpy().astype(int)
     masks = torch.ones((60000, 1)).numpy().astype(int)
     segments = sco(600, sig, labels, masks, critical_points=[10000,30000])

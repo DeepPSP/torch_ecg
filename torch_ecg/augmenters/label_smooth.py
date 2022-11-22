@@ -16,6 +16,15 @@ __all__ = [
 class LabelSmooth(Augmenter):
     """
     Label smoothing augmentation.
+
+    Examples
+    --------
+    ```python
+    ls = LabelSmooth()
+    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+    _, label = ls(None, label)
+    ```
+
     """
 
     __name__ = "LabelSmooth"

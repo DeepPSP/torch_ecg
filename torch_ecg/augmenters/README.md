@@ -36,7 +36,7 @@ config = CFG(
     stretch_compress={},
 )
 am = AugmenterManager.from_config(config)
-sig, label, mask = torch.rand(2,12,5000), torch.rand(2,26), torch.rand(2,5000,1)
+sig, label, mask = torch.randn(2,12,5000), torch.rand(2,26), torch.rand(2,5000,1)
 sig, label, mask = am(sig, label, mask)
 ```
 

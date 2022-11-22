@@ -4,13 +4,6 @@
 import shutil
 from pathlib import Path
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
-
 from torch_ecg.databases import AFDB  # noqa: F401
 from torch_ecg.databases import CINC2017  # noqa: F401
 from torch_ecg.databases import CINC2018  # noqa: F401
@@ -104,10 +97,3 @@ def test_download_qtdb():
 
 
 # other databases are very large, hence currently not being tested
-
-
-if __name__ == "__main__":
-    test_download_afdb()
-    test_download_ludb()
-    test_download_mitdb()
-    test_download_cpsc2019()

@@ -5,14 +5,6 @@ import time
 
 import torch
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
-
 from torch_ecg.model_configs import ATI_CNN_CONFIG  # noqa: F401; noqa: F401
 from torch_ecg.model_configs import ECG_CRNN_CONFIG  # noqa: F401
 from torch_ecg.model_configs import ECG_SEQ_LAB_NET_CONFIG  # noqa: F401
@@ -34,7 +26,7 @@ _IN_CHANNELS = 12
 _BATCH_SIZE = 2
 _SIG_LEN = 4000
 _RR_LEN = 100
-_TEST_EXAMPLE = torch.rand((_BATCH_SIZE, _IN_CHANNELS, _SIG_LEN)).to(_DEVICE)
+_TEST_EXAMPLE = torch.randn((_BATCH_SIZE, _IN_CHANNELS, _SIG_LEN)).to(_DEVICE)
 _TEST_RR_EXAMPLE = torch.rand(
     (
         _RR_LEN,
@@ -152,7 +144,3 @@ def test_tasks() -> None:
 
     print(f"total time cost: {time.time()-start:.2f} seconds")
     print("\n" + " Finish testing downstream task configs ".center(80, "#") + "\n")
-
-
-if __name__ == "__main__":
-    test_tasks()

@@ -3,17 +3,9 @@
 
 import time
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
-
 import torch
-from torch_ecg.cfg import CFG
 
+from torch_ecg.cfg import CFG
 from torch_ecg.model_configs import (  # noqa: F401
     cpsc_2018,
     cpsc_2018_leadwise,
@@ -72,6 +64,7 @@ from torch_ecg.models.cnn.multi_scopic import MultiScopicCNN  # noqa: F401
 from torch_ecg.models.cnn.resnet import ResNet  # noqa: F401
 from torch_ecg.models.cnn.vgg import VGG16  # noqa: F401
 from torch_ecg.models.cnn.xception import Xception  # noqa: F401
+
 
 _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
@@ -193,7 +186,3 @@ def _test_cnn(model_name: str, cfg: CFG) -> None:
     except Exception as e:
         print(f"{cfg} raises errors\n")
         raise e
-
-
-if __name__ == "__main__":
-    test_cnn()

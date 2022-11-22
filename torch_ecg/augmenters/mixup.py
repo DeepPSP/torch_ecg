@@ -22,6 +22,15 @@ class Mixup(Augmenter):
     """
     Mixup augmentor.
 
+    Examples
+    --------
+    ```python
+    mixup = Mixup(alpha=0.3, beta=0.6, prob=0.7)
+    sig = torch.randn(32, 12, 5000)
+    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+    sig, label = mixup(sig, label)
+    ```
+
     References
     ----------
     1. Zhang, Hongyi, et al. "mixup: Beyond Empirical Risk Minimization." International Conference on Learning Representations. 2018.

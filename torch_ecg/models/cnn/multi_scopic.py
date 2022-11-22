@@ -475,7 +475,7 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
         >>> model6.eval()
         >>> # we create tensor12, tensor6 to check the correctness of the assignment of the weights
         >>> tensor12 = torch.zeros(1, 12, 200)  # batch, leads, seq_len
-        >>> tensor6 = torch.rand(1, 6, 200)
+        >>> tensor6 = torch.randn(1, 6, 200)
         >>> # we make tensor12 has identical values as tensor6 at the given leads, and let the other leads have zero values
         >>> tensor12[:, indices, :] = tensor6
         >>> b = "branch_0"  # similarly for other branches

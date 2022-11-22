@@ -81,11 +81,11 @@ def normalize(
     ```python
     (b,l,s) = 2,12,20
     for shape in [(b,), (l,), (b,1), (b,l), (l,1), (1,l), (b,1,1), (b,l,1), (1,l,1,)]:
-        nm_sig = normalize(torch.rand(b,l,s), per_channel=True, mean=torch.rand(*shape))
+        nm_sig = normalize(torch.randn(b,l,s), per_channel=True, mean=torch.rand(*shape))
     for shape in [(b,), (b,1), (b,1,1)]:
-        nm_sig = normalize(torch.rand(b,l,s), per_channel=False, mean=torch.rand(*shape))
+        nm_sig = normalize(torch.randn(b,l,s), per_channel=False, mean=torch.rand(*shape))
     for shape in [(l,), (l,1), (1,l)]:
-        nm_sig = normalize(torch.rand(l,s), per_channel=True, mean=torch.rand(*shape))
+        nm_sig = normalize(torch.randn(l,s), per_channel=True, mean=torch.rand(*shape))
     ```
 
     """

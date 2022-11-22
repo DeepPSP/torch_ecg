@@ -4,14 +4,6 @@ test of the classes from models._nets.py
 
 import torch
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
-
 from torch_ecg.models._nets import CBA  # noqa: F401; noqa: F401
 from torch_ecg.models._nets import CRF  # noqa: F401
 from torch_ecg.models._nets import MLP  # noqa: F401
@@ -84,8 +76,8 @@ bac = Conv_Bn_Activation(
 # TODO: add more test of different modules
 
 
-if __name__ == "__main__":
-    test_input = torch.rand((1, 12, 5000))
+def test_nets():
+    test_input = torch.randn((32, 12, 5000))
 
     out = cba(test_input)
     print(f"out shape of cba = {out.shape}")

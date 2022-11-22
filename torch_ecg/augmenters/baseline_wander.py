@@ -22,7 +22,19 @@ __all__ = [
 
 
 class BaselineWanderAugmenter(Augmenter):
-    """ """
+    """
+    Generate baseline wander composed of sinusoidal and Gaussian noise
+
+    Examples
+    --------
+    ```python
+    blw = BaselineWanderAugmenter(300, prob=0.7)
+    sig = torch.randn(32, 12, 5000)
+    label = torch.ones((32, 20))
+    sig, _ = blw(sig, label)
+    ```
+
+    """
 
     __name__ = "BaselineWanderAugmenter"
 
@@ -43,13 +55,38 @@ class BaselineWanderAugmenter(Augmenter):
             sampling frequency of the ECGs to be augmented
         bw_fs: ndarray, optional,
             frequencies of the sinusoidal noises,
-            of shape (n,)
+            of shape (n,),
+            defaults to [0.33, 0.1, 0.05, 0.01]
         ampl_ratio: ndarray, optional,
             candidate ratios of noise amplitdes compared to the original ECGs for each `fs`,
-            of shape (m,n)
+            of shape (m,n),
+            defaults to
+            ```python
+            np.array(
+                [
+                    [0.01, 0.01, 0.02, 0.03],  # low
+                    [0.01, 0.02, 0.04, 0.05],  # low
+                    [0.1, 0.06, 0.04, 0.02],  # low
+                    [0.02, 0.04, 0.07, 0.1],  # low
+                    [0.05, 0.1, 0.16, 0.25],  # medium
+                    [0.1, 0.15, 0.25, 0.3],  # high
+                    [0.25, 0.25, 0.3, 0.35],  # extremely high
+                ]
+            )
+            ```
         gaussian: ndarray, optional,
             candidate mean and std of the Gaussian noises,
-            of shape (k, 2)
+            of shape (k, 2),
+            defaults to
+            ```python
+            np.array(
+                [  # mean and std, in terms of ratio
+                    [0.0, 0.001],
+                    [0.0, 0.003],
+                    [0.0, 0.01],
+                ]
+            )
+            ```
         prob: float, default 0.5,
             probability of performing the augmentation
         inplace: bool, default True,
@@ -192,7 +229,9 @@ def _get_ampl(sig: Tensor, fs: int) -> Tensor:
             get_ampl,
             iterable=[(sig[i].cpu().numpy(), fs) for i in range(sig.shape[0])],
         )
-    ampl = torch.as_tensor(ampl, dtype=sig.dtype, device=sig.device).unsqueeze(-1)
+    ampl = torch.as_tensor(
+        np.array(ampl), dtype=sig.dtype, device=sig.device
+    ).unsqueeze(-1)
     return ampl
 
 
@@ -360,7 +399,7 @@ def gen_baseline_wander(
                 for j in range(sig.shape[1])
             ],
         )
-    bw = torch.as_tensor(bw, dtype=sig.dtype, device=sig.device).reshape(
+    bw = torch.as_tensor(np.array(bw), dtype=sig.dtype, device=sig.device).reshape(
         batch, lead, siglen
     )
     return bw

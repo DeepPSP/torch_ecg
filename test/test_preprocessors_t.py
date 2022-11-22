@@ -3,14 +3,6 @@
 
 import torch
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
-
 from torch_ecg.cfg import CFG
 from torch_ecg.preprocessors import (  # noqa: F401
     PreprocManager,
@@ -43,7 +35,7 @@ def test_preproc_manager() -> None:
     ppm.add_(Normalize(method="min-max"))
     ppm.add_(Resample(fs=300, dst_fs=500), pos=0)
 
-    sig = torch.rand(2, 12, 8000)
+    sig = torch.randn(2, 12, 8000)
     sig = ppm(sig)
 
     del ppm, sig
@@ -56,5 +48,5 @@ def test_preproc_manager() -> None:
     ppm = PreprocManager.from_config(config)
     assert ppm.random
 
-    sig = torch.rand(2, 12, 8000)
+    sig = torch.randn(2, 12, 8000)
     sig = ppm(sig)

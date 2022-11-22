@@ -37,7 +37,7 @@ class PreprocManager(ReprMixin):
         normalize={"method": "min-max"},
     )
     ppm = PreprocManager.from_config(config)
-    sig = torch.rand(12, 80000).numpy()
+    sig = torch.randn(12, 80000).numpy()
     sig, fs = ppm(sig, 200)
     ```
 

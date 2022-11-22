@@ -7,14 +7,6 @@ from typing import Tuple
 import numpy as np
 import torch
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[1]))
-
 from torch_ecg.cfg import CFG
 from torch_ecg._preprocessors import (  # noqa: F401
     PreProcessor,
@@ -51,7 +43,7 @@ def test_preproc_manager():
     ppm.add_(NaiveNormalize())
     ppm.add_(DummyPreProcessor(), pos=0)
 
-    sig = torch.rand(12, 80000).numpy()
+    sig = torch.randn(12, 80000).numpy()
     sig, fs = ppm(sig, 200)
 
     del ppm, sig, fs
@@ -64,7 +56,7 @@ def test_preproc_manager():
     )
     ppm = PreprocManager.from_config(config)
 
-    sig = torch.rand(12, 80000).numpy()
+    sig = torch.randn(12, 80000).numpy()
     sig, fs = ppm(sig, 200)
 
     del ppm, sig, fs

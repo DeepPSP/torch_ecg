@@ -665,7 +665,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         >>> (cba12[0].bias.data[out_indices] == cba6[0].bias.data).all()
         tensor(True)
         >>> tensor12 = torch.zeros(1, 12, 200)
-        >>> tensor6 = torch.rand(1, 6, 200)
+        >>> tensor6 = torch.randn(1, 6, 200)
         >>> tensor12[:, indices, :] = tensor6
         >>> (cba12(tensor12)[:, out_indices, :] == cba6(tensor6)).all()
         tensor(True)

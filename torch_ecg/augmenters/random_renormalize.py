@@ -20,6 +20,15 @@ class RandomRenormalize(Augmenter):
     """
     Randomly re-normalize the ECG tensor,
     using the Z-score normalization method.
+
+    Examples
+    --------
+    ```python
+    rrn = RandomRenormalize()
+    sig = torch.randn(32, 12, 5000)
+    sig, _ = rrn(sig, None)
+    ```
+
     """
 
     __name__ = "RandomRenormalize"

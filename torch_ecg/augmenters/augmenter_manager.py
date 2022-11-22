@@ -45,8 +45,11 @@ class AugmenterManager(torch.nn.Module):
         stretch_compress={},
     )
     am = AugmenterManager.from_config(config)
-    sig, label, mask = torch.rand(2,12,5000), torch.rand(2,26), torch.rand(2,5000,1)
-    sig, label, mask = am(sig, label, mask)
+    sig = torch.randn(32, 12, 5000)
+    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+    mask1 = torch.randint(0, 2, (32, 5000, 3), dtype=torch.float32)
+    mask2 = torch.randint(0, 3, (32, 5000), dtype=torch.long)
+    sig, label, mask1, mask2 = am(sig, label, mask1, mask2)
     ```
 
     """

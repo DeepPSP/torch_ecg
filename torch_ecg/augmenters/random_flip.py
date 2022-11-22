@@ -16,7 +16,18 @@ __all__ = [
 
 
 class RandomFlip(Augmenter):
-    """ """
+    """
+    Randomly flip the ECGs along the voltage axis.
+
+    Examples
+    --------
+    ```python
+    rf = RandomFlip()
+    sig = torch.randn(32, 12, 5000)
+    sig, _ = rf(sig, None)
+    ```
+
+    """
 
     __name__ = "RandomFlip"
 
