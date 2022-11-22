@@ -31,13 +31,19 @@ class CFG(dict):
 
     Examples
     --------
-    >>> c = CFG(hehe={"a":1,"b":2})
-    >>> c.update(hehe={"a":-1})
+    ```python
+    >>> c = CFG(hehe={"a": 1, "b": 2})
+    >>> c.update(hehe={"a": [-1]})
     >>> c
-    {'hehe': {'a': -1, 'b': 2}}
-    >>> c.__update__(hehe={"a":-10})
+    {'hehe': {'a': [-1], 'b': 2}}
+    >>> c.update(hehe={"c": -10})
     >>> c
-    {'hehe': {'a': -10}}
+    {'hehe': {'a': [-1], 'b': 2, 'c': -10}}
+    >>> c.hehe.pop("a")
+    [-1]
+    >>> c
+    {'hehe': {'b': 2, 'c': -10}}
+    ```
 
     """
 

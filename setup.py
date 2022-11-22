@@ -17,6 +17,12 @@ extras["test"] = [
     "flake8",
     "pytest",
     "pytest-xdist",
+    "pytest-cov",
+    "pcg-springer-features",
+    "librosa",
+    "torchaudio==0.10.0",
+    "torch_audiomentations",
+    "IPython",
 ]
 extras["docs"] = [
     "recommonmark",

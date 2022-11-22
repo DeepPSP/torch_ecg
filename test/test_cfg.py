@@ -43,6 +43,8 @@ def test_defaults():
     assert DEFAULTS.dtype == torch.float32
     DEFAULTS.change_dtype("float16")
     assert DEFAULTS.dtype == torch.float16
+    DEFAULTS.change_dtype("float32")
+    assert DEFAULTS.dtype == torch.float32
 
     assert DEFAULTS.SEED == 42
     DEFAULTS.set_seed(100)

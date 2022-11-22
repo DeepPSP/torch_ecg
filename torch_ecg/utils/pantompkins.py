@@ -7,9 +7,6 @@ source: https://pypi.org/project/wfdb/2.2.1/#files
 import numpy as np
 import scipy.signal as scisig
 
-# import pdb
-# import matplotlib.pyplot as plt
-
 
 __all__ = [
     "PanTompkins",
