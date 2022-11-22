@@ -17,13 +17,6 @@ from torch.nn.parallel import DataParallel as DP
 from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader, Dataset
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
-
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.components.outputs import MultiLabelClassificationOutput
 from torch_ecg.components.trainer import BaseTrainer
@@ -783,7 +776,3 @@ def test_crnn_cinc2021_pipeline() -> None:
         del bmd, trainer, model
 
     shutil.rmtree(_CWD)
-
-
-if __name__ == "__main__":
-    test_crnn_cinc2021_pipeline()
