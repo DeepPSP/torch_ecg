@@ -1943,22 +1943,12 @@ class CinC2022Dataset(Dataset, ReprMixin):
 
         train_file = self.reader.db_dir / f"train_ratio_{_train_ratio}.json"
         test_file = self.reader.db_dir / f"test_ratio_{_test_ratio}.json"
-        aux_train_file = (
-            BaseCfg.project_dir / "utils" / f"train_ratio_{_train_ratio}.json"
-        )
-        aux_test_file = BaseCfg.project_dir / "utils" / f"test_ratio_{_test_ratio}.json"
 
         if not force_recompute and train_file.exists() and test_file.exists():
             if self.training:
                 return json.loads(train_file.read_text())
             else:
                 return json.loads(test_file.read_text())
-
-        if not force_recompute and aux_train_file.exists() and aux_test_file.exists():
-            if self.training:
-                return json.loads(aux_train_file.read_text())
-            else:
-                return json.loads(aux_test_file.read_text())
 
         df_train, df_test = stratified_train_test_split(
             self.reader.df_stats,
@@ -1976,9 +1966,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
         test_set = df_test["Patient ID"].tolist()
 
         train_file.write_text(json.dumps(train_set, ensure_ascii=False))
-        aux_train_file.write_text(json.dumps(train_set, ensure_ascii=False))
         test_file.write_text(json.dumps(test_set, ensure_ascii=False))
-        aux_test_file.write_text(json.dumps(test_set, ensure_ascii=False))
 
         shuffle(train_set)
         shuffle(test_set)
