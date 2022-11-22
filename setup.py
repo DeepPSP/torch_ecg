@@ -20,7 +20,7 @@ extras["test"] = [
     "pytest-cov",
     "pcg-springer-features",
     "librosa",
-    "torchaudio==0.10.0",
+    "torchaudio",
     "torch_audiomentations",
     "IPython",
 ]

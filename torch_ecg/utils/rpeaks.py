@@ -23,17 +23,11 @@ from wfdb.processing.qrs import GQRS, XQRS  # noqa: F401
 from wfdb.processing.qrs import gqrs_detect as _gqrs_detect
 from wfdb.processing.qrs import xqrs_detect as _xqrs_detect
 
-try:
-    from wfdb.processing.pantompkins import pantompkins as _pantompkins
-except ModuleNotFoundError:
-    from .pantompkins import pantompkins as _pantompkins
-
 import biosppy.signals.ecg as BSE
 
 __all__ = [
     "xqrs_detect",
     "gqrs_detect",
-    "pantompkins_detect",
     "hamilton_detect",
     "ssf_detect",
     "christov_detect",
@@ -44,23 +38,6 @@ __all__ = [
 
 # ---------------------------------------------------------------------
 # algorithms from wfdb
-def pantompkins_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
-    """to keep in accordance of parameters with `xqrs` and `gqrs`
-
-    References:
-    -----------
-    [1] Pan, Jiapu, and Willis J. Tompkins. "A real-time QRS detection algorithm." IEEE transactions on biomedical engineering 3 (1985): 230-236.
-
-    """
-    rpeaks = _pantompkins(sig, fs)
-    # correct R-peak locations
-    (rpeaks,) = BSE.correct_rpeaks(
-        signal=sig,
-        rpeaks=rpeaks,
-        sampling_rate=fs,
-        tol=kwargs.get("correct_tol", 0.05),
-    )
-    return rpeaks
 
 
 def xqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
@@ -69,6 +46,7 @@ def xqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
         sampfrom=0, sampto='end', conf=None, learn=True, verbose=True
 
     """
+    sig = sig.copy()  # to avoid changing the original signal
     kw = dict(sampfrom=0, sampto="end", conf=None, learn=True, verbose=False)
     kw = {k: kwargs.get(k, v) for k, v in kw.items()}
     rpeaks = _xqrs_detect(sig, fs, **kw)
@@ -91,6 +69,7 @@ def gqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
         QRSa=750, QRSamin=130
 
     """
+    sig = sig.copy()  # to avoid changing the original signal
     kw = dict(
         d_sig=None,
         adc_gain=None,
@@ -123,7 +102,6 @@ def gqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
 # algorithms from biosppy
 def hamilton_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     """
-
     the default detector used by `BSE`
 
     References:
@@ -131,6 +109,7 @@ def hamilton_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     [1] Hamilton, Pat. "Open source ECG analysis." Computers in cardiology. IEEE, 2002.
 
     """
+    sig = sig.copy()  # to avoid changing the original signal
     # segment
     (rpeaks,) = BSE.hamilton_segmenter(signal=sig, sampling_rate=fs)
 
@@ -146,7 +125,6 @@ def hamilton_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
 
 def ssf_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     """
-
     Slope Sum Function (SSF)
 
     might be too simple
@@ -156,6 +134,7 @@ def ssf_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     [1] Zong, W., et al. "An open-source algorithm to detect onset of arterial blood pressure pulses." Computers in Cardiology, 2003. IEEE, 2003.
 
     """
+    sig = sig.copy()  # to avoid changing the original signal
     (rpeaks,) = BSE.ssf_segmenter(
         signal=sig,
         sampling_rate=fs,
@@ -175,12 +154,12 @@ def ssf_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
 
 def christov_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     """
-
     References:
     -----------
     [1] Ivaylo I. Christov, "Real time electrocardiogram QRS detection using combined adaptive threshold", BioMedical Engineering OnLine 2004, vol. 3:28, 2004
 
     """
+    sig = sig.copy()  # to avoid changing the original signal
     (rpeaks,) = BSE.christov_segmenter(signal=sig, sampling_rate=fs)
     # correct R-peak locations
     (rpeaks,) = BSE.correct_rpeaks(
@@ -194,13 +173,13 @@ def christov_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
 
 def engzee_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     """
-
     References:
     -----------
     [1] W. Engelse and C. Zeelenberg, "A single scan algorithm for QRS detection and feature extraction", IEEE Comp. in Cardiology, vol. 6, pp. 37-42, 1979
     [2] A. Lourenco, H. Silva, P. Leite, R. Lourenco and A. Fred, "Real Time Electrocardiogram Segmentation for Finger Based ECG Biometrics", BIOSIGNALS 2012, pp. 49-54, 2012
 
     """
+    sig = sig.copy()  # to avoid changing the original signal
     (rpeaks,) = BSE.engzee_segmenter(
         signal=sig,
         sampling_rate=fs,
@@ -218,12 +197,12 @@ def engzee_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
 
 def gamboa_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     """
-
     References:
     -----------
     [1] Gamboa, Hugo. "Multi-modal behavioral biometrics based on HCI and electrophysiology." PhD ThesisUniversidade (2008).
 
     """
+    sig = sig.copy()  # to avoid changing the original signal
     (rpeaks,) = BSE.gamboa_segmenter(
         signal=sig,
         sampling_rate=fs,
