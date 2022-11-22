@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Sequence, NoReturn, Optional
+from typing import Sequence, Optional
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,7 +18,7 @@ def plot_spectrogram(
     sample_rate: int,
     title: str = "Spectrogram",
     xlim: Optional[Sequence[float]] = None,
-) -> NoReturn:
+) -> None:
     """
     modified from the function `plot_specgram`
     in https://pytorch.org/tutorials/beginner/audio_preprocessing_tutorial.html

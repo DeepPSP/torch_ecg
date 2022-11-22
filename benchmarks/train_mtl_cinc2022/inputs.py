@@ -5,7 +5,7 @@ import inspect
 import math
 from copy import deepcopy
 from abc import ABC, abstractmethod
-from typing import NoReturn, Union, List, Sequence, Tuple
+from typing import Union, List, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -38,7 +38,7 @@ class InputConfig(CFG):
         n_channels: int,
         n_samples: int = -1,
         **kwargs: dict
-    ) -> NoReturn:
+    ) -> None:
         """
 
         Parameters
@@ -91,7 +91,7 @@ class BaseInput(ReprMixin, ABC):
 
     __name__ = "BaseInput"
 
-    def __init__(self, config: InputConfig) -> NoReturn:
+    def __init__(self, config: InputConfig) -> None:
         """ """
         assert isinstance(config, InputConfig)
         self._config = deepcopy(config)
@@ -122,7 +122,7 @@ class BaseInput(ReprMixin, ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         raise NotImplementedError
 
@@ -198,7 +198,7 @@ class WaveformInput(BaseInput):
 
     __name__ = "WaveformInput"
 
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         assert self.input_type == "waveform"
 
@@ -244,7 +244,7 @@ class _SpectralInput(BaseInput):
 
     __name__ = "_SpectralInput"
 
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         assert "n_bins" in self._config
         self.fs = self._config.get("fs", self._config.get("sample_rate", None))
@@ -293,7 +293,7 @@ class SpectrogramInput(_SpectralInput):
     __doc__ = _SpectralInput.__doc__ + """"""
     __name__ = "SpectrogramInput"
 
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         super()._post_init()
         assert self.input_type in ["spectrogram"]
@@ -335,7 +335,7 @@ class MelSpectrogramInput(_SpectralInput):
     __doc__ = _SpectralInput.__doc__ + """"""
     __name__ = "MelSpectrogramInput"
 
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         super()._post_init()
         assert self.input_type in [
@@ -383,7 +383,7 @@ class MFCCInput(_SpectralInput):
     __doc__ = _SpectralInput.__doc__ + """"""
     __name__ = "MFCCInput"
 
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         super()._post_init()
         assert self.input_type in [
@@ -475,7 +475,7 @@ class SpectralInput(_SpectralInput):
 
     __name__ = "SpectralInput"
 
-    def _post_init(self) -> NoReturn:
+    def _post_init(self) -> None:
         """ """
         super()._post_init()
         assert self.input_type in [

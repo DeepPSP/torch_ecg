@@ -5,7 +5,7 @@ https://github.com/huggingface/transformers/blob/main/examples/pytorch/speech-pr
 """
 
 import re
-from typing import Dict, List, Optional, Any, NoReturn
+from typing import Dict, List, Optional, Any
 
 import torch
 from torch import nn
@@ -77,7 +77,7 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
         device: Optional[torch.device] = None,
         lazy: bool = True,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         super().__init__(
             model,
@@ -93,7 +93,7 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
         self,
         train_dataset: Optional[Dataset] = None,
         val_dataset: Optional[Dataset] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
         setup the dataloaders for training and validation
 
@@ -165,7 +165,7 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
             collate_fn=data_collator,
         )
 
-    def _setup_optimizer(self) -> NoReturn:
+    def _setup_optimizer(self) -> None:
         """ """
         if re.sub("[\\-_]*", "", self.train_config.optimizer.lower()) == "hfadamw":
             # AdamW from huggingface
@@ -181,7 +181,7 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
         else:
             super()._setup_optimizer()
 
-    def _setup_scheduler(self) -> NoReturn:
+    def _setup_scheduler(self) -> None:
         """ """
         if (
             self.train_config.lr_scheduler is not None
@@ -208,13 +208,13 @@ class Wav2Vec2PreTrainingTrainer(BaseTrainer):
         else:
             super()._setup_scheduler()
 
-    def _setup_criterion(self) -> NoReturn:
+    def _setup_criterion(self) -> None:
         """ """
         # the loss is computed in the model's forward function
         # and stored in the model's output's loss attribute
         pass
 
-    def train_one_epoch(self, pbar: tqdm) -> NoReturn:
+    def train_one_epoch(self, pbar: tqdm) -> None:
         """
         train one epoch, and update the progress bar
 

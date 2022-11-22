@@ -3,7 +3,7 @@ Currently NOT used, NOT tested.
 """
 
 from copy import deepcopy
-from typing import Union, Optional, NoReturn, Any
+from typing import Union, Optional, Any
 
 import numpy as np
 import torch
@@ -29,7 +29,7 @@ class OutComeMLP(MLP, CkptMixin):
 
     def __init__(
         self, in_channels: int, config: Optional[CFG] = None, **kwargs: Any
-    ) -> NoReturn:
+    ) -> None:
         """ """
         _config = CFG(deepcopy(ModelCfg.outcome))
         _config.update(deepcopy(config) or {})

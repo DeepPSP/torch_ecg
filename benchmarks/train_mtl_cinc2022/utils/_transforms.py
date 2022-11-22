@@ -12,7 +12,7 @@ NOTE:
 """
 
 import math
-from typing import Optional, NoReturn, Callable
+from typing import Optional, Callable
 
 import torch
 from torch import Tensor
@@ -64,7 +64,7 @@ class PitchShift(torch.nn.Module):
         hop_length: Optional[int] = None,
         window_fn: Callable[..., Tensor] = torch.hann_window,
         wkwargs: Optional[dict] = None,
-    ) -> NoReturn:
+    ) -> None:
         super().__init__()
         self.n_steps = n_steps
         self.bins_per_octave = bins_per_octave

@@ -2,7 +2,7 @@
 """
 
 from copy import deepcopy
-from typing import Union, Optional, NoReturn, Any, Dict
+from typing import Union, Optional, Any, Dict
 
 import numpy as np
 import torch
@@ -30,7 +30,7 @@ class CRNN_CINC2022(ECG_CRNN):
     __DEBUG__ = True
     __name__ = "CRNN_CINC2022"
 
-    def __init__(self, config: Optional[CFG] = None, **kwargs: Any) -> NoReturn:
+    def __init__(self, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
 
         Parameters
@@ -67,7 +67,7 @@ class CRNN_CINC2022(ECG_CRNN):
         if self.extra_heads.empty:
             self.extra_heads = None
 
-    def freeze_backbone(self, freeze: bool = True) -> NoReturn:
+    def freeze_backbone(self, freeze: bool = True) -> None:
         """
         freeze the backbone (CRNN part, excluding the heads) of the model
 

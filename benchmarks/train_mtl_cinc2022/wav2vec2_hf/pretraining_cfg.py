@@ -3,7 +3,7 @@
 
 from copy import deepcopy
 from pathlib import Path
-from typing import List, NoReturn
+from typing import List
 
 from transformers import Wav2Vec2Config, Wav2Vec2FeatureExtractor
 from torch_ecg.cfg import CFG
@@ -83,7 +83,7 @@ _PreTrainModelCfg = CFG()
 _PreTrainModelCfg.model_name = None
 
 
-def register_model(model_name: str, model_cfg: dict) -> NoReturn:
+def register_model(model_name: str, model_cfg: dict) -> None:
     """register a new model configuration"""
     if model_name in [k for k in _PreTrainModelCfg if k != "model_name"]:
         raise ValueError(f"Model {model_name} already exists, choose another name.")
@@ -196,7 +196,7 @@ _PreTrainModelCfg.model_name = "base"
 PreTrainModelCfg = deepcopy(_PreTrainModelCfg[_PreTrainModelCfg.model_name])
 
 
-def change_model(model_name: str) -> NoReturn:
+def change_model(model_name: str) -> None:
     """change model configuration to the one specified by `model_name`"""
     assert model_name in [k for k in _PreTrainModelCfg if k != "model_name"]
     PreTrainModelCfg.update(**deepcopy(_PreTrainModelCfg[model_name]))

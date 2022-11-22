@@ -8,7 +8,7 @@ from copy import deepcopy
 from pathlib import Path
 from collections import defaultdict
 from abc import abstractmethod
-from typing import Union, Optional, Any, List, Dict, Tuple, Sequence, NoReturn
+from typing import Union, Optional, Any, List, Dict, Tuple, Sequence
 
 import numpy as np
 import pandas as pd
@@ -141,7 +141,7 @@ class PCGDataBase(PhysioNetDataBase):
         working_dir: Optional[str] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -232,7 +232,7 @@ class PCGDataBase(PhysioNetDataBase):
         ab = sorted(ab, key=lambda x: _BACKEND_PRIORITY.index(x))
         return ab
 
-    def _auto_infer_units(self) -> NoReturn:
+    def _auto_infer_units(self) -> None:
         """
         disable this function implemented in the base class
         """
@@ -243,7 +243,7 @@ class PCGDataBase(PhysioNetDataBase):
         """ """
         raise NotImplementedError
 
-    def _reset_fs(self, new_fs: int) -> NoReturn:
+    def _reset_fs(self, new_fs: int) -> None:
         """ """
         self.fs = new_fs
 
@@ -300,7 +300,7 @@ class CINC2022Reader(PCGDataBase):
         working_dir: Optional[str] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
         Parameters
         ----------
@@ -407,7 +407,7 @@ class CINC2022Reader(PCGDataBase):
             "default": "#7f7f7f",
         }
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """
         list all records in the database
         """
@@ -465,7 +465,7 @@ class CINC2022Reader(PCGDataBase):
                 )
             )
 
-    def _load_stats(self) -> NoReturn:
+    def _load_stats(self) -> None:
         """
         collect statistics of the database
         """
@@ -1059,7 +1059,7 @@ class CINC2022Reader(PCGDataBase):
         audio_file = self.get_absolute_path(rec)
         return IPython.display.Audio(filename=str(audio_file))
 
-    def plot(self, rec: Union[str, int], **kwargs) -> NoReturn:
+    def plot(self, rec: Union[str, int], **kwargs) -> None:
         """
         plot the record `rec`, with metadata and segmentation
 
@@ -1268,7 +1268,7 @@ class CINC2016Reader(PCGDataBase):
         working_dir: Optional[str] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         super().__init__(
             db_name="challenge-2016",
@@ -1288,7 +1288,7 @@ class CINC2016Reader(PCGDataBase):
         self._all_records = None
         self._ls_rec()
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """ """
         records_file = self.db_dir / "RECORDS"
         write_file = False
@@ -1420,7 +1420,7 @@ class CINC2016Reader(PCGDataBase):
         audio_file = self.get_absolute_path(rec, self.data_ext)
         return IPython.display.Audio(filename=str(audio_file))
 
-    def plot(self, rec: Union[str, int], **kwargs) -> NoReturn:
+    def plot(self, rec: Union[str, int], **kwargs) -> None:
         """ """
         raise NotImplementedError
 
@@ -1431,7 +1431,7 @@ class CINC2016Reader(PCGDataBase):
             for subset in ["training", "validation"]
         ]
 
-    def download(self) -> NoReturn:
+    def download(self) -> None:
         """ """
         for url in self.url:
             http_get(url, self.db_dir / Path(url.split("?")[0]).stem, extract=True)
@@ -1512,7 +1512,7 @@ class EPHNOGRAMReader(PCGDataBase):
         working_dir: Optional[str] = None,
         verbose: int = 2,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         super().__init__(
             db_name="ephnogram",
@@ -1540,7 +1540,7 @@ class EPHNOGRAMReader(PCGDataBase):
         self._df_stats = pd.DataFrame()
         self._aggregate_stats()
 
-    def _ls_rec(self) -> NoReturn:
+    def _ls_rec(self) -> None:
         """ """
         self._df_records = pd.DataFrame()
         try:
@@ -1567,7 +1567,7 @@ class EPHNOGRAMReader(PCGDataBase):
         if len(self._df_records) == 0:
             self._ls_rec_local()
 
-    def _ls_rec_local(self) -> NoReturn:
+    def _ls_rec_local(self) -> None:
         """ """
         self._df_records = pd.DataFrame(columns=["record", "path", "aux_path"])
         records_file = self.db_dir / "RECORDS"
@@ -1608,7 +1608,7 @@ class EPHNOGRAMReader(PCGDataBase):
 
         records_file.write_text("\n".join(self._all_records))
 
-    def _aggregate_stats(self) -> NoReturn:
+    def _aggregate_stats(self) -> None:
         """ """
         if len(self) == 0:
             return
@@ -1718,7 +1718,7 @@ class EPHNOGRAMReader(PCGDataBase):
         data = self.load_data(rec, channels=channel)[0]
         return IPython.display.Audio(data=data, rate=8000)
 
-    def plot(self, rec: Union[str, int], **kwargs) -> NoReturn:
+    def plot(self, rec: Union[str, int], **kwargs) -> None:
         """ """
         raise NotImplementedError
 
@@ -1741,7 +1741,7 @@ class CompositeReader(ReprMixin):
 
     def __init__(
         self, databases: Sequence[PCGDataBase], fs: Optional[int] = None
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.databases = databases
         self.fs = fs

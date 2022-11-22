@@ -4,7 +4,7 @@
 import json
 from random import shuffle, sample
 from copy import deepcopy
-from typing import Optional, List, Sequence, NoReturn, Dict
+from typing import Optional, List, Sequence, Dict
 
 import numpy as np
 import torch
@@ -39,7 +39,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
 
     def __init__(
         self, config: CFG, task: str, training: bool = True, lazy: bool = True
-    ) -> NoReturn:
+    ) -> None:
         """ """
         super().__init__()
         self.config = CFG(deepcopy(config))
@@ -91,7 +91,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
             self._load_all_data()
         return {k: v[index] for k, v in self.cache.items()}
 
-    def __set_task(self, task: str, lazy: bool) -> NoReturn:
+    def __set_task(self, task: str, lazy: bool) -> None:
         """ """
         assert task.lower() in TrainCfg.tasks, f"illegal task \042{task}\042"
         if (
@@ -135,7 +135,7 @@ class CinC2022Dataset(Dataset, ReprMixin):
             if self.__cache[k].ndim == 1:
                 self.__cache[k] = self.__cache[k]
 
-    def _load_all_data(self) -> NoReturn:
+    def _load_all_data(self) -> None:
         """ """
         self.__set_task(self.task, lazy=False)
 
@@ -213,7 +213,7 @@ class FastDataReader(ReprMixin, Dataset):
         config: CFG,
         task: str,
         ppm: Optional[PreprocManager] = None,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.reader = reader
         self.records = records
@@ -319,7 +319,7 @@ class MutiTaskFastDataReader(ReprMixin, Dataset):
         config: CFG,
         task: str = "multi_task",
         ppm: Optional[PreprocManager] = None,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.reader = reader
         self.records = records

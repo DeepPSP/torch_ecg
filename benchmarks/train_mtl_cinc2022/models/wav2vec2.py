@@ -3,7 +3,7 @@
 
 from copy import deepcopy
 from pathlib import Path
-from typing import Union, Optional, NoReturn, Any, Tuple, Dict
+from typing import Union, Optional, Any, Tuple, Dict
 
 import numpy as np
 from einops.layers.torch import Rearrange
@@ -48,7 +48,7 @@ class Wav2Vec2_CINC2022(Wav2Vec2Model):
     __DEBUG__ = True
     __name__ = "Wav2Vec2_CINC2022"
 
-    def __init__(self, config: Optional[CFG] = None, **kwargs: Any) -> NoReturn:
+    def __init__(self, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
 
         Parameters
@@ -162,7 +162,7 @@ class Wav2Vec2_CINC2022(Wav2Vec2Model):
         self.sigmoid = nn.Sigmoid()
         self.softmax = nn.Softmax(-1)
 
-    def freeze_backbone(self, freeze: bool = True) -> NoReturn:
+    def freeze_backbone(self, freeze: bool = True) -> None:
         """
         freeze the backbone (feature_extractor and encoder) of the model
 
@@ -362,7 +362,7 @@ class HFWav2Vec2_CINC2022(nn.Module, CkptMixin, SizeMixin):
 
     __name__ = "HFWav2Vec2_CINC2022"
 
-    def __init__(self, config: Optional[CFG] = None, **kwargs: Any) -> NoReturn:
+    def __init__(self, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
 
         Parameters
@@ -450,7 +450,7 @@ class HFWav2Vec2_CINC2022(nn.Module, CkptMixin, SizeMixin):
         self.sigmoid = nn.Sigmoid()
         self.softmax = nn.Softmax(-1)
 
-    def freeze_feature_extractor(self, freeze: bool = True) -> NoReturn:
+    def freeze_feature_extractor(self, freeze: bool = True) -> None:
         """
         Calling this function will disable the gradient computation for the feature encoder so that its parameter will
         not be updated during training.
@@ -465,7 +465,7 @@ class HFWav2Vec2_CINC2022(nn.Module, CkptMixin, SizeMixin):
             param.requires_grad = not freeze
         self.backbone.feature_extractor._requires_grad = not freeze
 
-    def freeze_backbone(self, freeze: bool = True) -> NoReturn:
+    def freeze_backbone(self, freeze: bool = True) -> None:
         """
         freeze the backbone (feature_extractor and encoder) of the model
 
@@ -480,7 +480,7 @@ class HFWav2Vec2_CINC2022(nn.Module, CkptMixin, SizeMixin):
 
     def load_pretrained_backbone(
         self, path_or_model: Union[str, Path, HFWav2Vec2PreTrainedModel]
-    ) -> NoReturn:
+    ) -> None:
         """
         load the pretrained backbone from a given path
 

@@ -6,7 +6,7 @@ deprecated and overrided by ./augmentations.py
 """
 
 import re
-from typing import NoReturn, Union
+from typing import Union
 from collections import OrderedDict
 
 from torch.nn import Module, Sequential
@@ -80,7 +80,7 @@ class Transforms(Sequential):
 
     __name__ = "Transforms"
 
-    def __init__(self, *args: Union[Module, OrderedDict]) -> NoReturn:
+    def __init__(self, *args: Union[Module, OrderedDict]) -> None:
         """ """
         super().__init__(*args)
 

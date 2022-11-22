@@ -13,7 +13,7 @@ import time
 from copy import deepcopy
 from itertools import repeat
 from pathlib import Path
-from typing import NoReturn, List, Tuple, Dict, Union
+from typing import List, Tuple, Dict, Union
 
 import numpy as np
 from sklearn.base import BaseEstimator
@@ -112,9 +112,7 @@ CINC2022Trainer.__DEBUG__ = False
 ################################################################################
 
 # Train your model.
-def train_challenge_model(
-    data_folder: str, model_folder: str, verbose: int
-) -> NoReturn:
+def train_challenge_model(data_folder: str, model_folder: str, verbose: int) -> None:
     """
 
     Parameters

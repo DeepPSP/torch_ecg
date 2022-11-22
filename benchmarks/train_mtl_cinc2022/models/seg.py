@@ -2,7 +2,7 @@
 """
 
 from copy import deepcopy
-from typing import Union, Optional, NoReturn, Any, Dict
+from typing import Union, Optional, Any, Dict
 
 import numpy as np
 import torch
@@ -29,7 +29,7 @@ class SEQ_LAB_NET_CINC2022(ECG_SEQ_LAB_NET):
     __DEBUG__ = True
     __name__ = "SEQ_LAB_NET_CINC2022"
 
-    def __init__(self, config: Optional[CFG] = None, **kwargs: Any) -> NoReturn:
+    def __init__(self, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
 
         Parameters
@@ -59,7 +59,7 @@ class SEQ_LAB_NET_CINC2022(ECG_SEQ_LAB_NET):
             _config[_config.model_name],
         )
 
-    def freeze_backbone(self, freeze: bool = True) -> NoReturn:
+    def freeze_backbone(self, freeze: bool = True) -> None:
         """
         freeze the backbone (CRNN part, excluding the heads) of the model
 
@@ -171,7 +171,7 @@ class UNET_CINC2022(ECG_UNET):
     __DEBUG__ = True
     __name__ = "UNET_CINC2022"
 
-    def __init__(self, config: Optional[CFG] = None, **kwargs: Any) -> NoReturn:
+    def __init__(self, config: Optional[CFG] = None, **kwargs: Any) -> None:
         """
 
         Parameters
@@ -221,7 +221,7 @@ class UNET_CINC2022(ECG_UNET):
         """
         return {"segmentation": super().forward(waveforms)}
 
-    def freeze_backbone(self, freeze: bool = True) -> NoReturn:
+    def freeze_backbone(self, freeze: bool = True) -> None:
         """
         not used in this model,
         only to keep the API consistent with other models

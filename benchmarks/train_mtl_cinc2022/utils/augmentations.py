@@ -7,7 +7,7 @@ If labels contains segmentation masks, the forward function will not be able to 
 which is needed for example for `Shift`, `TimeInversion`, etc.
 """
 
-from typing import Sequence, NoReturn
+from typing import Sequence
 
 import torch_audiomentations as TA
 from torch_audiomentations.core.transforms_interface import BaseWaveformTransform
@@ -24,7 +24,7 @@ class AugmenterManager(TA.SomeOf):
         transforms: Sequence[BaseWaveformTransform],
         p: float = 1.0,
         p_mode="per_batch",
-    ) -> NoReturn:
+    ) -> None:
         """ """
         super().__init__((1, None), transforms, p=p, p_mode=p_mode)
 

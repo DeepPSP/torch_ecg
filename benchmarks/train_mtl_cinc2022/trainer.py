@@ -6,7 +6,7 @@ import sys
 import argparse
 import textwrap
 from copy import deepcopy
-from typing import Any, Optional, Tuple, NoReturn, Dict, List, Sequence, Union
+from typing import Any, Optional, Tuple, Dict, List, Sequence, Union
 
 import numpy as np
 import torch
@@ -64,7 +64,7 @@ class CINC2022Trainer(BaseTrainer):
         device: Optional[torch.device] = None,
         lazy: bool = True,
         **kwargs: Any,
-    ) -> NoReturn:
+    ) -> None:
         """
 
         Parameters
@@ -110,7 +110,7 @@ class CINC2022Trainer(BaseTrainer):
         self,
         train_dataset: Optional[Dataset] = None,
         val_dataset: Optional[Dataset] = None,
-    ) -> NoReturn:
+    ) -> None:
         """
         setup the dataloaders for training and validation
 
@@ -180,13 +180,13 @@ class CINC2022Trainer(BaseTrainer):
             collate_fn=collate_fn,
         )
 
-    def _setup_augmenter_manager(self) -> NoReturn:
+    def _setup_augmenter_manager(self) -> None:
         """ """
         self.augmenter_manager = AugmenterManager.from_config(
             config=self.train_config[self.train_config.task]
         )
 
-    def _setup_criterion(self) -> NoReturn:
+    def _setup_criterion(self) -> None:
         """ """
         loss_kw = (
             self.train_config[self.train_config.task]
@@ -221,7 +221,7 @@ class CINC2022Trainer(BaseTrainer):
             )
         self.criterion.to(device=self.device, dtype=self.dtype)
 
-    def train_one_epoch(self, pbar: tqdm) -> NoReturn:
+    def train_one_epoch(self, pbar: tqdm) -> None:
         """
         train one epoch, and update the progress bar
 
@@ -598,7 +598,7 @@ _MODEL_MAP = {
 }
 
 
-def _set_task(task: str, config: CFG) -> NoReturn:
+def _set_task(task: str, config: CFG) -> None:
     """"""
     assert task in config.tasks
     config.task = task

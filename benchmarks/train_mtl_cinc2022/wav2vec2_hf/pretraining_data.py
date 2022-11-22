@@ -6,7 +6,7 @@ import warnings
 from copy import deepcopy
 from dataclasses import dataclass
 from random import shuffle
-from typing import Dict, List, Sequence, Optional, Union, NoReturn
+from typing import Dict, List, Sequence, Optional, Union
 
 import numpy as np
 import torch
@@ -228,7 +228,7 @@ class Wav2Vec2PretrainingDataset(Dataset, ReprMixin):
         feature_extractor: Wav2Vec2FeatureExtractor,
         training: bool = True,
         lazy: bool = True,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.config = deepcopy(config)
         self.feature_extractor = feature_extractor
@@ -291,7 +291,7 @@ class Wav2Vec2PretrainingDataset(Dataset, ReprMixin):
             raise Exception("call _load_all_data() before iterating over the dataset")
         return self.signals[index]
 
-    def _load_all_data(self) -> NoReturn:
+    def _load_all_data(self) -> None:
         """ """
         if self._signals is not None and len(self._signals) > 0:
             return
@@ -430,7 +430,7 @@ class FastDataReader(Dataset, ReprMixin):
         config: CFG,
         feature_extractor: Wav2Vec2FeatureExtractor,
         ppm: Optional[PreprocManager] = None,
-    ) -> NoReturn:
+    ) -> None:
         """ """
         self.reader = reader
         self.records = records

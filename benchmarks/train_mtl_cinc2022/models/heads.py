@@ -2,7 +2,7 @@
 """
 
 import warnings
-from typing import NoReturn, Optional, Dict
+from typing import Optional, Dict
 
 import torch.nn as nn
 import torch.nn.functional as F
@@ -24,7 +24,7 @@ class MultiTaskHead(nn.Module, SizeMixin):
 
     __name__ = "MultiTaskHead"
 
-    def __init__(self, in_channels: int, config: CFG) -> NoReturn:
+    def __init__(self, in_channels: int, config: CFG) -> None:
         """
 
         Parameters
@@ -140,7 +140,7 @@ class MultiTaskHead(nn.Module, SizeMixin):
                 )
         return out
 
-    def _setup_criterion(self, loss: str, loss_kw: Optional[dict] = None) -> NoReturn:
+    def _setup_criterion(self, loss: str, loss_kw: Optional[dict] = None) -> None:
         """ """
         if loss_kw is None:
             loss_kw = {}

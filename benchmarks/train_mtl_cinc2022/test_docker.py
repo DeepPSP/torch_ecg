@@ -19,7 +19,6 @@ set_entry_test_flag(True)
 
 
 from copy import deepcopy  # noqa: E402
-from typing import NoReturn  # noqa: E402
 
 import numpy as np  # noqa: E402
 import torch  # noqa: E402
@@ -72,7 +71,7 @@ del dr
 TASK = "classification"  # "multi_task"
 
 
-def test_dataset() -> NoReturn:
+def test_dataset() -> None:
     """ """
     ds_config = deepcopy(TrainCfg)
     ds_config.db_dir = tmp_data_dir
@@ -86,7 +85,7 @@ def test_dataset() -> NoReturn:
     print("dataset test passed")
 
 
-def test_models() -> NoReturn:
+def test_models() -> None:
     """ """
     model = CRNN_CINC2022(ModelCfg[TASK])
     model.to(DEVICE)
@@ -112,7 +111,7 @@ def test_models() -> NoReturn:
     print("models test passed")
 
 
-def test_challenge_metrics() -> NoReturn:
+def test_challenge_metrics() -> None:
     """ """
     outputs = [
         CINC2022Outputs(
@@ -162,7 +161,7 @@ def test_challenge_metrics() -> NoReturn:
     print("challenge metrics test passed")
 
 
-def test_trainer() -> NoReturn:
+def test_trainer() -> None:
     """ """
     train_config = deepcopy(TrainCfg)
     train_config.db_dir = tmp_data_dir
@@ -216,7 +215,7 @@ from train_model import train_challenge_model  # noqa: E402
 from run_model import run_model  # noqa: E402
 
 
-def test_entry() -> NoReturn:
+def test_entry() -> None:
     """ """
 
     data_folder = str(tmp_data_dir / "training_data")

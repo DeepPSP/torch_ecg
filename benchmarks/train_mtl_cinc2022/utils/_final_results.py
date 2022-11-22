@@ -6,7 +6,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Union, NoReturn, Dict, Optional, Tuple
+from typing import Union, Dict, Optional, Tuple
 
 import pandas as pd
 import requests
@@ -59,7 +59,7 @@ def _fetch_final_results() -> Dict[str, pd.DataFrame]:
     return df
 
 
-def _http_get(url: str, fname: Union[str, Path]) -> NoReturn:
+def _http_get(url: str, fname: Union[str, Path]) -> None:
     """ """
     resp = requests.get(url, stream=True)
     total = int(resp.headers.get("content-length", 0))
@@ -75,7 +75,7 @@ def _http_get(url: str, fname: Union[str, Path]) -> NoReturn:
             bar.update(size)
 
 
-def _update_final_results() -> NoReturn:
+def _update_final_results() -> None:
     """ """
     df = _fetch_final_results()
     updated = False

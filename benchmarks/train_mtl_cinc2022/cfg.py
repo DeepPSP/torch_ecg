@@ -3,7 +3,7 @@
 
 import pathlib
 from copy import deepcopy
-from typing import Union, Sequence, NoReturn
+from typing import Union, Sequence
 
 import numpy as np
 from sklearn.model_selection import ParameterGrid
@@ -673,7 +673,7 @@ OutcomeCfg.monitor = "outcome_cost"  # the lower the better
 
 def remove_extra_heads(
     train_config: CFG, model_config: CFG, heads: Union[str, Sequence[str]]
-) -> NoReturn:
+) -> None:
     """
     remove extra heads from **task-specific** train config and model config,
     e.g. `TrainCfg.classification` and `ModelCfg.classification`

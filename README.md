@@ -211,7 +211,7 @@ dataset = CINC2021Dataset(config, training=True, lazy=False)
 A typical signature of the instantiation (`__init__`) function of a model is as follows
 
 ```python
-__init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> NoReturn
+__init__(self, classes:Sequence[str], n_leads:int, config:Optional[CFG]=None, **kwargs:Any) -> None
 ```
 
 if a `config` is not specified, then the default config will be used (stored in the [`model_configs`](torch_ecg/model_configs) module).
