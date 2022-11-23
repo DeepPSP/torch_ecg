@@ -102,9 +102,11 @@ def test_models() -> None:
         drop_last=False,
         collate_fn=collate_fn,
     )
-    for idx, (data, labels) in enumerate(dl):
-        data.to(DEVICE)
-        print(model.inference(data))
+    for idx, input_tensors in enumerate(dl):
+        waveforms = input_tensors.pop("waveforms").to(DEVICE)
+        # input_tensors = {k: v.to(DEVICE) for k, v in input_tensors.items()}
+        # out_tensors = model(waveforms, input_tensors)
+        print(model.inference(waveforms))
         if idx > 10:
             break
 

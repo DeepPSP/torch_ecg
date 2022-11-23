@@ -2853,11 +2853,6 @@ def _compute_challenge_metrics(
             "cost",
         ]
     }
-    # metrics["task_score"] = (
-    #     metrics["weighted_accuracy"]
-    #     if list(classes) == BaseCfg.classes
-    #     else metrics["cost"]
-    # )
     return metrics
 
 
@@ -3789,21 +3784,22 @@ class CINC2022Trainer(BaseTrainer):
         if self.val_train_loader is not None and self.train_config.task not in [
             "segmentation"
         ]:
-            head_num = 5
-            head_scalar_preds = all_outputs[0].murmur_output.prob[:head_num]
-            head_bin_preds = all_outputs[0].murmur_output.bin_pred[:head_num]
+            log_head_num = 5
+            head_scalar_preds = all_outputs[0].murmur_output.prob[:log_head_num]
+            head_bin_preds = all_outputs[0].murmur_output.bin_pred[:log_head_num]
             head_preds_classes = [
                 np.array(all_outputs[0].murmur_output.classes)[np.where(row)[0]]
                 for row in head_bin_preds
             ]
-            head_labels = all_labels[0]["murmur"][:head_num]
+            head_labels = all_labels[0]["murmur"][:log_head_num]
             head_labels_classes = [
                 np.array(all_outputs[0].murmur_output.classes)[np.where(row)]
                 if head_labels.ndim == 2
                 else np.array(all_outputs[0].murmur_output.classes)[row]
                 for row in head_labels
             ]
-            for n in range(head_num):
+            log_head_num = min(log_head_num, len(head_scalar_preds))
+            for n in range(log_head_num):
                 msg = textwrap.dedent(
                     f"""
                 ----------------------------------------------
@@ -3817,20 +3813,21 @@ class CINC2022Trainer(BaseTrainer):
                 )
                 self.log_manager.log_message(msg)
             if "outcome" in input_tensors:
-                head_scalar_preds = all_outputs[0].outcome_output.prob[:head_num]
-                head_bin_preds = all_outputs[0].outcome_output.bin_pred[:head_num]
+                head_scalar_preds = all_outputs[0].outcome_output.prob[:log_head_num]
+                head_bin_preds = all_outputs[0].outcome_output.bin_pred[:log_head_num]
                 head_preds_classes = [
                     np.array(all_outputs[0].outcome_output.classes)[np.where(row)[0]]
                     for row in head_bin_preds
                 ]
-                head_labels = all_labels[0]["outcome"][:head_num]
+                head_labels = all_labels[0]["outcome"][:log_head_num]
                 head_labels_classes = [
                     np.array(all_outputs[0].outcome_output.classes)[np.where(row)[0]]
                     if head_labels.ndim == 2
                     else np.array(all_outputs[0].outcome_output.classes)[row]
                     for row in head_labels
                 ]
-                for n in range(head_num):
+                log_head_num = min(log_head_num, len(head_scalar_preds))
+                for n in range(log_head_num):
                     msg = textwrap.dedent(
                         f"""
                     ----------------------------------------------
@@ -4004,9 +4001,11 @@ def test_models():
         drop_last=False,
         collate_fn=collate_fn,
     )
-    for idx, (data, labels) in enumerate(dl):
-        data.to(DEVICE)
-        print(model.inference(data))
+    for idx, input_tensors in enumerate(dl):
+        waveforms = input_tensors.pop("waveforms").to(DEVICE)
+        # input_tensors = {k: v.to(DEVICE) for k, v in input_tensors.items()}
+        # out_tensors = model(waveforms, input_tensors)
+        print(model.inference(waveforms))
         if idx > 10:
             break
 

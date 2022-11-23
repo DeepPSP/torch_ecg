@@ -2,7 +2,6 @@
 """
 
 import logging
-import shutil
 import textwrap
 from copy import deepcopy
 from itertools import repeat
@@ -775,4 +774,4 @@ def test_crnn_cinc2021_pipeline() -> None:
 
         del bmd, trainer, model
 
-    shutil.rmtree(_CWD)
+    # shutil.rmtree(_CWD)

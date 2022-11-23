@@ -375,21 +375,22 @@ class CINC2022Trainer(BaseTrainer):
         if self.val_train_loader is not None and self.train_config.task not in [
             "segmentation"
         ]:
-            head_num = 5
-            head_scalar_preds = all_outputs[0].murmur_output.prob[:head_num]
-            head_bin_preds = all_outputs[0].murmur_output.bin_pred[:head_num]
+            log_head_num = 5
+            head_scalar_preds = all_outputs[0].murmur_output.prob[:log_head_num]
+            head_bin_preds = all_outputs[0].murmur_output.bin_pred[:log_head_num]
             head_preds_classes = [
                 np.array(all_outputs[0].murmur_output.classes)[np.where(row)[0]]
                 for row in head_bin_preds
             ]
-            head_labels = all_labels[0]["murmur"][:head_num]
+            head_labels = all_labels[0]["murmur"][:log_head_num]
             head_labels_classes = [
                 np.array(all_outputs[0].murmur_output.classes)[np.where(row)]
                 if head_labels.ndim == 2
                 else np.array(all_outputs[0].murmur_output.classes)[row]
                 for row in head_labels
             ]
-            for n in range(head_num):
+            log_head_num = min(log_head_num, len(head_scalar_preds))
+            for n in range(log_head_num):
                 msg = textwrap.dedent(
                     f"""
                 ----------------------------------------------
@@ -403,20 +404,21 @@ class CINC2022Trainer(BaseTrainer):
                 )
                 self.log_manager.log_message(msg)
             if "outcome" in input_tensors:
-                head_scalar_preds = all_outputs[0].outcome_output.prob[:head_num]
-                head_bin_preds = all_outputs[0].outcome_output.bin_pred[:head_num]
+                head_scalar_preds = all_outputs[0].outcome_output.prob[:log_head_num]
+                head_bin_preds = all_outputs[0].outcome_output.bin_pred[:log_head_num]
                 head_preds_classes = [
                     np.array(all_outputs[0].outcome_output.classes)[np.where(row)[0]]
                     for row in head_bin_preds
                 ]
-                head_labels = all_labels[0]["outcome"][:head_num]
+                head_labels = all_labels[0]["outcome"][:log_head_num]
                 head_labels_classes = [
                     np.array(all_outputs[0].outcome_output.classes)[np.where(row)[0]]
                     if head_labels.ndim == 2
                     else np.array(all_outputs[0].outcome_output.classes)[row]
                     for row in head_labels
                 ]
-                for n in range(head_num):
+                log_head_num = min(log_head_num, len(head_scalar_preds))
+                for n in range(log_head_num):
                     msg = textwrap.dedent(
                         f"""
                     ----------------------------------------------

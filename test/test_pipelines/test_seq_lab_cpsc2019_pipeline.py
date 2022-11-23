@@ -1,7 +1,6 @@
 """
 """
 
-import shutil
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
@@ -572,4 +571,4 @@ def test_seq_lab_cpsc2019_pipeline() -> None:
 
         del bmd, trainer, model
 
-    shutil.rmtree(_CWD)
+    # shutil.rmtree(_CWD)
