@@ -3,7 +3,6 @@ import os
 import re
 import textwrap
 import warnings
-from abc import abstractmethod
 from copy import deepcopy
 from collections import defaultdict
 from dataclasses import dataclass
@@ -14,27 +13,16 @@ from typing import Union, Optional, Any, List, Dict, Tuple, Sequence
 import numpy as np
 import pandas as pd
 import wfdb
+import librosa
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from einops import rearrange
+import scipy.io.wavfile as sio_wav
+import torchaudio
 import torch_audiomentations as TA
 from torch_audiomentations.core.transforms_interface import BaseWaveformTransform
-
-try:
-    import torchaudio
-except Exception:
-    torchaudio = None
-try:
-    import librosa
-except Exception:
-    librosa = None
-try:
-    import scipy.io.wavfile as sio_wav
-except Exception:
-    sio_wav = None
-import IPython
 from tqdm.auto import tqdm
 from pcg_springer_features.schmidt_spike_removal import schmidt_spike_removal
 from deprecated import deprecated
@@ -672,47 +660,6 @@ ModelCfg.multi_task.segmentation_head.loss_kw = deepcopy(
 )
 
 
-def remove_extra_heads(
-    train_config: CFG, model_config: CFG, heads: Union[str, Sequence[str]]
-) -> None:
-    """
-    remove extra heads from **task-specific** train config and model config,
-    e.g. `TrainCfg.classification` and `ModelCfg.classification`
-
-    Parameters
-    ----------
-    train_config : CFG
-        train config
-    model_config : CFG
-        model config
-    heads : str or sequence of str,
-        names of heads to remove
-
-    """
-    if heads in ["", None, []]:
-        return
-    if isinstance(heads, str):
-        heads = [heads]
-    assert set(heads) <= set(["outcome", "outcomes", "segmentation"])
-    for head in heads:
-        if head.lower() in ["outcome", "outcomes"]:
-            train_config.outcomes = None
-            train_config.outcome_map = None
-            train_config.loss.pop("outcome", None)
-            train_config.loss_kw.pop("outcome", None)
-            train_config.head_weights = {"murmur": 1.0}
-            train_config.monitor = "murmur_weighted_accuracy"
-            model_config.outcomes = None
-            model_config.outcome_head = None
-        if head.lower() in ["segmentation"]:
-            train_config.states = None
-            train_config.state_map = None
-            train_config.loss.pop("segmentation", None)
-            train_config.loss_kw.pop("segmentation", None)
-            model_config.states = None
-            model_config.segmentation_head = None
-
-
 ###############################################################################
 
 
@@ -837,11 +784,6 @@ class PCGDataBase(PhysioNetDataBase):
         disable this function implemented in the base class
         """
         print("DO NOT USE THIS FUNCTION for a PCG database!")
-
-    @abstractmethod
-    def play(self, rec: str, **kwargs) -> IPython.display.Audio:
-        """ """
-        raise NotImplementedError
 
     def _reset_fs(self, new_fs: int) -> None:
         """ """
@@ -1632,198 +1574,6 @@ class CINC2022Reader(PCGDataBase):
             "Diastolic murmur pitch",
             "Diastolic murmur quality",
         ]
-
-    def play(self, rec: Union[str, int], **kwargs) -> IPython.display.Audio:
-        """
-        play the record `rec` in a Juptyer Notebook
-
-        Parameters
-        ----------
-        rec : str or int,
-            the record name or the index of the record in `self.all_records`
-        kwargs : dict,
-            optional keyword arguments including `data`, `fs`,
-            if specified, the data will be played instead of the record
-
-        Returns
-        -------
-        IPython.display.Audio,
-            the audio object of the record
-
-        """
-        if "data" in kwargs:
-            return IPython.display.Audio(
-                kwargs["data"], rate=kwargs.get("fs", self.get_fs(rec))
-            )
-        audio_file = self.get_absolute_path(rec)
-        return IPython.display.Audio(filename=str(audio_file))
-
-    def plot(self, rec: Union[str, int], **kwargs) -> None:
-        """
-        plot the record `rec`, with metadata and segmentation
-
-        Parameters
-        ----------
-        rec : str or int,
-            the record name or the index of the record in `self.all_records`
-        kwargs : dict,
-            not used currently
-
-        Returns
-        -------
-        fig: matplotlib.figure.Figure,
-            the figure of the record
-        ax: matplotlib.axes.Axes,
-            the axes of the figure
-
-        """
-        import matplotlib.pyplot as plt
-
-        waveforms = self.load_pcg(rec, data_format="flat")
-        df_segmentation = self.load_segmentation(rec)
-        meta_data = self.load_meta_data(self.get_subject(rec))
-        labels = {
-            "Outcome": meta_data["Outcome"],
-            "Murmur": meta_data["Murmur"],
-        }
-        meta_data = {
-            k: "NA" if meta_data[k] == self.stats_fillna_val else meta_data[k]
-            for k in ["Age", "Sex", "Height", "Weight", "Pregnancy status"]
-        }
-        rec_dec = self._decompose_rec(rec)
-        rec_dec = {
-            "SubjectID": rec_dec["sid"],
-            "Location": rec_dec["loc"],
-            "Number": rec_dec["num"],
-        }
-        rec_dec = {k: v for k, v in rec_dec.items() if v is not None}
-        figsize = (5 * len(waveforms) / self.fs, 5)
-
-        fig, ax = plt.subplots(figsize=figsize)
-        ax.plot(
-            np.arange(len(waveforms)) / self.fs,
-            waveforms,
-            color=self.palette["default"],
-        )
-        counter = {
-            "systolic": 0,
-            "diastolic": 0,
-            "S1": 0,
-            "S2": 0,
-        }
-        for _, row in df_segmentation.iterrows():
-            if row.wave != "unannotated":
-                # labels starting with "_" are ignored
-                # ref. https://stackoverflow.com/questions/44632903/setting-multiple-axvspan-labels-as-one-element-in-legend
-                ax.axvspan(
-                    row.start_t,
-                    row.end_t,
-                    color=self.palette[row.wave],
-                    alpha=0.3,
-                    label="_" * counter[row.wave] + row.wave,
-                )
-                counter[row.wave] += 1
-        ax.legend(loc="upper right")
-        bbox_prop = {
-            "boxstyle": "round",
-            "facecolor": "#EAEAF2",
-            "edgecolor": "black",
-        }
-        ax.annotate(
-            "\n".join(["{}: {}".format(k, v) for k, v in rec_dec.items()]),
-            (0.01, 0.95),
-            xycoords="axes fraction",
-            va="top",
-            bbox=bbox_prop,
-        )
-        ax.annotate(
-            "\n".join(["{}: {}".format(k, v) for k, v in meta_data.items()]),
-            (0.01, 0.80),
-            xycoords="axes fraction",
-            va="top",
-            bbox=bbox_prop,
-        )
-        ax.annotate(
-            "\n".join(["{}: {}".format(k, v) for k, v in labels.items()]),
-            (0.01, 0.15),
-            xycoords="axes fraction",
-            va="top",
-            bbox=bbox_prop,
-        )
-
-        return fig, ax
-
-    def plot_outcome_correlation(self, col: str = "Murmur", **kwargs: Any) -> object:
-        """
-        plot the correlation between the outcome and the feature `col`
-
-        Parameters
-        ----------
-        col: str, default "Murmur",
-            the feature to be used for the correlation, can be one of
-            "Murmur", "Age", "Sex", "Pregnancy status"
-        kwargs: dict,
-            key word arguments,
-            passed to the function `pd.DataFrame.plot`
-
-        Returns
-        -------
-        ax: mpl.axes.Axes
-
-        """
-        # import matplotlib as mpl
-        import matplotlib.pyplot as plt
-        import seaborn as sns
-
-        # sns.set()
-        sns.set_theme(style="white")  # darkgrid, whitegrid, dark, white, ticks
-        plt.rcParams["xtick.labelsize"] = 20
-        plt.rcParams["ytick.labelsize"] = 20
-        plt.rcParams["axes.labelsize"] = 24
-        plt.rcParams["legend.fontsize"] = 18
-        plt.rcParams["hatch.linewidth"] = 2.5
-
-        colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
-        hatches = ["/", "\\", "|", ".", "x"]
-
-        assert col in ["Murmur", "Age", "Sex", "Pregnancy status"]
-        prefix_sep = " - "
-        df_dummies = pd.get_dummies(
-            self.df_stats[col], prefix=col, prefix_sep=prefix_sep
-        )
-        columns = df_dummies.columns.tolist()
-        if f"{col}{prefix_sep}{self.stats_fillna_val}" in columns:
-            idx = columns.index(f"{col}{prefix_sep}{self.stats_fillna_val}")
-            columns[idx] = f"{col}{prefix_sep}{'NA'}"
-            df_dummies.columns = columns
-        df_stats = pd.concat((self.df_stats, df_dummies), axis=1)
-        plot_kw = dict(
-            kind="bar",
-            figsize=(8, 8),
-            ylabel="Number of Subjects (n.u.)",
-            stacked=True,
-            rot=0,
-            ylim=(0, 620),
-            yticks=np.arange(0, 700, 100),
-            width=0.3,
-            fill=True,
-            # hatch=hatches[: len(columns)],
-        )
-        plot_kw.update(kwargs)
-        ax = (
-            df_stats.groupby("Outcome")
-            .agg("sum")[df_dummies.columns.tolist()]
-            .plot(**plot_kw)
-        )
-        for idx in range(len(columns)):
-            ax.patches[2 * idx].set_hatch(hatches[idx])
-            ax.patches[2 * idx + 1].set_hatch(hatches[idx])
-        ax.legend(loc="upper left", ncol=int(np.ceil(len(columns) / 3)))
-        plt.tight_layout()
-
-        # mpl.rc_file_defaults()
-
-        return ax
 
 
 class CinC2022Dataset(Dataset, ReprMixin):
