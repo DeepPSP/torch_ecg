@@ -3,6 +3,7 @@
 ![pytest](https://github.com/DeepPSP/torch_ecg/actions/workflows/run-pytest.yml/badge.svg?branch=develop)
 ![codeql](https://github.com/DeepPSP/torch_ecg/actions/workflows/codeql-analysis.yml/badge.svg)
 ![formatting](https://github.com/DeepPSP/torch_ecg/actions/workflows/check-formatting.yml/badge.svg)
+[![codecov](https://codecov.io/gh/DeepPSP/torch_ecg/branch/master/graph/badge.svg?token=9YOPZ8GREA)](https://codecov.io/gh/DeepPSP/torch_ecg)
 ![PyPI](https://img.shields.io/pypi/v/torch-ecg?style=flat-square)
 [![DOI](https://zenodo.org/badge/298482237.svg)](https://zenodo.org/badge/latestdoi/298482237)
 ![downloads](https://img.shields.io/pypi/dm/torch-ecg?style=flat-square)
