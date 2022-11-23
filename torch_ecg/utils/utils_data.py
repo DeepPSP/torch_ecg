@@ -9,6 +9,7 @@ from collections import namedtuple, Counter  # noqa: F401
 from copy import deepcopy
 from dataclasses import dataclass
 from numbers import Real
+from pathlib import Path
 from typing import (
     Dict,
     List,
@@ -20,7 +21,8 @@ from typing import (
 
 import numpy as np
 import pandas as pd
-from torch import Tensor
+from torch import Tensor, from_numpy
+from torch.nn.functional import interpolate
 from sklearn.utils import compute_class_weight
 from wfdb import MultiRecord, Record
 from wfdb.io import _header
@@ -53,7 +55,6 @@ def get_mask(
     return_fmt: str = "mask",
 ) -> Union[np.ndarray, list]:
     """
-
     get the mask around the `critical_points`
 
     Parameters
@@ -76,6 +77,19 @@ def get_mask(
     mask: ndarray or list,
         the mask array
 
+    Examples
+    --------
+    ```python
+    >>> mask = get_mask((12, 5000), np.arange(250, 5000 - 250, 400), 50, 50)
+    >>> mask.shape
+    (12, 5000)
+    >>> mask.sum(axis=1)
+    array([1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200])
+    >>> intervals = get_mask((12, 5000), np.arange(250, 5000 - 250, 400), 50, 50, return_fmt="intervals")
+    >>> intervals
+    [[200, 300], [600, 700], [1000, 1100], [1400, 1500], [1800, 1900], [2200, 2300], [2600, 2700], [3000, 3100], [3400, 3500], [3800, 3900], [4200, 4300], [4600, 4700]]
+    ```
+
     """
     if isinstance(shape, int):
         shape = (shape,)
@@ -96,8 +110,7 @@ def class_weight_to_sample_weight(
     y: np.ndarray, class_weight: Union[str, List[float], np.ndarray, dict] = "balanced"
 ) -> np.ndarray:
     """
-
-    transform class weight to sample weight
+    Transform class weight to sample weight
 
     Parameters
     ----------
@@ -115,17 +128,34 @@ def class_weight_to_sample_weight(
     sample_weight: ndarray,
         the array of sample weight
 
+    Examples
+    --------
+    ```python
+    >>> y = np.array([0, 0, 0, 0, 1, 1, 1, 2])
+    >>> class_weight_to_sample_weight(y, class_weight="balanced").tolist()
+    [0.25, 0.25, 0.25, 0.25, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 1.0]
+    >>> class_weight_to_sample_weight(y, class_weight=[1, 1, 3]).tolist()
+    [0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 1.0]
+    >>> class_weight_to_sample_weight(y, class_weight={0: 2, 1: 1, 2: 3}).tolist()
+    [0.6666666666666666, 0.6666666666666666, 0.6666666666666666, 0.6666666666666666, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 1.0]
+    >>> y = ["dog", "dog", "cat", "dog", "cattle", "cat", "dog", "cat"]
+    >>> class_weight_to_sample_weight(y, class_weight={"dog": 1, "cat": 2, "cattle": 3}).tolist()
+    [0.3333333333333333, 0.3333333333333333, 0.6666666666666666, 0.3333333333333333, 1.0, 0.6666666666666666, 0.3333333333333333, 0.6666666666666666]
+    >>> class_weight_to_sample_weight(y, class_weight=[1, 2, 3])
+    AssertionError: if `y` are of type str, then class_weight should be "balanced" or a dict
+    ```
+
     """
     if not class_weight:
         sample_weight = np.ones_like(y, dtype=y.dtype)
         return sample_weight
 
     try:
-        sample_weight = y.copy().astype(int)
-    except Exception:
-        sample_weight = y.copy()
-        assert (
-            isinstance(class_weight, dict) or class_weight.lower() == "balanced"
+        sample_weight = np.array(y.copy()).astype(int)
+    except ValueError:
+        sample_weight = np.array(y.copy())
+        assert isinstance(class_weight, dict) or (
+            isinstance(class_weight, str) and class_weight.lower() == "balanced"
         ), "if `y` are of type str, then class_weight should be \042balanced\042 or a dict"
 
     if isinstance(class_weight, str) and class_weight.lower() == "balanced":
@@ -138,24 +168,31 @@ def class_weight_to_sample_weight(
     return sample_weight
 
 
-def rdheader(header_data: Union[str, Sequence[str]]) -> Union[Record, MultiRecord]:
+def rdheader(
+    header_data: Union[Path, str, Sequence[str]]
+) -> Union[Record, MultiRecord]:
     """
-
     modified from `wfdb.rdheader`
 
     Parameters
     ----------
-    head_data: str, or sequence of str,
+    head_data: Path, str, or sequence of str,
         path of the .hea header file, or lines of the .hea header file
 
+    Returns
+    -------
+    record: Record, or MultiRecord,
+        the record object
+
     """
-    if isinstance(header_data, str):
+    if isinstance(header_data, (str, Path)):
+        header_data = str(header_data)
         if not header_data.endswith(".hea"):
             _header_data = header_data + ".hea"
         else:
             _header_data = header_data
         if not os.path.isfile(_header_data):
-            raise FileNotFoundError
+            raise FileNotFoundError(f"file `{_header_data}` not found")
         with open(_header_data, "r") as f:
             _header_data = f.read().splitlines()
     elif isinstance(header_data, Sequence):
@@ -232,8 +269,7 @@ def ensure_lead_fmt(
     values: np.ndarray, n_leads: int = 12, fmt: str = "lead_first"
 ) -> np.ndarray:
     """
-
-    ensure the `n_leads`-lead (ECG) signal to be of the format of `fmt`
+    Ensure the `n_leads`-lead (ECG) signal to be of the format of `fmt`
 
     Parameters
     ----------
@@ -250,10 +286,21 @@ def ensure_lead_fmt(
     out_values: ndarray,
         ECG signal in the format of `fmt`
 
+    Examples
+    --------
+    ```python
+    >>> values = np.random.randn(5000, 12)
+    >>> new_values = ensure_lead_fmt(values, fmt="lead_first")
+    >>> new_values.shape
+    (5000, 12)
+    >>> np.allclose(values, new_values.T)
+    True
+    ```
+
     """
     dtype = values.dtype
     out_values = np.array(values, dtype=dtype)
-    lead_dim = np.where(np.array(out_values.shape) == n_leads)[0]
+    lead_dim = np.where(np.array(out_values.shape) == n_leads)[0].tolist()
     if not any([[0] == lead_dim or [1] == lead_dim]):
         raise ValueError(f"not valid {n_leads}-lead signal")
     lead_dim = lead_dim[0]
@@ -262,6 +309,13 @@ def ensure_lead_fmt(
     ):
         out_values = out_values.T
         return out_values
+    elif fmt.lower() not in [
+        "lead_first",
+        "channel_first",
+        "lead_last",
+        "channel_last",
+    ]:
+        raise ValueError(f"not valid fmt: `{fmt}`")
     return out_values
 
 
@@ -272,14 +326,14 @@ def ensure_siglen(
     tolerance: Optional[float] = None,
 ) -> np.ndarray:
     """
-
-    ensure the (ECG) signal to be of length `siglen`,
+    Ensure the (ECG) signal to be of length `siglen`,
     strategy:
-        If `values` has length greater than `siglen`,
+        1. If `values` has length greater than `siglen`,
         the central `siglen` samples will be adopted;
         otherwise, zero padding will be added to both sides.
-        If `tolerance` is given,
-        then if the length of `values` is longer than `siglen` by more than `tolerance`,
+        2. If `tolerance` is given,
+        then if the length of `values` is longer than
+        `siglen` by more than `tolerance` in percentage,
         the `values` will be sliced to have multiple of `siglen` samples.
 
     Parameters
@@ -291,6 +345,8 @@ def ensure_siglen(
     fmt: str, default "lead_first", case insensitive,
         format of the input and output values, can be one of
         "lead_first" (alias "channel_first"), "lead_last" (alias "channel_last")
+    tolerance: float, optional,
+        tolerance of the length of `values` to be longer than `siglen` in percentage
 
     Returns
     -------
@@ -298,9 +354,25 @@ def ensure_siglen(
         ECG signal in the format of `fmt` and of fixed length `siglen`,
         of ndim=3 if `tolerence` is given, otherwise ndim=2
 
+    Examples
+    --------
+    ```python
+    >>> values = np.random.randn(12, 4629)
+    >>> new_values = ensure_siglen(values, 5000, fmt="lead_first")
+    >>> new_values.shape
+    (12, 5000)
+    >>> new_values = ensure_siglen(values, 4000, tolerance=0.1, fmt="lead_first")
+    >>> new_values.shape
+    (2, 12, 4000)
+    >>> new_values = ensure_siglen(values, 4000, tolerance=0.2, fmt="lead_first")
+    >>> new_values.shape
+    (1, 12, 4000)
+    ```
+
     """
     dtype = values.dtype
     if fmt.lower() in ["channel_last", "lead_last"]:
+        # to lead_first
         _values = np.array(values, dtype=dtype).T
     else:
         _values = np.array(values, dtype=dtype).copy()
@@ -405,8 +477,7 @@ def masks_to_waveforms(
     leads: Optional[Sequence[str]] = None,
 ) -> Dict[str, List[ECGWaveForm]]:
     """
-
-    convert masks into lists of waveforms
+    Convert masks into lists of waveforms
 
     Parameters
     ----------
@@ -432,6 +503,23 @@ def masks_to_waveforms(
         each item value is a list containing the `ECGWaveForm`s corr. to the lead;
         each item key is from `leads` if `leads` is set,
         otherwise would be "lead_1", "lead_2", ..., "lead_n"
+
+    Examples
+    --------
+    ```python
+    >>> class_map = {
+    ...     "pwave": 1,
+    ...     "qrs": 2,
+    ...     "twave": 3,
+    ... }
+    >>> masks = np.zeros((2, 500), dtype=int)  # 2 leads, 5000 samples
+    >>> masks[:, 100:150] = 1
+    >>> masks[:, 160:205] = 2
+    >>> masks[:, 250:340] = 3
+    >>> waveforms = masks_to_waveforms(masks, class_map=class_map, fs=500, leads=["III", "aVR"])
+    >>> waveforms["III"][0]
+    ECGWaveForm(name='pwave', onset=100, offset=150, peak=nan, duration=100.0)
+    ```
 
     """
     if masks.ndim == 1:
@@ -490,6 +578,8 @@ def mask_to_intervals(
     right_inclusive: bool = False,
 ) -> Union[list, dict]:
     """
+    Convert a mask into a list of intervals,
+    or a dict of lists of intervals, if `vals` has multiple values
 
     Parameters
     ----------
@@ -507,6 +597,23 @@ def mask_to_intervals(
         the intervals corr. to each value in `vals` if `vals` is `None` or `Sequence`;
         or the intervals corr. to `vals` if `vals` is int.
         each interval is of the form `[a,b]`
+
+    Examples
+    --------
+    ```python
+    >>> mask = np.zeros(100, dtype=int)
+    >>> mask[10: 20] = 1
+    >>> mask[80: 95] = 1
+    >>> mask[50: 60] = 2
+    >>> mask_to_intervals(mask, vals=1)
+    [[10, 20], [80, 95]]
+    >>> mask_to_intervals(mask, vals=[0, 2])
+    {0: [[0, 10], [20, 50], [60, 80], [95, 100]], 2: [[50, 60]]}
+    >>> mask_to_intervals(mask)
+    {0: [[0, 10], [20, 50], [60, 80], [95, 100]], 1: [[10, 20], [80, 95]], 2: [[50, 60]]}
+    >>> mask_to_intervals(mask, vals=[1, 2], right_inclusive=True)
+    {1: [[10, 19], [80, 94]], 2: [[50, 59]]}
+    ```
 
     """
     if vals is None:
@@ -542,6 +649,7 @@ def mask_to_intervals(
 
 def uniform(low: Real, high: Real, num: int) -> List[float]:
     """
+    Generate a list of `num` numbers uniformly distributed between `low` and `high`
 
     Parameters
     ----------
@@ -556,6 +664,14 @@ def uniform(low: Real, high: Real, num: int) -> List[float]:
     -------
     arr: list of float,
         array of randomly generated numbers with uniform distribution
+
+    Examples
+    --------
+    ```python
+    >>> arr = uniform(0, 1, 10)
+    >>> all([0 <= x <= 1 for x in arr])
+    True
+    ```
 
     """
     arr = [DEFAULTS.RNG.uniform(low, high) for _ in range(num)]
@@ -604,7 +720,7 @@ def stratified_train_test_split(
     invalid_cols = [
         col
         for col in stratified_cols
-        if not all([v > 1 for v in Counter(df[col]).values()])
+        if not all([v > 1 for v in Counter(df[col].apply(str)).values()])
     ]
     if len(invalid_cols) > 0:
         warnings.warn(
@@ -613,7 +729,8 @@ def stratified_train_test_split(
             RuntimeWarning,
         )
     stratified_cols = [col for col in stratified_cols if col not in invalid_cols]
-    df_inspection = df[stratified_cols].copy()
+    # map to str to avoid incorrect comparison of nan values
+    df_inspection = df[stratified_cols].copy().applymap(str)
     for item in stratified_cols:
         all_entities = df_inspection[item].unique().tolist()
         entities_dict = {e: str(i) for i, e in enumerate(all_entities)}
@@ -650,14 +767,16 @@ def cls_to_bin(
     cls_array: Union[np.ndarray, Tensor], num_classes: Optional[int] = None
 ) -> np.ndarray:
     """
-
-    converting a categorical (class indices) array of shape (n,)
+    Converting a categorical (class indices) array of shape (n,)
     to a one-hot (binary) array of shape (n, num_classes)
 
     Parameters
     ----------
     cls_array: ndarray,
-        class indices array of shape (n,)
+        class indices array (tensor) of shape (num_samples,);
+        or of shape (num_samples, num_samples) if `num_classes` is not None,
+        in which case `cls_array` should be consistant with `num_classes`,
+        and the function will return `cls_array` directly
     num_classes: int, optional,
         number of classes,
         if not specified, it will be inferred from the values of `cls_array`
@@ -665,16 +784,29 @@ def cls_to_bin(
     Returns
     -------
     bin_array: ndarray,
-        binary array of shape (n, num_classes)
+        binary array of shape (num_samples, num_classes)
+
+    Examples
+    --------
+    ```python
+    >>> cls_array = torch.randint(0, 26, size=(1000,))
+    >>> bin_array = cls_to_bin(cls_array)
+    >>> cls_array = np.random.randint(0, 26, size=(1000,))
+    >>> bin_array = cls_to_bin(cls_array)
+    ```
 
     """
     if isinstance(cls_array, Tensor):
         cls_array = cls_array.cpu().numpy()
     if num_classes is None:
+        assert (
+            cls_array.ndim == 1
+        ), "`cls_array` should be 1D if num_classes is not specified"
         num_classes = cls_array.max() + 1
-    assert (
-        num_classes > 0 and num_classes == cls_array.max() + 1
-    ), "num_classes must be greater than 0 and equal to the max value of cls_array"
+    if cls_array.ndim == 1:
+        assert (
+            num_classes > 0 and num_classes == cls_array.max() + 1
+        ), "num_classes must be greater than 0 and equal to the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified"
     if cls_array.ndim == 2 and cls_array.shape[1] == num_classes:
         bin_array = cls_array
     else:
@@ -687,29 +819,30 @@ def cls_to_bin(
 
 def generate_weight_mask(
     target_mask: np.ndarray,
-    fg_weight: float,
-    fs: int,
-    reduction: int,
-    radius: float,
-    boundary_weight: float,
+    fg_weight: Real,
+    fs: Real,
+    reduction: Real,
+    radius: Real,
+    boundary_weight: Real,
     plot: bool = False,
 ) -> np.ndarray:
     """
-
-    generate weight mask for a binary target mask,
+    Generate weight mask for a binary target mask,
     accounting the foreground weight and boundary weight
 
     Parameters
     ----------
     target_mask: ndarray,
-        the target mask, assumed to be 1d
-    fg_weight: float,
-        foreground weight, usually > 1
-    fs: int,
+        the target mask, assumed to be 1d and binary
+    fg_weight: real number,
+        foreground (value 1) weight, usually > 1
+    fs: real number,
         sampling frequency of the signal
-    reduction: int,
+    reduction: real number,
         reduction ratio of the mask w.r.t. the signal
-    boundary_weight: float,
+    radius: real number,
+        radius of the boundary, with units in seconds
+    boundary_weight: real number,
         weight for the boundaries (positions where values change) of the target map
     plot: bool, default False,
         if True, target_mask and the result weight_mask will be plotted
@@ -719,7 +852,52 @@ def generate_weight_mask(
     weight_mask: ndarray,
         the weight mask
 
+    Examples
+    --------
+    ```python
+    >>> target_mask = np.zeros(50000, dtype=int)
+    >>> target_mask[500:14000] = 1
+    >>> target_mask[35800:44600] = 1
+    >>> fg_weight = 2.0
+    >>> fs = 500
+    >>> reduction = 1
+    >>> radius = 0.8
+    >>> boundary_weight = 5.0
+    >>> weight_mask = generate_weight_mask(
+    ...     target_mask, fg_weight, fs, reduction, radius, boundary_weight
+    ... )
+    >>> weight_mask.shape
+    (50000,)
+    >>> reduction = 10
+    >>> weight_mask = generate_weight_mask(
+    ...     target_mask, fg_weight, fs, reduction, radius, boundary_weight
+    ... )
+    >>> weight_mask.shape
+    (5000,)
+    ```
+
     """
+    assert target_mask.ndim == 1, "`target_mask` should be 1D"
+    assert set(np.unique(target_mask)).issubset(
+        {0, 1}
+    ), "`target_mask` should be binary"
+    assert (
+        isinstance(reduction, Real) and reduction >= 1
+    ), "`reduction` should be a real number greater than 1"
+    if reduction > 1:
+        # downsample the target mask
+        target_mask = (
+            interpolate(
+                from_numpy(target_mask).unsqueeze(0).unsqueeze(0).float(),
+                mode="nearest",
+                scale_factor=1 / reduction,
+                recompute_scale_factor=True,
+            )
+            .squeeze(0)
+            .squeeze(0)
+            .numpy()
+            .astype(DEFAULTS.DTYPE.NP)
+        )
     weight_mask = np.ones_like(target_mask, dtype=DEFAULTS.DTYPE.NP)
     sigma = int((radius * fs) / reduction)
     weight = np.full_like(target_mask, fg_weight) - 1
@@ -734,13 +912,21 @@ def generate_weight_mask(
         )
         weight_mask += weight
     if plot:
-        import matplotlib.pyplot as plt
+        try:
+            import matplotlib.pyplot as plt
+        except ModuleNotFoundError:
+            plt = None
+            warnings.warn(
+                "matplotlib is not installed, plotting is skipped", RuntimeWarning
+            )
 
-        fig, ax = plt.subplots(figsize=(12, 6))
-        ax.plot(target_mask, label="target mask")
-        ax.plot(weight_mask, label="weight mask")
-        ax.set_xlabel("samples")
-        ax.set_ylabel("weight")
-        ax.legend(loc="best")
-        plt.show()
+        if plt is not None:
+            fig, ax = plt.subplots(figsize=(12, 6))
+            ax.plot(target_mask, label="target mask")
+            ax.plot(weight_mask, label="weight mask")
+            ax.set_xlabel("samples")
+            ax.set_ylabel("weight")
+            ax.legend(loc="best")
+            plt.show()
+
     return weight_mask

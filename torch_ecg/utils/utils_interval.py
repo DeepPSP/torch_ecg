@@ -46,7 +46,6 @@ GeneralizedInterval = Union[Sequence[Interval], type(EMPTY_SET)]
 
 def overlaps(interval: Interval, another: Interval) -> int:
     """
-
     Return the amount of overlap, in bp between interval and anohter.
     If >0, the number of bp of overlap
     If 0,  they are book-ended
@@ -70,8 +69,7 @@ def overlaps(interval: Interval, another: Interval) -> int:
 def validate_interval(
     interval: Union[Interval, GeneralizedInterval], join_book_endeds: bool = True
 ) -> Tuple[bool, Union[Interval, GeneralizedInterval]]:
-    """finished, not checked,
-
+    """
     check whether `interval` is an `Interval` or a `GeneralizedInterval`,
     if true, return True, and validated (of the form [a,b] with a<=b) interval,
     return `False, []`, otherwise
@@ -106,7 +104,6 @@ def in_interval(
     val: Real, interval: Interval, left_closed: bool = True, right_closed: bool = False
 ) -> bool:
     """
-
     check whether val is inside interval or not
 
     Parameters
@@ -118,7 +115,8 @@ def in_interval(
 
     Returns
     -------
-    is_in: bool,
+    bool,
+        whether `val` is inside `generalized_interval` or not
 
     """
     itv = sorted(interval)
@@ -140,7 +138,6 @@ def in_generalized_interval(
     right_closed: bool = False,
 ) -> bool:
     """
-
     check whether val is inside generalized_interval or not
 
     Parameters
@@ -152,7 +149,8 @@ def in_generalized_interval(
 
     Returns
     -------
-    is_in: bool,
+    bool,
+        whether `val` is inside `generalized_interval` or not
 
     """
     is_in = False
