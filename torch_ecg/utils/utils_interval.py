@@ -11,25 +11,27 @@ TODO:
     2. distinguish openness and closedness
 
 """
+
 import time
+import warnings
 from copy import deepcopy
 from numbers import Real
-from typing import Any, List, Optional, Sequence, Tuple, Union
+from typing import Any, List, Sequence, Tuple, Union
 
 import numpy as np
 
+
 __all__ = [
-    "get_optimal_covering",
     "overlaps",
     "validate_interval",
     "in_interval",
     "in_generalized_interval",
-    "get_confidence_interval",
     "intervals_union",
     "generalized_intervals_union",
     "intervals_intersection",
     "generalized_intervals_intersection",
     "generalized_interval_complement",
+    "get_optimal_covering",
     "find_max_cont_len",
     "interval_len",
     "generalized_interval_len",
@@ -47,9 +49,9 @@ GeneralizedInterval = Union[Sequence[Interval], type(EMPTY_SET)]
 def overlaps(interval: Interval, another: Interval) -> int:
     """
     Return the amount of overlap, in bp between interval and anohter.
-    If >0, the number of bp of overlap
+    If > 0, the number of bp of overlap
     If 0,  they are book-ended
-    If <0, the distance in bp between them
+    If < 0, the distance in bp between them
 
     Parameters
     ----------
@@ -58,6 +60,17 @@ def overlaps(interval: Interval, another: Interval) -> int:
     Returns
     -------
     int, overlap length of two intervals; if < 0, the distance of two intervals
+
+    Examples
+    --------
+    ```python
+    >>> overlaps([1,2], [2,3])
+    0
+    >>> overlaps([1,2], [3,4])
+    -1
+    >>> overlaps([1,2], [0,3])
+    1
+    ```
 
     """
     # in case a or b is not in ascending order
@@ -71,8 +84,9 @@ def validate_interval(
 ) -> Tuple[bool, Union[Interval, GeneralizedInterval]]:
     """
     check whether `interval` is an `Interval` or a `GeneralizedInterval`,
-    if true, return True, and validated (of the form [a,b] with a<=b) interval,
-    return `False, []`, otherwise
+    if true, return True, and validated (of the form [a, b] with a <= b) interval,
+    return `False, []` otherwise.
+    NOTE: if `interval` is empty, return `False, []`
 
     Parameters
     ----------
@@ -86,7 +100,24 @@ def validate_interval(
         a bool, indicating whether `interval` is a valid interval
         an interval (can be empty)
 
+    Examples
+    --------
+    ```python
+    >>> validate_interval([1, 2, 3])
+    (False, [])
+    >>> validate_interval([2, 1])
+    (True, [1, 2])
+    >>> validate_interval([[1, 4], [4, 8]])
+    (True, [[1, 8]])
+    >>> validate_interval([[1, 4], [4, 8]], join_book_endeds=False)
+    (True, [[1, 4], [4, 8]])
+    >>> validate_interval([])
+    (False, [])
+    ```
+
     """
+    if (not isinstance(interval, (list, tuple))) or (len(interval) == 0):
+        return False, []
     if isinstance(interval[0], (list, tuple)):
         info = [validate_interval(itv, join_book_endeds) for itv in interval]
         if all([item[0] for item in info]):
@@ -109,14 +140,34 @@ def in_interval(
     Parameters
     ----------
     val: real number,
+        the value to be checked
     interval: Interval,
+        the interval to be checked
     left_closed: bool, default True,
+        whether the left end of `interval` is closed
     right_closed: bool, default False,
+        whether the right end of `interval` is closed
 
     Returns
     -------
-    bool,
-        whether `val` is inside `generalized_interval` or not
+    bool, whether `val` is inside `generalized_interval` or not
+
+    Examples
+    --------
+    ```python
+    >>> in_interval(-1.3, [0, 2])
+    False
+    >>> in_interval(1.5, [1, 2])
+    True
+    >>> in_interval(1, [1, 2])
+    True
+    >>> in_interval(1, [1, 2], left_closed=False)
+    False
+    >>> in_interval(2, [1, 2])
+    False
+    >>> in_interval(2, [1, 2], right_closed=True)
+    True
+    ```
 
     """
     itv = sorted(interval)
@@ -138,19 +189,42 @@ def in_generalized_interval(
     right_closed: bool = False,
 ) -> bool:
     """
-    check whether val is inside generalized_interval or not
+    Check whether val is inside generalized_interval or not
 
     Parameters
     ----------
     val: real number,
+        the value to be checked
     generalized_interval: union of `Interval`s,
+        the interval to be checked
     left_closed: bool, default True,
+        whether the left end of `generalized_interval` is closed
     right_closed: bool, default False,
+        whether the right end of `generalized_interval` is closed
 
     Returns
     -------
     bool,
         whether `val` is inside `generalized_interval` or not
+
+    Examples
+    --------
+    ```python
+    >>> in_generalized_interval(1.5, [[1, 2], [3, 4]])
+    True
+    >>> in_generalized_interval(2.5, [[1, 3], [2, 4]])
+    True
+    >>> in_generalized_interval(3.45, [[1, 3], [4, 6.9]])
+    False
+    >>> in_generalized_interval(0, [[0, 1], [3, 4]])
+    True
+    >>> in_generalized_interval(0, [[0, 1], [3, 4]], left_closed=False)
+    False
+    >>> in_generalized_interval(1, [[0, 1], [3, 4]])
+    False
+    >>> in_generalized_interval(1, [[0, 1], [3, 4]], right_closed=True)
+    True
+    ```
 
     """
     is_in = False
@@ -161,50 +235,10 @@ def in_generalized_interval(
     return is_in
 
 
-def get_confidence_interval(
-    data: Optional[Sequence] = None,
-    val: Optional[Real] = None,
-    rmse: Optional[float] = None,
-    confidence: float = 0.95,
-    **kwargs: Any,
-) -> np.ndarray:
-    """
-
-    Parameters
-    ----------
-    data: array_like, optional,
-    val: real number, optional,
-    rmse: float, optional,
-    confidence: float, default 0.95,
-    kwargs: dict,
-
-    Returns
-    -------
-    conf_itv: ndarray,
-
-    """
-    from scipy.stats import norm
-
-    assert data or (val and rmse), "insufficient data for computing"
-    correct_factor = kwargs.get("correct_factor", 1)
-    bias = norm.ppf(0.5 + confidence / 2)
-    if data is None:
-        lower_bound = (val - rmse * bias) * correct_factor
-        upper_bound = (val + rmse * bias) / correct_factor
-    else:
-        average = np.mean(np.array(data))
-        std = np.std(np.array(data), ddof=1)
-        lower_bound = (average - std * bias) * correct_factor
-        upper_bound = (average + std * bias) / correct_factor
-    conf_itv = np.array([lower_bound, upper_bound])
-    return conf_itv
-
-
 def intervals_union(
     interval_list: GeneralizedInterval, join_book_endeds: bool = True
 ) -> GeneralizedInterval:
     """
-
     find the union (ordered and non-intersecting) of all the intervals in `interval_list`,
     which is a list of intervals in the form [a,b], where a,b need not be ordered
 
@@ -219,6 +253,19 @@ def intervals_union(
     -------
     processed: GeneralizedInterval,
         the union of the intervals in `interval_list`
+
+    Examples
+    --------
+    ```python
+    >>> intervals_union([[1, 2], [3, 4]])
+    [[1, 2], [3, 4]]
+    >>> intervals_union([[1, 2], [2, 3]])
+    [[1, 3]]
+    >>> intervals_union([[1, 2], [2, 3]], join_book_endeds=False)
+    [[1, 2], [2, 3]]
+    >>> intervals_union([[1, 2.1], [1.6, 4], [3.1, 10.9]])
+    [[1, 10.9]]
+    ```
 
     """
     # list_add = lambda list1, list2: list1+list2
@@ -273,7 +320,6 @@ def generalized_intervals_union(
     join_book_endeds: bool = True,
 ) -> GeneralizedInterval:
     """
-
     calculate the union of a list (or tuple) of `GeneralizedInterval`s
 
     Parameters
@@ -288,6 +334,17 @@ def generalized_intervals_union(
     iu: GeneralizedInterval,
         the union of `interval_list`
 
+    Examples
+    --------
+    ```python
+    >>> generalized_intervals_union(([[1, 2], [3, 7]], [[40,90], [-30, -10]]))
+    [[-30, -10], [1, 2], [3, 7], [40, 90]]
+    >>> generalized_intervals_union(([[1, 2], [3, 7]], [[4,9], [-3, 1]]))
+    [[-3, 2], [3, 9]]
+    >>> generalized_intervals_union(([[1, 2], [3, 7]], [[4,9], [-3, 1]]), join_book_endeds=False)
+    [[-3, 1], [1, 2], [3, 9]]
+    ```
+
     """
     all_intervals = [itv for gnr_itv in interval_list for itv in gnr_itv]
     iu = intervals_union(interval_list=all_intervals, join_book_endeds=join_book_endeds)
@@ -298,7 +355,6 @@ def intervals_intersection(
     interval_list: GeneralizedInterval, drop_degenerate: bool = True
 ) -> Interval:
     """
-
     calculate the intersection of all intervals in interval_list
 
     Parameters
@@ -312,6 +368,21 @@ def intervals_intersection(
     -------
     its: Interval,
         the intersection of all intervals in `interval_list`
+
+    Examples
+    --------
+    ```python
+    >>> intervals_intersection([[1, 2], [3, 4]])
+    []
+    >>> intervals_intersection([[1, 2], [2, 3]])
+    []
+    >>> intervals_intersection([[1, 2], [2, 3]], drop_degenerate=False)
+    [[2, 2]]
+    >>> intervals_intersection([[1, 2.1], [1.6, 4], [3.1, 10.9]])
+    []
+    >>> intervals_intersection([[1, 2.1], [1.6, 4], [0.7, 1.9]])
+    [1.6, 1.9]
+    ```
 
     """
     if [] in interval_list:
@@ -335,7 +406,6 @@ def generalized_intervals_intersection(
     drop_degenerate: bool = True,
 ) -> GeneralizedInterval:
     """
-
     calculate the intersection of generalized_interval and another_generalized_interval,
     which are both generalized intervals
 
@@ -350,6 +420,17 @@ def generalized_intervals_intersection(
     -------
     its: GeneralizedInterval,
         the intersection of `generalized_interval` and `another_generalized_interval`
+
+    Examples
+    --------
+    ```python
+    >>> generalized_intervals_intersection([[1, 2], [3, 7]], [[40,90], [-30, -10]])
+    []
+    >>> generalized_intervals_intersection([[1, 5], [12, 33]], [[4, 9], [-3, 3], [33, 99]])
+    [[1, 3], [4, 5]]
+    >>> generalized_intervals_intersection([[1, 5], [12, 33]], [[4, 9], [-3, 3], [33, 99]], drop_degenerate=False)
+    [[1, 3], [4, 5], [33, 33]]
+    ```
 
     """
     this = intervals_union(generalized_interval)
@@ -377,9 +458,8 @@ def generalized_intervals_intersection(
 def generalized_interval_complement(
     total_interval: Interval, generalized_interval: GeneralizedInterval
 ) -> GeneralizedInterval:
-    """to be improved,
-
-    TODO: the case `total_interval` is a `GeneralizedInterval`
+    """
+    calculate the complement of `generalized_interval` in `total_interval`
 
     Parameters
     ----------
@@ -390,6 +470,19 @@ def generalized_interval_complement(
     -------
     cpl: union of `Interval`s,
         the complement of `generalized_interval` in `total_interval`
+
+    TODO: the case `total_interval` is a `GeneralizedInterval`
+
+    Examples
+    --------
+    ```python
+    >>> generalized_interval_complement([1, 100], [[5, 33], [40, 50], [60, 140]])
+    [[1, 5], [33, 40], [50, 60]]
+    >>> generalized_interval_complement([1, 10], [[40, 66], [111, 300]])
+    [[1, 10]]
+    >>> generalized_interval_complement([150, 200], [[40, 66], [111, 300]])
+    []
+    ```
 
     """
     rearranged_intervals = intervals_union(generalized_interval)
@@ -413,14 +506,14 @@ def generalized_interval_complement(
 
 def get_optimal_covering(
     total_interval: Interval,
-    to_cover: list,
+    to_cover: List[Union[Real, Interval]],
     min_len: Real,
     split_threshold: Real,
+    isolated_point_dist_threshold: Real = 0,
     traceback: bool = False,
     **kwargs: Any,
-) -> Tuple[GeneralizedInterval, list]:
+) -> Union[GeneralizedInterval, Tuple[GeneralizedInterval, list]]:
     """
-
     compute an optimal covering (disjoint union of intervals) that covers `to_cover` such that
     each interval in the covering is of length at least `min_len`,
     and any two intervals in the covering have distance at least `split_threshold`
@@ -432,9 +525,12 @@ def get_optimal_covering(
     to_cover: list,
         a list of intervals to cover
     min_len: real number,
-        minimun length of the intervals of the covering
+        minimun length (positive) of the intervals of the covering
     split_threshold: real number,
-        minumun distance of intervals of the covering
+        minumun distance (positive) of intervals of the covering
+    isolated_point_dist_threshold: real number, default 0.0,
+        the minimum distance (non-negative) of isolated points in `to_cover`
+        to the interval boundaries of the interval containing the point in the covering
     traceback: bool, default False,
         if True, a list containing the list of indices of the intervals in the original `to_cover`,
         that each interval in the covering covers
@@ -446,34 +542,102 @@ def get_optimal_covering(
 
     Returns
     -------
-    (ret, ret_traceback)
-        ret: GeneralizedInterval,
+    covering or (covering, ret_traceback),
+        covering: GeneralizedInterval,
             the covering that satisfies the given conditions
-        ret_traceback: list，
+        ret_traceback: list, optional,
             contains the list of indices of the intervals in the original `to_cover`,
-            that each interval in the covering covers
+            that each interval in the covering covers.
+            If `traceback` is False, this will not be returned
+
+    TODO
+    ----
+    make positions of isolated points in the final covering as close as possible
+    to the center of the interval that contains the point
+
+    Examples
+    --------
+    ```python
+    >>> total_interval = [0, 100]
+    >>> to_cover = [[7,33], 66, [82, 89]]
+    >>> get_optimal_covering(total_interval, to_cover, 10, 5)
+    [[7, 33], [56, 66], [82, 92]]
+    >>> get_optimal_covering(total_interval, to_cover, 10, 5, traceback=True)
+    ([[7, 33], [56, 66], [82, 92]], [[0], [1], [2]])
+    >>> get_optimal_covering(total_interval, to_cover, 20, 5, traceback=True)
+    ([[7, 33], [46, 66], [80, 100]], [[0], [1], [2]])
+    >>> get_optimal_covering(total_interval, to_cover, 20, 13, traceback=True)
+    ([[7, 33], [46, 66], [80, 100]], [[0], [1], [2]])
+    >>> get_optimal_covering(total_interval, to_cover, 20, 14, traceback=True)
+    ([[7, 33], [66, 89]], [[0], [1, 2]])
+    >>> get_optimal_covering(total_interval, to_cover, 20, 13, isolated_point_dist_threshold=1)
+    [[7, 33], [47, 67], [80, 100]]
+    >>> get_optimal_covering(total_interval, to_cover, 20, 13, isolated_point_dist_threshold=2)
+    [[7, 33], [64, 89]]
+    >>> get_optimal_covering(total_interval, to_cover, 30, 3)
+    [[3, 33], [36, 66], [70, 100]]
+    >>> get_optimal_covering(total_interval, to_cover, 30, 4)
+    [[3, 33], [59, 89]]
+    >>> get_optimal_covering(total_interval, to_cover, 40, 5)
+    [[0, 40], [60, 100]]
+    >>> get_optimal_covering(total_interval, to_cover, 1000, 1, traceback=True)
+    ([[0, 100]], [[0, 1, 2]])
+    ```
 
     """
+    assert validate_interval(total_interval)[
+        0
+    ], "`total_interval` must be a valid interval (a sequence of two real numbers)"
+    assert len(to_cover) > 0, "`to_cover` must be non-empty"
+    assert min_len > 0, "`min_len` must be positive"
+    assert split_threshold > 0, "`split_threshold` must be positive"
+    assert (
+        isolated_point_dist_threshold >= 0
+    ), "`isolated_point_dist_threshold` must be non-negative"
+
     start_time = time.time()
     verbose = kwargs.get("verbose", 0)
     tmp = sorted(total_interval)
     tot_start, tot_end = tmp[0], tmp[-1]
 
+    if (
+        tot_start
+        > min([item if isinstance(item, Real) else item[0] for item in to_cover])
+    ) or (
+        tot_end
+        < max([item if isinstance(item, Real) else item[-1] for item in to_cover])
+    ):
+        raise ValueError(
+            "some of the elements in `to_cover` exceeds the range of `total_interval`"
+        )
+
     if verbose >= 1:
         print(f"total_interval = {total_interval}, with_length = {tot_end-tot_start}")
 
     if tot_end - tot_start < min_len:
-        ret = [[tot_start, tot_end]]
+        covering = [[tot_start, tot_end]]
         ret_traceback = [list(range(len(to_cover)))] if traceback else []
-        return ret, ret_traceback
+        return (covering, ret_traceback) if traceback else covering
     to_cover_intervals = []
+    isolated_points = []
+    if isolated_point_dist_threshold > min_len / 2:
+        isolated_point_dist_threshold = min_len / 2
+        warnings.warn(
+            "`isolated_point_dist_threshold` should be smaller than `min_len`/2, "
+            f"hence is set to {isolated_point_dist_threshold}",
+            RuntimeWarning,
+        )
     for item in to_cover:
         if isinstance(item, list):
-            to_cover_intervals.append(item)
+            to_cover_intervals.append(item.copy())
         else:
             to_cover_intervals.append(
-                [max(tot_start, item - min_len // 2), min(tot_end, item + min_len // 2)]
+                [
+                    max(tot_start, item - isolated_point_dist_threshold),
+                    min(tot_end, item + isolated_point_dist_threshold),
+                ]
             )
+            isolated_points.append(item)
     if traceback:
         replica_for_traceback = deepcopy(to_cover_intervals)
 
@@ -482,16 +646,12 @@ def get_optimal_covering(
             f"to_cover_intervals after all converted to intervals = {to_cover_intervals}"
         )
 
-        # elif isinstance(item, int):
-        #     to_cover_intervals.append([item, item+1])
-        # else:
-        #     raise ValueError(f"{item} is not an integer or an interval")
-    # to_cover_intervals = interval_union(to_cover_intervals)
-
     for interval in to_cover_intervals:
         interval.sort()
 
     to_cover_intervals.sort(key=lambda i: i[0])
+
+    to_cover_intervals = intervals_union(to_cover_intervals)
 
     if verbose >= 2:
         print(f"to_cover_intervals after sorted = {to_cover_intervals}")
@@ -508,6 +668,8 @@ def get_optimal_covering(
     to_cover_intervals[0][-1] = max(to_cover_intervals[0][-1], tot_start + min_len)
     # ensure that the distance from the last interval to `tot_end` is at least `min_len`
     to_cover_intervals[-1][0] = min(to_cover_intervals[-1][0], tot_end - min_len)
+
+    to_cover_intervals = intervals_union(to_cover_intervals)
 
     if verbose >= 2:
         print(f"`to_cover_intervals` after two tails adjusted to {to_cover_intervals}")
@@ -550,8 +712,7 @@ def get_optimal_covering(
 
     # currently, distance between any two intervals in `to_cover_intervals` are larger than `split_threshold`
     # but any interval except the head and tail might has length less than `min_len`
-    ret = []
-    ret_traceback = []
+    covering = []
     if len(to_cover_intervals) == 1:
         # NOTE: here, there's only one `to_cover_intervals`,
         # whose length should be at least `min_len`
@@ -560,23 +721,21 @@ def get_optimal_covering(
         if mid_pt - tot_start < half_len:
             ret_start = tot_start
             ret_end = min(tot_end, max(tot_start + min_len, to_cover_intervals[0][-1]))
-            ret = [[ret_start, ret_end]]
+            covering = [[ret_start, ret_end]]
         else:
             ret_start = max(tot_start, min(to_cover_intervals[0][0], mid_pt - half_len))
             ret_end = min(
                 tot_end, max(mid_pt - half_len + min_len, to_cover_intervals[0][-1])
             )
-            ret = [[ret_start, ret_end]]
+            covering = [[ret_start, ret_end]]
 
     start = min(to_cover_intervals[0][0], to_cover_intervals[0][-1] - min_len)
+    start = [start, start]
 
     for idx, item in enumerate(to_cover_intervals[:-1]):
-        # print("item", item)
         this_start, this_end = item
         next_start, next_end = to_cover_intervals[idx + 1]
-        potential_end = max(this_end, start + min_len)
-        # print(f"start = {start}")
-        # print("potential_end", potential_end)
+        potential_end = max(this_end, start[0] + min_len)
         # if distance from `potential_end` to `next_start` is not enough
         # and has not reached the end of `to_cover_intervals`
         # continue to the next loop
@@ -584,20 +743,34 @@ def get_optimal_covering(
             if idx < len(to_cover_intervals) - 2:
                 continue
             else:
-                # now, idx==len(to_cover_intervals)-2
+                # now, idx equals len(to_cover_intervals)-2
                 # distance from `next_start` (hence `start`) to `tot_end` is at least `min_len`
-                ret.append([start, max(start + min_len, next_end)])
+                potential_end = max(start[0] + min_len, next_end)
+                covering.append(
+                    [
+                        max(start[0], min(start[1], potential_end - min_len)),
+                        potential_end,
+                    ]
+                )
         else:
-            ret.append([start, potential_end])
-            start = next_start
+            covering.append(
+                [max(start[0], min(start[1], potential_end - min_len)), potential_end]
+            )
+            start = [
+                max(
+                    potential_end + split_threshold, min(next_start, next_end - min_len)
+                ),
+                next_start,
+            ]
             if idx == len(to_cover_intervals) - 2:
-                ret.append([next_start, max(next_start + min_len, next_end)])
-        # print(f"ret = {ret}")
+                covering.append([next_start, max(next_start + min_len, next_end)])
+
+    ret_traceback = []
     if traceback:
-        for item in ret:
+        for item in covering:
             record = []
             for idx, item_prime in enumerate(replica_for_traceback):
-                itc = intervals_intersection([item, item_prime])
+                itc = intervals_intersection([item, item_prime], drop_degenerate=False)
                 len_itc = itc[-1] - itc[0] if len(itc) > 0 else -1
                 if len_itc > 0 or (
                     len_itc == 0 and item_prime[-1] - item_prime[0] == 0
@@ -607,21 +780,21 @@ def get_optimal_covering(
 
     if verbose >= 1:
         print(
-            f"the final result of get_optimal_covering is ret = {ret}, ret_traceback = {ret_traceback}, the whole process used {time.time()-start_time} second(s)"
+            f"the final result of `get_optimal_covering` is {covering}, "
+            f"ret_traceback = {ret_traceback}, "
+            f"the whole process used {time.time()-start_time} second(s)."
         )
 
-    return ret, ret_traceback
+    if traceback:
+        return covering, ret_traceback
+    return covering
 
 
 def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
     """
-
     find the maximum length of continuous (consecutive) sublists of `sublist`,
     whose element are integers within the range from 0 to `tot_rng`,
     along with the position of this sublist and the sublist itself.
-
-    eg, tot_rng=10, sublist=[0,2,3,4,7,9],
-    then 3, 1, [2,3,4] will be returned
 
     Parameters
     ----------
@@ -636,6 +809,15 @@ def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
         - "max_cont_len"
         - "max_cont_sublist_start"
         - "max_cont_sublist"
+
+    Examples
+    --------
+    ```python
+    >>> tot_rng = 10
+    >>> sublist = [0, 2, 3, 4, 7, 9]
+    >>> find_max_cont_len(sublist, tot_rng)
+    {'max_cont_len': 3, 'max_cont_sublist_start': 1, 'max_cont_sublist': [2, 3, 4]}
+    ```
 
     """
     complementary_sublist = (
@@ -657,7 +839,6 @@ def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
 
 def interval_len(interval: Interval) -> Real:
     """
-
     compute the length of an interval. 0 for the empty interval []
 
     Parameters
@@ -669,6 +850,19 @@ def interval_len(interval: Interval) -> Real:
     itv_len: real number,
         the `length` of `interval`
 
+    Examples
+    --------
+    ```python
+    >>> interval_len([0, 10])
+    10
+    >>> interval_len([10, 10])
+    0
+    >>> interval_len([10, 0])
+    10
+    >>> interval_len([])
+    0
+    ```
+
     """
     interval.sort()
     itv_len = interval[-1] - interval[0] if len(interval) > 0 else 0
@@ -677,7 +871,6 @@ def interval_len(interval: Interval) -> Real:
 
 def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
     """
-
     compute the length of a generalized interval. 0 for the empty interval []
 
     Parameters
@@ -689,34 +882,64 @@ def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
     gi_len: real number,
         the `length` of `generalized_interval`
 
+    Examples
+    --------
+    ```python
+    >>> generalized_interval_len([[0, 10], [20, 30]])
+    20
+    >>> generalized_interval_len([[10, 10], [20, 30]])
+    10
+    >>> generalized_interval_len([[10, 0], [20, 30]])
+    20
+    >>> generalized_interval_len([[0, 20], [10, 30]])
+    30
+    >>> generalized_interval_len([])
+    0
+    ```
+
     """
     gi_len = sum([interval_len(item) for item in intervals_union(generalized_interval)])
     return gi_len
 
 
-def find_extrema(signal: Optional[Sequence] = None, mode: str = "both") -> np.ndarray:
+def find_extrema(signal: Union[np.ndarray, Sequence], mode: str = "both") -> np.ndarray:
     """
-    Locate local extrema points in a signal. Based on Fermat's Theorem
+    Locate local extrema points in a 1D signal. Based on Fermat's Theorem
 
     Parameters
     ----------
-    signal: ndarray
-        input signal.
-    mode: str, optional
-        whether to find maxima ("max"), minima ("min"), or both ("both").
+    signal: ndarray,
+        1D input signal.
+    mode: str, default "both",
+        whether to find maxima ("max"), minima ("min"), or both ("both"),
+        case insensitive.
 
     Returns
     -------
     extrema : ndarray
         indices of the extrama points.
 
+    Examples
+    --------
+    ```python
+    >>> x = np.linspace(0, 2 * np.pi, 100)
+    >>> y = np.sin(x)
+    >>> find_extrema(y, mode="max")
+    array([25])
+    >>> find_extrema(y, mode="min")
+    array([74])
+    >>> find_extrema(y, mode="both")
+    array([25, 74])
+    ```
+
     """
     # check inputs
-    if signal is None:
-        raise TypeError("Please specify an input signal.")
+    if np.ndim(signal) != 1:
+        raise ValueError(f"`signal` must be 1D, but got {np.ndim(signal)}D")
 
+    mode = mode.lower()
     if mode not in ["max", "min", "both"]:
-        raise ValueError("Unknwon mode %r." % mode)
+        raise ValueError(f"Unknwon `{mode}`, must be one of `max`, `min`, `both`")
 
     aux = np.diff(np.sign(np.diff(signal)))
 
@@ -736,7 +959,6 @@ def is_intersect(
     another_interval: Union[GeneralizedInterval, Interval],
 ) -> bool:
     """
-
     determines if two (generalized) intervals intersect or not
 
     Parameters
@@ -747,6 +969,19 @@ def is_intersect(
     -------
     bool,
         True if `interval` intersects with another_interval, False otherwise
+
+    Examples
+    --------
+    ```python
+    >>> is_intersect([0, 10], [5, 15])
+    True
+    >>> is_intersect([0, 10], [10, 15])
+    False
+    >>> is_intersect([0, 10], [])
+    False
+    >>> is_intersect([0, 10], [[5, 20], [25, 30]])
+    True
+    ```
 
     """
     if (
@@ -774,11 +1009,10 @@ def is_intersect(
 def max_disjoint_covering(
     intervals: GeneralizedInterval,
     allow_book_endeds: bool = True,
-    with_traceback: bool = True,
+    traceback: bool = True,
     verbose: int = 0,
 ) -> Tuple[GeneralizedInterval, List[int]]:
     """
-
     find the largest (the largest interval length) covering of a sequence of intervals
 
     NOTE
@@ -792,7 +1026,7 @@ def max_disjoint_covering(
         a sequence of intervals
     allow_book_endeds: bool, default True,
         if True, book-ended intervals will be considered valid (disjoint)
-    with_traceback: bool, default True,
+    traceback: bool, default True,
         if True, the indices of the intervals in the input `intervals` of the output covering
         will also be returned
 
@@ -802,6 +1036,19 @@ def max_disjoint_covering(
         the maximum non-overlapping (disjoint) subset of `intervals`
     covering_inds: list of int,
         indices in `intervals` of the intervals of `covering_inds`
+
+    Examples
+    --------
+    ```python
+    >>> max_disjoint_covering([])
+    ([], [])
+    >>> max_disjoint_covering([[0, 10]])
+    ([[0, 10]], [0])
+    >>> max_disjoint_covering([[1, 4], [2, 3], [4, 6], [8, 9]])
+    ([[1, 4], [4, 6], [8, 9]], [0, 2, 3])
+    >>> max_disjoint_covering([[1, 4], [2, 3], [4, 6], [8, 9]], allow_book_endeds=False, traceback=False)
+    ([[2, 3], [4, 6], [8, 9]], [])
+    ```
 
     References
     ----------
@@ -816,11 +1063,11 @@ def max_disjoint_covering(
     l_itv = [sorted(itv) for itv in intervals]
     ordering = np.argsort([itv[-1] for itv in l_itv])
     l_itv = [l_itv[idx] for idx in ordering]
-    # l_itv = sorted(l_itv, key=lambda itv: itv[-1])
 
     if verbose >= 1:
         print(
-            f"the sorted intervals are {l_itv}, whose indices in the original input `intervals` are {ordering}"
+            f"the sorted intervals are {l_itv}, "
+            f"whose indices in the original input `intervals` are {ordering}"
         )
 
     if allow_book_endeds:
@@ -835,7 +1082,8 @@ def max_disjoint_covering(
 
     if verbose >= 1:
         print(
-            f"candidates heads = {candidates}, with corresponding indices in the sorted list of input intervals = {candidates_inds}"
+            f"candidates heads = {candidates}, with corresponding indices "
+            f"in the sorted list of input intervals = {candidates_inds}"
         )
 
     for c_idx, (cl, ci) in enumerate(zip(candidates, candidates_inds)):
@@ -860,7 +1108,7 @@ def max_disjoint_covering(
             tmp_candidates, tmp_candidates_inds = max_disjoint_covering(
                 intervals=tmp,
                 allow_book_endeds=allow_book_endeds,
-                with_traceback=with_traceback,
+                traceback=traceback,
                 # verbose=verbose,
             )
             candidates[c_idx] = cl + tmp_candidates
@@ -868,13 +1116,14 @@ def max_disjoint_covering(
 
     if verbose >= 1:
         print(
-            f"the processed candidates are {candidates}, with corresponding indices in the sorted list of input intervals = {candidates_inds}"
+            f"the processed candidates are {candidates}, with corresponding indices "
+            f"in the sorted list of input intervals = {candidates_inds}"
         )
 
     # covering = max(candidates, key=generalized_interval_len)
     max_idx = np.argmax([generalized_interval_len(c) for c in candidates])
     covering = candidates[max_idx]
-    if with_traceback:
+    if traceback:
         covering_inds = candidates_inds[max_idx]
         covering_inds = [
             ordering[i] for i in covering_inds
