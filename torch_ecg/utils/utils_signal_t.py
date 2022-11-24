@@ -9,6 +9,7 @@ from typing import Iterable, Optional, Union, Callable
 
 import torch
 
+
 __all__ = [
     "normalize",
     "resample",
@@ -24,8 +25,7 @@ def normalize(
     inplace: bool = True,
 ) -> torch.Tensor:
     r"""
-
-    perform z-score normalization on `sig`,
+    Perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
     or perform min-max normalization on `sig`,
     or normalize `sig` using `mean` and `std` via (sig - mean) / std.
@@ -71,15 +71,18 @@ def normalize(
     only the mean value will be shifted
 
     feasible shapes of `sig` and `std`, `mean` are as follows
+
     | shape of `sig` | `per_channel` |                shape of `std` or `mean                                     |
     |----------------|---------------|----------------------------------------------------------------------------|
     |    (b,l,s)     |     False     | scalar, (b,), (b,1), (b,1,1)                                               |
     |    (b,l,s)     |     True      | scalar, (b,), (l,), (b,1), (b,l), (l,1), (1,l), (b,1,1), (b,l,1), (1,l,1,) |
     |    (l,s)       |     False     | scalar,                                                                    |
     |    (l,s)       |     True      | scalar, (l,), (l,1), (1,l)                                                 |
+
     `scalar` includes native scalar or scalar tensor. One can check by
+
     ```python
-    (b,l,s) = 2,12,20
+    (b, l, s) = 2, 12, 20
     for shape in [(b,), (l,), (b,1), (b,l), (l,1), (1,l), (b,1,1), (b,l,1), (1,l,1,)]:
         nm_sig = normalize(torch.randn(b,l,s), per_channel=True, mean=torch.rand(*shape))
     for shape in [(b,), (b,1), (b,1,1)]:
@@ -94,12 +97,13 @@ def normalize(
         "z-score",
         "naive",
         "min-max",
-    ]
+    ], f"method `{method}` not supported, choose from 'z-score', 'naive', 'min-max'"
     ori_shape = sig.shape
     if not inplace:
         sig = sig.clone()
     n_leads, siglen = sig.shape[-2:]
     sig = sig.reshape((-1, n_leads, siglen))  # add batch dim if necessary
+    bs = sig.shape[0]
     device = sig.device
     dtype = sig.dtype
     if isinstance(std, Real):
@@ -108,11 +112,11 @@ def normalize(
     else:
         _std = torch.as_tensor(std, dtype=dtype, device=device)
         assert (_std > 0).all(), "standard deviations should all be positive"
-        if _std.shape[0] == sig.shape[0]:
-            # of shape (batch, n_leads, 1) or (batch, 1, 1), or (batch, n_leads,) or (batch, 1) or (batch,)
+        if _std.shape in [(bs, n_leads, 1), (bs, 1, 1), (bs, n_leads), (bs, 1), (bs,)]:
+            # of shape (batch, n_leads, 1), or (batch, 1, 1), or (batch, n_leads,), or (batch, 1), or (batch,)
             _std = _std.view((sig.shape[0], -1, 1))
-        elif _std.shape[0] == sig.shape[1] or (_std.shape[:2] == (1, sig.shape[1])):
-            # of shape (n_leads, 1) or (n_leads,) or (1, n_leads) or (1, n_leads, 1)
+        elif _std.shape in [(n_leads, 1), (n_leads,), (1, n_leads), (1, n_leads, 1)]:
+            # of shape (n_leads, 1), or (n_leads,), or (1, n_leads), or (1, n_leads, 1)
             _std = _std.view((-1, sig.shape[1], 1))
         else:
             raise ValueError(
@@ -122,14 +126,16 @@ def normalize(
         _mean = torch.full((sig.shape[0], 1, 1), mean, dtype=dtype, device=device)
     else:
         _mean = torch.as_tensor(mean, dtype=dtype, device=device)
-        if _mean.shape[0] == sig.shape[0]:
-            # of shape (batch, n_leads, 1) or (batch, 1, 1), or (batch, n_leads,) or (batch, 1) or (batch,)
+        if _mean.shape in [(bs, n_leads, 1), (bs, 1, 1), (bs, n_leads), (bs, 1), (bs,)]:
+            # of shape (batch, n_leads, 1), or (batch, 1, 1), or (batch, n_leads,), or (batch, 1), or (batch,)
             _mean = _mean.view((sig.shape[0], -1, 1))
-        elif _mean.shape[0] == sig.shape[1] or (_mean.shape[:2] == (1, sig.shape[1])):
-            # of shape (n_leads, 1) or (n_leads,) or (1, n_leads) or (1, n_leads, 1)
+        elif _mean.shape in [(n_leads, 1), (n_leads,), (1, n_leads), (1, n_leads, 1)]:
+            # of shape (n_leads, 1), or (n_leads,), or (1, n_leads), or (1, n_leads, 1)
             _mean = _mean.view((-1, sig.shape[1], 1))
         else:
-            raise ValueError("shape of `sig` and `mean` mismatch")
+            raise ValueError(
+                f"shape of `sig` = {sig.shape} and `mean` = {_mean.shape} mismatch"
+            )
 
     if not per_channel:
         assert _std.shape[1] == 1 and _mean.shape[1] == 1, (
@@ -166,8 +172,7 @@ def resample(
     inplace: bool = False,
 ) -> torch.Tensor:
     """
-
-    resample signal tensors to a new sampling frequency or a new signal length,
+    Resample signal tensors to a new sampling frequency or a new signal length,
 
     Parameters
     ----------
@@ -183,13 +188,21 @@ def resample(
     inplace: bool, default False,
         if True, normalization will be done inplace (on the signal)
 
+    Returns
+    -------
+    Tensor,
+        resampled signal, of shape (..., n_leads, siglen)
+
     """
     assert (
         sum([bool(dst_fs), bool(siglen)]) == 1
-    ), "one and only one of `fs` and `siglen` should be set"
+    ), "one and only one of `dst_fs` and `siglen` should be set"
     if dst_fs is not None:
         assert fs is not None, "if `dst_fs` is set, `fs` should also be set"
         scale_factor = dst_fs / fs
+    else:
+        scale_factor = None
+    recompute_scale_factor = True if siglen is None else None
     if not inplace:
         sig = sig.clone()
     if sig.ndim == 2:
@@ -199,6 +212,7 @@ def resample(
             scale_factor=scale_factor,
             mode="linear",
             align_corners=True,
+            recompute_scale_factor=recompute_scale_factor,
         ).squeeze(0)
     else:
         sig = torch.nn.functional.interpolate(
@@ -207,6 +221,7 @@ def resample(
             scale_factor=scale_factor,
             mode="linear",
             align_corners=True,
+            recompute_scale_factor=recompute_scale_factor,
         )
 
     return sig
@@ -226,7 +241,8 @@ def spectrogram(
     onesided: bool = True,
     return_complex: bool = True,
 ) -> torch.Tensor:
-    r"""Create a spectrogram or a batch of spectrograms from a raw signal.
+    r"""
+    Create a spectrogram or a batch of spectrograms from a raw signal.
     The spectrogram can be either magnitude-only or complex.
 
     Args:
@@ -310,7 +326,8 @@ def spectrogram(
 
 
 class Spectrogram(torch.nn.Module):
-    r"""Create a spectrogram from a signal.
+    r"""
+    Create a spectrogram from a signal.
 
     Args:
         n_fft (int, optional): Size of FFT, creates ``n_fft // 2 + 1`` bins. (Default: ``400``)

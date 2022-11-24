@@ -1,6 +1,7 @@
 """
 """
 
+import numpy as np
 import torch
 import pytest
 
@@ -41,10 +42,17 @@ def test_dtype():
 def test_defaults():
     assert DEFAULTS.DTYPE == DTYPE("float32")
     assert DEFAULTS.dtype == torch.float32
-    DEFAULTS.change_dtype("float16")
+    DEFAULTS.change_dtype(torch.float16)
     assert DEFAULTS.dtype == torch.float16
-    DEFAULTS.change_dtype("float32")
+    DEFAULTS.change_dtype(np.float32)
     assert DEFAULTS.dtype == torch.float32
+
+    with pytest.raises(
+        TypeError, match="`dtype` must be a str or np.dtype or torch.dtype"
+    ):
+        DEFAULTS.change_dtype(32)
+    with pytest.raises(AssertionError, match="`dtype` must be one of "):
+        DEFAULTS.change_dtype("float128")
 
     assert DEFAULTS.SEED == 42
     DEFAULTS.set_seed(100)

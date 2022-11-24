@@ -246,9 +246,9 @@ def change_dtype(dtype: Union[str, np.dtype, torch.dtype]) -> None:
             _dtype = dtype.__name__
         except AttributeError:
             raise TypeError(
-                f"dtype must be a str or np.dtype or torch.dtype, got {type(dtype)}"
+                f"`dtype` must be a str or np.dtype or torch.dtype, got {type(dtype)}"
             )
-    assert _dtype in _dtypes, f"dtype must be one of {_dtypes}, got {_dtype}"
+    assert _dtype in _dtypes, f"`dtype` must be one of {_dtypes}, got {_dtype}"
     DEFAULTS.DTYPE = DTYPE(_dtype)
     DEFAULTS.dtype = DEFAULTS.DTYPE.TORCH
 

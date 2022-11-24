@@ -73,6 +73,19 @@ from .utils_nn import (
     SizeMixin,
     CkptMixin,
 )
+from .utils_signal import (
+    smooth,
+    resample_irregular_timeseries,
+    detect_peaks,
+    remove_spikes_naive,
+    butter_bandpass_filter,
+    get_ampl,
+    normalize,
+)
+from .utils_signal_t import (
+    normalize as normalize_t,
+    resample as resample_t,
+)
 
 
 __all__ = [
@@ -112,7 +125,6 @@ __all__ = [
     "validate_interval",
     "in_interval",
     "in_generalized_interval",
-    "get_confidence_interval",
     "intervals_union",
     "generalized_intervals_union",
     "intervals_intersection",
@@ -142,4 +154,13 @@ __all__ = [
     "adjust_cnn_filter_lengths",
     "SizeMixin",
     "CkptMixin",
+    "smooth",
+    "resample_irregular_timeseries",
+    "detect_peaks",
+    "remove_spikes_naive",
+    "butter_bandpass_filter",
+    "get_ampl",
+    "normalize",
+    "normalize_t",
+    "resample_t",
 ]
