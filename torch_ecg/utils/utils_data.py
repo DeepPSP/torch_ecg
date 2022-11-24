@@ -147,7 +147,7 @@ def class_weight_to_sample_weight(
 
     """
     if not class_weight:
-        sample_weight = np.ones_like(y, dtype=y.dtype)
+        sample_weight = np.ones_like(y, dtype=DEFAULTS.np_dtype)
         return sample_weight
 
     try:
@@ -334,7 +334,8 @@ def ensure_siglen(
         2. If `tolerance` is given,
         then if the length of `values` is longer than
         `siglen` by more than `tolerance` in percentage,
-        the `values` will be sliced to have multiple of `siglen` samples.
+        the `values` will be sliced to have multiple of `siglen` samples,
+        each with `(1 - tolerance) * siglen` overlap.
 
     Parameters
     ----------

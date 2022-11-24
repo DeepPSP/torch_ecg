@@ -1,7 +1,6 @@
 """
 utilities for signal processing,
 including spatial, temporal, spatio-temporal domains
-
 """
 
 from copy import deepcopy
@@ -49,10 +48,10 @@ def smooth(
     window_len: int, default 11,
         the length of the smoothing window,
         (previously should be an odd integer, currently can be any (positive) integer)
-    window: str, default 'hanning',
-        the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman',
+    window: str, default "hanning",
+        the type of window from "flat", "hanning", "hamming", "bartlett", "blackman",
         flat window will produce a moving average smoothing
-    mode: str, default 'valid',
+    mode: str, default "valid",
         ref. np.convolve
     keep_dtype: bool, default True,
         dtype of the returned value keeps the same with that of `x` or not
@@ -64,9 +63,11 @@ def smooth(
 
     Examples
     --------
-    >>> t = linspace(-2, 2, 0.1)
-    >>> x = sin(t) + randn(len(t)) * 0.1
+    ```python
+    >>> t = np.linspace(-2, 2, 50)
+    >>> x = np.sin(t) + np.random.randn(len(t)) * 0.1
     >>> y = smooth(x)
+    ```
 
     See also:
     ---------
@@ -75,7 +76,8 @@ def smooth(
 
     TODO: the window parameter could be the window itself if an array instead of a string
 
-    NOTE: length(output) != length(input), to correct this: return y[(window_len/2-1):-(window_len/2)] instead of just y.
+    NOTE: length(output) != length(input), to correct this:
+        return y[(window_len/2-1):-(window_len/2)] instead of just y.
 
     References
     ----------
@@ -86,7 +88,7 @@ def smooth(
     radius = radius if radius % 2 == 1 else radius - 1
 
     if x.ndim != 1:
-        raise ValueError("smooth only accepts 1 dimension arrays.")
+        raise ValueError("function `smooth` only accepts 1 dimension arrays.")
 
     # if x.size < radius:
     #     raise ValueError("Input vector needs to be bigger than window size.")
@@ -96,7 +98,7 @@ def smooth(
 
     if window not in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
         raise ValueError(
-            "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+            """ `window` should be of "flat", "hanning", "hamming", "bartlett", "blackman" """
         )
 
     s = np.r_[x[radius - 1 : 0 : -1], x, x[-2 : -radius - 1 : -1]]
@@ -117,8 +119,8 @@ def smooth(
 
 
 def resample_irregular_timeseries(
-    s: np.ndarray,
-    output_fs: Real = 2,
+    sig: np.ndarray,
+    output_fs: Optional[Real] = None,
     method: str = "spline",
     return_with_time: bool = False,
     tnew: Optional[np.ndarray] = None,
@@ -126,22 +128,26 @@ def resample_irregular_timeseries(
     verbose: int = 0,
 ) -> np.ndarray:
     """
-
-    resample the 2d irregular timeseries `s` into a 1d or 2d regular time series with frequency `output_fs`,
-    elements of `s` are in the form [time, value], where the unit of `time` is ms
+    Resample the 2d irregular timeseries `sig` into a 1d or 2d
+    regular time series with frequency `output_fs`,
+    elements of `sig` are in the form [time, value],
+    where the unit of `time` is ms
 
     Parameters
     ----------
-    s: ndarray,
-        the 2d irregular timeseries
-    output_fs: Real, default 2,
-        the frequency of the output 1d regular timeseries
+    sig: ndarray,
+        the 2d irregular timeseries,
+        each row is [time, value]
+    output_fs: Real, optional,
+        the frequency of the output 1d regular timeseries,
+        one and only one of `output_fs` and `tnew` should be specified
     method: str, default "spline"
-        interpolation method, can be 'spline' or 'interp1d'
+        interpolation method, can be "spline" or "interp1d"
     return_with_time: bool, default False,
         return a 2d array, with the 0-th coordinate being time
     tnew: array_like, optional,
-        the array of time of the output array
+        the array of time of the output array,
+        one and only one of `output_fs` and `tnew` should be specified
     interp_kw: dict, default {},
         additional options for the corresponding methods in scipy.interpolate
 
@@ -149,28 +155,51 @@ def resample_irregular_timeseries(
     -------
     np.ndarray, a 1d or 2d regular time series with frequency `output_freq`
 
-    NOTE:
+    Examples
+    --------
+    ```python
+    >>> fs = 100
+    >>> t_irr = np.sort(np.random.rand(fs)) * 1000
+    >>> vals = np.random.randn(fs)
+    >>> sig = np.stack([t_irr, vals], axis=1)
+    >>> sig_reg = resample_irregular_timeseries(sig, output_fs=fs * 2, return_with_time=True)
+    >>> sig_reg = resample_irregular_timeseries(sig, output_fs=fs, method="interp1d")
+    >>> t_irr_2 = np.sort(np.random.rand(2 * fs)) * 1000
+    >>> sig_reg = resample_irregular_timeseries(sig, tnew=t_irr_2, return_with_time=True)
+    ```
+
+    NOTE
+    ----
     pandas also has the function to regularly resample irregular timeseries
 
     """
+    assert sig.ndim == 2, "`sig` should be a 2D array"
+    assert method.lower() in [
+        "spline",
+        "interp1d",
+    ], f"method `{method}` not supported"
+    assert (
+        sum([output_fs is None, tnew is None]) == 1
+    ), "one and only one of `output_fs` and `tnew` should be specified"
+
     _interp_kw = deepcopy(interp_kw)
-    if method.lower() not in ["spline", "interp1d"]:
-        raise ValueError("method {} not implemented".format(method))
 
     if verbose >= 1:
-        print("len(s) = {}".format(len(s)))
+        print(f"len(sig) = {len(sig)}")
 
-    if len(s) == 0:
+    if len(sig) == 0:
         return np.array([])
 
-    dtype = s.dtype
-    time_series = np.atleast_2d(s).astype(dtype)
-    step_ts = 1000 / output_fs
-    tot_len = int((time_series[-1][0] - time_series[0][0]) / step_ts) + 1
+    dtype = sig.dtype
+    time_series = np.atleast_2d(sig).astype(dtype)
     if tnew is None:
+        step_ts = 1000 / output_fs
+        tot_len = int((time_series[-1][0] - time_series[0][0]) / step_ts) + 1
         xnew = time_series[0][0] + np.arange(0, tot_len * step_ts, step_ts)
     else:
+        assert tnew.ndim == 1, "`tnew` should be a 1D array"
         xnew = np.array(tnew)
+        tot_len = len(xnew)
 
     if verbose >= 1:
         print(
@@ -241,10 +270,10 @@ def detect_peaks(
         threshold of prominence of the detected peaks (valleys)
     prominence_wlen: positive int, optional,
         the `wlen` parameter of the function `scipy.signal.peak_prominences`
-    edge: str or None, default 'rising',
-        can also be 'falling', 'both',
-        for a flat peak, keep only the rising edge ('rising'), only the falling edge ('falling'),
-        both edges ('both'), or don't detect a flat peak (None)
+    edge: str or None, default "rising",
+        can also be "falling", "both",
+        for a flat peak, keep only the rising edge ("rising"), only the falling edge ("falling"),
+        both edges ("both"), or don't detect a flat peak (None)
     kpsh: bool, default False,
         keep peaks with same height even if they are closer than `mpd`
     valley: bool, default False,
@@ -273,7 +302,7 @@ def detect_peaks(
 
     Examples
     --------
-    >>> from detect_peaks import detect_peaks
+    ```python
     >>> x = np.random.randn(100)
     >>> x[60:81] = np.nan
     >>> # detect all peaks and plot data
@@ -294,15 +323,16 @@ def detect_peaks(
 
     >>> x = [0, 1, 1, 0, 1, 1, 0]
     >>> # detect both edges
-    >>> detect_peaks(x, edge='both', show=True)
+    >>> detect_peaks(x, edge="both", show=True)
 
     >>> x = [-2, 1, -2, 2, 1, 1, 3, 0]
     >>> # set threshold = 2
     >>> detect_peaks(x, threshold = 2, show=True)
+    ```
 
     Version history
     ---------------
-    '1.0.5':
+    "1.0.5":
         The sign of `mph` is inverted if parameter `valley` is True
 
     """
@@ -340,7 +370,8 @@ def detect_peaks(
             f"before filtering by mpd = {mpd}, and threshold = {threshold}, ind = {ind.tolist()}"
         )
         print(
-            f"additionally, left_threshold = {left_threshold}, right_threshold = {right_threshold}, length of data = {len(data)}"
+            f"additionally, left_threshold = {left_threshold}, "
+            f"right_threshold = {right_threshold}, length of data = {len(data)}"
         )
 
     # handle NaN's
@@ -493,7 +524,7 @@ def remove_spikes_naive(
     sig: np.ndarray, threshold: Real = 20, inplace: bool = True
 ) -> np.ndarray:
     """
-    remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
+    Remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
 
     `spikes` here refers to abrupt large bumps with (abs) value larger than the given threshold,
     or nan values (read by `wfdb`),
@@ -510,6 +541,18 @@ def remove_spikes_naive(
     -------
     sig: ndarray,
         signal with `spikes` removed
+
+    Examples
+    --------
+    ```python
+    >>> sig = np.random.randn(1000)
+    >>> pos = np.random.randint(0, 1000, 10)
+    >>> sig[pos] = 100
+    >>> sig = remove_spikes_naive(sig)
+    >>> pos = np.random.randint(0, 1000, 1)
+    >>> sig[pos] = np.nan
+    >>> sig = remove_spikes_naive(sig)
+    ```
 
     """
     dtype = sig.dtype
@@ -649,7 +692,7 @@ def butter_bandpass_filter(
         b, a = butter_bandpass(0, highcut, fs, order=order, verbose=verbose)
         y = filtfilt(b, a, y)
     else:
-        raise ValueError(f"special btype {btype} is not supported")
+        raise ValueError(f"special btype `{btype}` is not supported")
     return y.astype(dtype)
 
 
@@ -661,7 +704,7 @@ def get_ampl(
     critical_points: Optional[Sequence] = None,
 ) -> Union[float, np.ndarray]:
     """
-    get amplitude of a signal (near critical points if given)
+    Get amplitude of a signal (near critical points if given)
 
     Parameters
     ----------
@@ -689,8 +732,10 @@ def get_ampl(
     dtype = sig.dtype
     if fmt.lower() in ["channel_last", "lead_last"]:
         _sig = sig.T
-    else:
+    elif fmt.lower() in ["channel_first", "lead_first"]:
         _sig = sig
+    else:
+        raise ValueError(f"unknown format `{fmt}`")
     _window = int(round(window * fs))
     half_window = _window // 2
     _window = half_window * 2
@@ -738,8 +783,7 @@ def normalize(
     per_channel: bool = False,
 ) -> np.ndarray:
     r"""
-
-    perform z-score normalization on `sig`,
+    Perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
     or perform min-max normalization on `sig`,
     or normalize `sig` using `mean` and `std` via (sig - mean) / std.
@@ -791,23 +835,27 @@ def normalize(
         "z-score",
         "naive",
         "min-max",
-    ]
-    if isinstance(std, Real):
-        assert std > 0, "standard deviation should be positive"
-    else:
-        assert (np.array(std) > 0).all(), "standard deviations should all be positive"
+    ], f"unknown normalization method `{method}`"
     if not per_channel:
         assert isinstance(mean, Real) and isinstance(
             std, Real
         ), "mean and std should be real numbers in the non per-channel setting"
+    if isinstance(std, Real):
+        assert std > 0, "standard deviation should be positive"
+    else:
+        assert (np.array(std) > 0).all(), "standard deviations should all be positive"
     assert sig_fmt.lower() in [
         "channel_first",
         "lead_first",
         "channel_last",
         "lead_last",
-    ], f"format {sig_fmt} of the signal not supported!"
+    ], f"format `{sig_fmt}` of the signal not supported!"
 
     if isinstance(mean, Iterable):
+        assert np.shape(mean) in [
+            (sig.shape[0],),
+            (sig.shape[-1],),
+        ], f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}"
         if sig_fmt.lower() in [
             "channel_first",
             "lead_first",
@@ -818,6 +866,10 @@ def normalize(
     else:
         _mean = mean
     if isinstance(std, Iterable):
+        assert np.shape(std) in [
+            (sig.shape[0],),
+            (sig.shape[-1],),
+        ], f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}"
         if sig_fmt.lower() in [
             "channel_first",
             "lead_first",

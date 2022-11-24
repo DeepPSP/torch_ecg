@@ -1,6 +1,7 @@
 """
 """
 
+import math
 from pathlib import Path
 
 import numpy as np
@@ -49,6 +50,7 @@ def test_get_mask():
     ]
     for idx in range(12):
         assert intervals == mask_to_intervals(mask[idx], 1)
+    assert (get_mask(5000, np.arange(250, 5000 - 250, 400), 50, 50) == mask[0]).all()
 
 
 def test_mask_to_intervals():
@@ -107,6 +109,7 @@ def test_class_weight_to_sample_weight():
         [1 / 3, 1 / 3, 2 / 3, 1 / 3, 1.0, 2 / 3, 1 / 3, 2 / 3],
         atol=1e-5,
     )
+    assert (class_weight_to_sample_weight(y, class_weight=None) == 1).all()
     with pytest.raises(
         AssertionError,
         match="""if `y` are of type str, then class_weight should be "balanced" or a dict""",
@@ -138,6 +141,7 @@ def test_ensure_lead_fmt():
     new_values = ensure_lead_fmt(values, fmt="lead_first")
     assert new_values.shape == (12, 5000)
     assert np.allclose(new_values, values.T)
+    assert np.allclose(ensure_lead_fmt(new_values, fmt="lead_last"), values)
     with pytest.raises(ValueError, match="not valid 2-lead signal"):
         ensure_lead_fmt(values, n_leads=2)
     with pytest.raises(ValueError, match="not valid fmt: `not_valid_fmt`"):
@@ -152,7 +156,7 @@ def test_ensure_siglen():
         new_values[:, (5000 - 4629) // 2 : (5000 - 4629) // 2 + 4629], values
     )
     new_values = ensure_siglen(values, 4000, tolerance=0.1, fmt="lead_first")
-    assert new_values.shape == (2, 12, 4000)
+    assert new_values.shape == (math.ceil((4629 - 4000) / (0.1 * 4000)), 12, 4000)
     new_values = ensure_siglen(values, 4000, tolerance=0.2, fmt="lead_first")
     assert new_values.shape == (1, 12, 4000)
 
@@ -162,6 +166,8 @@ def test_ensure_siglen():
     assert np.allclose(
         new_values, values[(4629 - 3000) // 2 : (4629 - 3000) // 2 + 3000]
     )
+    new_values = ensure_siglen(values, 3000, fmt="channel_last", tolerance=0.1)
+    assert new_values.shape == (math.ceil((4629 - 3000) / (0.1 * 3000)), 3000, 12)
 
 
 def test_masks_to_waveforms():

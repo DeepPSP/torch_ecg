@@ -39,6 +39,7 @@ def test_validate_interval():
         [[1, 4], [4, 8]],
     )
     assert validate_interval([]) == (False, [])
+    assert validate_interval([[1, 2, 3], [10, 20]]) == (False, [])
 
 
 def test_in_interval():
@@ -87,6 +88,7 @@ def test_generalized_intervals_union():
 def test_intervals_intersection():
     assert intervals_intersection([[1, 2], [3, 4]]) == []
     assert intervals_intersection([[1, 2], [2, 3]]) == []
+    assert intervals_intersection([[], [2, 3]]) == []
     assert intervals_intersection([[1, 2], [2, 3]], drop_degenerate=False) == [2, 2]
     assert intervals_intersection([[1, 2.1], [1.6, 4], [3.1, 10.9]]) == []
     assert intervals_intersection([[1, 2.1], [1.6, 4], [0.7, 1.9]]) == [1.6, 1.9]
@@ -114,6 +116,7 @@ def test_generalized_interval_complement():
 
 
 def test_get_optimal_covering():
+    # TODO: add more test examples
     total_interval = [0, 100]
     to_cover = [[7, 33], 66, [82, 89]]
     covering_1 = get_optimal_covering(
@@ -299,6 +302,7 @@ def test_is_intersect():
     assert is_intersect([0, 10], [10, 15]) is False
     assert is_intersect([0, 10], []) is False
     assert is_intersect([0, 10], [[5, 20], [25, 30]]) is True
+    assert is_intersect([[0, 10], [50, 77]], [[5, 20], [25, 30]]) is True
 
 
 def test_find_extrema():
@@ -319,6 +323,7 @@ def test_find_extrema():
 def test_max_disjoint_covering():
     assert max_disjoint_covering([]) == ([], [])
     assert max_disjoint_covering([[0, 10]]) == ([[0, 10]], [0])
+    assert max_disjoint_covering([[12, 12], [0, 10]]) == ([[0, 10]], [1])
     assert max_disjoint_covering([[1, 4], [2, 3], [4, 6], [8, 9]], verbose=2) == (
         [[1, 4], [4, 6], [8, 9]],
         [0, 2, 3],
