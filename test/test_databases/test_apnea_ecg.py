@@ -1,10 +1,14 @@
 """
+methods from the base class, e.g. `load_data`, are tested in a simple way in this file,
+since they are comprehensively tested `test_afdb.py`
 """
 
+import re
 import shutil
 from pathlib import Path
 
 from torch_ecg.databases import ApneaECG
+from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
 
 ###############################################################################
@@ -24,10 +28,44 @@ reader.download()
 
 class TestApneaECG:
     def test_len(self):
-        assert len(reader) == 200
+        assert len(reader) == 78
 
     def test_load_data(self):
-        pass
+        data = reader.load_data(0)
+        assert data.ndim == 2
+        data = reader.load_data(0, leads=0, data_format="flat")
+        assert data.ndim == 1
+        data = reader.load_data(
+            0, leads=0, data_format="flat", sampfrom=1000, sampto=2000
+        )
+        assert data.shape == (1000,)
+
+    def test_load_ecg_data(self):
+        rec = reader.ecg_records[0]
+        data = reader.load_ecg_data(rec)
+        assert data.ndim == 2
+
+    def test_load_rsp_data(self):
+        rec = reader.rsp_records[0]
+        data = reader.load_rsp_data(rec)
+        assert data.ndim == 2
 
     def test_load_ann(self):
-        pass
+        ann = reader.load_ann(0)
+        assert all(len(item) == 2 for item in ann)
+        assert all(isinstance(item[0], int) for item in ann)
+        assert all(isinstance(item[1], str) for item in ann)
+
+    def test_load_apnea_event(self):
+        df_apnea_event = reader.load_apnea_event(0)
+        assert df_apnea_event.columns == reader.sleep_event_keys
+
+    def test_meta_data():
+        assert isinstance(reader.version, str) and re.match(
+            PHYSIONET_DB_VERSION_PATTERN, reader.version
+        )
+        assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
+        assert reader.get_citation() is None  # printed
+
+    def test_plot_ann():
+        reader.plot_ann(0)

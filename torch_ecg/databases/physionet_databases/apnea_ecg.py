@@ -324,12 +324,12 @@ class ApneaECG(PhysioNetDataBase):
         else:
             apnea_periods = []
 
-        if len(apnea_periods) > 0:
-            self.logger.info(
-                f"apnea period(s) (units in minutes) of record {rec} is(are): {apnea_periods}"
-            )
-        else:
-            self.logger.info(f"record {rec} has no apnea period")
+        # if len(apnea_periods) > 0:
+        #     self.logger.info(
+        #         f"apnea period(s) (units in minutes) of record {rec} is(are): {apnea_periods}"
+        #     )
+        # else:
+        #     self.logger.info(f"record {rec} has no apnea period")
 
         if len(apnea_periods) == 0:
             return pd.DataFrame(columns=self.sleep_event_keys)
