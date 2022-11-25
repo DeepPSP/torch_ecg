@@ -101,11 +101,9 @@ def test_class_weight_to_sample_weight():
         atol=1e-5,
     )
 
-    y = ["dog", "dog", "cat", "dog", "cattle", "cat", "dog", "cat"]
+    y = ["NSR", "NSR", "AF", "NSR", "PVC", "AF", "NSR", "AF"]
     assert np.allclose(
-        class_weight_to_sample_weight(
-            y, class_weight={"dog": 1, "cat": 2, "cattle": 3}
-        ),
+        class_weight_to_sample_weight(y, class_weight={"NSR": 1, "AF": 2, "PVC": 3}),
         [1 / 3, 1 / 3, 2 / 3, 1 / 3, 1.0, 2 / 3, 1 / 3, 2 / 3],
         atol=1e-5,
     )
