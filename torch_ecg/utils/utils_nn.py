@@ -9,13 +9,15 @@ from copy import deepcopy
 from itertools import repeat, chain
 from math import floor
 from numbers import Real
+from pathlib import Path
 from typing import List, Optional, Sequence, Tuple, Union, Dict
 
 import numpy as np
 import torch
 from torch import Tensor, nn
 
-from ..cfg import DEFAULTS
+from ..cfg import CFG, DEFAULTS
+from .utils_data import cls_to_bin
 
 if DEFAULTS.DTYPE.TORCH == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -48,8 +50,8 @@ def extend_predictions(
     Parameters
     ----------
     preds: sequence,
-        sequence of predictions (scalar or binary),
-        of shape (n_records, n_classes), or (n_classes,),
+        sequence of predictions (scalar or binary) of shape (n_records, n_classes),
+        or categorical predictions of shape (n_classes,),
         where n_classes = `len(classes)`
     classes: list of str,
         classes of the predictions of `preds`
@@ -62,15 +64,40 @@ def extend_predictions(
         the extended array of predictions, with indices in `extended_classes`,
         of shape (n_records, n_classes), or (n_classes,)
 
+    Examples
+    --------
+    ```python
+    >>> n_records, n_classes = 10, 3
+    >>> classes = ["NSR", "AF", "PVC"]
+    >>> extended_classes = ["AF", "RBBB", "PVC", "NSR"]
+    >>> scalar_pred = torch.rand(n_records, n_classes)
+    >>> extended_pred = extend_predictions(scalar_pred, classes, extended_classes)
+    >>> bin_pred = torch.randint(0, 2, (n_records, n_classes))
+    >>> extended_pred = extend_predictions(bin_pred, classes, extended_classes)
+    >>> cate_pred = torch.randint(0, n_classes, (n_records,))
+    >>> extended_pred = extend_predictions(cate_pred, classes, extended_classes)
+    ```
+
     """
-    _preds = np.atleast_2d(preds)
-    assert _preds.shape[1] == len(
-        classes
-    ), f"`pred` indicates {_preds.shape[1]} classes, while `classes` has {len(classes)}"
     assert len(set(classes) - set(extended_classes)) == 0, (
         "`extended_classes` is not a superset of `classes`, "
         f"with {set(classes)-set(extended_classes)} in `classes` but not in `extended_classes`"
     )
+
+    if isinstance(preds, Tensor):
+        _preds = preds.numpy()
+    else:
+        _preds = np.array(preds)
+
+    if np.ndim(_preds) == 1:  # categorical predictions
+        extended_preds = cls_to_bin(_preds, len(classes))
+        extended_preds = extend_predictions(extended_preds, classes, extended_classes)
+        extended_preds = np.where(extended_preds == 1)[1]
+        return extended_preds
+
+    assert _preds.shape[1] == len(
+        classes
+    ), f"`pred` indicates {_preds.shape[1]} classes, while `classes` has {len(classes)}"
 
     extended_preds = np.zeros((_preds.shape[0], len(extended_classes)))
 
@@ -95,9 +122,10 @@ def compute_output_shape(
     output_padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
+    asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
 ) -> Tuple[Union[int, None]]:
     """
-    compute the output shape of a (transpose) convolution/maxpool/avgpool layer
+    Compute the output shape of a (transpose) convolution/maxpool/avgpool layer
 
     Parameters
     ----------
@@ -114,7 +142,7 @@ def compute_output_shape(
         stride (down-sampling length) of the layer, should be compatible with `input_shape`
     padding: int, or sequence of int, default 0,
         padding length(s) of the layer, should be compatible with `input_shape`
-    out_padding: int, or sequence of int, default 0,
+    output_padding: int, or sequence of int, default 0,
         additional size added to one side of the output shape,
         used only for transpose convolution
     dilation: int, or sequence of int, default 1,
@@ -122,6 +150,8 @@ def compute_output_shape(
     channel_last: bool, default False,
         channel dimension is the last dimension,
         or the second dimension (the first is the batch dimension by convention)
+    asymmetric_padding: (2-)sequence of int or sequence of (2-)sequence of int,
+        asymmetric paddings for all dimensions or for each dimension
 
     Returns
     -------
@@ -133,6 +163,7 @@ def compute_output_shape(
     [1] https://discuss.pytorch.org/t/utility-function-for-calculating-the-shape-of-a-conv-output/11173/5
 
     """
+    # check validity of arguments
     __TYPES__ = [
         "conv",
         "convolution",
@@ -148,7 +179,48 @@ def compute_output_shape(
         "averagepooling",
     ]
     lt = "".join(layer_type.lower().split("_"))
-    assert lt in __TYPES__
+    assert (
+        lt in __TYPES__
+    ), f"Unknown layer type `{layer_type}`, should be one of: {__TYPES__}"
+
+    def assert_positive_integer(num):
+        return isinstance(num, int) and num > 0
+
+    def assert_non_negative_integer(num):
+        return isinstance(num, int) and num >= 0
+
+    dim = len(input_shape) - 2
+    assert dim > 0, (
+        "`input_shape` should be a sequence of length at least 3, "
+        "to be a valid (with batch and channel) shape of a non-degenerate Tensor"
+    )
+    assert all(
+        s is None or assert_positive_integer(s) for s in input_shape
+    ), "`input_shape` should be a sequence containing only `None` and positive integers"
+
+    if num_filters is not None:
+        assert assert_positive_integer(
+            num_filters
+        ), "`num_filters` should be `None` or positive integer"
+    assert all(
+        assert_positive_integer(num)
+        for num in np.asarray(kernel_size).flatten().tolist()
+    ), "`kernel_size` should contain only positive integers"
+    assert all(
+        assert_positive_integer(num) for num in np.asarray(stride).flatten().tolist()
+    ), "`stride` should contain only positive integers"
+    assert all(
+        assert_non_negative_integer(num)
+        for num in np.asarray(padding).flatten().tolist()
+    ), "`padding` should contain only non-negative integers"
+    assert all(
+        assert_non_negative_integer(num)
+        for num in np.asarray(output_padding).flatten().tolist()
+    ), "`output_padding` should contain only non-negative integers"
+    assert all(
+        assert_positive_integer(num) for num in np.asarray(dilation).flatten().tolist()
+    ), "`dilation` should contain only positive integers"
+
     if lt in [
         "conv",
         "convolution",
@@ -185,11 +257,12 @@ def compute_output_shape(
         "transposeconvolution",
     ]:
         out_channels = num_filters
-    dim = len(input_shape) - 2
-    assert dim > 0, (
-        "input_shape should be a sequence of length at least 3, "
-        "to be a valid (with batch and channel) shape of a non-degenerate Tensor"
-    )
+
+    def check_output_validity(shape):
+        assert all(
+            p is None or p > 0 for p in shape
+        ), f"output shape `{shape}` is illegal, please check input arguments"
+        return shape
 
     # none_dim_msg = "only batch and channel dimension can be `None`"
     # if channel_last:
@@ -204,7 +277,7 @@ def compute_output_shape(
                     "out channel dimension and spatial dimensions are all `None`"
                 )
             output_shape = tuple(list(input_shape[:-1]) + [out_channels])
-            return output_shape
+            return check_output_validity(output_shape)
         elif any([n is None for n in input_shape[1:-1]]):
             raise ValueError(none_dim_msg)
     else:
@@ -214,7 +287,7 @@ def compute_output_shape(
                     "out channel dimension and spatial dimensions are all `None`"
                 )
             output_shape = tuple([input_shape[0], out_channels] + list(input_shape[2:]))
-            return output_shape
+            return check_output_validity(output_shape)
         elif any([n is None for n in input_shape[2:]]):
             raise ValueError(none_dim_msg)
 
@@ -224,7 +297,8 @@ def compute_output_shape(
         _kernel_size = kernel_size
     else:
         raise ValueError(
-            f"input has {dim} dimensions, while kernel has {len(kernel_size)} dimensions, both not including the channel dimension"
+            f"input has {dim} dimensions, while kernel has {len(kernel_size)} dimensions, "
+            "both not including the channel dimension"
         )
 
     if isinstance(stride, int):
@@ -233,24 +307,46 @@ def compute_output_shape(
         _stride = stride
     else:
         raise ValueError(
-            f"input has {dim} dimensions, while kernel has {len(stride)} dimensions, both not including the channel dimension"
+            f"input has {dim} dimensions, while `kernel` has {len(stride)} dimensions, "
+            "both not including the channel dimension"
         )
 
+    # NOTE: asymmetric padding along one spatial dimension
+    # seems not supported yet by PyTorch's builtin Module classes
     if isinstance(padding, int):
         _padding = list(repeat(list(repeat(padding, 2)), dim))
-    elif len(padding) == 2 and isinstance(padding[0], int):
-        _padding = list(repeat(padding, dim))
-    elif (
-        len(padding) == dim
-        and all([isinstance(p, Sequence) for p in padding])
-        and all([len(p) == 2 for p in padding])
-    ):
-        _padding = padding
+    # elif len(padding) == 2 and isinstance(padding[0], int):
+    #     _padding = list(repeat(padding, dim))
+    # elif (
+    #     len(padding) == dim
+    #     and all([isinstance(p, Sequence) for p in padding])
+    #     and all([len(p) == 2 for p in padding])
+    # ):
+    elif len(padding) == dim:
+        _padding = [list(repeat(p, 2)) for p in padding]
     else:
-        # raise ValueError(
-        #     f"input has {dim} dimensions, while kernel has {len(padding)} dimensions, both not including the channel dimension"
-        # )
-        raise ValueError("Invalid padding")
+        raise ValueError(
+            f"input has {dim} dimensions, while `padding` has {len(padding)} dimensions, "
+            "both not including the channel dimension"
+        )
+        # raise ValueError("Invalid `padding`")
+
+    if asymmetric_padding is not None:
+        assert hasattr(asymmetric_padding, "__len__"), "Invalid `asymmetric_padding`"
+        if isinstance(asymmetric_padding[0], int):
+            assert len(asymmetric_padding) == 2 and isinstance(
+                asymmetric_padding[1], int
+            ), "Invalid `asymmetric_padding`"
+            _asymmetric_padding = list(repeat(asymmetric_padding, dim))
+        else:
+            assert len(asymmetric_padding) == dim and all(
+                len(ap) == 2 and all(isinstance(p, int) for p in ap)
+                for ap in asymmetric_padding
+            ), "Invalid `asymmetric_padding`"
+            _asymmetric_padding = asymmetric_padding
+        for idx in range(dim):
+            _padding[idx][0] += _asymmetric_padding[idx][0]
+            _padding[idx][1] += _asymmetric_padding[idx][1]
 
     if isinstance(output_padding, int):
         _output_padding = list(repeat(output_padding, dim))
@@ -258,7 +354,8 @@ def compute_output_shape(
         _output_padding = output_padding
     else:
         raise ValueError(
-            f"input has {dim} dimensions, while kernel has {len(output_padding)} dimensions, both not including the channel dimension"
+            f"input has {dim} dimensions, while `output_padding` has {len(output_padding)} dimensions, "
+            "both not including the channel dimension"
         )
 
     if isinstance(dilation, int):
@@ -267,7 +364,8 @@ def compute_output_shape(
         _dilation = dilation
     else:
         raise ValueError(
-            f"input has {dim} dimensions, while kernel has {len(dilation)} dimensions, both not including the channel dimension"
+            f"input has {dim} dimensions, while `dilation` has {len(dilation)} dimensions, "
+            "both not including the channel dimension"
         )
 
     if channel_last:
@@ -304,7 +402,7 @@ def compute_output_shape(
     else:
         output_shape = tuple([input_shape[0], out_channels] + output_shape)
 
-    return output_shape
+    return check_output_validity(output_shape)
 
 
 def compute_conv_output_shape(
@@ -317,8 +415,10 @@ def compute_conv_output_shape(
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
     """
-    compute the output shape of a convolution/maxpool/avgpool layer
+    Compute the output shape of a convolution/maxpool/avgpool layer
 
+    Parameters
+    ----------
     input_shape: sequence of int or None,
         shape of an input Tensor,
         the first dimension is the batch dimension, which is allowed to be `None`
@@ -367,6 +467,8 @@ def compute_maxpool_output_shape(
     """
     compute the output shape of a maxpool layer
 
+    Parameters
+    ----------
     input_shape: sequence of int or None,
         shape of an input Tensor,
         the first dimension is the batch dimension, which is allowed to be `None`
@@ -410,8 +512,10 @@ def compute_avgpool_output_shape(
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
     """
-    compute the output shape of a avgpool layer
+    Compute the output shape of a avgpool layer
 
+    Parameters
+    ----------
     input_shape: sequence of int or None,
         shape of an input Tensor,
         the first dimension is the batch dimension, which is allowed to be `None`
@@ -456,7 +560,7 @@ def compute_deconv_output_shape(
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
     """
-    compute the output shape of a transpose convolution layer
+    Compute the output shape of a transpose convolution layer
 
     Parameters
     ----------
@@ -523,12 +627,14 @@ def compute_sequential_output_shape(
     batch_size: Optional[int] = None,
 ) -> Sequence[Union[int, None]]:
     """
-    compute the output shape of a sequential model
+    Compute the output shape of a sequential model
 
     Parameters
     ----------
     model: nn.Sequential,
-        the sequential model
+        the sequential model,
+        each `module` of the `model` should have
+        a `compute_output_shape` method
     seq_len: int,
         length of the 1d sequence
     batch_size: int, optional,
@@ -638,7 +744,7 @@ def compute_module_size(
         cvt_dict = {c: u for c, u in enumerate(list("BKMGTP"))}
         n_params = f"""{n_params:.1f}{cvt_dict[div_count]}"""
     else:
-        n_params = sum([np.prod(item.size()) for item in tensor_containers])
+        n_params = int(sum([np.prod(item.size()) for item in tensor_containers]))
     return n_params
 
 
@@ -689,12 +795,14 @@ def compute_receptive_field(
 
     Examples
     --------
+    ```python
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2])
     90
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[2,1,2,4,1,8,8,8,1])
     484
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[4,1,4,8,1,16,32,64,1])
     1984
+    ```
 
     this is the receptive fields of the output feature maps
     of the 3 branches of the multi-scopic net, using its original hyper-parameters,
@@ -743,6 +851,7 @@ def default_collate_fn(
     -------
     tuple or dict of Tensor,
         the concatenated values to feed into neural networks
+
     """
     if isinstance(batch[0], dict):
         keys = batch[0].keys()
@@ -783,7 +892,7 @@ def _default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor
     return tuple(ret)
 
 
-if torch.__version__ >= "1.15.0":
+if torch.__version__ >= "1.5.0":
 
     def _true_divide(dividend, divisor):
         return torch.true_divide(dividend, divisor)
@@ -947,14 +1056,14 @@ class CkptMixin(object):
 
     @classmethod
     def from_checkpoint(
-        cls, path: str, device: Optional[torch.device] = None
+        cls, path: Union[str, Path], device: Optional[torch.device] = None
     ) -> Tuple[nn.Module, dict]:
         """
         load a model from a checkpoint
 
         Parameters
         ----------
-        path: str,
+        path: str or Path,
             path of the checkpoint
         device: torch.device, optional,
             map location of the model parameters,
@@ -975,11 +1084,37 @@ class CkptMixin(object):
             aux_config is not None
         ), "input checkpoint has no sufficient data to recover a model"
         kwargs = dict(
-            classes=aux_config["classes"],
             config=ckpt["model_config"],
         )
+        if "classes" in aux_config:
+            kwargs["classes"] = aux_config["classes"]
         if "n_leads" in aux_config:
             kwargs["n_leads"] = aux_config["n_leads"]
         model = cls(**kwargs)
         model.load_state_dict(ckpt["model_state_dict"])
         return model, aux_config
+
+    def save(self, path: Union[str, Path], train_config: CFG) -> None:
+        """
+        Save the model to `path`
+
+        Parameters
+        ----------
+        path: str or Path,
+            path to save the model
+        train_config: CFG,
+            config for training the model,
+            used when one restores the model
+
+        """
+        path = Path(path)
+        if not path.parent.exists():
+            path.parent.mkdir(parents=True)
+        torch.save(
+            {
+                "model_state_dict": self.state_dict(),
+                "model_config": self.config,
+                "train_config": train_config,
+            },
+            path,
+        )
