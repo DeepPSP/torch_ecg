@@ -668,6 +668,10 @@ class SHHS(NSRRDataBase):
             self.db_dir / "polysomnography" / "annotations-events-profusion"
         )
 
+    def _ls_rec(self) -> None:
+        """ """
+        self._all_records = sorted(self.psg_data_path.rglob("*.edf"))
+
     def update_sleep_stage_names(self) -> None:
         """ """
         if self.sleep_stage_protocol == "aasm":

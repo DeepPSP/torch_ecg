@@ -144,8 +144,10 @@ class SPH(_DataBase):
                 )
             )
 
-        self._df_code = pd.read_csv(self.db_dir / "code.csv").astype(str)
-        self._df_metadata = pd.read_csv(self.db_dir / "metadata.csv")
+        if (self.db_dir / "code.csv").is_file():
+            self._df_code = pd.read_csv(self.db_dir / "code.csv").astype(str)
+        if (self.db_dir / "metadata.csv").is_file():
+            self._df_metadata = pd.read_csv(self.db_dir / "metadata.csv")
 
     def get_subject_id(self, rec: Union[str, int]) -> str:
         """
