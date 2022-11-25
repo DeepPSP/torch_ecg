@@ -20,3 +20,14 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 reader = QTDB(_CWD)
 reader.download()
+
+
+class TestQTDB:
+    def test_len(self):
+        assert len(reader) == 105
+
+    def test_load_data(self):
+        pass
+
+    def test_load_ann(self):
+        pass
