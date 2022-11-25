@@ -373,7 +373,6 @@ class LUDB(PhysioNetDataBase):
 
     def load_diagnoses(self, rec: Union[str, int]) -> List[str]:
         """
-
         load diagnoses of the `rec`
 
         Parameters
@@ -398,7 +397,6 @@ class LUDB(PhysioNetDataBase):
         class_map: Optional[Dict[str, int]] = None,
     ) -> np.ndarray:
         """
-
         load the wave delineation in the form of masks
 
         Parameters
@@ -536,7 +534,6 @@ class LUDB(PhysioNetDataBase):
 
     def _load_header(self, rec: Union[str, int]) -> dict:
         """
-
         load header data into a dict
 
         Parameters
@@ -586,7 +583,6 @@ class LUDB(PhysioNetDataBase):
         lower_cases: bool = False,
     ) -> List[str]:
         """
-
         Parameters
         ----------
         leads: str or int or list of str or int, optional,
@@ -623,7 +619,6 @@ class LUDB(PhysioNetDataBase):
         self, rec: Union[str, int], fields: Optional[Union[str, Sequence[str]]] = None
     ) -> Union[dict, str]:
         """
-
         Parameters
         ----------
         rec: str or int,
