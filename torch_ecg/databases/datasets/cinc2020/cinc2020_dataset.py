@@ -316,7 +316,6 @@ class CINC2020Dataset(ReprMixin, Dataset):
         """
         make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
         """
-        prev_state = self.__data_aug
         _TRANCHES = "ABEF"
         if self.training:
             ratio = int(self.config.train_ratio * 100)
@@ -344,14 +343,12 @@ class CINC2020Dataset(ReprMixin, Dataset):
         np.save(self.reader.db_dir_base / filename, y)
         print(f"y saved to {filename}")
 
-        self.__data_aug = prev_state
-
     def _check_nan(self) -> None:
         """
         during training, sometimes nan values are encountered,
         which ruins the whole training process
         """
-        for idx, (values, labels) in self:
+        for idx, (values, labels) in enumerate(self):
             if np.isnan(values).any():
                 print(f"values of {self.records[idx]} have nan values")
             if np.isnan(labels).any():

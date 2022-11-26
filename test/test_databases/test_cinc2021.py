@@ -14,6 +14,13 @@ from torch_ecg.databases.physionet_databases.cinc2021 import (
 )
 from torch_ecg.databases.aux_data.cinc2021_aux_data import dx_mapping_scored
 from torch_ecg.databases.datasets import CINC2021Dataset, CINC2021TrainCfg
+from torch_ecg.databases.datasets.cinc2021.cinc2021_cfg import (
+    twelve_leads,
+    six_leads,
+    four_leads,
+    three_leads,
+    two_leads,
+)
 from torch_ecg.utils import dicts_equal
 
 
@@ -201,12 +208,9 @@ class TestCINC2021Dataset:
 
     def test_load_one_record(self):
         for rec in ds.records:
-            data, target = ds.load_one_record(rec)
-            assert data.ndim == 2 and data.shape == (
-                len(config.leads),
-                config.input_len,
-            )
-            assert target.ndim == 1 and target.shape == (len(config.classes),)
+            data, target = ds._load_one_record(rec)
+            assert data.shape == (1, len(config.leads), config.input_len)
+            assert target.shape == (1, len(config.classes))
 
     def test_properties(self):
         assert ds.signals.shape == (
@@ -215,6 +219,60 @@ class TestCINC2021Dataset:
             config.input_len,
         )
         assert ds.labels.shape == (len(ds.records), len(config.classes))
+
+    def test_to(self):
+        new_ds = CINC2021Dataset(config, training=False, lazy=False)
+        new_ds.to(six_leads)
+        assert new_ds.signals.shape == (len(new_ds.records), 6, config.input_len)
+        assert new_ds.labels.shape == (len(new_ds.records), len(config.classes))
+        new_ds.to(two_leads)
+        assert new_ds.signals.shape == (len(new_ds.records), 2, config.input_len)
+        assert new_ds.labels.shape == (len(new_ds.records), len(config.classes))
+
+        with pytest.raises(
+            AssertionError,
+            match="One is not able to change to a set of leads which is not a subset of the current leads",
+        ):
+            new_ds.to(twelve_leads)
+
+        del new_ds
+
+    def test_empty(self):
+        new_ds = CINC2021Dataset(config, training=False, lazy=False)
+        new_ds.empty()
+        assert new_ds.signals.shape == (0, len(config.leads), config.input_len)
+        assert new_ds.labels.shape == (0, len(config.classes))
+        new_ds.empty(four_leads)
+        assert new_ds.signals.shape == (0, 4, config.input_len)
+        assert new_ds.labels.shape == (0, len(config.classes))
+        del new_ds
+
+    def test_from_extern(self):
+        new_config = deepcopy(config)
+        new_config.leads = deepcopy(three_leads)
+        new_ds = CINC2021Dataset.from_extern(ds, new_config)
+        assert new_ds.signals.shape == (len(ds.records), 3, config.input_len)
+        assert new_ds.labels.shape == (len(ds.records), len(config.classes))
+        del new_ds, new_config
+
+    def test_reload_from_extern(self):
+        new_config = deepcopy(config)
+        new_config.leads = deepcopy(six_leads)
+        new_ds = CINC2021Dataset.from_extern(ds, new_config)
+        new_ds.empty()
+        assert new_ds.signals.shape == (0, 6, config.input_len)
+        assert new_ds.labels.shape == (0, len(config.classes))
+        new_ds.reload_from_extern(ds)
+        assert new_ds.signals.shape == (len(ds.records), 6, config.input_len)
+        assert new_ds.labels.shape == (len(ds.records), len(config.classes))
+
+        with pytest.raises(
+            AssertionError,
+            match="One is not able to reload from a dataset whose `leads` is not a superset of the current one",
+        ):
+            ds.reload_from_extern(new_ds)
+
+        del new_ds, new_config
 
     def test_persistence(self):
         ds.persistence()

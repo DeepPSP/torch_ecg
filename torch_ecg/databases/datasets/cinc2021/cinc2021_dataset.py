@@ -118,14 +118,6 @@ class CINC2021Dataset(ReprMixin, Dataset):
 
     def _load_all_data(self) -> None:
         """ """
-        # self.reader can not be pickled
-        # with mp.Pool(processes=max(1, mp.cpu_count()-2)) as pool:
-        #     self._signals, self._labels = \
-        #         zip(*pool.starmap(_load_record, [(self.reader, r, self.config) for r in self.records]))
-
-        # self._signals = np.array([]).reshape(0, len(self.config.leads), self.siglen)
-        # self._labels = np.array([]).reshape(0, self.n_classes)
-
         fdr = FastDataReader(self.reader, self.records, self.config, self.ppm)
 
         # with tqdm(self.records, desc="Loading data", unit="record") as pbar:
@@ -196,12 +188,15 @@ class CINC2021Dataset(ReprMixin, Dataset):
 
     def to(self, leads: Sequence[str]) -> None:
         """ """
+        assert set(leads) <= set(
+            self.config.leads
+        ), "One is not able to change to a set of leads which is not a subset of the current leads"
         prev_leads = self.config.leads
         self.config.leads = leads
         self._indices = [prev_leads.index(ld) for ld in leads]
         self._signals = self._signals[:, self._indices, :]
 
-    def emtpy(self, leads: Optional[Sequence[str]] = None) -> None:
+    def empty(self, leads: Optional[Sequence[str]] = None) -> None:
         """ """
         if leads is None:
             leads = self.config.leads
@@ -210,6 +205,7 @@ class CINC2021Dataset(ReprMixin, Dataset):
         self._signals = np.array([], dtype=self.dtype).reshape(
             0, len(leads), self.siglen
         )
+        self._labels = np.array([], dtype=self.dtype).reshape(0, self.n_classes)
 
     @classmethod
     def from_extern(cls, ext_ds: "CINC2021Dataset", config: CFG) -> "CINC2021Dataset":
@@ -222,6 +218,9 @@ class CINC2021Dataset(ReprMixin, Dataset):
 
     def reload_from_extern(self, ext_ds: "CINC2021Dataset") -> None:
         """ """
+        assert set(self.config.leads) <= set(
+            ext_ds.config.leads
+        ), "One is not able to reload from a dataset whose `leads` is not a superset of the current one"
         indices = [ext_ds.config.leads.index(ld) for ld in self.config.leads]
         self._signals = ext_ds._signals[:, indices, :]
         self._labels = ext_ds._labels.copy()
@@ -506,39 +505,3 @@ class FastDataReader(ReprMixin, Dataset):
             "reader",
             "ppm",
         ]
-
-
-def _load_record(reader: CR, rec: str, config: CFG) -> Tuple[np.ndarray, np.ndarray]:
-    """finished, NOT checked,
-
-    load a record from the database using data reader
-
-    Parameters
-    ----------
-    reader: CR,
-        the data reader
-    rec: str,
-        the record to load
-    config: dict,
-        the configuration for loading record
-
-    Returns
-    -------
-    values: np.ndarray,
-        the values of the record
-    labels: np.ndarray,
-        the labels of the record
-
-    """
-    values = reader.load_resampled_data(
-        rec, leads=config.leads, data_format="channel_first", siglen=None
-    )
-    values = ensure_siglen(values, siglen=config.input_len, fmt="channel_first")
-
-    labels = reader.get_labels(rec, scored_only=True, fmt="a", normalize=True)
-    labels = np.isin(config.all_classes, labels).astype(int)
-
-    if config.data_format.lower() in ["channel_last", "lead_last"]:
-        values = values.T
-
-    return values, labels

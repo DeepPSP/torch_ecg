@@ -182,12 +182,9 @@ class TestCINC2020Dataset:
 
     def test_load_one_record(self):
         for rec in ds.records:
-            data, target = ds.load_one_record(rec)
-            assert data.ndim == 2 and data.shape == (
-                len(config.leads),
-                config.input_len,
-            )
-            assert target.ndim == 1 and target.shape == (len(config.classes),)
+            data, target = ds._load_one_record(rec)
+            assert data.shape == (1, len(config.leads), config.input_len)
+            assert target.shape == (1, len(config.classes))
 
     def test_properties(self):
         assert ds.signals.shape == (
