@@ -181,53 +181,6 @@ class QTDB(PhysioNetDataBase):
         """
         return wfdb.rdheader(str(self.get_absolute_path(rec))).sig_name
 
-    def _normalize_leads(
-        self,
-        rec: Union[str, int],
-        leads: Optional[Union[str, int, List[str], List[int]]] = None,
-    ) -> List[str]:
-        """
-        normalize the lead names to the ones in `self._all_leads`
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or int or list of str or list of int,
-            lead names or indices of the leads in `self._all_leads`
-
-        Returns
-        -------
-        list of str,
-            list of the normalized lead names
-
-        """
-        if leads is not None:
-            if isinstance(leads, str):
-                leads = [leads]
-            elif isinstance(leads, int):
-                leads = [self.get_lead_names(rec)[leads]]
-            elif isinstance(leads, (list, tuple)):
-                if isinstance(leads[0], int):
-                    leads = [self.get_lead_names(rec)[ld] for ld in leads]
-                if isinstance(leads[0], str):
-                    assert set(leads) <= set(
-                        self.get_lead_names(rec)
-                    ), f"leads must be a subset of the record's total leads {self.get_lead_names(rec)}"
-                else:
-                    raise ValueError(
-                        "leads must be str or int or a list of str or int, "
-                        f"but got {type(leads[0])}"
-                    )
-            else:
-                raise ValueError(
-                    "leads must be str or int or a list of str or int, "
-                    f"but got {type(leads)}"
-                )
-        else:
-            leads = self.get_lead_names(rec)
-        return leads
-
     def load_ann(
         self,
         rec: Union[str, int],
@@ -262,7 +215,12 @@ class QTDB(PhysioNetDataBase):
             the list of wave delineation in the form of `ECGWaveForm`
 
         """
-        assert extension in ["q1c", "q2c", "pu1", "pu2"]
+        assert extension in [
+            "q1c",
+            "q2c",
+            "pu1",
+            "pu2",
+        ], "extension should be one of `q1c`, `q2c`, `pu1`, `pu2`"
         fp = str(self.get_absolute_path(rec))
         wfdb_ann = wfdb.rdann(fp, extension=extension)
         header = wfdb.rdheader(fp)
@@ -409,7 +367,7 @@ class QTDB(PhysioNetDataBase):
 
         """
         raise NotImplementedError(
-            "only a small part of the recordings have rhythm annotations, "
+            "Only a small part of the recordings have rhythm annotations, "
             "hence not implemented yet"
         )
 
@@ -455,7 +413,7 @@ class QTDB(PhysioNetDataBase):
         assert beat_format.lower() in [
             "beat",
             "dict",
-        ], f"`beat_format` must be one of ['beat', 'dict'], got {beat_format}"
+        ], f"`beat_format` must be one of ['beat', 'dict'], but got `{beat_format}`"
         fp = str(self.get_absolute_path(rec))
         wfdb_ann = wfdb.rdann(fp, extension=extension)
         header = wfdb.rdheader(fp)
@@ -463,6 +421,7 @@ class QTDB(PhysioNetDataBase):
         sf = sampfrom or 0
         st = sampto or sig_len
         assert st > sf, "`sampto` should be greater than `sampfrom`!"
+        subs = 0 if keep_original else sf
 
         sample_inds = wfdb_ann.sample
         indices = np.where((sample_inds >= sf) & (sample_inds < st))[0]
@@ -471,7 +430,7 @@ class QTDB(PhysioNetDataBase):
             beat_types = self.beat_types
 
         beat_ann = [
-            BeatAnn(i, s)
+            BeatAnn(i - subs, s)
             for i, s in zip(sample_inds[indices], np.array(wfdb_ann.symbol)[indices])
             if s in beat_types
         ]
@@ -518,14 +477,17 @@ class QTDB(PhysioNetDataBase):
             locations (indices) of the all the rpeaks (qrs complexes)
 
         """
-        assert extension in ["atr", "man"]
+        assert extension in [
+            "atr",
+            "man",
+        ], f"`extension` must be one of ['atr', 'man'], but got `{extension}`"
         if isinstance(rec, int):
             rec = self[rec]
         rec_fp = self.get_absolute_path(rec)
         if not rec_fp.with_suffix(f".{extension}").exists():
             another_extension = "man" if extension == "atr" else "atr"
             raise FileNotFoundError(
-                f"annotation file {rec_fp.name} does not exist, "
+                f"annotation file `{rec_fp.name}` does not exist, "
                 f"try setting `extension = \042{another_extension}\042`"
             )
         wfdb_ann = wfdb.rdann(str(rec_fp), extension=extension)
@@ -610,7 +572,7 @@ class QTDB(PhysioNetDataBase):
             import matplotlib.pyplot as plt
 
             plt.MultipleLocator.MAXTICKS = 3000
-        _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
+        # _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=False)
 
         raise NotImplementedError
 
