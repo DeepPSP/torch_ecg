@@ -484,6 +484,56 @@ class PhysioNetDataBase(_DataBase):
         """
         raise NotImplementedError
 
+    def _normalize_leads(
+        self,
+        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
+        all_leads: Optional[Sequence[str]] = None,
+        numeric: bool = False,
+    ) -> List[Union[str, int]]:
+        """
+        Parameters
+        ----------
+        leads: str or int or list of str or int, optional,
+            the (names of) leads to normalize
+        all_leads: list of str, optional,
+            all leads of records in the database,
+            if not specified, the database class should have attribute `all_leads`,
+            and `self.all_leads` will be used
+        numeric: bool, default False,
+            if True, return the lead indices instead of the lead names
+
+        Returns
+        -------
+        leads: list of str or int,
+            the normalized leads
+
+        """
+        if all_leads is None:
+            assert hasattr(
+                self, "all_leads"
+            ), "If `all_leads` is not specified, the database class should have attribute `all_leads`!"
+            all_leads = self.all_leads
+        err_msg = (
+            f"`leads` should be a subset of {all_leads} or non-negative integers "
+            f"less than {len(all_leads)}, but got {leads}"
+        )
+        if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
+            _leads = all_leads
+        elif isinstance(leads, str):
+            _leads = [leads]
+        elif isinstance(leads, int):
+            assert len(all_leads) > leads >= 0, err_msg
+            _leads = [all_leads[leads]]
+        else:
+            try:
+                _leads = [ld if isinstance(ld, str) else all_leads[ld] for ld in leads]
+            except Exception:
+                raise AssertionError(err_msg)
+        assert set(_leads).issubset(all_leads), err_msg
+        if numeric:
+            _leads = [all_leads.index(ld) for ld in _leads]
+        return _leads
+
     def load_data(
         self,
         rec: Union[str, int],
@@ -528,21 +578,12 @@ class PhysioNetDataBase(_DataBase):
 
         """
         fp = str(self.get_absolute_path(rec))
+
         if hasattr(self, "all_leads"):
             all_leads = self.all_leads
         else:
             all_leads = wfdb.rdheader(fp).sig_name
-        if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
-            _leads = all_leads
-        elif isinstance(leads, str):
-            _leads = [leads]
-        elif isinstance(leads, int):
-            _leads = [all_leads[leads]]
-        else:
-            _leads = [ld if isinstance(ld, str) else all_leads[ld] for ld in leads]
-        assert set(_leads).issubset(
-            all_leads
-        ), f"leads should be a subset of {all_leads} or integers less than {len(all_leads)}, but got {leads}"
+        _leads = self._normalize_leads(leads, all_leads, numeric=False)
 
         allowed_data_format = [
             "channel_first",
@@ -569,7 +610,7 @@ class PhysioNetDataBase(_DataBase):
         allowed_units = ["mv", "uv", "μv", "muv"]
         assert (
             units is None or units.lower() in allowed_units
-        ), f"units should be one of `{allowed_units}` or None, but got `{units}`"
+        ), f"`units` should be one of `{allowed_units}` or None, but got `{units}`"
 
         rdrecord_kwargs = dict(
             sampfrom=sampfrom or 0,
@@ -623,8 +664,7 @@ class PhysioNetDataBase(_DataBase):
         print(info)
 
     def helper(self, items: Union[List[str], str, type(None)] = None, **kwargs) -> None:
-        """to be improved,
-
+        """
         print corr. meanings of symbols belonging to `items`
 
         Parameters
@@ -780,9 +820,7 @@ class PhysioNetDataBase(_DataBase):
 
 
 class NSRRDataBase(_DataBase):
-    """
-    https://sleepdata.org/
-    """
+    """https://sleepdata.org/"""
 
     def __init__(
         self,

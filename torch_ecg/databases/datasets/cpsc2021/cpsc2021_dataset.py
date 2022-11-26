@@ -90,7 +90,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             a simple example is:
             >>> config = deepcopy(CPSC2021TrainCfg)
             >>> config.db_dir = "some/path/to/db"
-            >>> dataset = CPSC2021Dataset(config, training=True, lazy=False)
+            >>> dataset = CPSC2021Dataset(config, task="main", training=True, lazy=False)
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,

@@ -596,6 +596,7 @@ class LUDB(PhysioNetDataBase):
         -------
         leads: list of str,
             the leads in the standard names and order
+
         """
         if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
             _leads = self.all_leads_lower

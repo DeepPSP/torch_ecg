@@ -1,6 +1,7 @@
 """
 """
 
+from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
@@ -9,6 +10,7 @@ import pytest
 from torch_ecg.databases import CINC2020
 from torch_ecg.databases.physionet_databases.cinc2020 import compute_all_metrics
 from torch_ecg.databases.aux_data.cinc2020_aux_data import dx_mapping_scored
+from torch_ecg.databases.datasets import CINC2020Dataset, CINC2020TrainCfg
 from torch_ecg.utils import dicts_equal
 
 
@@ -157,3 +159,9 @@ class TestCINC2020:
         )
         assert isinstance(metrics, tuple)
         assert all(isinstance(m, float) for m in metrics)
+
+
+config = deepcopy(CINC2020TrainCfg)
+config.db_dir = _CWD
+
+ds = CINC2020Dataset(config, training=False, lazy=True)

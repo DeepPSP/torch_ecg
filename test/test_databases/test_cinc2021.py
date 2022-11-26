@@ -1,6 +1,7 @@
 """
 """
 
+from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
@@ -12,6 +13,7 @@ from torch_ecg.databases.physionet_databases.cinc2021 import (
     compute_metrics_detailed,
 )
 from torch_ecg.databases.aux_data.cinc2021_aux_data import dx_mapping_scored
+from torch_ecg.databases.datasets import CINC2021Dataset, CINC2021TrainCfg
 from torch_ecg.utils import dicts_equal
 
 
@@ -176,3 +178,9 @@ class TestCINC2021:
         )
         assert isinstance(metrics, tuple)
         assert all(isinstance(m, (float, np.ndarray)) for m in metrics)
+
+
+config = deepcopy(CINC2021TrainCfg)
+config.db_dir = _CWD
+
+ds = CINC2021Dataset(config, trainning=False, lazy=True)

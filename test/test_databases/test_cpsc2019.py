@@ -2,9 +2,11 @@
 """
 
 import shutil
+from copy import deepcopy
 from pathlib import Path
 
 from torch_ecg.databases import CPSC2019
+from torch_ecg.databases.datasets import CPSC2019Dataset, CPSC2019TrainCfg
 
 
 ###############################################################################
@@ -38,3 +40,9 @@ class TestCPSC2019:
 
     def test_plot(self):
         reader.plot(0, ticks_granularity=2)
+
+
+config = deepcopy(CPSC2019TrainCfg)
+config.db_dir = _CWD
+
+ds = CPSC2019Dataset(config, training=False, lazy=True)

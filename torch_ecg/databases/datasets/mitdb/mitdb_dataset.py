@@ -52,7 +52,7 @@ class MITDBDataset(ReprMixin, Dataset):
             a simple example is:
             >>> config = deepcopy(MITDBDataset)
             >>> config.db_dir = "some/path/to/db"
-            >>> dataset = MITDBDataset(config, training=True, lazy=False)
+            >>> dataset = MITDBDataset(config, task="qrs_detection", training=True, lazy=False)
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,

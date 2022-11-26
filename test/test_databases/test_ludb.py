@@ -5,11 +5,13 @@ since they are comprehensively tested `test_afdb.py`
 
 import re
 import shutil
+from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
 
 from torch_ecg.databases import LUDB
+from torch_ecg.databases.datasets import LUDBDataset, LUDBTrainCfg
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
 
@@ -79,3 +81,14 @@ class TestLUDB:
 
     def test_plot(self):
         reader.plot(0, leads=[2, 5], ticks_granularity=2)
+
+
+config = deepcopy(LUDBTrainCfg)
+config.db_dir = _CWD
+
+ds = LUDBDataset(config, training=False, lazy=True)
+
+
+class TestLUDBDataset:
+    def test_len(self):
+        pass

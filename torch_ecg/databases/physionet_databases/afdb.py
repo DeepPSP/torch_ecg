@@ -99,10 +99,7 @@ class AFDB(PhysioNetDataBase):
         ]
 
         self.special_records = ["00735", "03665"]
-        self.qrsc_records = get_record_list_recursive(
-            self.db_dir, self.manual_beat_ann_ext, relative=False
-        )
-        self.qrsc_records = [Path(rec).stem for rec in self.qrsc_records]
+        self.qrsc_records = None
         self._ls_rec()
 
         self.class_map = CFG(AFIB=1, AFL=2, J=3, N=0)  # an extra isoelectric
@@ -134,6 +131,10 @@ class AFDB(PhysioNetDataBase):
         self._all_records = [
             rec for rec in self._all_records if rec not in self.special_records
         ]
+        self.qrsc_records = get_record_list_recursive(
+            self.db_dir, self.manual_beat_ann_ext, relative=False
+        )
+        self.qrsc_records = [Path(rec).stem for rec in self.qrsc_records]
 
     def load_ann(
         self,

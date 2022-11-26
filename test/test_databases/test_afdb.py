@@ -48,7 +48,7 @@ class TestAFDB:
 
         with pytest.raises(
             AssertionError,
-            match="`leads` should be a subset of .+ or integers less than .+",
+            match="`leads` should be a subset of .+ or non-negative integers less than",
         ):
             reader.load_data(0, leads=3)
         with pytest.raises(
@@ -57,7 +57,7 @@ class TestAFDB:
             reader.load_data(0, data_format="lead_last_first")
         with pytest.raises(
             AssertionError,
-            match="`data_format` should be one of `['channel_first', 'lead_first', 'channel_last', 'lead_last']` when the passed number of `leads` is larger than 1",
+            match="`data_format` should be one of `\\['channel_first', 'lead_first', 'channel_last', 'lead_last'\\]` when the passed number of `leads` is larger than 1",
         ):
             reader.load_data(0, data_format="flat")
         with pytest.raises(

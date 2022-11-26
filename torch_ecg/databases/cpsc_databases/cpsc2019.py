@@ -332,7 +332,7 @@ class CPSC2019(CPSCDataBase):
             import matplotlib.pyplot as plt
 
         if data is None:
-            _data = self.load_data(rec, units="μV", keep_dim=False)
+            _data = self.load_data(rec, units="μV", data_format="flat")
         else:
             units = self._auto_infer_units(data)
             if units == "mV":

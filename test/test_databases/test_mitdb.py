@@ -3,11 +3,13 @@
 
 import re
 import shutil
+from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
 
 from torch_ecg.databases import MITDB, WFDB_Rhythm_Annotations
+from torch_ecg.databases.datasets import MITDBDataset, MITDBTrainCfg
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
 
@@ -82,3 +84,9 @@ class TestMITDB:
 
     def test_plot(self):
         pass  # `plot` not implemented yet
+
+
+config = deepcopy(MITDBTrainCfg)
+config.db_dir = _CWD
+
+ds = MITDBDataset(config, task="qrs_detection", training=False, lazy=False)
