@@ -183,4 +183,4 @@ class TestCINC2021:
 config = deepcopy(CINC2021TrainCfg)
 config.db_dir = _CWD
 
-ds = CINC2021Dataset(config, trainning=False, lazy=True)
+ds = CINC2021Dataset(config, training=False, lazy=True)
