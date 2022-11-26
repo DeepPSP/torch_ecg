@@ -91,16 +91,15 @@ class ApneaECG(PhysioNetDataBase):
         self.ann_ext = "apn"
         self.qrs_ann_ext = "qrs"
 
+        self.ecg_records = None
+        self.rsp_records = None
+        self.rsp_channels = None
+        self.learning_set = None
+        self.test_set = None
+        self.control_group = None
+        self.borderline_group = None
+        self.apnea_group = None
         self._ls_rec()
-
-        self.ecg_records = [r for r in self._all_records if "r" not in r]
-        self.rsp_records = [r for r in self._all_records if "r" in r and "er" not in r]
-        self.rsp_channels = ["Resp C", "Resp A", "Resp N", "SpO2"]
-        self.learning_set = [r for r in self.ecg_records if "x" not in r]
-        self.test_set = [r for r in self.ecg_records if "x" in r]
-        self.control_group = [r for r in self.learning_set if "c" in r]
-        self.borderline_group = [r for r in self.learning_set if "b" in r]
-        self.apnea_group = [r for r in self.learning_set if "a" in r]
 
         self.sleep_event_keys = [
             "event_name",
@@ -111,6 +110,19 @@ class ApneaECG(PhysioNetDataBase):
         self.palette = {
             "Obstructive Apnea": "yellow",
         }
+
+    def _ls_rec(self) -> None:
+        """ """
+        super()._ls_rec()
+
+        self.ecg_records = [r for r in self._all_records if "r" not in r]
+        self.rsp_records = [r for r in self._all_records if "r" in r and "er" not in r]
+        self.rsp_channels = ["Resp C", "Resp A", "Resp N", "SpO2"]
+        self.learning_set = [r for r in self.ecg_records if "x" not in r]
+        self.test_set = [r for r in self.ecg_records if "x" in r]
+        self.control_group = [r for r in self.learning_set if "c" in r]
+        self.borderline_group = [r for r in self.learning_set if "b" in r]
+        self.apnea_group = [r for r in self.learning_set if "a" in r]
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
         """
@@ -279,10 +291,10 @@ class ApneaECG(PhysioNetDataBase):
             rec = self[rec]
         file_path = str(ann_path or self.get_absolute_path(rec))
         extension = kwargs.get("extension", "apn")
-        self.wfdb_ann = wfdb.rdann(file_path, extension=extension)
+        wfdb_ann = wfdb.rdann(file_path, extension=extension)
         detailed_ann = [
             [si // (self.fs * 60), sy]
-            for si, sy in zip(self.wfdb_ann.sample, self.wfdb_ann.symbol)
+            for si, sy in zip(wfdb_ann.sample.tolist(), wfdb_ann.symbol)
         ]
         return detailed_ann
 

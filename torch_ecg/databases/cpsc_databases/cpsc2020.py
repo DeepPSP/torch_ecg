@@ -320,7 +320,7 @@ class CPSC2020(CPSCDataBase):
             format of the ecg data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first"), or
-            "flat" (alias "plain") which is valid only when `leads` is a single lead
+            "flat" (alias "plain")
         units: str or None, default "mV",
             units of the output signal, can also be "μV", with aliases of "uV", "muV"
         fs: real number, optional,
@@ -538,7 +538,7 @@ class CPSC2020(CPSCDataBase):
 
         if data is None:
             _data = self.load_data(
-                rec, units="μV", sampfrom=sampfrom, sampto=sampto, keep_dim=False
+                rec, units="μV", sampfrom=sampfrom, sampto=sampto, data_format="flat"
             )
         else:
             units = self._auto_infer_units(data)
@@ -661,6 +661,10 @@ class CPSC2020(CPSCDataBase):
     @property
     def database_info(self) -> DataBaseInfo:
         return _CPSC2020_INFO
+
+    @property
+    def webpage(self) -> str:
+        return "http://2020.icbeb.org/CSPC2020"
 
 
 def _ann_to_beat_ann_epoch_v1(

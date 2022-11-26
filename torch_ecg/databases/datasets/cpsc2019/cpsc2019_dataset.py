@@ -191,7 +191,7 @@ class FastDataReader(ReprMixin, Dataset):
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
         """ """
         rec_name = self.records[index]
-        values = self.reader.load_data(rec_name, units="mV", keep_dim=False)
+        values = self.reader.load_data(rec_name, units="mV", data_format="flat")
         rpeaks = self.reader.load_ann(rec_name, keep_dim=False)
         if self.config.get("recover_length", False):
             reduction = 1

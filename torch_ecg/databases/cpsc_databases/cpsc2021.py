@@ -189,7 +189,6 @@ class CPSC2021(PhysioNetDataBase):
         """
         list all the records and load into `self._all_records`,
         facilitating further uses
-
         """
         self._all_records = CFG({t: [] for t in self.db_tranches})
         self._all_subjects = CFG({t: [] for t in self.db_tranches})
@@ -248,7 +247,6 @@ class CPSC2021(PhysioNetDataBase):
         """
         list all the records assuming the records
         are split into two folders (training_I and training_II)
-
         """
         fn = "RECORDS"
         rev_fn = "REVISED_RECORDS"
@@ -605,9 +603,7 @@ class CPSC2021(PhysioNetDataBase):
         keep_original: bool = False,
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        alias of `self.load_rpeaks`
-        """
+        """alias of `self.load_rpeaks`"""
         return self.load_rpeaks(rec, ann, sampfrom, sampto, keep_original, fs)
 
     def load_af_episodes(
@@ -813,8 +809,7 @@ class CPSC2021(PhysioNetDataBase):
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs,
     ) -> None:
-        """to improve,
-
+        """
         plot the signals of a record or external signals (units in μV),
         with metadata (labels, episodes of atrial fibrillation, etc.),
         possibly also along with wave delineations
@@ -1416,7 +1411,6 @@ def compute_challenge_metric(
     offset_score_range: Sequence[float],
 ) -> float:
     """
-
     compute challenge metric for a single record
 
     Parameters
@@ -1438,6 +1432,7 @@ def compute_challenge_metric(
     -------
     u: float,
         the final score for the prediction
+
     """
     ur_score = ur_calculate(class_true, class_pred)
     ue_score = ue_calculate(
@@ -1455,7 +1450,6 @@ def gen_endpoint_score_mask(
     verbose: int = 0,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-
     generate the scoring mask for the onsets and offsets of af episodes,
 
     Parameters
@@ -1487,6 +1481,7 @@ def gen_endpoint_score_mask(
     2. for records [data_39_4,data_48_4,data_68_23,data_98_5,data_101_5,data_101_7,data_101_8,data_104_25,data_104_27],
     the official `RefInfo._gen_endpoint_score_range` slightly expands the scoring intervals at heads or tails of the records,
     which strictly is incorrect as defined in the `Scoring` section of the official webpage (http://www.icbeb.org/CPSC2021)
+
     """
     _critical_points = list(critical_points)
     if 0 not in _critical_points:

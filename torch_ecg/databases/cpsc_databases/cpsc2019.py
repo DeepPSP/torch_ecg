@@ -10,6 +10,7 @@ from typing import Any, Optional, Sequence, Union
 import numpy as np
 import pandas as pd
 from scipy.io import loadmat
+from scipy.signal import resample_poly
 
 from ...cfg import DEFAULTS
 from ...utils.misc import add_docstring
@@ -124,7 +125,8 @@ class CPSC2019(CPSCDataBase):
         self._all_annotations = [f"R_{i:05d}" for i in range(1, 1 + self.n_records)]
         self._df_records = pd.DataFrame()
         print(
-            "Please allow some time for the reader to confirm the existence of corresponding data files and annotation files..."
+            "Please allow some time for the reader to confirm "
+            "the existence of corresponding data files and annotation files..."
         )
         self._df_records["record"] = [
             f"data_{i:05d}" for i in range(1, 1 + self.n_records)
@@ -219,15 +221,26 @@ class CPSC2019(CPSCDataBase):
         return self.data_dir / f"{rec}{extension or ''}"
 
     def load_data(
-        self, rec: Union[int, str], units: str = "mV", keep_dim: bool = True
+        self,
+        rec: Union[int, str],
+        data_format: str = "channel_first",
+        units: str = "mV",
+        fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
         Parameters
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
-        keep_dim: bool, default True,
-            whether or not to flatten the data of shape (n,1)
+        data_format: str, default "channel_first",
+            format of the ecg data,
+            "channel_last" (alias "lead_last"), or
+            "channel_first" (alias "lead_first"), or
+            "flat" (alias "plain")
+        units: str or None, default "mV",
+            units of the output signal, can also be "μV", with aliases of "uV", "muV"
+        fs: real number, optional,
+            if not None, the loaded data will be resampled to this frequency
 
         Returns
         -------
@@ -236,15 +249,19 @@ class CPSC2019(CPSCDataBase):
 
         """
         fp = self.get_absolute_path(rec, self.rec_ext)
-        print(fp)
         data = loadmat(str(fp))["ecg"].astype(DEFAULTS.DTYPE.NP)
-        if units.lower() in [
-            "uv",
-            "μv",
-        ]:
-            data = (1000 * data).astype(int)
-        if not keep_dim:
+        if fs is not None and fs != self.fs:
+            data = resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+        if data_format.lower() in ["channel_first", "lead_first"]:
+            data = data.T
+        elif data_format.lower() in ["flat", "plain"]:
             data = data.flatten()
+        elif data_format.lower() in ["channel_last", "lead_last"]:
+            pass
+        else:
+            raise ValueError(f"invalid `data_format`: {data_format}")
+        if units.lower() in ["uv", "μv", "muv"]:
+            data = (1000 * data).astype(int)
         return data
 
     def load_ann(self, rec: Union[int, str], keep_dim: bool = True) -> np.ndarray:
@@ -369,6 +386,10 @@ class CPSC2019(CPSCDataBase):
     @property
     def database_info(self) -> DataBaseInfo:
         return _CPSC2019_INFO
+
+    @property
+    def webpage(self) -> str:
+        return "http://2019.icbeb.org/Challenge.html"
 
 
 def compute_metrics(

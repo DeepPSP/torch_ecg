@@ -76,7 +76,8 @@ class TestAFDB:
         ann_1 = reader.load_ann(0, sampfrom=1000, sampto=2000, keep_original=True)
         for k, v in ann.items():
             for idx, itv in enumerate(v):
-                ann_1[k][idx] = ann_1[k][idx] - 1000
+                assert len(ann_1[k][idx]) == len(itv) == 2
+                ann_1[k][idx] = [ann_1[k][idx][0] - 1000, ann_1[k][idx][1] - 1000]
         assert ann == ann_1
         ann = reader.load_ann(0, sampfrom=1000, sampto=2000, ann_format="mask")
         ann_1 = reader.load_ann(

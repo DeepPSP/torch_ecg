@@ -588,7 +588,7 @@ class PhysioNetDataBase(_DataBase):
         elif units.lower() in ["μv", "uv", "muv"]:
             data = 1000 * wfdb_rec.p_signal
 
-        if fs is not None and hasattr(self, fs) and fs != self.fs:
+        if fs is not None and hasattr(self, "fs") and fs != self.fs:
             data = resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
 
         if data_format.lower() in ["channel_first", "lead_first"]:

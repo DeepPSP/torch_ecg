@@ -601,8 +601,16 @@ class LUDB(PhysioNetDataBase):
             _leads = self.all_leads_lower
         elif isinstance(leads, str):
             _leads = [leads.lower()]
+        elif isinstance(leads, int):
+            _leads = [self.all_leads_lower[leads]]
         else:
-            _leads = [ld.lower() for ld in leads]
+            _leads = [
+                ld.lower() if isinstance(ld, str) else self.all_leads_lower[ld]
+                for ld in leads
+            ]
+        assert set(_leads).issubset(
+            self.all_leads_lower
+        ), f"leads should be a subset of {self.all_leads} or integers less than {len(self.all_leads)}, but got {leads}"
 
         if standard_ordering:
             _leads = [ld for ld in self.all_leads_lower if ld in _leads]

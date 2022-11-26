@@ -28,7 +28,7 @@ reader.download()
 
 class TestApneaECG:
     def test_len(self):
-        assert len(reader) == 78
+        assert len(reader) == 86
 
     def test_load_data(self):
         data = reader.load_data(0)
@@ -58,7 +58,7 @@ class TestApneaECG:
 
     def test_load_apnea_event(self):
         df_apnea_event = reader.load_apnea_event(0)
-        assert df_apnea_event.columns == reader.sleep_event_keys
+        assert df_apnea_event.columns.tolist() == reader.sleep_event_keys
 
     def test_meta_data(self):
         assert isinstance(reader.version, str) and re.match(

@@ -100,8 +100,9 @@ class AFDB(PhysioNetDataBase):
 
         self.special_records = ["00735", "03665"]
         self.qrsc_records = get_record_list_recursive(
-            self.db_dir, self.manual_beat_ann_ext
+            self.db_dir, self.manual_beat_ann_ext, relative=False
         )
+        self.qrsc_records = [Path(rec).stem for rec in self.qrsc_records]
         self._ls_rec()
 
         self.class_map = CFG(AFIB=1, AFL=2, J=3, N=0)  # an extra isoelectric
@@ -278,7 +279,7 @@ class AFDB(PhysioNetDataBase):
         ann: Optional[Dict[str, np.ndarray]] = None,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
         ticks_granularity: int = 0,
-        leads: Optional[Union[str, List[str]]] = None,
+        leads: Optional[Union[str, int, List[str], List[int]]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         same_range: bool = False,
@@ -309,7 +310,7 @@ class AFDB(PhysioNetDataBase):
         ticks_granularity: int, default 0,
             the granularity to plot axis ticks, the higher the more,
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        leads: str or list of str, optional,
+        leads: str or int or list of str or list of int, optional,
             the leads to plot
         sampfrom: int, optional,
             start index of the data to plot
@@ -331,11 +332,16 @@ class AFDB(PhysioNetDataBase):
             _leads = self.all_leads
         elif isinstance(leads, str):
             _leads = [leads]
+        elif isinstance(leads, int):
+            _leads = [self.all_leads[leads]]
         else:
             _leads = leads
-        assert all([ld in self.all_leads for ld in _leads])
+        assert all([ld in self.all_leads for ld in _leads]) or set(_leads) <= {0, 1}
 
-        lead_indices = [self.all_leads.index(ld) for ld in _leads]
+        try:
+            lead_indices = [self.all_leads.index(ld) for ld in _leads]
+        except ValueError:
+            lead_indices = _leads
         if data is None:
             _data = self.load_data(
                 rec,

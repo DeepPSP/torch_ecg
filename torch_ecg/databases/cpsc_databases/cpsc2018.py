@@ -656,6 +656,10 @@ class CPSC2018(CPSCDataBase):
     def database_info(self) -> DataBaseInfo:
         return _CPSC2018_INFO
 
+    @property
+    def webpage(self) -> str:
+        return "http://2018.icbeb.org/Challenge.html"
+
 
 def compute_metrics():
     """ """

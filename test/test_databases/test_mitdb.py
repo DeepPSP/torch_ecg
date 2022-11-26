@@ -37,7 +37,7 @@ class TestMITDB:
         assert np.allclose(data[0][:1000], data_1)
 
     def test_load_ann(self):
-        data = reader.load_ann(0)
+        data = reader.load_data(0)
         ann = reader.load_ann(0)
         assert ann.keys() == {"beat", "rhythm"}
         assert isinstance(ann["beat"], list)
@@ -81,4 +81,4 @@ class TestMITDB:
         assert reader.get_citation() is None  # printed
 
     def test_plot(self):
-        reader.plot(0, ticks_granularity=2, sampfrom=2000, sampto=4000)
+        pass  # `plot` not implemented yet
