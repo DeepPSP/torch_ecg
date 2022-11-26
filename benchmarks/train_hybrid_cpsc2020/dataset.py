@@ -15,7 +15,7 @@ Issues
 ------
 1. flat segments are found in the original CPSC dataset, e.g. 170*4000 to 185*4000,
 which could be checked for example via:
->>> raw_data = ds.reader.load_data("A02",keep_dim=False)
+>>> raw_data = ds.reader.load_data("A02", data_format="flat")
 >>> flat_segs = []
 >>> for idx in range(len(raw_data)//ds.seglen):
 >>>     seg_data = raw_data[idx*ds.seglen:(idx+1)*ds.seglen]
@@ -534,7 +534,7 @@ class CPSC2020(ReprMixin, Dataset):
             return
         # perform pre-process
         pps = SP.parallel_preprocess_signal(
-            self.reader.load_data(rec, keep_dim=False),
+            self.reader.load_data(rec, data_format="flat"),
             fs=self.reader.fs,
             config=config,
             verbose=verbose,
@@ -653,7 +653,7 @@ class CPSC2020(ReprMixin, Dataset):
         elif force_recompute:
             self.__all_segments[rec_name] = []
 
-        data = self.reader.load_data(rec, units="mV", keep_dim=False)
+        data = self.reader.load_data(rec, units="mV", data_format="flat")
         ann = self.reader.load_ann(rec)
         border_dist = int(0.5 * self.config.fs)
         forward_len = self.seglen - self.config.overlap_len

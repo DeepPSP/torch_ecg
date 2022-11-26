@@ -530,7 +530,9 @@ def get_optimal_covering(
         minumun distance (positive) of intervals of the covering
     isolated_point_dist_threshold: real number, default 0.0,
         the minimum distance (non-negative) of isolated points in `to_cover`
-        to the interval boundaries of the interval containing the point in the covering
+        to the interval boundaries of the interval containing the point in the covering.
+        If one wants the isolated points to be centered in the interval containing the point,
+        set `isolated_point_dist_threshold` to be `min_len / 2`
     traceback: bool, default False,
         if True, a list containing the list of indices of the intervals in the original `to_cover`,
         that each interval in the covering covers
@@ -588,12 +590,14 @@ def get_optimal_covering(
     assert validate_interval(total_interval)[
         0
     ], "`total_interval` must be a valid interval (a sequence of two real numbers)"
-    assert len(to_cover) > 0, "`to_cover` must be non-empty"
     assert min_len > 0, "`min_len` must be positive"
     assert split_threshold > 0, "`split_threshold` must be positive"
     assert (
         isolated_point_dist_threshold >= 0
     ), "`isolated_point_dist_threshold` must be non-negative"
+
+    if len(to_cover) == 0:
+        return [] if not traceback else ([], [])
 
     start_time = time.time()
     verbose = kwargs.get("verbose", 0)

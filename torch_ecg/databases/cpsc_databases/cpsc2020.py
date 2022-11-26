@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 from scipy.io import loadmat
+from scipy.signal import resample_poly
 
 from ...cfg import CFG, DEFAULTS
 from ...utils.misc import add_docstring
@@ -300,24 +301,30 @@ class CPSC2020(CPSCDataBase):
     def load_data(
         self,
         rec: Union[int, str],
-        units: str = "mV",
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        keep_dim: bool = True,
+        data_format: str = "channel_first",
+        units: str = "mV",
+        fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
         Parameters
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
         sampfrom: int, optional,
             start index of the data to be loaded
         sampto: int, optional,
             end index of the data to be loaded
-        keep_dim: bool, default True,
-            whether or not to flatten the data of shape (n,1)
+        data_format: str, default "channel_first",
+            format of the ecg data,
+            "channel_last" (alias "lead_last"), or
+            "channel_first" (alias "lead_first"), or
+            "flat" (alias "plain") which is valid only when `leads` is a single lead
+        units: str or None, default "mV",
+            units of the output signal, can also be "μV", with aliases of "uV", "muV"
+        fs: real number, optional,
+            if not None, the loaded data will be resampled to this frequency
 
         Returns
         -------
@@ -327,12 +334,20 @@ class CPSC2020(CPSCDataBase):
         """
         rec_fp = self.get_absolute_path(rec, self.rec_ext)
         data = loadmat(str(rec_fp))["ecg"].astype(DEFAULTS.DTYPE.NP)
-        if units.lower() in ["uv", "μv"]:
-            data = (1000 * data).astype(int)
         sf, st = (sampfrom or 0), (sampto or len(data))
         data = data[sf:st]
-        if not keep_dim:
+        if fs is not None and fs != self.fs:
+            data = resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+        if data_format.lower() in ["channel_first", "lead_first"]:
+            data = data.T
+        elif data_format.lower() in ["flat", "plain"]:
             data = data.flatten()
+        elif data_format.lower() in ["channel_last", "lead_last"]:
+            pass
+        else:
+            raise ValueError(f"invalid `data_format`: {data_format}")
+        if units.lower() in ["uv", "muv", "μv"]:
+            data = (1000 * data).astype(int)
         return data
 
     def load_ann(
@@ -406,8 +421,10 @@ class CPSC2020(CPSCDataBase):
             test_records = []
             for k in self.subgroups.keys():
                 test_records += DEFAULTS.RNG_sample(self.subgroups[k], 1).tolist()
-        else:
+        elif 5 <= test_rec_num <= 10:
             raise ValueError("test data ratio too high")
+        else:
+            raise ValueError("Invalid `test_rec_num`")
         train_records = [r for r in self.all_records if r not in test_records]
 
         split_res = CFG(
@@ -423,7 +440,7 @@ class CPSC2020(CPSCDataBase):
         self,
         rec: Union[int, str],
         premature_type: Optional[str] = None,
-        window: int = 10000,
+        window: Real = 10,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
     ) -> List[List[int]]:
@@ -438,8 +455,9 @@ class CPSC2020(CPSCDataBase):
             record name or index of the record in `self.all_records`
         premature_type: str, optional,
             premature beat type, can be one of "SPB", "PVC"
-        window: int, default 10000,
-            window length of each premature beat
+        window: real number, default 10,
+            window length of each premature beat,
+            with units in seconds
         sampfrom: int, optional,
             start index of the premature beats to locate
         sampto: int, optional,
@@ -464,11 +482,13 @@ class CPSC2020(CPSCDataBase):
             return premature_intervals
         premature_inds = premature_inds[(sf < premature_inds) & (premature_inds < st)]
         tot_interval = [sf, st]
-        premature_intervals, _ = get_optimal_covering(
+        windown_len = int(window * self.fs)
+        premature_intervals = get_optimal_covering(
             total_interval=tot_interval,
             to_cover=premature_inds,
-            min_len=window * self.fs // 1000,
-            split_threshold=window * self.fs // 1000,
+            min_len=windown_len,
+            isolated_point_dist_threshold=windown_len // 2,
+            split_threshold=windown_len,
             traceback=False,
         )
         return premature_intervals
@@ -632,6 +652,16 @@ class CPSC2020(CPSCDataBase):
             ax.set_ylabel("Voltage [μV]")
             plt.show()
 
+    @property
+    def url(self) -> str:
+        return (
+            "https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/TrainingSet.zip"
+        )
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CPSC2020_INFO
+
 
 def _ann_to_beat_ann_epoch_v1(
     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
@@ -794,16 +824,6 @@ def _ann_to_beat_ann_epoch_v3(
     ann_matched = {k: np.array(v) for k, v in ann_matched.items()}
     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
     return retval
-
-    @property
-    def url(self) -> str:
-        return (
-            "https://opensz.oss-cn-beijing.aliyuncs.com/ICBEB2020/file/TrainingSet.zip"
-        )
-
-    @property
-    def database_info(self) -> DataBaseInfo:
-        return _CPSC2020_INFO
 
 
 def compute_metrics(

@@ -175,7 +175,7 @@ if __name__ == "__main__":
     dr = CR(TrainCfg.db_dir)
     for rec in dr.all_records:
         print(f"rec = {rec}")
-        input_ecg = dr.load_data(rec, keep_dim=False)
+        input_ecg = dr.load_data(rec, data_format="flat")
         print(f"input_ecg.shape = {input_ecg.shape}")
         S_pos, V_pos = CPSC2020_challenge(input_ecg, 400)
         print(f"S_pos = {S_pos}")

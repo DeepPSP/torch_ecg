@@ -218,6 +218,8 @@ def test_get_optimal_covering():
     assert len(covering) == 1
     assert traceback == [[0, 1, 2]]
 
+    assert get_optimal_covering(total_interval, [], min_len=10, split_threshold=5) == []
+
     with pytest.raises(
         ValueError,
         match="some of the elements in `to_cover` exceeds the range of `total_interval`",
@@ -233,8 +235,6 @@ def test_get_optimal_covering():
         match="`total_interval` must be a valid interval \\(a sequence of two real numbers\\)",
     ):
         get_optimal_covering([0, 100, 200], to_cover, min_len=10, split_threshold=5)
-    with pytest.raises(AssertionError, match="`to_cover` must be non-empty"):
-        get_optimal_covering(total_interval, [], min_len=10, split_threshold=5)
     with pytest.raises(
         AssertionError,
         match="`total_interval` must be a valid interval \\(a sequence of two real numbers\\)",
