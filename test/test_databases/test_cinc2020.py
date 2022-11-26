@@ -164,4 +164,41 @@ class TestCINC2020:
 config = deepcopy(CINC2020TrainCfg)
 config.db_dir = _CWD
 
-ds = CINC2020Dataset(config, training=False, lazy=True)
+ds = CINC2020Dataset(config, training=False, lazy=False)
+
+
+class TestCINC2020Dataset:
+    def test_len(self):
+        assert len(ds) == len(ds.records) > 0
+
+    def test_getitem(self):
+        for i in range(len(ds)):
+            data, target = ds[i]
+            assert data.ndim == 2 and data.shape == (
+                len(config.leads),
+                config.input_len,
+            )
+            assert target.ndim == 1 and target.shape == (len(config.classes),)
+
+    def test_load_one_record(self):
+        for rec in ds.records:
+            data, target = ds.load_one_record(rec)
+            assert data.ndim == 2 and data.shape == (
+                len(config.leads),
+                config.input_len,
+            )
+            assert target.ndim == 1 and target.shape == (len(config.classes),)
+
+    def test_properties(self):
+        assert ds.signals.shape == (
+            len(ds.records),
+            len(config.leads),
+            config.input_len,
+        )
+        assert ds.labels.shape == (len(ds.records), len(config.classes))
+
+    def test_persistence(self):
+        ds.persistence()
+
+    def test_check_nan(self):
+        ds._check_nan()

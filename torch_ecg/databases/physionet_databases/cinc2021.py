@@ -1638,7 +1638,6 @@ class CINC2021(PhysioNetDataBase):
         else:
             _leads = leads
         assert set(_leads).issubset(self._all_leads_set)
-        print(_leads)
         _leads = [self.all_leads.index(item) for item in _leads]
 
         tranche = self._get_tranche(rec)
@@ -1646,7 +1645,6 @@ class CINC2021(PhysioNetDataBase):
             rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz.npy"
         else:
             rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz_siglen_{siglen}.npy"
-        print(rec_fp)
         if not rec_fp.is_file():
             # print(f"corresponding file {rec_fp.name} does not exist")
             # NOTE: if not exists, create the data file,

@@ -350,7 +350,6 @@ class CINC2020Dataset(ReprMixin, Dataset):
         """
         during training, sometimes nan values are encountered,
         which ruins the whole training process
-
         """
         for idx, (values, labels) in self:
             if np.isnan(values).any():
