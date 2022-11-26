@@ -203,7 +203,7 @@ class LUDB(PhysioNetDataBase):
         self._all_symbols = ["(", ")", "p", "N", "t"]
         """
         this can be obtained using the following code:
-        >>> data_gen = LUDB(db_dir="/home/wenhao71/data/PhysioNet/ludb/1.0.0/")
+        >>> data_gen = LUDB(db_dir="/home/wenhao71/data/PhysioNet/ludb/1.0.1/")
         >>> all_symbols = set()
         >>> for rec in data_gen.all_records:
         ...     for ext in data_gen.beat_ann_ext:
@@ -305,9 +305,7 @@ class LUDB(PhysioNetDataBase):
         rec_fp = str(self.get_absolute_path(rec))
 
         # wave delineation annotations
-        _leads = self._normalize_leads(
-            leads, standard_ordering=False, lower_cases=False
-        )
+        _leads = self._normalize_leads(leads)
         _ann_ext = [
             f"{ld.lower()}" for ld in _leads
         ]  # for Version 1.0.0, it is f"{l.lower()}"
@@ -422,7 +420,6 @@ class LUDB(PhysioNetDataBase):
         if isinstance(rec, int):
             rec = self[rec]
         _class_map = CFG(class_map) if class_map is not None else self.class_map
-        # _leads = self._normalize_leads(leads, standard_ordering=True, lower_cases=True)
         data = self.load_data(rec, leads=leads, data_format="channel_first")
         masks = np.full_like(data, fill_value=_class_map.i, dtype=int)
         waves = self.load_ann(rec, leads=leads, metadata=False)["waves"]
@@ -489,9 +486,7 @@ class LUDB(PhysioNetDataBase):
             )
 
         if leads is not None:
-            _leads = self._normalize_leads(
-                leads, standard_ordering=False, lower_cases=False
-            )
+            _leads = self._normalize_leads(leads)
         else:
             _leads = [f"lead_{idx+1}" for idx in range(_masks.shape[0])]
         assert len(_leads) == _masks.shape[0]
@@ -575,54 +570,6 @@ class LUDB(PhysioNetDataBase):
         ][0] + 1
         header_dict["diagnoses"] = header_reader.comments[d_start:]
         return header_dict
-
-    def _normalize_leads(
-        self,
-        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
-        standard_ordering: bool = False,
-        lower_cases: bool = False,
-    ) -> List[str]:
-        """
-        Parameters
-        ----------
-        leads: str or int or list of str or int, optional,
-            the (names of) leads to normalize
-        standard_ordering: bool, default False,
-            if True, the ordering will be re-aranged to be accordance with `self.all_leads`
-        lower_cases: bool, default False,
-            if True, all names of the leads will be in lower cases
-
-        Returns
-        -------
-        leads: list of str,
-            the leads in the standard names and order
-
-        """
-        if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
-            _leads = self.all_leads_lower
-        elif isinstance(leads, str):
-            _leads = [leads.lower()]
-        elif isinstance(leads, int):
-            _leads = [self.all_leads_lower[leads]]
-        else:
-            _leads = [
-                ld.lower() if isinstance(ld, str) else self.all_leads_lower[ld]
-                for ld in leads
-            ]
-        assert set(_leads).issubset(
-            self.all_leads_lower
-        ), f"leads should be a subset of {self.all_leads} or integers less than {len(self.all_leads)}, but got {leads}"
-
-        if standard_ordering:
-            _leads = [ld for ld in self.all_leads_lower if ld in _leads]
-
-        if not lower_cases:
-            _lead_indices = [
-                idx for idx, ld in enumerate(self.all_leads_lower) if ld in _leads
-            ]
-            _leads = [self.all_leads[idx] for idx in _lead_indices]
-
-        return _leads
 
     def load_subject_info(
         self, rec: Union[str, int], fields: Optional[Union[str, Sequence[str]]] = None
@@ -713,9 +660,7 @@ class LUDB(PhysioNetDataBase):
             import matplotlib.pyplot as plt
 
             plt.MultipleLocator.MAXTICKS = 3000
-        _leads = self._normalize_leads(
-            leads, standard_ordering=False, lower_cases=False
-        )
+        _leads = self._normalize_leads(leads)
 
         # lead_list = self.load_ann(rec)["df_leads"]["lead_name"].tolist()
         # _lead_indices = [lead_list.index(ld) for ld in leads]
