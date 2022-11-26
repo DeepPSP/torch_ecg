@@ -175,6 +175,7 @@ DEFAULTS = CFG()
 DEFAULTS.log_dir = _PROJECT_CACHE / "log"
 DEFAULTS.checkpoints = _PROJECT_CACHE / "checkpoints"
 DEFAULTS.model_dir = _PROJECT_CACHE / "saved_models"
+DEFAULTS.working_dir = _PROJECT_CACHE / "working_dir"
 DEFAULTS.prefix = "TorchECG"
 
 DEFAULTS.DTYPE = FLOAT32

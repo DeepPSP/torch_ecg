@@ -26,7 +26,6 @@ from ...utils import ecg_arrhythmia_knowledge as EAK
 from ...utils.download import http_get
 from ...utils.misc import (
     add_docstring,
-    dict_to_str,
     get_record_list_recursive3,
     list_sum,
     ms2samples,
@@ -38,7 +37,6 @@ from ..aux_data.cinc2021_aux_data import (
     dx_mapping_scored,
     equiv_class_dict,
     load_weights,
-    normalize_class,
 )
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo, _PlotCfg
 
@@ -361,7 +359,6 @@ class CINC2021(PhysioNetDataBase):
         """
         list all the records and load into `self._all_records`,
         facilitating further uses
-
         """
         filename = "record_list.json"
         record_list_fp = self.db_dir_base / filename
@@ -509,6 +506,8 @@ class CINC2021(PhysioNetDataBase):
 
     def _find_dir(self, root: Union[str, Path], tranche: str, level: int = 0) -> Path:
         """
+        find the directory of a tranche
+
         Parameters
         ----------
         root: str,
@@ -687,9 +686,7 @@ class CINC2021(PhysioNetDataBase):
 
     @add_docstring(get_header_filepath.__doc__)
     def get_ann_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
-        """
-        alias for `get_header_filepath`
-        """
+        """alias for `get_header_filepath`"""
         fp = self.get_header_filepath(rec, with_ext=with_ext)
         return fp
 
@@ -737,7 +734,7 @@ class CINC2021(PhysioNetDataBase):
             "lead_first",
             "channel_last",
             "lead_last",
-        ]
+        ], f"Invalid data_format: `{data_format}`"
         # tranche = self._get_tranche(rec)
         if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
             _leads = self.all_leads
@@ -783,7 +780,7 @@ class CINC2021(PhysioNetDataBase):
         # ref. ISSUES 3, for multiplying `value_correction_factor`
         # data = data * self.value_correction_factor[tranche]
 
-        if units is not None and units.lower() in ["uv", "μv"]:
+        if units is not None and units.lower() in ["uv", "μv", "muv"]:
             data = data * 1000
 
         rec_fs = self.get_fs(rec, from_hea=True)
@@ -801,7 +798,6 @@ class CINC2021(PhysioNetDataBase):
         self, rec: Union[str, int], raw: bool = False, backend: str = "wfdb"
     ) -> Union[dict, str]:
         """
-
         load annotations (header) stored in the .hea files
 
         Parameters
@@ -842,6 +838,7 @@ class CINC2021(PhysioNetDataBase):
 
     def _load_ann_wfdb(self, rec: Union[str, int], header_data: List[str]) -> dict:
         """
+        load annotations (header) using `wfdb.rdheader`
 
         Parameters
         ----------
@@ -968,7 +965,6 @@ class CINC2021(PhysioNetDataBase):
 
     def _load_ann_naive(self, header_data: List[str]) -> dict:
         """
-
         load annotations (header) using raw data read directly from a header file
 
         Parameters
@@ -1061,6 +1057,7 @@ class CINC2021(PhysioNetDataBase):
 
     def _parse_diagnosis(self, l_Dx: List[str]) -> Tuple[dict, dict]:
         """
+        parse diagnosis from a list of strings
 
         Parameters
         ----------
@@ -1128,6 +1125,7 @@ class CINC2021(PhysioNetDataBase):
 
     def _parse_leads(self, l_leads_data: List[str]) -> pd.DataFrame:
         """
+        parse leads data from a list of strings
 
         Parameters
         ----------
@@ -1209,7 +1207,6 @@ class CINC2021(PhysioNetDataBase):
         normalize: bool = True,
     ) -> List[str]:
         """
-
         read labels (diagnoses or arrhythmias) of a record
 
         Parameters
@@ -1263,7 +1260,6 @@ class CINC2021(PhysioNetDataBase):
 
     def get_fs(self, rec: Union[str, int], from_hea: bool = True) -> Real:
         """
-
         get the sampling frequency of a record
 
         Parameters
@@ -1291,7 +1287,6 @@ class CINC2021(PhysioNetDataBase):
         self, rec: Union[str, int], items: Optional[List[str]] = None
     ) -> dict:
         """
-
         read auxiliary information of a subject (a record) stored in the header files
 
         Parameters
@@ -1334,8 +1329,7 @@ class CINC2021(PhysioNetDataBase):
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs: Any,
     ) -> None:
-        """to improve,
-
+        """
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
         possibly also along with wave delineations
@@ -1578,6 +1572,7 @@ class CINC2021(PhysioNetDataBase):
         self, tranches: Sequence[str], scored_only: bool = True
     ) -> Dict[str, int]:
         """
+        Get the distribution of classes in the specified tranches.
 
         Parameters
         ----------
@@ -1597,42 +1592,10 @@ class CINC2021(PhysioNetDataBase):
         df = dx_mapping_scored if scored_only else dx_mapping_all
         distribution = CFG()
         for _, row in df.iterrows():
-            num = (row[[tranche_names]].values).sum()
+            num = (row[tranche_names].values).sum()
             if num > 0:
                 distribution[row["Abbreviation"]] = num
         return distribution
-
-    @staticmethod
-    def get_arrhythmia_knowledge(
-        arrhythmias: Union[str, List[str]], **kwargs: Any
-    ) -> None:
-        """
-
-        knowledge about ECG features of specific arrhythmias,
-
-        Parameters
-        ----------
-        arrhythmias: str, or list of str,
-            the arrhythmia(s) to check, in abbreviations or in SNOMEDCTCode
-
-        """
-        if isinstance(arrhythmias, str):
-            d = [normalize_class(arrhythmias)]
-        else:
-            d = [normalize_class(c) for c in arrhythmias]
-        # pp = pprint.PrettyPrinter(indent=4)
-        # unsupported = [item for item in d if item not in dx_mapping_all["Abbreviation"]]
-        unsupported = [
-            item for item in d if item not in dx_mapping_scored["Abbreviation"].values
-        ]
-        assert (
-            len(unsupported) == 0
-        ), f"`{unsupported}` {'is' if len(unsupported)==1 else 'are'} not supported!"
-        for idx, item in enumerate(d):
-            # pp.pprint(eval(f"EAK.{item}"))
-            print(dict_to_str(eval(f"EAK.{item}")))
-            if idx < len(d) - 1:
-                print("*" * 110)
 
     def load_resampled_data(
         self,
@@ -1642,7 +1605,6 @@ class CINC2021(PhysioNetDataBase):
         siglen: Optional[int] = None,
     ) -> np.ndarray:
         """
-
         resample the data of `rec` to 500Hz,
         or load the resampled data in 500Hz, if the corr. data file already exists
 
@@ -1664,7 +1626,7 @@ class CINC2021(PhysioNetDataBase):
         Returns
         -------
         data: ndarray,
-            the resampled (and perhaps sliced) signal data
+            the 2D resampled (and perhaps sliced 3D) signal data
 
         """
         if isinstance(rec, int):
@@ -1676,6 +1638,7 @@ class CINC2021(PhysioNetDataBase):
         else:
             _leads = leads
         assert set(_leads).issubset(self._all_leads_set)
+        print(_leads)
         _leads = [self.all_leads.index(item) for item in _leads]
 
         tranche = self._get_tranche(rec)
@@ -1683,6 +1646,7 @@ class CINC2021(PhysioNetDataBase):
             rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz.npy"
         else:
             rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz_siglen_{siglen}.npy"
+        print(rec_fp)
         if not rec_fp.is_file():
             # print(f"corresponding file {rec_fp.name} does not exist")
             # NOTE: if not exists, create the data file,
@@ -1701,9 +1665,9 @@ class CINC2021(PhysioNetDataBase):
                 # slice_start = (data.shape[1] - siglen)//2
                 # slice_end = slice_start + siglen
                 # data = data[..., slice_start:slice_end]
-                data = ensure_siglen(data, siglen=siglen, fmt="channel_first").astype(
-                    DEFAULTS.DTYPE.NP
-                )
+                data = ensure_siglen(
+                    data, siglen=siglen, fmt="channel_first", tolerance=0.2
+                ).astype(DEFAULTS.DTYPE.NP)
                 np.save(rec_fp, data)
             elif siglen is None:
                 np.save(rec_fp, data)
@@ -1711,14 +1675,16 @@ class CINC2021(PhysioNetDataBase):
             # print(f"loading from local file...")
             data = np.load(rec_fp).astype(DEFAULTS.DTYPE.NP)
         # choose data of specific leads
-        data = data[_leads, ...]
+        if siglen is None:
+            data = data[_leads, ...]
+        else:
+            data = data[:, _leads, :]
         if data_format.lower() in ["channel_last", "lead_last"]:
-            data = data.T
+            data = np.moveaxis(data, -1, -2)
         return data
 
     def load_raw_data(self, rec: Union[str, int], backend: str = "scipy") -> np.ndarray:
         """
-
         load raw data from corresponding files with no further processing,
         in order to facilitate feeding data into the `run_12ECG_classifier` function
 
@@ -1756,7 +1722,6 @@ class CINC2021(PhysioNetDataBase):
         flat_granularity: str = "record",
     ) -> List[str]:
         """
-
         check if records from `tranches` has nan values, or contains flat values in any lead
 
         accessing data using `p_signal` of `wfdb` would produce nan values,
@@ -1821,7 +1786,6 @@ class CINC2021(PhysioNetDataBase):
 
     def _compute_cooccurrence(self, tranches: Optional[str] = None) -> pd.DataFrame:
         """
-
         compute the coocurrence matrix (DataFrame) of all classes in the whole of the CinC2021 database
 
         Parameters
@@ -1838,8 +1802,9 @@ class CINC2021(PhysioNetDataBase):
         """
         dx_cooccurrence_all_fp = self.working_dir / "dx_cooccurrence_all.csv"
         if dx_cooccurrence_all_fp.is_file() and tranches is None:
-            dx_cooccurrence_all = pd.read_csv(dx_cooccurrence_all_fp)
-            return
+            dx_cooccurrence_all = pd.read_csv(dx_cooccurrence_all_fp, index_col=0)
+            if not dx_cooccurrence_all.empty:
+                return dx_cooccurrence_all
         dx_cooccurrence_all = pd.DataFrame(
             np.zeros(
                 (len(dx_mapping_all.Abbreviation), len(dx_mapping_all.Abbreviation)),
@@ -1961,6 +1926,7 @@ def compute_all_metrics_detailed(
     classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence
 ) -> Tuple[Union[float, np.ndarray]]:
     """
+    compute detailed metrics for each class
 
     Parameters
     ----------
@@ -1985,6 +1951,7 @@ def compute_all_metrics_detailed(
     f_beta_measure: float,
     g_beta_measure: float,
     challenge_metric: float,
+
     """
     # sinus_rhythm = "426783006"
     sinus_rhythm = "NSR"
@@ -2034,7 +2001,6 @@ def compute_all_metrics(
     classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence
 ) -> Tuple[Union[float, np.ndarray]]:
     """
-
     simplified version of `compute_all_metrics_detailed`,
     this function doesnot produce per class scores
 
@@ -2107,7 +2073,6 @@ def compute_confusion_matrices(
     labels: np.ndarray, outputs: np.ndarray, normalize: bool = False
 ) -> np.ndarray:
     """
-
     Compute a binary confusion matrix for each class k:
 
         [TN_k FN_k]

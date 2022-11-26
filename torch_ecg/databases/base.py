@@ -12,7 +12,6 @@ Remarks:
 
 """
 
-import os
 import posixpath
 import pprint
 import re
@@ -171,7 +170,10 @@ class _DataBase(ReprMixin, ABC):
                 "please use the `download()` method.",
                 RuntimeWarning,
             )
-        self.working_dir = Path(working_dir or os.getcwd())
+        self.working_dir = (
+            Path(working_dir or DEFAULTS.working_dir).resolve().absolute()
+            / self.db_name
+        )
         self.working_dir.mkdir(parents=True, exist_ok=True)
         self.data_ext = None
         self.ann_ext = None

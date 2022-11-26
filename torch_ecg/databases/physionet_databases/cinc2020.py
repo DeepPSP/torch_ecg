@@ -24,7 +24,6 @@ from ...utils import EAK
 from ...utils.download import _stem, http_get
 from ...utils.misc import (
     add_docstring,
-    dict_to_str,
     get_record_list_recursive3,
     list_sum,
     ms2samples,
@@ -36,7 +35,6 @@ from ..aux_data.cinc2020_aux_data import (
     dx_mapping_scored,
     equiv_class_dict,
     load_weights,
-    normalize_class,
 )
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo, _PlotCfg
 
@@ -293,10 +291,9 @@ class CINC2020(PhysioNetDataBase):
         """
         list all the records and load into `self._all_records`,
         facilitating further uses
-
         """
-        fn = "record_list.json"
-        record_list_fp = self.db_dir_base / fn
+        filename = "record_list.json"
+        record_list_fp = self.db_dir_base / filename
         self._df_records = pd.DataFrame()
         if record_list_fp.is_file():
             self._all_records = {
@@ -305,12 +302,15 @@ class CINC2020(PhysioNetDataBase):
                 if k in self.tranche_names
             }
             for tranche in self.db_tranches:
-                self.db_dirs[tranche] = (
-                    self.db_dir_base / Path(self._all_records[tranche][0]).parent
-                )
                 self._all_records[tranche] = [
                     Path(f).name for f in self._all_records[tranche]
                 ]
+                self.db_dirs[tranche] = self._find_dir(self.db_dir_base, tranche, 0)
+                if not self.db_dirs[tranche]:
+                    print(
+                        f"failed to find the directory containing tranche {self.tranche_names[tranche]}"
+                    )
+                    # raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
         else:
             print(
                 "Please wait patiently to let the reader find all records of all the tranches..."
@@ -351,6 +351,49 @@ class CINC2020(PhysioNetDataBase):
             df_tmp["tranche"] = tranche
             self._df_records = pd.concat((self._df_records, df_tmp), ignore_index=True)
         self._df_records.set_index("record", inplace=True)
+
+    def _find_dir(self, root: Union[str, Path], tranche: str, level: int = 0) -> Path:
+        """
+        find the directory of a tranche
+
+        Parameters
+        ----------
+        root: str,
+            the root directory at which the data reader is searching
+        tranche: str,
+            the tranche to locate the directory containing it
+        level: int, default 0,
+            an identifier for ternimation of the search, regardless of finding the target directory or not
+
+        Returns
+        -------
+        res: Path,
+            the directory containing the tranche,
+            if is None, then not found
+
+        """
+        # print(f"searching for dir for tranche {self.tranche_names[tranche]} with root {root} at level {level}")
+        if level > 2:
+            print(
+                f"failed to find the directory containing tranche {self.tranche_names[tranche]}"
+            )
+            return None
+            # raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
+        rec_pattern = f"^{self.rec_prefix[tranche]}(?:\\d+).{self.rec_ext}$"
+        res = None
+        root = Path(root)
+        assert root.is_dir()
+        candidates = [f.name for f in root.iterdir()]
+        if len(list(filter(re.compile(rec_pattern).search, candidates))) > 0:
+            res = root
+            return res
+        new_roots = [root / item for item in candidates if (root / item).is_dir()]
+        for r in new_roots:
+            tmp = self._find_dir(r, tranche, level + 1)
+            if tmp:
+                res = tmp
+                return res
+        return res
 
     def _ls_diagnoses_records(self) -> None:
         """list all the records for all diagnoses"""
@@ -475,9 +518,7 @@ class CINC2020(PhysioNetDataBase):
 
     @add_docstring(get_header_filepath.__doc__)
     def get_ann_filepath(self, rec: Union[str, int], with_ext: bool = True) -> str:
-        """
-        alias for `get_header_filepath`
-        """
+        """alias for `get_header_filepath`"""
         return self.get_header_filepath(rec, with_ext=with_ext)
 
     def load_data(
@@ -525,7 +566,7 @@ class CINC2020(PhysioNetDataBase):
             "lead_first",
             "channel_last",
             "lead_last",
-        ]
+        ], f"Invalid data_format: `{data_format}`"
         tranche = self._get_tranche(rec)
         if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
             _leads = self.all_leads
@@ -574,7 +615,7 @@ class CINC2020(PhysioNetDataBase):
         # ref. ISSUES 3, for multiplying `value_correction_factor`
         # data = data * self.value_correction_factor[tranche]
 
-        if units is not None and units.lower() in ["uv", "μv"]:
+        if units is not None and units.lower() in ["uv", "μv", "muv"]:
             data = data * 1000
 
         if fs is not None and fs != self.fs[tranche]:
@@ -629,6 +670,8 @@ class CINC2020(PhysioNetDataBase):
 
     def _load_ann_wfdb(self, rec: Union[str, int], header_data: List[str]) -> dict:
         """
+        load annotations (header) using `wfdb.rdheader`
+
         Parameters
         ----------
         rec: str or int,
@@ -814,6 +857,8 @@ class CINC2020(PhysioNetDataBase):
 
     def _parse_diagnosis(self, l_Dx: List[str]) -> Tuple[dict, dict]:
         """
+        parse diagnosis from a list of strings
+
         Parameters
         ----------
         l_Dx: list of str,
@@ -869,6 +914,8 @@ class CINC2020(PhysioNetDataBase):
 
     def _parse_leads(self, l_leads_data: List[str]) -> pd.DataFrame:
         """
+        parse leads information from a list of strings
+
         Parameters
         ----------
         l_leads_data: list of str,
@@ -1002,6 +1049,7 @@ class CINC2020(PhysioNetDataBase):
         -------
         fs: real number,
             sampling frequency of the record `rec`
+
         """
         tranche = self._get_tranche(rec)
         fs = self.fs[tranche]
@@ -1025,6 +1073,7 @@ class CINC2020(PhysioNetDataBase):
         subject_info: dict,
             information about the subject, including
             "age", "sex", "medical_prescription", "history", "symptom_or_surgery",
+
         """
         if items is None or len(items) == 0:
             info_items = [
@@ -1093,8 +1142,7 @@ class CINC2020(PhysioNetDataBase):
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs: Any,
     ) -> None:
-        """to improve,
-
+        """
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
         possibly also along with wave delineations
@@ -1355,39 +1403,10 @@ class CINC2020(PhysioNetDataBase):
         df = dx_mapping_scored if scored_only else dx_mapping_all
         distribution = CFG()
         for _, row in df.iterrows():
-            num = (row[[tranche_names]].values).sum()
+            num = (row[tranche_names].values).sum()
             if num > 0:
                 distribution[row["Abbreviation"]] = num
         return distribution
-
-    @staticmethod
-    def get_arrhythmia_knowledge(arrhythmias: Union[str, List[str]], **kwargs) -> None:
-        """
-        knowledge about ECG features of specific arrhythmias,
-
-        Parameters
-        ----------
-        arrhythmias: str, or list of str,
-            the arrhythmia(s) to check, in abbreviations or in SNOMED CT Code
-
-        """
-        if isinstance(arrhythmias, str):
-            d = [normalize_class(arrhythmias)]
-        else:
-            d = [normalize_class(c) for c in arrhythmias]
-        # pp = pprint.PrettyPrinter(indent=4)
-        # unsupported = [item for item in d if item not in dx_mapping_all["Abbreviation"]]
-        unsupported = [
-            item for item in d if item not in dx_mapping_scored["Abbreviation"].values
-        ]
-        assert (
-            len(unsupported) == 0
-        ), f"`{unsupported}` {'is' if len(unsupported)==1 else 'are'} not supported!"
-        for idx, item in enumerate(d):
-            # pp.pprint(eval(f"EAK.{item}"))
-            print(dict_to_str(eval(f"EAK.{item}")))
-            if idx < len(d) - 1:
-                print("*" * 110)
 
     def load_resampled_data(
         self,
@@ -1415,7 +1434,7 @@ class CINC2020(PhysioNetDataBase):
         Returns
         -------
         data: ndarray,
-            the resampled (and perhaps sliced) signal data
+            the 2D resampled (and perhaps sliced 3D) signal data
 
         """
         if isinstance(rec, int):
@@ -1436,9 +1455,9 @@ class CINC2020(PhysioNetDataBase):
                 # slice_start = (data.shape[1] - siglen)//2
                 # slice_end = slice_start + siglen
                 # data = data[..., slice_start:slice_end]
-                data = ensure_siglen(data, siglen=siglen, fmt="channel_first").astype(
-                    DEFAULTS.DTYPE.NP
-                )
+                data = ensure_siglen(
+                    data, siglen=siglen, fmt="channel_first", tolerance=0.2
+                ).astype(DEFAULTS.DTYPE.NP)
                 np.save(rec_fp, data)
             elif siglen is None:
                 np.save(rec_fp, data)
@@ -1446,7 +1465,7 @@ class CINC2020(PhysioNetDataBase):
             # print(f"loading from local file...")
             data = np.load(rec_fp).astype(DEFAULTS.DTYPE.NP)
         if data_format.lower() in ["channel_last", "lead_last"]:
-            data = data.T
+            data = np.moveaxis(data, -1, -2)
         return data
 
     def load_raw_data(self, rec: Union[str, int], backend: str = "scipy") -> np.ndarray:
