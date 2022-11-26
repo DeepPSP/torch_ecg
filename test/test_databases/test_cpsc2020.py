@@ -71,7 +71,7 @@ class TestCPSC2020:
             or validate_interval(premature_beat_intervals)[0]
         )
 
-    def test_train_test_split_rec():
+    def test_train_test_split_rec(self):
         for test_rec_num in range(1, 5):
             split_res = reader.train_test_split_rec(test_rec_num=test_rec_num)
             assert split_res.keys() == {"train", "test"}
@@ -84,14 +84,14 @@ class TestCPSC2020:
         with pytest.raises(ValueError, match="Invalid `test_rec_num`"):
             reader.train_test_split_rec(test_rec_num=0)
 
-    def test_meta_data():
+    def test_meta_data(self):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
 
-    def test_plot():
+    def test_plot(self):
         reader.plot(0, ticks_granularity=2, sampfrom=2000, sampto=4000)
 
-    def test_compute_metrics():
+    def test_compute_metrics(self):
         sbp_true_0 = reader.load_ann(0)["SPB_indices"]
         pvc_true_0 = reader.load_ann(0)["PVC_indices"]
         sbp_true_1 = reader.load_ann(1)["SPB_indices"]

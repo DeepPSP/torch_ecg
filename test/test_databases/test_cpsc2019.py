@@ -32,9 +32,9 @@ class TestCPSC2019:
     def test_load_ann(self):
         pass
 
-    def test_meta_data():
+    def test_meta_data(self):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
 
-    def test_plot():
+    def test_plot(self):
         reader.plot(0, ticks_granularity=2)

@@ -73,12 +73,12 @@ class TestMITDB:
         )
         assert np.allclose(rpeaks, rpeaks_1 - 2000)
 
-    def test_meta_data():
+    def test_meta_data(self):
         assert isinstance(reader.version, str) and re.match(
             PHYSIONET_DB_VERSION_PATTERN, reader.version
         )
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
 
-    def test_plot():
+    def test_plot(self):
         reader.plot(0, ticks_granularity=2, sampfrom=2000, sampto=4000)

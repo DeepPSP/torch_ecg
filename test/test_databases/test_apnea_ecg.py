@@ -60,12 +60,12 @@ class TestApneaECG:
         df_apnea_event = reader.load_apnea_event(0)
         assert df_apnea_event.columns == reader.sleep_event_keys
 
-    def test_meta_data():
+    def test_meta_data(self):
         assert isinstance(reader.version, str) and re.match(
             PHYSIONET_DB_VERSION_PATTERN, reader.version
         )
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
 
-    def test_plot_ann():
+    def test_plot_ann(self):
         reader.plot_ann(0)

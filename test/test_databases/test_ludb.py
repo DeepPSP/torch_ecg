@@ -70,12 +70,12 @@ class TestLUDB:
                 assert ann[lead][i].onset == ann_1[lead][i].onset
                 assert ann[lead][i].offset == ann_1[lead][i].offset
 
-    def test_meta_data():
+    def test_meta_data(self):
         assert isinstance(reader.version, str) and re.match(
             PHYSIONET_DB_VERSION_PATTERN, reader.version
         )
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
 
-    def test_plot():
+    def test_plot(self):
         reader.plot(0, leads=[2, 5], ticks_granularity=2)
