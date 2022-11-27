@@ -566,6 +566,8 @@ def remove_spikes_naive(
     )
     if not inplace:
         sig = sig.copy()
+    if abs(sig[0]) > threshold:
+        sig[0] = 0
     for k in b:
         sig[k] = sig[k - 1]
     return sig.astype(dtype)

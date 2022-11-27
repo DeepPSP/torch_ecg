@@ -256,22 +256,22 @@ class CPSC2019(CPSCDataBase):
             data = data.T
         elif data_format.lower() in ["flat", "plain"]:
             data = data.flatten()
-        elif data_format.lower() in ["channel_last", "lead_last"]:
-            pass
-        else:
-            raise ValueError(f"invalid `data_format`: {data_format}")
+        elif data_format.lower() not in ["channel_last", "lead_last"]:
+            raise ValueError(f"Invalid `data_format`: {data_format}")
         if units.lower() in ["uv", "μv", "muv"]:
             data = (1000 * data).astype(int)
+        elif units.lower() != "mv":
+            raise ValueError(f"Invalid `units`: {units}")
         return data
 
-    def load_ann(self, rec: Union[int, str], keep_dim: bool = True) -> np.ndarray:
+    def load_ann(self, rec: Union[int, str]) -> np.ndarray:
         """
+        load the annotations (indices of R peaks) of the record `rec`
+
         Parameters
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
-        keep_dim: bool, default True,
-            whether or not to flatten the data of shape (n,1)
 
         Returns
         -------
@@ -280,26 +280,22 @@ class CPSC2019(CPSCDataBase):
 
         """
         fp = self.get_absolute_path(rec, self.ann_ext, ann=True)
-        ann = loadmat(str(fp))["R_peak"].astype(int)
-        if not keep_dim:
-            ann = ann.flatten()
+        ann = loadmat(str(fp))["R_peak"].astype(int).flatten()
         return ann
 
     @add_docstring(load_ann.__doc__)
-    def load_rpeaks(self, rec: Union[int, str], keep_dim: bool = True) -> np.ndarray:
+    def load_rpeaks(self, rec: Union[int, str]) -> np.ndarray:
         """
         alias of `self.load_ann`
         """
-        return self.load_ann(rec=rec, keep_dim=keep_dim)
+        return self.load_ann(rec=rec)
 
     @add_docstring(load_rpeaks.__doc__)
-    def load_rpeak_indices(
-        self, rec: Union[int, str], keep_dim: bool = True
-    ) -> np.ndarray:
+    def load_rpeak_indices(self, rec: Union[int, str]) -> np.ndarray:
         """
         alias of `self.load_rpeaks`
         """
-        return self.load_rpeaks(rec=rec, keep_dim=keep_dim)
+        return self.load_rpeaks(rec=rec)
 
     def plot(
         self,
@@ -343,7 +339,7 @@ class CPSC2019(CPSCDataBase):
         duration = len(_data) / self.fs
         secs = np.linspace(0, duration, len(_data))
         if ann is None or data is None:
-            rpeak_secs = self.load_rpeaks(rec, keep_dim=False) / self.fs
+            rpeak_secs = self.load_rpeaks(rec) / self.fs
         else:
             rpeak_secs = np.array(ann) / self.fs
 
@@ -422,9 +418,10 @@ def compute_metrics(
         accuracy of predictions
 
     """
-    assert len(rpeaks_truths) == len(
-        rpeaks_preds
-    ), f"number of records does not match, truth indicates {len(rpeaks_truths)}, while pred indicates {len(rpeaks_preds)}"
+    assert len(rpeaks_truths) == len(rpeaks_preds), (
+        f"number of records does not match, truth indicates {len(rpeaks_truths)}, "
+        f"while pred indicates {len(rpeaks_preds)}"
+    )
     n_records = len(rpeaks_truths)
     record_flags = np.ones((len(rpeaks_truths),), dtype=float)
     thr_ = thr * fs
@@ -468,7 +465,8 @@ def compute_metrics(
 
         if verbose >= 2:
             print(
-                f"for the {idx}-th record,\ntrue positive = {true_positive}\nfalse positive = {false_positive}\nfalse negative = {false_negative}"
+                f"for the {idx}-th record,\ntrue positive = {true_positive}\n"
+                f"false positive = {false_positive}\nfalse negative = {false_negative}"
             )
 
     rec_acc = round(np.sum(record_flags) / n_records, 4)

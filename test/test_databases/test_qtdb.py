@@ -66,12 +66,18 @@ class TestQTDB:
 
     def test_load_wave_masks(self):
         # Not implemented yet
-        with pytest.raises(NotImplementedError, match="A large proportion of the wave delineation annotations lack onset indices"):
+        with pytest.raises(
+            NotImplementedError,
+            match="A large proportion of the wave delineation annotations lack onset indices",
+        ):
             reader.load_wave_masks(0)
 
     def test_load_rhythm_ann(self):
         # Not implemented yet
-        with pytest.raises(NotImplementedError, match="Only a small part of the recordings have rhythm annotations"):
+        with pytest.raises(
+            NotImplementedError,
+            match="Only a small part of the recordings have rhythm annotations",
+        ):
             reader.load_rhythm_ann(0)
 
     def test_load_beat_ann(self):

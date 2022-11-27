@@ -192,7 +192,7 @@ class FastDataReader(ReprMixin, Dataset):
         """ """
         rec_name = self.records[index]
         values = self.reader.load_data(rec_name, units="mV", data_format="flat")
-        rpeaks = self.reader.load_ann(rec_name, keep_dim=False)
+        rpeaks = self.reader.load_ann(rec_name)
         if self.config.get("recover_length", False):
             reduction = 1
         else:
