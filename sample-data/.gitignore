@@ -1,1 +1,4 @@
 *.npy
+cpsc2021/preprocessed/
+cpsc2021/rr_seq/
+cpsc2021/segments/
