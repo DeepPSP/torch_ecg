@@ -77,7 +77,7 @@ _CPSC2021_INFO = DataBaseInfo(
     3. flag of atrial fibrillation and atrial flutter ("AFIB" and "AFL") in annotated information are seemed as the same type when scoring the method
     4. the 3 classes can coexist in ONE subject (not one record). For example, subject 61 has 6 records with label "N", 1 with label "AFp", and 2 with label "AFf"
     5. rhythm change annotations ("(AFIB", "(AFL", "(N" in the `aux_note` field or "+" in the `symbol` field of the annotation files) are inserted 0.15s ahead of or behind (onsets or offset resp.) of corresponding R peaks.
-    6. some records are revised if there are heart beats of the AF episode or the pause between adjacent AF episodes less than 5. The id numbers of the revised records are summarized in the attached REVISED_RECORDS
+    6. some records are revised if there are heart beats of the AF episode or the pause between adjacent AF episodes less than 5. The id numbers of the revised records are summarized in the attached `REVISED_RECORDS`.
     """,
     usage=[
         "AF (event, fine) detection",
@@ -457,10 +457,17 @@ class CPSC2021(PhysioNetDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
+        sig_len = self.df_stats[self.df_stats.record == rec].iloc[0].sig_len
         sf, st = (
-            sampfrom or 0,
-            sampto or self.df_stats[self.df_stats.record == rec].iloc[0].sig_len,
+            sampfrom if sampfrom is not None else 0,
+            min(sampto, sig_len) if sampto is not None else sig_len,
         )
+        if sampto is not None and sampto > sig_len:
+            warnings.warn(
+                f"the end index {sampto} is larger than the signal length {sig_len}, "
+                f"so it is set to {sig_len}",
+                RuntimeWarning,
+            )
         if sf >= st:
             raise ValueError("Invalid `sampfrom` and `sampto`")
         return sf, st
@@ -481,7 +488,7 @@ class CPSC2021(PhysioNetDataBase):
         rec: str or int,
             record name or index of the record in `self.all_records`
         field: str, optional
-            field of the annotation, can be one of "rpeaks", "af_episodes", "label", "raw", "wfdb",
+            field of the annotation, can be one of "rpeaks", "af_episodes", "label", "raw", "wfdb";
             if not specified, all fields of the annotation will be returned in the form of a dict,
             if is "raw" or "wfdb", then the corresponding wfdb "Annotation" will be returned
         sampfrom: int, optional,
@@ -521,7 +528,7 @@ class CPSC2021(PhysioNetDataBase):
             ann = {k: f(rec, ann, sf, st) for k, f in func.items()}
             if kwargs:
                 warnings.warn(
-                    f"key word arguments {list(kwargs.keys())} ignored when field is not specified!",
+                    f"key word arguments `{list(kwargs.keys())}` ignored when `field` is not specified!",
                     RuntimeWarning,
                 )
             return ann
@@ -534,7 +541,7 @@ class CPSC2021(PhysioNetDataBase):
         try:
             f = func[field.lower()]
         except Exception:
-            raise ValueError("invalid field")
+            raise ValueError(f"Invalid `field`: {field}")
         ann = f(rec, ann, sf, st, **kwargs)
         return ann
 
@@ -755,7 +762,7 @@ class CPSC2021(PhysioNetDataBase):
             label = self._labels_f2a[label]
         elif fmt.lower() in ["n", "num", "number"]:
             label = self._labels_f2n[label]
-        elif not fmt.lower() in ["f", "fullname"]:
+        elif fmt.lower() not in ["f", "fullname"]:
             raise ValueError(f"format `{fmt}` of labels is not supported!")
         return label
 
@@ -805,7 +812,7 @@ class CPSC2021(PhysioNetDataBase):
         ticks_granularity: int = 0,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
-        leads: Optional[Union[str, List[str]]] = None,
+        leads: Optional[Union[str, int, List[Union[str, int]]]] = None,
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs,
     ) -> None:
@@ -863,13 +870,8 @@ class CPSC2021(PhysioNetDataBase):
             import matplotlib.pyplot as plt
 
             plt.MultipleLocator.MAXTICKS = 3000
-        if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
-            _leads = self.all_leads
-        elif isinstance(leads, str):
-            _leads = [leads]
-        else:
-            _leads = leads
-        assert all([ld in self.all_leads for ld in _leads])
+
+        _leads = self._normalize_leads(leads)
 
         if data is None:
             _data = self.load_data(
