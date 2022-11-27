@@ -588,18 +588,25 @@ class CPSC2021(ReprMixin, Dataset):
             force_recompute=force_recompute,
             verbose=verbose,
         )
+
+        original_task = self.task
+        self.__set_task("main", lazy=True)
         if verbose >= 1:
             print("\n" + " slicing data into segments ".center("#", 110))
         self._slice_data(
             force_recompute=force_recompute,
             verbose=verbose,
         )
+
+        self.__set_task("rr_lstm", lazy=True)
         if verbose >= 1:
             print("\n" + " generating rr sequences ".center("#", 110))
         self._slice_rr_seq(
             force_recompute=force_recompute,
             verbose=verbose,
         )
+
+        self.__set_task(original_task, lazy=self.lazy)
 
     def _preprocess_data(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
