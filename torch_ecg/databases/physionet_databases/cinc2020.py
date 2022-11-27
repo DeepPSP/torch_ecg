@@ -1004,7 +1004,7 @@ class CINC2020(PhysioNetDataBase):
             record name or index of the record in `self.all_records`
         scored_only: bool, default True,
             only get the labels that are scored in the CINC2020 official phase
-        fmt: str, default "a",
+        fmt: str, default "s",
             the format of labels, one of the following (case insensitive):
             - "a", abbreviations
             - "f", full names
