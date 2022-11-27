@@ -33,7 +33,7 @@ class TestCPSC2021:
             0, leads=0, sampfrom=1000, sampto=5000, data_format="plain", units="μV"
         )
         assert data.ndim == 2
-        assert data_1.shape == (1, 4000)
+        assert data_1.shape == (4000,)
         assert np.allclose(data[0, 1000:5000], data_1 / 1000, atol=1e-2)
         data_1 = reader.load_data(
             0, leads=0, data_format="channel_last", fs=2 * reader.fs
@@ -141,7 +141,7 @@ class TestCPSC2021:
         assert reader.load_af_episodes(rec) == reader.load_ann(rec, field="af_episodes")
         assert reader.load_label(rec) == reader.load_ann(rec, field="label")
 
-    def test_gen_endpoint_score_mask():
+    def test_gen_endpoint_score_mask(self):
         rec = reader.diagnoses_records_list["AFp"][0]
         data = reader.load_data(rec)
         onset_score_mask, offset_score_mask = reader.gen_endpoint_score_mask(rec)
