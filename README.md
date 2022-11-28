@@ -461,22 +461,25 @@ See the [projects page](https://github.com/DeepPSP/torch_ecg/projects).
 
 ```latex
 @misc{torch_ecg,
-     author = {WEN, Hao and KANG, Jingsu},
       title = {{torch\_ecg: An ECG Deep Learning Framework Implemented using PyTorch}},
+     author = {WEN, Hao and KANG, Jingsu},
         doi = {10.5281/ZENODO.6435048},
         url = {https://zenodo.org/record/6435048},
   publisher = {Zenodo},
        year = {2022},
-  copyright = {MIT License}
+  copyright = {{MIT License}}
 }
 @article{torch_ecg_paper,
-     author = {Hao, Wen and Jingsu, Kang},
-      title = {Investigating Deep Learning Benchmarks for Electrocardiography Signal Processing},
-        doi = {10.48550/ARXIV.2204.04420},
-  publisher = {arXiv},
+      title = {{A Novel Deep Learning Package for Electrocardiography Research}},
+     author = {Hao Wen and Jingsu Kang},
+    journal = {{Physiological Measurement}},
+        doi = {10.1088/1361-6579/ac9451},
        year = {2022},
-    journal = {arXiv preprint arXiv:2204.04420},
-  copyright = {Creative Commons Attribution 4.0 International}
+      month = {11},
+  publisher = {{IOP Publishing}},
+     volume = {43},
+     number = {11},
+      pages = {115006}
 }
 ```
 
