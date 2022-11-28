@@ -48,7 +48,6 @@ def compute_metrics(
     mask_format: str = "channel_first",
 ) -> Dict[str, Dict[str, float]]:
     """
-
     compute metrics
     (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
     for multiple evaluations
@@ -78,6 +77,7 @@ def compute_metrics(
         with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
         each scoring is a dict consisting of the following metrics:
         sensitivity, precision, f1_score, mean_error, standard_deviation
+
     """
     assert len(truth_masks) == len(pred_masks)
     truth_waveforms, pred_waveforms = [], []

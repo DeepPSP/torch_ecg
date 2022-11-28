@@ -527,7 +527,7 @@ class WaveDelineationMetrics(Metrics):
             format of the mask, one of the following:
             'channel_last' (alias 'lead_last'), or
             'channel_first' (alias 'lead_first')
-        tol: float, default 0.15,
+        tol: float, optional, defaults to self.tol,
             tolerance for the duration of the waveform,
             with units in seconds
 

@@ -2,13 +2,14 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Sequence, Set, Union
+from typing import Any, Union, Sequence, Set, Dict
 
 import numpy as np
 import pandas as pd
 
 from ..cfg import CFG
 from ..utils.misc import add_docstring
+from ..utils.utils_data import ECGWaveFormNames
 from .metrics import (
     ClassificationMetrics,
     RPeaksDetectionMetrics,
@@ -137,7 +138,7 @@ class BaseOutput(CFG, ABC):
             the values to be appended
 
         """
-        if isinstance(values, BaseOutput):
+        if not isinstance(values, Sequence):
             values = [values]
         for v in values:
             assert (
@@ -347,7 +348,7 @@ class WaveDelineationOutput(SequenceTaggingOutput):
     mask : np.ndarray,
         predicted class indices at each time step (each sample point),
         or binary predictions at each time step (each sample point),
-        of shape (batch_size, signal_length), or (batch_size, signal_length, num_classes)
+        of shape (batch_size, num_channels, signal_length)
     """
 
     __name__ = "WaveDelineationOutput"
@@ -363,13 +364,24 @@ class WaveDelineationOutput(SequenceTaggingOutput):
         )
 
     def compute_metrics(
-        self, macro: bool = True, tol: float = 0.15
+        self,
+        fs: int,
+        class_map: Dict[str, int],
+        macro: bool = True,
+        tol: float = 0.15,
     ) -> ClassificationMetrics:
-        """
+        f"""
         compute metrics from the output
 
         Parameters
         ----------
+        fs: real number,
+            sampling frequency of the signal corresponding to the masks,
+            used to compute the duration of each waveform,
+            hence the error and standard deviations of errors
+        class_map: dict,
+            class map, mapping names to waves to numbers from 0 to n_classes-1,
+            the keys should contain {", ".join([f'"{item}"' for item in ECGWaveFormNames])}
         macro: bool,
             whether to use macro-averaged metrics
         tol: float, default 0.15,
@@ -387,11 +399,7 @@ class WaveDelineationOutput(SequenceTaggingOutput):
         ), "`labels` or `label` must be stored in the output for computing metrics"
         wd_met = WaveDelineationMetrics(macro=macro, tol=tol)
         labels = self.get("labels", self.get("label"))
-        return wd_met.compute(
-            labels.reshape((-1, labels.shape[-1])),
-            self.mask.reshape((-1, self.mask.shape[-1])),
-            len(self.classes),
-        )
+        return wd_met.compute(labels, self.mask, class_map=class_map, fs=fs)
 
 
 @add_docstring(_KNOWN_ISSUES.format(_RPeaksDetectionOutput_ISSUE_EXAMPLE), "append")
@@ -419,14 +427,16 @@ class RPeaksDetectionOutput(BaseOutput):
             ]
         )
 
-    def compute_metrics(self, thr: float = 0.15) -> ClassificationMetrics:
+    def compute_metrics(self, fs: int, thr: float = 0.075) -> ClassificationMetrics:
         """
         compute metrics from the output
 
         Parameters
         ----------
-        tol: float, default 0.15,
-            tolerance for the duration of the waveform,
+        fs: int,
+            sampling frequency of the signal corresponding to the masks
+        thr: float, default 0.075,
+            threshold for a prediction to be truth positive,
             with units in seconds
 
         Returns
@@ -440,5 +450,5 @@ class RPeaksDetectionOutput(BaseOutput):
         ), "`labels` or `label` must be stored in the output for computing metrics"
         rpd_met = RPeaksDetectionMetrics(thr=thr)
         return rpd_met.compute(
-            self.get("labels", self.get("label")), self.rpeak_indices
+            self.get("labels", self.get("label")), self.rpeak_indices, fs=fs
         )

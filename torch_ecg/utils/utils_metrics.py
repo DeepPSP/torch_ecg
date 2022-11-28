@@ -631,7 +631,6 @@ def QRS_score(
     thr: float = 0.075,
 ) -> float:
     """
-
     QRS accuracy score, proposed in CPSC2019.
 
     Parameters
@@ -644,7 +643,7 @@ def QRS_score(
         sampling frequency of ECG signal
     thr: float, default 0.075,
         threshold for a prediction to be truth positive,
-        with units in seconds,
+        with units in seconds
 
     Returns
     -------
