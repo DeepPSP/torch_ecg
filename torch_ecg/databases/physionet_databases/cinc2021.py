@@ -273,7 +273,6 @@ class CINC2021(PhysioNetDataBase):
         self.spacing = CFG({t: 1000 / f for t, f in self.fs.items()})
 
         self.all_leads = deepcopy(EAK.Standard12Leads)
-        self._all_leads_set = set(self.all_leads)
 
         self.df_ecg_arrhythmia = dx_mapping_all[["Dx", "SNOMEDCTCode", "Abbreviation"]]
         self.ann_items = [
@@ -1391,18 +1390,10 @@ class CINC2021(PhysioNetDataBase):
             import matplotlib.pyplot as plt
 
             plt.MultipleLocator.MAXTICKS = 3000
-        if leads is None or leads == "all":
-            _leads = self.all_leads
-        elif isinstance(leads, str):
-            _leads = [leads]
-        else:
-            _leads = leads
-        # assert all([ld in self.all_leads for ld in _leads])
-        assert set(_leads).issubset(self._all_leads_set)
 
-        # lead_list = self.load_ann(rec)["df_leads"]["lead_name"].tolist()
-        # lead_indices = [lead_list.index(ld) for ld in _leads]
+        _leads = self._normalize_leads(leads, numeric=False)
         lead_indices = [self.all_leads.index(ld) for ld in _leads]
+
         if data is None:
             _data = self.load_data(rec, data_format="channel_first", units="μV")[
                 lead_indices
@@ -1631,14 +1622,8 @@ class CINC2021(PhysioNetDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        if leads is None or leads == "all":
-            _leads = self.all_leads
-        elif isinstance(leads, str):
-            _leads = [leads]
-        else:
-            _leads = leads
-        assert set(_leads).issubset(self._all_leads_set)
-        _leads = [self.all_leads.index(item) for item in _leads]
+
+        _leads = self._normalize_leads(leads, numeric=True)
 
         tranche = self._get_tranche(rec)
         if siglen is None:

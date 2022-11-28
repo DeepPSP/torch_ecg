@@ -232,7 +232,6 @@ class CINC2020(PhysioNetDataBase):
         self.spacing = {t: 1000 / f for t, f in self.fs.items()}
 
         self.all_leads = deepcopy(EAK.Standard12Leads)
-        self._all_leads_set = set(self.all_leads)
 
         self.df_ecg_arrhythmia = dx_mapping_all[
             ["Dx", "SNOMED CT Code", "Abbreviation"]
@@ -567,20 +566,11 @@ class CINC2020(PhysioNetDataBase):
             "channel_last",
             "lead_last",
         ], f"Invalid data_format: `{data_format}`"
+
         tranche = self._get_tranche(rec)
-        if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
-            _leads = self.all_leads
-        elif isinstance(leads, str):
-            _leads = [leads]
-        elif isinstance(leads, int):
-            _leads = [self.all_leads[leads]]
-        else:
-            _leads = [ld if isinstance(ld, str) else self.all_leads[ld] for ld in leads]
-        assert set(_leads).issubset(
-            self.all_leads
-        ), f"leads should be a subset of {self.all_leads} or integers less than {len(self.all_leads)}, but got {leads}"
-        # if tranche in "CD" and fs == 500:  # resample will be done at the end of the function
-        #     data = self.load_resampled_data(rec)
+
+        _leads = self._normalize_leads(leads, numeric=False)
+
         if backend.lower() == "wfdb":
             rec_fp = self.get_data_filepath(rec, with_ext=False)
             # p_signal or d_signal of "lead_last" format
@@ -1204,18 +1194,10 @@ class CINC2020(PhysioNetDataBase):
             import matplotlib.pyplot as plt
 
             plt.MultipleLocator.MAXTICKS = 3000
-        if leads is None or leads == "all":
-            _leads = self.all_leads
-        elif isinstance(leads, str):
-            _leads = [leads]
-        else:
-            _leads = leads
-        # assert all([ld in self.all_leads for ld in _leads])
-        assert set(_leads).issubset(self._all_leads_set)
 
-        # lead_list = self.load_ann(rec)["df_leads"]["lead_name"].tolist()
-        # lead_indices = [lead_list.index(ld) for ld in _leads]
+        _leads = self._normalize_leads(leads, numeric=False)
         lead_indices = [self.all_leads.index(ld) for ld in _leads]
+
         if data is None:
             _data = self.load_data(rec, data_format="channel_first", units="μV")[
                 lead_indices
