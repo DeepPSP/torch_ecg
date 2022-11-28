@@ -80,7 +80,7 @@ class TestLUDB:
         assert reader.get_citation() is None  # printed
 
     def test_plot(self):
-        reader.plot(0, leads=[2, 5], ticks_granularity=2)
+        reader.plot(0, leads=["I", 5], ticks_granularity=2)
 
 
 config = deepcopy(LUDBTrainCfg)

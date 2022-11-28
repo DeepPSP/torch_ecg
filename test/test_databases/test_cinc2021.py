@@ -158,7 +158,7 @@ class TestCINC2021:
         assert (df_1 >= df_2).all(None)
 
     def test_plot(self):
-        reader.plot(0, ticks_granularity=2)
+        reader.plot(0, leads=["II", 7], ticks_granularity=2)
 
     def test_compute_metrics(self):
         classes = dx_mapping_scored.Abbreviation.tolist()

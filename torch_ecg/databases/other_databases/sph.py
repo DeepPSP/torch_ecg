@@ -118,6 +118,8 @@ class SPH(_DataBase):
             self._df_records["record"] = self._df_records["path"].apply(
                 lambda x: x.name
             )
+            indices = self._df_records["path"].apply(lambda x: x.is_file())
+            self._df_records = self._df_records.loc[indices]
         if len(self._df_records) == 0:
             write_file = True
             print(
@@ -205,7 +207,7 @@ class SPH(_DataBase):
             "lead_first",
             "channel_last",
             "lead_last",
-        ], f"Invalid `data_format`: {data_format}"
+        ], f"Invalid data_format: `{data_format}`"
 
         _leads = self._normalize_leads(leads, numeric=True)
 
@@ -215,14 +217,16 @@ class SPH(_DataBase):
         if units.lower() in ["uv", "μv", "muv"]:
             data = data * 1000
         elif units.lower() != "mv":
-            raise ValueError(f"Invalid `units`: {units}")
+            raise AssertionError(f"Invalid units: `{units}`")
 
         if data_format.lower() in ["channel_last", "lead_last"]:
             data = data.T
 
         return data
 
-    def load_ann(self, rec: Union[str, int], ann_format: str = "c") -> List[str]:
+    def load_ann(
+        self, rec: Union[str, int], ann_format: str = "c", ignore_modifier: bool = True
+    ) -> List[str]:
         """
         load annotation from the metadata file
 
@@ -235,6 +239,9 @@ class SPH(_DataBase):
             - "a", abbreviations
             - "f", full names
             - "c", AHACode
+        ignore_modifier: bool, default True,
+            whether to ignore the modifiers of the annotations,
+            for example, "60+310" will be converted to "60"
 
         Returns
         -------
@@ -250,17 +257,30 @@ class SPH(_DataBase):
             .iloc[0]
             .split(";")
         ]
+        modifiers = [lb.split("+")[1] if "+" in lb else "" for lb in labels]
+        if ignore_modifier:
+            labels = [lb.split("+")[0] for lb in labels]
+
         if ann_format.lower() == "c":
             pass  # default format
         elif ann_format.lower() == "f":
             labels = [
-                self._df_code[self._df_code["Code"] == lb]["Description"].iloc[0]
+                self._df_code[self._df_code["Code"] == lb.split("+")[0]][
+                    "Description"
+                ].iloc[0]
                 for lb in labels
             ]
+            if not ignore_modifier:
+                labels = [
+                    f"""{self._df_code[self._df_code["Code"] == m]["Description"].iloc[0]} {lb}"""
+                    if len(m) > 0
+                    else lb
+                    for lb, m in zip(labels, modifiers)
+                ]
         elif ann_format.lower() == "a":
             raise NotImplementedError("Abbreviations are not supported yet")
         else:
-            raise ValueError(f"Unknown annotation format: {ann_format}")
+            raise ValueError(f"Unknown annotation format: `{ann_format}`")
         return labels
 
     def get_subject_info(
@@ -324,7 +344,9 @@ class SPH(_DataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        age = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["Age"].iloc[0]
+        age = (
+            self._df_metadata[self._df_metadata["ECG_ID"] == rec]["Age"].iloc[0].item()
+        )
         return age
 
     def get_sex(self, rec: Union[str, int]) -> str:
@@ -347,7 +369,7 @@ class SPH(_DataBase):
         sex = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["Sex"].iloc[0]
         return sex
 
-    def get_siglen(self, rec: Union[str, int]) -> str:
+    def get_siglen(self, rec: Union[str, int]) -> int:
         """
         get the length of the ECG signal of the record
 
@@ -358,13 +380,15 @@ class SPH(_DataBase):
 
         Returns
         -------
-        siglen: str,
+        siglen: int,
             the signal length of the record
 
         """
         if isinstance(rec, int):
             rec = self[rec]
-        siglen = self._df_metadata[self._df_metadata["ECG_ID"] == rec]["N"].iloc[0]
+        siglen = (
+            self._df_metadata[self._df_metadata["ECG_ID"] == rec]["N"].iloc[0].item()
+        )
         return siglen
 
     @property

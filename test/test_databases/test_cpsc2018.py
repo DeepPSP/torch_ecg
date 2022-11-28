@@ -73,7 +73,7 @@ class TestCPSC2018:
         assert reader.get_citation() is None  # printed
 
     def test_plot(self):
-        reader.plot(0, leads=[1, 3, 9], ticks_granularity=2)
+        reader.plot(0, leads=["I", 3, 9], ticks_granularity=2)
 
     def test_compute_metrics(self):
         with pytest.raises(NotImplementedError):
