@@ -174,7 +174,7 @@ class SPH(_DataBase):
     def load_data(
         self,
         rec: Union[str, int],
-        leads: Optional[Union[str, List[str]]] = None,
+        leads: Optional[Union[str, int, List[Union[str, int]]]] = None,
         data_format: str = "channel_first",
         units: str = "mV",
     ) -> np.ndarray:
@@ -185,7 +185,7 @@ class SPH(_DataBase):
         ----------
         rec: str or int,
             record name or index of the record in `self.all_records`
-        leads: str or list of str, optional,
+        leads: str or int or list of str or int, optional,
             the leads to load
         data_format: str, default "channel_first",
             format of the ECG data,
@@ -205,19 +205,17 @@ class SPH(_DataBase):
             "lead_first",
             "channel_last",
             "lead_last",
-        ]
-        if leads is None or leads == "all":
-            _leads = list(range(len(self.all_leads)))
-        elif isinstance(leads, str):
-            _leads = [self.all_leads.index(leads)]
-        else:
-            _leads = [self.all_leads.index(lead) for lead in leads]
+        ], f"Invalid `data_format`: {data_format}"
+
+        _leads = self._normalize_leads(leads, numeric=True)
 
         with h5py.File(self.get_absolute_path(rec, extension=self.data_ext), "r") as f:
             data = f["ecg"][_leads].astype(DEFAULTS.DTYPE.NP)
 
-        if units.lower() in ["uv", "μv"]:
+        if units.lower() in ["uv", "μv", "muv"]:
             data = data * 1000
+        elif units.lower() != "mv":
+            raise ValueError(f"Invalid `units`: {units}")
 
         if data_format.lower() in ["channel_last", "lead_last"]:
             data = data.T
@@ -400,13 +398,12 @@ class SPH(_DataBase):
         data: Optional[np.ndarray] = None,
         ann: Optional[Sequence[str]] = None,
         ticks_granularity: int = 0,
-        leads: Optional[Union[str, List[str]]] = None,
+        leads: Optional[Union[str, int, List[Union[str, int]]]] = None,
         same_range: bool = False,
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs: Any,
     ) -> None:
-        """to improve,
-
+        """
         plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
         possibly also along with wave delineations
@@ -426,7 +423,7 @@ class SPH(_DataBase):
         ticks_granularity: int, default 0,
             the granularity to plot axis ticks, the higher the more,
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        leads: str or list of str, optional,
+        leads: str or int or list of str or int, optional,
             the leads to plot
         same_range: bool, default False,
             if True, forces all leads to have the same y range
@@ -457,14 +454,10 @@ class SPH(_DataBase):
             import matplotlib.pyplot as plt
 
             plt.MultipleLocator.MAXTICKS = 3000
-        if leads is None or leads == "all":
-            _leads = self.all_leads
-        elif isinstance(leads, str):
-            _leads = [leads]
-        else:
-            _leads = leads
 
+        _leads = self._normalize_leads(leads, numeric=False)
         lead_indices = [self.all_leads.index(ld) for ld in _leads]
+
         if data is None:
             _data = self.load_data(rec, data_format="channel_first", units="μV")[
                 lead_indices
@@ -476,9 +469,10 @@ class SPH(_DataBase):
                 _data = 1000 * data
             else:
                 _data = data
-            assert _data.shape[0] == len(
-                _leads
-            ), f"number of leads from data of shape ({_data.shape[0]}) does not match the length ({len(_leads)}) of `leads`"
+            assert _data.shape[0] == len(_leads), (
+                f"number of leads from data of shape ({_data.shape[0]}) does not "
+                f"match the length ({len(_leads)}) of `leads`"
+            )
 
         if same_range:
             y_ranges = np.ones((_data.shape[0],)) * np.max(np.abs(_data)) + 100

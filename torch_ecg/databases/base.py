@@ -297,6 +297,58 @@ class _DataBase(ReprMixin, ABC):
             )
         return path
 
+    def _normalize_leads(
+        self,
+        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
+        all_leads: Optional[Sequence[str]] = None,
+        numeric: bool = False,
+    ) -> List[Union[str, int]]:
+        """
+        normalize the leads to a list of standard lead names
+
+        Parameters
+        ----------
+        leads: str or int or list of str or int, optional,
+            the (names of) leads to normalize
+        all_leads: list of str, optional,
+            all leads of records in the database,
+            if not specified, the database class should have attribute `all_leads`,
+            and `self.all_leads` will be used
+        numeric: bool, default False,
+            if True, return the lead indices instead of the lead names
+
+        Returns
+        -------
+        leads: list of str or int,
+            the normalized leads
+
+        """
+        if all_leads is None:
+            assert hasattr(
+                self, "all_leads"
+            ), "If `all_leads` is not specified, the database class should have attribute `all_leads`!"
+            all_leads = self.all_leads
+        err_msg = (
+            f"`leads` should be a subset of {all_leads} or non-negative integers "
+            f"less than {len(all_leads)}, but got {leads}"
+        )
+        if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
+            _leads = all_leads
+        elif isinstance(leads, str):
+            _leads = [leads]
+        elif isinstance(leads, int):
+            assert len(all_leads) > leads >= 0, err_msg
+            _leads = [all_leads[leads]]
+        else:
+            try:
+                _leads = [ld if isinstance(ld, str) else all_leads[ld] for ld in leads]
+            except Exception:
+                raise AssertionError(err_msg)
+        assert set(_leads).issubset(all_leads), err_msg
+        if numeric:
+            _leads = [all_leads.index(ld) for ld in _leads]
+        return _leads
+
     @classmethod
     def get_arrhythmia_knowledge(
         cls, arrhythmias: Union[str, List[str]], **kwargs: Any
@@ -483,56 +535,6 @@ class PhysioNetDataBase(_DataBase):
 
         """
         raise NotImplementedError
-
-    def _normalize_leads(
-        self,
-        leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
-        all_leads: Optional[Sequence[str]] = None,
-        numeric: bool = False,
-    ) -> List[Union[str, int]]:
-        """
-        Parameters
-        ----------
-        leads: str or int or list of str or int, optional,
-            the (names of) leads to normalize
-        all_leads: list of str, optional,
-            all leads of records in the database,
-            if not specified, the database class should have attribute `all_leads`,
-            and `self.all_leads` will be used
-        numeric: bool, default False,
-            if True, return the lead indices instead of the lead names
-
-        Returns
-        -------
-        leads: list of str or int,
-            the normalized leads
-
-        """
-        if all_leads is None:
-            assert hasattr(
-                self, "all_leads"
-            ), "If `all_leads` is not specified, the database class should have attribute `all_leads`!"
-            all_leads = self.all_leads
-        err_msg = (
-            f"`leads` should be a subset of {all_leads} or non-negative integers "
-            f"less than {len(all_leads)}, but got {leads}"
-        )
-        if leads is None or (isinstance(leads, str) and leads.lower() == "all"):
-            _leads = all_leads
-        elif isinstance(leads, str):
-            _leads = [leads]
-        elif isinstance(leads, int):
-            assert len(all_leads) > leads >= 0, err_msg
-            _leads = [all_leads[leads]]
-        else:
-            try:
-                _leads = [ld if isinstance(ld, str) else all_leads[ld] for ld in leads]
-            except Exception:
-                raise AssertionError(err_msg)
-        assert set(_leads).issubset(all_leads), err_msg
-        if numeric:
-            _leads = [all_leads.index(ld) for ld in _leads]
-        return _leads
 
     def load_data(
         self,
