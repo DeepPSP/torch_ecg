@@ -278,7 +278,7 @@ class MITDBDataset(ReprMixin, Dataset):
         print(
             f"please allow the reader a few minutes to collect the segments from {self.segments_base_dir}..."
         )
-        seg_filename_pattern = f"{self.segment_name_pattern}.{self.segment_ext}"
+        seg_filename_pattern = f"{self.segment_name_pattern}\\.{self.segment_ext}"
         self.__all_segments = CFG(
             {
                 rec: get_record_list_recursive3(
@@ -303,7 +303,7 @@ class MITDBDataset(ReprMixin, Dataset):
         print(
             f"please allow the reader a few minutes to collect the rr sequences from {self.rr_seq_base_dir}..."
         )
-        rr_seq_filename_pattern = f"{self.rr_seq_name_pattern}.{self.rr_seq_ext}"
+        rr_seq_filename_pattern = f"{self.rr_seq_name_pattern}\\.{self.rr_seq_ext}"
         self.__all_rr_seq = CFG(
             {
                 rec: get_record_list_recursive3(

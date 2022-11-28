@@ -136,7 +136,7 @@ class CPSC2021(PhysioNetDataBase):
         self.ann_ext = "atr"
         self.header_ext = "hea"
         self.all_leads = ["I", "II"]
-        self.rec_patterns_with_ext = f"^data_(?:\\d+)_(?:\\d+).{self.rec_ext}$"
+        self.rec_patterns_with_ext = f"^data_(?:\\d+)_(?:\\d+)\\.{self.rec_ext}$"
 
         self._labels_f2a = {  # fullname to abbreviation
             "non atrial fibrillation": "N",

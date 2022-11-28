@@ -385,7 +385,7 @@ class CINC2021(PhysioNetDataBase):
             )
             start = time.time()
             rec_patterns_with_ext = {
-                tranche: f"^{self.rec_prefix[tranche]}(?:\\d+).{self.rec_ext}$"
+                tranche: f"^{self.rec_prefix[tranche]}(?:\\d+)\\.{self.rec_ext}$"
                 for tranche in self.db_tranches
             }
             self._all_records = get_record_list_recursive3(

@@ -148,7 +148,7 @@ class MITDB(PhysioNetDataBase):
         if len(self._all_records) == 0:
             self._df_records = pd.DataFrame()
             self._all_records = get_record_list_recursive3(
-                self.db_dir, f"^[\\d]{{3}}.{self.data_ext}$"
+                self.db_dir, f"^[\\d]{{3}}\\.{self.data_ext}$"
             )
             self._df_records["record"] = self._all_records
             self._df_records["path"] = self._df_records["record"].apply(

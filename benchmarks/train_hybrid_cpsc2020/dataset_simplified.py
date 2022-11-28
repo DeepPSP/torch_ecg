@@ -144,7 +144,7 @@ class CPSC2020(Dataset):
         print(
             f"please allow the reader a few minutes to collect the segments from {self.segments_dir}..."
         )
-        seg_filename_pattern = f"S\\d{{2}}_\\d{{7}}{self.reader.rec_ext}"
+        seg_filename_pattern = f"S\\d{{2}}_\\d{{7}}\\.{self.reader.rec_ext}"
         self.__all_segments = CFG(
             {
                 rec: get_record_list_recursive3(

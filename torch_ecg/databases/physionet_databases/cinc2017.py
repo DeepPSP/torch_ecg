@@ -121,7 +121,7 @@ class CINC2017(PhysioNetDataBase):
             self._all_records = fp.read_text().splitlines()
             # return
         self._all_records = get_record_list_recursive3(
-            db_dir=str(self.db_dir), rec_patterns=f"A[\\d]{{5}}.{self.rec_ext}"
+            db_dir=str(self.db_dir), rec_patterns=f"A[\\d]{{5}}\\.{self.rec_ext}"
         )
         parent_dir = set([str(Path(item).parent) for item in self.all_records])
         if len(parent_dir) > 1:
