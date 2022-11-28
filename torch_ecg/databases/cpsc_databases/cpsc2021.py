@@ -552,6 +552,7 @@ class CPSC2021(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         keep_original: bool = False,
+        valid_only: bool = True,
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
@@ -571,6 +572,11 @@ class CPSC2021(PhysioNetDataBase):
         keep_original: bool, default False,
             if True, indices will keep the same with the annotation file
             otherwise subtract `sampfrom` if specified
+        valid_only: bool, default True,
+            if True, only valid rpeaks will be returned,
+            otherwise, all indices in the `sample` field of the annotation will be returned.
+            Valid rpeaks are those with symbol in `WFDB_Beat_Annotations`;
+            symbols in `WFDB_Non_Beat_Annotations` are considered as invalid rpeaks
         fs: real number, optional,
             if not None, positions of the loaded rpeaks will be ajusted according to this sampling frequency
 
@@ -590,14 +596,17 @@ class CPSC2021(PhysioNetDataBase):
             )
         critical_points = ann.sample
         symbols = ann.symbol
-        rpeaks_valid = np.isin(symbols, list(WFDB_Beat_Annotations.keys()))
         if sampfrom and not keep_original:
             critical_points = critical_points - sampfrom
         if fs is not None and fs != self.fs:
             critical_points = np.round(
                 critical_points * fs / self.fs + self._epsilon
             ).astype(int)
-        rpeaks = critical_points[rpeaks_valid]
+        if valid_only:
+            rpeaks_valid = np.isin(symbols, list(WFDB_Beat_Annotations.keys()))
+            rpeaks = critical_points[rpeaks_valid]
+        else:
+            rpeaks = critical_points
         return rpeaks
 
     @add_docstring(load_rpeaks.__doc__)
@@ -608,10 +617,19 @@ class CPSC2021(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
         keep_original: bool = False,
+        valid_only: bool = True,
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """alias of `self.load_rpeaks`"""
-        return self.load_rpeaks(rec, ann, sampfrom, sampto, keep_original, fs)
+        return self.load_rpeaks(
+            rec=rec,
+            ann=ann,
+            sampfrom=sampfrom,
+            sampto=sampto,
+            keep_original=keep_original,
+            valid_only=valid_only,
+            fs=fs,
+        )
 
     def load_af_episodes(
         self,

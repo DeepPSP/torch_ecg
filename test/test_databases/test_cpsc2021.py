@@ -9,7 +9,7 @@ import wfdb
 import pytest
 
 from torch_ecg.databases import CPSC2021
-from torch_ecg.databases.cpsc_databases.cpsc2021 import compute_metrics
+from torch_ecg.databases.cpsc_databases.cpsc2021 import compute_metrics, RefInfo
 from torch_ecg.databases.datasets import CPSC2021Dataset, CPSC2021TrainCfg
 from torch_ecg.utils.utils_interval import generalized_interval_len
 
@@ -62,10 +62,14 @@ class TestCPSC2021:
             keep_original=True,
             fs=2 * reader.fs,
         )
+        ann_3 = reader.load_ann(
+            rec, field="rpeaks", sampfrom=1000, sampto=5000, valid_only=False
+        )
         assert ann.ndim == 1
         assert ann.shape == ann_1.shape == ann_2.shape
         assert np.allclose(ann, ann_1 - 1000)
         assert np.allclose(ann_1 * 2, ann_2)
+        assert set(ann_3) >= set(ann)
 
         ann = reader.load_ann(rec, field="af_episodes", sampfrom=1000, sampto=5000)
         ann_1 = reader.load_ann(
@@ -197,6 +201,36 @@ class TestCPSC2021:
             offset_score_range=offset_score_mask,
         )
         assert score < 0
+
+    def test_RefInfo(self):
+        rec = reader.diagnoses_records_list["AFp"][0]
+        path = str(reader.get_absolute_path(rec))
+        ref_info = RefInfo(path)
+
+        assert ref_info.fs == reader.fs
+        assert ref_info.len_sig == reader.load_data(rec).shape[1]
+
+        assert np.allclose(
+            ref_info.beat_loc, reader.load_ann(rec, field="rpeaks", valid_only=False)
+        )
+
+        af_episodes = np.array(
+            reader.load_ann(rec, field="af_episodes", fmt="c_intervals")
+        )
+        assert np.allclose(af_episodes[:, 0], ref_info.af_starts)
+        assert np.allclose(af_episodes[:, 1], ref_info.af_ends)
+
+        assert ref_info.class_true == reader.load_ann(rec, field="label", fmt="n")
+
+        onset_score_mask, offset_score_mask = reader.gen_endpoint_score_mask(rec)
+        assert np.allclose(onset_score_mask, ref_info.onset_score_range)
+        assert np.allclose(offset_score_mask, ref_info.offset_score_range)
+
+        rec = reader.diagnoses_records_list["N"][0]
+        path = str(reader.get_absolute_path(rec))
+        ref_info = RefInfo(path)
+        assert ref_info.onset_score_range is None
+        assert ref_info.offset_score_range is None
 
 
 config = deepcopy(CPSC2021TrainCfg)
