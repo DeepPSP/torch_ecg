@@ -667,169 +667,6 @@ class CPSC2020(CPSCDataBase):
         return "http://2020.icbeb.org/CSPC2020"
 
 
-def _ann_to_beat_ann_epoch_v1(
-    rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
-) -> dict:
-    """
-    the naive method to label beat types using annotations provided by the dataset
-
-    Parameters
-    ----------
-    rpeaks: ndarray,
-        rpeaks for forming beats
-    ann: dict,
-        with items (ndarray) "SPB_indices" and "PVC_indices",
-        which record the indices of SPBs and PVCs
-    bias_thr: real number,
-        tolerance for using annotations (PVC, SPB indices provided by the dataset),
-        to label the type of beats given by `rpeaks`
-
-    Returns
-    -------
-    retval: dict, with the following items
-        - ann_matched: dict of ndarray,
-            indices of annotations ("SPB_indices" and "PVC_indices")
-            that match some beat from `rpeaks`.
-            for v1, this term is always the same as `ann`, hence useless
-        - beat_ann: ndarray,
-            label for each beat from `rpeaks`
-
-    """
-    beat_ann = np.array(["N" for _ in range(len(rpeaks))])
-    for idx, r in enumerate(rpeaks):
-        if any([abs(r - p) < bias_thr for p in ann["SPB_indices"]]):
-            beat_ann[idx] = "S"
-        elif any([abs(r - p) < bias_thr for p in ann["PVC_indices"]]):
-            beat_ann[idx] = "V"
-    ann_matched = ann.copy()
-    retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
-    return retval
-
-
-def _ann_to_beat_ann_epoch_v2(
-    rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
-) -> dict:
-    """has flaws, deprecated,
-
-    similar to `_ann_to_beat_ann_epoch_v1`, but records those matched annotations,
-    for further post-process, adding those beats that are in annotation,
-    but not detected by the signal preprocessing algorithms (qrs detection)
-
-    however, the comparison process (the block inside the outer `for` loop)
-    is not quite correct
-
-    Parameters
-    ----------
-    rpeaks: ndarray,
-        rpeaks for forming beats
-    ann: dict,
-        with items (ndarray) "SPB_indices" and "PVC_indices",
-        which record the indices of SPBs and PVCs
-    bias_thr: real number,
-        tolerance for using annotations (PVC, SPB indices provided by the dataset),
-        to label the type of beats given by `rpeaks`
-
-    Returns
-    -------
-    retval: dict, with the following items
-        - ann_matched: dict of ndarray,
-            indices of annotations ("SPB_indices" and "PVC_indices")
-            that match some beat from `rpeaks`
-        - beat_ann: ndarray,
-            label for each beat from `rpeaks`
-
-    """
-    beat_ann = np.array(["N" for _ in range(len(rpeaks))], dtype="<U1")
-    # used to add back those beat that is not detected via proprocess algorithm
-    _ann = {k: v.astype(int).tolist() for k, v in ann.items()}
-    for idx_r, r in enumerate(rpeaks):
-        found = False
-        for idx_a, a in enumerate(_ann["SPB_indices"]):
-            if abs(r - a) < bias_thr:
-                found = True
-                beat_ann[idx_r] = "S"
-                del _ann["SPB_indices"][idx_a]
-                break
-        if found:
-            continue
-        for idx_a, a in enumerate(_ann["PVC_indices"]):
-            if abs(r - a) < bias_thr:
-                found = True
-                beat_ann[idx_r] = "V"
-                del _ann["PVC_indices"][idx_a]
-                break
-    ann_matched = {
-        k: np.array([a for a in v if a not in _ann[k]], dtype=int)
-        for k, v in ann.items()
-    }
-    retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
-    return retval
-    # _ann["SPB_indices"] = [a for a in _ann["SPB_indices"] if prev_r<a<next_r]
-    # _ann["PVC_indices"] = [a for a in _ann["PVC_indices"] if prev_r<a<next_r]
-    # augmented_rpeaks = np.concatenate((rpeaks, np.array(_ann["SPB_indices"]), np.array(_ann["PVC_indices"])))
-    # beat_ann = np.concatenate((beat_ann, np.array(["S" for _ in _ann["SPB_indices"]], dtype="<U1"), np.array(["V" for _ in _ann["PVC_indices"]], dtype="<U1")))
-    # sorted_indices = np.argsort(augmented_rpeaks)
-    # augmented_rpeaks = augmented_rpeaks[sorted_indices].astype(int)
-    # beat_ann = beat_ann[sorted_indices].astype("<U1")
-
-    # retval = dict(augmented_rpeaks=augmented_rpeaks, beat_ann=beat_ann)
-    # return retval
-
-
-def _ann_to_beat_ann_epoch_v3(
-    rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
-) -> dict:
-    """
-    similar to `_ann_to_beat_ann_epoch_v2`, but more reasonable
-
-    Parameters
-    ----------
-    rpeaks: ndarray,
-        rpeaks for forming beats
-    ann: dict,
-        with items (ndarray) "SPB_indices" and "PVC_indices",
-        which record the indices of SPBs and PVCs
-    bias_thr: real number,
-        tolerance for using annotations (PVC, SPB indices provided by the dataset),
-        to label the type of beats given by `rpeaks`
-
-    Returns
-    -------
-    retval: dict, with the following items
-        - ann_matched: dict of ndarray,
-            indices of annotations ("SPB_indices" and "PVC_indices")
-            that match some beat from `rpeaks`
-        - beat_ann: ndarray,
-            label for each beat from `rpeaks`
-
-    """
-    beat_ann = np.array(["N" for _ in range(len(rpeaks))], dtype="<U1")
-    ann_matched = {k: [] for k, v in ann.items()}
-    for idx_r, r in enumerate(rpeaks):
-        dist_to_spb = np.abs(r - ann["SPB_indices"])
-        dist_to_pvc = np.abs(r - ann["PVC_indices"])
-        if len(dist_to_spb) == 0:
-            dist_to_spb = np.array([np.inf])
-        if len(dist_to_pvc) == 0:
-            dist_to_pvc = np.array([np.inf])
-        argmin = np.argmin([np.min(dist_to_spb), np.min(dist_to_pvc), bias_thr])
-        if argmin == 2:
-            pass
-        elif argmin == 1:
-            beat_ann[idx_r] = "V"
-            ann_matched["PVC_indices"].append(
-                ann["PVC_indices"][np.argmin(dist_to_pvc)]
-            )
-        elif argmin == 0:
-            beat_ann[idx_r] = "S"
-            ann_matched["SPB_indices"].append(
-                ann["SPB_indices"][np.argmin(dist_to_spb)]
-            )
-    ann_matched = {k: np.array(v) for k, v in ann_matched.items()}
-    retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
-    return retval
-
-
 def compute_metrics(
     sbp_true: List[np.ndarray],
     pvc_true: List[np.ndarray],
@@ -928,3 +765,168 @@ def compute_metrics(
         retval = Score1, Score2
 
     return retval
+
+
+# out-dated functions
+
+# def _ann_to_beat_ann_epoch_v1(
+#     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
+# ) -> dict:
+#     """
+#     the naive method to label beat types using annotations provided by the dataset
+
+#     Parameters
+#     ----------
+#     rpeaks: ndarray,
+#         rpeaks for forming beats
+#     ann: dict,
+#         with items (ndarray) "SPB_indices" and "PVC_indices",
+#         which record the indices of SPBs and PVCs
+#     bias_thr: real number,
+#         tolerance for using annotations (PVC, SPB indices provided by the dataset),
+#         to label the type of beats given by `rpeaks`
+
+#     Returns
+#     -------
+#     retval: dict, with the following items
+#         - ann_matched: dict of ndarray,
+#             indices of annotations ("SPB_indices" and "PVC_indices")
+#             that match some beat from `rpeaks`.
+#             for v1, this term is always the same as `ann`, hence useless
+#         - beat_ann: ndarray,
+#             label for each beat from `rpeaks`
+
+#     """
+#     beat_ann = np.array(["N" for _ in range(len(rpeaks))])
+#     for idx, r in enumerate(rpeaks):
+#         if any([abs(r - p) < bias_thr for p in ann["SPB_indices"]]):
+#             beat_ann[idx] = "S"
+#         elif any([abs(r - p) < bias_thr for p in ann["PVC_indices"]]):
+#             beat_ann[idx] = "V"
+#     ann_matched = ann.copy()
+#     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
+#     return retval
+
+
+# def _ann_to_beat_ann_epoch_v2(
+#     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
+# ) -> dict:
+#     """has flaws, deprecated,
+
+#     similar to `_ann_to_beat_ann_epoch_v1`, but records those matched annotations,
+#     for further post-process, adding those beats that are in annotation,
+#     but not detected by the signal preprocessing algorithms (qrs detection)
+
+#     however, the comparison process (the block inside the outer `for` loop)
+#     is not quite correct
+
+#     Parameters
+#     ----------
+#     rpeaks: ndarray,
+#         rpeaks for forming beats
+#     ann: dict,
+#         with items (ndarray) "SPB_indices" and "PVC_indices",
+#         which record the indices of SPBs and PVCs
+#     bias_thr: real number,
+#         tolerance for using annotations (PVC, SPB indices provided by the dataset),
+#         to label the type of beats given by `rpeaks`
+
+#     Returns
+#     -------
+#     retval: dict, with the following items
+#         - ann_matched: dict of ndarray,
+#             indices of annotations ("SPB_indices" and "PVC_indices")
+#             that match some beat from `rpeaks`
+#         - beat_ann: ndarray,
+#             label for each beat from `rpeaks`
+
+#     """
+#     beat_ann = np.array(["N" for _ in range(len(rpeaks))], dtype="<U1")
+#     # used to add back those beat that is not detected via proprocess algorithm
+#     _ann = {k: v.astype(int).tolist() for k, v in ann.items()}
+#     for idx_r, r in enumerate(rpeaks):
+#         found = False
+#         for idx_a, a in enumerate(_ann["SPB_indices"]):
+#             if abs(r - a) < bias_thr:
+#                 found = True
+#                 beat_ann[idx_r] = "S"
+#                 del _ann["SPB_indices"][idx_a]
+#                 break
+#         if found:
+#             continue
+#         for idx_a, a in enumerate(_ann["PVC_indices"]):
+#             if abs(r - a) < bias_thr:
+#                 found = True
+#                 beat_ann[idx_r] = "V"
+#                 del _ann["PVC_indices"][idx_a]
+#                 break
+#     ann_matched = {
+#         k: np.array([a for a in v if a not in _ann[k]], dtype=int)
+#         for k, v in ann.items()
+#     }
+#     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
+#     return retval
+#     # _ann["SPB_indices"] = [a for a in _ann["SPB_indices"] if prev_r<a<next_r]
+#     # _ann["PVC_indices"] = [a for a in _ann["PVC_indices"] if prev_r<a<next_r]
+#     # augmented_rpeaks = np.concatenate((rpeaks, np.array(_ann["SPB_indices"]), np.array(_ann["PVC_indices"])))
+#     # beat_ann = np.concatenate((beat_ann, np.array(["S" for _ in _ann["SPB_indices"]], dtype="<U1"), np.array(["V" for _ in _ann["PVC_indices"]], dtype="<U1")))
+#     # sorted_indices = np.argsort(augmented_rpeaks)
+#     # augmented_rpeaks = augmented_rpeaks[sorted_indices].astype(int)
+#     # beat_ann = beat_ann[sorted_indices].astype("<U1")
+
+#     # retval = dict(augmented_rpeaks=augmented_rpeaks, beat_ann=beat_ann)
+#     # return retval
+
+
+# def _ann_to_beat_ann_epoch_v3(
+#     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
+# ) -> dict:
+#     """
+#     similar to `_ann_to_beat_ann_epoch_v2`, but more reasonable
+
+#     Parameters
+#     ----------
+#     rpeaks: ndarray,
+#         rpeaks for forming beats
+#     ann: dict,
+#         with items (ndarray) "SPB_indices" and "PVC_indices",
+#         which record the indices of SPBs and PVCs
+#     bias_thr: real number,
+#         tolerance for using annotations (PVC, SPB indices provided by the dataset),
+#         to label the type of beats given by `rpeaks`
+
+#     Returns
+#     -------
+#     retval: dict, with the following items
+#         - ann_matched: dict of ndarray,
+#             indices of annotations ("SPB_indices" and "PVC_indices")
+#             that match some beat from `rpeaks`
+#         - beat_ann: ndarray,
+#             label for each beat from `rpeaks`
+
+#     """
+#     beat_ann = np.array(["N" for _ in range(len(rpeaks))], dtype="<U1")
+#     ann_matched = {k: [] for k, v in ann.items()}
+#     for idx_r, r in enumerate(rpeaks):
+#         dist_to_spb = np.abs(r - ann["SPB_indices"])
+#         dist_to_pvc = np.abs(r - ann["PVC_indices"])
+#         if len(dist_to_spb) == 0:
+#             dist_to_spb = np.array([np.inf])
+#         if len(dist_to_pvc) == 0:
+#             dist_to_pvc = np.array([np.inf])
+#         argmin = np.argmin([np.min(dist_to_spb), np.min(dist_to_pvc), bias_thr])
+#         if argmin == 2:
+#             pass
+#         elif argmin == 1:
+#             beat_ann[idx_r] = "V"
+#             ann_matched["PVC_indices"].append(
+#                 ann["PVC_indices"][np.argmin(dist_to_pvc)]
+#             )
+#         elif argmin == 0:
+#             beat_ann[idx_r] = "S"
+#             ann_matched["SPB_indices"].append(
+#                 ann["SPB_indices"][np.argmin(dist_to_spb)]
+#             )
+#     ann_matched = {k: np.array(v) for k, v in ann_matched.items()}
+#     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
+#     return retval
