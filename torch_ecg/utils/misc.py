@@ -9,6 +9,7 @@ import re
 import sys
 import signal
 import time
+import warnings
 from contextlib import contextmanager
 from copy import deepcopy
 from functools import reduce, wraps
@@ -664,6 +665,8 @@ def read_event_scalars(
 
 def dicts_equal(d1: dict, d2: dict) -> bool:
     """
+    Determine if two dicts are equal
+
     Parameters
     ----------
     d1, d2: dict,
@@ -684,10 +687,12 @@ def dicts_equal(d1: dict, d2: dict) -> bool:
 
     Example
     -------
+    ```python
     >>> d1 = {"a": pd.DataFrame([{"hehe":1,"haha":2}])[["haha","hehe"]]}
     >>> d2 = {"a": pd.DataFrame([{"hehe":1,"haha":2}])[["hehe","haha"]]}
     >>> dicts_equal(d1, d2)
     True
+    ```
 
     """
     import torch
@@ -830,7 +835,13 @@ class CitationMixin(_CitationMixin):
 
     # backwar compatibility
     if (_DATA_CACHE / "database_citation.csv").exists():
-        df_old = pd.read_csv(_DATA_CACHE / "database_citation.csv")
+        try:
+            df_old = pd.read_csv(_DATA_CACHE / "database_citation.csv")
+        except pd.errors.EmptyDataError:
+            df_old = pd.DataFrame(columns=["doi", "citation"])
+        if set(df_old.columns) != set(["doi", "citation"]):
+            df_old = pd.DataFrame(columns=["doi", "citation"])
+        df_old = df_old[["doi", "citation"]]
         if _CitationMixin.citation_cache.exists():
             df = pd.read_csv(_CitationMixin.citation_cache)
         else:
@@ -929,7 +940,7 @@ class MovingAverage(object):
         elif m in ["wma", "weighted", "weighted moving average"]:
             func = self._wma
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"method `{method}` is not implemented yet")
         if data is not None:
             self.data = np.array(data)
         return func(**kwargs)
@@ -947,6 +958,11 @@ class MovingAverage(object):
             otherwise the previous `window` points of the current point will be used
 
         """
+        if len(kwargs) > 0:
+            warnings.warn(
+                f"the following arguments are not used: `{kwargs}` for simple moving average",
+                RuntimeWarning,
+            )
         smoothed = []
         if center:
             hw = window // 2
@@ -978,6 +994,11 @@ class MovingAverage(object):
             weight of the previous data point
 
         """
+        if len(kwargs) > 0:
+            warnings.warn(
+                f"the following arguments are not used: `{kwargs}` for exponential moving average",
+                RuntimeWarning,
+            )
         smoothed = []
         prev = self.data[0]
         for d in self.data:
@@ -991,6 +1012,11 @@ class MovingAverage(object):
         """
         cumulative moving average
         """
+        if len(kwargs) > 0:
+            warnings.warn(
+                f"the following arguments are not used: `{kwargs}` for cumulative moving average",
+                RuntimeWarning,
+            )
         smoothed = []
         prev = 0
         for n, d in enumerate(self.data):
@@ -1010,6 +1036,11 @@ class MovingAverage(object):
             window length of the moving average
 
         """
+        if len(kwargs) > 0:
+            warnings.warn(
+                f"the following arguments are not used: `{kwargs}` for weighted moving average",
+                RuntimeWarning,
+            )
         conv = np.arange(1, window + 1)[::-1]
         deno = np.sum(conv)
         smoothed = np.convolve(conv, self.data, mode="same") / deno
@@ -1142,12 +1173,12 @@ def timeout(duration: float):
     if np.isinf(duration):
         duration = 0
     elif duration < 0:
-        raise ValueError("duration must be non-negative")
+        raise ValueError("`duration` must be non-negative")
     elif duration > 0:  # granularity is 1 second, so round up
         duration = max(1, int(duration))
 
     def timeout_handler(signum, frame):
-        raise TimeoutError(f"block timedout after {duration} seconds")
+        raise TimeoutError(f"block timedout after `{duration}` seconds")
 
     signal.signal(signal.SIGALRM, timeout_handler)
     signal.alarm(duration)
@@ -1321,5 +1352,7 @@ def add_kwargs(func: Callable, **kwargs: Any) -> Callable:
         )
         filtered_kwargs = {k: v for k, v in kwargs_.items() if k in old_kwargs}
         return func(*args, **filtered_kwargs)
+
+        # TODO: update the signature of the function
 
     return wrapper
