@@ -210,14 +210,52 @@ def test_dicts_equal():
     d1 = {"a": pd.DataFrame([{"hehe": 1, "haha": 2}])[["haha", "hehe"]]}
     d2 = {"a": pd.DataFrame([{"hehe": 1, "haha": 2}])[["hehe", "haha"]]}
     assert dicts_equal(d1, d2) is True
+    assert dicts_equal(d2, d1) is True
 
     d1 = {"a": torch.tensor([1, 2, 3])}
     d2 = {"a": torch.tensor([1, 2, 3])}
     assert dicts_equal(d1, d2) is True
+    assert dicts_equal(d2, d1) is True
 
     d1 = {"a": np.array([1, 2, 3])}
     d2 = {"a": np.array([1, 2, 3])}
     assert dicts_equal(d1, d2) is True
+    assert dicts_equal(d2, d1) is True
+
+    d1 = {"a": [1, 2, 3]}
+    d2 = {"a": np.array([1, 2, 3])}
+    assert dicts_equal(d1, d2) is True
+    assert dicts_equal(d2, d1) is True
+    assert dicts_equal(d1, d2, allow_array_diff_types=False) is False
+    assert dicts_equal(d2, d1, allow_array_diff_types=False) is False
+
+    d1 = {"a": (1, 2, 3)}
+    d2 = {"a": np.array([1, 2, 3])}
+    assert dicts_equal(d1, d2) is True
+    assert dicts_equal(d2, d1) is True
+    assert dicts_equal(d1, d2, allow_array_diff_types=False) is False
+    assert dicts_equal(d2, d1, allow_array_diff_types=False) is False
+
+    d1 = {"a": torch.tensor([1, 2, 3])}
+    d2 = {"a": np.array([1, 2, 3])}
+    assert dicts_equal(d1, d2) is True
+    assert dicts_equal(d2, d1) is True
+    assert dicts_equal(d1, d2, allow_array_diff_types=False) is False
+    assert dicts_equal(d2, d1, allow_array_diff_types=False) is False
+
+    d1 = {"a": torch.tensor([1, 2, 3])}
+    d2 = {"a": pd.Series([1, 2, 3])}
+    assert dicts_equal(d1, d2) is False
+    assert dicts_equal(d2, d1) is False
+    assert dicts_equal(d1, d2, allow_array_diff_types=False) is False
+    assert dicts_equal(d2, d1, allow_array_diff_types=False) is False
+
+    d1 = {"a": torch.tensor([1, 2, 3])}
+    d2 = {"a": pd.DataFrame([1, 2, 3])}
+    assert dicts_equal(d1, d2) is False
+    assert dicts_equal(d2, d1) is False
+    assert dicts_equal(d1, d2, allow_array_diff_types=False) is False
+    assert dicts_equal(d2, d1, allow_array_diff_types=False) is False
 
 
 def test_ReprMixin():

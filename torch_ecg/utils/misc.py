@@ -663,7 +663,7 @@ def read_event_scalars(
     return summary
 
 
-def dicts_equal(d1: dict, d2: dict) -> bool:
+def dicts_equal(d1: dict, d2: dict, allow_array_diff_types: bool = True) -> bool:
     """
     Determine if two dicts are equal
 
@@ -671,6 +671,10 @@ def dicts_equal(d1: dict, d2: dict) -> bool:
     ----------
     d1, d2: dict,
         the two dicts to compare equality
+    allow_array_diff_types: bool, default True,
+        whether to allow the equality of two arrays with different types,
+        including list, tuple, np.ndarray, torch.Tensor,
+        NOT including pd.DataFrame, pd.Series
 
     Returns
     -------
@@ -700,17 +704,27 @@ def dicts_equal(d1: dict, d2: dict) -> bool:
     if len(d1) != len(d2):
         return False
     for k, v in d1.items():
-        if k not in d2 or not isinstance(d2[k], type(v)):
+        if k not in d2:
             return False
+        if not allow_array_diff_types and not isinstance(d2[k], type(v)):
+            return False
+        if allow_array_diff_types and isinstance(
+            v, (list, tuple, np.ndarray, torch.Tensor)
+        ):
+            if not isinstance(d2[k], (list, tuple, np.ndarray, torch.Tensor)):
+                return False
+            if not np.array_equal(v, d2[k]):
+                return False
+        elif allow_array_diff_types and not isinstance(
+            v, (list, tuple, np.ndarray, torch.Tensor)
+        ):
+            if not isinstance(d2[k], type(v)):
+                return False
         if isinstance(v, dict):
             if not dicts_equal(v, d2[k]):
                 return False
-        elif isinstance(v, np.ndarray):
-            if v.shape != d2[k].shape or not (v == d2[k]).all():
-                return False
-        elif isinstance(v, torch.Tensor):
-            if v.shape != d2[k].shape or not (v == d2[k]).all().item():
-                return False
+        elif isinstance(v, (list, tuple, np.ndarray, torch.Tensor)):
+            return np.array_equal(v, d2[k])
         elif isinstance(v, pd.DataFrame):
             if v.shape != d2[k].shape or set(v.columns) != set(d2[k].columns):
                 # consider: should one check index be equal?
