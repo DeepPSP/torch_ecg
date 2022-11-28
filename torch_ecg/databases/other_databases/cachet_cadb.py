@@ -417,7 +417,7 @@ class CACHET_CADB(_DataBase):
                 raise ValueError("short format file not found")
             return self.__short_format_data
         elif rec not in self.all_records:
-            raise ValueError(f"invalid record name: `{rec}`")
+            raise ValueError(f"Invalid record name: `{rec}`")
         data_path = self._df_records.loc[rec, "data_path"]
         header = self._rdheader(rec, key="ecg")
         data = np.fromfile(data_path, dtype=header["dataType"])[
@@ -427,17 +427,16 @@ class CACHET_CADB(_DataBase):
             # digital to analog conversion using the field `lsbValue` in the header
             data = (data - int(header["baseline"])) * float(header["lsbValue"])
             data = data.astype(DEFAULTS.DTYPE.NP)
-            units = units.lower()
-            if units in ["μv", "uv"]:
+            if units.lower() in ["μv", "uv"]:
                 data *= 1e3
-            elif units != "mv":
-                raise ValueError(f"invalid units: `{units}`")
+            elif units.lower() != "mv":
+                raise ValueError(f"Invalid `units`: {units}")
         if data_format in ["channel_last", "lead_last"]:
             data = data[:, np.newaxis]
         elif data_format in ["channel_first", "lead_first"]:
             data = data[np.newaxis, :]
         elif data_format not in ["flat", "plain"]:
-            raise ValueError(f"invalid data_format: `{data_format}`")
+            raise ValueError(f"Invalid `data_format`: {data_format}")
 
         if fs is not None and fs != self.fs:
             data = resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
@@ -489,12 +488,12 @@ class CACHET_CADB(_DataBase):
         if isinstance(rec, int):
             rec = self[rec]
         if rec not in self.all_records:
-            raise ValueError(f"invalid record name: `{rec}`")
+            raise ValueError(f"Invalid record name: `{rec}`")
         if context_name == "ecg":
-            raise ValueError("call `load_data` to load ECG data")
+            raise ValueError("Call `load_data` to load ECG data")
         assert (
             context_name in self.context_data_ext.keys()
-        ), f"invalid context_name: {context_name}"
+        ), f"Invalid `context_name`: `{context_name}`"
         context_data_path = self._df_records.loc[rec, f"context_{context_name}_path"]
 
         if context_data_path.suffix == ".csv":
@@ -518,16 +517,16 @@ class CACHET_CADB(_DataBase):
             sampfrom or 0 : sampto or None
         ]
         if units is not None:
+            assert units.lower() in ["default", header["unit"]], (
+                f"`units` should be `default` or `{header['unit']}`, but got `{units}`. "
+                "Currently, units conversion is not supported."
+            )
             # digital to analog conversion using the field `lsbValue` in the header
             context_data = (context_data - int(header.get("baseline", 1))) * float(
                 header["lsbValue"]
             )
             context_data = context_data.astype(DEFAULTS.DTYPE.NP)
-        elif units.lower() not in ["default", header["unit"]]:
-            raise ValueError(
-                f"`units` should be `default` or `{header['unit']}`, but got `{units}`. "
-                "Currently, units conversion is not supported."
-            )
+
         # convert to "channel_first" format
         context_data = context_data.reshape(-1, len(header["channel"])).T
 
@@ -537,12 +536,12 @@ class CACHET_CADB(_DataBase):
         if isinstance(channels, str):
             assert (
                 channels in header["channel"]
-            ), f"channels should be a subset of {header['channel']}, but got {channels}"
+            ), f"`channels` should be a subset of `{header['channel']}`, but got `{channels}`"
             channels = [header["channel"].index(channels)]
         elif isinstance(channels, int):
             assert channels < len(
                 header["channel"]
-            ), f"channels should be less than {len(header['channel'])}, but got {channels}"
+            ), f"`channels` should be less than `{len(header['channel'])}`, but got `{channels}`"
             channels = [channels]
         else:
             assert all(
@@ -552,7 +551,7 @@ class CACHET_CADB(_DataBase):
                     else ch in range(len(header["channel"]))
                     for ch in channels
                 ]
-            ), f"channels should be a subset of {header['channel']}, but got {_input_channels}"
+            ), f"`channels` should be a subset of `{header['channel']}`, but got `{_input_channels}`"
             _channels = [
                 header["channel"].index(ch) if isinstance(ch, str) else ch
                 for ch in channels
@@ -560,7 +559,7 @@ class CACHET_CADB(_DataBase):
             channels = list(dict.fromkeys(_channels))
             if len(channels) != len(_channels):
                 warnings.warn(
-                    f"duplicate channels are removed, {_input_channels} -> {channels}",
+                    f"duplicate `channels` are removed, {_input_channels} -> {channels}",
                     RuntimeWarning,
                 )
         context_data = context_data[channels]
@@ -599,10 +598,10 @@ class CACHET_CADB(_DataBase):
                 rec = self[rec]
         if rec == "short_format":
             if self._short_format_file is None:
-                raise ValueError("short format file not found")
+                raise ValueError("Short format file not found")
             return self.__short_format_ann
         elif rec not in self.all_records:
-            raise ValueError(f"invalid record name: `{rec}`")
+            raise ValueError(f"Invalid record name: `{rec}`")
         try:
             ann = pd.read_csv(self._df_records.loc[rec, "ann_path"])
         except pd.errors.EmptyDataError:
@@ -611,7 +610,7 @@ class CACHET_CADB(_DataBase):
         if ann_format == "pd":
             return ann
         else:
-            raise ValueError(f"ann_format: `{ann_format}` not supported")
+            raise ValueError(f"`ann_format`: `{ann_format}` not supported")
 
     def load_context_ann(
         self, rec: Union[str, int], sheet_name: Optional[str] = None
@@ -637,7 +636,7 @@ class CACHET_CADB(_DataBase):
         if isinstance(rec, int):
             rec = self[rec]
         if rec not in self.all_records:
-            raise ValueError(f"invalid record name: `{rec}`")
+            raise ValueError(f"Invalid record name: `{rec}`")
         context_ann_path = self._df_records.loc[rec, "context_ann_path"]
         context_ann = pd.read_excel(
             context_ann_path, engine="openpyxl", sheet_name=sheet_name

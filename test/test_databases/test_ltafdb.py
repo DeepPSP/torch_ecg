@@ -1,4 +1,5 @@
 """
+TestLTAFDB: NOT accomplished
 """
 
 import shutil
@@ -19,3 +20,20 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 
 reader = LTAFDB(_CWD)
+
+
+class TestLTAFDB:
+    def test_len(self):
+        pass
+
+    def test_load_data(self):
+        pass
+
+    def test_load_ann(self):
+        pass
+
+    def test_meta_data(self):
+        pass
+
+    def test_plot(self):
+        pass

@@ -1,4 +1,6 @@
 """
+TestCPSC2020: accomplished
+TestCPSC2020Dataset: NOT accomplished
 """
 
 import shutil

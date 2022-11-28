@@ -1,6 +1,9 @@
 """
 methods from the base class, e.g. `load_data`, are tested in a simple way in this file,
-since they are comprehensively tested `test_afdb.py`
+since they are comprehensively tested `test_afdb.py`.
+
+TestLUDB: accomplished
+TestLUDBDataset: NOT accomplished
 """
 
 import re

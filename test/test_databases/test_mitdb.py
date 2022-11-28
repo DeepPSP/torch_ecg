@@ -1,4 +1,6 @@
 """
+TestMITDB: accomplished
+TestMITDBDataset: NOT accomplished
 """
 
 import re
@@ -90,3 +92,11 @@ config = deepcopy(MITDBTrainCfg)
 config.db_dir = _CWD
 
 ds = MITDBDataset(config, task="qrs_detection", training=False, lazy=False)
+
+
+class TestMITDBDataset:
+    def test_len(self):
+        pass
+
+    def test_getitem(self):
+        pass

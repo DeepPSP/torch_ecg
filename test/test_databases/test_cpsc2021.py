@@ -1,17 +1,28 @@
 """
+TestCPSC2021: accomplished
+TestCPSC2021Dataset: NOT accomplished
 """
 
+import json
 from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import wfdb
+from scipy.io import savemat
 import pytest
 
 from torch_ecg.databases import CPSC2021
-from torch_ecg.databases.cpsc_databases.cpsc2021 import compute_metrics, RefInfo
+from torch_ecg.databases.cpsc_databases.cpsc2021 import (
+    compute_metrics,
+    RefInfo,
+    load_ans,
+    score as score_func,
+)
 from torch_ecg.databases.datasets import CPSC2021Dataset, CPSC2021TrainCfg
 from torch_ecg.utils.utils_interval import generalized_interval_len
+from torch_ecg.utils.misc import dicts_equal
 
 
 ###############################################################################
@@ -21,6 +32,15 @@ _CWD = Path(__file__).absolute().parents[2] / "sample-data" / "cpsc2021"
 
 
 reader = CPSC2021(_CWD)
+
+
+_ANS_JSON_FILE = Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_ans.json"
+_ANS_MAT_FILE = Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_ans.mat"
+_ANS_JSON_DICT = {"predict_endpoints": [[1000, 2000], [3000, 4000], [5000, 6000]]}
+_ANS_MAT_DICT = {"predict_endpoints": [[1001, 2001], [3001, 4001], [5001, 6001]]}
+
+_ANS_JSON_FILE.write_text(json.dumps(_ANS_JSON_DICT))
+savemat(str(_ANS_MAT_FILE), _ANS_MAT_DICT)
 
 
 class TestCPSC2021:
@@ -161,6 +181,31 @@ class TestCPSC2021:
         assert onset_score_mask.sum() < onset_score_mask_1.sum()
         assert offset_score_mask.sum() < offset_score_mask_1.sum()
 
+    def test_aggregate_stats(self):
+        new_reader = CPSC2021(_CWD)
+        stats_file = "stats.csv"
+        stats_file_fp = new_reader.db_dir_base / stats_file
+        if stats_file_fp.is_file():
+            stats_file_fp.unlink()
+        new_reader._stats = pd.DataFrame()
+        new_reader._aggregate_stats()
+
+        assert not new_reader.df_stats.empty
+
+        del new_reader
+
+    def test_ls_diagnoses_records(self):
+        new_reader = CPSC2021(_CWD)
+        fn = "diagnoses_records_list.json"
+        dr_fp = new_reader.db_dir_base / fn
+        if dr_fp.is_file():
+            dr_fp.unlink()
+        new_reader._diagnoses_records_list = None
+
+        assert new_reader.diagnoses_records_list is not None
+
+        del new_reader
+
     def test_meta_data(self):
         assert isinstance(reader.diagnoses_records_list, dict)
         assert all(isinstance(v, list) for v in reader.diagnoses_records_list.values())
@@ -206,6 +251,7 @@ class TestCPSC2021:
         rec = reader.diagnoses_records_list["AFp"][0]
         path = str(reader.get_absolute_path(rec))
         ref_info = RefInfo(path)
+        ref_info._gen_endpoint_score_range(verbose=2)
 
         assert ref_info.fs == reader.fs
         assert ref_info.len_sig == reader.load_data(rec).shape[1]
@@ -229,8 +275,34 @@ class TestCPSC2021:
         rec = reader.diagnoses_records_list["N"][0]
         path = str(reader.get_absolute_path(rec))
         ref_info = RefInfo(path)
+        assert ref_info.class_true == reader.load_ann(rec, field="label", fmt="n")
         assert ref_info.onset_score_range is None
         assert ref_info.offset_score_range is None
+
+        rec = reader.diagnoses_records_list["AFf"][0]
+        path = str(reader.get_absolute_path(rec))
+        ref_info = RefInfo(path)
+        assert ref_info.class_true == reader.load_ann(rec, field="label", fmt="n")
+
+        onset_score_mask, offset_score_mask = reader.gen_endpoint_score_mask(rec)
+        assert np.allclose(onset_score_mask, ref_info.onset_score_range)
+        assert np.allclose(offset_score_mask, ref_info.offset_score_range)
+
+    def test_load_ans(self):
+        ans = load_ans(_ANS_JSON_FILE)
+        assert dicts_equal(ans, _ANS_JSON_DICT)
+
+        ans = load_ans(_ANS_MAT_FILE)
+        assert dicts_equal(ans, _ANS_JSON_DICT)  # NOT _ANS_MAT_DICT
+
+    def test_score_func(self):
+        rec = reader.diagnoses_records_list["AFp"][0]
+        data_path = str(reader.get_absolute_path(rec))
+        score = score_func(
+            data_path=data_path,
+            ans_path=_ANS_JSON_FILE,
+        )
+        assert isinstance(score.item(), float)
 
 
 config = deepcopy(CPSC2021TrainCfg)
