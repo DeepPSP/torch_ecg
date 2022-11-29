@@ -23,7 +23,7 @@ from torch_ecg.augmenters import (
 def test_base_augmenter():
     with pytest.raises(
         TypeError,
-        match=f"Can't instantiate abstract class {Augmenter.__name__} with abstract methods",
+        match=f"Can't instantiate abstract class {Augmenter.__name__} with abstract method",
     ):
         aug = Augmenter()
 

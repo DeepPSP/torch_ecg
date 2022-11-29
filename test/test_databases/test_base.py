@@ -28,7 +28,7 @@ def test_base_database():
 
     with pytest.raises(
         TypeError,
-        match=f"Can't instantiate abstract class {PhysioNetDataBase.__name__} with abstract methods",
+        match=f"Can't instantiate abstract class {PhysioNetDataBase.__name__} with abstract method",
     ):
         db = PhysioNetDataBase()
 
