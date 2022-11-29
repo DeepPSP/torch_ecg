@@ -4,6 +4,8 @@ since they are comprehensively tested `test_afdb.py`.
 
 TestLUDB: accomplished
 TestLUDBDataset: NOT accomplished
+
+subsampling: NOT tested
 """
 
 import re

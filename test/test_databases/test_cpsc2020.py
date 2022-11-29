@@ -1,6 +1,8 @@
 """
 TestCPSC2020: accomplished
 TestCPSC2020Dataset: NOT accomplished
+
+subsampling: NOT tested
 """
 
 import shutil

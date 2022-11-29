@@ -2,6 +2,8 @@
 methods from the base class, e.g. `load_data`, are comprehensively tested in this file
 
 TestAFDB: accomplished
+
+subsampling: NOT tested
 """
 
 import re

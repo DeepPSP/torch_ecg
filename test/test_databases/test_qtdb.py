@@ -1,5 +1,7 @@
 """
 TestQTDB: accomplished
+
+subsampling: NOT tested
 """
 
 import re

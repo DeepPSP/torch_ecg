@@ -3,6 +3,8 @@ methods from the base class, e.g. `load_data`, are tested in a simple way in thi
 since they are comprehensively tested `test_afdb.py`.
 
 TestApneaECG: accomplished
+
+subsampling: NOT tested
 """
 
 import re

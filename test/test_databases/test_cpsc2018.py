@@ -1,5 +1,7 @@
 """
 TestCPSC2018: accomplished
+
+subsampling: NOT tested
 """
 
 from pathlib import Path

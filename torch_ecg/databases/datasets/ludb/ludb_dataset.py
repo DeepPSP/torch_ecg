@@ -169,14 +169,18 @@ class LUDBDataset(ReprMixin, Dataset):
         train_file = self.reader.db_dir / f"train_ratio_{_train_ratio}.json"
         test_file = self.reader.db_dir / f"test_ratio_{_test_ratio}.json"
 
+        if self.reader._subsample is not None:
+            force_recompute = True
+
         if force_recompute or not all([train_file.is_file(), test_file.is_file()]):
             all_records = deepcopy(self.reader.all_records)
             shuffle(all_records)
             split_idx = int(_train_ratio * len(all_records) / 100)
             train_set = all_records[:split_idx]
             test_set = all_records[split_idx:]
-            train_file.write_text(json.dumps(train_set, ensure_ascii=False))
-            test_file.write_text(json.dumps(test_set, ensure_ascii=False))
+            if self.reader._subsample is None:
+                train_file.write_text(json.dumps(train_set, ensure_ascii=False))
+                test_file.write_text(json.dumps(test_set, ensure_ascii=False))
         else:
             train_set = json.loads(train_file.read_text())
             test_set = json.loads(test_file.read_text())

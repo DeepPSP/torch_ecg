@@ -2,10 +2,11 @@
 """
 
 import json
+import warnings
 from copy import deepcopy
 from pathlib import Path
 from random import randint, shuffle
-from typing import List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple, Any
 
 import numpy as np
 from torch.utils.data.dataset import Dataset
@@ -40,6 +41,7 @@ class LUDB(ReprMixin, Dataset):
         config: CFG,
         training: bool = True,
         lazy: bool = False,
+        **reader_kwargs: Any,
     ) -> None:
         """
         Parameters
@@ -51,10 +53,16 @@ class LUDB(ReprMixin, Dataset):
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,
             if True, the data will not be loaded immediately
+        reader_kwargs: dict,
+            keyword arguments for the data reader class
 
         """
         super().__init__()
         self.config = deepcopy(config)
+        if reader_kwargs.pop("db_dir", None) is not None:
+            warnings.warn(
+                "db_dir is specified in both config and reader_kwargs", RuntimeWarning
+            )
         self.reader = LR(db_dir=self.config.db_dir)
         self.training = training
         self.classes = self.config.classes
@@ -163,14 +171,18 @@ class LUDB(ReprMixin, Dataset):
         train_file = self.reader.db_dir / f"train_ratio_{_train_ratio}.json"
         test_file = self.reader.db_dir / f"test_ratio_{_test_ratio}.json"
 
+        if self.reader._subsample is not None:
+            force_recompute = True
+
         if force_recompute or not all([train_file.is_file(), test_file.is_file()]):
             all_records = deepcopy(self.reader.all_records)
             shuffle(all_records)
             split_idx = int(_train_ratio * len(all_records) / 100)
             train_set = all_records[:split_idx]
             test_set = all_records[split_idx:]
-            train_file.write_text(json.dumps(train_set, ensure_ascii=False))
-            test_file.write_text(json.dumps(test_set, ensure_ascii=False))
+            if self.reader._subsample is None:
+                train_file.write_text(json.dumps(train_set, ensure_ascii=False))
+                test_file.write_text(json.dumps(test_set, ensure_ascii=False))
         else:
             train_set = json.loads(train_file.read_text())
             test_set = json.loads(test_file.read_text())

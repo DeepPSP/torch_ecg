@@ -1,6 +1,8 @@
 """
 TestCINC2021: accomplished
 TestCINC2021Dataset: accomplished
+
+subsampling: NOT tested
 """
 
 from copy import deepcopy

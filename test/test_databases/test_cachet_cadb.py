@@ -1,5 +1,7 @@
 """
 TestCACHET_CADB: accomplished
+
+subsampling: NOT tested
 """
 
 import shutil

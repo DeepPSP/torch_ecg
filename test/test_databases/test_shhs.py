@@ -1,5 +1,7 @@
 """
 TestSHHS: NOT accomplished
+
+subsampling: NOT tested
 """
 
 import shutil

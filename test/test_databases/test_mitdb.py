@@ -1,6 +1,8 @@
 """
 TestMITDB: accomplished
 TestMITDBDataset: NOT accomplished
+
+subsampling: NOT tested
 """
 
 import re
@@ -91,7 +93,11 @@ class TestMITDB:
 config = deepcopy(MITDBTrainCfg)
 config.db_dir = _CWD
 
-ds = MITDBDataset(config, task="qrs_detection", training=False, lazy=False)
+# tasks: "qrs_detection", "rhythm_segmentation", "af_event", "beat_classification", "rr_lstm"
+TASK = "qrs_detection"
+ds = MITDBDataset(config, task=TASK, training=True, lazy=True, subsample=0.2)
+ds.persistence()
+ds.reset_task(TASK, lazy=False)
 
 
 class TestMITDBDataset:

@@ -1209,9 +1209,11 @@ class MITDBDataset(ReprMixin, Dataset):
             "qrs_detection",
         ]:
             test_set = ["101", "102", "108", "114", "207", "223"]
+            test_set = [rec for rec in self.reader if rec in test_set]
             train_set = [rec for rec in self.reader if rec not in test_set]
         else:  # rhythm segmentation, af event, rr_lstm
             test_set = ["106", "114", "124", "202", "217", "232"]
+            test_set = [rec for rec in self.reader if rec in test_set]
             train_set = [rec for rec in self.reader if rec not in test_set]
 
         split_res = CFG(
