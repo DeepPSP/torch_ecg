@@ -3,7 +3,7 @@ methods from the base class, e.g. `load_data`, are tested in a simple way in thi
 since they are comprehensively tested `test_afdb.py`.
 
 TestLUDB: accomplished
-TestLUDBDataset: NOT accomplished
+TestLUDBDataset: accomplished
 
 subsampling: NOT tested
 """
@@ -91,9 +91,33 @@ class TestLUDB:
 config = deepcopy(LUDBTrainCfg)
 config.db_dir = _CWD
 
-ds = LUDBDataset(config, training=False, lazy=True)
+ds = LUDBDataset(config, training=False, lazy=False)
+
+config_1 = deepcopy(config)
+ds_1 = LUDBDataset(config_1, training=False, lazy=True)
 
 
 class TestLUDBDataset:
     def test_len(self):
-        pass
+        assert len(ds) == len(ds_1) > 0
+
+    def test_getitem(self):
+        for i in range(len(ds)):
+            signals, labels = ds[i]
+            assert signals.shape == (config.n_leads, config.input_len)
+            assert labels.shape == (config.input_len, len(config.classes))
+
+        for i in range(len(ds_1)):
+            signals, labels = ds[i]
+            assert signals.shape == (config.n_leads, config.input_len)
+            assert labels.shape == (config.input_len, len(config.classes))
+
+    def test_properties(self):
+        signals_shape = ds.signals.shape  # (n_samples, n_leads, signal_len)
+        labels_shape = ds.labels.shape  # (n_samples, n_leads, signal_len, n_classes)
+        assert signals_shape[:2] == labels_shape[:2] == (len(ds), config.n_leads)
+        assert signals_shape[2] == labels_shape[2] >= config.input_len
+        assert labels_shape[3] == len(config.classes)
+
+        assert ds_1.signals is None
+        assert ds_1.labels is None
