@@ -237,6 +237,12 @@ class TestCPSC2021:
             for v in reader.diagnoses_records_list.values()
         )
 
+    def test_helper(self):
+        assert reader.helper() is None  # printed
+        for item in ["attributes", "methods"]:
+            assert reader.helper(item) is None  # printed
+        assert reader.helper(["attributes", "methods"]) is None  # printed
+
     def test_plot(self):
         reader.plot(0, leads=[1], sampfrom=1000, sampto=5000, ticks_granularity=2)
 

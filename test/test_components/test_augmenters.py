@@ -3,9 +3,11 @@
 
 import numpy as np
 import torch
+import pytest
 
 from torch_ecg.cfg import CFG
 from torch_ecg.augmenters import (
+    Augmenter,
     BaselineWanderAugmenter,
     LabelSmooth,
     Mixup,
@@ -16,6 +18,14 @@ from torch_ecg.augmenters import (
     StretchCompressOffline,
     AugmenterManager,
 )
+
+
+def test_base_augmenter():
+    with pytest.raises(
+        TypeError,
+        match=f"Can't instantiate abstract class {Augmenter.__name__} with abstract methods",
+    ):
+        aug = Augmenter()
 
 
 def test_augmenter_manager():

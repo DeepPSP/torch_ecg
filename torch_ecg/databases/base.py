@@ -156,15 +156,15 @@ class _DataBase(ReprMixin, ABC):
         if db_dir is None:
             db_dir = _DATA_CACHE / db_name
             warnings.warn(
-                f"db_dir is not specified, "
-                f"using default {db_dir} as the storage path",
+                f"`db_dir` is not specified, "
+                f"using default `{db_dir}` as the storage path",
                 RuntimeWarning,
             )
         self.db_dir = Path(db_dir).resolve().absolute()
         if not self.db_dir.exists():
             self.db_dir.mkdir(parents=True, exist_ok=True)
             warnings.warn(
-                f"{self.db_dir} does not exist. It is now created. "
+                f"`{self.db_dir}` does not exist. It is now created. "
                 "Please check if it is set correctly. "
                 "Or if you may want to download the database into this folder, "
                 "please use the `download()` method.",
@@ -768,9 +768,12 @@ class PhysioNetDataBase(_DataBase):
             for a in all_annotations:
                 if k in a.keys() or "(" + k in a.keys():
                     try:
-                        print(f"{k.split('(')[1]} stands for {a[k]}")
-                    except Exception:
-                        print(f"{k} stands for {a['('+k]}")
+                        print(f"`{k.split('(')[1]}` stands for `{a[k]}`")
+                    except IndexError:
+                        try:
+                            print(f"`{k}` stands for `{a[k]}`")
+                        except KeyError:
+                            print(f"`{k}` stands for `{a['('+k]}`")
 
     @property
     def version(self) -> str:
