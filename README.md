@@ -5,7 +5,8 @@
 ![formatting](https://github.com/DeepPSP/torch_ecg/actions/workflows/check-formatting.yml/badge.svg)
 [![codecov](https://codecov.io/gh/DeepPSP/torch_ecg/branch/master/graph/badge.svg?token=9YOPZ8GREA)](https://codecov.io/gh/DeepPSP/torch_ecg)
 ![PyPI](https://img.shields.io/pypi/v/torch-ecg?style=flat-square)
-[![DOI](https://zenodo.org/badge/298482237.svg)](https://zenodo.org/badge/latestdoi/298482237)
+[![DOI](https://img.shields.io/badge/DOI-10.1088%2F1361--6579%2Fac9451-informational?style=flat-square)](https://doi.org/10.1088/1361-6579/ac9451)
+[![zenodo](https://zenodo.org/badge/298482237.svg)](https://zenodo.org/badge/latestdoi/298482237)
 ![downloads](https://img.shields.io/pypi/dm/torch-ecg?style=flat-square)
 ![license](https://img.shields.io/github/license/DeepPSP/torch_ecg?style=flat-square)
 

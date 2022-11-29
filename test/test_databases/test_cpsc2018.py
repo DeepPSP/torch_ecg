@@ -19,8 +19,8 @@ _CWD = Path(__file__).absolute().parents[2] / "sample-data" / "cpsc2018"
 ###############################################################################
 
 
-with pytest.raises(
-    ValueError,
+with pytest.warns(
+    RuntimeWarning,
     match="Annotation file not found\\. Please call method `_download_labels`, and call method `_ls_rec` again",
 ):
     reader = CPSC2018(_CWD)
