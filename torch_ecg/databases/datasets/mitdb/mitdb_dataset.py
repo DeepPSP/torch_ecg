@@ -6,7 +6,7 @@ import os
 import warnings
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union, Any
 
 import numpy as np
 from scipy import signal as SS
@@ -41,7 +41,12 @@ class MITDBDataset(ReprMixin, Dataset):
     __name__ = "MITDBDataset"
 
     def __init__(
-        self, config: CFG, task: str, training: bool = True, lazy: bool = True
+        self,
+        config: CFG,
+        task: str,
+        training: bool = True,
+        lazy: bool = True,
+        **reader_kwargs: Any,
     ) -> None:
         """
         Parameters
@@ -56,12 +61,18 @@ class MITDBDataset(ReprMixin, Dataset):
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,
-            if True, the data will not be loaded immediately,
+            if True, the data will not be loaded immediately
+        reader_kwargs: dict,
+            keyword arguments for the data reader class
 
         """
         super().__init__()
         self.config = deepcopy(config)
-        self.reader = DR(db_dir=self.config.db_dir)
+        if reader_kwargs.pop("db_dir", None) is not None:
+            warnings.warn(
+                "db_dir is specified in both config and reader_kwargs", RuntimeWarning
+            )
+        self.reader = DR(db_dir=self.config.db_dir, **reader_kwargs)
         # assert self.config.db_dir is not None, "db_dir must be specified"
         self.config.db_dir = self.reader.db_dir
         if self.config.torch_dtype == torch.float64:
@@ -146,6 +157,8 @@ class MITDBDataset(ReprMixin, Dataset):
         if self.task in ["beat_classification"]:
             # finished, tested
             self._all_data, self._all_labels = [], []
+            if self.lazy:
+                return
             with tqdm(
                 range(len(self.records)), desc="Loading data", unit="record"
             ) as pbar:
@@ -559,24 +572,33 @@ class MITDBDataset(ReprMixin, Dataset):
             print verbosity
 
         """
+        # TODO: consider whether preprocessing should be added
+        # if verbose >= 1:
+        #     print(" preprocessing data ".center(110, "#"))
+        # self._preprocess_data(
+        #     force_recompute=force_recompute,
+        #     verbose=verbose,
+        # )
+
+        original_task = self.task
+        original_lazy = self.lazy
+        self.__set_task("qrs_detection", lazy=True)
         if verbose >= 1:
-            print(" preprocessing data ".center("#", 110))
-        self._preprocess_data(
-            force_recompute=force_recompute,
-            verbose=verbose,
-        )
-        if verbose >= 1:
-            print("\n" + " slicing data into segments ".center("#", 110))
+            print("\n" + " slicing data into segments ".center(110, "#"))
         self._slice_data(
             force_recompute=force_recompute,
             verbose=verbose,
         )
+
+        self.__set_task("rr_lstm", lazy=True)
         if verbose >= 1:
-            print("\n" + " generating rr sequences ".center("#", 110))
+            print("\n" + " generating rr sequences ".center(110, "#"))
         self._slice_rr_seq(
             force_recompute=force_recompute,
             verbose=verbose,
         )
+
+        self.__set_task(original_task, lazy=original_lazy)
 
     def _get_rec_suffix(self, operations: List[str]) -> str:
         """

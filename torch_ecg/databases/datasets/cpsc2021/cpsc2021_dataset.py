@@ -40,9 +40,10 @@ import json
 import os
 import re
 import time
+import warnings
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union, Any
 
 import numpy as np
 from scipy import signal as SS
@@ -79,7 +80,12 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     __name__ = "CPSC2021Dataset"
 
     def __init__(
-        self, config: CFG, task: str, training: bool = True, lazy: bool = True
+        self,
+        config: CFG,
+        task: str,
+        training: bool = True,
+        lazy: bool = True,
+        **reader_kwargs: Any,
     ) -> None:
         """
         Parameters
@@ -94,12 +100,18 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,
-            if True, the data will not be loaded immediately,
+            if True, the data will not be loaded immediately
+        reader_kwargs: dict,
+            keyword arguments for the data reader class
 
         """
         super().__init__()
         self.config = deepcopy(config)
-        self.reader = CR(db_dir=self.config.db_dir)
+        if reader_kwargs.pop("db_dir", None) is not None:
+            warnings.warn(
+                "db_dir is specified in both config and reader_kwargs", RuntimeWarning
+            )
+        self.reader = CR(db_dir=self.config.db_dir, **reader_kwargs)
         # assert self.config.db_dir is not None, "db_dir must be specified"
         self.config.db_dir = self.reader.db_dir
         if self.config.torch_dtype == torch.float64:
@@ -574,6 +586,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         )
 
         original_task = self.task
+        original_lazy = self.lazy
         self.__set_task("main", lazy=True)
         if verbose >= 1:
             print("\n" + " slicing data into segments ".center(110, "#"))
@@ -590,7 +603,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             verbose=verbose,
         )
 
-        self.__set_task(original_task, lazy=self.lazy)
+        self.__set_task(original_task, lazy=original_lazy)
 
     def _preprocess_data(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """

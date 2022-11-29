@@ -115,12 +115,12 @@ MITDBTrainCfg.rpeaks_dist2border = int(0.5 * MITDBTrainCfg.fs)  # 0.5s
 MITDBTrainCfg.qrs_mask_bias = int(0.075 * MITDBTrainCfg.fs)  # bias to rpeaks
 
 # configs of signal preprocessing
-# MITDBTrainCfg.normalize = CFG(
-#     method="z-score",
-#     per_channel=True,
-#     mean=0.0,
-#     std=1.0,
-# )
+MITDBTrainCfg.normalize = CFG(
+    method="z-score",
+    per_channel=True,
+    mean=0.0,
+    std=1.0,
+)
 # frequency band of the filter to apply, should be chosen very carefully
 # MITDBTrainCfg.bandpass = None
 MITDBTrainCfg.bandpass = CFG(

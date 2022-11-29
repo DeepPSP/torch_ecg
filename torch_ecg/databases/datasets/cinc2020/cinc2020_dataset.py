@@ -4,10 +4,11 @@ data generator for feeding data into pytorch models
 
 import json
 import time
+import warnings
 from copy import deepcopy
 from functools import reduce
 from random import sample, shuffle
-from typing import List, Optional, Sequence, Set, Tuple
+from typing import List, Optional, Sequence, Set, Tuple, Any
 
 import numpy as np
 import torch
@@ -34,7 +35,13 @@ class CINC2020Dataset(ReprMixin, Dataset):
     __DEBUG__ = False
     __name__ = "CINC2020Dataset"
 
-    def __init__(self, config: CFG, training: bool = True, lazy: bool = True) -> None:
+    def __init__(
+        self,
+        config: CFG,
+        training: bool = True,
+        lazy: bool = True,
+        **reader_kwargs: Any,
+    ) -> None:
         """
         Parameters
         ----------
@@ -48,13 +55,19 @@ class CINC2020Dataset(ReprMixin, Dataset):
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default True,
-            if True, the data will not be loaded immediately,
+            if True, the data will not be loaded immediately
+        reader_kwargs: dict,
+            keyword arguments for the data reader class
 
         """
         super().__init__()
         self.config = deepcopy(config)
         # assert self.config.db_dir is not None, "db_dir must be specified"
-        self.reader = CR(db_dir=self.config.db_dir)
+        if reader_kwargs.pop("db_dir", None) is not None:
+            warnings.warn(
+                "db_dir is specified in both config and reader_kwargs", RuntimeWarning
+            )
+        self.reader = CR(db_dir=self.config.db_dir, **reader_kwargs)
         self.config.db_dir = self.reader.db_dir
         self._TRANCHES = (
             self.config.tranche_classes.keys()

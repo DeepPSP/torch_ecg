@@ -4,9 +4,10 @@ data generator for feeding data into pytorch models
 
 import json
 import math
+import warnings
 from copy import deepcopy
 from random import shuffle
-from typing import List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple, Any
 
 import numpy as np
 import torch
@@ -36,6 +37,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         config: CFG,
         training: bool = True,
         lazy: bool = False,
+        **reader_kwargs: Any,
     ) -> None:
         """
         Parameters
@@ -50,12 +52,18 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         training: bool, default True,
             if True, the training set will be loaded, otherwise the test set
         lazy: bool, default False,
-            if True, the data will not be loaded immediately,
+            if True, the data will not be loaded immediately
+        reader_kwargs: dict,
+            keyword arguments for the data reader class
 
         """
         super().__init__()
         self.config = deepcopy(config)
-        self.reader = CR(db_dir=config.db_dir)
+        if reader_kwargs.pop("db_dir", None) is not None:
+            warnings.warn(
+                "db_dir is specified in both config and reader_kwargs", RuntimeWarning
+            )
+        self.reader = CR(db_dir=config.db_dir, **reader_kwargs)
         self.config.db_dir = self.reader.db_dir
         self.training = training
         self.n_classes = 1
