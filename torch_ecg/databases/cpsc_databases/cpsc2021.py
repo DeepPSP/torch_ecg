@@ -1174,8 +1174,8 @@ class RefInfo:
 
     def _gen_endpoint_score_range(self, verbose=0):
         """ """
-        onset_range = np.zeros((self.len_sig,), dtype=np.float)
-        offset_range = np.zeros((self.len_sig,), dtype=np.float)
+        onset_range = np.zeros((self.len_sig,), dtype=float)
+        offset_range = np.zeros((self.len_sig,), dtype=float)
         for i, af_start in enumerate(self.af_starts):
             if self.class_true == 2:
                 if max(af_start - 1, 0) == 0:

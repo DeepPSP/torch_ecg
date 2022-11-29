@@ -45,6 +45,7 @@ from torch_ecg.utils.misc import (
     ReprMixin,
     list_sum,
     add_docstring,
+    get_kwargs,
 )
 from torch_ecg.utils.utils_metrics import _cls_to_bin
 from torch_ecg.model_configs import (
@@ -1055,8 +1056,8 @@ class CINC2022Reader(PCGDataBase):
                             v = self.stats_fillna_val
                         new_row[k] = v
                     new_row["Recording locations:"] = "+".join(locations)
-                    self._df_stats = self._df_stats.append(
-                        new_row,
+                    self._df_stats = pd.concat(
+                        [self._df_stats, pd.DataFrame(new_row, index=[0])],
                         ignore_index=True,
                     )
             self._df_stats.to_csv(stats_file, index=False)
@@ -2403,7 +2404,11 @@ class AugmenterManager(TA.SomeOf):
         p_mode="per_batch",
     ) -> None:
         """ """
-        super().__init__((1, None), transforms, p=p, p_mode=p_mode)
+        kwargs = dict(p=p, p_mode=p_mode)
+        if "output_type" in get_kwargs(TA.SomeOf.__init__):
+            # newer versions of `torch_audiomentations`
+            kwargs["output_type"] = "tensor"
+        super().__init__((1, None), transforms, **kwargs)
 
     @classmethod
     def from_config(cls, config: dict) -> "AugmenterManager":

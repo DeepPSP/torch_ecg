@@ -266,7 +266,7 @@ def metrics_from_confusion_matrix(
     num_samples, num_classes = np.shape(labels)
 
     # probability outputs to binary outputs
-    bin_outputs = np.zeros_like(outputs, dtype=np.int)
+    bin_outputs = np.zeros_like(outputs, dtype=int)
     bin_outputs[outputs >= thr] = 1
     bin_outputs[outputs < thr] = 0
     if np.unique(outputs).size == 2:

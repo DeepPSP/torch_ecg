@@ -347,7 +347,11 @@ class CSVLogger(BaseLogger):
                 for k, v in metrics.items()
             }
         )
-        self.logger = self.logger.append(row, ignore_index=True)
+        # self.logger = self.logger.append(row, ignore_index=True)
+        self.logger = pd.concat(
+            [self.logger, pd.DataFrame(row, index=[0])], ignore_index=True
+        )
+
         self._flushed = False
 
     def log_message(self, msg: str, level: int = logging.INFO) -> None:

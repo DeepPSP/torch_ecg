@@ -1851,7 +1851,7 @@ def compute_challenge_metric(
     correct_score = np.nansum(weights * A)
 
     # Compute the score for the model that always chooses the normal class.
-    inactive_outputs = np.zeros((num_recordings, num_classes), dtype=np.bool)
+    inactive_outputs = np.zeros((num_recordings, num_classes), dtype=bool)
     inactive_outputs[:, normal_index] = 1
     A = compute_modified_confusion_matrix(labels, inactive_outputs)
     inactive_score = np.nansum(weights * A)

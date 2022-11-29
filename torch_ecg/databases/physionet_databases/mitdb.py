@@ -183,13 +183,21 @@ class MITDB(PhysioNetDataBase):
                     k: sum([itv[1] - itv[0] for itv in v])
                     for k, v in rec_ann["rhythm"].items()
                 }
-                self._stats = self._stats.append(
-                    dict(
-                        record=self[idx],
-                        beat_num=beat_num,
-                        beat_type_num=beat_type_num,
-                        rhythm_len=rhythm_len,
-                    ),
+                self._stats = pd.concat(
+                    [
+                        self._stats,
+                        pd.DataFrame(
+                            [
+                                [
+                                    self._all_records[idx],
+                                    beat_num,
+                                    beat_type_num,
+                                    rhythm_len,
+                                ]
+                            ],
+                            columns=self._stats_columns,
+                        ),
+                    ],
                     ignore_index=True,
                 )
 

@@ -133,7 +133,7 @@ class ClassificationMetrics(Metrics):
         labels, outputs = cls_to_bin(labels, outputs, num_classes)
         num_samples, num_classes = np.shape(labels)
         # probability outputs to binary outputs
-        bin_outputs = np.zeros_like(outputs, dtype=np.int)
+        bin_outputs = np.zeros_like(outputs, dtype=int)
         bin_outputs[outputs >= thr] = 1
         bin_outputs[outputs < thr] = 0
         self._cm = confusion_matrix(labels, bin_outputs, num_classes)
