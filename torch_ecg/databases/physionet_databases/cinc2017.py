@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import wfdb  # noqa: F401
 
+from ...cfg import DEFAULTS
 from ...utils.misc import get_record_list_recursive3, add_docstring
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo
 
@@ -123,6 +124,14 @@ class CINC2017(PhysioNetDataBase):
         self._all_records = get_record_list_recursive3(
             db_dir=str(self.db_dir), rec_patterns=f"A[\\d]{{5}}\\.{self.rec_ext}"
         )
+        if self._subsample is not None:
+            size = min(
+                len(self._all_records),
+                max(1, int(round(self._subsample * len(self._all_records)))),
+            )
+            self._all_records = sorted(
+                DEFAULTS.RNG.choice(self._all_records, size=size, replace=False)
+            )
         parent_dir = set([str(Path(item).parent) for item in self.all_records])
         if len(parent_dir) > 1:
             raise ValueError("all records should be in the same directory")

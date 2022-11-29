@@ -11,7 +11,7 @@ import pandas as pd
 import wfdb
 from tqdm.auto import tqdm
 
-from ...cfg import CFG
+from ...cfg import CFG, DEFAULTS
 from ...utils.misc import get_record_list_recursive3, add_docstring
 from ...utils.utils_interval import generalized_intervals_intersection
 from ..base import (
@@ -150,6 +150,14 @@ class MITDB(PhysioNetDataBase):
             self._all_records = get_record_list_recursive3(
                 self.db_dir, f"^[\\d]{{3}}\\.{self.data_ext}$"
             )
+            if self._subsample is not None:
+                size = min(
+                    len(self._all_records),
+                    max(1, int(round(self._subsample * len(self._all_records)))),
+                )
+                self._all_records = sorted(
+                    DEFAULTS.RNG.choice(self._all_records, size=size, replace=False)
+                )
             self._df_records["record"] = self._all_records
             self._df_records["path"] = self._df_records["record"].apply(
                 lambda x: self.get_absolute_path(x)

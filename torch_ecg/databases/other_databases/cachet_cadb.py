@@ -174,6 +174,8 @@ class CACHET_CADB(_DataBase):
     def _ls_rec(self) -> None:
         """
         find all records in `self.db_dir`
+
+        TODO: impelement subsampling for the long format data
         """
         # short format file
         self._short_format_file = list(self.db_dir.rglob("*.hdf5"))

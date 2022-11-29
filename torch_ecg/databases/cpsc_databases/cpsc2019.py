@@ -153,7 +153,11 @@ class CPSC2019(CPSCDataBase):
         common = set([rec.split("_")[1] for rec in self._all_records]) & set(
             [ann.split("_")[1] for ann in self._all_annotations]
         )
-        common = sorted(list(common))
+        if self._subsample is not None:
+            # random subsample with ratio `self._subsample`
+            size = min(len(common), max(1, int(round(self._subsample * len(common)))))
+            common = DEFAULTS.RNG.choice(list(common), size, replace=False)
+        common = sorted(common)
         self._all_records = [f"data_{item}" for item in common]
         self._all_annotations = [f"R_{item}" for item in common]
         self._df_records = self._df_records.loc[self._all_records]

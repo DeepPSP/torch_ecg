@@ -230,6 +230,13 @@ class CPSC2020(CPSCDataBase):
         """ """
         self._all_records = [f"A{i:02d}" for i in range(1, 1 + self.n_records)]
         self._all_annotations = [f"R{i:02d}" for i in range(1, 1 + self.n_records)]
+        if self._subsample is not None:
+            size = max(1, int(round(self.n_records * self._subsample)))
+            indices = sorted(
+                DEFAULTS.RNG.choice(self.n_records, size=size, replace=False)
+            )
+            self._all_records = [self._all_records[i] for i in indices]
+            self._all_annotations = [self._all_annotations[i] for i in indices]
         self._df_records = pd.DataFrame()
         self._df_records["record"] = self._all_records
         self._df_records["path"] = self._df_records["record"].apply(

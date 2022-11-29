@@ -182,6 +182,9 @@ class _DataBase(ReprMixin, ABC):
         self._df_records = pd.DataFrame()
         self._all_records = None
 
+        self._subsample = kwargs.get("subsample", None)
+        assert self._subsample is None or 0 < self._subsample <= 1
+
     @abstractmethod
     def _ls_rec(self) -> None:
         """ """
@@ -475,6 +478,14 @@ class PhysioNetDataBase(_DataBase):
         try:
             self._df_records = pd.DataFrame()
             self._df_records["record"] = wfdb.get_record_list(db_name or self.db_name)
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["path"] = self._df_records["record"].apply(
                 lambda x: (self.db_dir / x).resolve()
             )
@@ -498,6 +509,14 @@ class PhysioNetDataBase(_DataBase):
                 for item in record_list_fp.read_text().splitlines()
                 if len(item) > 0
             ]
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["path"] = self._df_records["record"].apply(
                 lambda x: (self.db_dir / x).resolve()
             )
@@ -512,6 +531,14 @@ class PhysioNetDataBase(_DataBase):
             self._df_records["path"] = get_record_list_recursive(
                 self.db_dir, self.data_ext, relative=False
             )
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
             print(f"Done in {time.time() - start:.3f} seconds!")
             self._df_records["record"] = self._df_records["path"].apply(

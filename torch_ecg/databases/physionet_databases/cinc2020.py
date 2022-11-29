@@ -290,6 +290,8 @@ class CINC2020(PhysioNetDataBase):
         """
         list all the records and load into `self._all_records`,
         facilitating further uses
+
+        TODO: implement subsampling of records
         """
         filename = "record_list.json"
         record_list_fp = self.db_dir_base / filename

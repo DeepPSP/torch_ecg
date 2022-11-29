@@ -671,6 +671,14 @@ class SHHS(NSRRDataBase):
     def _ls_rec(self) -> None:
         """ """
         self._all_records = sorted(self.psg_data_path.rglob("*.edf"))
+        if self._subsample is not None:
+            size = min(
+                len(self._all_records),
+                max(1, int(round(self._subsample * len(self._all_records)))),
+            )
+            self._all_records = sorted(
+                DEFAULTS.RNG.choice(self._all_records, size=size, replace=False)
+            )
 
     def update_sleep_stage_names(self) -> None:
         """ """

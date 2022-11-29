@@ -189,6 +189,8 @@ class CPSC2021(PhysioNetDataBase):
         """
         list all the records and load into `self._all_records`,
         facilitating further uses
+
+        TODO: implement subsampling of records
         """
         self._all_records = CFG({t: [] for t in self.db_tranches})
         self._all_subjects = CFG({t: [] for t in self.db_tranches})
@@ -247,6 +249,8 @@ class CPSC2021(PhysioNetDataBase):
         """
         list all the records assuming the records
         are split into two folders (training_I and training_II)
+
+        TODO: implement subsampling of records
         """
         fn = "RECORDS"
         rev_fn = "REVISED_RECORDS"

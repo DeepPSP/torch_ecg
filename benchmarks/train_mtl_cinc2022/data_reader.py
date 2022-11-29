@@ -34,6 +34,7 @@ except Exception:
 import IPython
 from tqdm.auto import tqdm
 
+from torch_ecg.cfg import DEFAULTS
 from torch_ecg.databases.base import PhysioNetDataBase, DataBaseInfo
 from torch_ecg.utils.utils_signal import butter_bandpass_filter
 from torch_ecg.utils.misc import (
@@ -416,6 +417,14 @@ class CINC2022Reader(PCGDataBase):
         records_file = self.db_dir / "RECORDS"
         if records_file.exists():
             self._df_records["record"] = records_file.read_text().splitlines()
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["path"] = self._df_records["record"].apply(
                 lambda x: self.db_dir / x
             )
@@ -429,6 +438,14 @@ class CINC2022Reader(PCGDataBase):
             self._df_records["path"] = get_record_list_recursive3(
                 self.db_dir, f"{self._rec_pattern}\\.{self.data_ext}", relative=False
             )
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
 
         data_dir = self._df_records["path"].apply(lambda x: x.parent).unique()
@@ -456,7 +473,7 @@ class CINC2022Reader(PCGDataBase):
             self._subject_records[self.get_subject(rec)].append(rec)
         self._subject_records = dict(self._subject_records)
 
-        if write_file:
+        if write_file and self._subsample is None:
             records_file.write_text(
                 "\n".join(
                     self._df_records["path"]
@@ -1295,6 +1312,14 @@ class CINC2016Reader(PCGDataBase):
         self._df_records = pd.DataFrame()
         if records_file.exists():
             self._df_records["record"] = records_file.read_text().splitlines()
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["path"] = self._df_records["record"].apply(
                 lambda x: self.db_dir / x
             )
@@ -1305,6 +1330,14 @@ class CINC2016Reader(PCGDataBase):
             self._df_records["path"] = get_record_list_recursive(
                 self.db_dir, self.header_ext, relative=False
             )
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
         self._df_records["subset"] = self._df_records["path"].apply(
             lambda x: x.parent.name
@@ -1315,7 +1348,7 @@ class CINC2016Reader(PCGDataBase):
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()
-        if write_file:
+        if write_file and self._subsample is None:
             records_file.write_text(
                 "\n".join(
                     self._df_records["path"]
@@ -1545,6 +1578,14 @@ class EPHNOGRAMReader(PCGDataBase):
         self._df_records = pd.DataFrame()
         try:
             self._df_records["record"] = wfdb.get_record_list(self.db_name)
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["record"] = self._df_records["record"].apply(
                 lambda x: x.replace("WFDB", "MAT")
             )
@@ -1574,6 +1615,14 @@ class EPHNOGRAMReader(PCGDataBase):
         write_file = False
         if records_file.exists():
             self._df_records["record"] = records_file.read_text().splitlines()
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["record"] = self._df_records["record"].apply(
                 lambda x: x.replace("WFDB", "MAT")
             )
@@ -1590,6 +1639,14 @@ class EPHNOGRAMReader(PCGDataBase):
             self._df_records["path"] = get_record_list_recursive(
                 self.db_dir, self.data_ext, relative=False
             )
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
         self._df_records["aux_path"] = self._df_records["path"].apply(
@@ -1597,7 +1654,7 @@ class EPHNOGRAMReader(PCGDataBase):
         )
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()
-        if write_file:
+        if write_file and self._subsample is None:
             records_file.write_text(
                 "\n".join(
                     self._df_records["path"]
@@ -1606,7 +1663,8 @@ class EPHNOGRAMReader(PCGDataBase):
                 )
             )
 
-        records_file.write_text("\n".join(self._all_records))
+        if self._subsample is None:
+            records_file.write_text("\n".join(self._all_records))
 
     def _aggregate_stats(self) -> None:
         """ """

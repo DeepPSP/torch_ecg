@@ -112,6 +112,14 @@ class SPH(_DataBase):
                 for item in record_list_fp.read_text().splitlines()
                 if len(item) > 0
             ]
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["path"] = self._df_records["record"].apply(
                 lambda x: (self.db_dir / x).resolve()
             )
@@ -130,6 +138,14 @@ class SPH(_DataBase):
             self._df_records["path"] = get_record_list_recursive3(
                 self.db_dir, record_pattern, relative=False
             )
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
             print(f"Done in {time.time() - start:.3f} seconds!")
             self._df_records["record"] = self._df_records["path"].apply(
@@ -137,7 +153,7 @@ class SPH(_DataBase):
             )
         self._df_records.set_index("record", inplace=True)
         self._all_records = self._df_records.index.values.tolist()
-        if write_file:
+        if write_file and self._subsample is None:
             record_list_fp.write_text(
                 "\n".join(
                     self._df_records["path"]

@@ -174,6 +174,14 @@ class CPSC2018(CPSCDataBase):
         self._df_records["path"] = get_record_list_recursive(
             self.db_dir, self.rec_ext, relative=False
         )
+        if self._subsample is not None:
+            size = min(
+                len(self._df_records),
+                max(1, int(round(self._subsample * len(self._df_records)))),
+            )
+            self._df_records = self._df_records.sample(
+                n=size, random_state=DEFAULTS.SEED, replace=False
+            )
         self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
         self._df_records["record"] = self._df_records["path"].apply(lambda x: x.name)
         self._df_records.set_index("record", inplace=True)
