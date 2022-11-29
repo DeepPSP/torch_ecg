@@ -26,6 +26,7 @@ from torch_ecg.databases.datasets.cinc2021.cinc2021_cfg import (
     two_leads,
 )
 from torch_ecg.utils import dicts_equal
+from torch_ecg.cfg import DEFAULTS
 
 
 ###############################################################################
@@ -167,9 +168,9 @@ class TestCINC2021:
     def test_compute_metrics(self):
         classes = dx_mapping_scored.Abbreviation.tolist()
         n_records, n_classes = 32, len(classes)
-        truth = np.random.randint(0, 2, size=(n_records, n_classes))
-        probs = np.random.rand(n_records, n_classes)
-        thresholds = np.random.rand(n_classes)
+        truth = DEFAULTS.RNG_randint(0, 1, size=(n_records, n_classes))
+        probs = DEFAULTS.RNG.uniform(n_records, n_classes)
+        thresholds = DEFAULTS.RNG.uniform(n_classes)
         binary_pred = (probs > thresholds).astype(int)
 
         metrics = compute_metrics(

@@ -7,6 +7,7 @@ import numpy as np
 import wfdb
 import pytest
 
+from torch_ecg.cfg import DEFAULTS
 from torch_ecg.utils.utils_signal import (
     smooth,
     resample_irregular_timeseries,
@@ -26,7 +27,7 @@ sample_rec = wfdb.rdrecord(str(sample_path).replace(".mat", ""))
 
 def test_smooth():
     t = np.linspace(-2, 2, 50)
-    x = np.sin(t) + np.random.randn(len(t)) * 0.1
+    x = np.sin(t) + DEFAULTS.RNG.normal(size=(len(t),)) * 0.1
     x = x.astype("float32")
     y = smooth(x, window_len=7, keep_dtype=False)
     assert y.shape == x.shape
@@ -50,8 +51,8 @@ def test_smooth():
 
 def test_resample_irregular_timeseries():
     fs = 100
-    t_irr = np.sort(np.random.rand(fs)) * 1000
-    vals = np.random.randn(fs)
+    t_irr = np.sort(DEFAULTS.RNG.uniform(size=(fs,))) * 1000
+    vals = DEFAULTS.RNG.normal(size=(fs,))
     sig = np.stack([t_irr, vals], axis=1)
     sig_reg = resample_irregular_timeseries(sig, output_fs=fs * 2, verbose=2)
     assert sig_reg.ndim == 1
@@ -60,13 +61,13 @@ def test_resample_irregular_timeseries():
     )
     assert sig_reg.ndim == 2
     assert np.allclose(np.diff(sig_reg[:, 0], n=2), 0)
-    t_irr_2 = np.sort(np.random.rand(2 * fs)) * 1000
+    t_irr_2 = np.sort(DEFAULTS.RNG.uniform(size=(2 * fs,))) * 1000
     sig_reg = resample_irregular_timeseries(sig, tnew=t_irr_2, return_with_time=True)
     assert sig_reg.shape == (2 * fs, 2)
 
-    assert resample_irregular_timeseries(np.random.randn(0, 2), output_fs=fs).shape == (
-        0,
-    )
+    assert resample_irregular_timeseries(
+        DEFAULTS.RNG.normal(size=(0, 2)), output_fs=fs
+    ).shape == (0,)
 
     with pytest.raises(AssertionError, match="`sig` should be a 2D array"):
         resample_irregular_timeseries(sig[:, 1], output_fs=fs * 2)
@@ -82,12 +83,15 @@ def test_resample_irregular_timeseries():
 
 
 def test_detect_peaks():
-    x = np.random.randn(100)
+    x = DEFAULTS.RNG.normal(size=(100,))
     x[60:81] = np.nan
     ind = detect_peaks(x, verbose=2)
     assert ind.ndim == 1 and len(ind) > 0
 
-    x = np.sin(2 * np.pi * 5 * np.linspace(0, 1, 200)) + np.random.randn(200) / 5
+    x = (
+        np.sin(2 * np.pi * 5 * np.linspace(0, 1, 200))
+        + DEFAULTS.RNG.normal(size=(200,)) / 5
+    )
     # set minimum peak height = 0 and minimum peak distance = 20
     ind = detect_peaks(x, mph=0, mpd=20)
     assert ind.ndim == 1 and len(ind) > 0
@@ -97,7 +101,10 @@ def test_detect_peaks():
     ind = detect_peaks(x, mpd=2)
     assert ind.ndim == 1 and len(ind) > 0
 
-    x = np.sin(2 * np.pi * 5 * np.linspace(0, 1, 200)) + np.random.randn(200) / 5
+    x = (
+        np.sin(2 * np.pi * 5 * np.linspace(0, 1, 200))
+        + DEFAULTS.RNG.normal(size=(200,)) / 5
+    )
     # detection of valleys instead of peaks
     ind = detect_peaks(x, mph=-1.2, mpd=20, valley=True)
     assert ind.ndim == 1 and len(ind) > 0
@@ -114,20 +121,21 @@ def test_detect_peaks():
 
 
 def test_remove_spikes_naive():
-    sig = np.random.randn(1000)
-    pos = np.random.randint(0, 1000, 10)
+    siglen = 1000
+    sig = DEFAULTS.RNG.normal(size=(siglen,))
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
     sig[pos] = 100
-    pos = np.random.randint(0, 1000, 10)
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
     sig[pos] = -100
-    pos = np.random.randint(0, 1000, 10)
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
     sig[pos] = np.nan
-    pos = np.random.randint(0, 1000, 10)
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
     sig[pos] = np.inf
-    pos = np.random.randint(0, 1000, 10)
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
     sig[pos] = -np.inf
-    pos = np.random.randint(0, 1000, 10)
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
     sig[pos] = 15
-    pos = np.random.randint(0, 1000, 10)
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
     sig[pos] = -15
     new_sig = remove_spikes_naive(sig, threshold=50, inplace=False)
     assert (new_sig <= 50).all() and (new_sig >= -50).all()
@@ -135,12 +143,12 @@ def test_remove_spikes_naive():
     new_sig = remove_spikes_naive(sig, threshold=12, inplace=False)
     assert (new_sig <= 12).all() and (new_sig >= -12).all()
 
-    pos = np.random.randint(0, 1000, 1)
+    pos = DEFAULTS.RNG_randint(0, siglen - 1, 1)
     sig[pos] = np.nan
     sig = remove_spikes_naive(sig, inplace=True)
     assert not np.isnan(sig).any()
 
-    sig = np.random.rand(1000)
+    sig = DEFAULTS.RNG.uniform(size=(siglen,))
     new_sig = remove_spikes_naive(sig)
     assert (sig == new_sig).all()
 
@@ -213,8 +221,8 @@ def test_normalize():
     nm_data = normalize(
         data,
         method="z-score",
-        mean=np.random.rand(data.shape[0]),
-        std=np.random.rand(data.shape[0]),
+        mean=DEFAULTS.RNG.uniform(size=(data.shape[0],)),
+        std=DEFAULTS.RNG.uniform(size=(data.shape[0],)),
         per_channel=True,
     )
     assert nm_data.shape == data.shape
@@ -229,19 +237,23 @@ def test_normalize():
         normalize(
             data,
             method="z-score",
-            std=np.random.rand(data.shape[0]) - 1,
+            std=DEFAULTS.RNG.uniform(size=(data.shape[0],)) - 1,
             per_channel=True,
         )
     with pytest.raises(
         AssertionError,
         match="mean and std should be real numbers in the non per-channel setting",
     ):
-        normalize(data, method="z-score", mean=np.random.rand(data.shape[0]))
+        normalize(
+            data, method="z-score", mean=DEFAULTS.RNG.uniform(size=(data.shape[0],))
+        )
     with pytest.raises(
         AssertionError,
         match="mean and std should be real numbers in the non per-channel setting",
     ):
-        normalize(data, method="z-score", std=np.random.rand(data.shape[0]))
+        normalize(
+            data, method="z-score", std=DEFAULTS.RNG.uniform(size=(data.shape[0],))
+        )
     with pytest.raises(
         AssertionError, match="format `channel_first_last` of the signal not supported!"
     ):
@@ -252,7 +264,7 @@ def test_normalize():
         normalize(
             data,
             method="z-score",
-            mean=np.random.rand(data.shape[0] + 1),
+            mean=DEFAULTS.RNG.uniform(size=(data.shape[0] + 1,)),
             per_channel=True,
         )
     with pytest.raises(
@@ -261,6 +273,6 @@ def test_normalize():
         normalize(
             data,
             method="z-score",
-            std=np.random.rand(data.shape[0] + 1),
+            std=DEFAULTS.RNG.uniform(size=(data.shape[0] + 1,)),
             per_channel=True,
         )

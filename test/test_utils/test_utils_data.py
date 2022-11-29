@@ -10,6 +10,7 @@ import wfdb
 import torch
 import pytest
 
+from torch_ecg.cfg import DEFAULTS
 from torch_ecg.utils.utils_data import (
     get_mask,
     class_weight_to_sample_weight,
@@ -135,9 +136,11 @@ def test_rdheader():
 
 
 def test_ensure_lead_fmt():
-    values = np.random.randn(5000, 12)
+    num_leads = 12
+    siglen = 5000
+    values = DEFAULTS.RNG.normal(size=(siglen, num_leads))
     new_values = ensure_lead_fmt(values, fmt="lead_first")
-    assert new_values.shape == (12, 5000)
+    assert new_values.shape == (num_leads, siglen)
     assert np.allclose(new_values, values.T)
     assert np.allclose(ensure_lead_fmt(new_values, fmt="lead_last"), values)
     with pytest.raises(ValueError, match="not valid 2-lead signal"):
@@ -147,20 +150,25 @@ def test_ensure_lead_fmt():
 
 
 def test_ensure_siglen():
-    values = np.random.randn(12, 4629)
+    num_leads = 12
+    values = DEFAULTS.RNG.normal(size=(num_leads, 4629))
     new_values = ensure_siglen(values, 5000, fmt="lead_first")
-    assert new_values.shape == (12, 5000)
+    assert new_values.shape == (num_leads, 5000)
     assert np.allclose(
         new_values[:, (5000 - 4629) // 2 : (5000 - 4629) // 2 + 4629], values
     )
     new_values = ensure_siglen(values, 4000, tolerance=0.1, fmt="lead_first")
-    assert new_values.shape == (math.ceil((4629 - 4000) / (0.1 * 4000)), 12, 4000)
+    assert new_values.shape == (
+        math.ceil((4629 - 4000) / (0.1 * 4000)),
+        num_leads,
+        4000,
+    )
     new_values = ensure_siglen(values, 4000, tolerance=0.2, fmt="lead_first")
-    assert new_values.shape == (1, 12, 4000)
+    assert new_values.shape == (1, num_leads, 4000)
 
-    values = np.random.randn(4629, 12)
+    values = DEFAULTS.RNG.normal(size=(4629, num_leads))
     new_values = ensure_siglen(values, 3000, fmt="channel_last")
-    assert new_values.shape == (3000, 12)
+    assert new_values.shape == (3000, num_leads)
     assert np.allclose(
         new_values, values[(4629 - 3000) // 2 : (4629 - 3000) // 2 + 3000]
     )
@@ -247,23 +255,25 @@ def test_stratified_train_test_split():
 
 
 def test_cls_to_bin():
-    cls_array = torch.randint(0, 26, size=(1000,))
+    num_classes = 26
+    siglen = 1000
+    cls_array = torch.randint(0, num_classes, size=(siglen,))
     bin_array = cls_to_bin(cls_array)
-    assert bin_array.shape == (1000, 26)
+    assert bin_array.shape == (siglen, num_classes)
     assert set(np.unique(bin_array)).issubset({0, 1})
 
-    cls_array = np.random.randint(0, 26, size=(1000,))
+    cls_array = DEFAULTS.RNG_randint(0, num_classes - 1, size=(siglen,))
     bin_array = cls_to_bin(cls_array)
-    assert bin_array.shape == (1000, 26)
+    assert bin_array.shape == (siglen, num_classes)
     assert set(np.unique(bin_array)).issubset({0, 1})
     with pytest.raises(
         AssertionError,
         match="num_classes must be greater than 0 and equal to the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified",
     ):
-        cls_to_bin(cls_array, num_classes=25)
+        cls_to_bin(cls_array, num_classes=num_classes - 1)
 
-    cls_array = np.random.randint(0, 2, size=(1000, 26))
-    bin_array = cls_to_bin(cls_array, num_classes=26)
+    cls_array = DEFAULTS.RNG_randint(0, 1, size=(siglen, num_classes))
+    bin_array = cls_to_bin(cls_array, num_classes=num_classes)
     assert (bin_array == cls_array).all()
     with pytest.raises(
         AssertionError, match="`cls_array` should be 1D if num_classes is not specified"

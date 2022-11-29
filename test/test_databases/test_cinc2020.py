@@ -11,6 +11,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from torch_ecg.cfg import DEFAULTS
 from torch_ecg.databases import CINC2020
 from torch_ecg.databases.physionet_databases.cinc2020 import compute_all_metrics
 from torch_ecg.databases.aux_data.cinc2020_aux_data import dx_mapping_scored
@@ -151,9 +152,9 @@ class TestCINC2020:
     def test_compute_all_metrics(self):
         classes = dx_mapping_scored.Abbreviation.tolist()
         n_records, n_classes = 32, len(classes)
-        truth = np.random.randint(0, 2, size=(n_records, n_classes))
-        probs = np.random.rand(n_records, n_classes)
-        thresholds = np.random.rand(n_classes)
+        truth = DEFAULTS.RNG_randint(0, 1, size=(n_records, n_classes))
+        probs = DEFAULTS.RNG.uniform(n_records, n_classes)
+        thresholds = DEFAULTS.RNG.uniform(n_classes)
         binary_pred = (probs > thresholds).astype(int)
         metrics = compute_all_metrics(
             classes=classes,

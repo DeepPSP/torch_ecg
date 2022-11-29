@@ -20,7 +20,7 @@ from torch_ecg.utils.utils_nn import (
     CkptMixin,
 )
 from torch_ecg.models._nets import Conv_Bn_Activation
-from torch_ecg.cfg import CFG
+from torch_ecg.cfg import CFG, DEFAULTS
 
 
 class Model1D(torch.nn.Sequential, SizeMixin, CkptMixin):
@@ -326,7 +326,11 @@ def test_default_collate_fn():
     shape_3 = (2000, 4)
 
     batch_data = [
-        (np.random.rand(*shape_1), np.random.rand(*shape_2), np.random.rand(*shape_3))
+        (
+            DEFAULTS.RNG.uniform(size=shape_1),
+            DEFAULTS.RNG.uniform(size=shape_2),
+            DEFAULTS.RNG.uniform(size=shape_3),
+        )
         for _ in range(batch_size)
     ]
     tensor_1, tensor_2, tensor_3 = default_collate_fn(batch_data)
@@ -336,9 +340,9 @@ def test_default_collate_fn():
 
     batch_data = [
         dict(
-            tensor_1=np.random.rand(*shape_1),
-            tensor_2=np.random.rand(*shape_2),
-            tensor_3=np.random.rand(*shape_3),
+            tensor_1=DEFAULTS.RNG.uniform(size=shape_1),
+            tensor_2=DEFAULTS.RNG.uniform(size=shape_2),
+            tensor_3=DEFAULTS.RNG.uniform(size=shape_3),
         )
         for _ in range(batch_size)
     ]

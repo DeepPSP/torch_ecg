@@ -55,12 +55,14 @@ def top_n_accuracy(
 
     Examples
     --------
+    ```python
     >>> from torch_ecg.cfg import DEFAULTS
     >>> labels, outputs = DEFAULTS.RNG_randint(0, 10, (100)), DEFAULTS.RNG.uniform(0, 1, (100, 10))  # 100 samples, 10 classes
     >>> top_n_accuracy(labels, outputs, 3)
     0.32
     >>> top_n_accuracy(labels, outputs, [1,3,5])
     {'top_1_acc': 0.12, 'top_3_acc': 0.32, 'top_5_acc': 0.52}
+    ```
 
     """
     assert (

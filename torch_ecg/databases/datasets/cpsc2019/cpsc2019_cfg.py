@@ -44,11 +44,11 @@ CPSC2019TrainCfg.input_len = int(CPSC2019TrainCfg.fs * 10)  # 10 s
 # configs of signal preprocessing
 CPSC2019TrainCfg.normalize = False
 # frequency band of the filter to apply, should be chosen very carefully
-CPSC2019TrainCfg.bandpass = False
-# CPSC2019TrainCfg.bandpass = CFG(
-#     lowcut=0.5,
-#     highcut=60,
-# )
+# CPSC2019TrainCfg.bandpass = False
+CPSC2019TrainCfg.bandpass = CFG(
+    lowcut=0.5,
+    highcut=45,
+)
 
 # configs of data aumentation
 # NOTE: compared to data augmentation of CPSC2020,
@@ -57,24 +57,6 @@ CPSC2019TrainCfg.label_smooth = False
 CPSC2019TrainCfg.random_masking = False
 CPSC2019TrainCfg.stretch_compress = False  # stretch or compress in time axis
 CPSC2019TrainCfg.mixup = False
-# CPSC2019TrainCfg.baseline_wander = CFG(  # too slow!
-#     prob = 0.5,
-#     bw_fs = np.array([0.33, 0.1, 0.05, 0.01]),
-#     ampl_ratio = np.array([
-#         [0.01, 0.01, 0.02, 0.03],  # low
-#         [0.01, 0.02, 0.04, 0.05],  # low
-#         [0.1, 0.06, 0.04, 0.02],  # low
-#         [0.02, 0.04, 0.07, 0.1],  # low
-#         [0.05, 0.1, 0.16, 0.25],  # medium
-#         [0.1, 0.15, 0.25, 0.3],  # high
-#         [0.25, 0.25, 0.3, 0.35],  # extremely high
-#     ]),
-#     gaussian = np.array([  # default gaussian, mean and std, in terms of ratio
-#         [0.0, 0.001],
-#         [0.0, 0.003],
-#         [0.0, 0.01],
-#     ]),
-# )
 CPSC2019TrainCfg.random_flip = CFG(
     prob=0.5,
 )

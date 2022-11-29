@@ -2413,7 +2413,11 @@ class AugmenterManager(TA.SomeOf):
     @classmethod
     def from_config(cls, config: dict) -> "AugmenterManager":
         """ """
-        transforms = [TA.from_dict(item) for item in config["augmentations"]]
+        aug_config = deepcopy(config["augmentations"])
+        if "output_type" in get_kwargs(TA.SomeOf.__init__):
+            for item in aug_config:
+                item["output_type"] = "tensor"
+        transforms = [TA.from_dict(item) for item in aug_config]
         return cls(transforms, **config["augmentations_kw"])
 
     def __len__(self) -> int:

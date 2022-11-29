@@ -38,7 +38,7 @@ from torch_ecg.utils.misc import (  # noqa: F401
     get_kwargs,
     add_kwargs,
 )  # noqa: F401
-from torch_ecg.cfg import _DATA_CACHE
+from torch_ecg.cfg import DEFAULTS, _DATA_CACHE
 
 
 _SAMPLE_DATA_DIR = Path(__file__).parents[2].resolve() / "sample-data"
@@ -173,7 +173,7 @@ def test_plot_single_lead():
     n_samples = 5000
     plot_single_lead(
         t=np.arange(n_samples) / fs,
-        sig=500 * np.random.randn(n_samples),
+        sig=500 * DEFAULTS.RNG.normal(size=(n_samples,)),
         ticks_granularity=2,
     )
 
@@ -290,7 +290,7 @@ def test_CitationMixin():
 
 def test_MovingAverage():
     ma = MovingAverage(verbose=2)
-    data = np.random.randn(100)
+    data = DEFAULTS.RNG.normal(size=(100,))
     new_data = ma(data, method="sma", window=7, center=True)
     assert new_data.shape == data.shape
     new_data = ma(data, method="ema", weight=0.7)
