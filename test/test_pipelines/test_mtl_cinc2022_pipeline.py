@@ -1,3 +1,6 @@
+"""
+"""
+
 import json
 import os
 import re
@@ -14,6 +17,7 @@ import numpy as np
 import pandas as pd
 import wfdb
 import librosa
+import pytest
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -25,7 +29,6 @@ import torch_audiomentations as TA
 from torch_audiomentations.core.transforms_interface import BaseWaveformTransform
 from tqdm.auto import tqdm
 from pcg_springer_features.schmidt_spike_removal import schmidt_spike_removal
-from deprecated import deprecated
 
 from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.databases.base import PhysioNetDataBase, DataBaseInfo
@@ -3161,70 +3164,6 @@ def compute_cost(
     return mean_cost
 
 
-@deprecated(reason="only used in the unofficial phase of the Challenge")
-def compute_challenge_score(
-    labels: np.ndarray, outputs: np.ndarray, classes: Sequence[str]
-) -> float:
-    """
-    Compute Challenge score.
-
-    Parameters
-    ----------
-    labels: np.ndarray,
-        binary labels, of shape: (n_samples, n_classes)
-    outputs: np.ndarray,
-        binary outputs, of shape: (n_samples, n_classes)
-    classes: sequence of str,
-        class names
-
-    Returns
-    -------
-    mean_score: float,
-        mean Challenge score
-    """
-    # Define costs. Better to load these costs from an external file instead of defining them here.
-    c_algorithm = 1  # Cost for algorithmic prescreening.
-    c_gp = 250  # Cost for screening from a general practitioner (GP).
-    c_specialist = 500  # Cost for screening from a specialist.
-    c_treatment = 1000  # Cost for treatment.
-    c_error = 10000  # Cost for diagnostic error.
-    alpha = 0.5  # Fraction of murmur unknown cases that are positive.
-
-    num_patients, num_classes = np.shape(labels)
-
-    A = compute_confusion_matrix(labels, outputs)
-
-    idx_positive = classes.index("Present")
-    idx_unknown = classes.index("Unknown")
-    idx_negative = classes.index("Absent")
-
-    n_pp = A[idx_positive, idx_positive]
-    n_pu = A[idx_positive, idx_unknown]
-    n_pn = A[idx_positive, idx_negative]
-    n_up = A[idx_unknown, idx_positive]
-    n_uu = A[idx_unknown, idx_unknown]
-    n_un = A[idx_unknown, idx_negative]
-    n_np = A[idx_negative, idx_positive]
-    n_nu = A[idx_negative, idx_unknown]
-    n_nn = A[idx_negative, idx_negative]
-
-    n_total = n_pp + n_pu + n_pn + n_up + n_uu + n_un + n_np + n_nu + n_nn
-
-    total_score = (
-        c_algorithm * n_total
-        + c_gp * (n_pp + n_pu + n_pn)
-        + c_specialist * (n_pu + n_up + n_uu + n_un)
-        + c_treatment * (n_pp + alpha * n_pu + n_up + alpha * n_uu)
-        + c_error * (n_np + alpha * n_nu)
-    )
-    if n_total > 0:
-        mean_score = total_score / n_total
-    else:
-        mean_score = float("nan")
-
-    return mean_score
-
-
 class CINC2022Trainer(BaseTrainer):
     """ """
 
@@ -3736,6 +3675,31 @@ dr._ls_rec()
 del dr
 
 
+def test_data_reader():
+    with pytest.warns(RuntimeWarning, match="audio backend xxx is not available"):
+        dr = CINC2022Reader(_DB_DIR, audio_backend="xxx")
+    with pytest.warns(
+        RuntimeWarning,
+        match="loading result using wfdb is inconsistent with other backends",
+    ):
+        dr = CINC2022Reader(_DB_DIR, audio_backend="wfdb")
+
+    dr = CINC2022Reader(_DB_DIR, audio_backend="librosa")
+
+    stats_file = dr.db_dir / "training_data.csv"
+    if stats_file.is_file():
+        stats_file.unlink()
+    dr._df_stats = pd.DataFrame()
+    dr._df_stats_records = pd.DataFrame()
+    assert not dr.df_stats.empty
+    assert not dr.df_stats_records.empty
+
+    assert dr.get_fs(0) == dr.fs
+
+    # TODO: test
+    # `reader.load_segmentation`, `reader.load_meta_data`, `reader._load_preprocessed_data`
+
+
 def test_dataset():
     """ """
     ds_config = deepcopy(TrainCfg)
@@ -3746,6 +3710,8 @@ def test_dataset():
 
     ds_train._load_all_data()
     ds_val._load_all_data()
+
+    # TODO: test more tasks
 
     print("dataset test passed")
 
