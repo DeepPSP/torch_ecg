@@ -1,6 +1,6 @@
 """
 TestCPSC2021: accomplished
-TestCPSC2021Dataset: NOT accomplished
+TestCPSC2021Dataset: accomplished
 
 subsampling: NOT tested
 """
@@ -24,6 +24,7 @@ from torch_ecg.databases.cpsc_databases.cpsc2021 import (
 )
 from torch_ecg.databases.datasets import CPSC2021Dataset, CPSC2021TrainCfg
 from torch_ecg.utils.utils_interval import generalized_interval_len
+from torch_ecg.utils.misc import list_sum
 
 # from torch_ecg.utils.misc import dicts_equal
 
@@ -337,14 +338,61 @@ ds.persistence(verbose=2)
 config_1 = deepcopy(config)
 ds_1 = CPSC2021Dataset(config_1, task="rr_lstm", training=False, lazy=False)
 
+config_2 = deepcopy(config)
+ds_2 = CPSC2021Dataset(config_2, task="rr_lstm", training=False, lazy=False)
+ds_2.reset_task(task="qrs_detection", lazy=True)
+
 
 class TestCPSC2021Dataset:
     def test_len(self):
         assert len(ds) > 0
         assert len(ds_1) > 0
+        assert len(ds_2) > 0
 
     def test_getitem(self):
-        pass
+        input_len = config[ds.task].input_len
+        for i in range(len(ds)):
+            data, af_mask, weight_mask = ds[i]
+            assert data.shape == (config.n_leads, input_len)
+            assert af_mask.shape == (input_len, 1)
+            assert weight_mask.shape == (input_len, 1)
+
+        input_len = config_1[ds_1.task].input_len
+        for i in range(len(ds_1)):
+            rr_seq, rr_af_mask, rr_weight_mask = ds_1[i]
+            assert rr_seq.shape == (input_len, 1)
+            assert rr_af_mask.shape == (input_len, 1)
+            assert rr_weight_mask.shape == (input_len, 1)
+
+        input_len = config_2[ds_2.task].input_len
+        for i in range(len(ds_2)):
+            data, qrs_mask = ds_2[i]
+            assert data.shape == (config.n_leads, input_len)
+            assert qrs_mask.shape == (input_len, 1)
+
+    def test_properties(self):
+        assert ds.task == "main"
+        assert ds_1.task == "rr_lstm"
+        assert ds_2.task == "qrs_detection"
+        assert (
+            isinstance(ds.all_segments, dict)
+            and isinstance(ds_1.all_segments, dict)
+            and isinstance(ds_2.all_segments, dict)
+        )
+        assert (
+            set(ds.all_segments)
+            == set(ds_2.all_segments)
+            == set(ds_1.all_rr_seq)
+            > set()
+        )
+        assert set(ds.subjects) == set(ds_2.subjects) == set(ds_1.subjects) > set()
+        assert set(ds.all_segments) > set(ds.subjects)
+        assert len(ds.all_rr_seq) == len(ds_2.all_rr_seq) == len(ds_1.all_segments) == 0
+        assert len(ds) == len(ds.segments) < len(list_sum(ds.all_segments.values()))
+        assert len(ds_1) == len(ds_1.rr_seq) < len(list_sum(ds_1.all_rr_seq.values()))
+        assert (
+            len(ds_2) == len(ds_2.segments) < len(list_sum(ds_2.all_segments.values()))
+        )
 
     def test_plot_seg(self):
         ds.plot_seg(ds.segments[0], ticks_granularity=2)
