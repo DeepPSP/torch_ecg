@@ -22,7 +22,8 @@ from torch_ecg.databases.cpsc_databases.cpsc2021 import (
 )
 from torch_ecg.databases.datasets import CPSC2021Dataset, CPSC2021TrainCfg
 from torch_ecg.utils.utils_interval import generalized_interval_len
-from torch_ecg.utils.misc import dicts_equal
+
+# from torch_ecg.utils.misc import dicts_equal
 
 
 ###############################################################################
@@ -34,13 +35,32 @@ _CWD = Path(__file__).absolute().parents[2] / "sample-data" / "cpsc2021"
 reader = CPSC2021(_CWD)
 
 
-_ANS_JSON_FILE = Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_ans.json"
-_ANS_MAT_FILE = Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_ans.mat"
+_ANS_JSON_FILE = (
+    Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_test" / "cpsc2021_ans.json"
+)
+_ANS_MAT_FILE = (
+    Path(__file__).absolute().parents[2] / "tmp" / "cpsc2021_test" / "cpsc2021_ans.mat"
+)
+
+_ANS_JSON_FILE.parent.mkdir(parents=True, exist_ok=True)
+
 _ANS_JSON_DICT = {"predict_endpoints": [[1000, 2000], [3000, 4000], [5000, 6000]]}
 _ANS_MAT_DICT = {"predict_endpoints": [[1001, 2001], [3001, 4001], [5001, 6001]]}
 
 _ANS_JSON_FILE.write_text(json.dumps(_ANS_JSON_DICT))
 savemat(str(_ANS_MAT_FILE), _ANS_MAT_DICT)
+
+rec = reader.diagnoses_records_list["AFp"][0]
+data_path = reader.get_absolute_path(rec)
+stem = data_path.stem
+ans_json_file = _ANS_JSON_FILE.parent / f"{stem}.json"
+_ANS_JSON_FILE.rename(ans_json_file)
+_ANS_JSON_FILE = ans_json_file
+rec = reader.diagnoses_records_list["AFf"][0]
+data_path = reader.get_absolute_path(rec)
+ans_mat_file = _ANS_MAT_FILE.parent / f"{stem}.mat"
+_ANS_MAT_FILE.rename(ans_mat_file)
+_ANS_MAT_FILE = ans_mat_file
 
 
 class TestCPSC2021:
@@ -289,18 +309,18 @@ class TestCPSC2021:
         assert np.allclose(offset_score_mask, ref_info.offset_score_range)
 
     def test_load_ans(self):
-        ans = load_ans(_ANS_JSON_FILE)
-        assert dicts_equal(ans, _ANS_JSON_DICT)
+        ans = load_ans(str(_ANS_JSON_FILE))
+        # assert dicts_equal(ans, _ANS_JSON_DICT)
+        assert np.array_equal(ans, _ANS_JSON_DICT["predict_endpoints"])
 
-        ans = load_ans(_ANS_MAT_FILE)
-        assert dicts_equal(ans, _ANS_JSON_DICT)  # NOT _ANS_MAT_DICT
+        ans = load_ans(str(_ANS_MAT_FILE))
+        # assert dicts_equal(ans, _ANS_JSON_DICT)  # NOT _ANS_MAT_DICT
+        assert np.array_equal(ans, _ANS_JSON_DICT["predict_endpoints"])
 
     def test_score_func(self):
-        rec = reader.diagnoses_records_list["AFp"][0]
-        data_path = str(reader.get_absolute_path(rec))
         score = score_func(
-            data_path=data_path,
-            ans_path=_ANS_JSON_FILE,
+            data_path=str(_CWD),
+            ans_path=str(_ANS_JSON_FILE.parent),
         )
         assert isinstance(score.item(), float)
 
