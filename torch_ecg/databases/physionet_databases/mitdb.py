@@ -166,9 +166,10 @@ class MITDB(PhysioNetDataBase):
             )
             self._df_records.set_index("record", inplace=True)
         # filters out records with names not matching `self.data_pattern`
-        self._df_records = self._df_records[
-            self._df_records.index.str.match(self.data_pattern)
-        ]
+        if len(self._df_records) > 0:
+            self._df_records = self._df_records[
+                self._df_records.index.str.match(self.data_pattern)
+            ]
         self._all_records = self._df_records.index.tolist()
 
     def _aggregate_stats(self) -> None:
