@@ -775,6 +775,28 @@ class PhysioNetDataBase(_DataBase):
                         except KeyError:
                             print(f"`{k}` stands for `{a['('+k]}`")
 
+    def get_file_download_url(self, file_name: Union[str, Path]) -> str:
+        """
+        get the download url of the file
+
+        Parameters
+        ----------
+        file_name: str or Path,
+            the name of the file
+
+        Returns
+        -------
+        url: str,
+            the url of the file
+
+        """
+        url = posixpath.join(
+            wfdb.io.download.PN_INDEX_URL,
+            f"{self.db_name}/{self.version}",
+            f"{Path(file_name).name}?download",
+        )
+        return url
+
     @property
     def version(self) -> str:
         if self._version is not None:

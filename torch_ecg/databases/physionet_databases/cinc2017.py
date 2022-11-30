@@ -3,11 +3,9 @@
 """
 
 import math
-import zipfile
 import warnings
 from pathlib import Path
 from typing import Any, Optional, Sequence, Union, List
-from numbers import Real
 
 import numpy as np
 import pandas as pd
@@ -83,6 +81,7 @@ class CINC2017(PhysioNetDataBase):
             verbose=verbose,
             **kwargs,
         )
+
         self.fs = 300
 
         self.rec_ext = "mat"
@@ -108,11 +107,12 @@ class CINC2017(PhysioNetDataBase):
             "~": "blue",
         }
 
-        self._url_compressed = (
-            "https://physionet.org/static/published-projects/challenge-2017/"
-            "af-classification-from-a-short-single-lead-ecg-recording-"
-            "the-physionetcomputing-in-cardiology-challenge-2017-1.0.0.zip"
-        )
+        # self._url_compressed = (
+        #     "https://physionet.org/static/published-projects/challenge-2017/"
+        #     "af-classification-from-a-short-single-lead-ecg-recording-"
+        #     "the-physionetcomputing-in-cardiology-challenge-2017-1.0.0.zip"
+        # )
+        self._url_compressed = self.get_file_download_url("training2017.zip")
 
     def _ls_rec(self) -> None:
         """ """
@@ -194,54 +194,6 @@ class CINC2017(PhysioNetDataBase):
         if extension is not None and not extension.startswith("."):
             extension = f".{extension}"
         return self.data_dir / f"{rec}{extension or ''}"
-
-    def load_data(
-        self,
-        rec: Union[str, int],
-        sampfrom: Optional[int] = None,
-        sampto: Optional[int] = None,
-        data_format: str = "channel_first",
-        units: str = "mV",
-        fs: Optional[Real] = None,
-    ) -> np.ndarray:
-        """
-        load physical (converted from digital) ECG data,
-        which is more understandable for humans;
-        or load digital directly.
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ecg data,
-            "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first"), or
-            "flat" (alias "plain") which is valid only when `leads` is a single lead
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with aliases of "uV", "muV";
-            None for digital data, without digital-to-physical conversion
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
-
-        Returns
-        -------
-        data: ndarray,
-            the ECG data loaded from `rec`, with given units and format
-
-        """
-        return super().load_data(
-            rec,
-            sampfrom=sampfrom,
-            sampto=sampto,
-            data_format=data_format,
-            units=units,
-            fs=fs,
-        )
 
     def load_ann(
         self, rec: Union[str, int], original: bool = False, ann_format: str = "a"
@@ -367,14 +319,7 @@ class CINC2017(PhysioNetDataBase):
             ax.set_ylabel("Voltage [μV]")
             plt.show()
 
-    def download(self, compressed: bool = False) -> None:
-        """ """
-        super().download(compressed=compressed)
-        if compressed:
-            with zipfile.ZipFile(str(self.db_dir / "training2017.zip")) as zip_ref:
-                zip_ref.extractall()
-        self._ls_rec()
-
+    @property
     def _validation_set(self) -> List[str]:
         """
         the validation set specified at https://physionet.org/content/challenge-2017/1.0.0/
