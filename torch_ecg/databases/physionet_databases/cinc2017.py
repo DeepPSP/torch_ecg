@@ -3,6 +3,7 @@
 """
 
 import math
+import time
 import warnings
 from pathlib import Path
 from typing import Any, Optional, Sequence, Union, List
@@ -14,6 +15,7 @@ import wfdb  # noqa: F401
 from ...cfg import DEFAULTS
 from ...utils.misc import get_record_list_recursive3, add_docstring
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo
+
 
 __all__ = [
     "CINC2017",
@@ -91,7 +93,6 @@ class CINC2017(PhysioNetDataBase):
         self._df_ann = pd.DataFrame()
         self._df_ann_ori = pd.DataFrame()
         self._all_ann = []
-        self.data_dir = None
         self._ls_rec()
 
         self.d_ann_names = {
@@ -116,52 +117,79 @@ class CINC2017(PhysioNetDataBase):
 
     def _ls_rec(self) -> None:
         """ """
+        record_list_fp = self.db_dir / "RECORDS"
         self._df_records = pd.DataFrame()
-        fp = self.db_dir / "RECORDS"
-        if fp.exists():
-            self._all_records = fp.read_text().splitlines()
-            # return
-        self._all_records = get_record_list_recursive3(
-            db_dir=str(self.db_dir), rec_patterns=f"A[\\d]{{5}}\\.{self.rec_ext}"
-        )
-        if self._subsample is not None:
-            size = min(
-                len(self._all_records),
-                max(1, int(round(self._subsample * len(self._all_records)))),
+        if record_list_fp.is_file():
+            self._df_records["record"] = [
+                item
+                for item in record_list_fp.read_text().splitlines()
+                if len(item) > 0
+            ]
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
+            self._df_records["path"] = self._df_records["record"].apply(
+                lambda x: (self.db_dir / x).resolve()
             )
-            self._all_records = sorted(
-                DEFAULTS.RNG.choice(self._all_records, size=size, replace=False)
+            self._df_records = self._df_records[
+                self._df_records["path"].apply(lambda x: x.is_file())
+            ]
+            self._df_records["record"] = self._df_records["path"].apply(
+                lambda x: x.name
             )
-        parent_dir = set([str(Path(item).parent) for item in self.all_records])
-        if len(parent_dir) > 1:
-            raise ValueError("all records should be in the same directory")
-        self.data_dir = self.db_dir / parent_dir.pop()
-        self._all_records = [Path(item).name for item in self.all_records]
-        self._df_records["record"] = self._all_records
-        self._df_records["path"] = self._df_records["record"].apply(
-            lambda x: self.data_dir / x
-        )
+
+        if len(self._df_records) == 0:
+            print(
+                "Please wait patiently to let the reader find "
+                "all records of the database from local storage..."
+            )
+            start = time.time()
+            self._df_records["path"] = get_record_list_recursive3(
+                db_dir=str(self.db_dir),
+                rec_patterns=f"A[\\d]{{5}}\\.{self.rec_ext}",
+                relative=False,
+            )
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
+            self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
+            print(f"Done in {time.time() - start:.3f} seconds!")
+            self._df_records["record"] = self._df_records["path"].apply(
+                lambda x: x.name
+            )
         self._df_records.set_index("record", inplace=True)
-        # fp.write_text("\n".join(self._all_records) + "\n")
-        if len(self._all_records) == 0:
+        self._all_records = self._df_records.index.values.tolist()
+
+        ann_file = list(self.db_dir.rglob("REFERENCE.csv"))
+        if len(ann_file) > 0:
+            self._df_ann = pd.read_csv(ann_file[0], header=None)
+            self._df_ann.columns = ["rec", "ann"]
+        else:
+            self._df_ann = pd.DataFrame(columns=["rec", "ann"])
             warnings.warn(
-                f"No record found in {self.db_dir}. "
-                "Perhaps the user should call the `download` method to download the database first.",
+                "Cannot find the annotation file `REFERENCE.csv`!",
                 RuntimeWarning,
             )
-            return
-        self._df_ann = pd.read_csv(self.data_dir / "REFERENCE.csv", header=None)
-        self._df_ann.columns = [
-            "rec",
-            "ann",
-        ]
-        self._df_ann_ori = pd.read_csv(
-            self.data_dir / "REFERENCE-original.csv", header=None
-        )
-        self._df_ann_ori.columns = [
-            "rec",
-            "ann",
-        ]
+        ann_file = list(self.db_dir.rglob("REFERENCE-original.csv"))
+        if len(ann_file) > 0:
+            self._df_ann_ori = pd.read_csv(ann_file[0], header=None)
+            self._df_ann_ori.columns = ["rec", "ann"]
+        else:
+            self._df_ann_ori = pd.DataFrame(columns=["rec", "ann"])
+            warnings.warn(
+                "Cannot find the annotation file `REFERENCE-original.csv`!",
+                RuntimeWarning,
+            )
         # ["N", "A", "O", "~"]
         self._all_ann = list(
             set(
@@ -169,31 +197,6 @@ class CINC2017(PhysioNetDataBase):
                 + self._df_ann_ori.ann.unique().tolist()
             )
         )
-
-    def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
-    ) -> Path:
-        """
-        get the absolute path of the record `rec`
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        extension: str, optional,
-            extension of the file
-
-        Returns
-        -------
-        Path,
-            absolute path of the file
-
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        if extension is not None and not extension.startswith("."):
-            extension = f".{extension}"
-        return self.data_dir / f"{rec}{extension or ''}"
 
     def load_ann(
         self, rec: Union[str, int], original: bool = False, ann_format: str = "a"

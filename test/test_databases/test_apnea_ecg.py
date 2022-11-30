@@ -11,6 +11,8 @@ import re
 import shutil
 from pathlib import Path
 
+import pytest
+
 from torch_ecg.databases import ApneaECG
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
@@ -26,7 +28,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-reader = ApneaECG(_CWD)
+with pytest.warns(RuntimeWarning):
+    reader = ApneaECG(_CWD)
 reader.download()
 
 

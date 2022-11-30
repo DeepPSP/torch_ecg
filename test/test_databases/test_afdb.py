@@ -28,7 +28,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-reader = AFDB(_CWD)
+with pytest.warns(RuntimeWarning):
+    reader = AFDB(_CWD)
 reader.download()
 
 

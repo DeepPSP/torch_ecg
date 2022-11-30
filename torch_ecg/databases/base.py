@@ -472,8 +472,15 @@ class PhysioNetDataBase(_DataBase):
             if True, read from local storage, prior to using `wfdb.get_record_list`
 
         """
+        empty_warning_msg = (
+            "No records found in the database! "
+            "Please check if path to the database is correct. "
+            "Or you can try to download the database first using the `download` method."
+        )
         if local:
             self._ls_rec_local()
+            if len(self._df_records) == 0:
+                warnings.warn(empty_warning_msg, RuntimeWarning)
             return
         try:
             self._df_records = pd.DataFrame()
@@ -496,6 +503,8 @@ class PhysioNetDataBase(_DataBase):
             self._all_records = self._df_records.index.values.tolist()
         except Exception:
             self._ls_rec_local()
+        if len(self._df_records) == 0:
+            warnings.warn(empty_warning_msg, RuntimeWarning)
 
     def _ls_rec_local(self) -> None:
         """
@@ -520,12 +529,17 @@ class PhysioNetDataBase(_DataBase):
             self._df_records["path"] = self._df_records["record"].apply(
                 lambda x: (self.db_dir / x).resolve()
             )
+            self._df_records = self._df_records[
+                self._df_records["path"].apply(lambda x: x.is_file())
+            ]
             self._df_records["record"] = self._df_records["path"].apply(
                 lambda x: x.name
             )
-        else:
+
+        if len(self._df_records) == 0:
             print(
-                "Please wait patiently to let the reader find all records of the database from local storage..."
+                "Please wait patiently to let the reader find "
+                "all records of the database from local storage..."
             )
             start = time.time()
             self._df_records["path"] = get_record_list_recursive(

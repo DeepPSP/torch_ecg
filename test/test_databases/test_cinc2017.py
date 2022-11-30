@@ -8,6 +8,8 @@ import re
 import shutil
 from pathlib import Path
 
+import pytest
+
 from torch_ecg.databases import CINC2017
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
@@ -23,7 +25,8 @@ _CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-reader = CINC2017(_CWD)
+with pytest.warns(RuntimeWarning):
+    reader = CINC2017(_CWD)
 reader.download()
 
 
