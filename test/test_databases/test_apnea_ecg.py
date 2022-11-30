@@ -35,7 +35,7 @@ reader.download()
 
 class TestApneaECG:
     def test_len(self):
-        assert len(reader) == 86
+        assert len(reader) == 70
 
     def test_load_data(self):
         data = reader.load_data(0)
@@ -52,10 +52,18 @@ class TestApneaECG:
         data = reader.load_ecg_data(rec)
         assert data.ndim == 2
 
+        rec = reader.rsp_records[0]
+        with pytest.raises(ValueError, match=f"`{rec}` is not a record of ECG signals"):
+            reader.load_ecg_data(rec)
+
     def test_load_rsp_data(self):
         rec = reader.rsp_records[0]
         data = reader.load_rsp_data(rec)
         assert data.ndim == 2
+
+        rec = reader.ecg_records[0]
+        with pytest.raises(ValueError, match=f"`{rec}` is not a record of RSP signals"):
+            reader.load_rsp_data(rec)
 
     def test_load_ann(self):
         ann = reader.load_ann(0)

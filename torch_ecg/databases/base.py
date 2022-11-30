@@ -500,7 +500,7 @@ class PhysioNetDataBase(_DataBase):
                 lambda x: x.name
             )  # remove relative path, leaving only the record name
             self._df_records.set_index("record", inplace=True)
-            self._all_records = self._df_records.index.values.tolist()
+            self._all_records = self._df_records.index.tolist()
         except Exception:
             self._ls_rec_local()
         if len(self._df_records) == 0:
@@ -590,7 +590,7 @@ class PhysioNetDataBase(_DataBase):
         """
         load physical (converted from digital) ECG data,
         which is more understandable for humans;
-        or load digital directly.
+        or load digital signal directly.
 
         Parameters
         ----------

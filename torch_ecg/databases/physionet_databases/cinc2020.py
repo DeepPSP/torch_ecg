@@ -534,7 +534,7 @@ class CINC2020(PhysioNetDataBase):
         """
         load physical (converted from digital) ECG data,
         which is more understandable for humans;
-        or load digital directly.
+        or load digital signal directly.
 
         Parameters
         ----------

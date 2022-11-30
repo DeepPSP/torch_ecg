@@ -4,7 +4,7 @@
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional, Union, Sequence
+from typing import Any, Optional, Union, Sequence, List
 from numbers import Real
 
 import numpy as np
@@ -88,11 +88,12 @@ class ApneaECG(PhysioNetDataBase):
         )
         self.fs = 100
         self.data_ext = "dat"
+        self.data_pattern = "^[abcx]\\d{2}$"
         self.ann_ext = "apn"
         self.qrs_ann_ext = "qrs"
 
-        self.ecg_records = None
-        self.rsp_records = None
+        self._ecg_records = None
+        self._rsp_records = None
         self.rsp_channels = None
         self.learning_set = None
         self.test_set = None
@@ -115,14 +116,44 @@ class ApneaECG(PhysioNetDataBase):
         """ """
         super()._ls_rec()
 
-        self.ecg_records = [r for r in self._all_records if "r" not in r]
-        self.rsp_records = [r for r in self._all_records if "r" in r and "er" not in r]
+        self._rsp_records = self._df_records[
+            self._df_records.index.str.match("^[abcx]\\d{2}r$")
+        ].index.tolist()
+        self._ecg_records = self._df_records[
+            self._df_records.index.str.match(self.data_pattern)
+        ].index.tolist()
         self.rsp_channels = ["Resp C", "Resp A", "Resp N", "SpO2"]
-        self.learning_set = [r for r in self.ecg_records if "x" not in r]
-        self.test_set = [r for r in self.ecg_records if "x" in r]
+        self.learning_set = [r for r in self._ecg_records if "x" not in r]
+        self.test_set = [r for r in self._ecg_records if "x" in r]
         self.control_group = [r for r in self.learning_set if "c" in r]
         self.borderline_group = [r for r in self.learning_set if "b" in r]
         self.apnea_group = [r for r in self.learning_set if "a" in r]
+
+    def __len__(self) -> int:
+        """
+        number of records in the database
+        """
+        return len(self.ecg_records)
+
+    def __getitem__(self, index: int) -> str:
+        """
+        get the record name by index
+        """
+        return self.ecg_records[index]
+
+    @property
+    def ecg_records(self) -> List[str]:
+        """
+        ECG records
+        """
+        return self._ecg_records
+
+    @property
+    def rsp_records(self) -> List[str]:
+        """
+        Respiration records
+        """
+        return self._rsp_records
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
         """
@@ -173,7 +204,7 @@ class ApneaECG(PhysioNetDataBase):
         """
         load physical (converted from digital) ECG data,
         which is more understandable for humans;
-        or load digital directly.
+        or load digital signal directly.
 
         Parameters
         ----------
@@ -202,8 +233,8 @@ class ApneaECG(PhysioNetDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        if rec.endswith(("r", "er")):
-            raise ValueError(f"{rec} is not a record of ECG signals")
+        if rec not in self.ecg_records:
+            raise ValueError(f"`{rec}` is not a record of ECG signals")
         return self.load_data(
             rec,
             sampfrom=sampfrom,
@@ -215,7 +246,7 @@ class ApneaECG(PhysioNetDataBase):
 
     def load_rsp_data(
         self,
-        rec: Union[str, int],
+        rec: str,
         channels: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
@@ -224,10 +255,12 @@ class ApneaECG(PhysioNetDataBase):
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
+        load respiration data
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec: str,
+            record name the record
         channels: str or list of str, default None
             channels to be loaded, if None, all channels will be loaded
         sampfrom: int, optional,
@@ -251,10 +284,8 @@ class ApneaECG(PhysioNetDataBase):
             the respiration signal
 
         """
-        if isinstance(rec, int):
-            rec = self[rec]
-        if not rec.endswith(("r", "er")):
-            raise ValueError(f"{rec} is not a record of RSP signals")
+        if rec not in self.rsp_records:
+            raise ValueError(f"`{rec}` is not a record of RSP signals")
         sig = self.load_data(
             rec,
             leads=channels,
@@ -335,13 +366,6 @@ class ApneaECG(PhysioNetDataBase):
                 apnea_periods.append(pe)
         else:
             apnea_periods = []
-
-        # if len(apnea_periods) > 0:
-        #     self.logger.info(
-        #         f"apnea period(s) (units in minutes) of record {rec} is(are): {apnea_periods}"
-        #     )
-        # else:
-        #     self.logger.info(f"record {rec} has no apnea period")
 
         if len(apnea_periods) == 0:
             return pd.DataFrame(columns=self.sleep_event_keys)

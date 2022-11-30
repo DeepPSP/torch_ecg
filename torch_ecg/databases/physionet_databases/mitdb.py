@@ -90,6 +90,8 @@ class MITDB(PhysioNetDataBase):
         )
         self.fs = 360
         self.data_ext = "dat"
+        self.data_pattern = "^[\\d]{{3}}$"
+        self.data_pattern_with_ext = f"^[\\d]{{3}}\\.{self.data_ext}$"
         self.ann_ext = "atr"
 
         self.beat_types_extended = list("""!"+/AEFJLNQRSV[]aefjx|~""")
@@ -148,7 +150,7 @@ class MITDB(PhysioNetDataBase):
         if len(self._all_records) == 0:
             self._df_records = pd.DataFrame()
             self._all_records = get_record_list_recursive3(
-                self.db_dir, f"^[\\d]{{3}}\\.{self.data_ext}$"
+                self.db_dir, self.data_pattern_with_ext
             )
             if self._subsample is not None:
                 size = min(
@@ -163,6 +165,11 @@ class MITDB(PhysioNetDataBase):
                 lambda x: self.get_absolute_path(x)
             )
             self._df_records.set_index("record", inplace=True)
+        # filters out records with names not matching `self.data_pattern`
+        self._df_records = self._df_records[
+            self._df_records.index.str.match(self.data_pattern)
+        ]
+        self._all_records = self._df_records.index.tolist()
 
     def _aggregate_stats(self) -> None:
         """ """
