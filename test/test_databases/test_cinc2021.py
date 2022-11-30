@@ -169,8 +169,8 @@ class TestCINC2021:
         classes = dx_mapping_scored.Abbreviation.tolist()
         n_records, n_classes = 32, len(classes)
         truth = DEFAULTS.RNG_randint(0, 1, size=(n_records, n_classes))
-        probs = DEFAULTS.RNG.uniform(n_records, n_classes)
-        thresholds = DEFAULTS.RNG.uniform(n_classes)
+        probs = DEFAULTS.RNG.uniform(size=(n_records, n_classes))
+        thresholds = DEFAULTS.RNG.uniform(size=(n_classes,))
         binary_pred = (probs > thresholds).astype(int)
 
         metrics = compute_metrics(
