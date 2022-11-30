@@ -213,6 +213,7 @@ class MITDBDataset(ReprMixin, Dataset):
                 self.segments_dirs,
                 self.segments,
                 self.segment_ext,
+                self.reader.rhythm_types_map,
             )
             if self.lazy:
                 return
@@ -256,6 +257,7 @@ class MITDBDataset(ReprMixin, Dataset):
                 self.rr_seq_dirs,
                 self.rr_seq,
                 self.rr_seq_ext,
+                self.reader.rhythm_types_map,
             )
             if self.lazy:
                 return
@@ -289,7 +291,8 @@ class MITDBDataset(ReprMixin, Dataset):
             self.__all_segments = json.loads(self.segments_json.read_text())
             # return
         print(
-            f"please allow the reader a few minutes to collect the segments from {self.segments_base_dir}..."
+            "please allow the reader a few minutes to collect "
+            f"the segments from {self.segments_base_dir}..."
         )
         seg_filename_pattern = f"{self.segment_name_pattern}\\.{self.segment_ext}"
         self.__all_segments = CFG(
@@ -314,7 +317,8 @@ class MITDBDataset(ReprMixin, Dataset):
             self.__all_rr_seq = json.loads(self.rr_seq_json.read_text())
             # return
         print(
-            f"please allow the reader a few minutes to collect the rr sequences from {self.rr_seq_base_dir}..."
+            "please allow the reader a few minutes to collect "
+            f"the rr sequences from {self.rr_seq_base_dir}..."
         )
         rr_seq_filename_pattern = f"{self.rr_seq_name_pattern}\\.{self.rr_seq_ext}"
         self.__all_rr_seq = CFG(
@@ -351,6 +355,8 @@ class MITDBDataset(ReprMixin, Dataset):
             return CFG()
 
     def __len__(self) -> int:
+        if self.task in ["beat_classification"]:
+            return len(self._all_data)
         return len(self.fdr)
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, ...]:
@@ -720,7 +726,7 @@ class MITDBDataset(ReprMixin, Dataset):
         segments = []
 
         # ordinary segments with constant forward_len
-        print("Slicing ordinary segments with constant forward_len")
+        print("Slicing ordinary segments with constant `forward_len`")
         with tqdm(
             range((siglen - self.seglen) // forward_len + 1),
             desc=f"Slicing segments for record {rec}",
@@ -749,7 +755,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
         # special segments around critical_points with random forward_len in critical_forward_len
         print(
-            "Slicing special segments around critical_points with random forward_len in critical_forward_len"
+            "Slicing special segments around `critical_points` "
+            "with random `forward_len` in `critical_forward_len`"
         )
         with tqdm(
             critical_points, desc=f"Slicing segments for record {rec}", unit="segment"
@@ -1061,10 +1068,10 @@ class MITDBDataset(ReprMixin, Dataset):
         rr_seq = []
 
         # ordinary rr_seq with constant forward_len
-        print("Slicing ordinary rr_seq with constant forward_len")
+        print("Slicing ordinary rr_seq with constant `forward_len`")
         with tqdm(
             range((len(rr) - self.seglen) // forward_len + 1),
-            desc=f"Slicing rr_seq for record {rec}",
+            desc=f"Slicing rr_seq for record `{rec}`",
             unit="segment",
         ) as pbar:
             for idx in pbar:
@@ -1094,7 +1101,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
         # special rr_seq around critical_points with random forward_len in critical_forward_len
         print(
-            "Slicing special rr_seq around critical_points with random forward_len in critical_forward_len"
+            "Slicing special rr_seq around `critical_points` "
+            "with random `forward_len` in `critical_forward_len`"
         )
         with tqdm(
             critical_points, desc=f"Slicing rr_seq for record {rec}", unit="segment"
@@ -1208,13 +1216,13 @@ class MITDBDataset(ReprMixin, Dataset):
             "beat_classification",
             "qrs_detection",
         ]:
-            test_set = ["101", "102", "108", "114", "207", "223"]
-            test_set = [rec for rec in self.reader if rec in test_set]
-            train_set = [rec for rec in self.reader if rec not in test_set]
+            full_test_set = ["101", "102", "108", "114", "207", "223"]
+            train_set = [rec for rec in self.reader if rec not in full_test_set]
+            test_set = [rec for rec in self.reader if rec in full_test_set]
         else:  # rhythm segmentation, af event, rr_lstm
-            test_set = ["106", "114", "124", "202", "217", "232"]
-            test_set = [rec for rec in self.reader if rec in test_set]
-            train_set = [rec for rec in self.reader if rec not in test_set]
+            full_test_set = ["106", "114", "124", "202", "217", "232"]
+            train_set = [rec for rec in self.reader if rec not in full_test_set]
+            test_set = [rec for rec in self.reader if rec in full_test_set]
 
         split_res = CFG(
             {
@@ -1242,10 +1250,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
         """
         seg_data = self._load_seg_data(seg)
-        print(f"seg_data.shape = {seg_data.shape}")
         seg_ann = self._load_seg_ann(seg)
         seg_ann["rhythm_intervals"] = mask_to_intervals(seg_ann["rhythm_mask"], vals=1)
-        print(f"seg_ann = {seg_ann}")
         rec_name = self._get_rec_name(seg)
         self.reader.plot(
             rec=rec_name,  # unnecessary indeed
@@ -1273,6 +1279,7 @@ class FastDataReader(ReprMixin, Dataset):
         file_dirs: dict,
         files: List[str],
         file_ext: str,
+        rhythm_types_map: dict,
     ) -> None:
         """ """
         self.config = config
@@ -1281,6 +1288,7 @@ class FastDataReader(ReprMixin, Dataset):
         self.file_dirs = file_dirs
         self.files = files
         self.file_ext = file_ext
+        self.rhythm_types_map = rhythm_types_map
 
         self.seglen = self.config[self.task].input_len
         self.n_classes = len(self.config[task].classes)
@@ -1346,6 +1354,13 @@ class FastDataReader(ReprMixin, Dataset):
             rr_seq = loadmat(str(rr_seq_path))
             rr_seq["rr"] = rr_seq["rr"].reshape((self.seglen, 1))
             rr_seq["label"] = rr_seq["label"].reshape((self.seglen, self.n_classes))
+            # map values of `rr_seq["label"]` to 0, 1 according to `self.reader.rhythm_types_map`
+            rr_seq["label"][
+                np.where(rr_seq["label"] == self.rhythm_types_map["AFIB"])
+            ] = 1
+            rr_seq["label"][
+                np.where(rr_seq["label"] != self.rhythm_types_map["AFIB"])
+            ] = 0
             weight_mask = generate_weight_mask(
                 target_mask=rr_seq["label"].squeeze(-1),
                 fg_weight=2,

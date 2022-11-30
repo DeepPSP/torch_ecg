@@ -99,10 +99,38 @@ ds = MITDBDataset(config, task=TASK, training=True, lazy=True, subsample=0.2)
 ds.persistence()
 ds.reset_task(TASK, lazy=False)
 
+ds_rhythm = MITDBDataset(config, task="rhythm_segmentation", training=True, lazy=False)
+
+ds_af = MITDBDataset(config, task="af_event", training=True, lazy=False)
+
+ds_beat = MITDBDataset(config, task="beat_classification", training=True, lazy=False)
+
+ds_rr = MITDBDataset(config, task="rr_lstm", training=True, lazy=False)
+
 
 class TestMITDBDataset:
     def test_len(self):
-        pass
+        assert len(ds) > 0
+        assert len(ds_rhythm) > 0
+        assert len(ds_af) > 0
+        assert len(ds_beat) > 0
+        assert len(ds_rr) > 0
 
     def test_getitem(self):
-        pass
+        data, ann = ds[0]
+        assert data.ndim == ann.ndim == 2
+        assert data.shape == (config.n_leads, config[TASK].input_len)
+        assert ann.shape == (config[TASK].output_len, 1)
+
+        data, ann = ds_beat[0]
+        assert data.ndim == 2 and ann.ndim == 1
+        assert data.shape == (config.n_leads, config.beat_classification.input_len)
+        assert ann.shape == (len(config.beat_classification.classes),)
+
+        rr, ann, wt_mask = ds_rr[0]
+        assert rr.shape == ann.shape == wt_mask.shape == (config.rr_lstm.input_len, 1)
+
+        # `ds_rhythm` and `ds_af` have bugs now
+
+    def test_plot_seg(self):
+        pass  # `plot_seg` not implemented yet

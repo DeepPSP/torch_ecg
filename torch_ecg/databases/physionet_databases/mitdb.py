@@ -90,7 +90,7 @@ class MITDB(PhysioNetDataBase):
         )
         self.fs = 360
         self.data_ext = "dat"
-        self.data_pattern = "^[\\d]{{3}}$"
+        self.data_pattern = "^[\\d]{3}$"
         self.data_pattern_with_ext = f"^[\\d]{{3}}\\.{self.data_ext}$"
         self.ann_ext = "atr"
 
