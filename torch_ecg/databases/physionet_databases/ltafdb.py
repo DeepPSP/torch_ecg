@@ -555,7 +555,11 @@ class LTAFDB(PhysioNetDataBase):
             _rpeak = np.array(rpeak_inds or []) / self.fs  # indices to time
         if beat_ann is None and data is None:
             _beat_ann = self.load_beat_ann(
-                rec, sampfrom=sampfrom, sampto=sampto, keep_original=False
+                rec,
+                beat_format="dict",
+                sampfrom=sampfrom,
+                sampto=sampto,
+                keep_original=False,
             )
         else:
             _beat_ann = beat_ann or CFG({k: [] for k in self.beat_types})
