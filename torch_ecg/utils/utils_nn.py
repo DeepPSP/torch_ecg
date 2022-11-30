@@ -413,6 +413,7 @@ def compute_conv_output_shape(
     padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
+    asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
 ) -> Tuple[Union[int, None]]:
     """
     Compute the output shape of a convolution/maxpool/avgpool layer
@@ -435,6 +436,8 @@ def compute_conv_output_shape(
     channel_last: bool, default False,
         channel dimension is the last dimension,
         or the second dimension (the first is the batch dimension by convention)
+    asymmetric_padding: (2-)sequence of int or sequence of (2-)sequence of int,
+        asymmetric paddings for all dimensions or for each dimension
 
     Returns
     -------
@@ -452,6 +455,7 @@ def compute_conv_output_shape(
         0,
         dilation,
         channel_last,
+        asymmetric_padding,
     )
     return output_shape
 
@@ -558,6 +562,7 @@ def compute_deconv_output_shape(
     output_padding: Union[Sequence[int], int] = 0,
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
+    asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
 ) -> Tuple[Union[int, None]]:
     """
     Compute the output shape of a transpose convolution layer
@@ -583,6 +588,8 @@ def compute_deconv_output_shape(
     channel_last: bool, default False,
         channel dimension is the last dimension,
         or the second dimension (the first is the batch dimension by convention)
+    asymmetric_padding: (2-)sequence of int or sequence of (2-)sequence of int,
+        asymmetric paddings for all dimensions or for each dimension
 
     Returns
     -------
@@ -600,6 +607,7 @@ def compute_deconv_output_shape(
         output_padding,
         dilation,
         channel_last,
+        asymmetric_padding,
     )
     return output_shape
 

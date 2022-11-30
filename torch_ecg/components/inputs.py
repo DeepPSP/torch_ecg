@@ -1,5 +1,4 @@
 """
-TODO: add examples for the classes
 """
 
 import inspect
@@ -14,7 +13,7 @@ from torch.nn import functional as F
 from einops.layers.torch import Rearrange
 
 from ..cfg import CFG, DEFAULTS
-from ..utils.misc import ReprMixin
+from ..utils.misc import ReprMixin, add_docstring
 from ..utils.utils_nn import compute_conv_output_shape
 from ..utils.utils_signal_t import Spectrogram
 
@@ -38,7 +37,8 @@ class InputConfig(CFG):
         input_type: str,
         n_channels: int,
         n_samples: int = -1,
-        **kwargs: dict
+        ensure_batch_dim: bool = True,
+        **kwargs: dict,
     ) -> None:
         """
         Parameters
@@ -52,6 +52,18 @@ class InputConfig(CFG):
             the number of channels of the input
         n_samples : int,
             the number of samples of the input
+        ensure_batch_dim : bool,
+            whether to ensure the transformed input has a batch dimension
+
+        Examples
+        --------
+        ```python
+        >>> input_config = InputConfig(
+        ...     input_type="waveform",
+        ...     n_channels=12,
+        ...     n_samples=5000,
+        ... )
+        ```
 
         """
         super().__init__(
@@ -59,20 +71,30 @@ class InputConfig(CFG):
             input_type=input_type,
             n_channels=n_channels,
             n_samples=n_samples,
-            **kwargs
+            ensure_batch_dim=ensure_batch_dim,
+            **kwargs,
         )
-        assert "n_channels" in self and self.n_channels > 0
-        assert "n_samples" in self and (self.n_samples > 0 or self.n_samples == -1)
+        assert (
+            "n_channels" in self and self.n_channels > 0
+        ), f"`n_channels` must be positive, got {self.n_channels}"
+        assert "n_samples" in self and (
+            self.n_samples > 0 or self.n_samples == -1
+        ), f"`n_samples` must be positive or -1, got {self.n_samples}"
         assert "input_type" in self and self.input_type.lower() in [
             "waveform",
             "fft",
             "spectrogram",
-        ]
+        ], f"`input_type` must be one of ['waveform', 'fft', 'spectrogram'], got {self.input_type}"
         self.input_type = self.input_type.lower()
         if self.input_type in [
             "spectrogram",
         ]:
-            assert "n_bins" in self
+            assert (
+                "n_bins" in self
+            ), f"`n_bins` must be specified for {self.input_type} input"
+            assert (
+                "fs" in self or "sample_rate" in self
+            ), f"`fs` or `sample_rate` must be specified for {self.input_type} input"
 
 
 class BaseInput(ReprMixin, ABC):
@@ -82,7 +104,9 @@ class BaseInput(ReprMixin, ABC):
 
     def __init__(self, config: InputConfig) -> None:
         """ """
-        assert isinstance(config, InputConfig)
+        assert isinstance(
+            config, InputConfig
+        ), "`config` must be an instance of `InputConfig`"
         self._config = deepcopy(config)
         self._values = None
         self._dtype = self._config.get("dtype", DEFAULTS.DTYPE.TORCH)
@@ -105,9 +129,20 @@ class BaseInput(ReprMixin, ABC):
         return self.from_waveform(waveform)
 
     @abstractmethod
+    def _from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
+        """internal method to convert the waveform to the input tensor"""
+        raise NotImplementedError
+
     def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
         """ """
-        raise NotImplementedError
+        assert waveform.shape[-2:] == (self.n_channels, self.n_samples,), (
+            f"`waveform` shape must be `(batch_size, {self.n_channels}, {self.n_samples})` "
+            f"or `({self.n_channels}, {self.n_samples})`, got `{waveform.shape}`"
+        )
+        input_tensors = self._from_waveform(waveform)
+        if waveform.ndim == 2 and self._config.ensure_batch_dim:
+            input_tensors = input_tensors.unsqueeze(0)
+        return input_tensors
 
     @abstractmethod
     def _post_init(self) -> None:
@@ -124,9 +159,26 @@ class BaseInput(ReprMixin, ABC):
 
     @property
     def n_samples(self) -> int:
+        return self._config.n_samples
+
+    @property
+    def input_channels(self) -> int:
+        channel_dim = {
+            "waveform": -2,
+            "fft": -2,
+            # "spectrogram": -3,  # implemented in `SpectrogramInput`
+        }
+        if self.values is not None:
+            return self.values.shape[channel_dim[self.input_type]]
+        return self.compute_input_shape((self.n_channels, self.n_samples))[
+            channel_dim[self.input_type]
+        ]
+
+    @property
+    def input_samples(self) -> int:
         if self.values is not None:
             return self.values.shape[-1]
-        return self._config.n_samples
+        return self.compute_input_shape((self.n_channels, self.n_samples))[-1]
 
     @property
     def input_type(self) -> str:
@@ -158,28 +210,34 @@ class BaseInput(ReprMixin, ABC):
 
         """
         if self.input_type == "waveform":
-            return tuple(waveform_shape)
-        if self.input_type == "fft":
+            input_shape = tuple(waveform_shape)
+        elif self.input_type == "fft":
             nfft = self.nfft or waveform_shape[-1]
             seq_len = torch.fft.rfftfreq(nfft).shape[0]
             if self.drop_dc:
                 seq_len -= 1
-            return (*waveform_shape[:-2], 2 * waveform_shape[-2], nfft)
-        n_samples = compute_conv_output_shape(
-            waveform_shape
-            if len(waveform_shape) == 3
-            else [None] + list(waveform_shape),
-            kernel_size=self.win_length,
-            stride=self.hop_length,
-            padding=[self.hop_length, self.win_length - self.hop_length],
-        )[-1]
-        if self.feature_fs is not None:
-            n_samples = math.floor(n_samples * self.feature_fs / self.fs)
-        if self.to1d:
-            mid_dims = (self.n_channels * self.n_bins,)
-        else:
-            mid_dims = (self.n_channels, self.n_bins)
-        return (*waveform_shape[:-2], *mid_dims, n_samples)
+            input_shape = (*waveform_shape[:-2], 2 * waveform_shape[-2], seq_len)
+        elif self.input_type == "spectrogram":
+            n_samples = compute_conv_output_shape(
+                waveform_shape
+                if len(waveform_shape) == 3
+                else [None] + list(waveform_shape),
+                kernel_size=self.win_length,
+                stride=self.hop_length,
+                asymmetric_padding=[self.hop_length, self.win_length - self.hop_length],
+            )[-1]
+            if self.feature_fs is not None:
+                n_samples = math.floor(n_samples * self.feature_fs / self.fs)
+            if self.to1d:
+                mid_dims = (self.n_channels * self.n_bins,)
+            else:
+                mid_dims = (self.n_channels, self.n_bins)
+            input_shape = (*waveform_shape[:-2], *mid_dims, n_samples)
+
+        if len(waveform_shape) == 2 and self._config.ensure_batch_dim:
+            input_shape = (1, *input_shape)
+
+        return input_shape
 
     def extra_repr_keys(self) -> List[str]:
         """ """
@@ -187,29 +245,77 @@ class BaseInput(ReprMixin, ABC):
 
 
 class WaveformInput(BaseInput):
-    """ """
+    """
+    Waveform input
+
+    Examples
+    --------
+    ```python
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> BATCH_SIZE = 32
+    >>> N_CHANNELS = 12
+    >>> N_SAMPLES = 5000
+    >>> input_config = InputConfig(
+    ...     input_type="waveform",
+    ...     n_channels=N_CHANNELS,
+    ...     n_samples=N_SAMPLES,
+    ... )
+    >>> inputer = WaveformInput(input_config)
+    >>> waveform = torch.randn(BATCH_SIZE, N_CHANNELS, N_SAMPLES)
+    >>> inputer(waveform).shape
+    torch.Size([32, 12, 5000])
+    >>> waveform = DEFAULTS.RNG.uniform(size=(N_CHANNELS, N_SAMPLES))
+    >>> inputer(waveform).shape
+    torch.Size([1, 12, 5000])
+    >>> input_config = InputConfig(
+    ...     input_type="waveform",
+    ...     n_channels=N_CHANNELS,
+    ...     n_samples=N_SAMPLES,
+    ...     ensure_batch_dim=False,
+    ... )
+    >>> inputer = WaveformInput(input_config)
+    >>> waveform = DEFAULTS.RNG.uniform(size=(N_CHANNELS, N_SAMPLES))
+    >>> inputer(waveform).shape
+    torch.Size([12, 5000])
+    ```
+
+    """
 
     __name__ = "WaveformInput"
 
     def _post_init(self) -> None:
         """ """
-        assert self.input_type == "waveform"
+        assert self.input_type == "waveform", "`input_type` must be `waveform`"
+
+    def _from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
+        """internal method to convert the waveform to the input tensor"""
+        self._values = torch.as_tensor(waveform).to(self.device, self.dtype)
+        return self._values
 
     def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
         """
+        Converts the input `np.ndarray` or `torch.Tensor` waveform to a `torch.Tensor`
+
         Parameters
         ----------
         waveform : np.ndarray or torch.Tensor,
-            the waveform to be transformed
+            the waveform to be transformed,
+            shape: (batch_size, n_channels, n_samples) or (n_channels, n_samples)
 
         Returns
         -------
         torch.Tensor,
-            the transformed waveform
+            the transformed waveform,
+            shape: (batch_size, n_channels, n_samples)
+            NOTE: if the input is a 2D tensor, the batch dimension is added (batch_size = 1)
 
         """
-        self._values = torch.as_tensor(waveform).to(self.device, self.dtype)
-        return self._values
+        return super().from_waveform(waveform)
+
+    @add_docstring(from_waveform.__doc__)
+    def __call__(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
+        """ """
+        return self.from_waveform(waveform)
 
 
 class FFTInput(BaseInput):
@@ -228,34 +334,70 @@ class FFTInput(BaseInput):
             - "backward"
             - "ortho"
 
+    Examples
+    --------
+    ```python
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> BATCH_SIZE = 32
+    >>> N_CHANNELS = 12
+    >>> N_SAMPLES = 5000
+    >>> input_config = InputConfig(
+    ...     input_type="fft",
+    ...     n_channels=N_CHANNELS,
+    ...     n_samples=N_SAMPLES,
+    ...     n_fft=200,
+    ...     drop_dc=True,
+    ...     norm="ortho",
+    ... )
+    >>> inputer = FFTInput(input_config)
+    >>> waveform = torch.randn(BATCH_SIZE, N_CHANNELS, N_SAMPLES)
+    >>> inputer(waveform).ndim
+    3
+    >>> inputer(waveform).shape == inputer.compute_input_shape(waveform.shape)
+    True
+    >>> waveform = DEFAULTS.RNG.uniform(size=(N_CHANNELS, N_SAMPLES))
+    >>> inputer(waveform).ndim
+    3
+    >>> inputer(waveform).shape == inputer.compute_input_shape(waveform.shape)
+    True
+    >>> input_config = InputConfig(
+    ...     input_type="fft",
+    ...     n_channels=N_CHANNELS,
+    ...     n_samples=N_SAMPLES,
+    ...     n_fft=None,
+    ...     drop_dc=False,
+    ...     norm="forward",
+    ...     ensure_batch_dim=False,
+    ... )
+    >>> inputer = FFTInput(input_config)
+    >>> waveform = DEFAULTS.RNG.uniform(size=(N_CHANNELS, N_SAMPLES))
+    >>> inputer(waveform).ndim
+    2
+    >>> inputer(waveform).shape == inputer.compute_input_shape(waveform.shape)
+    True
+    ```
+
     """
 
     __name__ = "FFTInput"
 
     def _post_init(self) -> None:
         """ """
-        assert self.input_type == "fft"
+        assert self.input_type == "fft", "`input_type` must be `fft`"
         self.nfft = self._config.get("nfft", None)
         if self.nfft is None and self.n_samples > 0:
             self.nfft = self.n_samples
         self.drop_dc = self._config.get("drop_dc", True)
         self.norm = self._config.get("norm", None)
         if self.norm is not None:
-            assert self.norm in ["forward", "backward", "ortho"]
+            assert self.norm in [
+                "forward",
+                "backward",
+                "ortho",
+            ], f"`norm` must be one of [`forward`, `backward`, `ortho`], got {self.norm}"
 
-    def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
-        """
-        Parameters
-        ----------
-        waveform : np.ndarray or torch.Tensor,
-            the waveform to be transformed
-
-        Returns
-        -------
-        torch.Tensor,
-            the transformed waveform
-
-        """
+    def _from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
+        """internal method to convert the waveform to the input tensor"""
         self._values = torch.fft.rfft(
             torch.as_tensor(waveform).to(self.device, self.dtype),
             n=self.nfft,
@@ -265,9 +407,37 @@ class FFTInput(BaseInput):
         if self.drop_dc:
             self._values = self._values[..., 1:]
         self._values = torch.cat(
-            [torch.abs(self._values), torch.angle(self._values)], dim=1
+            [torch.abs(self._values), torch.angle(self._values)], dim=-2
         )
         return self._values
+
+    def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
+        """
+        Converts the input `np.ndarray` or `torch.Tensor` waveform
+        to a `torch.Tensor` of FFTs
+
+        Parameters
+        ----------
+        waveform : np.ndarray or torch.Tensor,
+            the waveform to be transformed,
+            shape: (batch_size, n_channels, n_samples) or (n_channels, n_samples)
+
+        Returns
+        -------
+        torch.Tensor,
+            the transformed waveform,
+            shape: (batch_size, 2 * n_channels, seq_len),
+            where seq_len is computed via `torch.fft.rfftfreq(nfft).shape[0]`,
+            if `drop_dc` is True, then seq_len is reduced by 1
+            NOTE: if the input is a 2D tensor, the batch dimension is added (batch_size = 1)
+
+        """
+        return super().from_waveform(waveform)
+
+    @add_docstring(from_waveform.__doc__)
+    def __call__(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
+        """ """
+        return self.from_waveform(waveform)
 
     def extra_repr_keys(self) -> List[str]:
         """ """
@@ -305,17 +475,21 @@ class _SpectralInput(BaseInput):
 
     def _post_init(self) -> None:
         """ """
-        assert "n_bins" in self._config
-        self.fs = self._config.get("fs", self._config.get("sample_rate", None))
-        assert self.fs is not None
+        self.to1d = self._config.get("to1d", False)
+        self.fs = self._config.get("fs", self._config.get("sample_rate"))
         self.feature_fs = self._config.get("feature_fs", None)
         if "window_size" not in self._config:
             self._config.window_size = 1 / 20
-        assert 0 < self._config.window_size < 0.2
+        assert (
+            0 < self._config.window_size < 0.2
+        ), f"`window_size` must be in (0, 0.2), got {self._config.window_size}"
         if "overlap_size" not in self._config:
             self._config.overlap_size = 1 / 40
-        assert 0 < self._config.overlap_size < self._config.window_size
-        self.to1d = self._config.get("to1d", False)
+        # TODO: consider negative overlap_size, i.e. positive gaps between windows
+        assert 0 < self._config.overlap_size < self._config.window_size, (
+            f"`overlap_size` must be in `(0, window_size)` = {(0, self._config.window_size)}, "
+            f"got {self._config.overlap_size}"
+        )
 
     @property
     def n_bins(self) -> int:
@@ -337,6 +511,21 @@ class _SpectralInput(BaseInput):
     def hop_length(self) -> int:
         return self.window_size - self.overlap_size
 
+    @property
+    def input_channels(self) -> int:
+        channel_dim = -2 if self.to1d else -3
+        if self.values is not None:
+            return self.values.shape[channel_dim]
+        return self.compute_input_shape((self.n_channels, self.n_samples))[channel_dim]
+
+    @property
+    def input_samples(self) -> Tuple[int, ...]:
+        sample_dim = (-1,) if self.to1d else (-2, -1)
+        if self.values is not None:
+            input_shape = self.values.shape
+        input_shape = self.compute_input_shape((self.n_channels, self.n_samples))
+        return tuple(input_shape[dim] for dim in sample_dim)
+
     def extra_repr_keys(self) -> List[str]:
         """ """
         return super().extra_repr_keys() + [
@@ -351,13 +540,45 @@ class _SpectralInput(BaseInput):
 
 class SpectrogramInput(_SpectralInput):
 
-    __doc__ = _SpectralInput.__doc__ + """"""
+    __doc__ = (
+        _SpectralInput.__doc__
+        + """
+
+    Examples
+    --------
+    ```python
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> BATCH_SIZE = 32
+    >>> N_CHANNELS = 12
+    >>> N_SAMPLES = 5000
+    >>> input_config = InputConfig(
+    ...     name="spectrogram",
+    ...     n_channels=N_CHANNELS,
+    ...     n_samples=N_SAMPLES,
+    ...     n_bins=128,
+    ...     fs=500,
+    ...     window_size=1 / 20,
+    ...     overlap_size=1 / 40,
+    ...     feature_fs=100,
+    ...     to1d=True,
+    ... )
+    >>> inputer = SpectrogramInput(input_config)
+    >>> waveform = torch.randn(BATCH_SIZE, N_CHANNELS, N_SAMPLES)
+    >>> spectrogram = inputer(waveform)
+    >>> spectrogram.shape == inputer.compute_input_shape(waveform.shape)
+    True
+    ```
+
+    """
+    )
     __name__ = "SpectrogramInput"
 
     def _post_init(self) -> None:
         """ """
         super()._post_init()
-        assert self.input_type in ["spectrogram"]
+        assert self.input_type in [
+            "spectrogram"
+        ], f"`input_type` must be one of [`spectrogram`], got {self.input_type}"
         args = inspect.getfullargspec(Spectrogram.__init__).args
         for k in ["self", "n_fft", "win_length", "hop_length"]:
             args.remove(k)
@@ -375,23 +596,49 @@ class SpectrogramInput(_SpectralInput):
                 Rearrange("... channel n_bins time -> ... (channel n_bins) time"),
             )
 
-    def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
-        """
-        Parameters
-        ----------
-        waveform : np.ndarray or torch.Tensor,
-            the waveform to be transformed
-
-        Returns
-        -------
-        torch.Tensor,
-            the transformed waveform
-
-        """
+    def _from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
+        """internal method to convert the waveform to the input tensor"""
         self._values = self._transform(
             torch.as_tensor(waveform).to(self.device, self.dtype)
         )
         if self.feature_fs is not None:
+            # self.values.ndim can be 2, 3, or 4
             scale_factor = [1] * (self.values.ndim - 3) + [self.feature_fs / self.fs]
-            self._values = F.interpolate(self._values, scale_factor=scale_factor)
+            if self.values.ndim == 2:
+                self._values = F.interpolate(
+                    self._values.unsqueeze(0),
+                    scale_factor=scale_factor,
+                    recompute_scale_factor=True,
+                ).squeeze(0)
+            else:
+                self._values = F.interpolate(
+                    self._values, scale_factor=scale_factor, recompute_scale_factor=True
+                )
         return self._values
+
+    def from_waveform(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
+        """
+        Converts the input `np.ndarray` or `torch.Tensor` waveform
+        to a `torch.Tensor` of spectrograms
+
+        Parameters
+        ----------
+        waveform : np.ndarray or torch.Tensor,
+            the waveform to be transformed,
+            shape: (batch_size, n_channels, n_samples) or (n_channels, n_samples)
+
+        Returns
+        -------
+        torch.Tensor,
+            the transformed waveform,
+            shape: (batch_size, n_channels, n_bins, n_frames),
+            where n_frames = (n_samples - win_length) // hop_length + 1
+            NOTE: if the input is a 2D tensor, the batch dimension is added (batch_size = 1)
+
+        """
+        return super().from_waveform(waveform)
+
+    @add_docstring(from_waveform.__doc__)
+    def __call__(self, waveform: Union[np.ndarray, torch.Tensor]) -> torch.Tensor:
+        """ """
+        return self.from_waveform(waveform)
