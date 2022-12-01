@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 
-from torch_ecg.databases import MITDB, WFDB_Rhythm_Annotations
+from torch_ecg.databases import MITDB, WFDB_Rhythm_Annotations, DataBaseInfo
 from torch_ecg.databases.datasets import MITDBDataset, MITDBTrainCfg
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
@@ -85,6 +85,7 @@ class TestMITDB:
         )
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         pass  # `plot` not implemented yet

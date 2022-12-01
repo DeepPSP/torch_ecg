@@ -12,8 +12,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from torch_ecg.cfg import DEFAULTS
-from torch_ecg.databases import CINC2020
+from torch_ecg.databases import CINC2020, DataBaseInfo
 from torch_ecg.databases.physionet_databases.cinc2020 import compute_all_metrics
 from torch_ecg.databases.aux_data.cinc2020_aux_data import (
     dx_mapping_scored,
@@ -25,6 +24,7 @@ from torch_ecg.databases.aux_data.cinc2020_aux_data import (
 )
 from torch_ecg.databases.datasets import CINC2020Dataset, CINC2020TrainCfg
 from torch_ecg.utils import dicts_equal
+from torch_ecg.cfg import DEFAULTS
 
 
 ###############################################################################
@@ -153,6 +153,7 @@ class TestCINC2020:
         assert set(reader.diagnoses_records_list.keys()) >= set(
             dx_mapping_scored.Abbreviation
         )
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         reader.plot(0, leads=["II", 7], ticks_granularity=2)

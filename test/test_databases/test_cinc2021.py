@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from torch_ecg.databases import CINC2021
+from torch_ecg.databases import CINC2021, DataBaseInfo
 from torch_ecg.databases.physionet_databases.cinc2021 import (
     compute_metrics,
     compute_metrics_detailed,
@@ -165,10 +165,11 @@ class TestCINC2021:
             dx_mapping_scored.Abbreviation
         )
         assert set(reader._check_exceptions()) <= set(reader.exceptional_records)
-        df_1 = reader._compute_cooccurrence()
+        df_1 = reader._compute_cooccurrence(tranches="F")
         df_2 = reader._compute_cooccurrence(tranches="FG")
         assert df_2.shape == df_1.shape
         assert (df_1 >= df_2).all(None)
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         reader.plot(0, leads=["II", 7], ticks_granularity=2)

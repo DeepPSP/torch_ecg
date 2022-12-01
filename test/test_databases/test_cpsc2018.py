@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from torch_ecg.databases import CPSC2018
+from torch_ecg.databases import CPSC2018, DataBaseInfo
 from torch_ecg.databases.cpsc_databases.cpsc2018 import compute_metrics
 
 
@@ -84,6 +84,7 @@ class TestCPSC2018:
         for item in ["attributes", "methods"]:
             assert reader.helper(item) is None  # printed
         assert reader.helper(["attributes", "methods"]) is None  # printed
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         reader.plot(0, leads=["I", 3, 9], ticks_granularity=2)

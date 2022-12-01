@@ -7,7 +7,7 @@ subsampling: NOT tested
 import shutil
 from pathlib import Path
 
-from torch_ecg.databases import SHHS
+from torch_ecg.databases import SHHS, DataBaseInfo
 
 
 ###############################################################################
@@ -35,7 +35,8 @@ class TestSHHS:
         pass
 
     def test_meta_data(self):
-        pass
+        # TODO: add more....
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         pass

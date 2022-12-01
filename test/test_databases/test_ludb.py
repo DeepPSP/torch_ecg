@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 
-from torch_ecg.databases import LUDB
+from torch_ecg.databases import LUDB, DataBaseInfo
 from torch_ecg.databases.datasets import LUDBDataset, LUDBTrainCfg
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
@@ -83,6 +83,7 @@ class TestLUDB:
         )
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         reader.plot(0, leads=["I", 5], ticks_granularity=2)

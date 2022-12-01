@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from torch_ecg.databases import QTDB
+from torch_ecg.databases import QTDB, DataBaseInfo
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
 
@@ -128,6 +128,7 @@ class TestQTDB:
         )
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         # `plot` not implemented yet

@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from torch_ecg.databases import SPH
+from torch_ecg.databases import SPH, DataBaseInfo
 from torch_ecg.utils.download import http_get
 
 
@@ -101,6 +101,7 @@ class TestSPH:
     def test_meta_data(self):
         assert isinstance(reader.url, dict)
         assert reader.get_citation() is None  # printed
+        isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         reader.plot(0, leads=["II", 7], ticks_granularity=2)

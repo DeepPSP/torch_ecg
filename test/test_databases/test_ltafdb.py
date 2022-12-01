@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from torch_ecg.databases import LTAFDB, BeatAnn
+from torch_ecg.databases import LTAFDB, BeatAnn, DataBaseInfo
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 from torch_ecg.utils.utils_interval import validate_interval
 
@@ -129,6 +129,7 @@ class TestLTAFDB:
         )
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         reader.plot(0, leads=0, ticks_granularity=2, sampfrom=1000, sampto=3000)

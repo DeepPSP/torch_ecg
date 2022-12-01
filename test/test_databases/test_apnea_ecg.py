@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from torch_ecg.databases import ApneaECG
+from torch_ecg.databases import ApneaECG, DataBaseInfo
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
 
@@ -81,6 +81,7 @@ class TestApneaECG:
         )
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot_ann(self):
         reader.plot_ann(0)

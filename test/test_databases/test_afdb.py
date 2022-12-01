@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from torch_ecg.databases import AFDB
+from torch_ecg.databases import AFDB, DataBaseInfo
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
 
@@ -124,6 +124,7 @@ class TestAFDB:
         assert str(reader) == repr(reader)
         assert isinstance(reader.df_all_db_info, pd.DataFrame)
         assert len(reader.df_all_db_info) > 0
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         reader.plot(0, leads=0, ticks_granularity=2, sampfrom=1000, sampto=2000)

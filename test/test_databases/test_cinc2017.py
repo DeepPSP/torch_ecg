@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from torch_ecg.databases import CINC2017
+from torch_ecg.databases import CINC2017, DataBaseInfo
 from torch_ecg.utils.download import PHYSIONET_DB_VERSION_PATTERN
 
 
@@ -60,6 +60,7 @@ class TestCINC2017:
         )
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         reader.plot(0, ticks_granularity=2)

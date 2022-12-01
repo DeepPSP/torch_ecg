@@ -15,7 +15,7 @@ import wfdb
 from scipy.io import savemat
 import pytest
 
-from torch_ecg.databases import CPSC2021
+from torch_ecg.databases import CPSC2021, DataBaseInfo
 from torch_ecg.databases.cpsc_databases.cpsc2021 import (
     compute_metrics,
     RefInfo,
@@ -236,6 +236,7 @@ class TestCPSC2021:
             set(v) <= set(reader.all_records)
             for v in reader.diagnoses_records_list.values()
         )
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_helper(self):
         assert reader.helper() is None  # printed

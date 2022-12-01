@@ -11,7 +11,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from torch_ecg.databases import CPSC2020
+from torch_ecg.databases import CPSC2020, DataBaseInfo
 from torch_ecg.databases.cpsc_databases.cpsc2020 import compute_metrics
 from torch_ecg.utils import validate_interval
 
@@ -91,6 +91,7 @@ class TestCPSC2020:
     def test_meta_data(self):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         reader.plot(0, ticks_granularity=2, sampfrom=2000, sampto=4000)

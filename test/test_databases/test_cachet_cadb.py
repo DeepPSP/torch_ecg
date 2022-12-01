@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from torch_ecg.databases import CACHET_CADB
+from torch_ecg.databases import CACHET_CADB, DataBaseInfo
 from torch_ecg.utils.download import http_get
 
 
@@ -128,6 +128,7 @@ class TestCACHET_CADB:
     def test_meta_data(self):
         assert isinstance(reader.url, dict)
         assert reader.get_citation() is None  # printed
+        assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
         pass  # `plot` not implemented yet
