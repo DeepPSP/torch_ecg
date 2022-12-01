@@ -113,21 +113,18 @@ class AFDB(PhysioNetDataBase):
                 qrs="green",
             )
 
-    def _ls_rec(self, db_name: Optional[str] = None, local: bool = True) -> None:
+    def _ls_rec(self, local: bool = True) -> None:
         """
         find all records (relative path without file extension),
         and save into `self._all_records` for further use
 
         Parameters
         ----------
-        db_name: str, optional,
-            name of the database for using `wfdb.get_record_list`,
-            if not set, `self.db_name` will be used
         local: bool, default True,
             if True, read from local storage, prior to using `wfdb.get_record_list`
 
         """
-        super()._ls_rec(db_name=db_name, local=local)
+        super()._ls_rec(local=local)
         self._all_records = [
             rec for rec in self._all_records if rec not in self.special_records
         ]

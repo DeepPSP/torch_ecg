@@ -682,30 +682,6 @@ class PhysioNetDataBase(_DataBase):
 
         return data
 
-    @property
-    def database_info(self, detailed: bool = False) -> None:
-        """
-        print the information about the database
-
-        Parameters
-        ----------
-        detailed: bool, default False,
-            if False, an short introduction of the database will be printed,
-            if True, then docstring of the class will be printed additionally
-
-        """
-        if not detailed:
-            try:
-                short_description = self.df_all_db_info[
-                    self.df_all_db_info["db_name"] == self.db_name
-                ]["db_description"].values[0]
-                print(short_description)
-                return
-            except Exception:
-                pass
-        info = "\n".join(self.__doc__.split("\n")[1:])
-        print(info)
-
     def helper(self, items: Union[List[str], str, type(None)] = None, **kwargs) -> None:
         """
         print corr. meanings of symbols belonging to `items`
@@ -1001,30 +977,6 @@ class NSRRDataBase(_DataBase):
 
         """
         raise NotImplementedError
-
-    @property
-    def database_info(self, detailed: bool = False) -> None:
-        """
-        print the information about the database
-
-        detailed: bool, default False,
-            if False, an short introduction of the database will be printed,
-            if True, then docstring of the class will be printed additionally
-
-        """
-        if not detailed:
-            # raw_info = {
-            #     "What": "",
-            #     "Who": "",
-            #     "When": "",
-            #     "Funding": ""
-            # }
-            raw_info = self.df_all_db_info[
-                self.df_all_db_info.db_name == self.db_name.lower()
-            ].db_description.values[0]
-            print(raw_info)
-            return
-        print(self.__doc__)
 
     def helper(self, items: Union[List[str], str, type(None)] = None, **kwargs) -> None:
         """ """

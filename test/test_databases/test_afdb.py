@@ -11,6 +11,7 @@ import shutil
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from torch_ecg.databases import AFDB
@@ -29,12 +30,15 @@ _CWD.mkdir(parents=True, exist_ok=True)
 
 
 with pytest.warns(RuntimeWarning):
-    reader = AFDB(_CWD)
+    reader = AFDB(_CWD, verbose=3)
 reader.download()
 
 
 class TestAFDB:
     def test_len(self):
+        assert len(reader) == 23
+
+        reader._ls_rec(local=False)
         assert len(reader) == 23
 
     def test_load_data(self):
@@ -117,6 +121,9 @@ class TestAFDB:
         )
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
+        assert str(reader) == repr(reader)
+        assert isinstance(reader.df_all_db_info, pd.DataFrame)
+        assert len(reader.df_all_db_info) > 0
 
     def test_plot(self):
         reader.plot(0, leads=0, ticks_granularity=2, sampfrom=1000, sampto=2000)

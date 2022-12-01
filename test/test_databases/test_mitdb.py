@@ -120,7 +120,7 @@ class TestMITDBDataset:
         data, ann = ds[0]
         assert data.ndim == ann.ndim == 2
         assert data.shape == (config.n_leads, config[TASK].input_len)
-        assert ann.shape == (config[TASK].output_len, 1)
+        assert ann.shape == (config[TASK].input_len, 1)
 
         data, ann = ds_beat[0]
         assert data.ndim == 2 and ann.ndim == 1
