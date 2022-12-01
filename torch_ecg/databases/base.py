@@ -485,6 +485,26 @@ class PhysioNetDataBase(_DataBase):
         try:
             self._df_records = pd.DataFrame()
             self._df_records["record"] = wfdb.get_record_list(db_name or self.db_name)
+            self._df_records["path"] = self._df_records["record"].apply(
+                lambda x: (self.db_dir / x).resolve()
+            )
+            # keep only the records that exist in `self.db_dir`
+            # NOTE
+            # 1. data files might be in some subdirectories of `self.db_dir`
+            # 2. `wfdb.get_record_list` will return records without file extension
+            self._df_records = self._df_records[
+                self._df_records["path"].apply(
+                    lambda x: len(x.parent.glob(f"{x.name}.*")) > 0
+                )
+            ]
+            # if no record found,
+            # search locally and recursively inside `self.db_dir`
+            if len(self._df_records) == 0:
+                return self._ls_rec_local()
+            self._df_records["record"] = self._df_records["path"].apply(
+                lambda x: x.name
+            )  # remove relative path, leaving only the record name
+            self._df_records.set_index("record", inplace=True)
             if self._subsample is not None:
                 size = min(
                     len(self._df_records),
@@ -493,13 +513,6 @@ class PhysioNetDataBase(_DataBase):
                 self._df_records = self._df_records.sample(
                     n=size, random_state=DEFAULTS.SEED, replace=False
                 )
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: (self.db_dir / x).resolve()
-            )
-            self._df_records["record"] = self._df_records["path"].apply(
-                lambda x: x.name
-            )  # remove relative path, leaving only the record name
-            self._df_records.set_index("record", inplace=True)
             self._all_records = self._df_records.index.tolist()
         except Exception:
             self._ls_rec_local()

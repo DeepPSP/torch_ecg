@@ -168,7 +168,7 @@ class TestCINC2021:
         df_1 = reader._compute_cooccurrence(tranches="F")
         df_2 = reader._compute_cooccurrence(tranches="FG")
         assert df_2.shape == df_1.shape
-        assert (df_1 >= df_2).all(None)
+        assert (df_1 <= df_2).all(None)
         assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
