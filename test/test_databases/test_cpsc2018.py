@@ -79,6 +79,12 @@ class TestCPSC2018:
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
 
+    def test_helper(self):
+        assert reader.helper() is None  # printed
+        for item in ["attributes", "methods"]:
+            assert reader.helper(item) is None  # printed
+        assert reader.helper(["attributes", "methods"]) is None  # printed
+
     def test_plot(self):
         reader.plot(0, leads=["I", 3, 9], ticks_granularity=2)
 

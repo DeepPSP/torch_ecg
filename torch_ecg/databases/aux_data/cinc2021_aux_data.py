@@ -6,13 +6,13 @@ from 3 files of the official evaluation repo:
 
 from io import StringIO
 from numbers import Real
-from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 
-from ...cfg import CFG
+from ...cfg import CFG, _DATA_CACHE
+
 
 __all__ = [
     "df_weights",
@@ -345,17 +345,6 @@ abbr_to_fullname = CFG(
 fullname_to_abbr = CFG({v: k for k, v in abbr_to_fullname.items()})
 
 
-# equiv_class_dict = CFG({ # from unofficial phase, deprecated
-#     "CRBBB": "RBBB",
-#     "SVPB": "PAC",
-#     "VPB": "PVC",
-#     "713427006": "59118001",
-#     "63593006": "284470004",
-#     "17338001": "427172004",
-#     "complete right bundle branch block": "right bundle branch block",
-#     "supraventricular premature beats": "premature atrial contraction",
-#     "ventricular premature beats": "premature ventricular contractions",
-# })
 equiv_class_dict = {}
 for c in df_weights.columns:
     if "|" not in c:
@@ -374,8 +363,7 @@ def load_weights(
     equivalent_classes: Optional[Union[Dict[str, str], List[List[str]]]] = None,
     return_fmt: str = "np",
 ) -> Union[np.ndarray, pd.DataFrame]:
-    """NOT finished, NOT checked,
-
+    """
     load the weight matrix of the `classes`
 
     Parameters
@@ -393,6 +381,7 @@ def load_weights(
     -------
     mat: 2d array or DataFrame,
         the weight matrix of the `classes`
+
     """
     if classes:
         l_nc = [normalize_class(c, ensure_scored=True) for c in classes]
@@ -400,6 +389,7 @@ def load_weights(
         mat = df_weights_abbr.loc[l_nc, l_nc]
     else:
         mat = df_weights_abbr.copy()
+        classes = df_weights_abbr.columns.tolist()
 
     if return_fmt.lower() == "np":
         mat = mat.values
@@ -415,7 +405,6 @@ def load_weights(
 
 def normalize_class(c: Union[str, int], ensure_scored: bool = False) -> str:
     """
-
     normalize the class name to its abbr.,
     facilitating the computation of the `load_weights` function
 
@@ -431,6 +420,7 @@ def normalize_class(c: Union[str, int], ensure_scored: bool = False) -> str:
     -------
     nc: str,
         the abbr. of the class
+
     """
     nc = snomed_ct_code_to_abbr.get(str(c), str(c))
     if ensure_scored and nc not in df_weights_abbr.columns:
@@ -440,7 +430,6 @@ def normalize_class(c: Union[str, int], ensure_scored: bool = False) -> str:
 
 def get_class(snomed_ct_code: Union[str, int]) -> Dict[str, str]:
     """
-
     look up the abbreviation and the full name of an ECG arrhythmia,
     given its SNOMEDCTCode
 
@@ -453,6 +442,7 @@ def get_class(snomed_ct_code: Union[str, int]) -> Dict[str, str]:
     -------
     arrhythmia_class: dict,
         containing `abbr` the abbreviation and `fullname` the full name of the arrhythmia
+
     """
     arrhythmia_class = {
         "abbr": snomed_ct_code_to_abbr[str(snomed_ct_code)],
@@ -470,6 +460,7 @@ def get_class_count(
     fmt: str = "a",
 ) -> Dict[str, int]:
     """
+    get the number of classes in the `tranches`
 
     Parameters
     ----------
@@ -496,6 +487,7 @@ def get_class_count(
     class_count: dict,
         key: class in the format of `fmt`
         value: count of a class in `tranches`
+
     """
     assert threshold >= 0
     tranche_names = CFG(
@@ -561,6 +553,7 @@ def get_class_weight(
     min_weight: Real = 0.5,
 ) -> Dict[str, int]:
     """
+    get the weight of each class in each tranche
 
     Parameters
     ----------
@@ -590,6 +583,7 @@ def get_class_weight(
     class_weight: dict,
         key: class in the format of `fmt`
         value: weight of a class in `tranches`
+
     """
     class_count = get_class_count(
         tranches=tranches,
@@ -612,7 +606,7 @@ def get_class_weight(
 
 
 # extra statistics
-dx_cooccurrence_all_fp = Path("./dx_cooccurrence_all.csv")
+dx_cooccurrence_all_fp = _DATA_CACHE / "dx_cooccurrence_all_cinc2021.csv"
 if dx_cooccurrence_all_fp.is_file():
     dx_cooccurrence_all = pd.read_csv(dx_cooccurrence_all_fp, index_col=0)
     dx_cooccurrence_scored = dx_cooccurrence_all.loc[
@@ -627,6 +621,7 @@ def get_cooccurrence(
     c1: Union[str, int], c2: Union[str, int], ensure_scored: bool = False
 ) -> int:
     """
+    Get the co-occurrence count between two diagnoses.
 
     Parameters
     ----------
@@ -641,10 +636,20 @@ def get_cooccurrence(
     cooccurrence: int,
         cooccurrence of class `c1` and `c2`, if they are not the same class;
         otherwise the occurrence of the class `c1` (also `c2`)
+
     """
+    global dx_cooccurrence_all, dx_cooccurrence_scored
     if dx_cooccurrence_all is None or dx_cooccurrence_all.empty:
-        raise ValueError("dx_cooccurrence_all is not found, pre-compute it first!")
+        if dx_cooccurrence_all_fp.is_file():
+            dx_cooccurrence_all = pd.read_csv(dx_cooccurrence_all_fp, index_col=0)
+            dx_cooccurrence_scored = dx_cooccurrence_all.loc[
+                dx_mapping_scored.Abbreviation, dx_mapping_scored.Abbreviation
+            ]
+        if dx_cooccurrence_all is None or dx_cooccurrence_all.empty:
+            raise ValueError(
+                "`dx_cooccurrence_all` is not found, pre-compute it first!"
+            )
     _c1 = normalize_class(c1, ensure_scored=ensure_scored)
     _c2 = normalize_class(c2, ensure_scored=ensure_scored)
-    cooccurrence = dx_cooccurrence_all.loc[_c1, _c2]
+    cooccurrence = dx_cooccurrence_all.loc[_c1, _c2].item()
     return cooccurrence

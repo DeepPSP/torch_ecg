@@ -9,6 +9,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from torch_ecg.databases import CINC2021
@@ -16,7 +17,14 @@ from torch_ecg.databases.physionet_databases.cinc2021 import (
     compute_metrics,
     compute_metrics_detailed,
 )
-from torch_ecg.databases.aux_data.cinc2021_aux_data import dx_mapping_scored
+from torch_ecg.databases.aux_data.cinc2021_aux_data import (
+    dx_mapping_scored,
+    load_weights,
+    get_class,
+    get_class_count,
+    get_class_weight,
+    get_cooccurrence,
+)
 from torch_ecg.databases.datasets import CINC2021Dataset, CINC2021TrainCfg
 from torch_ecg.databases.datasets.cinc2021.cinc2021_cfg import (
     twelve_leads,
@@ -190,6 +198,63 @@ class TestCINC2021:
         )
         assert isinstance(metrics, tuple)
         assert all(isinstance(m, (float, np.ndarray)) for m in metrics)
+
+    def test_aux_data(self):
+        mat = load_weights(return_fmt="np")
+        assert isinstance(mat, np.ndarray)
+        mat = load_weights(return_fmt="pd")
+        assert isinstance(mat, pd.DataFrame)
+        with pytest.raises(ValueError, match="format of `torch` is not supported"):
+            load_weights(return_fmt="torch")
+
+        assert get_class("713426002") == get_class(713426002)
+
+        class_count_a = get_class_count(
+            tranches="ABCDEF", exclude_classes=["713426002"], fmt="a"
+        )
+        assert isinstance(class_count_a, dict) and len(class_count_a) > 0
+        class_count_f = get_class_count(
+            tranches="ABCDEF", exclude_classes=["713426002"], fmt="f"
+        )
+        assert isinstance(class_count_f, dict) and len(class_count_f) > 0
+        class_count_s = get_class_count(
+            tranches="ABCDEF", exclude_classes=["713426002"], fmt="s"
+        )
+        assert isinstance(class_count_s, dict) and len(class_count_s) > 0
+
+        class_weight_a = get_class_weight(
+            tranches="ABCDEF", exclude_classes=["713426002"], fmt="a"
+        )
+        assert (
+            isinstance(class_weight_a, dict)
+            and class_weight_a.keys() == class_count_a.keys()
+        )
+        class_weight_f = get_class_weight(
+            tranches="ABCDEF", exclude_classes=["713426002"], fmt="f"
+        )
+        assert (
+            isinstance(class_weight_f, dict)
+            and class_weight_f.keys() == class_count_f.keys()
+        )
+        class_weight_s = get_class_weight(
+            tranches="ABCDEF", exclude_classes=["713426002"], fmt="s"
+        )
+        assert (
+            isinstance(class_weight_s, dict)
+            and class_weight_s.keys() == class_count_s.keys()
+        )
+
+        with pytest.raises(
+            ValueError, match="`dx_cooccurrence_all` is not found, pre-compute it first"
+        ):
+            cooccurrence = get_cooccurrence(713426002, "270492004")
+        reader._compute_cooccurrence()
+        cooccurrence = get_cooccurrence(713426002, "270492004")
+        assert isinstance(cooccurrence, int) and cooccurrence >= 0
+        with pytest.raises(
+            ValueError, match="class `164951009` not among the scored classes"
+        ):
+            get_cooccurrence("713426002", "164951009", ensure_scored=True)
 
 
 config = deepcopy(CINC2021TrainCfg)

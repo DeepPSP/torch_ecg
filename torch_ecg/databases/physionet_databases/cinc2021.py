@@ -37,6 +37,7 @@ from ..aux_data.cinc2021_aux_data import (
     dx_mapping_scored,
     equiv_class_dict,
     load_weights,
+    dx_cooccurrence_all_fp,
 )
 from ..base import DEFAULT_FIG_SIZE_PER_SEC, PhysioNetDataBase, DataBaseInfo, _PlotCfg
 
@@ -1785,7 +1786,6 @@ class CINC2021(PhysioNetDataBase):
             the coocurrence matrix (DataFrame) desired
 
         """
-        dx_cooccurrence_all_fp = self.working_dir / "dx_cooccurrence_all.csv"
         if dx_cooccurrence_all_fp.is_file() and tranches is None:
             dx_cooccurrence_all = pd.read_csv(dx_cooccurrence_all_fp, index_col=0)
             if not dx_cooccurrence_all.empty:
