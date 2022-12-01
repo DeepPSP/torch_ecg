@@ -1314,7 +1314,8 @@ class CINC2022Reader(PCGDataBase):
 
         NOTE
         ----
-        segmentation files do NOT have the same length (namely the second column of the last row of these .tsv files) as the audio files.
+        segmentation files do NOT have the same length
+        (namely the second column of the last row of these .tsv files) as the audio files.
 
         """
         if isinstance(rec, int):
@@ -1594,6 +1595,10 @@ class CINC2022Reader(PCGDataBase):
             "Diastolic murmur pitch",
             "Diastolic murmur quality",
         ]
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CINC2022_INFO
 
 
 class CinC2022Dataset(Dataset, ReprMixin):

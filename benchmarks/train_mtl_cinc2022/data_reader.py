@@ -1243,6 +1243,10 @@ class CINC2022Reader(PCGDataBase):
 
         return ax
 
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CINC2022_INFO
+
 
 _CINC2016_INFO = DataBaseInfo(  # NOT finished yet
     title="""
@@ -1496,6 +1500,10 @@ class CINC2016Reader(PCGDataBase):
         "e00523\ne00526\ne00528\ne00536\ne00537\ne00539\ne00551\ne00562\ne00591\ne00601\ne00603\n"
         "e00605\ne00619\ne00622\ne00627\ne00648\ne00657\ne00670\n"
     ).splitlines()  # read from validation/RECORDS
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _CINC2016_INFO
 
 
 _EPHNOGRAM_INFO = DataBaseInfo(  # NOT finished yet
@@ -1785,6 +1793,10 @@ class EPHNOGRAMReader(PCGDataBase):
         if self._df_stats.empty:
             self._aggregate_stats()
         return self._df_stats
+
+    @property
+    def database_info(self) -> DataBaseInfo:
+        return _EPHNOGRAM_INFO
 
 
 @add_docstring(_HeartMurmurInfo, mode="append")
