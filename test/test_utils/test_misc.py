@@ -426,6 +426,14 @@ def test_get_kwargs():
     def func2(a, b, c=1, d=2, *, e=3, f=4):
         pass
 
+    class CLS1:
+        def __init__(self, a, b, c, d=2, e=3, f=4):
+            pass
+
+    class CLS2:
+        def __init__(self, a, b, c=1, d=2, *, e=3, f=4):
+            pass
+
     kw = get_kwargs(func1, kwonly=False)
     assert kw == {"d": 2, "e": 3, "f": 4}
     kw = get_kwargs(func1, kwonly=True)
@@ -433,6 +441,15 @@ def test_get_kwargs():
     kw = get_kwargs(func2, kwonly=False)
     assert kw == {"c": 1, "d": 2, "e": 3, "f": 4}
     kw = get_kwargs(func2, kwonly=True)
+    assert kw == {"e": 3, "f": 4}
+
+    kw = get_kwargs(CLS1, kwonly=False)
+    assert kw == {"d": 2, "e": 3, "f": 4}
+    kw = get_kwargs(CLS1, kwonly=True)
+    assert kw == {}
+    kw = get_kwargs(CLS2, kwonly=False)
+    assert kw == {"c": 1, "d": 2, "e": 3, "f": 4}
+    kw = get_kwargs(CLS2, kwonly=True)
     assert kw == {"e": 3, "f": 4}
 
 

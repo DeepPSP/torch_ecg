@@ -1327,12 +1327,21 @@ def get_kwargs(func_or_cls: Callable, kwonly: bool = False) -> Dict[str, Any]:
     kwargs = {}
     if fas.kwonlydefaults is not None:
         kwargs = deepcopy(fas.kwonlydefaults)
-    if kwonly:
-        return kwargs
-    if fas.defaults is not None:
+    if not kwonly and fas.defaults is not None:
         kwargs.update(
             {k: v for k, v in zip(fas.args[-len(fas.defaults) :], fas.defaults)}
         )
+    if len(kwargs) == 0:
+        # perhaps `inspect.getfullargspec` does not work
+        # we should use `inspect.signature` instead
+        # TODO: discard old code, and use only this block
+        signature = inspect.signature(func_or_cls)
+        valid_kinds = [inspect.Parameter.KEYWORD_ONLY]
+        if not kwonly:
+            valid_kinds.append(inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        for k, v in signature.parameters.items():
+            if v.default is not inspect.Parameter.empty and v.kind in valid_kinds:
+                kwargs[k] = v.default
     return kwargs
 
 
