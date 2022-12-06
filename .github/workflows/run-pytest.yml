@@ -23,6 +23,11 @@ jobs:
       run: |
         sudo apt update
         sudo apt install build-essential ffmpeg libsm6 libxext6 libsndfile1 -y
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.7.7' # Not needed with a .ruby-version file
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -36,6 +41,13 @@ jobs:
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
         python -m pip freeze
+    - name: Install nsrr and download a samll part of SHHS to do test
+      # NOT finished yet
+      # have to know how to login using GitHub secrets
+      # and download a small part of SHHS using
+      # `nsrr download shhs/polysomnography/edfs/shhs1/shhs1-20000*.edf`
+      run: |
+        sudo gem install nsrr --no-document
     - name: Run test with pytest and collect coverage
       run: |
         pytest --cov -v test
