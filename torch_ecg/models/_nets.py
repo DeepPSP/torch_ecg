@@ -20,7 +20,7 @@ from torch.nn import Parameter
 from torch.nn.utils.rnn import PackedSequence
 
 from ..cfg import CFG
-from ..utils.misc import dict_to_str, list_sum
+from ..utils.misc import dict_to_str, list_sum, get_required_args
 from ..utils.utils_nn import SizeMixin  # compute_output_shape,
 from ..utils.utils_nn import (
     compute_avgpool_output_shape,
@@ -34,13 +34,14 @@ __all__ = [
     "Hardswish",
     "Initializers",
     "Activations",
+    "Normalizations",
     "Bn_Activation",
     "Conv_Bn_Activation",
     "CBA",
     "MultiConv",
     "BranchedConv",
     "SeparableConv",
-    "DeformConv",
+    # "DeformConv",
     "AntiAliasConv",
     "DownSample",
     "BlurPool",
@@ -238,7 +239,7 @@ def get_activation(
             raise ValueError(f"activation `{act}` not supported")
         _act = Activations[act.lower()]
     elif isinstance(act, nn.Module):
-        # if is already an instance
+        # if is already an instance of `torch.nn.Module`,
         # we do not check if it is really an activation
         return act
     else:
@@ -288,23 +289,33 @@ def get_normalization(
     Returns
     -------
     nn.Module or None,
-        the class of the normalization or an instance of the normalization, or None
+        the class of the normalization if `kw_norm` is None,
+        or an instance of the normalization if `kw_norm` is not None,
+        or None if `norm` is None
 
     """
     if norm is None:
         return norm
     if isclass(norm):
         _norm = norm
+        if _norm not in Normalizations.values():
+            raise ValueError(f"normalization `{norm}` not supported")
     elif isinstance(norm, str):
         if norm.lower() not in Normalizations:
             raise ValueError(f"normalization `{norm}` not supported")
         _norm = Normalizations.get(norm.lower())
     elif isinstance(norm, nn.Module):
+        # if is already an instance of `torch.nn.Module`,
+        # we do not check if it is really a normalization
         return norm
     else:
         raise ValueError(f"normalization `{norm}` not supported")
     if kw_norm is None:
         return _norm
+    if "num_channels" in get_required_args(_norm) and "num_features" in kw_norm:
+        # for some normalizations, the argument name is `num_channels`
+        # instead of `num_features`, e.g., `torch.nn.GroupNorm`
+        kw_norm["num_channels"] = kw_norm.pop("num_features")
     return _norm(**kw_norm)
 
 
@@ -1382,6 +1393,9 @@ class DownSample(nn.Sequential, SizeMixin):
             the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
         mode: str, default "max",
             can be one of `self.__MODES__`
+        **kwargs: Any,
+            additional arguments for down sampling layer,
+            e.g. `norm_type` for "lp" mode
 
         """
         super().__init__()
@@ -1425,20 +1439,18 @@ class DownSample(nn.Sequential, SizeMixin):
                 )
             else:
                 down_layer = nn.Sequential(
-                    (
-                        nn.AvgPool1d(
-                            kernel_size=self.__kernel_size,
-                            stride=self.__down_scale,
-                            padding=self.__padding,
-                        ),
-                        nn.Conv1d(
-                            self.__in_channels,
-                            self.__out_channels,
-                            kernel_size=1,
-                            groups=self.__groups,
-                            bias=False,
-                        ),
-                    )
+                    nn.AvgPool1d(
+                        kernel_size=self.__kernel_size,
+                        stride=self.__down_scale,
+                        padding=self.__padding,
+                    ),
+                    nn.Conv1d(
+                        self.__in_channels,
+                        self.__out_channels,
+                        kernel_size=1,
+                        groups=self.__groups,
+                        bias=False,
+                    ),
                 )
         elif self.__mode == "conv":
             down_layer = nn.Conv1d(
@@ -1477,6 +1489,34 @@ class DownSample(nn.Sequential, SizeMixin):
                         bias=False,
                     ),
                 )
+        elif self.__mode == "lp":
+            if self.__in_channels == self.__out_channels:
+                down_layer = nn.Sequential(
+                    nn.LPPool1d(
+                        norm_type=kwargs.get("norm_type", 2),
+                        kernel_size=self.__kernel_size,
+                        stride=self.__down_scale,
+                    ),
+                    ZeroPad1d(padding=[self.__padding, self.__padding]),
+                )
+            else:
+                down_layer = nn.Sequential(
+                    nn.LPPool1d(
+                        norm_type=kwargs.get("norm_type", 2),
+                        kernel_size=self.__kernel_size,
+                        stride=self.__down_scale,
+                    ),
+                    nn.Conv1d(
+                        self.__in_channels,
+                        self.__out_channels,
+                        kernel_size=1,
+                        groups=self.__groups,
+                        bias=False,
+                        padding=self.__padding,
+                    ),
+                )
+        elif self.__mode == "lse":
+            raise NotImplementedError
         else:
             down_layer = None
         if down_layer:
@@ -1506,12 +1546,7 @@ class DownSample(nn.Sequential, SizeMixin):
             of shape (batch_size, n_channels, seq_len)
 
         """
-        if self.__mode in [
-            "max",
-            "avg",
-            "conv",
-            "blur",
-        ]:
+        if self.__mode in ["max", "avg", "lp", "conv", "blur"]:
             output = super().forward(input)
         else:
             # align_corners = False if mode in ["nearest", "area"] else True
@@ -1562,12 +1597,7 @@ class DownSample(nn.Sequential, SizeMixin):
                 out_seq_len = self.down_sample[0].compute_output_shape(
                     seq_len, batch_size
                 )[-1]
-        elif self.__mode in [
-            "avg",
-            "nearest",
-            "area",
-            "linear",
-        ]:
+        elif self.__mode in ["avg", "nearest", "area", "linear", "lp"]:
             out_seq_len = compute_avgpool_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
                 kernel_size=self.__kernel_size,
@@ -1756,13 +1786,14 @@ class BlurPool(nn.Module, SizeMixin):
                 output_shape = (
                     batch_size,
                     self.__in_channels,
-                    (np.sum(self.__pad_sizes) + seq_len - 1) // self.__down_scale + 1,
+                    (np.sum(self.__pad_sizes) + seq_len - 1).item() // self.__down_scale
+                    + 1,
                 )
             return output_shape
         if seq_len is None:
             padded_len = None
         else:
-            padded_len = np.sum(self.__pad_sizes) + seq_len
+            padded_len = (np.sum(self.__pad_sizes) + seq_len).item()
         kernel_size = self.filt.shape[-1]
         output_shape = compute_conv_output_shape(
             input_shape=(batch_size, self.__in_channels, padded_len),
