@@ -83,7 +83,6 @@ def preprocess_multi_lead_signal(
     verbose: int = 0,
 ) -> Dict[str, np.ndarray]:
     """
-
     perform preprocessing for multi-lead ecg signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
 
@@ -187,7 +186,6 @@ def preprocess_single_lead_signal(
     verbose: int = 0,
 ) -> Dict[str, np.ndarray]:
     """
-
     perform preprocessing for single lead ecg signal (with units in mV),
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
 
@@ -281,8 +279,7 @@ def rpeaks_detect_multi_leads(
     rpeak_fn: str = "xqrs",
     verbose: int = 0,
 ) -> np.ndarray:
-    """finished, NOT checked,
-
+    """
     detect rpeaks from the filtered multi-lead ecg signal (with units in mV)
 
     Parameters
@@ -328,7 +325,6 @@ def merge_rpeaks(
     rpeaks_candidates: List[np.ndarray], sig: np.ndarray, fs: Real, verbose: int = 0
 ) -> np.ndarray:
     """
-
     merge rpeaks that are detected from each lead of multi-lead signals (with units in mV),
     using certain criterion merging qrs masks from each lead
 

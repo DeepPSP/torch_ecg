@@ -70,6 +70,7 @@ __all__ = [
     "timeout",
     "Timer",
     "get_kwargs",
+    "get_required_args",
     "add_kwargs",
 ]
 
@@ -1345,6 +1346,32 @@ def get_kwargs(func_or_cls: Callable, kwonly: bool = False) -> Dict[str, Any]:
             if v.default is not inspect.Parameter.empty and v.kind in valid_kinds:
                 kwargs[k] = v.default
     return kwargs
+
+
+def get_required_args(func_or_cls: Callable) -> List[str]:
+    """
+    get the required arguments of a function or class
+
+    Parameters
+    ----------
+    func_or_cls: Callable,
+        the function or class to get the required arguments of
+
+    Returns
+    -------
+    required_args: list of str,
+        the names of required arguments of the function or class
+
+    """
+    signature = inspect.signature(func_or_cls)
+    required_args = [
+        k
+        for k, v in signature.parameters.items()
+        if v.default is inspect.Parameter.empty
+        and v.kind
+        in [inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.POSITIONAL_ONLY]
+    ]
+    return required_args
 
 
 def add_kwargs(func: Callable, **kwargs: Any) -> Callable:

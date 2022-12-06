@@ -1,4 +1,7 @@
 """
+Computes the respiratory rate from single-lead ECG signals.
+
+A python re-implementation of the `edr` function of physionet edr.c
 """
 
 from numbers import Real
@@ -22,7 +25,6 @@ def phs_edr(
     verbose: int = 0,
 ) -> np.ndarray:
     """
-
     computes the respiratory rate from single-lead ECG signals.
 
     ref. the `main` function and the `getxy`, `edr` function of physionet edr.c
@@ -118,8 +120,5 @@ def phs_edr(
 
 
 def _getxy(sig: Sequence, von: int, bis: int) -> Real:
-    """
-    compute the integrand from `von` to `bis` of the signals with baseline removed
-
-    """
+    """compute the integrand from `von` to `bis` of the signals with baseline removed"""
     return (np.array(sig)[von : bis + 1]).sum()

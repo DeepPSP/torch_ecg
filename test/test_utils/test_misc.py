@@ -36,6 +36,7 @@ from torch_ecg.utils.misc import (  # noqa: F401
     timeout,
     Timer,
     get_kwargs,
+    get_required_args,
     add_kwargs,
 )  # noqa: F401
 from torch_ecg.cfg import DEFAULTS, _DATA_CACHE
@@ -451,6 +452,32 @@ def test_get_kwargs():
     assert kw == {"c": 1, "d": 2, "e": 3, "f": 4}
     kw = get_kwargs(CLS2, kwonly=True)
     assert kw == {"e": 3, "f": 4}
+
+
+def test_get_required_args():
+    def func1(a, b, c, d=2, e=3, f=4):
+        pass
+
+    def func2(a, b, c=1, d=2, *, e=3, f=4):
+        pass
+
+    class CLS1:
+        def __init__(self, a, b, c, d=2, e=3, f=4):
+            pass
+
+    class CLS2:
+        def __init__(self, a, b, c=1, d=2, *, e=3, f=4):
+            pass
+
+    kw = get_required_args(func1)
+    assert kw == ["a", "b", "c"]
+    kw = get_required_args(func2)
+    assert kw == ["a", "b"]
+
+    kw = get_required_args(CLS1)
+    assert kw == ["a", "b", "c"]
+    kw = get_required_args(CLS2)
+    assert kw == ["a", "b"]
 
 
 def test_add_kwargs():
