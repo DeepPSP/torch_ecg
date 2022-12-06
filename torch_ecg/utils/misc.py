@@ -1334,6 +1334,8 @@ def get_kwargs(func_or_cls: Callable, kwonly: bool = False) -> Dict[str, Any]:
     if len(kwargs) == 0:
         # perhaps `inspect.getfullargspec` does not work
         # we should use `inspect.signature` instead
+        # for example, the model init functions defined in
+        # https://github.com/pytorch/vision/blob/release/0.13/torchvision/models/resnet.py
         # TODO: discard old code, and use only this block
         signature = inspect.signature(func_or_cls)
         valid_kinds = [inspect.Parameter.KEYWORD_ONLY]

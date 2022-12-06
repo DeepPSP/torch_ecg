@@ -46,7 +46,8 @@ __all__ = [
     "BlurPool",
     "BidirectionalLSTM",
     "StackedLSTM",
-    # "AML_Attention", "AML_GatedAttention",
+    # "AML_Attention",
+    # "AML_GatedAttention",
     "AttentionWithContext",
     "MultiHeadAttention",
     "SelfAttention",
@@ -59,14 +60,18 @@ __all__ = [
     "SEBlock",
     "GlobalContextBlock",
     "CBAMBlock",
-    "BAMBlock",
-    "CoordAttention",
+    # "BAMBlock",
+    # "CoordAttention",
+    # "GEBlock",
+    # "SKBlock",
     "CRF",
     "ExtendedCRF",
     "SpaceToDepth",
     "MLDecoder",
     "DropPath",
     "make_attention_layer",
+    "get_activation",
+    "get_normalization",
 ]
 
 
@@ -208,25 +213,33 @@ def get_activation(
     Parameters
     ----------
     act: str or nn.Module or None,
-        name or the class or an instance of the activation, or None
+        name or the class or an instance of the activation, or None.
+        NOTE: if an instance of `torch.nn.Module` is passed, it is returned as is,
+        without checking if it is really an activation
     kw_act: dict, optional,
         keyword arguments for the activation
 
     Returns
     -------
     nn.Module or None,
-        the class of the activation or an instance of the activation, or None
+        the class of the activation if `kw_act` is None,
+        or an instance of the activation if `kw_act` is not None,
+        or None if `act` is None
 
     """
     if act is None:
         return act
     if isclass(act):
         _act = act
+        if _act not in Activations.values():
+            raise ValueError(f"activation `{act}` not supported")
     elif isinstance(act, str):
         if act.lower() not in Activations:
             raise ValueError(f"activation `{act}` not supported")
         _act = Activations[act.lower()]
     elif isinstance(act, nn.Module):
+        # if is already an instance
+        # we do not check if it is really an activation
         return act
     else:
         raise ValueError(f"activation `{act}` not supported")
@@ -4557,25 +4570,19 @@ def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
         return GlobalContextBlock(in_channels, **config)
     elif name in ["nl", "non-local", "nonlocal", "non_local"]:
         return NonLocalBlock(in_channels, **config)
-    elif name in [
-        "ca",
-    ]:
-        return CoordAttention(in_channels, **config)
-    elif name in [
-        "sk",
-    ]:
-        return SKBlock(in_channels, **config)
-    elif name in [
-        "ge",
-    ]:
-        return GEBlock(in_channels, **config)
-    elif name in [
-        "cbam",
-    ]:
+    elif name in ["cbam"]:
         return CBAMBlock(in_channels, **config)
-    elif name in [
-        "bam",
-    ]:
+    elif name in ["ca"]:
+        # NOT IMPLEMENTED
+        return CoordAttention(in_channels, **config)
+    elif name in ["sk"]:
+        # NOT IMPLEMENTED
+        return SKBlock(in_channels, **config)
+    elif name in ["ge"]:
+        # NOT IMPLEMENTED
+        return GEBlock(in_channels, **config)
+    elif name in ["bam"]:
+        # NOT IMPLEMENTED
         return BAMBlock(in_channels, **config)
     else:
         try:
