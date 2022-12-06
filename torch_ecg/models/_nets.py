@@ -2245,11 +2245,7 @@ class AML_GatedAttention(nn.Module, SizeMixin):
 
 
 class AttentionWithContext(nn.Module, SizeMixin):
-    """finished, checked (might have bugs),
-
-    from 0236 of CPSC2018 challenge
-
-    """
+    """from 0236 of CPSC2018 challenge"""
 
     __DEBUG__ = False
     __name__ = "AttentionWithContext"
@@ -2257,8 +2253,7 @@ class AttentionWithContext(nn.Module, SizeMixin):
     def __init__(
         self, in_channels: int, bias: bool = True, initializer: str = "glorot_uniform"
     ) -> None:
-        """finished, checked (might have bugs),
-
+        """
         Parameters
         ----------
         in_channels: int,
@@ -2279,20 +2274,21 @@ class AttentionWithContext(nn.Module, SizeMixin):
             print(f"AttentionWithContext W.shape = {self.W.shape}")
         self.init(self.W)
 
+        self.u = Parameter(torch.Tensor(in_channels))
+        Initializers.constant(self.u, 1 / in_channels)
+        if self.__DEBUG__:
+            print(f"AttentionWithContext u.shape = {self.u.shape}")
+        # self.init(self.u)
+
         if self.bias:
             self.b = Parameter(torch.Tensor(in_channels))
             Initializers.zeros(self.b)
             if self.__DEBUG__:
                 print(f"AttentionWithContext b.shape = {self.b.shape}")
             # Initializers["zeros"](self.b)
-            self.u = Parameter(torch.Tensor(in_channels))
-            Initializers.constant(self.u, 1 / in_channels)
-            if self.__DEBUG__:
-                print(f"AttentionWithContext u.shape = {self.u.shape}")
-            # self.init(self.u)
         else:
             self.register_parameter("b", None)
-            self.register_parameter("u", None)
+            # self.register_parameter("u", None)
 
     def compute_mask(self, input: Tensor, input_mask: Optional[Tensor] = None) -> None:
         """
@@ -2308,8 +2304,13 @@ class AttentionWithContext(nn.Module, SizeMixin):
         Parameters
         ----------
         input: Tensor,
-            of shape (batch_size, seq_len, n_channels)
+            of shape (batch_size, n_channels, seq_len)
         mask: Tensor, optional,
+
+        Returns
+        -------
+        output: Tensor,
+            of shape (batch_size, seq_len)
 
         """
         if self.__DEBUG__:
@@ -2317,6 +2318,9 @@ class AttentionWithContext(nn.Module, SizeMixin):
                 f"AttentionWithContext forward: input.shape = {input.shape}, W.shape = {self.W.shape}"
             )
 
+        # original implementation is tensorflow
+        # so we change to channel last format
+        input = input.permute(0, 2, 1)
         # linear + activation
         # (batch_size, seq_len, n_channels) x (n_channels, n_channels)
         # -> (batch_size, seq_len, n_channels)
@@ -2378,7 +2382,11 @@ class AttentionWithContext(nn.Module, SizeMixin):
             the output shape, given `seq_len` and `batch_size`
 
         """
-        output_shape = (batch_size, self.__out_channels, seq_len)
+        assert seq_len is not None or batch_size is not None, (
+            "at least one of `seq_len` and `batch_size` must be given, "
+            "otherwise the output shape is the meaningless `(None, None)`"
+        )
+        output_shape = (batch_size, seq_len)
         return output_shape
 
 
