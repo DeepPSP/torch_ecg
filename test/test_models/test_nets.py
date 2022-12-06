@@ -2,6 +2,9 @@
 test of the classes from models._nets.py
 """
 
+import inspect
+import itertools
+
 import torch
 import pytest
 
@@ -11,13 +14,14 @@ from torch_ecg.models._nets import (  # noqa: F401
     Hardswish,
     Initializers,
     Activations,
+    Normalizations,
     Bn_Activation,
     Conv_Bn_Activation,
     CBA,
     MultiConv,
     BranchedConv,
     SeparableConv,
-    DeformConv,
+    # DeformConv,
     AntiAliasConv,
     DownSample,
     BlurPool,
@@ -35,6 +39,10 @@ from torch_ecg.models._nets import (  # noqa: F401
     SEBlock,
     GlobalContextBlock,
     CBAMBlock,
+    # "BAMBlock",
+    # "CoordAttention",
+    # "GEBlock",
+    # "SKBlock",
     CRF,
     ExtendedCRF,
     SpaceToDepth,
@@ -43,6 +51,8 @@ from torch_ecg.models._nets import (  # noqa: F401
     make_attention_layer,
     get_activation,
     get_normalization,
+    # internal
+    _DEFAULT_CONV_CONFIGS,
 )  # noqa: F401
 
 
@@ -101,6 +111,69 @@ def test_activations():
         get_activation(SomeClass(1, 2))
     with pytest.raises(ValueError, match="activation `.+` not supported"):
         get_activation(SomeClass)
+
+
+def test_normalization():
+    assert get_normalization(None) is None
+
+    bn = torch.nn.BatchNorm1d(IN_CHANNELS)
+
+    assert get_normalization("batch_norm") == torch.nn.BatchNorm1d
+    assert isinstance(
+        get_normalization(
+            "batch_normalization", kw_norm=dict(num_features=IN_CHANNELS)
+        ),
+        torch.nn.BatchNorm1d,
+    )
+    assert (
+        get_normalization("batch_normalization", kw_norm=dict(num_features=IN_CHANNELS))
+        != bn
+    )
+    assert get_normalization(bn, kw_norm=dict(num_features=IN_CHANNELS)) == bn
+
+    norm = get_normalization(
+        "batch_norm", kw_norm=dict(num_features=IN_CHANNELS, momentum=0.01)
+    )
+    assert norm.momentum == 0.01
+    assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
+
+    norm = get_normalization(
+        "group_norm", kw_norm=dict(num_channels=IN_CHANNELS, num_groups=IN_CHANNELS)
+    )
+    assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
+
+    norm = get_normalization(
+        "group_norm", kw_norm=dict(num_features=IN_CHANNELS, num_groups=IN_CHANNELS)
+    )
+    assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
+
+    norm = get_normalization("layer_norm", kw_norm=dict(normalized_shape=SEQ_LEN))
+    assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
+
+    norm = get_normalization("instance_norm", kw_norm=dict(num_features=IN_CHANNELS))
+    assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
+
+    norm = get_normalization("local_response_norm", kw_norm=dict(size=IN_CHANNELS // 4))
+    assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
+
+    class SomeClass:
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
+    with pytest.raises(ValueError, match="normalization `.+` not supported"):
+        get_normalization("not_supported")
+    with pytest.raises(ValueError, match="normalization `.+` not supported"):
+        get_normalization(123)
+    with pytest.raises(ValueError, match="normalization `.+` not supported"):
+        get_normalization(SomeClass(1, 2))
+    with pytest.raises(ValueError, match="normalization `.+` not supported"):
+        get_normalization(SomeClass)
+
+
+def test_initializer():
+    for name in Initializers:
+        assert inspect.isfunction(Initializers[name])
 
 
 def test_cba():
@@ -170,48 +243,194 @@ def test_cba():
     )
 
 
-def test_normalization():
-    pass
-
-
-def test_initializer():
-    pass
-
-
 def test_multi_conv():
-    pass
+    mc = MultiConv(
+        in_channels=IN_CHANNELS,
+        out_channels=[IN_CHANNELS * 4, IN_CHANNELS * 8, IN_CHANNELS * 16],
+        filter_lengths=5,
+        subsample_lengths=[1, 2, 1],
+        dilations=2,
+        groups=IN_CHANNELS // 2,
+        dropouts=[0.1, 0.2, 0.0],
+        activation="mish",
+    )
+    assert mc(SAMPLE_INPUT).shape == mc.compute_output_shape(
+        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+    )
 
 
 def test_branched_conv():
-    pass
+    bc = BranchedConv(
+        in_channels=IN_CHANNELS,
+        out_channels=[
+            [IN_CHANNELS * 4, IN_CHANNELS * 8, IN_CHANNELS * 16, IN_CHANNELS * 32],
+            [IN_CHANNELS * 8, IN_CHANNELS * 32],
+        ],
+        filter_lengths=[5, [3, 7]],
+        subsample_lengths=2,
+        dilations=[[1, 2, 1, 2], [4, 8]],
+        groups=IN_CHANNELS // 2,
+        dropouts=0.1,
+    )
+    out_tensors = bc(SAMPLE_INPUT)
+    assert isinstance(out_tensors, list) and len(out_tensors) == 2
+    assert all(isinstance(t, torch.Tensor) for t in out_tensors)
+    assert [t.shape for t in out_tensors] == bc.compute_output_shape(
+        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+    )
 
 
 def test_separable_conv():
-    pass
+    sc = SeparableConv(
+        in_channels=IN_CHANNELS,
+        out_channels=IN_CHANNELS * 4,
+        kernel_size=7,
+        stride=2,
+        padding=3,
+        dilation=2,
+        groups=IN_CHANNELS // 3,
+    )
+    assert sc(SAMPLE_INPUT).shape == sc.compute_output_shape(
+        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+    )
 
 
 def test_deform_conv():
-    pass
-
-
-def test_anti_alias_conv():
-    pass
-
-
-def test_down_sample():
-    pass
+    pass  # NOT IMPLEMENTED
 
 
 def test_blur_pool():
-    pass
+    grid = itertools.product(
+        [1, 2, 5],  # down_scale
+        range(1, 8),  # filt_size
+        ["reflect", "replicate", "zero"],  # pad_type
+        [0, 1, 2],  # pad_off
+    )
+    for down_scale, filt_size, pad_type, pad_off in grid:
+        bp = BlurPool(
+            in_channels=IN_CHANNELS,
+            down_scale=down_scale,
+            filt_size=filt_size,
+            pad_type=pad_type,
+            pad_off=pad_off,
+        )
+        assert bp(SAMPLE_INPUT).shape == bp.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+
+
+def test_anti_alias_conv():
+    aac = AntiAliasConv(
+        in_channels=IN_CHANNELS,
+        out_channels=IN_CHANNELS * 4,
+        kernel_size=11,
+        stride=1,
+        padding=5,
+        dilation=2,
+        groups=IN_CHANNELS // 4,
+    )
+    assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(
+        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+    )
+    aac = AntiAliasConv(
+        in_channels=IN_CHANNELS,
+        out_channels=IN_CHANNELS * 4,
+        kernel_size=11,
+        stride=3,
+        padding=None,
+        dilation=2,
+        groups=IN_CHANNELS // 2,
+    )
+    assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(
+        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+    )
+
+
+def test_down_sample():
+    grid = itertools.product(
+        [1, 2, 5],  # down_scale
+        ["max", "avg", "lp", "conv", "blur"],  # mode
+        [True, False],  # batch_norm
+        [None, 5, 11],  # kernel_size
+        [None, IN_CHANNELS * 2],  # out_channels
+        # [0, 1, 2],  # padding
+        [0],  # padding, TODO: test padding other than 0
+    )
+    for down_scale, mode, batch_norm, kernel_size, out_channels, padding in grid:
+        # print(down_scale, mode, batch_norm, kernel_size, out_channels)
+        ds = DownSample(
+            in_channels=IN_CHANNELS,
+            down_scale=down_scale,
+            mode=mode,
+            batch_norm=batch_norm,
+            kernel_size=kernel_size,
+            out_channels=out_channels,
+            padding=padding,
+        )
+        assert ds(SAMPLE_INPUT).shape == ds.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
 
 
 def test_bidirectional_lstm():
-    pass
+    grid = itertools.product(
+        [1, 2, 3],  # num_layers
+        [True, False],  # bias
+        [0.0, 0.1, 0.5],  # dropout
+        [True, False],  # return_sequences
+    )
+    sample_input = torch.randn(SEQ_LEN // 50, BATCH_SIZE, IN_CHANNELS)
+    for num_layers, bias, dropout, return_sequences in grid:
+        if num_layers == 1:
+            dropout = 0.0
+        bi_lstm = BidirectionalLSTM(
+            input_size=IN_CHANNELS,
+            hidden_size=IN_CHANNELS * 2,
+            num_layers=num_layers,
+            bias=bias,
+            dropout=dropout,
+            return_sequences=return_sequences,
+        )
+        assert bi_lstm(sample_input).shape == bi_lstm.compute_output_shape(
+            seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
+        )
 
 
 def test_stacked_lstm():
-    pass
+    grid = itertools.product(
+        [
+            [IN_CHANNELS * 4],
+            [IN_CHANNELS * 2, IN_CHANNELS * 4],
+            [IN_CHANNELS * 2, IN_CHANNELS * 4, IN_CHANNELS * 8],
+        ],  # hidden_sizes
+        [True, False],  # bias
+        [0.0, 0.1, 0.5],  # dropouts
+        [True, False],  # bidirectional
+        [True, False],  # return_sequences
+    )
+    sample_input = torch.randn(SEQ_LEN // 50, BATCH_SIZE, IN_CHANNELS)
+    for hidden_sizes, bias, dropouts, bidirectional, return_sequences in grid:
+        slstm = StackedLSTM(
+            input_size=IN_CHANNELS,
+            hidden_sizes=hidden_sizes,
+            bias=bias,
+            dropout=dropouts,
+            bidirectional=bidirectional,
+            return_sequences=return_sequences,
+        )
+        assert slstm(sample_input).shape == slstm.compute_output_shape(
+            seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
+        )
+
+    slstm = StackedLSTM(
+        input_size=IN_CHANNELS,
+        hidden_sizes=[IN_CHANNELS * 2, IN_CHANNELS * 4, IN_CHANNELS * 8],
+        bias=[True, False, True],
+        dropout=[0.0, 0.2, 0.1],
+    )
+    assert slstm(sample_input).shape == slstm.compute_output_shape(
+        seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
+    )
 
 
 def test_attention_with_context():

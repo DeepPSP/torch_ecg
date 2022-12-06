@@ -1984,6 +1984,12 @@ class BidirectionalLSTM(nn.Module, SizeMixin):
         input: Tensor,
             of shape (seq_len, batch_size, n_channels)
 
+        Returns
+        -------
+        output: Tensor,
+            of shape (seq_len, batch_size, 2 * hidden_size) if `return_sequences` is True,
+            otherwise of shape (batch_size, 2 * hidden_size)
+
         """
         output, _ = self.lstm(input)  # seq_len, batch_size, 2 * hidden_size
         if not self.return_sequence:
@@ -2007,13 +2013,15 @@ class BidirectionalLSTM(nn.Module, SizeMixin):
             the output shape, given `seq_len` and `batch_size`
 
         """
-        output_shape = (seq_len, batch_size, self.__output_size)
+        if self.return_sequence:
+            output_shape = (seq_len, batch_size, self.__output_size)
+        else:
+            output_shape = (batch_size, self.__output_size)
         return output_shape
 
 
 class StackedLSTM(nn.Sequential, SizeMixin):
-    """finished, checked (no bugs, but correctness is left further to check),
-
+    """
     stacked LSTM, which allows different hidden sizes for each LSTM layer
 
     NOTE
