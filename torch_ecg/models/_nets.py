@@ -2,6 +2,7 @@
 basic building blocks, for 1d signal (time series)
 """
 
+import warnings
 from copy import deepcopy
 from itertools import repeat
 from inspect import isclass
@@ -451,7 +452,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         activation: Optional[Union[str, nn.Module]] = None,
         kernel_initializer: Optional[Union[str, callable]] = None,
         bias: bool = True,
-        ordering: str = "cba",
+        ordering: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         """
@@ -509,7 +510,14 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             self.__padding = padding
         self.__groups = groups
         self.__bias = bias
-        self.__ordering = ordering.lower()
+        if ordering is None:
+            self.__ordering = "cba"
+            if not batch_norm:
+                self.__ordering = self.__ordering.replace("b", "")
+            if not activation:
+                self.__ordering = self.__ordering.replace("a", "")
+        else:
+            self.__ordering = ordering.lower()
         assert "c" in self.__ordering, "convolution must be included"
 
         kw_activation = kwargs.get("kw_activation", {})
@@ -528,6 +536,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             f"not divisible by `groups` (= `{self.__groups}`)"
         )
 
+        # construct the convolution layer
         if self.__conv_type is None:
             conv_layer = nn.Conv1d(
                 self.__in_channels,
@@ -587,10 +596,19 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                 f"convolution of type `{self.__conv_type}` not implemented yet!"
             )
 
+        # validate the normalization layer
         if "b" in self.__ordering and self.__ordering.index(
             "c"
         ) < self.__ordering.index("b"):
             bn_in_channels = self.__out_channels
+        elif batch_norm and "b" not in self.__ordering:
+            warnings.warn(
+                "normalization is specified by `norm` but not included in `ordering` "
+                f"({self.__ordering}), so it is appended to the end of `ordering`",
+                RuntimeWarning,
+            )
+            bn_in_channels = self.__out_channels
+            self.__ordering = self.__ordering + "b"
         else:
             bn_in_channels = self.__in_channels
         if batch_norm:
@@ -625,10 +643,32 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                 bn_layer = batch_norm
         else:
             bn_layer = None
+            if "b" in self.__ordering:
+                warnings.warn(
+                    "normalization is specified in `ordering` but not by `norm`, "
+                    "so `norm` is removed from `ordering`",
+                    RuntimeWarning,
+                )
+                self.__ordering = self.__ordering.replace("b", "")
 
+        # validate the activation layer
         act_layer = get_activation(activation, kw_activation)
         if act_layer is not None:
             act_name = f"activation_{type(act_layer).__name__}"
+            if "a" not in self.__ordering:
+                warnings.warn(
+                    f"activation is specified by `activation` but not included in `ordering` "
+                    f"({self.__ordering}), so it is appended to the end of `ordering`",
+                    RuntimeWarning,
+                )
+                self.__ordering = self.__ordering + "a"
+        elif "a" in self.__ordering:
+            warnings.warn(
+                "activation is specified in `ordering` but not by `activation`, "
+                "so `activation` is removed from `ordering`",
+                RuntimeWarning,
+            )
+            self.__ordering = self.__ordering.replace("a", "")
 
         self.__asymmetric_padding = None
 
@@ -646,8 +686,10 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             if self.__stride == 1 and self.__kernel_size % 2 == 0:
                 self.__asymmetric_padding = (1, 0)
                 self.add_module("zero_pad", ZeroPad1d(self.__asymmetric_padding))
-            self.add_module(act_name, act_layer)
-            self.add_module("batch_norm", bn_layer)
+            if act_layer:
+                self.add_module(act_name, act_layer)
+            if bn_layer:
+                self.add_module("batch_norm", bn_layer)
         elif self.__ordering in ["bac", "bc"]:
             if bn_layer:
                 self.add_module("batch_norm", bn_layer)
@@ -675,8 +717,11 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                 self.add_module("zero_pad", ZeroPad1d(self.__asymmetric_padding))
             if act_layer:
                 self.add_module(act_name, act_layer)
+        elif self.__ordering in ["c"]:
+            # only convolution
+            self.add_module("conv1d", conv_layer)
         else:
-            raise ValueError(f"ordering `{self.__ordering}` not supported!")
+            raise ValueError(f"`ordering` ({self.__ordering}) not supported!")
 
     def _assign_weights_lead_wise(
         self, other: "Conv_Bn_Activation", indices: Sequence[int]
@@ -2803,15 +2848,15 @@ class ZeroPadding(nn.Module, SizeMixin):
         ), f"`loc` must be in `{self.__LOC__}`, but got `{loc}`"
         # self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         if self.__loc == "head":
-            self.__padding = (self.__increase_channels, 0, 0, 0)
+            self.__padding = (0, 0, self.__increase_channels, 0)
         elif self.__loc == "tail":
-            self.__padding = (0, self.__increase_channels, 0, 0)
+            self.__padding = (0, 0, 0, self.__increase_channels)
         elif self.__loc == "both":
             self.__padding = (
+                0,
+                0,
                 self.__increase_channels // 2,
                 self.__increase_channels - self.__increase_channels // 2,
-                0,
-                0,
             )
 
     def forward(self, input: Tensor) -> Tensor:
