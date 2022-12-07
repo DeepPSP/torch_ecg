@@ -41,13 +41,13 @@ jobs:
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
         python -m pip freeze
-    - name: Install nsrr and download a samll part of SHHS to do test
+    # - name: Install nsrr and download a samll part of SHHS to do test
       # NOT finished yet
       # have to know how to login using GitHub secrets
       # and download a small part of SHHS using
       # `nsrr download shhs/polysomnography/edfs/shhs1/shhs1-20000*.edf`
-      run: |
-        sudo gem install nsrr --no-document
+      # run: |
+      #   sudo gem install nsrr --no-document
     - name: Run test with pytest and collect coverage
       run: |
         pytest --cov -v test
