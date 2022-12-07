@@ -912,25 +912,33 @@ class MultiConv(nn.Sequential, SizeMixin):
             kernel_sizes = list(repeat(filter_lengths, self.__num_convs))
         else:
             kernel_sizes = list(filter_lengths)
-        assert len(kernel_sizes) == self.__num_convs
+        assert (
+            len(kernel_sizes) == self.__num_convs
+        ), f"`filter_lengths` must be of type int or sequence of int of length {self.__num_convs}"
 
         if isinstance(subsample_lengths, int):
             strides = list(repeat(subsample_lengths, self.__num_convs))
         else:
             strides = list(subsample_lengths)
-        assert len(strides) == self.__num_convs
+        assert (
+            len(strides) == self.__num_convs
+        ), f"`subsample_lengths` must be of type int or sequence of int of length {self.__num_convs}"
 
         if isinstance(dropouts, Real):
             _dropouts = list(repeat(dropouts, self.__num_convs))
         else:
             _dropouts = list(dropouts)
-        assert len(_dropouts) == self.__num_convs
+        assert (
+            len(_dropouts) == self.__num_convs
+        ), f"`dropouts` must be a real number or sequence of real numbers of length {self.__num_convs}"
 
         if isinstance(dilations, int):
             _dilations = list(repeat(dilations, self.__num_convs))
         else:
             _dilations = list(dilations)
-        assert len(_dilations) == self.__num_convs
+        assert (
+            len(_dilations) == self.__num_convs
+        ), f"`dilations` must be of type int or sequence of int of length {self.__num_convs}"
 
         __ordering = self.config.ordering.lower()
         if "a" in __ordering and __ordering.index("a") < __ordering.index("c"):
@@ -1051,7 +1059,7 @@ class BranchedConv(nn.Module, SizeMixin):
         self.__out_channels = list(out_channels)
         assert all(
             [isinstance(item, (Sequence, np.ndarray)) for item in self.__out_channels]
-        )
+        ), f"`out_channels` must be a sequence of sequence of int, but got `{self.__out_channels}`"
         self.__num_branches = len(self.__out_channels)
         self.config = deepcopy(_DEFAULT_CONV_CONFIGS)
         self.config.update(deepcopy(config))
@@ -1064,25 +1072,33 @@ class BranchedConv(nn.Module, SizeMixin):
             kernel_sizes = list(repeat(filter_lengths, self.__num_branches))
         else:
             kernel_sizes = list(filter_lengths)
-        assert len(kernel_sizes) == self.__num_branches
+        assert (
+            len(kernel_sizes) == self.__num_branches
+        ), f"`filter_lengths` must be of type int or sequence of int of length {self.__num_branches}"
 
         if isinstance(subsample_lengths, int):
             strides = list(repeat(subsample_lengths, self.__num_branches))
         else:
             strides = list(subsample_lengths)
-        assert len(strides) == self.__num_branches
+        assert (
+            len(strides) == self.__num_branches
+        ), f"`subsample_lengths` must be of type int or sequence of int of length {self.__num_branches}"
 
         if isinstance(dropouts, Real):
             _dropouts = list(repeat(dropouts, self.__num_branches))
         else:
             _dropouts = list(dropouts)
-        assert len(_dropouts) == self.__num_branches
+        assert (
+            len(_dropouts) == self.__num_branches
+        ), f"`dropouts` must be a real number or sequence of real numbers of length {self.__num_branches}"
 
         if isinstance(dilations, int):
             _dilations = list(repeat(dilations, self.__num_branches))
         else:
             _dilations = list(dilations)
-        assert len(_dilations) == self.__num_branches
+        assert (
+            len(_dilations) == self.__num_branches
+        ), f"`dilations` must be of type int or sequence of int of length {self.__num_branches}"
 
         self.branches = nn.ModuleDict()
         for idx, (oc, ks, sd, dl, dp) in enumerate(
@@ -1210,14 +1226,14 @@ class SeparableConv(nn.Sequential, SizeMixin):
         dc_out_channels = int(self.__in_channels * self.__depth_multiplier)
         assert (
             dc_out_channels % self.__in_channels == 0
-        ), f"depth_multiplier (input is {self.__depth_multiplier}) should be positive integers"
+        ), f"`depth_multiplier` (input is `{self.__depth_multiplier}`) should be positive integers"
         self.__width_multiplier = (
             kwargs.get("width_multiplier", None) or kwargs.get("alpha", None) or 1
         )
         self.__out_channels = int(self.__width_multiplier * self.__out_channels)
         assert self.__out_channels % self.__groups == 0, (
-            f"width_multiplier (input is {self.__width_multiplier}) "
-            f"makes `out_channels` not divisible by `groups` (= {self.__groups})"
+            f"`width_multiplier` (input is `{self.__width_multiplier}`) "
+            f"makes `out_channels` not divisible by `groups` (= `{self.__groups}`)"
         )
 
         self.add_module(
@@ -1429,7 +1445,9 @@ class DownSample(nn.Sequential, SizeMixin):
         """
         super().__init__()
         self.__mode = mode.lower()
-        assert self.__mode in self.__MODES__
+        assert (
+            self.__mode in self.__MODES__
+        ), f"`mode` should be one of `{self.__MODES__}`, but got `{mode}`"
         self.__down_scale = down_scale
         self.__kernel_size = kernel_size or down_scale
         self.__in_channels = in_channels
@@ -2782,7 +2800,7 @@ class ZeroPadding(nn.Module, SizeMixin):
         self.__loc = loc.lower()
         assert (
             self.__loc in self.__LOC__
-        ), f"`loc` must be in `{self.__LOC__}`, got `{loc}`"
+        ), f"`loc` must be in `{self.__LOC__}`, but got `{loc}`"
         # self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         if self.__loc == "head":
             self.__padding = (self.__increase_channels, 0, 0, 0)
@@ -2904,8 +2922,8 @@ class SeqLin(nn.Sequential, SizeMixin):
         else:
             self.__dropouts = dropouts
             assert len(self.__dropouts) == self.__num_layers, (
-                f"`out_channels` indicates {self.__num_layers} linear layers, "
-                f"while `dropouts` indicates {len(self.__dropouts)}"
+                f"`out_channels` indicates `{self.__num_layers}` linear layers, "
+                f"while `dropouts` indicates `{len(self.__dropouts)}`"
             )
         self.__skip_last_activation = kwargs.get("skip_last_activation", False)
 
@@ -3078,7 +3096,9 @@ class NonLocalBlock(nn.Module, SizeMixin):
         self.__mid_channels = (mid_channels or self.__in_channels // 2) or 1
         self.__out_channels = self.__in_channels
         if isinstance(filter_lengths, dict):
-            assert set(filter_lengths.keys()) == set(self.__MID_LAYERS__)
+            assert set(filter_lengths.keys()) == set(
+                self.__MID_LAYERS__
+            ), f"`filter_lengths` keys must equal `{self.__MID_LAYERS__}`, but got `{filter_lengths.keys()}`"
             self.__kernel_sizes = CFG({k: v for k, v in filter_lengths.items()})
         else:
             self.__kernel_sizes = CFG({k: filter_lengths for k in self.__MID_LAYERS__})
@@ -3326,14 +3346,8 @@ class GlobalContextBlock(nn.Module, SizeMixin):
 
     __DEBUG__ = False
     __name__ = "GlobalContextBlock"
-    __POOLING_TYPES__ = [
-        "attn",
-        "avg",
-    ]
-    __FUSION_TYPES__ = [
-        "add",
-        "mul",
-    ]
+    __POOLING_TYPES__ = ["attn", "avg"]
+    __FUSION_TYPES__ = ["add", "mul"]
 
     def __init__(
         self,
@@ -3362,11 +3376,16 @@ class GlobalContextBlock(nn.Module, SizeMixin):
 
         """
         super().__init__()
-        assert pooling_type in self.__POOLING_TYPES__
-        assert all([f in self.__FUSION_TYPES__ for f in fusion_types])
+        assert (
+            pooling_type in self.__POOLING_TYPES__
+        ), f"`pooling_type` should be one of `{self.__POOLING_TYPES__}`, but got `{pooling_type}`"
+        assert all(
+            [f in self.__FUSION_TYPES__ for f in fusion_types]
+        ), f"`fusion_types` should be a subset of `{self.__FUSION_TYPES__}`, but got `{fusion_types}`"
         assert len(fusion_types) > 0, "at least one fusion should be used"
         self.__in_channels = in_channels
         self.__ratio = ratio
+        assert self.__ratio >= 1, "`ratio` should be greater than or equal to 1"
         if reduction:
             self.__mid_channels = in_channels // ratio
         else:
@@ -3948,26 +3967,26 @@ class CRF(nn.Module, SizeMixin):
         """
         if emissions.dim() != 3:
             raise ValueError(
-                f"emissions must have dimension of 3, got {emissions.dim()}"
+                f"`emissions` must have dimension of 3, but got `{emissions.dim()}`"
             )
         if emissions.shape[2] != self.num_tags:
             raise ValueError(
-                f"expected last dimension of emissions is {self.num_tags}, "
-                f"got {emissions.shape[2]}"
+                f"expected last dimension of `emissions` is `{self.num_tags}`, "
+                f"but got `{emissions.shape[2]}`"
             )
 
         if tags is not None:
             if emissions.shape[:2] != tags.shape:
                 raise ValueError(
-                    "the first two dimensions of emissions and tags must match, "
-                    f"got {tuple(emissions.shape[:2])} and {tuple(tags.shape)}"
+                    "the first two dimensions of `emissions` and `tags` must match, "
+                    f"but got `{tuple(emissions.shape[:2])}` and `{tuple(tags.shape)}`"
                 )
 
         if mask is not None:
             if emissions.shape[:2] != mask.shape:
                 raise ValueError(
-                    "the first two dimensions of emissions and mask must match, "
-                    f"got {tuple(emissions.shape[:2])} and {tuple(mask.shape)}"
+                    "the first two dimensions of `emissions` and `mask` must match, "
+                    f"but got `{tuple(emissions.shape[:2])}` and `{tuple(mask.shape)}`"
                 )
             no_empty_seq = not self.batch_first and mask[0].all()
             no_empty_seq_bf = self.batch_first and mask[:, 0].all()
@@ -3982,12 +4001,18 @@ class CRF(nn.Module, SizeMixin):
         # tags: (seq_len, batch_size)
         # mask: (seq_len, batch_size)
         """
-        assert emissions.dim() == 3 and tags.dim() == 2
+        assert (
+            emissions.dim() == 3 and tags.dim() == 2
+        ), "`emissions` must have dimension of 3, and `tags` must have dimension of 2"
         seq_len, batch_size, num_tags = emissions.shape
-        assert emissions.shape[:2] == tags.shape
-        assert emissions.shape[2] == self.num_tags
-        assert mask.shape == tags.shape
-        assert mask[0].all()
+        assert (
+            emissions.shape[:2] == tags.shape
+        ), "the first two dimensions of `emissions` and `tags` must match"
+        assert (
+            emissions.shape[2] == self.num_tags
+        ), f"expected last dimension of `emissions` is `{self.num_tags}`, but got `{emissions.shape[2]}`"
+        assert mask.shape == tags.shape, "shapes of `tags` and `mask` must match"
+        assert mask[0].all(), "mask of the first timestep must all be on"
 
         seq_len, batch_size = tags.shape
         mask = mask.float()
@@ -4023,10 +4048,16 @@ class CRF(nn.Module, SizeMixin):
         # emissions: (seq_len, batch_size, num_tags)
         # mask: (seq_len, batch_size)
         """
-        assert emissions.dim() == 3 and mask.dim() == 2
-        assert emissions.shape[:2] == mask.shape
-        assert emissions.shape[2] == self.num_tags
-        assert mask[0].all()
+        assert (
+            emissions.dim() == 3 and mask.dim() == 2
+        ), "`emissions` must have dimension of 3, and `mask` must have dimension of 2"
+        assert (
+            emissions.shape[:2] == mask.shape
+        ), "the first two dimensions of `emissions` and `mask` must match"
+        assert (
+            emissions.shape[2] == self.num_tags
+        ), f"expected last dimension of `emissions` is `{self.num_tags}`, but got `{emissions.shape[2]}`"
+        assert mask[0].all(), "mask of the first timestep must all be on"
 
         seq_len, batch_size, num_tags = emissions.shape
 
@@ -4078,10 +4109,16 @@ class CRF(nn.Module, SizeMixin):
         # emissions: (seq_len, batch_size, num_tags)
         # mask: (seq_len, batch_size)
         """
-        assert emissions.dim() == 3 and mask.dim() == 2
-        assert emissions.shape[:2] == mask.shape
-        assert emissions.shape[2] == self.num_tags
-        assert mask[0].all()
+        assert (
+            emissions.dim() == 3 and mask.dim() == 2
+        ), "`emissions` must have dimension of 3, and `mask` must have dimension of 2"
+        assert (
+            emissions.shape[:2] == mask.shape
+        ), "the first two dimensions of `emissions` and `mask` must match"
+        assert (
+            emissions.shape[2] == self.num_tags
+        ), f"expected last dimension of `emissions` is `{self.num_tags}`, but got `{emissions.shape[2]}`"
+        assert mask[0].all(), "mask of the first timestep must all be on"
 
         seq_len, batch_size = mask.shape
 
