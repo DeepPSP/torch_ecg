@@ -2,6 +2,7 @@
 basic building blocks, for 1d signal (time series)
 """
 
+import warnings
 from copy import deepcopy
 from itertools import repeat
 from inspect import isclass
@@ -510,7 +511,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         self.__groups = groups
         self.__bias = bias
         self.__ordering = ordering.lower()
-        assert "c" in self.__ordering
+        assert "c" in self.__ordering, "convolution must be included"
 
         kw_activation = kwargs.get("kw_activation", {})
         kw_initializer = kwargs.get("kw_initializer", {})
@@ -523,9 +524,9 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         )
         self.__out_channels = int(self.__width_multiplier * self.__out_channels)
         assert self.__out_channels % self.__groups == 0, (
-            f"width_multiplier (input is {self.__width_multiplier}) makes "
-            f"`out_channels` (= {self.__out_channels}) "
-            f"not divisible by `groups` (= {self.__groups})"
+            f"`width_multiplier` (input is `{self.__width_multiplier}`) makes "
+            f"`out_channels` (= `{self.__out_channels}`) "
+            f"not divisible by `groups` (= `{self.__groups}`)"
         )
 
         if self.__conv_type is None:
@@ -584,7 +585,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             )
         else:
             raise NotImplementedError(
-                f"convolution of type {self.__conv_type} not implemented yet!"
+                f"convolution of type `{self.__conv_type}` not implemented yet!"
             )
 
         if "b" in self.__ordering and self.__ordering.index(
@@ -619,7 +620,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                     bn_layer = nn.LayerNorm(**kw_bn)
                 else:
                     raise ValueError(
-                        f"normalization method {batch_norm} not supported yet!"
+                        f"normalization method `{batch_norm}` not supported yet!"
                     )
             else:
                 bn_layer = batch_norm
@@ -659,7 +660,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             if act_layer:
                 self.add_module(act_name, act_layer)
         else:
-            raise ValueError(f"ordering \042{self.__ordering}\042 not supported!")
+            raise ValueError(f"ordering `{self.__ordering}` not supported!")
 
     def _assign_weights_lead_wise(
         self, other: "Conv_Bn_Activation", indices: Sequence[int]
@@ -729,8 +730,8 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         ]:
             if getattr(self, field) != getattr(other, field):
                 raise ValueError(
-                    f"{field} of self and other should be the same, "
-                    f"but got {getattr(self, field)} and {getattr(other, field)}"
+                    f"`{field}` of self and other should be the same, "
+                    f"but got `{getattr(self, field)}` and `{getattr(other, field)}`"
                 )
         units = self.out_channels // self.groups
         out_indices = list_sum([[i * units + j for j in range(units)] for i in indices])
@@ -1626,7 +1627,7 @@ class ZeroPad1d(nn.ConstantPad1d, SizeMixin):
 
     __name__ = "ZeroPad1d"
 
-    def __init__(self, padding: Sequence[int]) -> None:
+    def __init__(self, padding: Union[int, Sequence[int]]) -> None:
         """
         Parameters
         ----------
@@ -1634,10 +1635,47 @@ class ZeroPad1d(nn.ConstantPad1d, SizeMixin):
             the padding to be applied to the input tensor
 
         """
-        assert len(padding) == 2 and all(
-            [isinstance(i, int) for i in padding]
-        ), "padding must be a 2-sequence of int"
+        assert (isinstance(padding, int) and padding > 0) or (
+            isinstance(padding, Sequence)
+            and len(padding) == 2
+            and all([isinstance(i, int) for i in padding])
+            and all([i >= 0 for i in padding])
+        ), "`padding` must be non-negative int or a 2-sequence of non-negative int"
+        padding = list(repeat(padding, 2)) if isinstance(padding, int) else padding
         super().__init__(padding, 0.0)
+
+    def compute_output_shape(
+        self,
+        seq_len: Optional[int] = None,
+        batch_size: Optional[int] = None,
+        in_channels: Optional[int] = None,
+    ) -> Sequence[Union[int, None]]:
+        """
+        Parameters
+        ----------
+        seq_len: int,
+            length of the 1d sequence
+        batch_size: int, optional,
+            the batch size, can be None
+        in_channels: int,
+            the number of input channels
+
+        Returns
+        -------
+        output_shape: sequence,
+            the output shape, given `seq_len` and `batch_size`
+
+        """
+        assert any(
+            [seq_len is not None, batch_size is not None, in_channels is not None]
+        ), (
+            "at least one of `seq_len`, `batch_size` and `in_channels` must be provided, "
+            "otherwise the output shape is the meaningless `(None, None, None)`"
+        )
+        if seq_len is None:
+            return (batch_size, in_channels, None)
+        else:
+            return (batch_size, in_channels, seq_len + sum(self.padding))
 
 
 class BlurPool(nn.Module, SizeMixin):
@@ -2646,7 +2684,7 @@ class AttentivePooling(nn.Module, SizeMixin):
         Parameters
         ----------
         input: Tensor,
-            of shape (batch_size, seq_len, n_channels)
+            of shape (batch_size, n_channels, seq_len)
 
         Returns
         -------
@@ -2654,6 +2692,7 @@ class AttentivePooling(nn.Module, SizeMixin):
             of shape (batch_size, n_channels)
 
         """
+        input = input.permute(0, 2, 1)  # -> (batch_size, seq_len, n_channels
         scores = self.dropout(input)
         scores = self.mid_linear(scores)  # -> (batch_size, seq_len, n_channels)
         scores = self.activation(scores)  # -> (batch_size, seq_len, n_channels)
@@ -2699,10 +2738,7 @@ class ZeroPadding(nn.Module, SizeMixin):
     """
 
     __name__ = "ZeroPadding"
-    __LOC__ = [
-        "head",
-        "tail",
-    ]
+    __LOC__ = ["head", "tail", "both"]
 
     def __init__(self, in_channels: int, out_channels: int, loc: str = "head") -> None:
         """
@@ -2712,18 +2748,31 @@ class ZeroPadding(nn.Module, SizeMixin):
             number of channels in the input
         out_channels: int,
             number of channels for the output
-        loc: str, default "top", case insensitive,
-            padding to the head or the tail channel
+        loc: str, default "head", case insensitive,
+            padding to the head or the tail channel, or both
 
         """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
         self.__increase_channels = out_channels - in_channels
-        assert self.__increase_channels >= 0
+        assert self.__increase_channels >= 0, "`out_channels` must be >= `in_channels`"
         self.__loc = loc.lower()
-        assert self.__loc in self.__LOC__
+        assert (
+            self.__loc in self.__LOC__
+        ), f"`loc` must be in `{self.__LOC__}`, got `{loc}`"
         # self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if self.__loc == "head":
+            self.__padding = (self.__increase_channels, 0, 0, 0)
+        elif self.__loc == "tail":
+            self.__padding = (0, self.__increase_channels, 0, 0)
+        elif self.__loc == "both":
+            self.__padding = (
+                self.__increase_channels // 2,
+                self.__increase_channels - self.__increase_channels // 2,
+                0,
+                0,
+            )
 
     def forward(self, input: Tensor) -> Tensor:
         """
@@ -2732,16 +2781,14 @@ class ZeroPadding(nn.Module, SizeMixin):
         input: Tensor,
             of shape (batch_size, n_channels, seq_len)
 
+        Returns
+        -------
+        output: Tensor,
+            of shape (batch_size, n_channels, seq_len)
+
         """
-        batch_size, _, seq_len = input.shape
-        _device = input.device
         if self.__increase_channels > 0:
-            output = torch.zeros((batch_size, self.__increase_channels, seq_len))
-            output = output.to(device=_device)
-            if self.__loc == "head":
-                output = torch.cat((output, input), dim=1)
-            elif self.__loc == "tail":
-                output = torch.cat((input, output), dim=1)
+            output = F.pad(input, self.__padding, "constant", 0)
         else:
             output = input
         return output
@@ -2771,7 +2818,6 @@ class SeqLin(nn.Sequential, SizeMixin):
     """
     Sequential linear,
     might be useful in learning non-linear classifying hyper-surfaces
-
     """
 
     __DEBUG__ = False
@@ -2835,9 +2881,10 @@ class SeqLin(nn.Sequential, SizeMixin):
                 self.__dropouts = [dropouts]
         else:
             self.__dropouts = dropouts
-            assert (
-                len(self.__dropouts) == self.__num_layers
-            ), f"`out_channels` indicates {self.__num_layers} linear layers, while `dropouts` indicates {len(self.__dropouts)}"
+            assert len(self.__dropouts) == self.__num_layers, (
+                f"`out_channels` indicates {self.__num_layers} linear layers, "
+                f"while `dropouts` indicates {len(self.__dropouts)}"
+            )
         self.__skip_last_activation = kwargs.get("skip_last_activation", False)
 
         lin_in_channels = self.__in_channels
@@ -2920,7 +2967,6 @@ class MLP(SeqLin):
     """
     multi-layer perceptron,
     alias for sequential linear block
-
     """
 
     __DEBUG__ = False
@@ -3032,6 +3078,7 @@ class NonLocalBlock(nn.Module, SizeMixin):
                 ),
             )
             if self.__subsample_length > 1 and k != "theta":
+                # for "g" and "phi" layers
                 self.mid_layers[k].add_module(
                     "max_pool", nn.MaxPool1d(kernel_size=self.__subsample_length)
                 )
@@ -3072,6 +3119,8 @@ class NonLocalBlock(nn.Module, SizeMixin):
         y = torch.matmul(f, g_x)  # --> (batch_size, seq_len, n_channels)
         y = y.permute(0, 2, 1).contiguous()  # --> (batch_size, n_channels, seq_len)
         y = self.W(y)
+        len_diff = x.size(-1) - y.size(-1)  # nonzero only for even kernel sizes of W
+        y = F.pad(y, (len_diff // 2, len_diff - len_diff // 2))
         y += x
         return y
 
