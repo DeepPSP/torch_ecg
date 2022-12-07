@@ -1350,7 +1350,7 @@ def get_kwargs(func_or_cls: Callable, kwonly: bool = False) -> Dict[str, Any]:
 
 def get_required_args(func_or_cls: Callable) -> List[str]:
     """
-    get the required arguments of a function or class
+    get the required positional arguments of a function or class
 
     Parameters
     ----------

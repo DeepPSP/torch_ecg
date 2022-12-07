@@ -1,5 +1,7 @@
 """
 test of the classes from models._nets.py
+
+TODO: add more test for error raising
 """
 
 import inspect
@@ -58,7 +60,7 @@ from torch_ecg.models._nets import (  # noqa: F401
 
 BATCH_SIZE = 32
 IN_CHANNELS = 12
-SEQ_LEN = 5000
+SEQ_LEN = 2000
 SAMPLE_INPUT = torch.randn(BATCH_SIZE, IN_CHANNELS, SEQ_LEN)
 
 
@@ -241,6 +243,70 @@ def test_cba():
     assert bac(SAMPLE_INPUT).shape == bac.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
+
+    with pytest.raises(AssertionError, match="convolution must be included"):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 4,
+            kernel_size=5,
+            stride=1,
+            ordering="ab",
+        )
+
+    with pytest.raises(
+        AssertionError,
+        match="`width_multiplier` .+ makes `out_channels` .+ not divisible by `groups`",
+    ):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 3,
+            kernel_size=5,
+            stride=1,
+            groups=12,
+            width_multiplier=1.5,
+        )
+
+    with pytest.raises(
+        NotImplementedError, match="convolution of type `.+` not implemented yet"
+    ):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 3,
+            kernel_size=5,
+            stride=1,
+            conv_type="deformable",
+        )
+
+    with pytest.raises(ValueError, match="initializer `.+` not supported"):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 3,
+            kernel_size=5,
+            stride=1,
+            kernel_initializer="not_supported",
+        )
+
+    with pytest.raises(ValueError, match="normalization method `.+` not supported"):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 3,
+            kernel_size=5,
+            stride=1,
+            norm="not_supported",
+        )
+
+    with pytest.raises(ValueError, match="ordering `.+` not supported"):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 3,
+            kernel_size=5,
+            stride=1,
+            ordering="abc",
+        )
+
+
+def test_assign_weights_lead_wise():
+    pass
 
 
 def test_multi_conv():
@@ -434,54 +500,368 @@ def test_stacked_lstm():
 
 
 def test_attention_with_context():
-    pass
+    grid = itertools.product(
+        [True, False],  # bias
+        [
+            "glorot_uniform",
+            "glorot_normal",
+            "he_uniform",
+            "he_normal",
+            "xavier_normal",
+            "xavier_uniform",
+            "normal",
+            "uniform",
+            "orthogonal",
+        ],  # initializer
+    )
+    for bias, initializer in grid:
+        awc = AttentionWithContext(
+            in_channels=IN_CHANNELS,
+            bias=bias,
+            initializer=initializer,
+        )
+        assert awc(SAMPLE_INPUT).shape == awc.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+
+    with pytest.raises(
+        AssertionError, match="at least one of `seq_len` and `batch_size` must be given"
+    ):
+        awc.compute_output_shape(seq_len=None, batch_size=None)
 
 
 def test_multi_head_attention():
-    pass
+    grid = itertools.product(
+        [True, False],  # bias
+        [2, 6, 12],  # num_heads
+    )
+    q, k, v = (torch.randn(SEQ_LEN // 10, BATCH_SIZE, IN_CHANNELS) for _ in range(3))
+    for bias, num_heads in grid:
+        mha = MultiHeadAttention(
+            embed_dim=IN_CHANNELS,
+            num_heads=num_heads,
+            bias=bias,
+        )
+        assert mha(q, k, v)[0].shape == mha.compute_output_shape(
+            seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
+        )
 
 
 def test_self_attention():
-    pass
+    grid = itertools.product(
+        [True, False],  # bias
+        [2, 6, 12],  # num_heads
+        [
+            "mish",
+            "relu",
+            "leaky_relu",
+            "gelu",
+            "tanh",
+            "sigmoid",
+            "softmax",
+        ],  # activation
+    )
+    sample_input = torch.randn(SEQ_LEN // 10, BATCH_SIZE, IN_CHANNELS)
+    for bias, num_heads, activation in grid:
+        sa = SelfAttention(
+            embed_dim=IN_CHANNELS,
+            num_heads=num_heads,
+            bias=bias,
+            activation=activation,
+        )
+        assert sa(sample_input).shape == sa.compute_output_shape(
+            seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
+        )
 
 
 def test_attentive_pooling():
-    pass
+    grid = itertools.product(
+        [None, IN_CHANNELS // 2, IN_CHANNELS * 2],  # mid_channels
+        ["tanh", "sigmoid", "softmax"],  # activation
+        [0, 0.1, 0.5],  # dropout
+    )
+    for mid_channels, activation, dropout in grid:
+        ap = AttentivePooling(
+            in_channels=IN_CHANNELS,
+            mid_channels=mid_channels,
+            activation=activation,
+            dropout=dropout,
+        )
+        assert ap(SAMPLE_INPUT).shape == ap.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
 
 
 def test_zero_padding():
-    pass
+    grid = itertools.product(
+        [IN_CHANNELS, IN_CHANNELS * 2],  # out_channels
+        ZeroPadding.__LOC__,  # loc
+    )
+    for out_channels, loc in grid:
+        zp = ZeroPadding(
+            in_channels=IN_CHANNELS,
+            out_channels=out_channels,
+            loc=loc,
+        )
+        assert zp(SAMPLE_INPUT).shape == zp.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+
+    with pytest.raises(AssertionError, match="`loc` must be in"):
+        ZeroPadding(
+            in_channels=IN_CHANNELS, out_channels=IN_CHANNELS * 2, loc="invalid"
+        )
+
+    with pytest.raises(AssertionError, match="`out_channels` must be >= `in_channels`"):
+        ZeroPadding(in_channels=IN_CHANNELS, out_channels=IN_CHANNELS // 2)
 
 
 def test_zero_pad_1d():
-    pass
+    for padding in [2, [1, 1], [0, 3]]:
+        zp = ZeroPad1d(padding=padding)
+        assert zp(SAMPLE_INPUT).shape == zp.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE, in_channels=IN_CHANNELS
+        )
+
+    with pytest.raises(
+        AssertionError,
+        match="`padding` must be non-negative int or a 2-sequence of non-negative int",
+    ):
+        ZeroPad1d(padding=[1, 2, 3])
+    with pytest.raises(
+        AssertionError,
+        match="`padding` must be non-negative int or a 2-sequence of non-negative int",
+    ):
+        ZeroPad1d(padding=-1)
+    with pytest.raises(
+        AssertionError,
+        match="`padding` must be non-negative int or a 2-sequence of non-negative int",
+    ):
+        ZeroPad1d(padding=[1, 2.3])
 
 
 def test_mlp():
-    pass
+    out_channels = [IN_CHANNELS * 2, IN_CHANNELS * 4, 26]  # out_channels
+    grid = itertools.product(
+        ["mish", "relu", "leaky", "gelu", "tanh"],  # activation
+        [0, 0.1, [0.1, 0.2, 0.0]],  # dropout
+        [True, False],  # bias
+        [
+            "xavier_uniform",
+            "xavier_normal",
+            "kaiming_uniform",
+            "kaiming_normal",
+        ],  # initializer
+    )
+    for activation, dropout, bias, initializer in grid:
+        mlp = MLP(
+            in_channels=IN_CHANNELS,
+            out_channels=out_channels,
+            activation=activation,
+            dropout=dropout,
+            bias=bias,
+            initializer=initializer,
+        )
+        assert mlp(SAMPLE_INPUT.permute(0, 2, 1)).shape == mlp.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+
+    with pytest.raises(
+        AssertionError,
+        match="`out_channels` indicates `\\d+` linear layers, while `dropouts` indicates `\\d+`",
+    ):
+        SeqLin(
+            in_channels=IN_CHANNELS,
+            out_channels=[IN_CHANNELS * 2, IN_CHANNELS * 4, 26],
+            dropouts=[0.1, 0.2],
+        )
 
 
 def test_attention_blocks():
     # NonLocalBlock, SEBlock, GlobalContextBlock, CBAMBlock,
     # make_attention_layer
-    pass
+
+    grid_nl = itertools.product(
+        [IN_CHANNELS, IN_CHANNELS * 2],  # mid_channels
+        [2, {"g": 1, "phi": 3, "theta": 2, "W": 3}],  # filter_lengths
+        [1, 2],  # subsample_length
+    )
+    for mid_channels, filter_lengths, subsample_length in grid_nl:
+        config = dict(
+            mid_channels=mid_channels,
+            filter_lengths=filter_lengths,
+            subsample_length=subsample_length,
+        )
+        nl = NonLocalBlock(in_channels=IN_CHANNELS, **config)
+        assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+        nl = make_attention_layer(IN_CHANNELS, name="non_local", **config)
+        assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+
+    with pytest.raises(
+        AssertionError, match="`filter_lengths` must be an int or a dict, but got `.+`"
+    ):
+        NonLocalBlock(
+            in_channels=IN_CHANNELS,
+            mid_channels=IN_CHANNELS * 2,
+            filter_lengths=[1, 2],
+            subsample_length=1,
+        )
+    with pytest.raises(
+        AssertionError,
+        match="`filter_lengths` keys must be a subset of `.+`, but got `.+`",
+    ):
+        NonLocalBlock(
+            in_channels=IN_CHANNELS,
+            mid_channels=IN_CHANNELS * 2,
+            filter_lengths={"g": 1, "gamma": 3, "theta": 2, "W": 3},
+            subsample_length=1,
+        )
+
+    for reduction in [2, 4, 8]:
+        se = SEBlock(in_channels=IN_CHANNELS, reduction=reduction)
+        assert se(SAMPLE_INPUT).shape == se.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+        se = make_attention_layer(IN_CHANNELS, name="se", reduction=reduction)
+        assert se(SAMPLE_INPUT).shape == se.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+
+    grid_gc = itertools.product(
+        [4, 16],  # ratio
+        [True, False],  # reduction
+        GlobalContextBlock.__POOLING_TYPES__,  # pooling_type
+        [["add", "mul"], ["add"], ["mul"]],  # fusion_types
+    )
+    sample_input = torch.randn(BATCH_SIZE, IN_CHANNELS * 16, SEQ_LEN // 8)
+    for ratio, reduction, pooling_type, fusion_types in grid_gc:
+        config = dict(
+            ratio=ratio,
+            reduction=reduction,
+            pooling_type=pooling_type,
+            fusion_types=fusion_types,
+        )
+        gc = GlobalContextBlock(in_channels=IN_CHANNELS * 16, **config)
+        assert gc(sample_input).shape == gc.compute_output_shape(
+            seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
+        )
+        gc = make_attention_layer(IN_CHANNELS * 16, name="gc", **config)
+        assert gc(sample_input).shape == gc.compute_output_shape(
+            seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
+        )
+
+    with pytest.raises(
+        AssertionError,
+        match="`pooling_type` should be one of `.+`, but got `.+`",
+    ):
+        GlobalContextBlock(
+            in_channels=IN_CHANNELS * 16,
+            ratio=4,
+            pooling_type="max",
+        )
+    with pytest.raises(
+        AssertionError,
+        match="`fusion_types` should be a subset of `.+`, but got `.+`",
+    ):
+        GlobalContextBlock(
+            in_channels=IN_CHANNELS * 16,
+            ratio=4,
+            fusion_types=["add", "mul", "div"],
+        )
+
+    grid_cbam = itertools.product(
+        [4, 16],  # reduction
+        ["sigmoid", "tanh"],  # gate
+        [["avg", "max"], ["avg"], ["max"], ["lp", "lse"]],  # pool_types
+        [True, False],  # no_spatial
+    )
+    sample_input = torch.randn(BATCH_SIZE, IN_CHANNELS * 16, SEQ_LEN // 8)
+    for reduction, gate, pool_types, no_spatial in grid_cbam:
+        config = dict(
+            reduction=reduction,
+            gate=gate,
+            pool_types=pool_types,
+            no_spatial=no_spatial,
+        )
+        cbam = CBAMBlock(gate_channels=IN_CHANNELS * 16, **config)
+        assert cbam(sample_input).shape == cbam.compute_output_shape(
+            seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
+        )
+        cbam = make_attention_layer(IN_CHANNELS * 16, name="cbam", **config)
+        assert cbam(sample_input).shape == cbam.compute_output_shape(
+            seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
+        )
 
 
 def test_crf():
     # CRF, ExtendedCRF,
-    pass
+    num_tags = 26
+
+    sample_input = torch.randn(BATCH_SIZE, SEQ_LEN // 20, num_tags)
+    crf = CRF(num_tags=num_tags, batch_first=False)
+    assert crf(sample_input.permute(1, 0, 2)).shape == crf.compute_output_shape(
+        seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
+    )
+    crf = CRF(num_tags=num_tags, batch_first=True)
+    assert crf(sample_input).shape == crf.compute_output_shape(
+        seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match="`num_tags` must be be positive, but got `.+`",
+    ):
+        CRF(num_tags=-1)
+
+    sample_input = torch.randn(BATCH_SIZE, SEQ_LEN // 20, IN_CHANNELS)
+    for bias in [True, False]:
+        crf = ExtendedCRF(in_channels=IN_CHANNELS, num_tags=num_tags, bias=bias)
+        assert crf(sample_input).shape == crf.compute_output_shape(
+            seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
+        )
 
 
 def test_s2d():
     # SpaceToDepth
-    pass
+    for block_size in [2, 4]:
+        s2d = SpaceToDepth(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 8,
+            block_size=block_size,
+        )
+        assert s2d(SAMPLE_INPUT).shape == s2d.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
 
 
 def test_mldecoder():
     # MLDecoder
-    pass
+    grid = itertools.product(
+        [-1, 50, 200],  # num_groups
+        [False],  # zsl
+    )
+    for num_groups, zsl in grid:
+        mldecoder = MLDecoder(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 8,
+            num_groups=num_groups,
+            zsl=zsl,
+        )
+        assert mldecoder(SAMPLE_INPUT).shape == mldecoder.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+
+    with pytest.raises(NotImplementedError, match="Not implemented for `zsl` is `.+`"):
+        MLDecoder(in_channels=IN_CHANNELS, out_channels=IN_CHANNELS * 8, zsl=True)
 
 
 def test_droppath():
     # DropPath
-    pass
+    dp = DropPath()
+    assert dp(SAMPLE_INPUT).shape == dp.compute_output_shape(
+        input_shape=SAMPLE_INPUT.shape
+    )

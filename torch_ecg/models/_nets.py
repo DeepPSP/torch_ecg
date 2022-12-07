@@ -3096,11 +3096,16 @@ class NonLocalBlock(nn.Module, SizeMixin):
         self.__mid_channels = (mid_channels or self.__in_channels // 2) or 1
         self.__out_channels = self.__in_channels
         if isinstance(filter_lengths, dict):
-            assert set(filter_lengths.keys()) == set(
-                self.__MID_LAYERS__
-            ), f"`filter_lengths` keys must equal `{self.__MID_LAYERS__}`, but got `{filter_lengths.keys()}`"
-            self.__kernel_sizes = CFG({k: v for k, v in filter_lengths.items()})
+            assert set(filter_lengths.keys()) <= set(self.__MID_LAYERS__), (
+                f"`filter_lengths` keys must be a subset of `{self.__MID_LAYERS__}`, "
+                f"but got `{filter_lengths.keys()}`"
+            )
+            self.__kernel_sizes = CFG({k: 1 for k in self.__MID_LAYERS__})
+            self.__kernel_sizes.update({k: v for k, v in filter_lengths.items()})
         else:
+            assert isinstance(
+                filter_lengths, int
+            ), f"`filter_lengths` must be an int or a dict, but got `{type(filter_lengths)}`"
             self.__kernel_sizes = CFG({k: filter_lengths for k in self.__MID_LAYERS__})
         self.__subsample_length = subsample_length
         self.config = CFG(deepcopy(config))
@@ -3534,12 +3539,7 @@ class CBAMBlock(nn.Module, SizeMixin):
 
     __DEBUG__ = False
     __name__ = "CBAMBlock"
-    __POOL_TYPES__ = [
-        "avg",
-        "max",
-        "lp",
-        "lse",
-    ]
+    __POOL_TYPES__ = ["avg", "max", "lp", "lse"]
 
     def __init__(
         self,
@@ -3548,10 +3548,7 @@ class CBAMBlock(nn.Module, SizeMixin):
         groups: int = 1,
         activation: Union[str, nn.Module] = "relu",
         gate: Union[str, nn.Module] = "sigmoid",
-        pool_types: Sequence[str] = [
-            "avg",
-            "max",
-        ],
+        pool_types: Sequence[str] = ["avg", "max"],
         no_spatial: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -3608,12 +3605,13 @@ class CBAMBlock(nn.Module, SizeMixin):
             skip_last_activation=True,
         )
         # self.channel_gate_act = nn.Sigmoid()
-        if isinstance(gate, str):
-            self.channel_gate_act = Activations[gate.lower()]()
-        elif isinstance(gate, nn.Module):
-            self.channel_gate_act = gate
-        else:
-            raise ValueError(f"Unsupported gate activation {gate}!")
+        # if isinstance(gate, str):
+        #     self.channel_gate_act = Activations[gate.lower()]()
+        # elif isinstance(gate, nn.Module):
+        #     self.channel_gate_act = gate
+        # else:
+        #     raise ValueError(f"Unsupported gate activation {gate}!")
+        self.channel_gate_act = get_activation(gate, kw_act={})
 
         # spatial gate
         if no_spatial:
@@ -3829,8 +3827,7 @@ class CRF(nn.Module, SizeMixin):
             otherwise as (seq_len, batch, num_tags)
 
         """
-        if num_tags <= 0:
-            raise ValueError(f"invalid number of tags: {num_tags}")
+        assert num_tags > 0, f"`num_tags` must be be positive, but got `{num_tags}`"
         super().__init__()
         self.num_tags = num_tags
         self.batch_first = batch_first
@@ -3839,6 +3836,7 @@ class CRF(nn.Module, SizeMixin):
         self.transitions = nn.Parameter(torch.empty(num_tags, num_tags))
         self.reset_parameters()
         # self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.__permute_tuple = (0, 1, 2) if self.batch_first else (1, 0, 2)
 
     def reset_parameters(self) -> None:
         """
@@ -3931,14 +3929,18 @@ class CRF(nn.Module, SizeMixin):
         Parameters
         ----------
         emissions: Tensor,
-            emission score tensor of shape (seq_len, batch_size, num_tags)
+            emission score tensor,
+            of shape (seq_len, batch_size, num_tags) if batch_first is False,
+            of shape (batch_size, seq_len, num_tags) if batch_first is True.
         mask: torch.ByteTensor
             mask tensor of shape (seq_len, batch_size)
 
         Returns
         -------
         output: Tensor,
-            one hot encoding Tensor of the most likely tag sequence
+            one hot encoding Tensor of the most likely tag sequence,
+            of shape (seq_len, batch_size, num_tags) if batch_first is False,
+            of shape (batch_size, seq_len, num_tags) if batch_first is True.
 
         """
         self._validate(emissions, mask=mask)
@@ -3952,7 +3954,7 @@ class CRF(nn.Module, SizeMixin):
             mask = mask.transpose(0, 1)
         best_tags = Tensor(self._viterbi_decode(emissions, mask)).to(torch.int64)
         output = F.one_hot(best_tags.to(_device), num_classes=self.num_tags).permute(
-            1, 0, 2
+            *self.__permute_tuple
         )
         return output
 
@@ -4281,9 +4283,6 @@ class ExtendedCRF(nn.Sequential, SizeMixin):
             output = self.proj(input)
         else:
             output = input
-        output = output.permute(
-            1, 0, 2
-        )  # (batch_size, seq_len, n_channels) --> (seq_len, batch_size, n_channels)
         output = self.crf(output)
         return output
 
@@ -4314,6 +4313,8 @@ class ExtendedCRF(nn.Sequential, SizeMixin):
 
 class SpaceToDepth(nn.Module, SizeMixin):
     """
+    Space to depth layer, used in TResNet.
+
     References
     ----------
     1. https://github.com/Alibaba-MIIL/TResNet/blob/master/src/models/tresnet_v2/layers/space_to_depth.py
@@ -4361,7 +4362,7 @@ class SpaceToDepth(nn.Module, SizeMixin):
         Returns
         -------
         Tensor,
-            of shape (batch, channel', seqlen//bs)
+            of shape (batch, channel', seqlen // bs)
 
         """
         batch, channel, seqlen = x.shape
@@ -4430,10 +4431,11 @@ class MLDecoder(nn.Module, SizeMixin):
     __DEBUG__ = False
     __name__ = "MLDecoder"
 
+    @deprecate_kwargs([["num_groups", "num_of_groups"]])
     def __init__(
         self,
         in_channels: int,
-        out_channels: Sequence[int],
+        out_channels: int,
         num_of_groups: int = -1,
         decoder_embedding: int = 768,
         zsl: bool = False,
@@ -4468,7 +4470,7 @@ class MLDecoder(nn.Module, SizeMixin):
             query_embed = nn.Embedding(embed_len_decoder, decoder_embedding)
             query_embed.requires_grad_(False)
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"Not implemented for `zsl` is `{zsl}`")
             # query_embed = None
 
         # decoder
@@ -4622,6 +4624,23 @@ class DropPath(nn.Module, SizeMixin):
     def extra_repr(self) -> str:
         return f"p={self.p}, inplace={self.inplace}"
 
+    def compute_output_shape(
+        self, input_shape: Union[torch.Size, Sequence[Union[int, None]]]
+    ) -> Sequence[Union[int, None]]:
+        """
+        Parameters
+        ----------
+        input_shape: torch.Size or sequence of int,
+            the input shape
+
+        Returns
+        -------
+        tuple,
+            the output shape, given `input_shape`
+
+        """
+        return tuple(input_shape)
+
 
 def drop_path(
     x: Tensor, p: float = 0.2, training: bool = False, inplace: bool = False
@@ -4684,6 +4703,7 @@ def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
 
     """
     key = "name" if "name" in config else "type"
+    assert key in config, "config must contain key 'name' or 'type'"
     name = config[key].lower()
     if name in ["se"]:
         return SEBlock(in_channels, **config)
