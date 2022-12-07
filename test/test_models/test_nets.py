@@ -4,11 +4,14 @@ test of the classes from models._nets.py
 TODO: add more test for error raising
 """
 
+import functools
 import inspect
 import itertools
+import operator
 
 import torch
 import pytest
+from tqdm.auto import tqdm
 
 from torch_ecg.models._nets import (  # noqa: F401
     Mish,
@@ -58,7 +61,7 @@ from torch_ecg.models._nets import (  # noqa: F401
 )  # noqa: F401
 
 
-BATCH_SIZE = 32
+BATCH_SIZE = 4
 IN_CHANNELS = 12
 SEQ_LEN = 2000
 SAMPLE_INPUT = torch.randn(BATCH_SIZE, IN_CHANNELS, SEQ_LEN)
@@ -179,6 +182,73 @@ def test_initializer():
 
 
 def test_cba():
+    grid_dict = dict(
+        kernel_size=[1, 2, 11, 16],  # kernel_size
+        stride=[1, 2, 5],  # stride
+        padding=[None, 0, 2],  # padding
+        dilation=[1, 2, 7],  # dilation
+        groups=[1, 2, IN_CHANNELS],  # groups
+        norm=[None, True, "group_norm"],  # norm
+        activation=[None, "leaky"],  # activation
+        bias=[True, False],  # bias
+        ordering=[
+            "cab",
+            "bac",
+            "bca",
+            "acb",
+            "bc",
+            "cb",
+            "ac",
+            "ca",
+        ],  # ordering
+        conv_type=[None, "separable", "aa"],  # conv_type
+        alpha=[None, 2],  # alpha (width_multiplier)
+    )
+    grid = itertools.product(*grid_dict.values())
+    grid_len = functools.reduce(operator.mul, map(len, grid_dict.values()))
+    for (
+        kernel_size,
+        stride,
+        padding,
+        dilation,
+        groups,
+        norm,
+        activation,
+        bias,
+        ordering,
+        conv_type,
+        alpha,
+    ) in tqdm(grid, mininterval=3, total=grid_len, desc="Testing CBA"):
+        if not norm and "b" in ordering:
+            continue
+        if norm and "b" not in ordering:
+            continue
+        if not activation and "a" in ordering:
+            continue
+        if activation and "a" not in ordering:
+            continue
+        config = dict(
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            groups=groups,
+            norm=norm,
+            activation=activation,
+            bias=bias,
+            ordering=ordering,
+            conv_type=conv_type,
+            alpha=alpha,
+        )
+        cba = Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 8,
+            **config,
+        )
+        assert cba(SAMPLE_INPUT).shape == cba.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+
     cba = Conv_Bn_Activation(
         in_channels=IN_CHANNELS,
         out_channels=IN_CHANNELS * 4,
@@ -193,20 +263,6 @@ def test_cba():
         "ReLU6",
     ]
     assert cba(SAMPLE_INPUT).shape == cba.compute_output_shape(
-        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
-    )
-    cba_alpha = Conv_Bn_Activation(
-        in_channels=IN_CHANNELS,
-        out_channels=IN_CHANNELS * 4,
-        kernel_size=5,
-        stride=1,
-        activation="hardswish",
-        groups=12,
-        width_multiplier=1.5,
-        depth_multiplier=2,
-        conv_type="separable",
-    )
-    assert cba_alpha(SAMPLE_INPUT).shape == cba_alpha.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
     cab = Conv_Bn_Activation(
@@ -251,6 +307,7 @@ def test_cba():
             kernel_size=5,
             stride=1,
             ordering="ab",
+            activation="gelu",
         )
 
     with pytest.raises(
@@ -264,6 +321,7 @@ def test_cba():
             stride=1,
             groups=12,
             width_multiplier=1.5,
+            activation="gelu",
         )
 
     with pytest.raises(
@@ -295,13 +353,67 @@ def test_cba():
             norm="not_supported",
         )
 
-    with pytest.raises(ValueError, match="ordering `.+` not supported"):
+    with pytest.raises(ValueError, match="`ordering` \\(.+\\) not supported"):
         Conv_Bn_Activation(
             in_channels=IN_CHANNELS,
             out_channels=IN_CHANNELS * 3,
             kernel_size=5,
             stride=1,
+            activation="gelu",
             ordering="abc",
+        )
+
+    with pytest.warns(
+        RuntimeWarning,
+        match="normalization is specified by `norm` but not included in `ordering`",
+    ):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 3,
+            kernel_size=5,
+            stride=1,
+            groups=IN_CHANNELS // 2,
+            norm="group_norm",
+            ordering="ca",
+        )
+    with pytest.warns(
+        RuntimeWarning,
+        match="normalization is specified in `ordering` but not by `norm`",
+    ):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 3,
+            kernel_size=5,
+            stride=1,
+            groups=IN_CHANNELS // 2,
+            norm=None,
+            ordering="cab",
+        )
+    with pytest.warns(
+        RuntimeWarning,
+        match="activation is specified by `activation` but not included in `ordering`",
+    ):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 3,
+            kernel_size=5,
+            stride=1,
+            groups=IN_CHANNELS // 2,
+            activation="relu",
+            ordering="cb",
+        )
+    with pytest.warns(
+        RuntimeWarning,
+        match="activation is specified in `ordering` but not by `activation`",
+    ):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 3,
+            kernel_size=5,
+            stride=1,
+            groups=IN_CHANNELS // 2,
+            activation=None,
+            ordering="cab",
         )
 
 
