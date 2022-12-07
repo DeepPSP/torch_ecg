@@ -41,15 +41,19 @@ jobs:
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
         python -m pip freeze
-    # - name: Install nsrr and download a samll part of SHHS to do test
-      # NOT finished yet
-      # have to know how to login using GitHub secrets
-      # and download a small part of SHHS using
-      # `nsrr download shhs/polysomnography/edfs/shhs1/shhs1-20000*.edf`
-      # run: |
-      #   sudo gem install nsrr --no-document
+    - name: Install nsrr and download a samll part of SHHS to do test
+    # ref. https://github.com/DeepPSP/nsrr-automate
+      run: |
+        gem install nsrr --no-document
+        nsrr download shhs/polysomnography/edfs/shhs1/ --file="^shhs1\-20000.*\.edf" --token=${{ secrets.NSRR_TOKEN }}
+        mkdir -p ~/tmp/nsrr-data/
+        mv shhs/ ~/tmp/nsrr-data/
+        du -sh ~/tmp/nsrr-data/*
     - name: Run test with pytest and collect coverage
       run: |
         pytest --cov -v test
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
+    - name: Remove downloaded NSRR data
+      run: |
+        rm -rf ~/tmp/nsrr-data/

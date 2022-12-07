@@ -11,6 +11,7 @@ from torch_ecg.models.loss import (
     MaskedBCEWithLogitsLoss,
 )
 
+
 inp = torch.tensor([[10.0, -10.0], [-10.0, 10.0], [-10.0, 10.0]])
 targ_1 = torch.tensor([[1.0, 0.0], [0.0, 1.0], [0.0, 1.0]])
 targ_0 = torch.tensor([[0.0, 1.0], [1.0, 0.0], [1.0, 0.0]])

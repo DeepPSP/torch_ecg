@@ -13,14 +13,14 @@ import torch
 import pytest
 from tqdm.auto import tqdm
 
-from torch_ecg.models._nets import (  # noqa: F401
+from torch_ecg.models._nets import (
     Mish,
     Swish,
     Hardswish,
     Initializers,
     Activations,
-    Normalizations,
-    Bn_Activation,
+    # Normalizations,
+    # Bn_Activation,
     Conv_Bn_Activation,
     CBA,
     MultiConv,
@@ -57,8 +57,7 @@ from torch_ecg.models._nets import (  # noqa: F401
     get_activation,
     get_normalization,
     # internal
-    _DEFAULT_CONV_CONFIGS,
-)  # noqa: F401
+)
 
 
 BATCH_SIZE = 4
@@ -67,6 +66,7 @@ SEQ_LEN = 2000
 SAMPLE_INPUT = torch.randn(BATCH_SIZE, IN_CHANNELS, SEQ_LEN)
 
 
+@torch.no_grad()
 def test_activations():
     # Mish, Swish, Hardswish
     # get_activation
@@ -118,6 +118,7 @@ def test_activations():
         get_activation(SomeClass)
 
 
+@torch.no_grad()
 def test_normalization():
     assert get_normalization(None) is None
 
@@ -181,6 +182,7 @@ def test_initializer():
         assert inspect.isfunction(Initializers[name])
 
 
+@torch.no_grad()
 def test_cba():
     grid_dict = dict(
         kernel_size=[1, 2, 11, 16],  # kernel_size
@@ -249,7 +251,7 @@ def test_cba():
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
 
-    cba = Conv_Bn_Activation(
+    cba = CBA(
         in_channels=IN_CHANNELS,
         out_channels=IN_CHANNELS * 4,
         kernel_size=11,
@@ -265,7 +267,7 @@ def test_cba():
     assert cba(SAMPLE_INPUT).shape == cba.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
-    cab = Conv_Bn_Activation(
+    cab = CBA(
         in_channels=IN_CHANNELS,
         out_channels=IN_CHANNELS * 4,
         kernel_size=5,
@@ -282,7 +284,7 @@ def test_cba():
     assert cab(SAMPLE_INPUT).shape == cab.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
-    bac = Conv_Bn_Activation(
+    bac = CBA(
         in_channels=IN_CHANNELS,
         out_channels=IN_CHANNELS * 4,
         kernel_size=5,
@@ -417,10 +419,12 @@ def test_cba():
         )
 
 
+@torch.no_grad()
 def test_assign_weights_lead_wise():
     pass
 
 
+@torch.no_grad()
 def test_multi_conv():
     mc = MultiConv(
         in_channels=IN_CHANNELS,
@@ -437,6 +441,7 @@ def test_multi_conv():
     )
 
 
+@torch.no_grad()
 def test_branched_conv():
     bc = BranchedConv(
         in_channels=IN_CHANNELS,
@@ -458,6 +463,7 @@ def test_branched_conv():
     )
 
 
+@torch.no_grad()
 def test_separable_conv():
     sc = SeparableConv(
         in_channels=IN_CHANNELS,
@@ -473,10 +479,12 @@ def test_separable_conv():
     )
 
 
+@torch.no_grad()
 def test_deform_conv():
     pass  # NOT IMPLEMENTED
 
 
+@torch.no_grad()
 def test_blur_pool():
     grid = itertools.product(
         [1, 2, 5],  # down_scale
@@ -497,6 +505,7 @@ def test_blur_pool():
         )
 
 
+@torch.no_grad()
 def test_anti_alias_conv():
     aac = AntiAliasConv(
         in_channels=IN_CHANNELS,
@@ -524,6 +533,7 @@ def test_anti_alias_conv():
     )
 
 
+@torch.no_grad()
 def test_down_sample():
     grid = itertools.product(
         [1, 2, 5],  # down_scale
@@ -550,6 +560,7 @@ def test_down_sample():
         )
 
 
+@torch.no_grad()
 def test_bidirectional_lstm():
     grid = itertools.product(
         [1, 2, 3],  # num_layers
@@ -574,6 +585,7 @@ def test_bidirectional_lstm():
         )
 
 
+@torch.no_grad()
 def test_stacked_lstm():
     grid = itertools.product(
         [
@@ -611,6 +623,7 @@ def test_stacked_lstm():
     )
 
 
+@torch.no_grad()
 def test_attention_with_context():
     grid = itertools.product(
         [True, False],  # bias
@@ -642,6 +655,7 @@ def test_attention_with_context():
         awc.compute_output_shape(seq_len=None, batch_size=None)
 
 
+@torch.no_grad()
 def test_multi_head_attention():
     grid = itertools.product(
         [True, False],  # bias
@@ -659,6 +673,7 @@ def test_multi_head_attention():
         )
 
 
+@torch.no_grad()
 def test_self_attention():
     grid = itertools.product(
         [True, False],  # bias
@@ -686,6 +701,7 @@ def test_self_attention():
         )
 
 
+@torch.no_grad()
 def test_attentive_pooling():
     grid = itertools.product(
         [None, IN_CHANNELS // 2, IN_CHANNELS * 2],  # mid_channels
@@ -704,6 +720,7 @@ def test_attentive_pooling():
         )
 
 
+@torch.no_grad()
 def test_zero_padding():
     grid = itertools.product(
         [IN_CHANNELS, IN_CHANNELS * 2],  # out_channels
@@ -728,6 +745,7 @@ def test_zero_padding():
         ZeroPadding(in_channels=IN_CHANNELS, out_channels=IN_CHANNELS // 2)
 
 
+@torch.no_grad()
 def test_zero_pad_1d():
     for padding in [2, [1, 1], [0, 3]]:
         zp = ZeroPad1d(padding=padding)
@@ -752,6 +770,7 @@ def test_zero_pad_1d():
         ZeroPad1d(padding=[1, 2.3])
 
 
+@torch.no_grad()
 def test_mlp():
     out_channels = [IN_CHANNELS * 2, IN_CHANNELS * 4, 26]  # out_channels
     grid = itertools.product(
@@ -789,6 +808,7 @@ def test_mlp():
         )
 
 
+@torch.no_grad()
 def test_attention_blocks():
     # NonLocalBlock, SEBlock, GlobalContextBlock, CBAMBlock,
     # make_attention_layer
@@ -909,6 +929,7 @@ def test_attention_blocks():
         )
 
 
+@torch.no_grad()
 def test_crf():
     # CRF, ExtendedCRF,
     num_tags = 26
@@ -937,6 +958,7 @@ def test_crf():
         )
 
 
+@torch.no_grad()
 def test_s2d():
     # SpaceToDepth
     for block_size in [2, 4]:
@@ -950,6 +972,7 @@ def test_s2d():
         )
 
 
+@torch.no_grad()
 def test_mldecoder():
     # MLDecoder
     grid = itertools.product(
@@ -971,6 +994,7 @@ def test_mldecoder():
         MLDecoder(in_channels=IN_CHANNELS, out_channels=IN_CHANNELS * 8, zsl=True)
 
 
+@torch.no_grad()
 def test_droppath():
     # DropPath
     dp = DropPath()

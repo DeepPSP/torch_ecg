@@ -4,7 +4,6 @@ TestSHHS: NOT accomplished
 subsampling: NOT tested
 """
 
-import shutil
 from pathlib import Path
 
 from torch_ecg.databases import SHHS, DataBaseInfo
@@ -12,12 +11,9 @@ from torch_ecg.databases import SHHS, DataBaseInfo
 
 ###############################################################################
 # set paths
-_CWD = Path(__file__).absolute().parents[2] / "tmp" / "test-db" / "shhs"
-try:
-    shutil.rmtree(_CWD)
-except FileNotFoundError:
-    pass
-_CWD.mkdir(parents=True, exist_ok=True)
+# 9 files are downloaded in the following directory using `nsrr`
+# ref. the action file .github/workflows/run-pytest.yml
+_CWD = Path("~/tmp/nsrr-data/shhs").expanduser().resolve()
 ###############################################################################
 
 
@@ -26,7 +22,7 @@ reader = SHHS(_CWD)
 
 class TestSHHS:
     def test_len(self):
-        pass
+        assert len(reader) == 9
 
     def test_load_data(self):
         pass
