@@ -2,7 +2,6 @@
 basic building blocks, for 1d signal (time series)
 """
 
-import warnings
 from copy import deepcopy
 from itertools import repeat
 from inspect import isclass
@@ -631,14 +630,22 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         if act_layer is not None:
             act_name = f"activation_{type(act_layer).__name__}"
 
+        self.__asymmetric_padding = None
+
         if self.__ordering in ["cba", "cb", "ca"]:
             self.add_module("conv1d", conv_layer)
+            if self.__stride == 1 and self.__kernel_size % 2 == 0:
+                self.__asymmetric_padding = (1, 0)
+                self.add_module("zero_pad", ZeroPad1d(self.__asymmetric_padding))
             if bn_layer:
                 self.add_module("batch_norm", bn_layer)
             if act_layer:
                 self.add_module(act_name, act_layer)
         elif self.__ordering in ["cab"]:
             self.add_module("conv1d", conv_layer)
+            if self.__stride == 1 and self.__kernel_size % 2 == 0:
+                self.__asymmetric_padding = (1, 0)
+                self.add_module("zero_pad", ZeroPad1d(self.__asymmetric_padding))
             self.add_module(act_name, act_layer)
             self.add_module("batch_norm", bn_layer)
         elif self.__ordering in ["bac", "bc"]:
@@ -647,16 +654,25 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             if act_layer:
                 self.add_module(act_name, act_layer)
             self.add_module("conv1d", conv_layer)
+            if self.__stride == 1 and self.__kernel_size % 2 == 0:
+                self.__asymmetric_padding = (1, 0)
+                self.add_module("zero_pad", ZeroPad1d(self.__asymmetric_padding))
         elif self.__ordering in ["acb", "ac"]:
             if act_layer:
                 self.add_module(act_name, act_layer)
             self.add_module("conv1d", conv_layer)
+            if self.__stride == 1 and self.__kernel_size % 2 == 0:
+                self.__asymmetric_padding = (1, 0)
+                self.add_module("zero_pad", ZeroPad1d(self.__asymmetric_padding))
             if bn_layer:
                 self.add_module("batch_norm", bn_layer)
         elif self.__ordering in ["bca"]:
             if bn_layer:
                 self.add_module("batch_norm", bn_layer)
             self.add_module("conv1d", conv_layer)
+            if self.__stride == 1 and self.__kernel_size % 2 == 0:
+                self.__asymmetric_padding = (1, 0)
+                self.add_module("zero_pad", ZeroPad1d(self.__asymmetric_padding))
             if act_layer:
                 self.add_module(act_name, act_layer)
         else:
@@ -770,6 +786,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                 dilation=self.__dilation,
                 padding=self.__padding,
                 channel_last=False,
+                asymmetric_padding=self.__asymmetric_padding,
             )
         elif self.__conv_type in [
             "separable",
@@ -777,6 +794,11 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             "aa",
         ]:
             output_shape = self.conv1d.compute_output_shape(seq_len, batch_size)
+            if self.__asymmetric_padding:
+                output_shape = (
+                    *output_shape[:-1],
+                    output_shape[-1] + sum(self.__asymmetric_padding),
+                )
         return output_shape
 
     @property
