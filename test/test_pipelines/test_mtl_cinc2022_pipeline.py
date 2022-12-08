@@ -1038,7 +1038,11 @@ class CINC2022Reader(PCGDataBase):
             print("No cached statistics found, gathering from scratch...")
             self._df_stats = pd.DataFrame()
             with tqdm(
-                self.all_subjects, total=len(self.all_subjects), desc="loading stats"
+                self.all_subjects,
+                total=len(self.all_subjects),
+                desc="loading stats",
+                dynamic_ncols=True,
+                mininterval=1.0,
             ) as pbar:
                 for s in pbar:
                     f = self.data_dir / f"{s}.txt"
@@ -1095,6 +1099,8 @@ class CINC2022Reader(PCGDataBase):
                 self._df_stats.iterrows(),
                 total=len(self._df_stats),
                 desc="loading record stats",
+                dynamic_ncols=True,
+                mininterval=1.0,
             ) as pbar:
                 for _, row in pbar:
                     sid = row["Patient ID"]
@@ -1695,7 +1701,13 @@ class CinC2022Dataset(Dataset, ReprMixin):
             return
 
         tmp_cache = []
-        with tqdm(range(len(self.fdr)), desc="Loading data", unit="records") as pbar:
+        with tqdm(
+            range(len(self.fdr)),
+            desc="Loading data",
+            unit="records",
+            dynamic_ncols=True,
+            mininterval=1.0,
+        ) as pbar:
             for idx in pbar:
                 tmp_cache.append(self.fdr[idx])
         keys = tmp_cache[0].keys()

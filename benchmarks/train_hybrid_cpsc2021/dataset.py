@@ -224,7 +224,11 @@ class CPSC2021(ReprMixin, Dataset):
                 return
             self._all_data, self._all_labels, self._all_masks = [], [], []
             with tqdm(
-                range(len(self.fdr)), desc="Loading data", unit="records"
+                range(len(self.fdr)),
+                desc="Loading data",
+                unit="records",
+                dynamic_ncols=True,
+                mininterval=1.0,
             ) as pbar:
                 for idx in pbar:
                     d, l, m = self.fdr[idx]
@@ -266,7 +270,11 @@ class CPSC2021(ReprMixin, Dataset):
                 return
             self._all_data, self._all_labels, self._all_masks = [], [], []
             with tqdm(
-                range(len(self.fdr)), desc="Loading data", unit="records"
+                range(len(self.fdr)),
+                desc="Loading data",
+                unit="records",
+                dynamic_ncols=True,
+                mininterval=1.0,
             ) as pbar:
                 for idx in pbar:
                     d, l, m = self.fdr[idx]

@@ -296,7 +296,13 @@ class Wav2Vec2PretrainingDataset(Dataset, ReprMixin):
         if self._signals is not None and len(self._signals) > 0:
             return
         self._signals = []
-        with tqdm(range(len(self.fdr)), desc="Loading data", unit="records") as pbar:
+        with tqdm(
+            range(len(self.fdr)),
+            desc="Loading data",
+            unit="records",
+            dynamic_ncols=True,
+            mininterval=1.0,
+        ) as pbar:
             for idx in pbar:
                 self._signals.extend(self.fdr[idx])
 

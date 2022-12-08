@@ -126,7 +126,13 @@ class CinC2022Dataset(Dataset, ReprMixin):
             return
 
         tmp_cache = []
-        with tqdm(range(len(self.fdr)), desc="Loading data", unit="records") as pbar:
+        with tqdm(
+            range(len(self.fdr)),
+            desc="Loading data",
+            unit="records",
+            dynamic_ncols=True,
+            mininterval=1.0,
+        ) as pbar:
             for idx in pbar:
                 tmp_cache.append(self.fdr[idx])
         keys = tmp_cache[0].keys()

@@ -267,7 +267,10 @@ def train(
         epoch_loss = 0
 
         with tqdm(
-            total=n_train, desc=f"Epoch {epoch + 1}/{n_epochs}", ncols=100
+            total=n_train,
+            desc=f"Epoch {epoch + 1}/{n_epochs}",
+            dynamic_ncols=True,
+            mininterval=1.0,
         ) as pbar:
             for epoch_step, (signals, labels) in enumerate(train_loader):
                 global_step += 1

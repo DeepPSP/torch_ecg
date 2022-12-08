@@ -17,12 +17,6 @@ from typing import Dict, Tuple
 
 import numpy as np
 from scipy.io import loadmat
-
-try:
-    from tqdm.auto import tqdm  # noqa: F401
-except ModuleNotFoundError:
-    from tqdm import tqdm  # noqa: F401
-
 import torch
 from torch.utils.data.dataset import Dataset
 

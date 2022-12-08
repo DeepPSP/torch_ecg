@@ -476,7 +476,7 @@ class OutComeClassifier_CINC2022(object):
         best_score = np.inf
         best_clf = None
         best_params = None
-        with tqdm(enumerate(param_grid)) as pbar:
+        with tqdm(enumerate(param_grid), dynamic_ncols=True, mininterval=1.0) as pbar:
             for idx, params in pbar:
                 updated_params = deepcopy(params)
                 updated_params["n_jobs"] = self._num_workers

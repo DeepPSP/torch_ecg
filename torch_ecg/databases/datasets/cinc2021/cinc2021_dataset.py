@@ -135,7 +135,13 @@ class CINC2021Dataset(ReprMixin, Dataset):
         #     for rec in pbar:
         # s, l = self._load_one_record(rec)  # self._load_one_record is much slower than FastDataReader
         self._signals, self._labels = [], []
-        with tqdm(desc="Loading data", total=len(fdr), unit="record") as pbar:
+        with tqdm(
+            desc="Loading data",
+            total=len(fdr),
+            unit="record",
+            dynamic_ncols=True,
+            mininterval=1.0,
+        ) as pbar:
             for idx in range(len(fdr)):
                 sig, lb = fdr[idx]
                 # np.concatenate slows down the process severely
@@ -298,7 +304,10 @@ class CINC2021Dataset(ReprMixin, Dataset):
             test_set = {t: [] for t in _TRANCHES}
             for t in _TRANCHES:
                 with tqdm(
-                    self.reader.all_records[t], total=len(self.reader.all_records[t])
+                    self.reader.all_records[t],
+                    total=len(self.reader.all_records[t]),
+                    dynamic_ncols=True,
+                    mininterval=1.0,
                 ) as bar:
                     for rec in bar:
                         if rec in self.reader.exceptional_records:
@@ -421,7 +430,12 @@ class CINC2021Dataset(ReprMixin, Dataset):
         fn_suffix = fn_suffix + f"_siglen_{self.siglen}"
 
         X, y = [], []
-        with tqdm(range(self.__len__()), total=self.__len__()) as bar:
+        with tqdm(
+            range(self.__len__()),
+            total=self.__len__(),
+            dynamic_ncols=True,
+            mininterval=1.0,
+        ) as bar:
             for idx in bar:
                 values, labels = self.__getitem__(idx)
                 X.append(values)

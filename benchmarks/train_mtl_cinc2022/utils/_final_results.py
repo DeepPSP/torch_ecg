@@ -69,6 +69,8 @@ def _http_get(url: str, fname: Union[str, Path]) -> None:
         unit="iB",
         unit_scale=True,
         unit_divisor=1024,
+        dynamic_ncols=True,
+        mininterval=1.0,
     ) as bar:
         for data in resp.iter_content(chunk_size=1024):
             size = file.write(data)

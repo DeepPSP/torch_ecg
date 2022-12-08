@@ -125,7 +125,13 @@ class CINC2020Dataset(ReprMixin, Dataset):
         """ """
         fdr = FastDataReader(self.reader, self.records, self.config, self.ppm)
         self._signals, self._labels = [], []
-        with tqdm(range(len(fdr)), desc="Loading data", unit="record") as pbar:
+        with tqdm(
+            range(len(fdr)),
+            desc="Loading data",
+            unit="record",
+            dynamic_ncols=True,
+            mininterval=1.0,
+        ) as pbar:
             for idx in pbar:
                 sig, lb = fdr[idx]
                 self._signals.append(sig)
@@ -240,7 +246,10 @@ class CINC2020Dataset(ReprMixin, Dataset):
             test_set = {t: [] for t in _TRANCHES}
             for t in _TRANCHES:
                 with tqdm(
-                    self.reader.all_records[t], total=len(self.reader.all_records[t])
+                    self.reader.all_records[t],
+                    total=len(self.reader.all_records[t]),
+                    dynamic_ncols=True,
+                    mininterval=1.0,
                 ) as bar:
                     for rec in bar:
                         if rec in self.reader.exceptional_records:
@@ -342,7 +351,12 @@ class CINC2020Dataset(ReprMixin, Dataset):
         fn_suffix = fn_suffix + f"_siglen_{self.siglen}"
 
         X, y = [], []
-        with tqdm(range(self.__len__()), total=self.__len__()) as bar:
+        with tqdm(
+            range(self.__len__()),
+            total=self.__len__(),
+            dynamic_ncols=True,
+            mininterval=1.0,
+        ) as bar:
             for idx in bar:
                 values, labels = self.__getitem__(idx)
                 X.append(values)

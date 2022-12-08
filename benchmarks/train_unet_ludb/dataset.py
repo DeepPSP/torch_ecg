@@ -129,7 +129,9 @@ class LUDB(ReprMixin, Dataset):
         """ """
         self._signals, self._labels = [], []
 
-        with tqdm(self.fdr, total=len(self.fdr)) as bar:
+        with tqdm(
+            self.fdr, total=len(self.fdr), dynamic_ncols=True, mininterval=1.0
+        ) as bar:
             for signals, labels in bar:
                 self._signals.append(signals)
                 self._labels.append(labels)

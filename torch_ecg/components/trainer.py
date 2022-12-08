@@ -173,6 +173,8 @@ class BaseTrainer(ReprMixin, ABC):
                 total=self.n_train,
                 desc=f"Epoch {self.epoch}/{self.n_epochs}",
                 unit="signals",
+                dynamic_ncols=True,
+                mininterval=1.0,
             ) as pbar:
                 self.log_manager.epoch_start(self.epoch)
                 # train one epoch

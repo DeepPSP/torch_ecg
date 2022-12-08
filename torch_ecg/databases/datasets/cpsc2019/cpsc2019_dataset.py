@@ -104,7 +104,13 @@ class CPSC2019Dataset(ReprMixin, Dataset):
     def _load_all_data(self) -> None:
         """ """
         self._signals, self._labels = [], []
-        with tqdm(self.fdr, desc="loading data", unit="record") as pbar:
+        with tqdm(
+            self.fdr,
+            desc="loading data",
+            unit="record",
+            dynamic_ncols=True,
+            mininterval=1.0,
+        ) as pbar:
             for sig, lab in pbar:
                 self._signals.append(sig)
                 self._labels.append(lab)

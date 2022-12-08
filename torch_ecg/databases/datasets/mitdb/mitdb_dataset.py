@@ -160,7 +160,11 @@ class MITDBDataset(ReprMixin, Dataset):
             if self.lazy:
                 return
             with tqdm(
-                range(len(self.records)), desc="Loading data", unit="record"
+                range(len(self.records)),
+                desc="Loading data",
+                unit="record",
+                dynamic_ncols=True,
+                mininterval=1.0,
             ) as pbar:
                 for idx in pbar:
                     data = self.reader.load_data(self.records[idx])
@@ -223,7 +227,13 @@ class MITDBDataset(ReprMixin, Dataset):
                     f"No data found for task {self.task}, slice the data first.",
                     RuntimeWarning,
                 )
-            with tqdm(range(len(self.fdr)), desc="Loading data", unit="record") as pbar:
+            with tqdm(
+                range(len(self.fdr)),
+                desc="Loading data",
+                unit="record",
+                dynamic_ncols=True,
+                mininterval=1.0,
+            ) as pbar:
                 for idx in pbar:
                     d, l, m = self.fdr[idx]
                     self._all_data.append(d)
@@ -262,7 +272,13 @@ class MITDBDataset(ReprMixin, Dataset):
             if self.lazy:
                 return
             self._all_data, self._all_labels, self._all_masks = [], [], []
-            with tqdm(range(len(self.fdr)), desc="Loading data", unit="record") as pbar:
+            with tqdm(
+                range(len(self.fdr)),
+                desc="Loading data",
+                unit="record",
+                dynamic_ncols=True,
+                mininterval=1.0,
+            ) as pbar:
                 for idx in pbar:
                     d, l, m = self.fdr[idx]
                     self._all_data.append(d)
@@ -650,6 +666,8 @@ class MITDBDataset(ReprMixin, Dataset):
             total=len(self.reader),
             desc="Slicing data",
             unit="record",
+            dynamic_ncols=True,
+            mininterval=1.0,
         ) as pbar:
             for idx, rec in pbar:
                 self._slice_one_record(
@@ -731,6 +749,8 @@ class MITDBDataset(ReprMixin, Dataset):
             range((siglen - self.seglen) // forward_len + 1),
             desc=f"Slicing segments for record {rec}",
             unit="segment",
+            dynamic_ncols=True,
+            mininterval=1.0,
         ) as pbar:
             for idx in pbar:
                 start_idx = idx * forward_len
@@ -759,7 +779,11 @@ class MITDBDataset(ReprMixin, Dataset):
             "with random `forward_len` in `critical_forward_len`"
         )
         with tqdm(
-            critical_points, desc=f"Slicing segments for record {rec}", unit="segment"
+            critical_points,
+            desc=f"Slicing segments for record {rec}",
+            unit="segment",
+            dynamic_ncols=True,
+            mininterval=1.0,
         ) as pbar:
             for cp in pbar:
                 start_idx = max(
@@ -1012,6 +1036,8 @@ class MITDBDataset(ReprMixin, Dataset):
             total=len(self.reader),
             desc="Slicing rr_seq",
             unit="record",
+            dynamic_ncols=True,
+            mininterval=1.0,
         ) as pbar:
             for idx, rec in pbar:
                 self._slice_rr_seq_one_record(
@@ -1073,6 +1099,8 @@ class MITDBDataset(ReprMixin, Dataset):
             range((len(rr) - self.seglen) // forward_len + 1),
             desc=f"Slicing rr_seq for record `{rec}`",
             unit="segment",
+            dynamic_ncols=True,
+            mininterval=1.0,
         ) as pbar:
             for idx in pbar:
                 start_idx = idx * forward_len
@@ -1105,7 +1133,11 @@ class MITDBDataset(ReprMixin, Dataset):
             "with random `forward_len` in `critical_forward_len`"
         )
         with tqdm(
-            critical_points, desc=f"Slicing rr_seq for record {rec}", unit="segment"
+            critical_points,
+            desc=f"Slicing rr_seq for record {rec}",
+            unit="segment",
+            dynamic_ncols=True,
+            mininterval=1.0,
         ) as pbar:
             for cp in pbar:
                 start_idx = max(

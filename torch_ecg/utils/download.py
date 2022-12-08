@@ -95,7 +95,9 @@ def http_get(
     total = int(content_length) if content_length is not None else None
     if req.status_code == 403 or req.status_code == 404:
         raise Exception(f"Could not reach {url}.")
-    progress = tqdm(unit="B", unit_scale=True, total=total, mininterval=1.0)
+    progress = tqdm(
+        unit="B", unit_scale=True, total=total, dynamic_ncols=True, mininterval=1.0
+    )
     for chunk in req.iter_content(chunk_size=1024):
         if chunk:  # filter out keep-alive new chunks
             progress.update(len(chunk))

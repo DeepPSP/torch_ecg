@@ -220,7 +220,9 @@ def test_cba():
         ordering,
         conv_type,
         alpha,
-    ) in tqdm(grid, mininterval=3, total=grid_len, desc="Testing CBA"):
+    ) in tqdm(
+        grid, mininterval=3.0, total=grid_len, desc="Testing CBA", dynamic_ncols=True
+    ):
         if not norm and "b" in ordering:
             continue
         if norm and "b" not in ordering:
