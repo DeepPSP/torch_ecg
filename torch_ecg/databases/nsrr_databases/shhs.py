@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-docstring, to write
+Sleep Heart Health Study (SHHS) database
 """
 
+import itertools
+import re
 import warnings
 from datetime import datetime
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Tuple
 
 import numpy as np
 import pandas as pd
+import scipy.signal as SS
 import xmltodict as xtd
 from pyedflib import EdfReader  # noqa: F401
 
@@ -62,7 +65,7 @@ _SHHS_INFO = DataBaseInfo(
         2.1. There is one OAI index in the data set. It reflects obstructive events associated with a 4% desaturation or arousal. Nearly 30% of the cohort has a zero value for this variable
         2.2. Dichotomization is suggested (e.g. >=3 or >=4 events per hour indicates positive)
     3. Central Apnea Index (CAI):
-        3.1. Several variables describe central breathing events, with different thresholds for desaturation and requirement/non-requirement of arousals. ˜58% of the cohort have zero values
+        3.1. Several variables describe central breathing events, with different thresholds for desaturation and requirement/non-requirement of arousals. ~58% of the cohort have zero values
         3.2. Dichotomization is suggested (e.g. >=3 or >=4 events per hour indicates positive)
     4. Sleep Stages:
         4.1. Stage 1 and stage 3-4 are not normally distributed, but stage 2 and REM sleep are.
@@ -154,7 +157,7 @@ _SHHS_INFO = DataBaseInfo(
         4.1. combination of both CSA and OSA
         4.2. exact mechanism of the loss of central respiratory drive during sleep in OSA is unknown but is most likely related to incorrect settings of the CPAP (Continuous Positive Airway Pressure) treatment and other medical conditions the person has
     5. Hypopnea:
-        overly shallow breathing or an abnormally low respiratory rate. Hypopnea is defined by some to be less severe than apnea (the complete cessation of breathing)
+        overly shallow breathing or an abnormally low respiratory rate. Hypopnea is defined by some to be less severe than apnea (the complete cessation of breathing)
     6. Apnea Hypopnea Index (AHI): to write
         6.1. used to indicate the severity of OSA
         6.2. number of apneas or hypopneas recorded during the study per hour of sleep
@@ -231,7 +234,12 @@ class SHHS(NSRRDataBase):
             **kwargs,
         )
 
-        self.current_version = kwargs.get("current_version", "0.15.0")
+        self.__create_constants(**kwargs)
+
+        self.current_version = kwargs.get("current_version", "0.19.0")
+        self.version_pattern = "\\d+\\.\\d+\\.\\d+"
+
+        self.rec_name_pattern = "shhs[12]\\-\\d{6}"
 
         self.psg_data_path = None
         self.ann_path = None
@@ -242,417 +250,18 @@ class SHHS(NSRRDataBase):
         self.event_profusion_ann_path = None
         self.form_paths()
 
+        self._df_records = pd.DataFrame()
+        self._all_records = []
+        self.rec_with_hrv_summary_ann = []
+        self.rec_with_hrv_detail_ann = []
+        self.rec_with_event_ann = []
+        self.rec_with_event_profusion_ann = []
+        self.rec_with_rpeaks_ann = []
+        self._tables = {}
+        self._ls_rec()
+
         self.fs = None
         self.file_opened = None
-
-        # stats
-        try:
-            self.rec_with_hrv_ann = [
-                f"shhs{int(row['visitnumber'])}-{int(row['nsrrid'])}"
-                for _, row in self.load_hrv_summary_ann().iterrows()
-            ]
-        except Exception:
-            self.rec_with_hrv_ann = []
-
-        self.all_signals = [
-            "SaO2",
-            "H.R.",
-            "EEG(sec)",
-            "ECG",
-            "EMG",
-            "EOG(L)",
-            "EOG(R)",
-            "EEG",
-            "SOUND",
-            "AIRFLOW",
-            "THOR RES",
-            "ABDO RES",
-            "POSITION",
-            "LIGHT",
-            "NEW AIR",
-            "OX stat",
-        ]
-
-        # annotations regarding sleep analysis
-        self.hrv_ann_summary_keys = [
-            "nsrrid",
-            "visitnumber",
-            "NN_RR",
-            "AVNN",
-            "IHR",
-            "SDNN",
-            "SDANN",
-            "SDNNIDX",
-            "rMSSD",
-            "pNN10",
-            "pNN20",
-            "pNN30",
-            "pNN40",
-            "pNN50",
-            "tot_pwr",
-            "ULF",
-            "VLF",
-            "LF",
-            "HF",
-            "LF_HF",
-            "LF_n",
-            "HF_n",
-        ]
-        self.hrv_ann_detailed_keys = [
-            "nsrrid",
-            "visitnumber",
-            "Start__sec_",
-            "ihr",
-            "NN_RR",
-            "AVNN",
-            "SDNN",
-            "rMSSD",
-            "PNN10",
-            "PNN20",
-            "PNN30",
-            "PNN40",
-            "PNN50",
-            "TOT_PWR",
-            "VLF",
-            "LF",
-            "LF_n",
-            "HF",
-            "HF_n",
-            "LF_HF",
-            "sleepstage01",
-            "sleepstage02",
-            "sleepstage03",
-            "sleepstage04",
-            "sleepstage05",
-            "sleepstage06",
-            "sleepstage07",
-            "sleepstage08",
-            "sleepstage09",
-            "sleepstage10",
-            "event01start",
-            "event01end",
-            "event02start",
-            "event02end",
-            "event03start",
-            "event03end",
-            "event04start",
-            "event04end",
-            "event05start",
-            "event05end",
-            "event06start",
-            "event06end",
-            "event07start",
-            "event07end",
-            "event08start",
-            "event08end",
-            "event09start",
-            "event09end",
-            "event10start",
-            "event10end",
-            "event11start",
-            "event11end",
-            "event12start",
-            "event12end",
-            "event13start",
-            "event13end",
-            "event14start",
-            "event14end",
-            "event15start",
-            "event15end",
-            "event16start",
-            "event16end",
-            "event17start",
-            "event17end",
-            "event18start",
-            "event18end",
-            "hasrespevent",
-        ]
-        self.hrv_ann_epoch_len_sec = 300  # 5min
-        self.sleep_ann_keys_from_hrv = [
-            "Start__sec_",
-            "sleepstage01",
-            "sleepstage02",
-            "sleepstage03",
-            "sleepstage04",
-            "sleepstage05",
-            "sleepstage06",
-            "sleepstage07",
-            "sleepstage08",
-            "sleepstage09",
-            "sleepstage10",
-            "event01start",
-            "event01end",
-            "event02start",
-            "event02end",
-            "event03start",
-            "event03end",
-            "event04start",
-            "event04end",
-            "event05start",
-            "event05end",
-            "event06start",
-            "event06end",
-            "event07start",
-            "event07end",
-            "event08start",
-            "event08end",
-            "event09start",
-            "event09end",
-            "event10start",
-            "event10end",
-            "event11start",
-            "event11end",
-            "event12start",
-            "event12end",
-            "event13start",
-            "event13end",
-            "event14start",
-            "event14end",
-            "event15start",
-            "event15end",
-            "event16start",
-            "event16end",
-            "event17start",
-            "event17end",
-            "event18start",
-            "event18end",
-            "hasrespevent",
-        ]
-        self.sleep_stage_ann_keys_from_hrv = [
-            "Start__sec_",
-            "sleepstage01",
-            "sleepstage02",
-            "sleepstage03",
-            "sleepstage04",
-            "sleepstage05",
-            "sleepstage06",
-            "sleepstage07",
-            "sleepstage08",
-            "sleepstage09",
-            "sleepstage10",
-        ]
-        self.sleep_event_ann_keys_from_hrv = [
-            "Start__sec_",
-            "event01start",
-            "event01end",
-            "event02start",
-            "event02end",
-            "event03start",
-            "event03end",
-            "event04start",
-            "event04end",
-            "event05start",
-            "event05end",
-            "event06start",
-            "event06end",
-            "event07start",
-            "event07end",
-            "event08start",
-            "event08end",
-            "event09start",
-            "event09end",
-            "event10start",
-            "event10end",
-            "event11start",
-            "event11end",
-            "event12start",
-            "event12end",
-            "event13start",
-            "event13end",
-            "event14start",
-            "event14end",
-            "event15start",
-            "event15end",
-            "event16start",
-            "event16end",
-            "event17start",
-            "event17end",
-            "event18start",
-            "event18end",
-            "hasrespevent",
-        ]
-
-        # annotations from events-nsrr and events-profusion folders
-        self.event_keys = [
-            "EventType",
-            "EventConcept",
-            "Start",
-            "Duration",
-            "SignalLocation",
-            "SpO2Nadir",
-            "SpO2Baseline",
-        ]
-        # NOTE: the union of names from shhs1-200001 to shhs1-200399
-        # NOT a full search
-        self.short_event_types_from_event = [
-            "Respiratory",
-            "Stages",
-            "Arousals",
-        ]
-        self.long_event_types_from_event = [
-            "Respiratory|Respiratory",
-            "Stages|Stages",
-            "Arousals|Arousals",
-        ]
-        # NOTE: the union of names from shhs1-200001 to shhs1-200399
-        # NOT a full search
-        # NOT including sleep stages
-        self.short_event_names_from_event = [
-            "Central Apnea",
-            "Obstructive Apnea",
-            "Mixed Apnea",
-            "Hypopnea",
-            "SpO2 artifact",
-            "SpO2 desaturation",
-            "Arousal ()",
-            "Arousal (Standard)",
-            "Arousal (STANDARD)",
-            "Arousal (CHESHIRE)",
-            "Arousal (ASDA)",
-            "Unsure",
-        ]
-        self.long_event_names_from_event = [
-            "Central apnea|Central Apnea",
-            "Obstructive apnea|Obstructive Apnea",
-            "Mixed apnea|Mixed Apnea",
-            "Hypopnea|Hypopnea",
-            "SpO2 artifact|SpO2 artifact",
-            "SpO2 desaturation|SpO2 desaturation",
-            "Arousal|Arousal ()",
-            "Arousal|Arousal (Standard)",
-            "Arousal|Arousal (STANDARD)",
-            "Arousal resulting from Chin EMG|Arousal (CHESHIRE)",
-            "ASDA arousal|Arousal (ASDA)",
-            "Unsure|Unsure",
-        ]
-        self.event_profusion_keys = [
-            "Name",
-            "Start",
-            "Duration",
-            "Input",
-            "LowestSpO2",
-            "Desaturation",
-        ]
-        # NOTE: currently the union of names from shhs1-200001 to shhs1-200099,
-        # NOT a full search
-        self.event_names_from_event_profusion = [
-            "Central Apnea",
-            "Obstructive Apnea",
-            "Mixed Apnea",
-            "Hypopnea",
-            "SpO2 artifact",
-            "SpO2 desaturation",
-            "Arousal ()",
-            "Arousal (ASDA)",
-            "Unsure",
-        ]
-
-        self.apnea_types = [
-            "Central Apnea",
-            "Obstructive Apnea",
-            "Mixed Apnea",
-            "Hypopnea",
-        ]
-
-        # annotations regarding wave delineation
-        self.wave_deli_keys = [
-            "RPoint",
-            "Start",
-            "End",
-            "STLevel1",
-            "STSlope1",
-            "STLevel2",
-            "STSlope2",
-            "Manual",
-            "Type",
-            "PPoint",
-            "PStart",
-            "PEnd",
-            "TPoint",
-            "TStart",
-            "TEnd",
-            "TemplateID",
-            "nsrrid",
-            "samplingrate",
-            "seconds",
-            "epoch",
-            "rpointadj",
-        ]
-        self.wave_deli_samp_num_keys = [
-            "RPoint",
-            "Start",
-            "End",
-            "PPoint",
-            "PStart",
-            "PEnd",
-            "TPoint",
-            "TStart",
-            "TEnd",
-        ]
-
-        # TODO: other annotation files: EEG
-
-        # self-defined items
-        self.sleep_stage_keys = ["start_sec", "sleep_stage"]
-        self.sleep_event_keys = [
-            "event_name",
-            "event_start",
-            "event_end",
-            "event_duration",
-        ]
-        self.sleep_epoch_len_sec = 30
-        self.ann_sleep_stages = [0, 1, 2, 3, 4, 5, 9]
-        """
-        0	--- Wake
-        1	--- sleep stage 1
-        2	--- sleep stage 2
-        3	--- sleep stage 3/4
-        4	--- sleep stage 3/4
-        5	--- REM stage
-        9	--- Movement/Wake or Unscored?
-        """
-        self.sleep_stage_protocol = kwargs.get("sleep_stage_protocol", "aasm")
-        self.all_sleep_stage_names = ["W", "R", "N1", "N2", "N3", "N4"]
-        self.sleep_stage_name_value_mapping = {
-            "W": 0,
-            "R": 1,
-            "N1": 2,
-            "N2": 3,
-            "N3": 4,
-            "N4": 5,
-        }
-        self.sleep_stage_names = []
-        self.update_sleep_stage_names()
-        self._to_simplified_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 2, 3: 3, 4: 3}
-        """ 9 to nan?
-        0   --- awake
-        1   --- REM
-        2   --- N1 (NREM1/2), shallow sleep
-        3   --- N2 (NREM3/4), deep sleep
-        """
-        self._to_aasm_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 3, 3: 4, 4: 4}
-        """ 9 to nan?
-        0   --- awake
-        1   --- REM
-        2   --- N1 (NREM1)
-        3   --- N2 (NREM2)
-        4   --- N3 (NREM3/4)
-        """
-        self._to_shhs_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 3, 3: 4, 4: 5}
-
-        # for plotting
-        self.palette = {
-            "W": "orange",
-            "R": "yellow",
-            "N1": "green",
-            "N2": "cyan",
-            "N3": "blue",
-            "N4": "purple",
-            "Central Apnea": "red",
-            "Obstructive Apnea": "yellow",
-            "Mixed Apnea": "cyan",
-            "Hypopnea": "purple",
-        }  # TODO: add more
 
     def form_paths(self) -> None:
         """ """
@@ -670,15 +279,150 @@ class SHHS(NSRRDataBase):
 
     def _ls_rec(self) -> None:
         """ """
-        self._all_records = sorted(self.psg_data_path.rglob("*.edf"))
+        self.logger.info("Finding `edf` records....")
+        self._df_records = pd.DataFrame()
+        self._df_records["path"] = sorted(self.db_dir.rglob("*.edf"))
+
         if self._subsample is not None:
             size = min(
-                len(self._all_records),
-                max(1, int(round(self._subsample * len(self._all_records)))),
+                len(self._df_records),
+                max(1, int(round(self._subsample * len(self._df_records)))),
             )
-            self._all_records = sorted(
-                DEFAULTS.RNG.choice(self._all_records, size=size, replace=False)
+            self._df_records = self._df_records.sample(
+                n=size, random_state=DEFAULTS.SEED, replace=False
             )
+
+        # if self._df_records is non-empty, call `form_paths` again if necessary
+        # typically path for a record is like:
+        # self.db_dir / "polysomnography/edfs/shhs1/shhs1-200001.edf"
+        if (
+            len(self._df_records) > 0
+            and self._df_records.iloc[0]["path"].parents[3] != self.db_dir
+        ):
+            self.db_dir = self._df_records.iloc[0]["path"].parents[3]
+            self.form_paths()
+
+        # get other columns
+        self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
+        self._df_records["tranche"] = self._df_records["record"].apply(
+            lambda x: x.split("-")[0]
+        )
+        self._df_records["visitnumber"] = self._df_records["record"].apply(
+            lambda x: int(x.split("-")[0][4:])
+        )
+        self._df_records["nsrrid"] = self._df_records["record"].apply(
+            lambda x: int(x.split("-")[1])
+        )
+
+        # auxiliary and annotation files
+        if not self._df_records.empty:
+            for key in self.extension:
+                self._df_records[key] = self._df_records.apply(
+                    lambda row: self.folder_or_file[key]
+                    / row["tranche"]
+                    / (row["record"] + self.extension[key]),
+                    axis=1,
+                )
+
+        self._df_records.set_index("record", inplace=True)
+        self._all_records = self._df_records.index.tolist()
+
+        # update `current_version`
+        if self.ann_path.is_dir():
+            for file in self.ann_path.iterdir():
+                if (
+                    file.is_file()
+                    and len(re.findall(self.version_pattern, file.name)) > 0
+                ):
+                    self.current_version = re.findall(self.version_pattern, file.name)[
+                        0
+                    ]
+                    break
+
+            self.logger.info("Loading tables....")
+            # gather tables in self.ann_path and in self.hrv_ann_path
+            for file in itertools.chain(
+                self.ann_path.glob("*.csv"), self.hrv_ann_path.glob("*.csv")
+            ):
+                if not file.suffix == ".csv":
+                    continue
+                table_name = file.stem.replace(f"-{self.current_version}", "")
+                try:
+                    self._tables[table_name] = pd.read_csv(file, low_memory=False)
+                except UnicodeDecodeError:
+                    self._tables[table_name] = pd.read_csv(
+                        file, low_memory=False, encoding="latin-1"
+                    )
+
+        self.logger.info("Finding records with HRV annotations....")
+        # find records with hrv annotations
+        self.rec_with_hrv_summary_ann = []
+        for table_name in ["shhs1-hrv-summary", "shhs2-hrv-summary"]:
+            if table_name in self._tables:
+                self.rec_with_hrv_summary_ann.extend(
+                    [
+                        f"shhs{int(row['visitnumber'])}-{int(row['nsrrid'])}"
+                        for _, row in self._tables[table_name].iterrows()
+                    ]
+                )
+        self.rec_with_hrv_summary_ann = sorted(list(set(self.rec_with_hrv_summary_ann)))
+        self.rec_with_hrv_detail_ann = []
+        for table_name in ["shhs1-hrv-5min", "shhs2-hrv-5min"]:
+            if table_name in self._tables:
+                self.rec_with_hrv_detail_ann.extend(
+                    [
+                        f"shhs{int(row['visitnumber'])}-{int(row['nsrrid'])}"
+                        for _, row in self._tables[table_name].iterrows()
+                    ]
+                )
+        self.rec_with_hrv_detail_ann = sorted(list(set(self.rec_with_hrv_detail_ann)))
+
+        self.logger.info("Finding records with rpeaks annotations....")
+        # find available rpeak annotation files
+        self.rec_with_rpeaks_ann = sorted(
+            [
+                f.stem.replace("-rpoint", "")
+                for f in self.wave_deli_path.rglob("shhs*-rpoint.csv")
+            ]
+        )
+
+        self.logger.info("Finding records with event annotations....")
+        # find available event annotation files
+        self.rec_with_event_ann = sorted(
+            [
+                f.stem.replace("-nsrr", "")
+                for f in self.event_ann_path.rglob("shhs*-nsrr.xml")
+            ]
+        )
+        self.rec_with_event_profusion_ann = sorted(
+            [
+                f.stem.replace("-profusion", "")
+                for f in self.event_profusion_ann_path.rglob("shhs*-profusion.xml")
+            ]
+        )
+
+        # END OF `_ls_rec`
+
+    def list_table_names(self) -> List[str]:
+        """list available table names"""
+        return list(self._tables.keys())
+
+    def get_table(self, table_name: str) -> pd.DataFrame:
+        """
+        get table by name
+
+        Parameters
+        ----------
+        table_name: str,
+            table name,
+            for available table names, call method `list_table_names`
+
+        Returns
+        -------
+        table: pd.DataFrame
+
+        """
+        return self._tables[table_name]
 
     def update_sleep_stage_names(self) -> None:
         """ """
@@ -689,70 +433,134 @@ class SHHS(NSRRDataBase):
         elif self.sleep_stage_protocol == "shhs":
             nb_stages = 6
         else:
-            raise ValueError(f"No stage protocol named {self.sleep_stage_protocol}")
+            raise ValueError(f"No stage protocol named `{self.sleep_stage_protocol}`")
 
         self.sleep_stage_names = self.all_sleep_stage_names[:nb_stages]
 
-    def get_subject_id(self, rec: str) -> int:
+    def get_subject_id(self, rec: Union[str, int]) -> int:
         """
+        get a unique subject id for a record
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
 
         Returns
         -------
         pid, int, `subject_id` derived from `rec`
 
         """
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
         head_shhs1, head_shhs2v3, head_shhs2v4 = "30000", "30001", "30002"
-        dataset_no, no = rec.split("-")
-        dataset_no = dataset_no[-1]
-        if dataset_no == "2":
+        tranche, nsrrid, visitnumber = [
+            self.split_rec_name(rec)[k] for k in ["tranche", "nsrrid", "visitnumber"]
+        ]
+        if visitnumber == "2":
             raise ValueError(
-                "SHHS2 has two different sampling frequencies, currently could not be distinguished using only `rec`"
+                "SHHS2 has two different sampling frequencies, "
+                "currently could not be distinguished using only `rec`"
             )
-        pid = int(head_shhs1 + dataset_no + no)
+        pid = int(head_shhs1 + str(visitnumber) + str(nsrrid))
         return pid
 
-    def get_visit_number(self, rec: str) -> int:
+    def split_rec_name(self, rec: Union[str, int]) -> Dict[str, Union[str, int]]:
         """
+        split `rec` into `tranche`, `visitnumber`, `nsrrid`
+
         Parameters
         ----------
         rec: str,
-            record name, typically in the form "shhs1-200001"
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+
+        Returns
+        -------
+        dict, keys: "tranche", "visitnumber", "nsrrid"
+
+        """
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
+        assert re.match(self.rec_name_pattern, rec)
+        tranche, nsrrid = rec.split("-")
+        visitnumber = tranche[-1]
+        return {
+            "tranche": tranche,
+            "visitnumber": int(visitnumber),
+            "nsrrid": int(nsrrid),
+        }
+
+    def get_visit_number(self, rec: Union[str, int]) -> int:
+        """
+        get `visitnumber` from `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
 
         Returns
         -------
         int, visit number extracted from `rec`
 
         """
-        return int(rec.split("-")[0][-1])
+        return self.split_rec_name(rec)["visitnumber"]
 
-    def get_nsrrid(self, rec: str) -> int:
+    def get_tranche(self, rec: Union[str, int]) -> str:
         """
+        get `tranche` ("shhs1" or "shhs2") from `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+
+        Returns
+        -------
+        str, tranche extracted from `rec`
+
+        """
+        return self.split_rec_name(rec)["tranche"]
+
+    def get_nsrrid(self, rec: Union[str, int]) -> int:
+        """
+        get `nsrrid` from `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
 
         Returns
         -------
         int, nsrrid extracted from `rec`
 
         """
-        return int(rec.split("-")[1])
+        return self.split_rec_name(rec)["nsrrid"]
 
-    def get_fs(self, rec: str, sig: str = "ECG", rec_path: Optional[str] = None) -> int:
+    def get_fs(
+        self,
+        rec: Union[str, int],
+        sig: str = "ECG",
+        rec_path: Optional[Union[str, Path]] = None,
+    ) -> int:
         """
+        get the sampling frequency of a signal of a record
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
         sig: str, default "ECG",
             signal name
-        rec_path: str, optional,
-            path of the file which contains the psg data,
+        rec_path: str or Path, optional,
+            path of the file which contains the PSG data,
             if not given, default path will be used
 
         Returns
@@ -761,7 +569,9 @@ class SHHS(NSRRDataBase):
             the sampling frequency of the signal `sig` of the record `rec`
 
         """
-        frp = self.match_full_rec_path(rec, rec_path)
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
+        frp = self.get_absolute_path(rec, rec_path)
         self.safe_edf_file_operation("open", frp)
         chn_num = self.file_opened.getSignalLabels().index(self.match_channel(sig))
         fs = self.file_opened.getSampleFrequency(chn_num)
@@ -769,26 +579,32 @@ class SHHS(NSRRDataBase):
         return fs
 
     def get_chn_num(
-        self, rec: str, sig: str = "ECG", rec_path: Optional[str] = None
+        self,
+        rec: Union[str, int],
+        sig: str = "ECG",
+        rec_path: Optional[Union[str, Path]] = None,
     ) -> int:
         """
+        get the index of the channel of the signal `sig` of the record `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
         sig: str, default "ECG",
             signal name
-        rec_path: str, optional,
-            path of the file which contains the psg data,
+        rec_path: str or Path, optional,
+            path of the file which contains the PSG data,
             if not given, default path will be used
 
         Returns
         -------
         chn_num, int,
-            the number of channel of the signal `sig` of the record `rec`
+            the index of channel of the signal `sig` of the record `rec`
 
         """
-        frp = self.match_full_rec_path(rec, rec_path)
+        frp = self.get_absolute_path(rec, rec_path)
         self.safe_edf_file_operation("open", frp)
         chn_num = self.file_opened.getSignalLabels().index(self.match_channel(sig))
         self.safe_edf_file_operation("close")
@@ -796,6 +612,8 @@ class SHHS(NSRRDataBase):
 
     def match_channel(self, channel: str) -> str:
         """
+        match the channel name to the standard channel name in SHHS
+
         Parameters
         ----------
         channel: str,
@@ -809,27 +627,22 @@ class SHHS(NSRRDataBase):
         for sig in self.all_signals:
             if sig.lower() == channel.lower():
                 return sig
-        raise ValueError(f"No channel named {channel}")
+        raise ValueError(f"No channel named `{channel}`")
 
     def get_absolute_path(
-        self, rec: Union[str, int], extension: Optional[str] = None
-    ) -> Path:
-        """
-        Call `match_full_rec_path` instead
-        """
-        raise NotImplementedError("Call `match_full_rec_path` instead")
-
-    def match_full_rec_path(
         self,
-        rec: str,
+        rec: Union[str, int],
         rec_path: Optional[Union[str, Path]] = None,
         rec_type: str = "psg",
     ) -> Path:
         """
+        get the absolute path of the record `rec` with type `rec_type`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
         rec_path: str or Path, optional,
             path of the file which contains the desired data,
             if not given, default path will be used
@@ -839,79 +652,49 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         rp: Path,
+            absolute path of the record `rec` with type `rec_type`
 
         """
-        extension = {
-            "psg": ".edf",
-            "wave_delineation": "-rpoint.csv",
-            "event": "-nsrr.xml",
-            "event_profusion": "-profusion.xml",
-        }
-        folder_or_file = {
-            "psg": self.psg_data_path,
-            "hrv_summary": self.hrv_ann_path
-            / f"shhs{self.get_visit_number(rec)}-hrv-summary-{self.current_version}.csv",
-            "hrv_5min": self.hrv_ann_path
-            / f"shhs{self.get_visit_number(rec)}-hrv-5min-{self.current_version}.csv",
-            "eeg_band_summary": self.eeg_ann_path
-            / f"shhs{self.get_visit_number(rec)}-eeg-band-summary-dataset-{self.current_version}.csv",
-            "eeg_spectral_summary": self.eeg_ann_path
-            / f"shhs{self.get_visit_number(rec)}-eeg-spectral-summary-dataset-{self.current_version}.csv",
-            "wave_delineation": self.wave_deli_path,
-            "event": self.event_ann_path,
-            "event_profusion": self.event_profusion_ann_path,
-        }
-
         if rec_path is not None:
             rp = Path(rec_path)
-        elif rec_type.split("_")[0] in ["hrv", "eeg"]:
-            rp = folder_or_file[rec_type]
-        else:
-            rp = Path(str(folder_or_file[rec_type]) + rec.split("-")[0]) / (
-                rec + extension[rec_type]
-            )
+            return rp
 
+        assert rec_type in self.folder_or_file, (
+            "`rec_type` should be one of "
+            f"`{list(self.folder_or_file.keys())}`, but got `{rec_type}`"
+        )
+
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
+
+        tranche, nsrrid = [self.split_rec_name(rec)[k] for k in ["tranche", "nsrrid"]]
+        # rp = self._df_records.loc[rec, rec_type]
+        rp = (
+            self.folder_or_file[rec_type] / tranche / f"{rec}{self.extension[rec_type]}"
+        )
         return rp
 
     def database_stats(self) -> None:
         """ """
         raise NotImplementedError
 
-    # def database_info(self, detailed: bool = False) -> None:
-    #     """
-    #     print information about the database
-
-    #     Parameters
-    #     ----------
-    #     detailed: bool, default False,
-    #         if False, "What","Who","When","Funding" will be printed,
-    #         if True, then docstring of the class will be printed additionally
-
-    #     """
-    #     raw_info = {
-    #         "What": "Multi-cohort study focused on sleep-disordered breathing and cardiovascular outcomes",
-    #         "Who": "5804 adults aged 40 and older",
-    #         "When": "Two exam cycles, 1995-1998 and 2001-2003. Cardiovascular disease outcomes were tracked until 2010",
-    #         "Funding": "National Heart, Lung, and Blood Institute",
-    #     }
-
-    #     print(raw_info)
-
-    #     if detailed:
-    #         print(self.__doc__)
-
-    def show_rec_stats(self, rec: str, rec_path: Optional[str] = None) -> None:
+    def show_rec_stats(
+        self, rec: Union[str, int], rec_path: Optional[Union[str, Path]]
+    ) -> None:
         """
+        print the statistics of the record `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        rec_path: str, optional,
-            path of the file which contains the psg data,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        rec_path: str or Path, optional,
+            path of the file which contains the PSG data,
             if not given, default path will be used
 
         """
-        frp = self.match_full_rec_path(rec, rec_path, rec_type="psg")
+        frp = self.get_absolute_path(rec, rec_path, rec_type="psg")
         self.safe_edf_file_operation("open", frp)
         for chn, lb in enumerate(self.file_opened.getSignalLabels()):
             print("SignalLabel:", lb)
@@ -922,42 +705,42 @@ class SHHS(NSRRDataBase):
             print("*" * 40)
         self.safe_edf_file_operation("close")
 
-    def load_data(self, rec: str) -> None:
-        """ """
-        raise ValueError("Please load specific data, for example, psg, ecg, eeg, etc.")
-
-    def load_ann(self, rec: str) -> None:
-        """ """
-        raise ValueError(
-            "Please load specific annotations, for example, event annotations, etc."
-        )
-
     def load_psg_data(
-        self, rec: str, channel: str = "all", rec_path: Optional[str] = None
-    ) -> Dict[str, np.ndarray]:
+        self,
+        rec: Union[str, int],
+        channel: str = "all",
+        rec_path: Optional[Union[str, Path]] = None,
+    ) -> Union[Dict[str, Tuple[np.ndarray, Real]], Tuple[np.ndarray, Real]]:
         """
+        load PSG data of the record `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
         channel: str, default "all",
             name of the channel of PSG,
             if is "all", then all channels will be returned
-        rec_path: str, optional,
-            path of the file which contains the psg data,
+        rec_path: str or Path, optional,
+            path of the file which contains the PSG data,
             if not given, default path will be used
 
         Returns
         -------
-        dict, psg data
+        dict, PSG data and sampling frequency;
+        or (np.ndarray, real number), PSG data of the channel `channel` and its sampling frequency
 
         """
         chn = self.match_channel(channel) if channel.lower() != "all" else "all"
-        frp = self.match_full_rec_path(rec, rec_path, rec_type="psg")
+        frp = self.get_absolute_path(rec, rec_path, rec_type="psg")
         self.safe_edf_file_operation("open", frp)
 
         data_dict = {
-            k: self.file_opened.readSignal(idx)
+            k: (
+                self.file_opened.readSignal(idx),
+                self.file_opened.getSampleFrequency(idx),
+            )
             for idx, k in enumerate(self.file_opened.getSignalLabels())
         }
 
@@ -966,45 +749,149 @@ class SHHS(NSRRDataBase):
         if chn == "all":
             return data_dict
         else:
-            return {chn: data_dict[chn]}
+            return data_dict[chn]
 
-    def load_ecg_data(self, rec: str, rec_path: Optional[str] = None) -> np.ndarray:
+    def load_ecg_data(
+        self,
+        rec: Union[str, int],
+        rec_path: Optional[Union[str, Path]] = None,
+        fs: Optional[int] = None,
+    ) -> Tuple[np.ndarray, Real]:
         """
+        load ECG data of the record `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        rec_path: str, optional,
-            path of the file which contains the ecg data,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        rec_path: str or Path, optional,
+            path of the file which contains the ECG data,
             if not given, default path will be used
+        fs: int, optional,
+            sampling frequency of the ECG data,
+            if not given, the original sampling frequency will be used
 
         Returns
         -------
-        ndarray
+        data: ndarray,
+            ECG data
+        data_fs: real number,
+            sampling frequency
 
         """
-        return self.load_psg_data(rec=rec, channel="ecg", rec_path=rec_path)[
-            self.match_channel("ecg")
-        ].astype(DEFAULTS.DTYPE.NP)
+        data, data_fs = self.load_psg_data(rec=rec, channel="ecg", rec_path=rec_path)
+        if fs is not None and fs != data_fs:
+            data = SS.resample_poly(data, fs, data_fs).astype(DEFAULTS.DTYPE.NP)
+            data_fs = fs
+        else:
+            data = data.astype(DEFAULTS.DTYPE.NP)
+            data_fs = data_fs
+        return data, data_fs
 
-    def load_event_ann(
-        self, rec: str, event_ann_path: Optional[str] = None, simplify: bool = False
-    ) -> pd.DataFrame:
+    @add_docstring(
+        "NOTE: one should call `load_psg_data` to load other channels.", mode="append"
+    )
+    @add_docstring(load_ecg_data.__doc__)
+    def load_data(
+        self,
+        rec: Union[str, int],
+        rec_path: Optional[Union[str, Path]] = None,
+        fs: Optional[int] = None,
+    ) -> Tuple[np.ndarray, Real]:
+        """alias of `load_ecg_data`"""
+        return self.load_ecg_data(rec=rec, rec_path=rec_path, fs=fs)
+
+    def load_ann(
+        self,
+        rec: Union[str, int],
+        ann_type: str,
+        ann_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
+    ) -> Union[np.ndarray, pd.DataFrame, dict]:
         """
+        load annotations of specific type of the record `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        event_ann_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        ann_type: str,
+            type of the annotation, can be
+            "event", "event_profusion", "hrv_summary", "hrv_detailed", "sleep",
+            "sleep_stage", "sleep_event", "apnea", "wave_delineation",
+            "rpeak", "rr", "nn"
+        ann_path: str or Path, optional,
+            path of the file which contains the annotations,
+            if not given, default path will be used
+        kwargs: dict,
+            other arguments for specific annotation type
+
+        Returns
+        -------
+        annotations: ndarray or DataFrame or dict,
+
+        """
+        if ann_type.lower() == "event":
+            return self.load_event_ann(rec=rec, event_ann_path=ann_path, **kwargs)
+        elif ann_type.lower() == "event_profusion":
+            return self.load_event_profusion_ann(
+                rec=rec, event_profusion_ann_path=ann_path, **kwargs
+            )
+        elif ann_type.lower() == "hrv_summary":
+            return self.load_hrv_summary_ann(rec=rec, hrv_ann_path=ann_path, **kwargs)
+        elif ann_type.lower() == "hrv_detailed":
+            return self.load_hrv_detailed_ann(rec=rec, hrv_ann_path=ann_path, **kwargs)
+        elif ann_type.lower() == "sleep":
+            return self.load_sleep_ann(rec=rec, sleep_ann_path=ann_path, **kwargs)
+        elif ann_type.lower() == "sleep_stage":
+            return self.load_sleep_stage_ann(
+                rec=rec, sleep_stage_ann_path=ann_path, **kwargs
+            )
+        elif ann_type.lower() == "sleep_event":
+            return self.load_sleep_event_ann(
+                rec=rec, sleep_event_ann_path=ann_path, **kwargs
+            )
+        elif ann_type.lower() in ["sleep_apnea", "apnea"]:
+            return self.load_apnea_ann(rec=rec, apnea_ann_path=ann_path, **kwargs)
+        elif ann_type.lower() == "wave_delineation":
+            return self.load_wave_delineation_ann(
+                rec=rec, wave_deli_path=ann_path, **kwargs
+            )
+        elif ann_type.lower() == "rpeak":
+            return self.load_rpeak_ann(rec=rec, rpeak_ann_path=ann_path, **kwargs)
+        elif ann_type.lower() in ["rr", "rr_interval"]:
+            return self.load_rr_ann(rec=rec, rpeak_ann_path=ann_path, **kwargs)
+        elif ann_type.lower() in ["nn", "nn_interval"]:
+            return self.load_nn_ann(rec=rec, rpeak_ann_path=ann_path, **kwargs)
+
+    def load_event_ann(
+        self,
+        rec: Union[str, int],
+        event_ann_path: Optional[Union[str, Path]] = None,
+        simplify: bool = False,
+        **kwargs: Any,
+    ) -> pd.DataFrame:
+        """
+        load event annotations of the record `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        event_ann_path: str or Path, optional,
             path of the file which contains the events-nsrr annotations,
             if not given, default path will be used
 
         Returns
         -------
         df_events: DataFrame,
+            event annotations
 
         """
-        file_path = self.match_full_rec_path(rec, event_ann_path, rec_type="event")
+        file_path = self.get_absolute_path(rec, event_ann_path, rec_type="event")
         doc = xtd.parse(file_path.read_text())
         df_events = pd.DataFrame(
             doc["PSGAnnotation"]["ScoredEvents"]["ScoredEvent"][1:]
@@ -1022,14 +909,20 @@ class SHHS(NSRRDataBase):
         return df_events
 
     def load_event_profusion_ann(
-        self, rec: str, event_profusion_ann_path: Optional[str] = None
+        self,
+        rec: Union[str, int],
+        event_profusion_ann_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
     ) -> dict:
         """
+        load `event_profusion` annotations of the record `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        event_profusion_ann_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        event_profusion_ann_path: str or Path, optional,
             path of the file which contains the events-profusion annotations,
             if not given, default path will be used
 
@@ -1042,7 +935,7 @@ class SHHS(NSRRDataBase):
         merge "sleep_stage_list" and "df_events" into one DataFrame
 
         """
-        file_path = self.match_full_rec_path(
+        file_path = self.get_absolute_path(
             rec, event_profusion_ann_path, rec_type="event_profusion"
         )
         doc = xtd.parse(file_path.read_text())
@@ -1057,14 +950,20 @@ class SHHS(NSRRDataBase):
         return ret
 
     def load_hrv_summary_ann(
-        self, rec: Optional[str] = None, hrv_ann_path: Optional[str] = None
+        self,
+        rec: Optional[Union[str, int]] = None,
+        hrv_ann_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
     ) -> pd.DataFrame:
         """
+        load summary HRV annotations of the record `rec`
+
         Parameters
         ----------
-        rec: str, optional,
-            record name, typically in the form "shhs1-200001"
-        hrv_ann_path: str, optional,
+        rec: str or int, optional,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        hrv_ann_path: str or Path, optional,
             path of the summary HRV annotation file,
             if not given, default path will be used
 
@@ -1077,35 +976,44 @@ class SHHS(NSRRDataBase):
 
         """
         if rec is None:
-            file_path = self.match_full_rec_path(
-                "shhs1-200001", hrv_ann_path, rec_type="hrv_summary"
-            )
-            df_hrv_ann = pd.read_csv(file_path, engine="python")
-            file_path = self.match_full_rec_path(
-                "shhs2-200001", hrv_ann_path, rec_type="hrv_summary"
-            )
             df_hrv_ann = pd.concat(
-                [df_hrv_ann, pd.read_csv(file_path, engine="python")]
+                [
+                    self._tables[table_name]
+                    for table_name in ["shh1-hrv-summary", "shh2-hrv-summary"]
+                    if table_name in self._tables
+                ],
+                ignore_index=True,
             )
             return df_hrv_ann
-        file_path = self.match_full_rec_path(rec, hrv_ann_path, rec_type="hrv_summary")
 
-        df_hrv_ann = pd.read_csv(file_path, engine="python")
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
 
-        df_hrv_ann = df_hrv_ann[
-            df_hrv_ann["nsrrid"] == self.get_nsrrid(rec)
+        if rec not in self.rec_with_hrv_summary_ann:
+            return pd.DataFrame()
+
+        tranche, nsrrid = [self.split_rec_name(rec)[k] for k in ["tranche", "nsrrid"]]
+        table_name = f"{tranche}-hrv-summary"
+        df_hrv_ann = self._tables[table_name][
+            self._tables[table_name].nsrrid == int(nsrrid)
         ].reset_index(drop=True)
         return df_hrv_ann
 
     def load_hrv_detailed_ann(
-        self, rec: str, hrv_ann_path: Optional[str] = None
+        self,
+        rec: Union[str, int],
+        hrv_ann_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
     ) -> pd.DataFrame:
         """
+        load detailed HRV annotations of the record `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        hrv_ann_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        hrv_ann_path: str or Path, optional,
             path of the detailed HRV annotation file,
             if not given, default path will be used
 
@@ -1115,40 +1023,38 @@ class SHHS(NSRRDataBase):
             detailed HRV annotations of `rec`
 
         """
-        file_path = self.match_full_rec_path(rec, hrv_ann_path, rec_type="hrv_5min")
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
+        if rec not in self.rec_with_hrv_detail_ann:
+            return pd.DataFrame()
 
-        if not file_path.is_file():
-            raise FileNotFoundError(
-                f"Record {rec} has no HRV annotation (including sleep annotaions). "
-                f"Or the annotation file has not been downloaded yet. Or the path {file_path} is not correct. Please check!"
-            )
-
-        self.logger.info(
-            f"HRV annotations of record {rec} will be loaded from the file\n{str(file_path)}"
-        )
-
-        df_hrv_ann = pd.read_csv(file_path, engine="python")
-        df_hrv_ann = df_hrv_ann[
-            df_hrv_ann["nsrrid"] == self.get_nsrrid(rec)
+        tranche, nsrrid = [self.split_rec_name(rec)[k] for k in ["tranche", "nsrrid"]]
+        table_name = f"{tranche}-hrv-5min"
+        df_hrv_ann = self._tables[table_name][
+            self._tables[table_name].nsrrid == int(nsrrid)
         ].reset_index(drop=True)
-
-        self.logger.info(
-            f"Record {rec} has {len(df_hrv_ann)} HRV annotations, with {len(self.hrv_ann_detailed_keys)} column(s)"
-        )
 
         return df_hrv_ann
 
     def load_sleep_ann(
-        self, rec: str, source: str, sleep_ann_path: Optional[str] = None
+        self,
+        rec: Union[str, int],
+        source: str = "event",
+        sleep_ann_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
     ) -> Union[pd.DataFrame, dict]:
         """
+        load sleep annotations of the record `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        source: str, can be "hrv", "event", "event_profusion",
-            source of the annotations
-        sleep_ann_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        source: str, default "event",
+            source of the annotations, case insensitive,
+            can be "hrv", "event", "event_profusion"
+        sleep_ann_path: str or Path, optional,
             path of the file which contains the sleep annotations,
             if not given, default path will be used
 
@@ -1158,6 +1064,8 @@ class SHHS(NSRRDataBase):
             all annotations on sleep of `rec`
 
         """
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
         if source.lower() == "hrv":
             df_hrv_ann = self.load_hrv_detailed_ann(
                 rec=rec, hrv_ann_path=sleep_ann_path
@@ -1166,7 +1074,8 @@ class SHHS(NSRRDataBase):
                 drop=True
             )
             self.logger.info(
-                f"record {rec} has {len(df_sleep_ann)} sleep annotations from corresponding hrv annotation file, with {len(self.sleep_ann_keys_from_hrv)} column(s)"
+                f"record `{rec}` has `{len(df_sleep_ann)}` sleep annotations from corresponding "
+                f"hrv annotation file, with `{len(self.sleep_ann_keys_from_hrv)}` column(s)"
             )
         elif source.lower() == "event":
             df_event_ann = self.load_event_ann(
@@ -1175,7 +1084,8 @@ class SHHS(NSRRDataBase):
             _cols = ["EventType", "EventConcept", "Start", "Duration", "SignalLocation"]
             df_sleep_ann = df_event_ann[_cols]
             self.logger.info(
-                f"record {rec} has {len(df_sleep_ann)} sleep annotations from corresponding event-nsrr annotation file, with {len(_cols)} column(s)"
+                f"record `{rec}` has `{len(df_sleep_ann)}` sleep annotations from corresponding "
+                f"event-nsrr annotation file, with `{len(_cols)}` column(s)"
             )
         elif source.lower() == "event_profusion":
             df_event_ann = self.load_event_profusion_ann(rec)
@@ -1183,26 +1093,38 @@ class SHHS(NSRRDataBase):
             # latter to make imporvements
             df_sleep_ann = df_event_ann
             self.logger.info(
-                f"record {rec} has {len(df_sleep_ann['df_events'])} sleep event annotations from corresponding event-profusion annotation file, with {len(df_sleep_ann['df_events'].columns)} column(s)"
+                f"record `{rec}` has `{len(df_sleep_ann['df_events'])}` sleep event annotations "
+                "from corresponding event-profusion annotation file, "
+                f"with `{len(df_sleep_ann['df_events'].columns)}` column(s)"
+            )
+        else:
+            raise ValueError(
+                f"source `{source}` not supported, "
+                "only `hrv`, `event`, `event_profusion` are supported"
             )
         return df_sleep_ann
 
     def load_sleep_stage_ann(
         self,
-        rec: str,
-        source: str,
-        sleep_stage_ann_path: Optional[str] = None,
+        rec: Union[str, int],
+        source: str = "event",
+        sleep_stage_ann_path: Optional[Union[str, Path]] = None,
         sleep_stage_protocol: str = "aasm",
         with_stage_names: bool = True,
+        **kwargs: Any,
     ) -> pd.DataFrame:
         """
+        load sleep stage annotations of the record `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        source: str, can be "hrv", "event", "event_profusion",
-            source of the annotations
-        sleep_stage_ann_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        source: str, default "event",
+            source of the annotations, case insensitive,
+            can be "hrv", "event", "event_profusion"
+        sleep_stage_ann_path: str or Path, optional,
             path of the file which contains the sleep stage annotations,
             if not given, default path will be used
         sleep_stage_protocol: str, default "aasm",
@@ -1217,6 +1139,8 @@ class SHHS(NSRRDataBase):
             all annotations on sleep stage of `rec`
 
         """
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
         self.sleep_stage_protocol = sleep_stage_protocol
         self.update_sleep_stage_names()
 
@@ -1303,34 +1227,40 @@ class SHHS(NSRRDataBase):
 
         if source.lower() != "event_profusion":
             self.logger.info(
-                f"record {rec} has {len(df_tmp)} raw (epoch_len = 5min) sleep stage annotations, with {len(self.sleep_stage_ann_keys_from_hrv)} column(s)"
+                f"record `{rec}` has `{len(df_tmp)}` raw (epoch_len = 5min) sleep stage annotations, "
+                f"with `{len(self.sleep_stage_ann_keys_from_hrv)}` column(s)"
             )
             self.logger.info(
-                f"after being transformed (epoch_len = 30sec), record {rec} has {len(df_sleep_stage_ann)} sleep stage annotations, with {len(self.sleep_stage_keys)} column(s)"
+                f"after being transformed (epoch_len = 30sec), record `{rec}` has {len(df_sleep_stage_ann)} "
+                f"sleep stage annotations, with `{len(self.sleep_stage_keys)}` column(s)"
             )
 
         return df_sleep_stage_ann
 
     def load_sleep_event_ann(
         self,
-        rec: str,
-        source: str,
+        rec: Union[str, int],
+        source: str = "event",
         event_types: Optional[List[str]] = None,
-        sleep_event_ann_path: Optional[str] = None,
+        sleep_event_ann_path: Optional[Union[str, Path]] = None,
     ) -> pd.DataFrame:
         """
+        load sleep event annotations of `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        source: str, can be "hrv", "event", "event_profusion",
-            source of the annotations
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        source: str, default "event",
+            source of the annotations, case insensitive,
+            can be "hrv", "event", "event_profusion"
         event_types: list of str (cases ignored), optional,
             "Respiratory" (including "Apnea", "SpO2"), "Arousal",
             "Apnea" (including "CSA", "OSA", "MSA", "Hypopnea"), "SpO2",
             "CSA", "OSA", "MSA", "Hypopnea",
-            used only when `source` = "event" or "event_profusion"
-        sleep_event_ann_path: str, optional,
+            used only when `source` is "event" or "event_profusion"
+        sleep_event_ann_path: str or Path, optional,
             path of the file which contains the sleep event annotations,
             if not given, default path will be used
 
@@ -1340,22 +1270,13 @@ class SHHS(NSRRDataBase):
             all annotations on sleep events of `rec`
 
         """
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
         df_sleep_ann = self.load_sleep_ann(
             rec=rec, source=source, sleep_ann_path=sleep_event_ann_path
         )
 
         df_sleep_event_ann = pd.DataFrame(columns=self.sleep_event_keys)
-
-        _et = []
-        if source.lower() != "hrv":
-            if event_types is None or len(event_types) == 0:
-                raise ValueError(
-                    f"When `source` is \042{source}\042, please specify legal `event_types`!"
-                )
-            else:
-                _et = [s.lower() for s in event_types]
-
-        self.logger.info(f"for record {rec}, _et (event_types) = {_et}")
 
         if source.lower() == "hrv":
             df_sleep_ann = df_sleep_ann[self.sleep_event_ann_keys_from_hrv].reset_index(
@@ -1382,32 +1303,55 @@ class SHHS(NSRRDataBase):
             df_sleep_event_ann = df_sleep_event_ann[self.sleep_event_keys]
 
             self.logger.info(
-                f"record {rec} has {len(df_sleep_ann)} raw (epoch_len = 5min) sleep event annotations from hrv, with {len(self.sleep_event_ann_keys_from_hrv)} column(s)"
+                f"record `{rec}` has `{len(df_sleep_ann)}` raw (epoch_len = 5min) sleep event "
+                f"annotations from hrv, with `{len(self.sleep_event_ann_keys_from_hrv)}` column(s)"
             )
             self.logger.info(
-                f"after being transformed, record {rec} has {len(df_sleep_event_ann)} sleep event(s)"
+                f"after being transformed, record `{rec}` has `{len(df_sleep_event_ann)}` sleep event(s)"
             )
         elif source.lower() == "event":
+            if event_types is None:
+                event_types = ["respiratory", "arousal"]
+            assert (
+                set()
+                < set(event_types)
+                <= set(
+                    [
+                        "respiratory",
+                        "arousal",
+                        "apnea",
+                        "spo2",
+                        "csa",
+                        "osa",
+                        "msa",
+                        "hypopnea",
+                    ]
+                )
+            ), (
+                "`event_types` should be a subset of "
+                "'respiratory', 'arousal', 'apnea', 'spo2', 'csa', 'osa', 'msa', 'hypopnea'",
+                f"but got `{event_types}`",
+            )
             _cols = set()
-            if "respiratory" in _et:
+            if "respiratory" in event_types:
                 _cols = _cols | set(self.long_event_names_from_event[:6])
-            if "arousal" in _et:
+            if "arousal" in event_types:
                 _cols = _cols | set(self.long_event_names_from_event[6:11])
-            if "apnea" in _et:
+            if "apnea" in event_types:
                 _cols = _cols | set(self.long_event_names_from_event[:4])
-            if "spo2" in _et:
+            if "spo2" in event_types:
                 _cols = _cols | set(self.long_event_names_from_event[4:6])
-            if "csa" in _et:
+            if "csa" in event_types:
                 _cols = _cols | set(self.long_event_names_from_event[0:1])
-            if "osa" in _et:
+            if "osa" in event_types:
                 _cols = _cols | set(self.long_event_names_from_event[1:2])
-            if "msa" in _et:
+            if "msa" in event_types:
                 _cols = _cols | set(self.long_event_names_from_event[2:3])
-            if "hypopnea" in _et:
+            if "hypopnea" in event_types:
                 _cols = _cols | set(self.long_event_names_from_event[3:4])
             _cols = list(_cols)
 
-            print(f"for record {rec}, _cols = {_cols}")
+            self.logger.info(f"for record `{rec}`, _cols = `{_cols}`")
 
             df_sleep_event_ann = df_sleep_ann[
                 df_sleep_ann["EventConcept"].isin(_cols)
@@ -1430,25 +1374,47 @@ class SHHS(NSRRDataBase):
         elif source.lower() == "event_profusion":
             df_sleep_ann = df_sleep_ann["df_events"]
             _cols = set()
-            if "respiratory" in _et:
+            if event_types is None:
+                event_types = ["respiratory", "arousal"]
+            assert (
+                set()
+                < set(event_types)
+                <= set(
+                    [
+                        "respiratory",
+                        "arousal",
+                        "apnea",
+                        "spo2",
+                        "csa",
+                        "osa",
+                        "msa",
+                        "hypopnea",
+                    ]
+                )
+            ), (
+                "`event_types` should be a subset of "
+                "'respiratory', 'arousal', 'apnea', 'spo2', 'csa', 'osa', 'msa', 'hypopnea', "
+                f"but got `{event_types}`"
+            )
+            if "respiratory" in event_types:
                 _cols = _cols | set(self.event_names_from_event_profusion[:6])
-            if "arousal" in _et:
+            if "arousal" in event_types:
                 _cols = _cols | set(self.event_names_from_event_profusion[6:8])
-            if "apnea" in _et:
+            if "apnea" in event_types:
                 _cols = _cols | set(self.event_names_from_event_profusion[:4])
-            if "spo2" in _et:
+            if "spo2" in event_types:
                 _cols = _cols | set(self.event_names_from_event_profusion[4:6])
-            if "csa" in _et:
+            if "csa" in event_types:
                 _cols = _cols | set(self.event_names_from_event_profusion[0:1])
-            if "osa" in _et:
+            if "osa" in event_types:
                 _cols = _cols | set(self.event_names_from_event_profusion[1:2])
-            if "msa" in _et:
+            if "msa" in event_types:
                 _cols = _cols | set(self.event_names_from_event_profusion[2:3])
-            if "hypopnea" in _et:
+            if "hypopnea" in event_types:
                 _cols = _cols | set(self.event_names_from_event_profusion[3:4])
             _cols = list(_cols)
 
-            print(f"for record {rec}, _cols = {_cols}")
+            self.logger.info(f"for record `{rec}`, _cols = `{_cols}`")
 
             df_sleep_event_ann = df_sleep_ann[
                 df_sleep_ann["Name"].isin(_cols)
@@ -1470,22 +1436,27 @@ class SHHS(NSRRDataBase):
 
     def load_apnea_ann(
         self,
-        rec: str,
-        source: str,
+        rec: Union[str, int],
+        source: str = "event",
         apnea_types: Optional[List[str]] = None,
-        apnea_ann_path: Optional[str] = None,
+        apnea_ann_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
     ) -> pd.DataFrame:
         """
+        load annotations on apnea events of `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        source: str, can be "event", "event_profusion",
-            source of the annotations
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        source: str, default "event",
+            source of the annotations, case insensitive,
+            can be one of "event", "event_profusion"
         apnea_types: list of str (cases ignored), optional,
             "CSA", "OSA", "MSA", "Hypopnea",
             if is None, then all types of apnea will be loaded
-        apnea_ann_path: str, optional,
+        apnea_ann_path: str or Path, optional,
             path of the file which contains the apnea event annotations,
             if not given, default path will be used
 
@@ -1496,8 +1467,8 @@ class SHHS(NSRRDataBase):
 
         """
         event_types = ["apnea"] if apnea_types is None else apnea_types
-        if source not in ["event", "event_profusion"]:
-            raise ValueError(f"source {source} contains no apnea annotations")
+        if source.lower() not in ["event", "event_profusion"]:
+            raise ValueError(f"source `{source}` contains no apnea annotations")
         df_apnea_ann = self.load_sleep_event_ann(
             rec=rec,
             source=source,
@@ -1508,15 +1479,19 @@ class SHHS(NSRRDataBase):
 
     def load_wave_delineation(
         self,
-        rec: str,
-        wave_deli_path: Optional[str] = None,
+        rec: Union[str, int],
+        wave_deli_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
     ) -> pd.DataFrame:
         """
+        load annotations on wave delineations of `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        wave_deli_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        wave_deli_path: str or Path, optional,
             path of the file which contains wave delineation annotations,
             if not given, default path will be used
 
@@ -1525,18 +1500,26 @@ class SHHS(NSRRDataBase):
         df_wave_delineation, DataFrame,
             all annotations on wave delineations of `rec`
 
-        NOTE: see the part describing wave delineation annotations of the docstring of the class, or call `self.database_info(detailed=True)`
+        NOTE
+        ----
+        see the part describing wave delineation annotations of the docstring of the class,
+        or call `self.database_info(detailed=True)`
 
         """
-        file_path = self.match_full_rec_path(
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
+
+        file_path = self.get_absolute_path(
             rec, wave_deli_path, rec_type="wave_delineation"
         )
 
         if not file_path.is_file():
-            raise FileNotFoundError(
-                f"The annotation file of wave delineation of record {rec} has not been downloaded yet. "
-                f"Or the path {str(file_path)} is not correct. Please check!"
+            self.logger.info(
+                f"The annotation file of wave delineation of record `{rec}` has not been downloaded yet. "
+                f"Or the path `{str(file_path)}` is not correct. "
+                f"Or `{rec}` does not have `rpeak.csv` annotation file. Please check!"
             )
+            return pd.DataFrame()
 
         df_wave_delineation = pd.read_csv(file_path, engine="python")
         df_wave_delineation = df_wave_delineation[self.wave_deli_keys].reset_index(
@@ -1546,18 +1529,22 @@ class SHHS(NSRRDataBase):
 
     def load_rpeak_ann(
         self,
-        rec: str,
-        rpeak_ann_path: Optional[str] = None,
+        rec: Union[str, int],
+        rpeak_ann_path: Optional[Union[str, Path]] = None,
         exclude_artifacts: bool = True,
         exclude_abnormal_beats: bool = True,
         to_ts: bool = False,
+        **kwargs: Any,
     ) -> np.ndarray:
         """
+        load annotations on R peaks of `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        rpeak_ann_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        rpeak_ann_path: str or Path, optional,
             annotation file path,
             if not given, default path will be used
         exclude_artifacts: bool, default True,
@@ -1568,13 +1555,15 @@ class SHHS(NSRRDataBase):
 
         Returns
         -------
-        ndarray
+        ndarray, shape (n_rpeaks, ),
+            locations of R peaks of `rec`
 
         """
         info_items = ["Type", "rpointadj", "samplingrate"]
-        df_rpeaks_with_type_info = self.load_wave_delineation(rec, rpeak_ann_path)[
-            info_items
-        ]
+        df_rpeaks_with_type_info = self.load_wave_delineation(rec, rpeak_ann_path)
+        if df_rpeaks_with_type_info.empty:
+            return np.array([], dtype=int)
+        df_rpeaks_with_type_info = df_rpeaks_with_type_info[info_items]
         exclude_beat_types = []
         # 0 = Artifact, 1 = Normal Sinus Beat, 2 = VE, 3 = SVE
         if exclude_artifacts:
@@ -1592,13 +1581,21 @@ class SHHS(NSRRDataBase):
 
         return (np.round(ret)).astype(int)
 
-    def load_rr_ann(self, rec: str, rpeak_ann_path: Optional[str] = None) -> np.ndarray:
+    def load_rr_ann(
+        self,
+        rec: Union[str, int],
+        rpeak_ann_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
+    ) -> np.ndarray:
         """
+        load annotations on RR intervals of `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        rpeak_ann_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        rpeak_ann_path: str or Path, optional,
             annotation file path,
             if not given, default path will be used
 
@@ -1619,13 +1616,21 @@ class SHHS(NSRRDataBase):
         rr = np.column_stack((rpeaks_ts[:-1], rr))
         return rr
 
-    def load_nn_ann(self, rec: str, rpeak_ann_path: Optional[str] = None) -> np.ndarray:
+    def load_nn_ann(
+        self,
+        rec: Union[str, int],
+        rpeak_ann_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
+    ) -> np.ndarray:
         """
+        load annotations on NN intervals of `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        rpeak_ann_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        rpeak_ann_path: str or Path, optional,
             annotation file path,
             if not given, default path will be used
 
@@ -1636,9 +1641,10 @@ class SHHS(NSRRDataBase):
 
         """
         info_items = ["Type", "rpointadj", "samplingrate"]
-        df_rpeaks_with_type_info = self.load_wave_delineation(rec, rpeak_ann_path)[
-            info_items
-        ]
+        df_rpeaks_with_type_info = self.load_wave_delineation(rec, rpeak_ann_path)
+        if df_rpeaks_with_type_info.empty:
+            return np.array([])
+        df_rpeaks_with_type_info = df_rpeaks_with_type_info[info_items]
         fs = df_rpeaks_with_type_info.iloc[0]["samplingrate"]
         rpeaks_ts = (
             np.round(df_rpeaks_with_type_info["rpointadj"] * 1000 / fs)
@@ -1656,14 +1662,17 @@ class SHHS(NSRRDataBase):
         return nn
 
     def locate_artifacts(
-        self, rec: str, wave_deli_path: Optional[str] = None
+        self, rec: Union[str, int], wave_deli_path: Optional[Union[str, Path]] = None
     ) -> np.ndarray:
         """
+        locate "artifacts" in `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        wave_deli_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        wave_deli_path: str or Path, optional,
             annotation file path,
             if not given, default path will be used
 
@@ -1673,9 +1682,10 @@ class SHHS(NSRRDataBase):
             indices of artifacts
 
         """
-        df_rpeaks_with_type_info = self.load_wave_delineation(rec, wave_deli_path)[
-            ["Type", "rpointadj"]
-        ]
+        df_rpeaks_with_type_info = self.load_wave_delineation(rec, wave_deli_path)
+        if df_rpeaks_with_type_info.empty:
+            return np.array([], dtype=int)
+        df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
 
         return (
             np.round(
@@ -1687,16 +1697,19 @@ class SHHS(NSRRDataBase):
 
     def locate_abnormal_beats(
         self,
-        rec: str,
-        wave_deli_path: Optional[str] = None,
+        rec: Union[str, int],
+        wave_deli_path: Optional[Union[str, Path]] = None,
         abnormal_type: Optional[str] = None,
     ) -> Dict[str, np.ndarray]:
         """
+        locate "abnormal beats" in `rec`
+
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        wave_deli_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        wave_deli_path: str or Path, optional,
             annotation file path,
             if not given, default path will be used
         abnormal_type: str, optional,
@@ -1710,30 +1723,33 @@ class SHHS(NSRRDataBase):
         """
         if abnormal_type is not None and abnormal_type not in ["VE", "SVE"]:
             raise ValueError(
-                f"No abnormal type of {abnormal_type} in wave delineation annotation files"
+                f"No abnormal type of `{abnormal_type}` in wave delineation annotation files"
             )
 
-        df_rpeaks_with_type_info = self.load_wave_delineation(rec, wave_deli_path)[
-            ["Type", "rpointadj"]
-        ]
-
-        # 2 = VE, 3 = SVE
-        ve = (
-            np.round(
-                df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 2][
-                    "rpointadj"
-                ].values
-            )
-        ).astype(int)
-        sve = (
-            np.round(
-                df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 3][
-                    "rpointadj"
-                ].values
-            )
-        ).astype(int)
-
-        abnormal_rpeaks = {"VE": ve, "SVE": sve}
+        df_rpeaks_with_type_info = self.load_wave_delineation(rec, wave_deli_path)
+        if not df_rpeaks_with_type_info.empty:
+            df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
+            # 2 = VE, 3 = SVE
+            ve = (
+                np.round(
+                    df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 2][
+                        "rpointadj"
+                    ].values
+                )
+            ).astype(int)
+            sve = (
+                np.round(
+                    df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 3][
+                        "rpointadj"
+                    ].values
+                )
+            ).astype(int)
+            abnormal_rpeaks = {"VE": ve, "SVE": sve}
+        else:
+            abnormal_rpeaks = {
+                "VE": np.array([], dtype=int),
+                "SVE": np.array([], dtype=int),
+            }
 
         if abnormal_type is None:
             return abnormal_rpeaks
@@ -1741,15 +1757,20 @@ class SHHS(NSRRDataBase):
             return {abnormal_type: abnormal_rpeaks[abnormal_type]}
 
     def load_eeg_band_ann(
-        self, rec: str, eeg_band_ann_path: Optional[str] = None
+        self,
+        rec: Union[str, int],
+        eeg_band_ann_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
     ) -> pd.DataFrame:
-        """not finished,
+        """
+        load annotations on EEG bands of `rec`
 
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        eeg_band_ann_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        eeg_band_ann_path: str or Path, optional,
             annotation file path,
             if not given, default path will be used
 
@@ -1759,20 +1780,27 @@ class SHHS(NSRRDataBase):
 
         """
         if self.current_version >= "0.15.0":
-            print("EEG spectral summary variables are removed in this version")
+            self.logger.info(
+                f"EEG spectral summary variables are removed in version {self.current_version}"
+            )
         else:
             raise NotImplementedError
 
     def load_eeg_spectral_ann(
-        self, rec: str, eeg_spectral_ann_path: Optional[str] = None
+        self,
+        rec: Union[str, int],
+        eeg_spectral_ann_path: Optional[Union[str, Path]] = None,
+        **kwargs: Any,
     ) -> pd.DataFrame:
-        """not finished,
+        """
+        load annotations on EEG spectral summary of `rec`
 
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001"
-        eeg_spectral_ann_path: str, optional,
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+        eeg_spectral_ann_path: str or Path, optional,
             annotation file path,
             if not given, default path will be used
 
@@ -1782,7 +1810,9 @@ class SHHS(NSRRDataBase):
 
         """
         if self.current_version >= "0.15.0":
-            print("EEG spectral summary variables are removed in this version")
+            self.logger.info(
+                f"EEG spectral summary variables are removed in version {self.current_version}"
+            )
         else:
             raise NotImplementedError
 
@@ -1791,7 +1821,7 @@ class SHHS(NSRRDataBase):
 
     def plot_ann(
         self,
-        rec: str,
+        rec: Union[str, int],
         stage_source: Optional[str] = None,
         stage_kw: dict = {},
         event_source: Optional[str] = None,
@@ -1949,11 +1979,16 @@ class SHHS(NSRRDataBase):
 
     def str_to_real_number(self, s: Union[str, Real]) -> Real:
         """
-        some columns in the annotations might incorrectly been converted from real number to string, using `xmltodict`.
+        some columns in the annotations might incorrectly
+        been converted from real number to string, using `xmltodict`.
 
         Parameters
         ----------
         s: str or real number (NaN)
+
+        Returns
+        -------
+        real number
 
         """
         if isinstance(s, str):
@@ -1964,10 +1999,270 @@ class SHHS(NSRRDataBase):
         else:  # NaN case
             return s
 
+    def __create_constants(self, **kwargs) -> None:
+        """ """
+        self.extension = {
+            "psg": ".edf",
+            "wave_delineation": "-rpoint.csv",
+            "event": "-nsrr.xml",
+            "event_profusion": "-profusion.xml",
+        }
+
+        # fmt: off
+
+        self.all_signals = [
+            "EEG(sec)", "ECG", "EMG", "EOG(L)", "EOG(R)", "EEG",
+            "AIRFLOW", "THOR RES", "ABDO RES", "NEW AIR", "OX stat", "SaO2", "H.R.",
+            "POSITION", "SOUND", "LIGHT",
+        ]
+
+        # annotations regarding sleep analysis
+        self.hrv_ann_summary_keys = [
+            "nsrrid", "visitnumber", "NN_RR", "AVNN", "IHR",
+            "SDNN", "SDANN", "SDNNIDX", "rMSSD",
+            "pNN10", "pNN20", "pNN30", "pNN40", "pNN50",
+            "tot_pwr", "ULF", "VLF", "LF", "HF", "LF_HF", "LF_n", "HF_n",
+        ]
+        self.hrv_ann_detailed_keys = [
+            "nsrrid", "visitnumber", "Start__sec_", "ihr", "hasrespevent",
+            "NN_RR", "AVNN", "SDNN", "rMSSD",
+            "PNN10", "PNN20", "PNN30", "PNN40", "PNN50",
+            "TOT_PWR", "VLF", "LF", "LF_n", "HF", "HF_n", "LF_HF",
+            "sleepstage01", "sleepstage02", "sleepstage03", "sleepstage04", "sleepstage05",
+            "sleepstage06", "sleepstage07", "sleepstage08", "sleepstage09", "sleepstage10",
+            "event01start", "event01end",
+            "event02start", "event02end",
+            "event03start", "event03end",
+            "event04start", "event04end",
+            "event05start", "event05end",
+            "event06start", "event06end",
+            "event07start", "event07end",
+            "event08start", "event08end",
+            "event09start", "event09end",
+            "event10start", "event10end",
+            "event11start", "event11end",
+            "event12start", "event12end",
+            "event13start", "event13end",
+            "event14start", "event14end",
+            "event15start", "event15end",
+            "event16start", "event16end",
+            "event17start", "event17end",
+            "event18start", "event18end",
+        ]
+        self.hrv_ann_epoch_len_sec = 300  # 5min
+        self.sleep_ann_keys_from_hrv = [
+            "Start__sec_", "hasrespevent",
+            "sleepstage01", "sleepstage02", "sleepstage03", "sleepstage04", "sleepstage05",
+            "sleepstage06", "sleepstage07", "sleepstage08", "sleepstage09", "sleepstage10",
+            "event01start", "event01end",
+            "event02start", "event02end",
+            "event03start", "event03end",
+            "event04start", "event04end",
+            "event05start", "event05end",
+            "event06start", "event06end",
+            "event07start", "event07end",
+            "event08start", "event08end",
+            "event09start", "event09end",
+            "event10start", "event10end",
+            "event11start", "event11end",
+            "event12start", "event12end",
+            "event13start", "event13end",
+            "event14start", "event14end",
+            "event15start", "event15end",
+            "event16start", "event16end",
+            "event17start", "event17end",
+            "event18start", "event18end",
+        ]
+        self.sleep_stage_ann_keys_from_hrv = [
+            "Start__sec_",
+            "sleepstage01", "sleepstage02", "sleepstage03", "sleepstage04", "sleepstage05",
+            "sleepstage06", "sleepstage07", "sleepstage08", "sleepstage09", "sleepstage10",
+        ]
+        self.sleep_event_ann_keys_from_hrv = [
+            "Start__sec_", "hasrespevent",
+            "event01start", "event01end",
+            "event02start", "event02end",
+            "event03start", "event03end",
+            "event04start", "event04end",
+            "event05start", "event05end",
+            "event06start", "event06end",
+            "event07start", "event07end",
+            "event08start", "event08end",
+            "event09start", "event09end",
+            "event10start", "event10end",
+            "event11start", "event11end",
+            "event12start", "event12end",
+            "event13start", "event13end",
+            "event14start", "event14end",
+            "event15start", "event15end",
+            "event16start", "event16end",
+            "event17start", "event17end",
+            "event18start", "event18end",
+        ]
+
+        # annotations from events-nsrr and events-profusion folders
+        self.event_keys = [
+            "EventType", "EventConcept", "Start", "Duration",
+            "SignalLocation", "SpO2Nadir", "SpO2Baseline",
+        ]
+        # NOTE: the union of names from shhs1-200001 to shhs1-200399
+        # NOT a full search
+        self.short_event_types_from_event = [
+            "Respiratory", "Stages", "Arousals",
+        ]
+        self.long_event_types_from_event = [
+            "Respiratory|Respiratory",
+            "Stages|Stages",
+            "Arousals|Arousals",
+        ]
+        # NOTE: the union of names from shhs1-200001 to shhs1-200399
+        # NOT a full search
+        # NOT including sleep stages
+        self.short_event_names_from_event = [
+            "Central Apnea",
+            "Obstructive Apnea",
+            "Mixed Apnea",
+            "Hypopnea",
+            "SpO2 artifact",
+            "SpO2 desaturation",
+            "Arousal ()",
+            "Arousal (Standard)",
+            "Arousal (STANDARD)",
+            "Arousal (CHESHIRE)",
+            "Arousal (ASDA)",
+            "Unsure",
+        ]
+        self.long_event_names_from_event = [
+            "Central apnea|Central Apnea",
+            "Obstructive apnea|Obstructive Apnea",
+            "Mixed apnea|Mixed Apnea",
+            "Hypopnea|Hypopnea",
+            "SpO2 artifact|SpO2 artifact",
+            "SpO2 desaturation|SpO2 desaturation",
+            "Arousal|Arousal ()",
+            "Arousal|Arousal (Standard)",
+            "Arousal|Arousal (STANDARD)",
+            "Arousal resulting from Chin EMG|Arousal (CHESHIRE)",
+            "ASDA arousal|Arousal (ASDA)",
+            "Unsure|Unsure",
+        ]
+        self.event_profusion_keys = [
+            "Name", "Start", "Duration",
+            "Input", "LowestSpO2", "Desaturation",
+        ]
+        # NOTE: currently the union of names from shhs1-200001 to shhs1-200099,
+        # NOT a full search
+        self.event_names_from_event_profusion = [
+            "Central Apnea",
+            "Obstructive Apnea",
+            "Mixed Apnea",
+            "Hypopnea",
+            "SpO2 artifact",
+            "SpO2 desaturation",
+            "Arousal ()",
+            "Arousal (ASDA)",
+            "Unsure",
+        ]
+
+        self.apnea_types = [
+            "Central Apnea",
+            "Obstructive Apnea",
+            "Mixed Apnea",
+            "Hypopnea",
+        ]
+
+        # annotations regarding wave delineation
+        self.wave_deli_keys = [
+            "RPoint", "Start", "End",
+            "STLevel1", "STSlope1", "STLevel2", "STSlope2",
+            "Manual", "Type", "rpointadj",
+            "PPoint", "PStart", "PEnd",
+            "TPoint", "TStart", "TEnd",
+            "TemplateID", "nsrrid", "samplingrate", "seconds", "epoch",
+        ]
+        self.wave_deli_samp_num_keys = [
+            "RPoint", "Start", "End",
+            "PPoint", "PStart", "PEnd",
+            "TPoint", "TStart", "TEnd",
+        ]
+
+        # TODO: other annotation files: EEG
+
+        # self-defined items
+        self.sleep_stage_keys = ["start_sec", "sleep_stage"]
+        self.sleep_event_keys = [
+            "event_name", "event_start", "event_end", "event_duration",
+        ]
+        self.sleep_epoch_len_sec = 30
+        self.ann_sleep_stages = [0, 1, 2, 3, 4, 5, 9]
+        """
+        0	--- Wake
+        1	--- sleep stage 1
+        2	--- sleep stage 2
+        3	--- sleep stage 3/4
+        4	--- sleep stage 3/4
+        5	--- REM stage
+        9	--- Movement/Wake or Unscored?
+        """
+        self.sleep_stage_protocol = kwargs.get("sleep_stage_protocol", "aasm")
+        self.all_sleep_stage_names = ["W", "R", "N1", "N2", "N3", "N4"]
+        self.sleep_stage_name_value_mapping = {
+            "W": 0,
+            "R": 1,
+            "N1": 2,
+            "N2": 3,
+            "N3": 4,
+            "N4": 5,
+        }
+        self.sleep_stage_names = []
+        self.update_sleep_stage_names()
+        self._to_simplified_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 2, 3: 3, 4: 3}
+        """ 9 to nan?
+        0   --- awake
+        1   --- REM
+        2   --- N1 (NREM1/2), shallow sleep
+        3   --- N2 (NREM3/4), deep sleep
+        """
+        self._to_aasm_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 3, 3: 4, 4: 4}
+        """ 9 to nan?
+        0   --- awake
+        1   --- REM
+        2   --- N1 (NREM1)
+        3   --- N2 (NREM2)
+        4   --- N3 (NREM3/4)
+        """
+        self._to_shhs_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 3, 3: 4, 4: 5}
+
+        # for plotting
+        self.palette = {
+            "W": "orange",
+            "R": "yellow",
+            "N1": "green",
+            "N2": "cyan",
+            "N3": "blue",
+            "N4": "purple",
+            "Central Apnea": "red",
+            "Obstructive Apnea": "yellow",
+            "Mixed Apnea": "cyan",
+            "Hypopnea": "purple",
+        }  # TODO: add more
+
+        # fmt: on
+
+    @property
+    def folder_or_file(self) -> Dict[str, Path]:
+        return {
+            "psg": self.psg_data_path,
+            "wave_delineation": self.wave_deli_path,
+            "event": self.event_ann_path,
+            "event_profusion": self.event_profusion_ann_path,
+        }
+
     @property
     def url(self) -> str:
         warnings.warn(
-            "one has to apply for a token from `sleepdata.org` and uses `nsrr` to download the data",
+            "one has to apply for a token from `sleepdata.org` "
+            "and uses `nsrr` to download the data",
             RuntimeWarning,
         )
         return ""

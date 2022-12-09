@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-docstring, to write
+Database classes for NSRR (sleepdata.org) databases.
 """
 
 from .shhs import SHHS
