@@ -483,7 +483,7 @@ class SHHS(NSRRDataBase):
         """
         if isinstance(rec, int):
             rec = self.all_records[rec]
-        assert re.match(self.rec_name_pattern, rec)
+        assert re.match(self.rec_name_pattern, rec), f"Invalid record name: `{rec}`"
         tranche, nsrrid = rec.split("-")
         visitnumber = tranche[-1]
         return {
@@ -710,6 +710,10 @@ class SHHS(NSRRDataBase):
         rec: Union[str, int],
         channel: str = "all",
         rec_path: Optional[Union[str, Path]] = None,
+        sampfrom: Optional[Real] = None,
+        sampto: Optional[Real] = None,
+        fs: Optional[int] = None,
+        physical: bool = True,
     ) -> Union[Dict[str, Tuple[np.ndarray, Real]], Tuple[np.ndarray, Real]]:
         """
         load PSG data of the record `rec`
@@ -725,36 +729,78 @@ class SHHS(NSRRDataBase):
         rec_path: str or Path, optional,
             path of the file which contains the PSG data,
             if not given, default path will be used
+        sampfrom: real number, optional,
+            start time (units in seconds) of the data to be loaded,
+            valid only when `channel` is some specific channel
+        sampto: real number, optional,
+            end time (units in seconds) of the data to be loaded,
+            valid only when `channel` is some specific channel
+        fs: real number, optional,
+            if not None, the loaded data will be resampled to this frequency
+            valid only when `channel` is some specific channel
+        physical: bool, default True,
+            if True, then the data will be converted to physical units
+            otherwise, the data will be in digital units
 
         Returns
         -------
-        dict, PSG data and sampling frequency;
-        or (np.ndarray, real number), PSG data of the channel `channel` and its sampling frequency
+        dict,
+            keys: PSG channel names;
+            values: PSG data and sampling frequency
+
+        (np.ndarray, real number):
+            PSG data of the channel `channel` and its sampling frequency
 
         """
         chn = self.match_channel(channel) if channel.lower() != "all" else "all"
         frp = self.get_absolute_path(rec, rec_path, rec_type="psg")
         self.safe_edf_file_operation("open", frp)
 
-        data_dict = {
-            k: (
-                self.file_opened.readSignal(idx),
-                self.file_opened.getSampleFrequency(idx),
-            )
-            for idx, k in enumerate(self.file_opened.getSignalLabels())
-        }
+        if chn == "all":
+            ret_data = {
+                k: (
+                    self.file_opened.readSignal(idx, digital=not physical),
+                    self.file_opened.getSampleFrequency(idx),
+                )
+                for idx, k in enumerate(self.file_opened.getSignalLabels())
+            }
+        else:
+            all_signals = list(self.file_opened.getSignalLabels())
+            assert (
+                chn in all_signals
+            ), f"`channel` should be one of `{all_signals}`, but got `{chn}`"
+            idx = all_signals.index(chn)
+            data_fs = self.file_opened.getSampleFrequency(idx)
+            data = self.file_opened.readSignal(idx, digital=not physical)
+            # the `readSignal` method of `EdfReader` does NOT treat
+            # the parameters `start` and `n` correctly
+            # so we have to do it manually
+            if sampfrom is not None:
+                idx_from = int(round(sampfrom * data_fs))
+            else:
+                idx_from = 0
+            if sampto is not None:
+                idx_to = int(round(sampto * data_fs))
+            else:
+                idx_to = len(data)
+            data = data[idx_from:idx_to]
+            if fs is not None and fs != data_fs:
+                data = SS.resample_poly(data, fs, data_fs).astype(data.dtype)
+                data_fs = fs
+            ret_data = (data, data_fs)
 
         self.safe_edf_file_operation("close")
 
-        if chn == "all":
-            return data_dict
-        else:
-            return data_dict[chn]
+        return ret_data
 
     def load_ecg_data(
         self,
         rec: Union[str, int],
         rec_path: Optional[Union[str, Path]] = None,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        data_format: str = "channel_first",
+        units: Union[str, type(None)] = "mV",
         fs: Optional[int] = None,
     ) -> Tuple[np.ndarray, Real]:
         """
@@ -768,9 +814,20 @@ class SHHS(NSRRDataBase):
         rec_path: str or Path, optional,
             path of the file which contains the ECG data,
             if not given, default path will be used
-        fs: int, optional,
-            sampling frequency of the ECG data,
-            if not given, the original sampling frequency will be used
+        sampfrom: int, optional,
+            start index of the data to be loaded
+        sampto: int, optional,
+            end index of the data to be loaded
+        data_format: str, default "channel_first",
+            format of the ecg data,
+            "channel_last" (alias "lead_last"), or
+            "channel_first" (alias "lead_first"), or
+            "flat" (alias "plain") which is valid only when `leads` is a single lead
+        units: str or None, default "mV",
+            units of the output signal, can also be "μV", with aliases of "uV", "muV";
+            None for digital data, without digital-to-physical conversion
+        fs: real number, optional,
+            if not None, the loaded data will be resampled to this frequency
 
         Returns
         -------
@@ -780,13 +837,40 @@ class SHHS(NSRRDataBase):
             sampling frequency
 
         """
-        data, data_fs = self.load_psg_data(rec=rec, channel="ecg", rec_path=rec_path)
-        if fs is not None and fs != data_fs:
-            data = SS.resample_poly(data, fs, data_fs).astype(DEFAULTS.DTYPE.NP)
-            data_fs = fs
-        else:
-            data = data.astype(DEFAULTS.DTYPE.NP)
-            data_fs = data_fs
+        allowed_data_format = [
+            "channel_first",
+            "lead_first",
+            "channel_last",
+            "lead_last",
+            "flat",
+            "plain",
+        ]
+        assert (
+            data_format.lower() in allowed_data_format
+        ), f"`data_format` should be one of `{allowed_data_format}`, but got `{data_format}`"
+        allowed_units = ["mv", "uv", "μv", "muv"]
+        assert (
+            units is None or units.lower() in allowed_units
+        ), f"`units` should be one of `{allowed_units}` or None, but got `{units}`"
+
+        data, data_fs = self.load_psg_data(
+            rec=rec,
+            channel="ecg",
+            rec_path=rec_path,
+            sampfrom=sampfrom,
+            sampto=sampto,
+            fs=fs,
+            physical=units is not None,
+        )
+        data = data.astype(DEFAULTS.DTYPE.NP)
+
+        if units is not None and units.lower() in ["μv", "uv", "muv"]:
+            data *= 1e3
+        if data_format.lower() in ["channel_first", "lead_first"]:
+            data = data[np.newaxis, :]
+        elif data_format.lower() in ["channel_last", "lead_last"]:
+            data = data[:, np.newaxis]
+
         return data, data_fs
 
     @add_docstring(
@@ -797,10 +881,22 @@ class SHHS(NSRRDataBase):
         self,
         rec: Union[str, int],
         rec_path: Optional[Union[str, Path]] = None,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        data_format: str = "channel_first",
+        units: Union[str, type(None)] = "mV",
         fs: Optional[int] = None,
     ) -> Tuple[np.ndarray, Real]:
         """alias of `load_ecg_data`"""
-        return self.load_ecg_data(rec=rec, rec_path=rec_path, fs=fs)
+        return self.load_ecg_data(
+            rec=rec,
+            rec_path=rec_path,
+            sampfrom=sampfrom,
+            sampto=sampto,
+            data_format=data_format,
+            units=units,
+            fs=fs,
+        )
 
     def load_ann(
         self,
