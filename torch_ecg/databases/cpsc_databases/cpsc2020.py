@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+The 3rd China Physiological Signal Challenge 2020:
+Searching for Premature Ventricular Contraction (PVC) and Supraventricular Premature Beat (SPB) from Long-term ECGs
 """
 
 import math
@@ -9,8 +11,8 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
+import scipy.signal as SS
 from scipy.io import loadmat
-from scipy.signal import resample_poly
 
 from ...cfg import CFG, DEFAULTS
 from ...utils.misc import add_docstring
@@ -344,7 +346,7 @@ class CPSC2020(CPSCDataBase):
         sf, st = (sampfrom or 0), (sampto or len(data))
         data = data[sf:st]
         if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+            data = SS.resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
         if data_format.lower() in ["channel_first", "lead_first"]:
             data = data.T
         elif data_format.lower() in ["flat", "plain"]:

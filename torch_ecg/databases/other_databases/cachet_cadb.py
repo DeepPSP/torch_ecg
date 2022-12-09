@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+Contextualized Ambulatory Electrocardiography Arrhythmia Dataset (CACHET-CADB)
 """
 
 import re
@@ -13,7 +14,7 @@ from numbers import Real
 import numpy as np
 import pandas as pd
 import h5py
-from scipy.signal import resample_poly
+import scipy.signal as SS
 
 from ...cfg import DEFAULTS
 from ...utils.download import http_get
@@ -441,7 +442,7 @@ class CACHET_CADB(_DataBase):
             raise ValueError(f"Invalid `data_format`: {data_format}")
 
         if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+            data = SS.resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
 
         return data
 
@@ -567,7 +568,7 @@ class CACHET_CADB(_DataBase):
         context_data = context_data[channels]
 
         if fs is not None and fs != header["sampleRate"]:
-            context_data = resample_poly(
+            context_data = SS.resample_poly(
                 context_data, fs, header["sampleRate"], axis=1
             ).astype(context_data.dtype)
 

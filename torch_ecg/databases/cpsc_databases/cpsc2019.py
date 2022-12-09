@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+The 2nd China Physiological Signal Challenge (CPSC 2019):
+Challenging QRS Detection and Heart Rate Estimation from Single-Lead ECG Recordings
 """
 
 import json
@@ -9,8 +11,8 @@ from typing import Any, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
+import scipy.signal as SS
 from scipy.io import loadmat
-from scipy.signal import resample_poly
 
 from ...cfg import DEFAULTS
 from ...utils.misc import add_docstring
@@ -124,7 +126,7 @@ class CPSC2019(CPSCDataBase):
         self._all_records = [f"data_{i:05d}" for i in range(1, 1 + self.n_records)]
         self._all_annotations = [f"R_{i:05d}" for i in range(1, 1 + self.n_records)]
         self._df_records = pd.DataFrame()
-        print(
+        self.logger.info(
             "Please allow some time for the reader to confirm "
             "the existence of corresponding data files and annotation files..."
         )
@@ -255,7 +257,7 @@ class CPSC2019(CPSCDataBase):
         fp = self.get_absolute_path(rec, self.rec_ext)
         data = loadmat(str(fp))["ecg"].astype(DEFAULTS.DTYPE.NP)
         if fs is not None and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+            data = SS.resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
         if data_format.lower() in ["channel_first", "lead_first"]:
             data = data.T
         elif data_format.lower() in ["flat", "plain"]:

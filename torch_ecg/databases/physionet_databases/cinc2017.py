@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+AF Classification from a Short Single Lead ECG Recording
+-- The PhysioNet Computing in Cardiology Challenge 2017
 """
 
 import math
@@ -144,7 +146,7 @@ class CINC2017(PhysioNetDataBase):
             )
 
         if len(self._df_records) == 0:
-            print(
+            self.logger.info(
                 "Please wait patiently to let the reader find "
                 "all records of the database from local storage..."
             )
@@ -163,7 +165,7 @@ class CINC2017(PhysioNetDataBase):
                     n=size, random_state=DEFAULTS.SEED, replace=False
                 )
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
-            print(f"Done in {time.time() - start:.3f} seconds!")
+            self.logger.info(f"Done in {time.time() - start:.3f} seconds!")
             self._df_records["record"] = self._df_records["path"].apply(
                 lambda x: x.name
             )

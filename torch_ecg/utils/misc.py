@@ -464,21 +464,27 @@ def plot_single_lead(
 
 
 def init_logger(
-    log_dir: Union[str, Path],
+    log_dir: Optional[Union[str, Path, bool]] = None,
     log_file: Optional[str] = None,
     log_name: Optional[str] = None,
+    suffix: Optional[str] = None,
     mode: str = "a",
     verbose: int = 0,
 ) -> logging.Logger:
     """
     Parameters
     ----------
-    log_dir: str or Path,
-        directory of the log file
+    log_dir: str or Path, optional,
+        directory of the log file,
+        default to `DEFAULTS.log_dir`;
+        if is `False`, then no log file will be created
     log_file: str, optional,
         name of the log file
     log_name: str, optional,
         name of the logger
+    suffix: str, optional,
+        suffix of the log filename,
+        ignored if `log_file` is not `None`
     mode: str, default "a",
         mode of writing the log file, can be one of "a", "w"
     verbose: int, default 0,
@@ -489,43 +495,62 @@ def init_logger(
     logger: Logger
 
     """
-    if log_file is None:
-        log_file = f"log_{get_date_str()}.txt"
-    log_dir = Path(log_dir)
-    log_dir.mkdir(parents=True, exist_ok=True)
-    log_file = log_dir / log_file
-    print(f"log file path: {str(log_file)}")
+    if log_dir is False:
+        log_file = None
+    else:
+        if log_file is None:
+            log_file = f"{DEFAULTS.prefix}-log-{get_date_str()}.txt"
+        log_dir = (
+            Path(log_dir).expanduser().resolve()
+            if log_dir is not None
+            else DEFAULTS.log_dir
+        )
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_file = log_dir / log_file
+        print(f"log file path: {str(log_file)}")
 
-    logger = logging.getLogger(
-        log_name or DEFAULTS.prefix
-    )  # "ECG" to prevent from using the root logger
+    log_name = (log_name or DEFAULTS.prefix) + (f"-{suffix}" if suffix else "")
+    # if a logger with the same name already exists, remove it
+    if log_name in logging.root.manager.loggerDict:
+        logging.getLogger(log_name).handlers = []
+    logger = logging.getLogger(log_name)  # to prevent from using the root logger
 
     c_handler = logging.StreamHandler(sys.stdout)
-    f_handler = logging.FileHandler(str(log_file))
+    if log_file is not None:
+        f_handler = logging.FileHandler(str(log_file))
 
     if verbose >= 2:
-        print("levels of c_handler and f_handler are set DEBUG")
+        # print("level of `c_handler` is set DEBUG")
         c_handler.setLevel(logging.DEBUG)
-        f_handler.setLevel(logging.DEBUG)
+        if log_file is not None:
+            # print("level of `f_handler` is set DEBUG")
+            f_handler.setLevel(logging.DEBUG)
         logger.setLevel(logging.DEBUG)
     elif verbose >= 1:
-        print("level of c_handler is set INFO, level of f_handler is set DEBUG")
+        # print("level of `c_handler` is set INFO")
         c_handler.setLevel(logging.INFO)
-        f_handler.setLevel(logging.DEBUG)
+        if log_file is not None:
+            # print("level of `f_handler` is set DEBUG")
+            f_handler.setLevel(logging.DEBUG)
         logger.setLevel(logging.DEBUG)
     else:
-        print("level of c_handler is set WARNING, level of f_handler is set INFO")
+        # print("level of `c_handler` is set WARNING")
         c_handler.setLevel(logging.WARNING)
-        f_handler.setLevel(logging.INFO)
+        if log_file is not None:
+            # print("level of `f_handler` is set INFO")
+            f_handler.setLevel(logging.INFO)
         logger.setLevel(logging.INFO)
 
     c_format = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-    f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     c_handler.setFormatter(c_format)
-    f_handler.setFormatter(f_format)
-
     logger.addHandler(c_handler)
-    logger.addHandler(f_handler)
+
+    if log_file is not None:
+        f_format = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+        f_handler.setFormatter(f_format)
+        logger.addHandler(f_handler)
 
     return logger
 

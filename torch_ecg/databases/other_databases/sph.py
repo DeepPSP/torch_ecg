@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+Shandong Provincial Hospital Database
 """
 
 import time
@@ -130,7 +131,7 @@ class SPH(_DataBase):
             self._df_records = self._df_records.loc[indices]
         if len(self._df_records) == 0:
             write_file = True
-            print(
+            self.logger.info(
                 "Please wait patiently to let the reader find all records of the database from local storage..."
             )
             start = time.time()
@@ -147,7 +148,7 @@ class SPH(_DataBase):
                     n=size, random_state=DEFAULTS.SEED, replace=False
                 )
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
-            print(f"Done in {time.time() - start:.3f} seconds!")
+            self.logger.info(f"Done in {time.time() - start:.3f} seconds!")
             self._df_records["record"] = self._df_records["path"].apply(
                 lambda x: x.name
             )
@@ -504,7 +505,7 @@ class SPH(_DataBase):
             ]
         else:
             units = self._auto_infer_units(data)
-            print(f"input data is auto detected to have units in {units}")
+            self.logger.info(f"input data is auto detected to have units in `{units}`")
             if units.lower() == "mv":
                 _data = 1000 * data
             else:

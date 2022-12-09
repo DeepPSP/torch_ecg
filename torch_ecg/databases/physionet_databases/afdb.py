@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+MIT-BIH Atrial Fibrillation Database
 """
 
 import math
@@ -351,7 +352,7 @@ class AFDB(PhysioNetDataBase):
             )
         else:
             units = self._auto_infer_units(data)
-            print(f"input data is auto detected to have units in {units}")
+            self.logger.info(f"input data is auto detected to have units in `{units}`")
             if units.lower() == "mv":
                 _data = 1000 * data
             else:

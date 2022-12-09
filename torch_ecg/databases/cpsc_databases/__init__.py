@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-docstring, to write
+China Physiological Signal Challenge (CPSC) databases
 """
 
 from .cpsc2018 import CPSC2018

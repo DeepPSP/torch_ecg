@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+The China Physiological Signal Challenge 2018:
+Automatic identification of the rhythm/morphology abnormalities in 12-lead ECGs
 """
 
 import warnings

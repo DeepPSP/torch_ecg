@@ -12,6 +12,7 @@ Remarks:
 
 """
 
+import logging
 import posixpath
 import pprint
 import re
@@ -29,17 +30,18 @@ from numbers import Real
 import numpy as np
 import pandas as pd
 import requests
+import scipy.signal as SS
 import wfdb
-from scipy.signal import resample_poly
 from pyedflib import EdfReader
 
 from ..cfg import CFG, DEFAULTS, _DATA_CACHE
 from ..utils import ecg_arrhythmia_knowledge as EAK  # noqa: F401
 from ..utils.download import http_get
 from ..utils.misc import (
-    ReprMixin,
     dict_to_str,
     get_record_list_recursive,
+    init_logger,
+    ReprMixin,
     CitationMixin,
 )
 from .aux_data import get_physionet_dbs
@@ -160,7 +162,7 @@ class _DataBase(ReprMixin, ABC):
                 f"using default `{db_dir}` as the storage path",
                 RuntimeWarning,
             )
-        self.db_dir = Path(db_dir).resolve().absolute()
+        self.db_dir = Path(db_dir).expanduser().resolve().absolute()
         if not self.db_dir.exists():
             self.db_dir.mkdir(parents=True, exist_ok=True)
             warnings.warn(
@@ -171,10 +173,23 @@ class _DataBase(ReprMixin, ABC):
                 RuntimeWarning,
             )
         self.working_dir = (
-            Path(working_dir or DEFAULTS.working_dir).resolve().absolute()
+            Path(working_dir or DEFAULTS.working_dir).expanduser().resolve().absolute()
             / self.db_name
         )
         self.working_dir.mkdir(parents=True, exist_ok=True)
+
+        self.logger = kwargs.get("logger", None)
+        if self.logger is None:
+            self.logger = init_logger(
+                log_dir=False,
+                suffix=self.__class__.__name__,
+                verbose=verbose,
+            )
+        else:
+            assert isinstance(
+                self.logger, logging.Logger
+            ), "logger must be a `logging.Logger` instance"
+
         self.data_ext = None
         self.ann_ext = None
         self.header_ext = "hea"
@@ -567,7 +582,7 @@ class PhysioNetDataBase(_DataBase):
                     n=size, random_state=DEFAULTS.SEED, replace=False
                 )
             self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
-            print(f"Done in {time.time() - start:.3f} seconds!")
+            self.logger.info(f"Done in {time.time() - start:.3f} seconds!")
             self._df_records["record"] = self._df_records["path"].apply(
                 lambda x: x.name
             )
@@ -686,7 +701,7 @@ class PhysioNetDataBase(_DataBase):
             data = 1000 * wfdb_rec.p_signal
 
         if fs is not None and hasattr(self, "fs") and fs != self.fs:
-            data = resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+            data = SS.resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
 
         if data_format.lower() in ["channel_first", "lead_first"]:
             data = data.T
@@ -838,7 +853,7 @@ class PhysioNetDataBase(_DataBase):
                 self.df_all_db_info["db_name"] == self.db_name
             ].iloc[0]["db_description"]
         except IndexError:
-            print(
+            self.logger.info(
                 f"\042{self.db_name}\042 is not in the database list hosted at PhysioNet!"
             )
             return None
@@ -864,7 +879,7 @@ class PhysioNetDataBase(_DataBase):
                 self._ls_rec()
                 return
             else:
-                print(
+                self.logger.info(
                     "No compressed database available! Downloading the uncompressed version..."
                 )
         wfdb.dl_database(

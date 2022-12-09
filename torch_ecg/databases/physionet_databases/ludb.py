@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+Lobachevsky University Electrocardiography Database
 """
 
 from copy import deepcopy
@@ -189,9 +190,10 @@ class LUDB(PhysioNetDataBase):
             verbose=verbose,
             **kwargs,
         )
-        print(
-            "Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used"
-        )
+        if self.version == "1.0.0":
+            self.logger.info(
+                "Version of LUDB 1.0.0 has bugs, make sure that version 1.0.1 or higher is used"
+            )
         self.fs = 500
         self.spacing = 1000 / self.fs
         self.data_ext = "dat"
@@ -671,7 +673,7 @@ class LUDB(PhysioNetDataBase):
             ]
         else:
             units = self._auto_infer_units(data)
-            print(f"input data is auto detected to have units in {units}")
+            self.logger.info(f"input data is auto detected to have units in {units}")
             if units.lower() == "mv":
                 _data = 1000 * data
             else:

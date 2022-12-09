@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+The 4th China Physiological Signal Challenge 2021:
+Paroxysmal Atrial Fibrillation Events Detection from Dynamic ECG Recordings
 """
 
 import json
@@ -273,12 +275,14 @@ class CPSC2021(PhysioNetDataBase):
             else:
                 if not dir_tranche.is_dir():
                     continue
-                print("Please wait patiently to let the reader find all records...")
+                self.logger.info(
+                    "Please wait patiently to let the reader find all records..."
+                )
                 start = time.time()
                 self._all_records[t] = get_record_list_recursive3(
                     str(dir_tranche), self.rec_patterns_with_ext
                 )
-                print(f"Done in {time.time() - start:.5f} seconds!")
+                self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
                 record_list_fp.write_text("\n".join(self._all_records[t]))
 
             record_list_fp = dir_tranche / rev_fn
@@ -293,7 +297,7 @@ class CPSC2021(PhysioNetDataBase):
             self._stats = pd.read_csv(stats_file_fp)
 
         if self._stats.empty or set(self._stats_columns) != set(self._stats.columns):
-            print(
+            self.logger.info(
                 "Please wait patiently to let the reader aggregate statistics on the whole dataset..."
             )
             start = time.time()
@@ -325,7 +329,7 @@ class CPSC2021(PhysioNetDataBase):
             )
             self._stats = self._stats[self._stats_columns]
             self._stats.to_csv(stats_file_fp, index=False)
-            print(f"Done in {time.time() - start:.5f} seconds!")
+            self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
         else:
             pass  # currently no need to parse the loaded csv file
         self._stats["subject_id"] = self._stats["subject_id"].apply(lambda s: str(s))
@@ -362,7 +366,7 @@ class CPSC2021(PhysioNetDataBase):
         else:
             start = time.time()
             if self.df_stats.empty:
-                print(
+                self.logger.info(
                     "Please wait several minutes patiently to let the reader list records for each diagnosis..."
                 )
                 self._diagnoses_records_list = {
@@ -371,7 +375,7 @@ class CPSC2021(PhysioNetDataBase):
                 for rec in self.all_records:
                     lb = self.load_label(rec)
                     self._diagnoses_records_list[lb].append(rec)
-                print(f"Done in {time.time() - start:.5f} seconds!")
+                self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
             else:
                 self._diagnoses_records_list = {
                     d: self.df_stats[self.df_stats["label"] == d]["record"].tolist()
@@ -906,7 +910,7 @@ class CPSC2021(PhysioNetDataBase):
             )
         else:
             units = self._auto_infer_units(data)
-            print(f"input data is auto detected to have units in {units}")
+            self.logger.info(f"input data is auto detected to have units in {units}")
             if units.lower() == "mv":
                 _data = 1000 * data
             else:
@@ -1095,7 +1099,8 @@ class CPSC2021(PhysioNetDataBase):
 
     def _round(self, n: Real) -> int:
         """
-        dealing with round(0.5) = 0, hence keeping accordance with output length of `resample_poly`
+        dealing with round(0.5) = 0,
+        hence keeping accordance with output length of `resample_poly`
         """
         return int(round(n + self._epsilon))
 
@@ -1106,7 +1111,11 @@ class CPSC2021(PhysioNetDataBase):
             return self._url_compressed
         # currently, cpsc2021 is not included in the list obtained
         # using `wfdb.get_dbs()`
-        self._url_compressed = f"https://www.physionet.org/static/published-projects/cpsc2021/paroxysmal-atrial-fibrillation-events-detection-from-dynamic-ECG-recordings-the-4th-china-physiological-signal-challenge-2021-{self.version}.zip"
+        self._url_compressed = (
+            "https://www.physionet.org/static/published-projects/cpsc2021/"
+            "paroxysmal-atrial-fibrillation-events-detection-from-dynamic-ECG-recordings"
+            f"-the-4th-china-physiological-signal-challenge-2021-{self.version}.zip"
+        )
         return self._url_compressed
 
     @property

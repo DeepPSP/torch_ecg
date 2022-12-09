@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+Classification of 12-lead ECGs: the PhysioNet/Computing in Cardiology Challenge 2020
 """
 
 import io
@@ -15,9 +16,9 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
+import scipy.signal as SS
 import wfdb
 from scipy.io import loadmat
-from scipy.signal import resample, resample_poly  # noqa: F401
 
 from ...cfg import CFG, DEFAULTS
 from ...utils import EAK
@@ -308,12 +309,12 @@ class CINC2020(PhysioNetDataBase):
                 ]
                 self.db_dirs[tranche] = self._find_dir(self.db_dir_base, tranche, 0)
                 if not self.db_dirs[tranche]:
-                    print(
+                    self.logger.info(
                         f"failed to find the directory containing tranche {self.tranche_names[tranche]}"
                     )
                     # raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
         else:
-            print(
+            self.logger.info(
                 "Please wait patiently to let the reader find all records of all the tranches..."
             )
             start = time.time()
@@ -329,19 +330,19 @@ class CINC2020(PhysioNetDataBase):
                 tmp_dirname = [Path(f).parent for f in self._all_records[tranche]]
                 if len(set(tmp_dirname)) != 1:
                     if len(set(tmp_dirname)) > 1:
-                        print(
+                        self.logger.info(
                             f"records of tranche {tranche} are stored in several folders!"
                         )
                         # raise ValueError(f"records of tranche {tranche} are stored in several folders!")
                     else:
-                        print(f"no record found for tranche {tranche}!")
+                        self.logger.info(f"no record found for tranche {tranche}!")
                         continue
                         # raise ValueError(f"no record found for tranche {tranche}!")
                 self.db_dirs[tranche] = self.db_dir_base / tmp_dirname[0]
                 self._all_records[tranche] = [
                     Path(f).name for f in self._all_records[tranche]
                 ]
-            print(f"Done in {time.time() - start:.5f} seconds!")
+            self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
             record_list_fp.write_text(json.dumps(to_save))
         self._all_records = CFG(self._all_records)
         self.__all_records = list_sum(self._all_records.values())
@@ -373,9 +374,9 @@ class CINC2020(PhysioNetDataBase):
             if is None, then not found
 
         """
-        # print(f"searching for dir for tranche {self.tranche_names[tranche]} with root {root} at level {level}")
+        # self.logger.info(f"searching for dir for tranche {self.tranche_names[tranche]} with root {root} at level {level}")
         if level > 2:
-            print(
+            self.logger.info(
                 f"failed to find the directory containing tranche {self.tranche_names[tranche]}"
             )
             return None
@@ -403,7 +404,7 @@ class CINC2020(PhysioNetDataBase):
         if dr_fp.is_file():
             self._diagnoses_records_list = json.loads(dr_fp.read_text())
         else:
-            print(
+            self.logger.info(
                 "Please wait several minutes patiently to let the reader list records for each diagnosis..."
             )
             start = time.time()
@@ -416,7 +417,7 @@ class CINC2020(PhysioNetDataBase):
                     ld = ann["diagnosis_scored"]["diagnosis_abbr"]
                     for d in ld:
                         self._diagnoses_records_list[d].append(rec)
-            print(f"Done in {time.time() - start:.5f} seconds!")
+            self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
             dr_fp.write_text(json.dumps(self._diagnoses_records_list))
         self._all_records = CFG(self._all_records)
         self.__all_records = list_sum(self._all_records.values())
@@ -611,7 +612,9 @@ class CINC2020(PhysioNetDataBase):
             data = data * 1000
 
         if fs is not None and fs != self.fs[tranche]:
-            data = resample_poly(data, fs, self.fs[tranche], axis=1).astype(data.dtype)
+            data = SS.resample_poly(data, fs, self.fs[tranche], axis=1).astype(
+                data.dtype
+            )
 
         if data_format.lower() in ["channel_last", "lead_last"]:
             data = data.T
@@ -1190,7 +1193,7 @@ class CINC2020(PhysioNetDataBase):
                 }
             )
             url = f"https://physionet.org/lightwave/?db={physionet_lightwave_suffix[tranche]}"
-            print(f"better view: {url}")
+            self.logger.info(f"better view: {url}")
 
         if "plt" not in dir():
             import matplotlib.pyplot as plt
@@ -1206,7 +1209,7 @@ class CINC2020(PhysioNetDataBase):
             ]
         else:
             units = self._auto_infer_units(data)
-            print(f"input data is auto detected to have units in {units}")
+            self.logger.info(f"input data is auto detected to have units in {units}")
             if units.lower() == "mv":
                 _data = 1000 * data
             else:
@@ -1429,10 +1432,10 @@ class CINC2020(PhysioNetDataBase):
         else:
             rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz_siglen_{siglen}.npy"
         if not rec_fp.is_file():
-            # print(f"corresponding file {rec_fp.name} does not exist")
+            # self.logger.info(f"corresponding file {rec_fp.name} does not exist")
             data = self.load_data(rec, data_format="channel_first", units="mV", fs=None)
             if self.fs[tranche] != 500:
-                data = resample_poly(data, 500, self.fs[tranche], axis=1).astype(
+                data = SS.resample_poly(data, 500, self.fs[tranche], axis=1).astype(
                     DEFAULTS.DTYPE.NP
                 )
             if siglen is not None and data.shape[1] >= siglen:
@@ -1446,7 +1449,7 @@ class CINC2020(PhysioNetDataBase):
             elif siglen is None:
                 np.save(rec_fp, data)
         else:
-            # print(f"loading from local file...")
+            # self.logger.info(f"loading from local file...")
             data = np.load(rec_fp).astype(DEFAULTS.DTYPE.NP)
         if data_format.lower() in ["channel_last", "lead_last"]:
             data = np.moveaxis(data, -1, -2)
@@ -1503,7 +1506,7 @@ class CINC2020(PhysioNetDataBase):
             for rec in self.all_records[t]:
                 data = self.load_data(rec)
                 if np.isnan(data).any():
-                    print(f"record {rec} from tranche {t} has nan values")
+                    self.logger.info(f"record {rec} from tranche {t} has nan values")
 
     @property
     def url(self) -> List[str]:

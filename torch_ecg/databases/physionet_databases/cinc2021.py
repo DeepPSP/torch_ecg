@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+Will Two Do? Varying Dimensions in Electrocardiography:
+The PhysioNet/Computing in Cardiology Challenge 2021
 """
 
 import io
@@ -16,9 +18,9 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
+import scipy.signal as SS
 import wfdb
 from scipy.io import loadmat
-from scipy.signal import resample, resample_poly  # noqa: F401
 from tqdm.auto import tqdm
 
 from ...cfg import CFG, DEFAULTS
@@ -377,12 +379,12 @@ class CINC2021(PhysioNetDataBase):
                 ]
                 self.db_dirs[tranche] = self._find_dir(self.db_dir_base, tranche, 0)
                 if not self.db_dirs[tranche]:
-                    print(
+                    self.logger.info(
                         f"failed to find the directory containing tranche {self.tranche_names[tranche]}"
                     )
                     # raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
         else:
-            print(
+            self.logger.info(
                 "Please wait patiently to let the reader find all records of all the tranches..."
             )
             start = time.time()
@@ -398,19 +400,19 @@ class CINC2021(PhysioNetDataBase):
                 tmp_dirname = [Path(f).parent for f in self._all_records[tranche]]
                 if len(set(tmp_dirname)) != 1:
                     if len(set(tmp_dirname)) > 1:
-                        print(
+                        self.logger.info(
                             f"records of tranche {tranche} are stored in several folders!"
                         )
                         # raise ValueError(f"records of tranche {tranche} are stored in several folders!")
                     else:
-                        print(f"no record found for tranche {tranche}!")
+                        self.logger.info(f"no record found for tranche {tranche}!")
                         continue
                         # raise ValueError(f"no record found for tranche {tranche}!")
                 self.db_dirs[tranche] = self.db_dir_base / tmp_dirname[0]
                 self._all_records[tranche] = [
                     Path(f).name for f in self._all_records[tranche]
                 ]
-            print(f"Done in {time.time() - start:.5f} seconds!")
+            self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
             record_list_fp.write_text(json.dumps(to_save))
         self._all_records = CFG(self._all_records)
         self.__all_records = list_sum(self._all_records.values())
@@ -441,7 +443,7 @@ class CINC2021(PhysioNetDataBase):
         if not fast and (
             self._stats.empty or self._stats_columns != set(self._stats.columns)
         ):
-            print(
+            self.logger.info(
                 "Please wait patiently to let the reader collect statistics on the whole dataset..."
             )
             start = time.time()
@@ -496,9 +498,11 @@ class CINC2021(PhysioNetDataBase):
                     lambda lst: list_sep.join(lst)
                 )
             _stats_to_save.to_csv(stats_file_fp, index=False)
-            print(f"Done in {time.time() - start:.5f} seconds!")
+            self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
         else:
-            print("converting dtypes of columns `diagnosis` and `diagnosis_scored`...")
+            self.logger.info(
+                "converting dtypes of columns `diagnosis` and `diagnosis_scored`..."
+            )
             for k in [
                 "diagnosis",
                 "diagnosis_scored",
@@ -528,9 +532,9 @@ class CINC2021(PhysioNetDataBase):
             if is None, then not found
 
         """
-        # print(f"searching for dir for tranche {self.tranche_names[tranche]} with root {root} at level {level}")
+        # self.logger.info(f"searching for dir for tranche {self.tranche_names[tranche]} with root {root} at level {level}")
         if level > 2:
-            print(
+            self.logger.info(
                 f"failed to find the directory containing tranche {self.tranche_names[tranche]}"
             )
             return None
@@ -575,7 +579,7 @@ class CINC2021(PhysioNetDataBase):
         if dr_fp.is_file():
             self._diagnoses_records_list = json.loads(dr_fp.read_text())
         else:
-            print(
+            self.logger.info(
                 "Please wait several minutes patiently to let the reader list records for each diagnosis..."
             )
             self._diagnoses_records_list = {
@@ -789,9 +793,9 @@ class CINC2021(PhysioNetDataBase):
 
         rec_fs = self.get_fs(rec, from_hea=True)
         if fs is not None and fs != rec_fs:
-            data = resample_poly(data, fs, rec_fs, axis=1).astype(data.dtype)
+            data = SS.resample_poly(data, fs, rec_fs, axis=1).astype(data.dtype)
         # if fs is not None and fs != self.fs[tranche]:
-        #     data = resample_poly(data, fs, self.fs[tranche], axis=1)
+        #     data = SS.resample_poly(data, fs, self.fs[tranche], axis=1)
 
         if data_format.lower() in ["channel_last", "lead_last"]:
             data = data.T
@@ -1389,7 +1393,7 @@ class CINC2021(PhysioNetDataBase):
                 }
             )
             url = f"https://physionet.org/lightwave/?db={physionet_lightwave_suffix[tranche]}"
-            print(f"better view: {url}")
+            self.logger.info(f"better view: {url}")
 
         if "plt" not in dir():
             import matplotlib.pyplot as plt
@@ -1405,7 +1409,7 @@ class CINC2021(PhysioNetDataBase):
             ]
         else:
             units = self._auto_infer_units(data)
-            print(f"input data is auto detected to have units in {units}")
+            self.logger.info(f"input data is auto detected to have units in {units}")
             if units.lower() == "mv":
                 _data = 1000 * data
             else:
@@ -1636,7 +1640,7 @@ class CINC2021(PhysioNetDataBase):
         else:
             rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz_siglen_{siglen}.npy"
         if not rec_fp.is_file():
-            # print(f"corresponding file {rec_fp.name} does not exist")
+            # self.logger.info(f"corresponding file {rec_fp.name} does not exist")
             # NOTE: if not exists, create the data file,
             # so that the ordering of leads keeps in accordance with `EAK.Standard12Leads`
             data = self.load_data(
@@ -1644,11 +1648,11 @@ class CINC2021(PhysioNetDataBase):
             )
             rec_fs = self.get_fs(rec, from_hea=True)
             if rec_fs != 500:
-                data = resample_poly(data, 500, rec_fs, axis=1).astype(
+                data = SS.resample_poly(data, 500, rec_fs, axis=1).astype(
                     DEFAULTS.DTYPE.NP
                 )
             # if self.fs[tranche] != 500:
-            #     data = resample_poly(data, 500, self.fs[tranche], axis=1)
+            #     data = SS.resample_poly(data, 500, self.fs[tranche], axis=1)
             if siglen is not None and data.shape[1] >= siglen:
                 # slice_start = (data.shape[1] - siglen)//2
                 # slice_end = slice_start + siglen
@@ -1660,7 +1664,7 @@ class CINC2021(PhysioNetDataBase):
             elif siglen is None:
                 np.save(rec_fp, data)
         else:
-            # print(f"loading from local file...")
+            # self.logger.info(f"loading from local file...")
             data = np.load(rec_fp).astype(DEFAULTS.DTYPE.NP)
         # choose data of specific leads
         if siglen is None:
@@ -1744,9 +1748,9 @@ class CINC2021(PhysioNetDataBase):
             for rec in self.all_records[t]:
                 data = self.load_data(rec)
                 if np.isnan(data).any():
-                    print(f"record {rec} from tranche {t} has nan values")
+                    self.logger.info(f"record {rec} from tranche {t} has nan values")
                 elif np.std(data) == 0:
-                    print(f"record {rec} from tranche {t} is flat")
+                    self.logger.info(f"record {rec} from tranche {t} is flat")
                 elif (np.std(data, axis=1) == 0).any():
                     exceptional_leads = set(
                         np.array(self.all_leads)[
@@ -1762,7 +1766,7 @@ class CINC2021(PhysioNetDataBase):
                         ]
                     )
                     if cond or flat_granularity.lower() == "lead":
-                        print(
+                        self.logger.info(
                             f"leads {exceptional_leads} of record {rec} from tranche {t} is flat"
                         )
                     else:
@@ -1801,7 +1805,7 @@ class CINC2021(PhysioNetDataBase):
         )
         dx_cooccurrence_all.index = dx_mapping_all.Abbreviation.values
         start = time.time()
-        print("start computing the cooccurrence matrix...")
+        self.logger.info("start computing the cooccurrence matrix...")
         _tranches = (tranches or "").upper() or list(self.all_records.keys())
         for tranche, l_rec in self.all_records.items():
             if tranche not in _tranches:
@@ -1812,7 +1816,7 @@ class CINC2021(PhysioNetDataBase):
                 for item in d:
                     if item not in dx_cooccurrence_all.columns.values:
                         # ref. ISSUE 7
-                        # print(f"{rec} has illegal Dx {item}!")
+                        # self.logger.info(f"{rec} has illegal Dx {item}!")
                         continue
                     dx_cooccurrence_all.loc[item, item] += 1
                 for i in range(len(d) - 1):
@@ -1823,9 +1827,10 @@ class CINC2021(PhysioNetDataBase):
                             continue
                         dx_cooccurrence_all.loc[d[i], d[j]] += 1
                         dx_cooccurrence_all.loc[d[j], d[i]] += 1
-                print(f"tranche {tranche} <-- {idx+1} / {len(l_rec)}", end="\r")
-            print("\n")
-        print(
+                self.logger.info(
+                    f"tranche {tranche} <-- {idx+1} / {len(l_rec)}", end="\r"
+                )
+        self.logger.info(
             f"finish computing the cooccurrence matrix in {(time.time()-start)/60:.3f} minutes"
         )
         if tranches is None:
