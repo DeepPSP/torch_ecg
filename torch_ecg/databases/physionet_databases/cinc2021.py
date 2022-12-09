@@ -1827,7 +1827,7 @@ class CINC2021(PhysioNetDataBase):
                             continue
                         dx_cooccurrence_all.loc[d[i], d[j]] += 1
                         dx_cooccurrence_all.loc[d[j], d[i]] += 1
-                self.logger.info(
+                print(
                     f"tranche {tranche} <-- {idx+1} / {len(l_rec)}", end="\r"
                 )
         self.logger.info(
