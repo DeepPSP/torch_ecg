@@ -5,11 +5,13 @@ import math
 import time
 
 import numpy as np
+import scipy.signal as SS
 import torch
+
 from cfg import ModelCfg
 from saved_models import load_model
-from scipy.signal import resample_poly
 from signal_processing import ecg_denoise, parallel_preprocess_signal
+
 
 CRNN_MODEL, SEQ_LAB_MODEL = load_model(which="both")
 CRNN_CFG, SEQ_LAB_CFG = ModelCfg.crnn, ModelCfg.seq_lab
@@ -59,7 +61,7 @@ def CPSC2020_challenge(ECG, fs):
     FS = 400
 
     if int(fs) != FS:
-        sig = resample_poly(np.array(ECG).flatten(), up=FS, down=int(fs))
+        sig = SS.resample_poly(np.array(ECG).flatten(), up=FS, down=int(fs))
     else:
         sig = np.array(ECG).flatten()
     pps = parallel_preprocess_signal(sig, FS)  # use default config in `cfg`

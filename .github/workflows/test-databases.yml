@@ -43,7 +43,12 @@ jobs:
     # ref. https://github.com/DeepPSP/nsrr-automate
       run: |
         gem install nsrr --no-document
-        nsrr download shhs/polysomnography/edfs/shhs1/ --file="^shhs1\-20000.*\.edf" --token=${{ secrets.NSRR_TOKEN }}
+        nsrr download shhs/polysomnography/edfs/shhs1/ --file="^shhs1\-20010.*\.edf" --token=${{ secrets.NSRR_TOKEN }}
+        nsrr download shhs/polysomnography/annotations-events-nsrr/shhs1/ --file="^shhs1\-20010.*\-nsrr\.xml" --token=${{ secrets.NSRR_TOKEN }}
+        nsrr download shhs/polysomnography/annotations-events-profusion/shhs1/ --file="^shhs1\-20010.*\-profusion\.xml" --token=${{ secrets.NSRR_TOKEN }}
+        nsrr download shhs/polysomnography/annotations-rpoints/shhs1/ --file="^shhs1\-20010.*\-rpoint\.csv" --token=${{ secrets.NSRR_TOKEN }}
+        nsrr download shhs/datasets/ --shallow --token=${{ secrets.NSRR_TOKEN }}
+        nsrr download shhs/datasets/hrv-analysis/ --token=${{ secrets.NSRR_TOKEN }}
         mkdir -p ~/tmp/nsrr-data/
         mv shhs/ ~/tmp/nsrr-data/
         du -sh ~/tmp/nsrr-data/*

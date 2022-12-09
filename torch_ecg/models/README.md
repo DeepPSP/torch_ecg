@@ -1,5 +1,7 @@
 # Models for ECG tasks
 
+![pytest](https://github.com/DeepPSP/torch_ecg/actions/workflows/test-models.yml/badge.svg?branch=test-models)
+
 Resources:
 ----------
 1. ECG CRNN

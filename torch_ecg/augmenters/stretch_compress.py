@@ -6,10 +6,10 @@ from random import choice, randint
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
+import scipy.signal as SS
 import torch
 import torch.multiprocessing as tmp
 import torch.nn.functional as F
-from scipy.signal import resample, resample_poly  # noqa: F401
 from torch import Tensor
 
 from ..cfg import DEFAULTS
@@ -519,7 +519,7 @@ class StretchCompressOffline(ReprMixin):
                 start_idx = max(0, end_idx - new_len)
                 ratio = (end_idx - start_idx) / seglen - 1
             aug_seg = sig[..., start_idx:end_idx]
-            aug_seg = resample(x=aug_seg, num=seglen, axis=1)
+            aug_seg = SS.resample(x=aug_seg, num=seglen, axis=1)
             for lb in labels:
                 dtype = lb.dtype
                 aug_labels.append(

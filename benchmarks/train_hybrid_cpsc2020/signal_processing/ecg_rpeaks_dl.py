@@ -13,7 +13,7 @@ from typing import Sequence, Union
 
 import biosppy.signals.ecg as BSE
 import numpy as np
-from scipy.signal import resample_poly
+import scipy.signal as SS
 
 try:
     import torch_ecg  # noqa: F401
@@ -86,7 +86,7 @@ def seq_lab_net_detect(
     sig_rsmp = _seq_lab_net_pre_process(sig, verbose=verbose)
 
     if fs != model_fs:
-        sig_rsmp = resample_poly(sig_rsmp, up=model_fs, down=int(fs))
+        sig_rsmp = SS.resample_poly(sig_rsmp, up=model_fs, down=int(fs))
 
     max_single_batch_half_len = 10 * 60 * model_fs
     if len(sig_rsmp) > 2 * max_single_batch_half_len:
