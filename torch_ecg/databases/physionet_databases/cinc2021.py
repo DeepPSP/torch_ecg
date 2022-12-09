@@ -1827,9 +1827,7 @@ class CINC2021(PhysioNetDataBase):
                             continue
                         dx_cooccurrence_all.loc[d[i], d[j]] += 1
                         dx_cooccurrence_all.loc[d[j], d[i]] += 1
-                print(
-                    f"tranche {tranche} <-- {idx+1} / {len(l_rec)}", end="\r"
-                )
+                print(f"tranche {tranche} <-- {idx+1} / {len(l_rec)}", end="\r")
         self.logger.info(
             f"finish computing the cooccurrence matrix in {(time.time()-start)/60:.3f} minutes"
         )

@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import scipy.signal as SS
 import xmltodict as xtd
-from pyedflib import EdfReader  # noqa: F401
+from tqdm.auto import tqdm
 
 from ...cfg import DEFAULTS
 from ...utils.misc import add_docstring
@@ -253,7 +253,7 @@ class SHHS(NSRRDataBase):
         self._df_records = pd.DataFrame()
         self._all_records = []
         self.rec_with_hrv_summary_ann = []
-        self.rec_with_hrv_detail_ann = []
+        self.rec_with_hrv_detailed_ann = []
         self.rec_with_event_ann = []
         self.rec_with_event_profusion_ann = []
         self.rec_with_rpeaks_ann = []
@@ -366,16 +366,18 @@ class SHHS(NSRRDataBase):
                     ]
                 )
         self.rec_with_hrv_summary_ann = sorted(list(set(self.rec_with_hrv_summary_ann)))
-        self.rec_with_hrv_detail_ann = []
+        self.rec_with_hrv_detailed_ann = []
         for table_name in ["shhs1-hrv-5min", "shhs2-hrv-5min"]:
             if table_name in self._tables:
-                self.rec_with_hrv_detail_ann.extend(
+                self.rec_with_hrv_detailed_ann.extend(
                     [
                         f"shhs{int(row['visitnumber'])}-{int(row['nsrrid'])}"
                         for _, row in self._tables[table_name].iterrows()
                     ]
                 )
-        self.rec_with_hrv_detail_ann = sorted(list(set(self.rec_with_hrv_detail_ann)))
+        self.rec_with_hrv_detailed_ann = sorted(
+            list(set(self.rec_with_hrv_detailed_ann))
+        )
 
         self.logger.info("Finding records with rpeaks annotations....")
         # find available rpeak annotation files
@@ -400,6 +402,10 @@ class SHHS(NSRRDataBase):
                 for f in self.event_profusion_ann_path.rglob("shhs*-profusion.xml")
             ]
         )
+
+        self._df_records["available_signals"] = None
+        if not self.lazy:
+            self.get_available_signals(None)
 
         # END OF `_ls_rec`
 
@@ -466,6 +472,57 @@ class SHHS(NSRRDataBase):
         pid = int(head_shhs1 + str(visitnumber) + str(nsrrid))
         return pid
 
+    def get_available_signals(
+        self, rec: Union[str, int, None]
+    ) -> Union[List[str], None]:
+        """
+        get available signals for a record;
+        if input `rec` is None, will find available signals for all records,
+        and assign to `self._df_records['available_signals']`
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name, typically in the form "shhs1-200001",
+            or index of the record in `self.all_records`
+
+        Returns
+        -------
+        available_signals: list of str,
+            names of available signals for `rec`
+
+        """
+        if rec is None:
+            # iterrows with tqdm
+            for _, row in tqdm(
+                self._df_records.iterrows(),
+                total=len(self._df_records),
+                desc="Finding available signals",
+                unit="record",
+                dynamic_ncols=True,
+                mininterval=1.0,
+            ):
+                rec = row.name
+                if self._df_records.loc[rec, "available_signals"] is not None:
+                    continue
+                available_signals = self.get_available_signals(rec)
+                self._df_records.at[rec, "available_signals"] = available_signals
+            return
+
+        if isinstance(rec, int):
+            rec = self.all_records[rec]
+
+        available_signals = self._df_records.loc[rec, "available_signals"]
+        if available_signals is not None:
+            return available_signals
+
+        frp = self.get_absolute_path(rec)
+        self.safe_edf_file_operation("open", frp)
+        available_signals = self.file_opened.getSignalLabels()
+        self.safe_edf_file_operation("close")
+        self._df_records.at[rec, "available_signals"] = available_signals
+        return available_signals
+
     def split_rec_name(self, rec: Union[str, int]) -> Dict[str, Union[str, int]]:
         """
         split `rec` into `tranche`, `visitnumber`, `nsrrid`
@@ -492,7 +549,7 @@ class SHHS(NSRRDataBase):
             "nsrrid": int(nsrrid),
         }
 
-    def get_visit_number(self, rec: Union[str, int]) -> int:
+    def get_visitnumber(self, rec: Union[str, int]) -> int:
         """
         get `visitnumber` from `rec`
 
@@ -915,9 +972,9 @@ class SHHS(NSRRDataBase):
             or index of the record in `self.all_records`
         ann_type: str,
             type of the annotation, can be
-            "event", "event_profusion", "hrv_summary", "hrv_detailed", "sleep",
-            "sleep_stage", "sleep_event", "apnea", "wave_delineation",
-            "rpeak", "rr", "nn"
+            "event", "event_profusion", "hrv_summary", "hrv_detailed",
+            "sleep", "sleep_stage", "sleep_event", "apnea" (alias "sleep_apnea"),
+            "wave_delineation", "rpeak", "rr", "nn"
         ann_path: str or Path, optional,
             path of the file which contains the annotations,
             if not given, default path will be used
@@ -1121,7 +1178,7 @@ class SHHS(NSRRDataBase):
         """
         if isinstance(rec, int):
             rec = self.all_records[rec]
-        if rec not in self.rec_with_hrv_detail_ann:
+        if rec not in self.rec_with_hrv_detailed_ann:
             return pd.DataFrame()
 
         tranche, nsrrid = [self.split_rec_name(rec)[k] for k in ["tranche", "nsrrid"]]
@@ -1573,7 +1630,7 @@ class SHHS(NSRRDataBase):
         )
         return df_apnea_ann
 
-    def load_wave_delineation(
+    def load_wave_delineation_ann(
         self,
         rec: Union[str, int],
         wave_deli_path: Optional[Union[str, Path]] = None,
@@ -1656,7 +1713,7 @@ class SHHS(NSRRDataBase):
 
         """
         info_items = ["Type", "rpointadj", "samplingrate"]
-        df_rpeaks_with_type_info = self.load_wave_delineation(rec, rpeak_ann_path)
+        df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec, rpeak_ann_path)
         if df_rpeaks_with_type_info.empty:
             return np.array([], dtype=int)
         df_rpeaks_with_type_info = df_rpeaks_with_type_info[info_items]
@@ -1737,7 +1794,7 @@ class SHHS(NSRRDataBase):
 
         """
         info_items = ["Type", "rpointadj", "samplingrate"]
-        df_rpeaks_with_type_info = self.load_wave_delineation(rec, rpeak_ann_path)
+        df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec, rpeak_ann_path)
         if df_rpeaks_with_type_info.empty:
             return np.array([])
         df_rpeaks_with_type_info = df_rpeaks_with_type_info[info_items]
@@ -1778,7 +1835,7 @@ class SHHS(NSRRDataBase):
             indices of artifacts
 
         """
-        df_rpeaks_with_type_info = self.load_wave_delineation(rec, wave_deli_path)
+        df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec, wave_deli_path)
         if df_rpeaks_with_type_info.empty:
             return np.array([], dtype=int)
         df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
@@ -1822,7 +1879,7 @@ class SHHS(NSRRDataBase):
                 f"No abnormal type of `{abnormal_type}` in wave delineation annotation files"
             )
 
-        df_rpeaks_with_type_info = self.load_wave_delineation(rec, wave_deli_path)
+        df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec, wave_deli_path)
         if not df_rpeaks_with_type_info.empty:
             df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
             # 2 = VE, 3 = SVE
@@ -2097,6 +2154,7 @@ class SHHS(NSRRDataBase):
 
     def __create_constants(self, **kwargs) -> None:
         """ """
+        self.lazy = kwargs.get("lazy", True)
         self.extension = {
             "psg": ".edf",
             "wave_delineation": "-rpoint.csv",
