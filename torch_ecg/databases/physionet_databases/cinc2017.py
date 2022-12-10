@@ -63,7 +63,7 @@ class CINC2017(PhysioNetDataBase):
         self,
         db_dir: Optional[Union[str, Path]] = None,
         working_dir: Optional[Union[str, Path]] = None,
-        verbose: int = 2,
+        verbose: int = 1,
         **kwargs: Any,
     ) -> None:
         """
@@ -73,7 +73,7 @@ class CINC2017(PhysioNetDataBase):
             storage path of the database
         working_dir: str, optional,
             working directory, to store intermediate files and log file
-        verbose: int, default 2,
+        verbose: int, default 1
             log verbosity
         kwargs: auxilliary key word arguments
 

@@ -5,7 +5,7 @@ name: Run Test with PyTest and Codecov
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ dev ]
   pull_request:
     branches: [ master ]
 

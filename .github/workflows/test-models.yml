@@ -5,7 +5,7 @@ name: Test models with PyTest
 
 on:
   push:
-    branches: [ test-models ]
+    branches: [ dev-models ]
 
 jobs:
   build:

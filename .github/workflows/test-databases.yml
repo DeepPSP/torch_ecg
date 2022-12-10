@@ -5,7 +5,7 @@ name: Test databases with PyTest
 
 on:
   push:
-    branches: [ test-databases ]
+    branches: [ dev-databases ]
 
 jobs:
   build:

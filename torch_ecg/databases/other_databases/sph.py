@@ -63,7 +63,7 @@ class SPH(_DataBase):
         self,
         db_dir: Optional[Union[str, Path]] = None,
         working_dir: Optional[Union[str, Path]] = None,
-        verbose: int = 2,
+        verbose: int = 1,
         **kwargs: Any,
     ) -> None:
         """
@@ -74,7 +74,7 @@ class SPH(_DataBase):
             if not specified, `wfdb` will fetch data from the website of PhysioNet
         working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
-        verbose: int, default 2,
+        verbose: int, default 1
             log verbosity
         kwargs: auxilliary key word arguments
 
