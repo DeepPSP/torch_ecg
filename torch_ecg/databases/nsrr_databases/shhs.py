@@ -211,7 +211,7 @@ class SHHS(NSRRDataBase):
         self,
         db_dir: Optional[Union[str, Path]] = None,
         working_dir: Optional[Union[str, Path]] = None,
-        verbose: int = 2,
+        verbose: int = 1,
         **kwargs: Any,
     ) -> None:
         """
@@ -221,7 +221,7 @@ class SHHS(NSRRDataBase):
             storage path of the database
         working_dir: str or Path, optional,
             working directory, to store intermediate files and log file
-        verbose: int, default 2,
+        verbose: int, default 1
             log verbosity
         kwargs: auxilliary key word arguments
 
@@ -459,7 +459,7 @@ class SHHS(NSRRDataBase):
 
         """
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
         head_shhs1, head_shhs2v3, head_shhs2v4 = "30000", "30001", "30002"
         tranche, nsrrid, visitnumber = [
             self.split_rec_name(rec)[k] for k in ["tranche", "nsrrid", "visitnumber"]
@@ -510,17 +510,25 @@ class SHHS(NSRRDataBase):
             return
 
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
 
-        available_signals = self._df_records.loc[rec, "available_signals"]
-        if available_signals is not None:
-            return available_signals
+        if rec in self._df_records.index:
+            available_signals = self._df_records.loc[rec, "available_signals"]
+            if available_signals is not None:
+                return available_signals
 
-        frp = self.get_absolute_path(rec)
-        self.safe_edf_file_operation("open", frp)
-        available_signals = self.file_opened.getSignalLabels()
-        self.safe_edf_file_operation("close")
-        self._df_records.at[rec, "available_signals"] = available_signals
+            frp = self.get_absolute_path(rec)
+            try:
+                # perhaps broken file
+                # or the downloading is not finished
+                self.safe_edf_file_operation("open", frp)
+            except OSError:
+                return None
+            available_signals = self.file_opened.getSignalLabels()
+            self.safe_edf_file_operation("close")
+            self._df_records.at[rec, "available_signals"] = available_signals
+        else:
+            available_signals = []
         return available_signals
 
     def split_rec_name(self, rec: Union[str, int]) -> Dict[str, Union[str, int]]:
@@ -539,7 +547,7 @@ class SHHS(NSRRDataBase):
 
         """
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
         assert re.match(self.rec_name_pattern, rec), f"Invalid record name: `{rec}`"
         tranche, nsrrid = rec.split("-")
         visitnumber = tranche[-1]
@@ -605,7 +613,7 @@ class SHHS(NSRRDataBase):
         rec: Union[str, int],
         sig: str = "ECG",
         rec_path: Optional[Union[str, Path]] = None,
-    ) -> int:
+    ) -> Real:
         """
         get the sampling frequency of a signal of a record
 
@@ -615,22 +623,49 @@ class SHHS(NSRRDataBase):
             record name, typically in the form "shhs1-200001",
             or index of the record in `self.all_records`
         sig: str, default "ECG",
-            signal name
+            signal name or annotation name (e.g. "rpeak"),
+            some annotation files (*-rpeak.csv) have sampling frequency column
         rec_path: str or Path, optional,
             path of the file which contains the PSG data,
             if not given, default path will be used
 
         Returns
         -------
-        fs, int,
-            the sampling frequency of the signal `sig` of the record `rec`
+        fs, real number,
+            the sampling frequency of the signal `sig` of the record `rec`.
+            If corresponding signal (.edf) file is not available,
+            or the signal file does not contain the signal `sig`,
+            return -1
 
         """
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
+        sig = self.match_channel(sig, raise_error=False)
+        assert sig in self.all_signals + ["rpeak"], f"Invalid signal name: `{sig}`"
+        if sig.lower() == "rpeak":
+            df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec)
+            if df_rpeaks_with_type_info.empty:
+                self.logger.info(
+                    f"Rpeak annotation file corresponding to `{rec}` is not available."
+                )
+                return -1
+            return df_rpeaks_with_type_info.iloc[0]["samplingrate"]
+
         frp = self.get_absolute_path(rec, rec_path)
+        if not frp.exists():
+            self.logger.info(
+                f"Signal (.edf) file corresponding to `{rec}` is not available."
+            )
+            return -1
         self.safe_edf_file_operation("open", frp)
-        chn_num = self.file_opened.getSignalLabels().index(self.match_channel(sig))
+        sig = self.match_channel(sig)
+        available_signals = self.file_opened.getSignalLabels()
+        if sig not in available_signals:
+            self.logger.info(
+                f"Signal `{sig}` is not available in signal file corresponding to `{rec}`."
+            )
+            return -1
+        chn_num = self.file_opened.getSignalLabels().index(sig)
         fs = self.file_opened.getSampleFrequency(chn_num)
         self.safe_edf_file_operation("close")
         return fs
@@ -658,16 +693,24 @@ class SHHS(NSRRDataBase):
         Returns
         -------
         chn_num, int,
-            the index of channel of the signal `sig` of the record `rec`
+            the index of channel of the signal `sig` of the record `rec`.
+            If corresponding signal (.edf) file is not available,
+            or the signal file does not contain the signal `sig`,
+            return -1
 
         """
-        frp = self.get_absolute_path(rec, rec_path)
-        self.safe_edf_file_operation("open", frp)
-        chn_num = self.file_opened.getSignalLabels().index(self.match_channel(sig))
-        self.safe_edf_file_operation("close")
+        sig = self.match_channel(sig)
+        available_signals = self.get_available_signals(rec)
+        if sig not in available_signals:
+            self.logger.info(
+                f"Signal (.edf) file corresponding to `{rec}` is not available, or"
+                f"signal `{sig}` is not available in signal file corresponding to `{rec}`."
+            )
+            return -1
+        chn_num = available_signals.index(self.match_channel(sig))
         return chn_num
 
-    def match_channel(self, channel: str) -> str:
+    def match_channel(self, channel: str, raise_error: bool = True) -> str:
         """
         match the channel name to the standard channel name in SHHS
 
@@ -675,16 +718,24 @@ class SHHS(NSRRDataBase):
         ----------
         channel: str,
             channel name
+        raise_error: bool, default True,
+            whether to raise error if no match is found.
+            If False, return the input `channel` directly
 
         Returns
         -------
-        str, the standard channel name in SHHS
+        sig: str,
+            the standard channel name in SHHS.
+            If no match is found, and `raise_error` is False,
+            return the input `channel` directly
 
         """
         for sig in self.all_signals:
             if sig.lower() == channel.lower():
                 return sig
-        raise ValueError(f"No channel named `{channel}`")
+        if raise_error:
+            raise ValueError(f"No channel named `{channel}`")
+        return channel
 
     def get_absolute_path(
         self,
@@ -722,7 +773,7 @@ class SHHS(NSRRDataBase):
         )
 
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
 
         tranche, nsrrid = [self.split_rec_name(rec)[k] for k in ["tranche", "nsrrid"]]
         # rp = self._df_records.loc[rec, rec_type]
@@ -1045,6 +1096,9 @@ class SHHS(NSRRDataBase):
 
         """
         file_path = self.get_absolute_path(rec, event_ann_path, rec_type="event")
+        if not file_path.exists():
+            # rec not in `self.rec_with_event_ann`
+            return pd.DataFrame()
         doc = xtd.parse(file_path.read_text())
         df_events = pd.DataFrame(
             doc["PSGAnnotation"]["ScoredEvents"]["ScoredEvent"][1:]
@@ -1091,6 +1145,9 @@ class SHHS(NSRRDataBase):
         file_path = self.get_absolute_path(
             rec, event_profusion_ann_path, rec_type="event_profusion"
         )
+        if not file_path.exists():
+            # rec not in `self.rec_with_event_profusion_ann`
+            return {"sleep_stage_list": [], "df_events": pd.DataFrame()}
         doc = xtd.parse(file_path.read_text())
         sleep_stage_list = [
             int(ss) for ss in doc["CMPStudyConfig"]["SleepStages"]["SleepStage"]
@@ -1132,7 +1189,7 @@ class SHHS(NSRRDataBase):
             df_hrv_ann = pd.concat(
                 [
                     self._tables[table_name]
-                    for table_name in ["shh1-hrv-summary", "shh2-hrv-summary"]
+                    for table_name in ["shhs1-hrv-summary", "shhs2-hrv-summary"]
                     if table_name in self._tables
                 ],
                 ignore_index=True,
@@ -1140,7 +1197,7 @@ class SHHS(NSRRDataBase):
             return df_hrv_ann
 
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
 
         if rec not in self.rec_with_hrv_summary_ann:
             return pd.DataFrame()
@@ -1177,7 +1234,7 @@ class SHHS(NSRRDataBase):
 
         """
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
         if rec not in self.rec_with_hrv_detailed_ann:
             return pd.DataFrame()
 
@@ -1218,41 +1275,47 @@ class SHHS(NSRRDataBase):
 
         """
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
         if source.lower() == "hrv":
             df_hrv_ann = self.load_hrv_detailed_ann(
                 rec=rec, hrv_ann_path=sleep_ann_path
             )
-            df_sleep_ann = df_hrv_ann[self.sleep_ann_keys_from_hrv].reset_index(
-                drop=True
-            )
-            self.logger.info(
+            if not df_hrv_ann.empty:
+                df_sleep_ann = df_hrv_ann[self.sleep_ann_keys_from_hrv].reset_index(
+                    drop=True
+                )
+            else:
+                df_sleep_ann = pd.DataFrame(columns=self.sleep_ann_keys_from_hrv)
+            self.logger.debug(
                 f"record `{rec}` has `{len(df_sleep_ann)}` sleep annotations from corresponding "
-                f"hrv annotation file, with `{len(self.sleep_ann_keys_from_hrv)}` column(s)"
+                f"hrv-5min (detailed) annotation file, with `{len(self.sleep_ann_keys_from_hrv)}` column(s)"
             )
         elif source.lower() == "event":
             df_event_ann = self.load_event_ann(
                 rec, event_ann_path=sleep_ann_path, simplify=False
             )
             _cols = ["EventType", "EventConcept", "Start", "Duration", "SignalLocation"]
-            df_sleep_ann = df_event_ann[_cols]
-            self.logger.info(
+            if not df_event_ann.empty:
+                df_sleep_ann = df_event_ann[_cols]
+            else:
+                df_sleep_ann = pd.DataFrame(columns=_cols)
+            self.logger.debug(
                 f"record `{rec}` has `{len(df_sleep_ann)}` sleep annotations from corresponding "
                 f"event-nsrr annotation file, with `{len(_cols)}` column(s)"
             )
         elif source.lower() == "event_profusion":
-            df_event_ann = self.load_event_profusion_ann(rec)
+            dict_event_ann = self.load_event_profusion_ann(rec)
             # temporarily finished
             # latter to make imporvements
-            df_sleep_ann = df_event_ann
-            self.logger.info(
+            df_sleep_ann = dict_event_ann
+            self.logger.debug(
                 f"record `{rec}` has `{len(df_sleep_ann['df_events'])}` sleep event annotations "
                 "from corresponding event-profusion annotation file, "
                 f"with `{len(df_sleep_ann['df_events'].columns)}` column(s)"
             )
         else:
             raise ValueError(
-                f"source `{source}` not supported, "
+                f"Source `{source}` not supported, "
                 "only `hrv`, `event`, `event_profusion` are supported"
             )
         return df_sleep_ann
@@ -1293,7 +1356,7 @@ class SHHS(NSRRDataBase):
 
         """
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
         self.sleep_stage_protocol = sleep_stage_protocol
         self.update_sleep_stage_names()
 
@@ -1357,6 +1420,11 @@ class SHHS(NSRRDataBase):
                     "sleep_stage": df_sleep_ann["sleep_stage_list"],
                 }
             )
+        else:
+            raise ValueError(
+                f"Source `{source}` not supported, "
+                "only `hrv`, `event`, `event_profusion` are supported"
+            )
 
         df_sleep_stage_ann = df_sleep_stage_ann[self.sleep_stage_keys]
 
@@ -1379,11 +1447,11 @@ class SHHS(NSRRDataBase):
             ].apply(lambda a: self.sleep_stage_names[a])
 
         if source.lower() != "event_profusion":
-            self.logger.info(
+            self.logger.debug(
                 f"record `{rec}` has `{len(df_tmp)}` raw (epoch_len = 5min) sleep stage annotations, "
                 f"with `{len(self.sleep_stage_ann_keys_from_hrv)}` column(s)"
             )
-            self.logger.info(
+            self.logger.debug(
                 f"after being transformed (epoch_len = 30sec), record `{rec}` has {len(df_sleep_stage_ann)} "
                 f"sleep stage annotations, with `{len(self.sleep_stage_keys)}` column(s)"
             )
@@ -1424,10 +1492,14 @@ class SHHS(NSRRDataBase):
 
         """
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
         df_sleep_ann = self.load_sleep_ann(
             rec=rec, source=source, sleep_ann_path=sleep_event_ann_path
         )
+        if isinstance(df_sleep_ann, pd.DataFrame) and df_sleep_ann.empty:
+            return df_sleep_ann
+        elif isinstance(df_sleep_ann, dict) and df_sleep_ann["df_events"].empty:
+            return df_sleep_ann["df_events"]
 
         df_sleep_event_ann = pd.DataFrame(columns=self.sleep_event_keys)
 
@@ -1455,16 +1527,18 @@ class SHHS(NSRRDataBase):
             )
             df_sleep_event_ann = df_sleep_event_ann[self.sleep_event_keys]
 
-            self.logger.info(
+            self.logger.debug(
                 f"record `{rec}` has `{len(df_sleep_ann)}` raw (epoch_len = 5min) sleep event "
                 f"annotations from hrv, with `{len(self.sleep_event_ann_keys_from_hrv)}` column(s)"
             )
-            self.logger.info(
+            self.logger.debug(
                 f"after being transformed, record `{rec}` has `{len(df_sleep_event_ann)}` sleep event(s)"
             )
         elif source.lower() == "event":
             if event_types is None:
                 event_types = ["respiratory", "arousal"]
+            else:
+                event_types = [e.lower() for e in event_types]
             assert (
                 set()
                 < set(event_types)
@@ -1504,7 +1578,7 @@ class SHHS(NSRRDataBase):
                 _cols = _cols | set(self.long_event_names_from_event[3:4])
             _cols = list(_cols)
 
-            self.logger.info(f"for record `{rec}`, _cols = `{_cols}`")
+            self.logger.debug(f"for record `{rec}`, _cols = `{_cols}`")
 
             df_sleep_event_ann = df_sleep_ann[
                 df_sleep_ann["EventConcept"].isin(_cols)
@@ -1529,6 +1603,8 @@ class SHHS(NSRRDataBase):
             _cols = set()
             if event_types is None:
                 event_types = ["respiratory", "arousal"]
+            else:
+                event_types = [e.lower() for e in event_types]
             assert (
                 set()
                 < set(event_types)
@@ -1567,7 +1643,7 @@ class SHHS(NSRRDataBase):
                 _cols = _cols | set(self.event_names_from_event_profusion[3:4])
             _cols = list(_cols)
 
-            self.logger.info(f"for record `{rec}`, _cols = `{_cols}`")
+            self.logger.debug(f"for record `{rec}`, _cols = `{_cols}`")
 
             df_sleep_event_ann = df_sleep_ann[
                 df_sleep_ann["Name"].isin(_cols)
@@ -1584,6 +1660,11 @@ class SHHS(NSRRDataBase):
                 lambda row: row["event_start"] + row["event_duration"], axis=1
             )
             df_sleep_event_ann = df_sleep_event_ann[self.sleep_event_keys]
+        else:
+            raise ValueError(
+                f"Source `{source}` not supported, "
+                "only `hrv`, `event`, `event_profusion` are supported"
+            )
 
         return df_sleep_event_ann
 
@@ -1621,7 +1702,10 @@ class SHHS(NSRRDataBase):
         """
         event_types = ["apnea"] if apnea_types is None else apnea_types
         if source.lower() not in ["event", "event_profusion"]:
-            raise ValueError(f"source `{source}` contains no apnea annotations")
+            raise ValueError(
+                f"Source `{source}` contains no apnea annotations, "
+                "should be one of 'event', 'event_profusion'"
+            )
         df_apnea_ann = self.load_sleep_event_ann(
             rec=rec,
             source=source,
@@ -1660,14 +1744,14 @@ class SHHS(NSRRDataBase):
 
         """
         if isinstance(rec, int):
-            rec = self.all_records[rec]
+            rec = self[rec]
 
         file_path = self.get_absolute_path(
             rec, wave_deli_path, rec_type="wave_delineation"
         )
 
         if not file_path.is_file():
-            self.logger.info(
+            self.logger.debug(
                 f"The annotation file of wave delineation of record `{rec}` has not been downloaded yet. "
                 f"Or the path `{str(file_path)}` is not correct. "
                 f"Or `{rec}` does not have `rpeak.csv` annotation file. Please check!"
@@ -1686,7 +1770,7 @@ class SHHS(NSRRDataBase):
         rpeak_ann_path: Optional[Union[str, Path]] = None,
         exclude_artifacts: bool = True,
         exclude_abnormal_beats: bool = True,
-        to_ts: bool = False,
+        units: Optional[str] = None,
         **kwargs: Any,
     ) -> np.ndarray:
         """
@@ -1704,7 +1788,10 @@ class SHHS(NSRRDataBase):
             exlcude those beats (R peaks) that are labelled artifact or not
         exclude_abnormal_beats: bool, default True,
             exlcude those beats (R peaks) that are labelled abnormal ("VE" and "SVE") or not
-        to_ts: bool, default False,
+        units: str, optional,
+            units of the returned R peak locations,
+            can be one of "s", "ms", case insensitive,
+            None for no conversion, using indices of samples
 
         Returns
         -------
@@ -1724,20 +1811,33 @@ class SHHS(NSRRDataBase):
         if exclude_abnormal_beats:
             exclude_beat_types += [2, 3]
 
-        ret = df_rpeaks_with_type_info[
+        rpeaks = df_rpeaks_with_type_info[
             ~df_rpeaks_with_type_info["Type"].isin(exclude_beat_types)
         ]["rpointadj"].values
 
-        if to_ts:
+        if units is None:
+            rpeaks = (np.round(rpeaks)).astype(int)
+        elif units.lower() == "s":
             fs = df_rpeaks_with_type_info.iloc[0]["samplingrate"]
-            ret = ret * 1000 / fs
+            rpeaks = rpeaks / fs
+        elif units.lower() == "ms":
+            fs = df_rpeaks_with_type_info.iloc[0]["samplingrate"]
+            rpeaks = rpeaks / fs * 1000
+            rpeaks = (np.round(rpeaks)).astype(int)
+        else:
+            raise ValueError(
+                "`units` should be one of 's', 'ms', case insensitive, "
+                "or None for no conversion, using indices of samples, "
+                f"but got `{units}`"
+            )
 
-        return (np.round(ret)).astype(int)
+        return rpeaks
 
     def load_rr_ann(
         self,
         rec: Union[str, int],
         rpeak_ann_path: Optional[Union[str, Path]] = None,
+        units: Union[str, None] = "s",
         **kwargs: Any,
     ) -> np.ndarray:
         """
@@ -1751,11 +1851,16 @@ class SHHS(NSRRDataBase):
         rpeak_ann_path: str or Path, optional,
             annotation file path,
             if not given, default path will be used
+        units: str, default "s",
+            units of the returned R peak locations,
+            can be one of "s", "ms", case insensitive,
+            None for no conversion, using indices of samples
 
         Returns
         -------
         rr: ndarray,
-            array of rr intervals
+            array of rr intervals, shape (n_rpeaks - 1, 2),
+            each row is a rr interval, the first column is the location of the R peak
 
         """
         rpeaks_ts = self.load_rpeak_ann(
@@ -1763,7 +1868,7 @@ class SHHS(NSRRDataBase):
             rpeak_ann_path=rpeak_ann_path,
             exclude_artifacts=True,
             exclude_abnormal_beats=True,
-            to_ts=True,
+            units=units,
         )
         rr = np.diff(rpeaks_ts)
         rr = np.column_stack((rpeaks_ts[:-1], rr))
@@ -1773,6 +1878,7 @@ class SHHS(NSRRDataBase):
         self,
         rec: Union[str, int],
         rpeak_ann_path: Optional[Union[str, Path]] = None,
+        units: Union[str, None] = "s",
         **kwargs: Any,
     ) -> np.ndarray:
         """
@@ -1786,24 +1892,43 @@ class SHHS(NSRRDataBase):
         rpeak_ann_path: str or Path, optional,
             annotation file path,
             if not given, default path will be used
+        units: str, default "s",
+            units of the returned R peak locations,
+            can be one of "s", "ms", case insensitive,
+            None for no conversion, using indices of samples
 
         Returns
         -------
         nn: ndarray,
-            array of nn intervals
+            array of nn intervals, shape (n, 2),
+            each row is a nn interval, the first column is the location of the R peak
 
         """
         info_items = ["Type", "rpointadj", "samplingrate"]
         df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec, rpeak_ann_path)
         if df_rpeaks_with_type_info.empty:
-            return np.array([])
+            return np.array([]).reshape(0, 2)
+
         df_rpeaks_with_type_info = df_rpeaks_with_type_info[info_items]
         fs = df_rpeaks_with_type_info.iloc[0]["samplingrate"]
-        rpeaks_ts = (
-            np.round(df_rpeaks_with_type_info["rpointadj"] * 1000 / fs)
-        ).astype(int)
-        rr = np.diff(rpeaks_ts)
-        rr = np.column_stack((rpeaks_ts[:-1], rr))
+        rpeaks = df_rpeaks_with_type_info["rpointadj"]
+
+        if units is None:
+            rpeaks = (np.round(rpeaks)).astype(int)
+        elif units.lower() == "s":
+            rpeaks = rpeaks / fs
+        elif units.lower() == "ms":
+            rpeaks = rpeaks / fs * 1000
+            rpeaks = (np.round(rpeaks)).astype(int)
+        else:
+            raise ValueError(
+                "`units` should be one of 's', 'ms', case insensitive, "
+                "or None for no conversion, using indices of samples, "
+                f"but got `{units}`"
+            )
+
+        rr = np.diff(rpeaks)
+        rr = np.column_stack((rpeaks[:-1], rr))
 
         normal_sinus_rpeak_indices = np.where(
             df_rpeaks_with_type_info["Type"].values == 1
@@ -1812,10 +1937,13 @@ class SHHS(NSRRDataBase):
         ]  # 1 = Normal Sinus Beat
         keep_indices = np.where(np.diff(normal_sinus_rpeak_indices) == 1)[0].tolist()
         nn = rr[normal_sinus_rpeak_indices[keep_indices]]
-        return nn
+        return nn.reshape(-1, 2)
 
     def locate_artifacts(
-        self, rec: Union[str, int], wave_deli_path: Optional[Union[str, Path]] = None
+        self,
+        rec: Union[str, int],
+        wave_deli_path: Optional[Union[str, Path]] = None,
+        units: Optional[str] = None,
     ) -> np.ndarray:
         """
         locate "artifacts" in `rec`
@@ -1828,19 +1956,24 @@ class SHHS(NSRRDataBase):
         wave_deli_path: str or Path, optional,
             annotation file path,
             if not given, default path will be used
+        units: str, optional,
+            units of the returned artifact locations,
+            can be one of "s", "ms", case insensitive,
+            None for no conversion, using indices of samples
 
         Returns
         -------
-        ndarray,
-            indices of artifacts
+        artifacts: ndarray,
+            indices (or time) of artifacts locations,
+            shape (n_artifacts,)
 
         """
         df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec, wave_deli_path)
         if df_rpeaks_with_type_info.empty:
             return np.array([], dtype=int)
-        df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
+        # df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
 
-        return (
+        artifacts = (
             np.round(
                 df_rpeaks_with_type_info[df_rpeaks_with_type_info["Type"] == 0][
                     "rpointadj"
@@ -1848,12 +1981,29 @@ class SHHS(NSRRDataBase):
             )
         ).astype(int)
 
+        if units is None:
+            fs = df_rpeaks_with_type_info.iloc[0]["samplingrate"]
+            if units.lower() == "s":
+                artifacts = artifacts / fs
+            elif units.lower() == "ms":
+                artifacts = artifacts / fs * 1000
+                artifacts = (np.round(artifacts)).astype(int)
+            else:
+                raise ValueError(
+                    "`units` should be one of 's', 'ms', case insensitive, "
+                    "or None for no conversion, using indices of samples, "
+                    f"but got `{units}`"
+                )
+
+        return artifacts
+
     def locate_abnormal_beats(
         self,
         rec: Union[str, int],
         wave_deli_path: Optional[Union[str, Path]] = None,
         abnormal_type: Optional[str] = None,
-    ) -> Dict[str, np.ndarray]:
+        units: Optional[str] = None,
+    ) -> Union[Dict[str, np.ndarray], np.ndarray]:
         """
         locate "abnormal beats" in `rec`
 
@@ -1868,20 +2018,28 @@ class SHHS(NSRRDataBase):
         abnormal_type: str, optional,
             type of abnormal beat type to locate, can be "VE", "SVE",
             if not given, both "VE" and "SVE" will be located
+        units: str, optional,
+            units of the returned R peak locations,
+            can be one of "s", "ms", case insensitive,
+            None for no conversion, using indices of samples
 
         Returns
         -------
-        dict
+        abnormal_rpeaks: dict,
+            dictionary of abnormal beat locations,
+            keys are "VE" and/or "SVE",
+            values are indices (or time) of abnormal beats, shape (n,)
 
         """
         if abnormal_type is not None and abnormal_type not in ["VE", "SVE"]:
             raise ValueError(
-                f"No abnormal type of `{abnormal_type}` in wave delineation annotation files"
+                f"No abnormal type of `{abnormal_type}` in "
+                "wave delineation annotation (*-rpeak.csv) files"
             )
 
         df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec, wave_deli_path)
         if not df_rpeaks_with_type_info.empty:
-            df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
+            # df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
             # 2 = VE, 3 = SVE
             ve = (
                 np.round(
@@ -1904,10 +2062,35 @@ class SHHS(NSRRDataBase):
                 "SVE": np.array([], dtype=int),
             }
 
+        if units is not None:
+            fs = df_rpeaks_with_type_info.iloc[0]["samplingrate"]
+            if units.lower() == "s":
+                abnormal_rpeaks = {
+                    abnormal_type: abnormal_rpeaks[abnormal_type] / fs
+                    for abnormal_type in abnormal_rpeaks
+                }
+            elif units.lower() == "ms":
+                abnormal_rpeaks = {
+                    abnormal_type: abnormal_rpeaks[abnormal_type] / fs * 1000
+                    for abnormal_type in abnormal_rpeaks
+                }
+                abnormal_rpeaks = {
+                    abnormal_type: (np.round(abnormal_rpeaks[abnormal_type])).astype(
+                        int
+                    )
+                    for abnormal_type in abnormal_rpeaks
+                }
+            else:
+                raise ValueError(
+                    "`units` should be one of 's', 'ms', case insensitive, "
+                    "or None for no conversion, using indices of samples, "
+                    f"but got `{units}`"
+                )
+
         if abnormal_type is None:
             return abnormal_rpeaks
         elif abnormal_type in ["VE", "SVE"]:
-            return {abnormal_type: abnormal_rpeaks[abnormal_type]}
+            return abnormal_rpeaks[abnormal_type]
 
     def load_eeg_band_ann(
         self,
@@ -2000,7 +2183,7 @@ class SHHS(NSRRDataBase):
 
         """
         if all([stage_source is None, event_source is None]):
-            raise ValueError("No input data!")
+            raise ValueError("`stage_source` and `event_source` cannot be both `None`")
 
         if stage_source is not None:
             df_sleep_stage = self.load_sleep_stage_ann(
