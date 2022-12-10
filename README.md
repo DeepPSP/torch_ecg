@@ -1,6 +1,6 @@
 # [torch_ecg](https://github.com/DeepPSP/torch_ecg/)
 
-![pytest](https://github.com/DeepPSP/torch_ecg/actions/workflows/run-pytest.yml/badge.svg?branch=develop)
+![pytest](https://github.com/DeepPSP/torch_ecg/actions/workflows/run-pytest.yml/badge.svg?branch=dev)
 ![codeql](https://github.com/DeepPSP/torch_ecg/actions/workflows/codeql-analysis.yml/badge.svg)
 ![formatting](https://github.com/DeepPSP/torch_ecg/actions/workflows/check-formatting.yml/badge.svg)
 [![codecov](https://codecov.io/gh/DeepPSP/torch_ecg/branch/master/graph/badge.svg?token=9YOPZ8GREA)](https://codecov.io/gh/DeepPSP/torch_ecg)
