@@ -236,10 +236,11 @@ class SHHS(NSRRDataBase):
 
         self.__create_constants(**kwargs)
 
+        # `current_version` will be when calling `_ls_rec`
         self.current_version = kwargs.get("current_version", "0.19.0")
         self.version_pattern = "\\d+\\.\\d+\\.\\d+"
 
-        self.rec_name_pattern = "shhs[12]\\-\\d{6}"
+        self.rec_name_pattern = "^shhs[12]\\-\\d{6}$"
 
         self.psg_data_path = None
         self.ann_path = None
@@ -514,7 +515,7 @@ class SHHS(NSRRDataBase):
 
         if rec in self._df_records.index:
             available_signals = self._df_records.loc[rec, "available_signals"]
-            if available_signals is not None:
+            if available_signals is not None and len(available_signals) > 0:
                 return available_signals
 
             frp = self.get_absolute_path(rec)
@@ -524,9 +525,10 @@ class SHHS(NSRRDataBase):
                 self.safe_edf_file_operation("open", frp)
             except OSError:
                 return None
-            available_signals = self.file_opened.getSignalLabels()
+            available_signals = [s.lower() for s in self.file_opened.getSignalLabels()]
             self.safe_edf_file_operation("close")
             self._df_records.at[rec, "available_signals"] = available_signals
+            self.all_signals = self.all_signals.union(set(available_signals))
         else:
             available_signals = []
         return available_signals
@@ -548,7 +550,9 @@ class SHHS(NSRRDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        assert re.match(self.rec_name_pattern, rec), f"Invalid record name: `{rec}`"
+        assert isinstance(rec, str) and re.match(
+            self.rec_name_pattern, rec
+        ), f"Invalid record name: `{rec}`"
         tranche, nsrrid = rec.split("-")
         visitnumber = tranche[-1]
         return {
@@ -641,7 +645,7 @@ class SHHS(NSRRDataBase):
         if isinstance(rec, int):
             rec = self[rec]
         sig = self.match_channel(sig, raise_error=False)
-        assert sig in self.all_signals + ["rpeak"], f"Invalid signal name: `{sig}`"
+        assert sig in self.all_signals.union({"rpeak"}), f"Invalid signal name: `{sig}`"
         if sig.lower() == "rpeak":
             df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec)
             if df_rpeaks_with_type_info.empty:
@@ -659,13 +663,13 @@ class SHHS(NSRRDataBase):
             return -1
         self.safe_edf_file_operation("open", frp)
         sig = self.match_channel(sig)
-        available_signals = self.file_opened.getSignalLabels()
+        available_signals = [s.lower() for s in self.file_opened.getSignalLabels()]
         if sig not in available_signals:
             self.logger.info(
                 f"Signal `{sig}` is not available in signal file corresponding to `{rec}`."
             )
             return -1
-        chn_num = self.file_opened.getSignalLabels().index(sig)
+        chn_num = available_signals.index(sig)
         fs = self.file_opened.getSampleFrequency(chn_num)
         self.safe_edf_file_operation("close")
         return fs
@@ -702,6 +706,8 @@ class SHHS(NSRRDataBase):
         sig = self.match_channel(sig)
         available_signals = self.get_available_signals(rec)
         if sig not in available_signals:
+            if isinstance(rec, int):
+                rec = self[rec]
             self.logger.info(
                 f"Signal (.edf) file corresponding to `{rec}` is not available, or"
                 f"signal `{sig}` is not available in signal file corresponding to `{rec}`."
@@ -730,9 +736,8 @@ class SHHS(NSRRDataBase):
             return the input `channel` directly
 
         """
-        for sig in self.all_signals:
-            if sig.lower() == channel.lower():
-                return sig
+        if channel.lower() in self.all_signals:
+            return channel.lower()
         if raise_error:
             raise ValueError(f"No channel named `{channel}`")
         return channel
@@ -787,7 +792,7 @@ class SHHS(NSRRDataBase):
         raise NotImplementedError
 
     def show_rec_stats(
-        self, rec: Union[str, int], rec_path: Optional[Union[str, Path]]
+        self, rec: Union[str, int], rec_path: Optional[Union[str, Path]] = None
     ) -> None:
         """
         print the statistics of the record `rec`
@@ -873,10 +878,10 @@ class SHHS(NSRRDataBase):
                 for idx, k in enumerate(self.file_opened.getSignalLabels())
             }
         else:
-            all_signals = list(self.file_opened.getSignalLabels())
+            all_signals = [s.lower() for s in self.file_opened.getSignalLabels()]
             assert (
                 chn in all_signals
-            ), f"`channel` should be one of `{all_signals}`, but got `{chn}`"
+            ), f"`channel` should be one of `{self.file_opened.getSignalLabels()}`, but got `{chn}`"
             idx = all_signals.index(chn)
             data_fs = self.file_opened.getSampleFrequency(idx)
             data = self.file_opened.readSignal(idx, digital=not physical)
@@ -1970,7 +1975,8 @@ class SHHS(NSRRDataBase):
         """
         df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec, wave_deli_path)
         if df_rpeaks_with_type_info.empty:
-            return np.array([], dtype=int)
+            dtype = int if units is None or units.lower() != "s" else float
+            return np.array([], dtype=dtype)
         # df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
 
         artifacts = (
@@ -1981,7 +1987,7 @@ class SHHS(NSRRDataBase):
             )
         ).astype(int)
 
-        if units is None:
+        if units is not None:
             fs = df_rpeaks_with_type_info.iloc[0]["samplingrate"]
             if units.lower() == "s":
                 artifacts = artifacts / fs
@@ -2038,6 +2044,7 @@ class SHHS(NSRRDataBase):
             )
 
         df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec, wave_deli_path)
+
         if not df_rpeaks_with_type_info.empty:
             # df_rpeaks_with_type_info = df_rpeaks_with_type_info[["Type", "rpointadj"]]
             # 2 = VE, 3 = SVE
@@ -2057,12 +2064,13 @@ class SHHS(NSRRDataBase):
             ).astype(int)
             abnormal_rpeaks = {"VE": ve, "SVE": sve}
         else:
+            dtype = int if units is None or units.lower() != "s" else float
             abnormal_rpeaks = {
-                "VE": np.array([], dtype=int),
-                "SVE": np.array([], dtype=int),
+                "VE": np.array([], dtype=dtype),
+                "SVE": np.array([], dtype=dtype),
             }
 
-        if units is not None:
+        if units is not None and not df_rpeaks_with_type_info.empty:
             fs = df_rpeaks_with_type_info.iloc[0]["samplingrate"]
             if units.lower() == "s":
                 abnormal_rpeaks = {
@@ -2337,7 +2345,7 @@ class SHHS(NSRRDataBase):
 
     def __create_constants(self, **kwargs) -> None:
         """ """
-        self.lazy = kwargs.get("lazy", True)
+        self.lazy = kwargs.get("lazy", False)
         self.extension = {
             "psg": ".edf",
             "wave_delineation": "-rpoint.csv",
@@ -2351,7 +2359,9 @@ class SHHS(NSRRDataBase):
             "EEG(sec)", "ECG", "EMG", "EOG(L)", "EOG(R)", "EEG",
             "AIRFLOW", "THOR RES", "ABDO RES", "NEW AIR", "OX stat", "SaO2", "H.R.",
             "POSITION", "SOUND", "LIGHT",
+            "AUX", "CPAP", "EPMS", "OX STAT", "PR",
         ]
+        self.all_signals = set([s.lower() for s in self.all_signals])
 
         # annotations regarding sleep analysis
         self.hrv_ann_summary_keys = [

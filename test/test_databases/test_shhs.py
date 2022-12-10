@@ -71,7 +71,7 @@ class TestSHHS:
             assert isinstance(value[0], np.ndarray)
             assert isinstance(value[1], Real) and value[1] > 0
         psg_data = reader.load_psg_data(
-            0, channel=reader.all_signals[0], physical=False
+            0, channel=list(reader.all_signals)[0], physical=False
         )
         assert isinstance(psg_data, tuple)
         assert len(psg_data) == 2
@@ -443,13 +443,13 @@ class TestSHHS:
         assert isinstance(ann_2, np.ndarray)
         assert ann_2.shape == abn_beats["VE"].shape
         assert np.allclose(
-            ann_2, abn_beats["VE"] / reader.get_fs(rec, "rpeaks"), atol=1e-2
+            ann_2, abn_beats["VE"] / reader.get_fs(rec, "rpeak"), atol=1e-2
         )
         ann_2 = reader.locate_abnormal_beats(rec, abnormal_type="VE", units="ms")
         assert isinstance(ann_2, np.ndarray)
         assert ann_2.shape == abn_beats["VE"].shape
         assert np.allclose(
-            ann_2, abn_beats["VE"] / reader.get_fs(rec, "rpeaks") * 1000, atol=1e-2
+            ann_2, abn_beats["VE"] / reader.get_fs(rec, "rpeak") * 1000, atol=1e-2
         )
 
         rec = (
@@ -463,9 +463,9 @@ class TestSHHS:
         assert abn_beats["VE"].ndim == 1 and abn_beats["SVE"].ndim == 1
         assert len(abn_beats["VE"]) == 0 and len(abn_beats["SVE"]) == 0
 
+        rec = reader.rec_with_rpeaks_ann[0]
         with pytest.raises(ValueError, match="No abnormal type of `.+`"):
             reader.locate_abnormal_beats(rec, abnormal_type="AF")
-
         with pytest.raises(
             ValueError,
             match="`units` should be one of 's', 'ms', case insensitive, or None",
@@ -482,12 +482,12 @@ class TestSHHS:
         ann_1 = reader.locate_artifacts(rec, units="s")
         assert isinstance(ann_1, np.ndarray)
         assert ann_1.shape == artifacts.shape
-        assert np.allclose(ann_1, artifacts / reader.get_fs(rec, "rpeaks"), atol=1e-2)
+        assert np.allclose(ann_1, artifacts / reader.get_fs(rec, "rpeak"), atol=1e-2)
         ann_1 = reader.locate_artifacts(rec, units="ms")
         assert isinstance(ann_1, np.ndarray)
         assert ann_1.shape == artifacts.shape
         assert np.allclose(
-            ann_1, artifacts / reader.get_fs(rec, "rpeaks") * 1000, atol=1.0
+            ann_1, artifacts / reader.get_fs(rec, "rpeak") * 1000, atol=1.0
         )
 
         rec = (
@@ -498,6 +498,7 @@ class TestSHHS:
         assert artifacts.ndim == 1
         assert len(artifacts) == 0
 
+        rec = reader.rec_with_rpeaks_ann[0]
         with pytest.raises(
             ValueError,
             match="`units` should be one of 's', 'ms', case insensitive, or None",
@@ -528,7 +529,7 @@ class TestSHHS:
             assert sig == reader.match_channel(sig.lower())
             assert sig in reader.all_signals
 
-        assert reader.match_channel("rpeaks", raise_error=False) == "rpeak"
+        assert reader.match_channel("rpeak", raise_error=False) == "rpeak"
 
     def test_get_fs(self):
         available_signals = reader.get_available_signals(0)
