@@ -83,7 +83,7 @@ def special_detectors(
     kwargs: dict,
         keyword arguments, including:
         "rpeak_fn": rpeak detection method, can be one of
-           "seq_lab", "xqrs", "gqrs", "pantompkins", "hamilton", "ssf", "christov", "engzee", gamboa"
+           "seq_lab", "xqrs", "gqrs", "hamilton", "ssf", "christov", "engzee", gamboa"
         the default method is "xqrs",
         which has less environment issues compared to the deep learning method "seq_lab"
         "axis_method": electrical axis detection method, can be one of

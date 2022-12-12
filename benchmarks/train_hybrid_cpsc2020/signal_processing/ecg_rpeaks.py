@@ -21,20 +21,10 @@ from wfdb.processing.qrs import gqrs_detect as _gqrs_detect
 from wfdb.processing.qrs import xqrs_detect as _xqrs_detect
 import biosppy.signals.ecg as BSE
 
-try:
-    import torch_ecg  # noqa: F401
-except ModuleNotFoundError:
-    import sys
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(__file__).absolute().parents[3]))
-from torch_ecg.utils.pantompkins import pantompkins as _pantompkins
-
 
 __all__ = [
     "xqrs_detect",
     "gqrs_detect",
-    "pantompkins_detect",
     "hamilton_detect",
     "ssf_detect",
     "christov_detect",
@@ -45,24 +35,6 @@ __all__ = [
 
 # ---------------------------------------------------------------------
 # algorithms from wfdb
-def pantompkins_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
-    """to keep in accordance of parameters with `xqrs` and `gqrs`
-
-    References
-    ----------
-    [1] Pan, Jiapu, and Willis J. Tompkins. "A real-time QRS detection algorithm." IEEE transactions on biomedical engineering 3 (1985): 230-236.
-    """
-    rpeaks = _pantompkins(sig, fs)
-    # correct R-peak locations
-    (rpeaks,) = BSE.correct_rpeaks(
-        signal=sig,
-        rpeaks=rpeaks,
-        sampling_rate=fs,
-        tol=kwargs.get("correct_tol", 0.05),
-    )
-    return rpeaks
-
-
 def xqrs_detect(sig: np.ndarray, fs: Real, **kwargs) -> np.ndarray:
     """
     default kwargs:

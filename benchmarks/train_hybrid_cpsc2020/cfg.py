@@ -58,7 +58,7 @@ PreprocCfg.parallel_epoch_len = 600  # second
 PreprocCfg.parallel_epoch_overlap = 10  # second
 PreprocCfg.parallel_keep_tail = True
 PreprocCfg.rpeaks = "seq_lab"  # "xqrs"
-# or "gqrs", or "pantompkins", "hamilton", "ssf", "christov", "engzee", "gamboa"
+# or "gqrs", or "hamilton", "ssf", "christov", "engzee", "gamboa"
 # or empty string "" if not detecting rpeaks
 """
 for qrs detectors:

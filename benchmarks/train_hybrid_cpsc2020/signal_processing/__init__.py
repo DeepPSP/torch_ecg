@@ -15,7 +15,6 @@ from .ecg_rpeaks import (
     gamboa_detect,
     gqrs_detect,
     hamilton_detect,
-    pantompkins_detect,
     ssf_detect,
     xqrs_detect,
 )
@@ -32,7 +31,6 @@ __all__ = [
     "seq_lab_net_detect",
     "xqrs_detect",
     "gqrs_detect",
-    "pantompkins_detect",
     "hamilton_detect",
     "ssf_detect",
     "christov_detect",
