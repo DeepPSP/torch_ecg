@@ -9,6 +9,7 @@ from typing import Sequence
 
 import numpy as np
 
+
 __all__ = [
     "phs_edr",
 ]
@@ -38,13 +39,16 @@ def phs_edr(
     rpeaks: array-like,
         indices of R peaks in the signal
     winL_t: real number, default 40,
-        left length of the window at R peaks for the computation of the area of a QRS complex, with units in ms
+        left length of the window at R peaks for the computation of the area of a QRS complex,
+        with units in milliseconds
     winR_t: real number, default 40,
-        right length of the window at R peaks for the computation of the area of a QRS complex, with units in ms
+        right length of the window at R peaks for the computation of the area of a QRS complex,
+        with units in milliseconds
     return_with_time: bool, default True,
         if True, returns the time along with the EDR values at which they are computed
     mode: str, default "complex", can also be "simple",
-        apply a filtering process (the `edr` function of physionet edr.c) or simply use the `_getxy` function to compute EDR
+        apply a filtering process (the `edr` function of physionet edr.c)
+        or simply use the `_getxy` function to compute EDR
     verbose: int, default 0,
         for printing the computation details
 
@@ -52,16 +56,19 @@ def phs_edr(
     -------
     np.ndarray,
         1d, if `return_with_time` is set False,
-        2d in the form of [idx,val], if `return_with_time` is set True
+        2d in the form of [ts, val] (ts in milliseconds), if `return_with_time` is set True
 
     """
     ts = np.array(rpeaks) * 1000 // fs
     winL, winR = int(winL_t * fs / 1000), int(winR_t * fs / 1000)
 
     if mode == "simple":
-        ecg_der_rsp = np.vectorize(lambda idx: _getxy(sig, idx - winL, idx + winR))(
-            np.array(rpeaks)
-        )
+        if len(rpeaks) > 0:
+            ecg_der_rsp = np.vectorize(lambda idx: _getxy(sig, idx - winL, idx + winR))(
+                np.array(rpeaks)
+            )
+        else:
+            ecg_der_rsp = np.array([])
     elif mode == "complex":
         ecg_der_rsp = []
         xm, xc, xd, xdmax = 0, 0, 0, 0
@@ -106,7 +113,7 @@ def phs_edr(
             ecg_der_rsp.append(int(r * 50))
             # end of calculation of instantaneous EDR
     else:
-        raise ValueError(f"No mode named {mode}!")
+        raise ValueError(f"No mode named `{mode}`!")
 
     ecg_der_rsp = np.array(ecg_der_rsp)
 

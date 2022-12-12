@@ -35,7 +35,6 @@ from .rpeaks import (
     gamboa_detect,
     gqrs_detect,
     hamilton_detect,
-    pantompkins_detect,
     ssf_detect,
     xqrs_detect,
 )
@@ -51,7 +50,6 @@ __all__ = [
 QRS_DETECTORS = {
     "xqrs": xqrs_detect,
     "gqrs": gqrs_detect,
-    "pantompkins": pantompkins_detect,
     "hamilton": hamilton_detect,
     "ssf": ssf_detect,
     "christov": christov_detect,

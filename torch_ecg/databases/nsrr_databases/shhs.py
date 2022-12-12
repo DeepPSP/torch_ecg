@@ -502,6 +502,7 @@ class SHHS(NSRRDataBase):
                 unit="record",
                 dynamic_ncols=True,
                 mininterval=1.0,
+                disable=(self.verbose < 1),
             ):
                 rec = row.name
                 if self._df_records.loc[rec, "available_signals"] is not None:

@@ -610,5 +610,10 @@ class TestSHHS:
         assert reader.current_version >= "0.19.0"
         assert reader.show_rec_stats(0) is None  # printed to stdout
 
+        with pytest.warns(
+            RuntimeWarning, match="one has to apply for a token from `sleepdata.org`"
+        ):
+            assert reader.url == ""
+
     def test_plot(self):
         pass

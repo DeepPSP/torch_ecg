@@ -224,7 +224,9 @@ def _untar_file(path_to_tar_file: Union[str, Path], dst_dir: Union[str, Path]) -
 
     """
     print(f"Extracting file {path_to_tar_file} to {dst_dir}.")
-    mode = Path(path_to_tar_file).suffix.replace(".", "r:").replace("tar", "")
+    mode = (
+        Path(path_to_tar_file).suffix.replace(".", "r:").replace("tar", "").strip(":")
+    )
     with tarfile.open(str(path_to_tar_file), mode) as tar_ref:
         # tar_ref.extractall(str(dst_dir))
         # CVE-2007-4559 (related to  CVE-2001-1267):

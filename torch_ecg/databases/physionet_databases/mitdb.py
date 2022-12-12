@@ -184,6 +184,7 @@ class MITDB(PhysioNetDataBase):
             unit="record",
             dynamic_ncols=True,
             mininterval=1.0,
+            disable=(self.verbose < 1),
         ) as pbar:
             for idx in pbar:
                 rec_ann = self.load_ann(idx)

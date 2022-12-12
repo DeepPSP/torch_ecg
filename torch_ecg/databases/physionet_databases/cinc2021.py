@@ -468,6 +468,7 @@ class CINC2021(PhysioNetDataBase):
                 unit="record",
                 dynamic_ncols=True,
                 mininterval=1.0,
+                disable=(self.verbose < 1),
             ) as pbar:
                 for idx, row in pbar:
                     ann_dict = self.load_ann(row["record"])
