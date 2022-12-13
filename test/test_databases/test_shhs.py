@@ -1,5 +1,5 @@
 """
-TestSHHS: NOT accomplished
+TestSHHS: accomplished
 
 subsampling: NOT tested
 """
@@ -616,4 +616,63 @@ class TestSHHS:
             assert reader.url == ""
 
     def test_plot(self):
-        pass
+        rec = reader.rec_with_event_ann[0]
+        reader.plot_ann(rec, stage_source="event")
+        rec = reader.rec_with_event_profusion_ann[0]
+        reader.plot_ann(rec, stage_source="event_profusion")
+        rec = reader.rec_with_hrv_detailed_ann[0]
+        reader.plot_ann(rec, stage_source="hrv")
+
+        with pytest.raises(
+            ValueError,
+            match="`stage_source` and `event_source` cannot be both `None`",
+        ):
+            reader.plot_ann(rec)
+
+        with pytest.raises(
+            ValueError,
+            match="No sleep stage annotations found for record `.+` with source `hrv`",
+        ):
+            rec = list(set(reader.all_records) - set(reader.rec_with_rpeaks_ann))[0]
+            reader.plot_ann(rec, stage_source="hrv")
+
+        rec = (
+            "shhs2-200001"  # a record (both signal and ann. files) that does not exist
+        )
+        with pytest.raises(
+            ValueError,
+            match=f"No sleep event annotations found for record `{rec}` with source `event`",
+        ):
+            reader.plot_ann(rec, event_source="event")
+
+        with pytest.raises(
+            NotImplementedError,
+            match="Plotting of some type of events in `df_sleep_event` has not been implemented yet",
+        ):
+            rec = reader.rec_with_event_ann[0]
+            reader.plot_ann(rec, event_source="event")
+
+        with pytest.raises(
+            NotImplementedError,
+            match="Plotting of some type of events in `df_sleep_event` has not been implemented yet",
+        ):
+            rec = reader.rec_with_event_profusion_ann[0]
+            reader.plot_ann(rec, event_source="event_profusion")
+
+        with pytest.raises(
+            NotImplementedError,
+            match="Hypnogram format is not implemented yet",
+        ):
+            rec = reader.rec_with_event_ann[0]
+            reader.plot_ann(rec, event_source="event", plot_format="hypnogram")
+
+        with pytest.raises(
+            ValueError,
+            match="Unknown plot format `xxx`! `plot_format` can only be one of `span`, `hypnogram`",
+        ):
+            rec = reader.rec_with_event_ann[0]
+            reader.plot_ann(rec, event_source="event", plot_format="xxx")
+
+        with pytest.raises(ValueError, match="No input data"):
+            rec = reader.rec_with_event_ann[0]
+            reader._plot_ann()

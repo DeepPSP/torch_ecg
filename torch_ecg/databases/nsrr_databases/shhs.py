@@ -2171,6 +2171,7 @@ class SHHS(NSRRDataBase):
         stage_kw: dict = {},
         event_source: Optional[str] = None,
         event_kw: dict = {},
+        plot_format: str = "span",
     ) -> None:
         """
         Parameters
@@ -2189,6 +2190,9 @@ class SHHS(NSRRDataBase):
             if is None, then annotations of sleep events of `rec` won"t be plotted
         event_kw: dict, default {},
             arguments to the function `self.load_sleep_event_ann`
+        plot_format: str, default "span",
+            format of the plot,
+            can be one of "span", "hypnogram", case insensitive
 
         """
         if all([stage_source is None, event_source is None]):
@@ -2198,31 +2202,56 @@ class SHHS(NSRRDataBase):
             df_sleep_stage = self.load_sleep_stage_ann(
                 rec, source=stage_source, **stage_kw
             )
+            if df_sleep_stage.empty:
+                if isinstance(rec, int):
+                    rec = self[rec]
+                raise ValueError(
+                    f"No sleep stage annotations found for record `{rec}` "
+                    f"with source `{stage_source}`"
+                )
         else:
             df_sleep_stage = None
         if event_source is not None:
             df_sleep_event = self.load_sleep_event_ann(
                 rec, source=event_source, **event_kw
             )
+            if df_sleep_event.empty:
+                if isinstance(rec, int):
+                    rec = self[rec]
+                raise ValueError(
+                    f"No sleep event annotations found for record `{rec}` "
+                    f"with source `{event_source}`"
+                )
         else:
             df_sleep_event = None
 
-        self._plot_ann(df_sleep_stage=df_sleep_stage, df_sleep_event=df_sleep_event)
+        self._plot_ann(
+            df_sleep_stage=df_sleep_stage,
+            df_sleep_event=df_sleep_event,
+            plot_format=plot_format,
+        )
 
     def _plot_ann(
         self,
         df_sleep_stage: Optional[pd.DataFrame] = None,
         df_sleep_event: Optional[pd.DataFrame] = None,
+        plot_format: str = "span",
     ) -> None:
-        """not finished,
-
+        """
         Parameters
         ----------
         df_sleep_stage: DataFrame, optional,
             sleep stage annotations
         df_sleep_event: DataFrame, optional,
             sleep event annotations
+        plot_format: str, default "span",
+            format of the plot,
+            can be one of "span", "hypnogram", case insensitive
 
+        TODO
+        ----
+        1. implement the `hypnogram` format
+        2. implement plotting of sleep events
         """
         import matplotlib.patches as mpatches
         import matplotlib.pyplot as plt
@@ -2232,6 +2261,16 @@ class SHHS(NSRRDataBase):
 
         if nb_axes == 0:
             raise ValueError("No input data!")
+
+        if plot_format.lower() == "span":
+            pass
+        elif plot_format.lower() == "hypnogram":
+            raise NotImplementedError("Hypnogram format is not implemented yet!")
+        else:
+            raise ValueError(
+                f"Unknown plot format `{plot_format}`! "
+                f"`plot_format` can only be one of `span`, `hypnogram`"
+            )
 
         patches = {k: mpatches.Patch(color=c, label=k) for k, c in self.palette.items()}
 
@@ -2259,7 +2298,7 @@ class SHHS(NSRRDataBase):
             if len(current_legal_events) != len(
                 set(current_legal_events) | set(df_sleep_event["event_name"])
             ):
-                raise ValueError(
+                raise NotImplementedError(
                     "Plotting of some type of events in `df_sleep_event` has not been implemented yet!"
                 )
 
