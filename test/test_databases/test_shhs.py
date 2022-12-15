@@ -1,7 +1,7 @@
 """
 TestSHHS: accomplished
 
-subsampling: NOT tested
+subsampling: accomplished
 """
 
 from numbers import Real
@@ -60,6 +60,27 @@ class TestSHHS:
         for table_name, df in reader._tables.items():
             assert isinstance(df, pd.DataFrame)
             assert not df.empty
+
+    def test_subsample(self):
+        ss_ratio = 0.3
+        reader_ss = SHHS(_CWD, subsample=ss_ratio, verbose=0)
+        assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
+        ss_ratio = 0.1 / len(reader)
+        reader_ss = SHHS(_CWD, subsample=ss_ratio)
+        assert len(reader_ss) == 1
+
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            SHHS(_CWD, subsample=0.0)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            SHHS(_CWD, subsample=1.01)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            SHHS(_CWD, subsample=-0.1)
 
     def test_load_psg_data(self):
         psg_data = reader.load_psg_data(0, physical=False)

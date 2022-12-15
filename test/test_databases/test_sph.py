@@ -38,6 +38,27 @@ class TestSPH:
     def test_len(self):
         assert len(reader) == 100
 
+    def test_subsample(self):
+        ss_ratio = 0.3
+        reader_ss = SPH(_CWD, subsample=ss_ratio, verbose=0)
+        assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
+        ss_ratio = 0.1 / len(reader)
+        reader_ss = SPH(_CWD, subsample=ss_ratio)
+        assert len(reader_ss) == 1
+
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            SPH(_CWD, subsample=0.0)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            SPH(_CWD, subsample=1.01)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            SPH(_CWD, subsample=-0.1)
+
     def test_load_data(self):
         for rec in reader:
             data = reader.load_data(rec)

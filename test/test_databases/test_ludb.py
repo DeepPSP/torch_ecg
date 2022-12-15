@@ -14,6 +14,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from torch_ecg.databases import LUDB, DataBaseInfo
 from torch_ecg.databases.datasets import LUDBDataset, LUDBTrainCfg
@@ -38,6 +39,27 @@ reader.download()
 class TestLUDB:
     def test_len(self):
         assert len(reader) == 200
+
+    def test_subsample(self):
+        ss_ratio = 0.3
+        reader_ss = LUDB(_CWD, subsample=ss_ratio, verbose=0)
+        assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
+        ss_ratio = 0.1 / len(reader)
+        reader_ss = LUDB(_CWD, subsample=ss_ratio)
+        assert len(reader_ss) == 1
+
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            LUDB(_CWD, subsample=0.0)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            LUDB(_CWD, subsample=1.01)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            LUDB(_CWD, subsample=-0.1)
 
     def test_load_data(self):
         data = reader.load_data(0)

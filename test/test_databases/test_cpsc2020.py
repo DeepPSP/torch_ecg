@@ -2,7 +2,7 @@
 TestCPSC2020: accomplished
 TestCPSC2020Dataset: NOT accomplished
 
-subsampling: NOT tested
+subsampling: accomplished
 """
 
 import shutil
@@ -34,6 +34,27 @@ reader.download()
 class TestCPSC2020:
     def test_len(self):
         assert len(reader) == 10
+
+    def test_subsample(self):
+        ss_ratio = 0.3
+        reader_ss = CPSC2020(_CWD, subsample=ss_ratio, verbose=0)
+        assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
+        ss_ratio = 0.1 / len(reader)
+        reader_ss = CPSC2020(_CWD, subsample=ss_ratio)
+        assert len(reader_ss) == 1
+
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            CPSC2020(_CWD, subsample=0.0)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            CPSC2020(_CWD, subsample=1.01)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            CPSC2020(_CWD, subsample=-0.1)
 
     def test_load_data(self):
         data_1 = reader.load_data(0, sampfrom=2000, sampto=4000, data_format="flat")

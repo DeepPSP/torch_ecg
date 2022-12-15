@@ -2,7 +2,7 @@
 TestCPSC2021: accomplished
 TestCPSC2021Dataset: accomplished
 
-subsampling: NOT tested
+subsampling: NOT implemented
 """
 
 import json

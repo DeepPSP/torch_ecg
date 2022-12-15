@@ -2,7 +2,7 @@
 TestCINC2021: accomplished
 TestCINC2021Dataset: accomplished
 
-subsampling: NOT tested
+subsampling: NOT implemented
 """
 
 from copy import deepcopy
