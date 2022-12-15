@@ -198,13 +198,7 @@ class CPSC2020(CPSCDataBase):
         self.rec_ext = "mat"
         self.ann_ext = "mat"
 
-        self.rec_dir = self.db_dir / "data"
-        self.ann_dir = self.db_dir / "ref"
-        # aliases
-        self.data_dir = self.rec_dir
-        self.ref_dir = self.ann_dir
-
-        self.n_records = 10
+        self._df_records = None
         self._all_records = None
         self._all_annotations = None
         self._ls_rec()
@@ -230,22 +224,43 @@ class CPSC2020(CPSCDataBase):
 
     def _ls_rec(self) -> None:
         """ """
-        self._all_records = [f"A{i:02d}" for i in range(1, 1 + self.n_records)]
-        self._all_annotations = [f"R{i:02d}" for i in range(1, 1 + self.n_records)]
-        if self._subsample is not None:
-            size = max(1, int(round(self.n_records * self._subsample)))
-            indices = sorted(
-                DEFAULTS.RNG.choice(self.n_records, size=size, replace=False)
-            )
-            self._all_records = [self._all_records[i] for i in indices]
-            self._all_annotations = [self._all_annotations[i] for i in indices]
         self._df_records = pd.DataFrame()
-        self._df_records["record"] = self._all_records
-        self._df_records["path"] = self._df_records["record"].apply(
-            lambda x: self.get_absolute_path(x)
-        )
-        self._df_records["annotation"] = self._all_annotations
+        n_records = 10
+        all_records = [f"A{i:02d}" for i in range(1, 1 + n_records)]
+        self._df_records["path"] = [
+            path
+            for path in self.db_dir.rglob(f"*.{self.rec_ext}")
+            if path.stem in all_records
+        ]
+        self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
         self._df_records.set_index("record", inplace=True)
+
+        all_annotations = [f"R{i:02d}" for i in range(1, 1 + n_records)]
+        df_ann = pd.DataFrame()
+        df_ann["ann_path"] = [
+            path
+            for path in self.db_dir.rglob(f"*.{self.ann_ext}")
+            if path.stem in all_annotations
+        ]
+        df_ann["record"] = df_ann["ann_path"].apply(lambda x: x.stem.replace("R", "A"))
+        df_ann.set_index("record", inplace=True)
+        # take the intersection by the index of `df_ann` and `self._df_records`
+        self._df_records = self._df_records.join(df_ann, how="inner")
+
+        if len(self._df_records) > 0:
+            if self._subsample is not None:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self._df_records = self._df_records.sample(
+                    n=size, random_state=DEFAULTS.SEED, replace=False
+                )
+
+        self._all_records = self._df_records.index.tolist()
+        self._all_annotations = (
+            self._df_records["ann_path"].apply(lambda x: x.stem).tolist()
+        )
 
     @property
     def all_annotations(self):
@@ -294,7 +309,7 @@ class CPSC2020(CPSCDataBase):
 
         Returns
         -------
-        Path,
+        abs_path: Path,
             absolute path of the file
 
         """
@@ -302,10 +317,9 @@ class CPSC2020(CPSCDataBase):
             rec = self[rec]
         if extension is not None and not extension.startswith("."):
             extension = f".{extension}"
-        if ann:
-            rec = rec.replace("A", "R")
-            return self.ann_dir / f"{rec}{extension or ''}"
-        return self.data_dir / f"{rec}{extension or ''}"
+        col = "ann_path" if ann else "path"
+        abs_path = self._df_records.loc[rec, col].with_suffix(extension)
+        return abs_path
 
     def load_data(
         self,
