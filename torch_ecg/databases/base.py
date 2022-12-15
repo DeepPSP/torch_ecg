@@ -198,7 +198,9 @@ class _DataBase(ReprMixin, ABC):
         self._all_records = None
 
         self._subsample = kwargs.get("subsample", None)
-        assert self._subsample is None or 0 < self._subsample <= 1
+        assert (
+            self._subsample is None or 0 < self._subsample <= 1
+        ), f"`subsample` must be in (0, 1], but got `{self._subsample}`"
 
     @abstractmethod
     def _ls_rec(self) -> None:
@@ -546,23 +548,24 @@ class PhysioNetDataBase(_DataBase):
                 for item in record_list_fp.read_text().splitlines()
                 if len(item) > 0
             ]
-            if self._subsample is not None:
-                size = min(
-                    len(self._df_records),
-                    max(1, int(round(self._subsample * len(self._df_records)))),
+            if len(self._df_records) > 0:
+                if self._subsample is not None:
+                    size = min(
+                        len(self._df_records),
+                        max(1, int(round(self._subsample * len(self._df_records)))),
+                    )
+                    self._df_records = self._df_records.sample(
+                        n=size, random_state=DEFAULTS.SEED, replace=False
+                    )
+                self._df_records["path"] = self._df_records["record"].apply(
+                    lambda x: (self.db_dir / x).resolve()
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
+                self._df_records = self._df_records[
+                    self._df_records["path"].apply(lambda x: x.is_file())
+                ]
+                self._df_records["record"] = self._df_records["path"].apply(
+                    lambda x: x.name
                 )
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: (self.db_dir / x).resolve()
-            )
-            self._df_records = self._df_records[
-                self._df_records["path"].apply(lambda x: x.is_file())
-            ]
-            self._df_records["record"] = self._df_records["path"].apply(
-                lambda x: x.name
-            )
 
         if len(self._df_records) == 0:
             print(

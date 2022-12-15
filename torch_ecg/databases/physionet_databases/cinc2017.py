@@ -127,23 +127,24 @@ class CINC2017(PhysioNetDataBase):
                 for item in record_list_fp.read_text().splitlines()
                 if len(item) > 0
             ]
-            if self._subsample is not None:
-                size = min(
-                    len(self._df_records),
-                    max(1, int(round(self._subsample * len(self._df_records)))),
+            if len(self._df_records) > 0:
+                if self._subsample is not None:
+                    size = min(
+                        len(self._df_records),
+                        max(1, int(round(self._subsample * len(self._df_records)))),
+                    )
+                    self._df_records = self._df_records.sample(
+                        n=size, random_state=DEFAULTS.SEED, replace=False
+                    )
+                self._df_records["path"] = self._df_records["record"].apply(
+                    lambda x: (self.db_dir / x).resolve()
                 )
-                self._df_records = self._df_records.sample(
-                    n=size, random_state=DEFAULTS.SEED, replace=False
+                self._df_records = self._df_records[
+                    self._df_records["path"].apply(lambda x: x.is_file())
+                ]
+                self._df_records["record"] = self._df_records["path"].apply(
+                    lambda x: x.name
                 )
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: (self.db_dir / x).resolve()
-            )
-            self._df_records = self._df_records[
-                self._df_records["path"].apply(lambda x: x.is_file())
-            ]
-            self._df_records["record"] = self._df_records["path"].apply(
-                lambda x: x.name
-            )
 
         if len(self._df_records) == 0:
             self.logger.info(
