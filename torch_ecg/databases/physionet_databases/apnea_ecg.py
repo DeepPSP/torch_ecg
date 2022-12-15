@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import wfdb
 
+from ...cfg import DEFAULTS
 from ...utils import add_docstring
 from ..base import PhysioNetDataBase, DataBaseInfo
 
@@ -115,6 +116,8 @@ class ApneaECG(PhysioNetDataBase):
 
     def _ls_rec(self) -> None:
         """ """
+        subsample = self._subsample
+        self._subsample = None  # so that no subsampling in super()._ls_rec()
         super()._ls_rec()
 
         if len(self.all_records) == 0:
@@ -123,9 +126,29 @@ class ApneaECG(PhysioNetDataBase):
         self._rsp_records = self._df_records[
             self._df_records.index.str.match("^[abcx]\\d{2}r$")
         ].index.tolist()
-        self._ecg_records = self._df_records[
+        ecg_records = self._df_records[
             self._df_records.index.str.match(self.data_pattern)
         ].index.tolist()
+        if subsample is not None:
+            size = min(
+                len(ecg_records),
+                max(1, int(round(len(ecg_records) * subsample))),
+            )
+            self.logger.debug(
+                f"subsample `{size}` records from `{len(ecg_records)}` `ecg_records`"
+            )
+            self._ecg_records = sorted(
+                DEFAULTS.RNG.choice(ecg_records, size=size, replace=False).tolist()
+            )
+            self._df_records = self._df_records.loc[
+                sorted(self._ecg_records + self._rsp_records)
+            ]
+            del ecg_records
+        else:
+            self._ecg_records = ecg_records
+        self._subsample = subsample
+        self._all_records = self._df_records.index.tolist()
+
         self.rsp_channels = ["Resp C", "Resp A", "Resp N", "SpO2"]
         self.learning_set = [r for r in self._ecg_records if "x" not in r]
         self.test_set = [r for r in self._ecg_records if "x" in r]

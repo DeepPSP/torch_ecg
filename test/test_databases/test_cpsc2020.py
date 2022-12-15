@@ -131,7 +131,7 @@ class TestCPSC2020:
         Score1, Score2 = compute_metrics(
             [sbp_true_0], [pvc_true_0], [sbp_true_1], [pvc_true_1]
         )
-        assert Score1 < 0 and Score2 < 0
+        assert Score1 <= 0 and Score2 <= 0
         assert compute_metrics(
             [sbp_true_0], [pvc_true_0], [sbp_true_1], [pvc_true_1], verbose=2
         ).keys() == {

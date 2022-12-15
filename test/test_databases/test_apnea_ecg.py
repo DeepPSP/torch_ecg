@@ -35,7 +35,8 @@ reader.download()
 
 class TestApneaECG:
     def test_len(self):
-        assert len(reader) == 70
+        assert len(reader) == len(reader.ecg_records) == 70
+        assert len(reader._all_records) == 78
 
     def test_subsample(self):
         ss_ratio = 0.3

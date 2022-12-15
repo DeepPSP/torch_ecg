@@ -527,6 +527,9 @@ class PhysioNetDataBase(_DataBase):
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
                 )
+                self.logger.debug(
+                    f"subsample `{size}` records from `{len(self._df_records)}`"
+                )
                 self._df_records = self._df_records.sample(
                     n=size, random_state=DEFAULTS.SEED, replace=False
                 )
@@ -554,6 +557,9 @@ class PhysioNetDataBase(_DataBase):
                         len(self._df_records),
                         max(1, int(round(self._subsample * len(self._df_records)))),
                     )
+                    self.logger.debug(
+                        f"subsample `{size}` records from `{len(self._df_records)}`"
+                    )
                     self._df_records = self._df_records.sample(
                         n=size, random_state=DEFAULTS.SEED, replace=False
                     )
@@ -580,6 +586,9 @@ class PhysioNetDataBase(_DataBase):
                 size = min(
                     len(self._df_records),
                     max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                self.logger.debug(
+                    f"subsample `{size}` records from `{len(self._df_records)}`"
                 )
                 self._df_records = self._df_records.sample(
                     n=size, random_state=DEFAULTS.SEED, replace=False
