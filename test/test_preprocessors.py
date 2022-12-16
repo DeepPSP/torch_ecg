@@ -25,6 +25,9 @@ from torch_ecg._preprocessors import (  # noqa: F401
 )  # noqa: F401
 
 
+test_sig = torch.randn(12, 80000).numpy()
+
+
 class DummyPreProcessor(PreProcessor):
     def __init__(self) -> None:
         super().__init__()
@@ -34,8 +37,11 @@ class DummyPreProcessor(PreProcessor):
 
 
 def test_preproc_manager():
+    sig = test_sig.copy()
+
     ppm = PreprocManager()
     assert ppm.empty
+    sig, fs = ppm(sig, 200)
     ppm.add_(BandPass(0.5, 40))
     assert not ppm.empty
     ppm.add_(Resample(100), pos=0)
@@ -47,23 +53,111 @@ def test_preproc_manager():
     ppm.add_(NaiveNormalize())
     ppm.add_(DummyPreProcessor(), pos=0)
 
-    sig = torch.randn(12, 80000).numpy()
+    sig = test_sig.copy()
     sig, fs = ppm(sig, 200)
 
     del ppm, sig, fs
 
     config = CFG(
-        random=False,
+        random=True,
         resample={"fs": 500},
         bandpass={"filter_type": "fir"},
         normalize={"method": "min-max"},
+        baseline_remove={"window1": 0.3, "window2": 0.7},
     )
     ppm = PreprocManager.from_config(config)
 
-    sig = torch.randn(12, 80000).numpy()
+    sig = test_sig.copy()
     sig, fs = ppm(sig, 200)
 
     del ppm, sig, fs
+
+    config = {}
+    with pytest.warns(
+        RuntimeWarning,
+        match="No preprocessors added to the manager\\. You are using a dummy preprocessor",
+    ):
+        ppm = PreprocManager.from_config(config)
+    assert ppm.empty
+    sig = test_sig.copy()
+    sig, fs = ppm(sig, 200)
+
+    del ppm, sig, fs
+
+
+def test_bandpass():
+    sig = test_sig.copy()
+    bp = BandPass(0, 40)
+    sig, fs = bp(sig, 200)
+    bp = BandPass(0.5, None)
+    sig, fs = bp(sig, 200)
+
+    assert str(bp) == repr(bp)
+
+
+def test_baseline_remove():
+    sig = test_sig.copy()
+    br = BaselineRemove()
+    sig, fs = br(sig, 200)
+    br = BaselineRemove(0.3, 0.9)
+    sig, fs = br(sig, 200)
+
+    with pytest.warns(
+        RuntimeWarning, match="values of `window1` and `window2` are switched"
+    ):
+        br = BaselineRemove(0.9, 0.3)
+
+    assert str(br) == repr(br)
+
+
+def test_normalize():
+    sig = test_sig.copy()
+    std = 0.5 * np.ones(sig.shape[0])
+    norm = Normalize(std=std, per_channel=True)
+    sig, fs = norm(sig, 200)
+
+    with pytest.raises(AssertionError, match="standard deviation should be positive"):
+        norm = Normalize(std=0)
+    with pytest.raises(
+        AssertionError, match="standard deviations should all be positive"
+    ):
+        norm = Normalize(std=np.zeros(sig.shape[0]))
+
+    assert str(norm) == repr(norm)
+
+    norm = MinMaxNormalize(per_channel=True)
+    sig, fs = norm(sig, 200)
+
+    assert str(norm) == repr(norm)
+
+    norm = NaiveNormalize(per_channel=True)
+    sig, fs = norm(sig, 200)
+
+    assert str(norm) == repr(norm)
+
+    norm = ZScoreNormalize(per_channel=True)
+    sig, fs = norm(sig, 200)
+
+    assert str(norm) == repr(norm)
+
+
+def test_resample():
+    sig = test_sig.copy()
+    rsmp = Resample(fs=500)
+    sig, fs = rsmp(sig, 200)
+    rsmp = Resample(siglen=5000)
+    sig, fs = rsmp(sig, 200)
+
+    with pytest.raises(
+        AssertionError, match="one and only one of `fs` and `siglen` should be set"
+    ):
+        rsmp = Resample(fs=500, siglen=5000)
+    with pytest.raises(
+        AssertionError, match="one and only one of `fs` and `siglen` should be set"
+    ):
+        rsmp = Resample()
+
+    assert str(rsmp) == repr(rsmp)
 
 
 def test_preprocess_multi_lead_signal():

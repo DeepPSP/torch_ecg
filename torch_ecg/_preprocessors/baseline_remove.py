@@ -37,7 +37,9 @@ class BaselineRemove(PreProcessor):
         self.window2 = window2
         if self.window2 < self.window1:
             self.window1, self.window2 = self.window2, self.window1
-            warnings.warn("values of window1 and window2 are switched", RuntimeWarning)
+            warnings.warn(
+                "values of `window1` and `window2` are switched", RuntimeWarning
+            )
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """
