@@ -1,11 +1,13 @@
 """
 """
 
+import itertools
 from numbers import Real
 from typing import Tuple
 
 import numpy as np
 import torch
+import pytest
 
 from torch_ecg.cfg import CFG
 from torch_ecg._preprocessors import (  # noqa: F401
@@ -18,6 +20,8 @@ from torch_ecg._preprocessors import (  # noqa: F401
     NaiveNormalize,
     ZScoreNormalize,
     Resample,
+    preprocess_multi_lead_signal,
+    preprocess_single_lead_signal,
 )  # noqa: F401
 
 
@@ -60,3 +64,76 @@ def test_preproc_manager():
     sig, fs = ppm(sig, 200)
 
     del ppm, sig, fs
+
+
+def test_preprocess_multi_lead_signal():
+    sig = torch.randn(12, 8000).numpy()
+    fs = 200
+
+    grid = itertools.product(
+        ["lead_first", "channel_last"],  # sig_fmt
+        [None, [0.2, 0.6]],  # bl_win
+        [None, [0.5, 45], [-np.inf, 40], [1, fs]],  # band_fs
+        ["butter", "fir"],  # filter_type
+    )
+    for sig_fmt, bl_win, band_fs, filter_type in grid:
+        if sig_fmt == "channel_last":
+            filt_sig = sig.transpose(1, 0)
+        else:
+            filt_sig = sig.copy()
+        filt_sig = preprocess_multi_lead_signal(
+            filt_sig,
+            fs,
+            sig_fmt=sig_fmt,
+            bl_win=bl_win,
+            band_fs=band_fs,
+            filter_type=filter_type,
+        )
+
+    with pytest.raises(AssertionError, match="multi-lead signal should be 2d array"):
+        preprocess_multi_lead_signal(sig[0], fs)
+    with pytest.raises(AssertionError, match="multi-lead signal should be 2d array"):
+        preprocess_multi_lead_signal(sig[np.newaxis, ...], fs)
+
+    with pytest.raises(
+        AssertionError, match="multi-lead signal format `xxx` not supported"
+    ):
+        preprocess_multi_lead_signal(sig, fs, sig_fmt="xxx")
+
+    with pytest.raises(AssertionError, match="Invalid frequency band"):
+        preprocess_multi_lead_signal(sig, fs, band_fs=[1, 0.5])
+    with pytest.raises(AssertionError, match="Invalid frequency band"):
+        preprocess_multi_lead_signal(sig, fs, band_fs=[0, fs])
+
+    with pytest.raises(ValueError, match="Unsupported filter type `xxx`"):
+        preprocess_multi_lead_signal(sig, fs, band_fs=[0.5, 45], filter_type="xxx")
+
+
+def test_preprocess_single_lead_signal():
+    sig = torch.randn(8000).numpy()
+    fs = 200
+
+    grid = itertools.product(
+        [None, [0.2, 0.6]],  # bl_win
+        [None, [0.5, 45], [-np.inf, 40], [1, fs]],  # band_fs
+        ["butter", "fir"],  # filter_type
+    )
+    for bl_win, band_fs, filter_type in grid:
+        filt_sig = preprocess_single_lead_signal(
+            sig,
+            fs,
+            bl_win=bl_win,
+            band_fs=band_fs,
+            filter_type=filter_type,
+        )
+
+    with pytest.raises(AssertionError, match="single-lead signal should be 1d array"):
+        preprocess_single_lead_signal(sig[np.newaxis, ...], fs)
+
+    with pytest.raises(AssertionError, match="Invalid frequency band"):
+        preprocess_single_lead_signal(sig, fs, band_fs=[1, 0.5])
+    with pytest.raises(AssertionError, match="Invalid frequency band"):
+        preprocess_single_lead_signal(sig, fs, band_fs=[0, fs])
+
+    with pytest.raises(ValueError, match="Unsupported filter type `xxx`"):
+        preprocess_single_lead_signal(sig, fs, band_fs=[0.5, 45], filter_type="xxx")

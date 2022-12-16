@@ -122,12 +122,14 @@ def preprocess_multi_lead_signal(
         the format of the signal is kept the same with the original signal, i.e. `sig_fmt`
 
     """
+    raw_sig = np.asarray(raw_sig)
+    assert raw_sig.ndim == 2, "multi-lead signal should be 2d array"
     assert sig_fmt.lower() in [
         "channel_first",
         "lead_first",
         "channel_last",
         "lead_last",
-    ]
+    ], f"multi-lead signal format `{sig_fmt}` not supported"
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
         filtered_ecg = raw_sig.T
     else:
@@ -146,7 +148,7 @@ def preprocess_multi_lead_signal(
 
     # filter signal
     if band_fs:
-        assert band_fs[0] < band_fs[1]
+        assert band_fs[0] < band_fs[1], "Invalid frequency band"
         nyq = 0.5 * fs
         if band_fs[0] <= 0 and band_fs[1] < nyq:
             band = "lowpass"
@@ -158,7 +160,7 @@ def preprocess_multi_lead_signal(
             band = "bandpass"
             frequency = band_fs
         else:
-            raise ValueError("Invalid frequency band")
+            raise AssertionError("Invalid frequency band")
         if filter_type.lower() == "fir":
             filtered_ecg = filter_signal(
                 signal=filtered_ecg,
@@ -179,7 +181,7 @@ def preprocess_multi_lead_signal(
                 or round(0.01 * fs),  # better be determined by the `buttord`
             )
         else:
-            raise ValueError("Unsupported filter type")
+            raise ValueError(f"Unsupported filter type `{filter_type}`")
 
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
         filtered_ecg = filtered_ecg.T
@@ -192,6 +194,8 @@ def preprocess_single_lead_signal(
     fs: Real,
     bl_win: Optional[List[Real]] = None,
     band_fs: Optional[List[Real]] = None,
+    filter_type: str = "butter",
+    filter_order: Optional[int] = None,
 ) -> np.ndarray:
     """
     perform preprocessing for single lead ecg signal (with units in mV),
@@ -213,6 +217,10 @@ def preprocess_single_lead_signal(
         a typical pair is [0.5, 45],
         be careful when detecting paced rhythm,
         if is None or empty, bandpass filtering will not be performed
+    filter_type: str, default "butter",
+        type of the bandpass filter, can be "butter" or "fir"
+    filter_order: int, optional,
+        order of the bandpass filter,
 
     Returns
     -------
@@ -225,7 +233,8 @@ def preprocess_single_lead_signal(
     e.g. `butter_bandpass_filter` in `utils.utils_singal`
 
     """
-    filtered_ecg = raw_sig
+    filtered_ecg = np.asarray(raw_sig)
+    assert filtered_ecg.ndim == 1, "single-lead signal should be 1d array"
 
     # remove baseline
     if bl_win:
@@ -237,7 +246,7 @@ def preprocess_single_lead_signal(
 
     # filter signal
     if band_fs:
-        assert band_fs[0] < band_fs[1]
+        assert band_fs[0] < band_fs[1], "Invalid frequency band"
         nyq = 0.5 * fs
         if band_fs[0] <= 0 and band_fs[1] < nyq:
             band = "lowpass"
@@ -249,15 +258,27 @@ def preprocess_single_lead_signal(
             band = "bandpass"
             frequency = band_fs
         else:
-            raise ValueError("Invalid frequency band")
-        filtered_ecg = filter_signal(
-            signal=filtered_ecg,
-            ftype="FIR",
-            # ftype="butter",
-            band=band,
-            order=int(0.3 * fs),
-            sampling_rate=fs,
-            frequency=frequency,
-        )["signal"]
+            raise AssertionError("Invalid frequency band")
+        if filter_type.lower() == "fir":
+            filtered_ecg = filter_signal(
+                signal=filtered_ecg,
+                ftype="FIR",
+                # ftype="butter",
+                band=band,
+                order=int(0.3 * fs),
+                sampling_rate=fs,
+                frequency=frequency,
+            )["signal"]
+        elif filter_type.lower() == "butter":
+            filtered_ecg = butter_bandpass_filter(
+                data=filtered_ecg,
+                lowcut=band_fs[0],
+                highcut=band_fs[1],
+                fs=fs,
+                order=filter_order
+                or round(0.01 * fs),  # better be determined by the `buttord`
+            )
+        else:
+            raise ValueError(f"Unsupported filter type `{filter_type}`")
 
     return filtered_ecg
