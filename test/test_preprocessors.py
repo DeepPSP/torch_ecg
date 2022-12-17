@@ -10,7 +10,7 @@ import torch
 import pytest
 
 from torch_ecg.cfg import CFG
-from torch_ecg._preprocessors import (  # noqa: F401
+from torch_ecg._preprocessors import (
     PreProcessor,
     PreprocManager,
     BandPass,
@@ -22,7 +22,7 @@ from torch_ecg._preprocessors import (  # noqa: F401
     Resample,
     preprocess_multi_lead_signal,
     preprocess_single_lead_signal,
-)  # noqa: F401
+)
 
 
 test_sig = torch.randn(12, 80000).numpy()

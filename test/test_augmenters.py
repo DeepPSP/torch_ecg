@@ -1,6 +1,8 @@
 """
 """
 
+import re
+
 import numpy as np
 import torch
 import pytest
@@ -48,6 +50,62 @@ def test_augmenter_manager():
     mask1 = torch.randint(0, 2, (32, 5000, 3), dtype=torch.float32)
     mask2 = torch.randint(0, 3, (32, 5000), dtype=torch.long)
     sig, label, mask1, mask2 = am(sig, label, mask1, mask2)
+
+    am.random = True
+    sig, label, mask1, mask2 = am(sig, label, mask1, mask2)
+
+    assert re.search("augmenters = \\[", repr(am))
+
+    am.rearrange(
+        new_ordering=[
+            "stretch_compress",
+            "random_masking",
+            "baseline_wander",
+            "random_renormalize",
+            "random_flip",
+            "label_smooth",
+            "mixup",
+        ]
+    )
+
+    with pytest.raises(AssertionError, match="Duplicate augmenter names"):
+        am.rearrange(
+            new_ordering=[
+                "stretch_compress",
+                "random_masking",
+                "baseline_wander",
+                "random_renormalize",
+                "random_flip",
+                "label_smooth",
+                "mixup",
+                "random_masking",
+            ]
+        )
+
+    with pytest.raises(AssertionError, match="Number of augmenters mismatch"):
+        am.rearrange(
+            new_ordering=[
+                "stretch_compress",
+                "random_masking",
+                "baseline_wander",
+                "random_renormalize",
+                "random_flip",
+                "label_smooth",
+            ]
+        )
+
+    with pytest.raises(AssertionError, match="Unknown augmenter name: `.+`"):
+        am.rearrange(
+            new_ordering=[
+                "stretch_compress",
+                "random_masking",
+                "baseline_wander",
+                "random_normalize",  # typo
+                "random_flip",
+                "label_smooth",
+                "mixup",
+            ]
+        )
 
 
 def test_baseline_wander_augmenter():

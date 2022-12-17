@@ -197,9 +197,18 @@ class AugmenterManager(torch.nn.Module):
             )
         }
         _mapping.update({"BaselineWanderAugmenter": "baseline_wander"})
+        _mapping.update({v: k for k, v in _mapping.items()})
         for k in new_ordering:
             if k not in _mapping:
+                assert k in [
+                    am.__class__.__name__ for am in self._augmenters
+                ], f"Unknown augmenter name: `{k}`"
                 _mapping.update({k: k})
+        assert len(new_ordering) == len(set(new_ordering)), "Duplicate augmenter names."
+        assert len(new_ordering) == len(
+            self._augmenters
+        ), "Number of augmenters mismatch."
+
         self._augmenters.sort(
-            key=lambda aug: new_ordering.index(_mapping[aug.__name__])
+            key=lambda aug: new_ordering.index(_mapping[aug.__class__.__name__])
         )

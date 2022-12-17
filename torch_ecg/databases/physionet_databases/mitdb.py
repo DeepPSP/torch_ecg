@@ -147,31 +147,36 @@ class MITDB(PhysioNetDataBase):
 
     def _ls_rec(self) -> None:
         """ """
+        subsample = self._subsample
+        self._subsample = None  # so that no subsampling in super()._ls_rec()
         super()._ls_rec()
-        if len(self._all_records) == 0:
-            self._df_records = pd.DataFrame()
-            self._all_records = get_record_list_recursive3(
-                self.db_dir, self.data_pattern_with_ext
-            )
-            if self._subsample is not None:
-                size = min(
-                    len(self._all_records),
-                    max(1, int(round(self._subsample * len(self._all_records)))),
-                )
-                self._all_records = sorted(
-                    DEFAULTS.RNG.choice(self._all_records, size=size, replace=False)
-                )
-            self._df_records["record"] = self._all_records
-            self._df_records["path"] = self._df_records["record"].apply(
-                lambda x: self.get_absolute_path(x)
-            )
-            self._df_records.set_index("record", inplace=True)
         # filters out records with names not matching `self.data_pattern`
         if len(self._df_records) > 0:
             self._df_records = self._df_records[
                 self._df_records.index.str.match(self.data_pattern)
             ]
+        if len(self._all_records) == 0:
+            self._df_records = pd.DataFrame()
+            self._df_records["path"] = get_record_list_recursive3(
+                self.db_dir, self.data_pattern_with_ext, relative=False
+            )
+            self._df_records["record"] = self._df_records["path"].apply(
+                lambda x: x.stem
+            )
+            self._df_records.set_index("record", inplace=True)
+        if subsample is not None:
+            size = min(
+                len(self._df_records),
+                max(1, int(round(subsample * len(self._df_records)))),
+            )
+            self.logger.debug(
+                f"subsample `{size}` records from `{len(self._df_records)}`"
+            )
+            self._df_records = self._df_records.sample(
+                n=size, random_state=DEFAULTS.SEED, replace=False
+            )
         self._all_records = self._df_records.index.tolist()
+        self._subsample = subsample
 
     def _aggregate_stats(self) -> None:
         """ """
