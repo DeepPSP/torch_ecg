@@ -110,6 +110,8 @@ class RandomRenormalize(Augmenter):
             assert self.std.shape[0] == lead
         if not self.inplace:
             sig = sig.clone()
+        if self.prob == 0:
+            return (sig, label, *extra_tensors)
         indices = self.get_indices(self.prob, pop_size=batch)
         if self.per_channel:
             mean = DEFAULTS.RNG.normal(

@@ -20,6 +20,7 @@ from torch_ecg.augmenters import (
     StretchCompressOffline,
     AugmenterManager,
 )
+from torch_ecg.augmenters.baseline_wander import _gen_baseline_wander
 
 
 def test_base_augmenter():
@@ -109,10 +110,27 @@ def test_augmenter_manager():
 
 
 def test_baseline_wander_augmenter():
-    blw = BaselineWanderAugmenter(300, prob=0.7)
+    blw = BaselineWanderAugmenter(300, prob=0.7, inplace=False)
     sig = torch.randn(32, 12, 5000)
     label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
     sig, _ = blw(sig, label)
+
+    assert str(blw) == repr(blw)
+
+    noise = _gen_baseline_wander(
+        siglen=sig.shape[-1],
+        fs=blw.fs,
+        bw_fs=blw.bw_fs,
+        amplitude=blw.ampl_ratio[1],
+        amplitude_gaussian=blw.gaussian[1],
+    )
+    noise = _gen_baseline_wander(
+        siglen=sig.shape[-1],
+        fs=blw.fs,
+        bw_fs=1.5,
+        amplitude=0.05,
+        amplitude_gaussian=blw.gaussian[1],
+    )
 
 
 def test_cutmix_augmenter():
@@ -120,9 +138,14 @@ def test_cutmix_augmenter():
 
 
 def test_label_smooth():
-    ls = LabelSmooth()
+    ls = LabelSmooth(inplace=False)
     label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
     _, label = ls(None, label)
+    ls = LabelSmooth(smoothing=0.0)
+    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+    _, label = ls(None, label)
+
+    assert str(ls) == repr(ls)
 
 
 def test_mixup():
@@ -130,12 +153,26 @@ def test_mixup():
     sig = torch.randn(32, 12, 5000)
     label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
     sig, label = mixup(sig, label)
+    mixup = Mixup(inplace=False)
+    sig = torch.randn(32, 12, 5000)
+    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+    sig, label = mixup(sig, label)
+
+    assert str(mixup) == repr(mixup)
 
 
 def test_random_flip():
     rf = RandomFlip()
     sig = torch.randn(32, 12, 5000)
     sig, _ = rf(sig, None)
+    rf = RandomFlip(inplace=False, per_channel=False)
+    sig = torch.randn(32, 12, 5000)
+    sig, _ = rf(sig, None)
+    rf = RandomFlip(prob=0.0, per_channel=False)
+    sig = torch.randn(32, 12, 5000)
+    sig, _ = rf(sig, None)
+
+    assert str(rf) == repr(rf)
 
 
 def test_random_masking():
@@ -143,21 +180,71 @@ def test_random_masking():
     sig = torch.randn(32, 12, 5000)
     critical_points = [np.arange(250, 5000 - 250, step=400) for _ in range(32)]
     sig, _ = rm(sig, None, critical_points=critical_points)
+    rm = RandomMasking(fs=500, prob=0.3, inplace=False)
+    sig = torch.randn(32, 12, 5000)
+    sig, _ = rm(sig, None, critical_points=critical_points)
+    rm = RandomMasking(fs=500, prob=0.0)
+    sig = torch.randn(32, 12, 5000)
+    sig, _ = rm(sig, None, critical_points=critical_points)
+
+    assert str(rm) == repr(rm)
 
 
 def test_random_renormalize():
-    rrn = RandomRenormalize()
+    rrn = RandomRenormalize(per_channel=True, prob=0.7)
     sig = torch.randn(32, 12, 5000)
     sig, _ = rrn(sig, None)
 
+    # TODO: fix errors in the following tests
+    # rrn = RandomRenormalize(mean=np.zeros((12, 1)), std=np.ones((12, 1)), per_channel=True)
+    # sig = torch.randn(32, 12, 5000)
+    # sig, _ = rrn(sig, None)
+
+    rrn = RandomRenormalize(mean=np.zeros((12,)), std=np.ones((12,)), inplace=False)
+    sig = torch.randn(32, 12, 5000)
+    sig, _ = rrn(sig, None)
+
+    rrn = RandomRenormalize(prob=0.0)
+    sig = torch.randn(32, 12, 5000)
+    sig, _ = rrn(sig, None)
+
+    assert str(rrn) == repr(rrn)
+
 
 def test_stretch_compress():
-    sc = StretchCompress()
+    sc = StretchCompress(inplace=False)
     sig = torch.randn((32, 12, 5000))
-    labels = torch.randint(0, 2, (32, 5000, 26))
+    # labels = torch.randint(0, 2, (32, 5000, 26))
     label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
     mask = torch.randint(0, 2, (32, 5000, 3), dtype=torch.float32)
     sig, label, mask = sc(sig, label, mask)
+    assert sig.shape == (32, 12, 5000)
+    assert label.shape == (32, 26)
+    assert mask.shape == (32, 5000, 3)
+
+    sig = torch.randn((32, 12, 5000))
+    # labels = torch.randint(0, 2, (32, 5000, 26))
+    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+    mask = torch.randint(0, 2, (32, 5000 // 8, 3), dtype=torch.float32)
+    sig, label, mask = sc._generate(sig, label, mask)
+
+    sc = StretchCompress(prob=0.0)
+    sig = torch.randn((32, 12, 5000))
+    # labels = torch.randint(0, 2, (32, 5000, 26))
+    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+    mask = torch.randint(0, 2, (32, 5000 // 8, 3), dtype=torch.float32)
+    sig, label, mask = sc(sig, label, mask)
+    assert sig.shape == (32, 12, 5000)
+    assert label.shape == (32, 26)
+    assert mask.shape == (32, 5000 // 8, 3)
+
+    sig = torch.randn((32, 12, 5000))
+    # labels = torch.randint(0, 2, (32, 5000, 26))
+    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+    mask = torch.randint(0, 2, (32, 5000 // 8, 3), dtype=torch.float32)
+    sig, label, mask = sc._generate(sig, label, mask)
+
+    assert str(sc) == repr(sc)
 
 
 def test_stretch_compress_offline():
@@ -166,4 +253,16 @@ def test_stretch_compress_offline():
     sig = torch.randn((12, 60000)).numpy()
     labels = torch.ones((60000, 3)).numpy().astype(int)
     masks = torch.ones((60000, 1)).numpy().astype(int)
-    segments = sco(600, sig, labels, masks, critical_points=[10000, 30000])
+    segments = sco(seglen, sig, labels, masks, critical_points=[10000, 30000])
+
+    sig = torch.randn((12, 60)).numpy()
+    labels = torch.ones((60, 3)).numpy().astype(int)
+    masks = torch.ones((60, 1)).numpy().astype(int)
+    segments = sco(seglen, sig, labels, masks)
+
+    sig = torch.randn((12, 800)).numpy()
+    labels = torch.ones((800, 3)).numpy().astype(int)
+    masks = torch.ones((800, 1)).numpy().astype(int)
+    segments = sco(seglen, sig, labels, masks)
+
+    assert str(sco) == repr(sco)

@@ -8,7 +8,6 @@ from typing import Any, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import scipy.signal as SS
 import torch
-import torch.multiprocessing as tmp
 import torch.nn.functional as F
 from torch import Tensor
 
@@ -208,26 +207,38 @@ class StretchCompress(Augmenter):
         if not self.inplace:
             sig = sig.clone()
         if self.prob == 0:
-            return sig
+            if len(labels) == 1:
+                return sig
+            return (sig, *labels)
         indices = self.get_indices(prob=self.prob, pop_size=batch)
-        with tmp.Pool(processes=4) as pool:
-            sig[indices, ...] = torch.as_tensor(
-                np.array(
-                    pool.starmap(
-                        func=_stretch_compress_one_batch_element,
-                        iterable=[
-                            (
-                                self.ratio,
-                                sig[batch_idx, ...].unsqueeze(0),
-                            )
-                            for batch_idx in indices
-                        ],
-                    ),
-                ),
-                dtype=sig.dtype,
-                device=sig.device,
+        # with tmp.Pool(processes=4) as pool:
+        #     data = pool.starmap(
+        #         func=_stretch_compress_one_batch_element,
+        #         iterable=[
+        #             (
+        #                 self.ratio,
+        #                 sig[batch_idx, ...].unsqueeze(0),
+        #                 *(label[batch_idx, ...].unsqueeze(0) for label in labels)
+        #             )
+        #             for batch_idx in indices
+        #         ],
+        #     )
+        # for batch_idx, (sig_, *labels_) in zip(indices, data):
+        #     sig[batch_idx, ...] = sig_
+        #     for idx, label in enumerate(labels_):
+        #         labels[idx][batch_idx, ...] = label
+        for batch_idx in indices:
+            data = _stretch_compress_one_batch_element(
+                self.ratio,
+                sig[batch_idx, ...].unsqueeze(0),
+                *(label[batch_idx, ...].unsqueeze(0) for label in labels),
             )
-        return sig
+            sig[batch_idx, ...] = data[0]
+            for idx, label in enumerate(data[1:]):
+                labels[idx][batch_idx, ...] = label
+        if len(labels) == 0:
+            return sig
+        return (sig, *labels)
 
     def extra_repr_keys(self) -> List[str]:
         """ """
@@ -267,6 +278,9 @@ def _stretch_compress_one_batch_element(
     n_labels = len(labels)
     siglen = sig.shape[-1]
     for idx in range(n_labels):
+        if labels[idx].ndim < 3:
+            label_len.append(0)
+            continue
         labels[idx] = labels[idx].permute(
             0, 2, 1
         )  # (1, label_len, n_classes) -> (1, n_classes, label_len)
@@ -287,12 +301,14 @@ def _stretch_compress_one_batch_element(
             ..., half_diff_len : siglen + half_diff_len
         ].squeeze(0)
         for idx in range(n_labels):
+            if label_len[idx] == 0:
+                continue
             labels[idx] = F.interpolate(
                 labels[idx],
                 size=new_len,
                 mode="linear",
                 align_corners=True,
-            )[..., half_diff_len : siglen + half_diff_len].squeeze(0)
+            )[..., half_diff_len : siglen + half_diff_len]
     else:  # compress and pad
         sig = F.pad(
             F.interpolate(
@@ -306,6 +322,8 @@ def _stretch_compress_one_batch_element(
             value=0.0,
         ).squeeze(0)
         for idx in range(n_labels):
+            if label_len[idx] == 0:
+                continue
             labels[idx] = F.pad(
                 F.interpolate(
                     labels[idx],
@@ -316,17 +334,20 @@ def _stretch_compress_one_batch_element(
                 pad=(half_diff_len, diff_len - half_diff_len),
                 mode="constant",
                 value=0.0,
-            ).squeeze(0)
+            )
     for idx, (label, ll) in enumerate(zip(labels, label_len)):
+        if ll == 0:
+            labels[idx] = labels[idx].squeeze(0)
+            continue
         if ll != siglen:
             labels[idx] = F.interpolate(
                 label, size=(ll,), mode="linear", align_corners=True
             )
-        labels[idx] = labels[idx].permute(
-            1, 0
+        labels[idx] = (
+            labels[idx].squeeze(0).permute(1, 0)
         )  # (n_classes, label_len) -> (label_len, n_classes)
     if len(labels) > 0:
-        return (sig,) + tuple(labels)
+        return (sig, *labels)
     return sig
 
 
