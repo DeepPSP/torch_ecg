@@ -123,7 +123,7 @@ def preprocess_multi_lead_signal(
 
     """
     raw_sig = np.asarray(raw_sig)
-    assert raw_sig.ndim == 2, "multi-lead signal should be 2d array"
+    assert raw_sig.ndim in [2, 3], "multi-lead signal should be 2d or 3d array"
     assert sig_fmt.lower() in [
         "channel_first",
         "lead_first",
@@ -131,7 +131,8 @@ def preprocess_multi_lead_signal(
         "lead_last",
     ], f"multi-lead signal format `{sig_fmt}` not supported"
     if sig_fmt.lower() in ["channel_last", "lead_last"]:
-        filtered_ecg = raw_sig.T
+        # might have a batch dimension at the first axis
+        filtered_ecg = np.moveaxis(raw_sig, -2, -1)
     else:
         filtered_ecg = raw_sig
 

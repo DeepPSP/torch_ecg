@@ -115,17 +115,20 @@ class MinMaxNormalize(Normalize):
     __name__ = "MinMaxNormalize"
 
     def __init__(
-        self,
-        per_channel: bool = False,
+        self, per_channel: bool = False, inplace: bool = True, **kwargs: Any
     ) -> None:
         """
         Parameters
         ----------
         per_channel: bool, default False,
             if True, normalization will be done per channel
+        inplace: bool, default True,
+            if True, normalization will be done inplace (on the signal)
 
         """
-        super().__init__(method="min-max", per_channel=per_channel)
+        super().__init__(
+            method="min-max", per_channel=per_channel, inplace=inplace, **kwargs
+        )
 
 
 class NaiveNormalize(Normalize):
@@ -144,6 +147,7 @@ class NaiveNormalize(Normalize):
         mean: Union[Real, Iterable[Real]] = 0.0,
         std: Union[Real, Iterable[Real]] = 1.0,
         per_channel: bool = False,
+        inplace: bool = True,
         **kwargs: Any
     ) -> None:
         """
@@ -155,6 +159,8 @@ class NaiveNormalize(Normalize):
             value(s) to be divided
         per_channel: bool, default False,
             if True, normalization will be done per channel
+        inplace: bool, default True,
+            if True, normalization will be done inplace (on the signal)
 
         """
         super().__init__(
@@ -162,6 +168,7 @@ class NaiveNormalize(Normalize):
             mean=mean,
             std=std,
             per_channel=per_channel,
+            inplace=inplace,
         )
 
 
@@ -181,6 +188,7 @@ class ZScoreNormalize(Normalize):
         mean: Union[Real, Iterable[Real]] = 0.0,
         std: Union[Real, Iterable[Real]] = 1.0,
         per_channel: bool = False,
+        inplace: bool = True,
         **kwargs: Any
     ) -> None:
         """
@@ -194,6 +202,8 @@ class ZScoreNormalize(Normalize):
             or standard deviations for each lead of the normalized signal,
         per_channel: bool, default False,
             if True, normalization will be done per channel
+        inplace: bool, default True,
+            if True, normalization will be done inplace (on the signal)
 
         """
         super().__init__(
@@ -201,4 +211,6 @@ class ZScoreNormalize(Normalize):
             mean=mean,
             std=std,
             per_channel=per_channel,
+            inplace=inplace,
+            **kwargs
         )

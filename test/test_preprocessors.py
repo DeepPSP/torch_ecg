@@ -184,10 +184,14 @@ def test_preprocess_multi_lead_signal():
             filter_type=filter_type,
         )
 
-    with pytest.raises(AssertionError, match="multi-lead signal should be 2d array"):
+    with pytest.raises(
+        AssertionError, match="multi-lead signal should be 2d or 3d array"
+    ):
         preprocess_multi_lead_signal(sig[0], fs)
-    with pytest.raises(AssertionError, match="multi-lead signal should be 2d array"):
-        preprocess_multi_lead_signal(sig[np.newaxis, ...], fs)
+    with pytest.raises(
+        AssertionError, match="multi-lead signal should be 2d or 3d array"
+    ):
+        preprocess_multi_lead_signal(torch.randn(1, 1, 12, 8000).numpy(), fs)
 
     with pytest.raises(
         AssertionError, match="multi-lead signal format `xxx` not supported"
