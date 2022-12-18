@@ -158,6 +158,7 @@ class TxtLogger(BaseLogger):
 
         """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
+        self._log_dir.mkdir(parents=True, exist_ok=True)
         if log_suffix is None:
             log_suffix = ""
         else:
@@ -304,6 +305,7 @@ class CSVLogger(BaseLogger):
 
         """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
+        self._log_dir.mkdir(parents=True, exist_ok=True)
         if log_suffix is None:
             log_suffix = ""
         else:
@@ -403,6 +405,7 @@ class TensorBoardXLogger(BaseLogger):
 
         """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
+        self._log_dir.mkdir(parents=True, exist_ok=True)
         self.logger = tensorboardX.SummaryWriter(
             str(self._log_dir), filename_suffix=log_suffix or ""
         )
@@ -479,6 +482,7 @@ class WandbLogger(BaseLogger):
         """
         self.__wandb = importlib.import_module("wandb")
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
+        self._log_dir.mkdir(parents=True, exist_ok=True)
         self._log_suffix = log_suffix
         self._project = project
         self._entity = entity

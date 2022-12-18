@@ -235,5 +235,7 @@ class TestRPeaksDetectionOutput:
 
 
 def test_base_output():
-    with pytest.raises(NotImplementedError, match="Subclass must implement method `required_fields`"):
+    with pytest.raises(
+        NotImplementedError, match="Subclass must implement method `required_fields`"
+    ):
         BaseOutput()
