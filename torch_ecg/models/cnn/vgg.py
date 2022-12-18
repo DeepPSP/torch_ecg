@@ -28,7 +28,6 @@ if DEFAULTS.DTYPE.TORCH == torch.float64:
 
 
 __all__ = [
-    "VGGBlock",
     "VGG16",
 ]
 
@@ -137,7 +136,7 @@ class VGGBlock(nn.Sequential, SizeMixin):
                 output_shape = compute_maxpool_output_shape(
                     input_shape=[batch_size, self.__out_channels, seq_len],
                     kernel_size=self.config.pool_size,
-                    stride=self.config.pool_size,
+                    stride=self.config.pool_stride,
                     channel_last=False,
                 )
             num_layers += 1

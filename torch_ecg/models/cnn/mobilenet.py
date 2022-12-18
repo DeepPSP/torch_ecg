@@ -1245,5 +1245,9 @@ class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
     @property
+    def in_channels(self) -> int:
+        return self.__in_channels
+
+    @property
     def doi(self) -> List[str]:
         return list(set(self.config.get("doi", []) + ["10.1109/iccv.2019.00140"]))

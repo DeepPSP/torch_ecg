@@ -3827,7 +3827,7 @@ def test_trainer():
     train_config.debug = True
 
     train_config.n_epochs = 1
-    train_config.batch_size = 4  # 16G (Tesla T4)
+    train_config.batch_size = 2
 
     _set_task(TASK, train_config)
 

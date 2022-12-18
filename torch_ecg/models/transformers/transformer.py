@@ -34,6 +34,7 @@ class Transformer(nn.Module, SizeMixin):
         num_heads: int = 8,
         num_layers: int = 1,
         dropout: float = 0.1,
+        batch_first: bool = True,
         **kwargs: Any,
     ) -> None:
         """
@@ -49,6 +50,8 @@ class Transformer(nn.Module, SizeMixin):
             number of encoding layers
         dropout: float, default 0.1,
             dropout probability
+        batch_first: bool, default True,
+            whether the input is of shape (batch_size, seq_len, input_size)
         kwargs: keyword arguments,
 
         """
@@ -57,7 +60,7 @@ class Transformer(nn.Module, SizeMixin):
         self.__hidden_size = hidden_size
         self.__num_layers = num_layers
         self.__num_heads = num_heads
-        self.__batch_first = kwargs.get("batch_first", True)
+        self.__batch_first = batch_first
 
         if self.__input_size % self.__num_heads != 0:
             input_size = self.__input_size
@@ -147,3 +150,8 @@ class Transformer(nn.Module, SizeMixin):
             return (batch_size, seq_len, self.__input_size)
         else:
             return (seq_len, batch_size, self.__input_size)
+
+    @property
+    def batch_first(self) -> bool:
+        """ """
+        return self.__batch_first
