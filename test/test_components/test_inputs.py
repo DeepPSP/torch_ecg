@@ -70,7 +70,6 @@ def test_input_config():
 
 
 def test_base_input():
-
     input_config = InputConfig(
         input_type="waveform",
         n_channels=N_CHANNELS,
@@ -160,6 +159,8 @@ def test_waveform_input():
         waveform = torch.randn(BATCH_SIZE, N_CHANNELS, 4000)
         waveform_input = wi(waveform)
 
+    assert str(wi) == repr(wi)
+
 
 def test_fft_input():
     init_config = dict(
@@ -221,6 +222,8 @@ def test_fft_input():
     ):
         waveform = torch.randn(BATCH_SIZE, N_CHANNELS, 4000)
         fft_input = fi(waveform)
+
+    assert str(fi) == repr(fi)
 
 
 def test_spectral_input():
@@ -312,3 +315,5 @@ def test_spectrogram_input():
     with pytest.raises(AssertionError, match="`waveform` shape must be"):
         waveform = torch.randn(BATCH_SIZE, N_CHANNELS, 4000)
         spectrogram_input = si(waveform)
+
+    assert str(si) == repr(si)

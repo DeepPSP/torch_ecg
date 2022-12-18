@@ -9,7 +9,7 @@ import numpy as np
 import torch
 import pytest
 
-from torch_ecg.cfg import CFG
+from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg._preprocessors import (
     PreProcessor,
     PreprocManager,
@@ -56,8 +56,6 @@ def test_preproc_manager():
     sig = test_sig.copy()
     sig, fs = ppm(sig, 200)
 
-    del ppm, sig, fs
-
     config = CFG(
         random=True,
         resample={"fs": 500},
@@ -66,11 +64,56 @@ def test_preproc_manager():
         baseline_remove={"window1": 0.3, "window2": 0.7},
     )
     ppm = PreprocManager.from_config(config)
+    assert ppm.random
 
     sig = test_sig.copy()
     sig, fs = ppm(sig, 200)
 
-    del ppm, sig, fs
+    ppm.random = False
+    ppm.rearrange(
+        new_ordering=[
+            "baseline_remove",
+            "resample",
+            "bandpass",
+            "normalize",
+        ]
+    )
+
+    ppm.random = True
+    with pytest.warns(
+        RuntimeWarning, match="The preprocessors are applied in random order"
+    ):
+        ppm.rearrange(
+            new_ordering=[
+                "bandpass",
+                "baseline_remove",
+                "resample",
+                "normalize",
+            ]
+        )
+    ppm.random = False
+
+    with pytest.raises(AssertionError, match="Duplicate preprocessor names"):
+        ppm.rearrange(
+            new_ordering=[
+                "bandpass",
+                "baseline_remove",
+                "resample",
+                "normalize",
+                "bandpass",
+            ]
+        )
+    with pytest.raises(AssertionError, match="Number of preprocessors mismatch"):
+        ppm.rearrange(
+            new_ordering=[
+                "bandpass",
+                "baseline_remove",
+                "resample",
+            ]
+        )
+
+    with pytest.raises(ValueError, match="Invalid input ECG signal"):
+        ppm(DEFAULTS.RNG.normal(size=(1, 1, 1, 5000)), 200)
 
     config = {}
     with pytest.warns(
@@ -81,6 +124,8 @@ def test_preproc_manager():
     assert ppm.empty
     sig = test_sig.copy()
     sig, fs = ppm(sig, 200)
+
+    assert str(ppm) == repr(ppm)
 
     del ppm, sig, fs
 
@@ -235,3 +280,11 @@ def test_preprocess_single_lead_signal():
 
     with pytest.raises(ValueError, match="Unsupported filter type `xxx`"):
         preprocess_single_lead_signal(sig, fs, band_fs=[0.5, 45], filter_type="xxx")
+
+
+def test_base_preprocessor():
+    with pytest.raises(
+        TypeError,
+        match=f"Can't instantiate abstract class {PreProcessor.__name__} with abstract method",
+    ):
+        PreProcessor()

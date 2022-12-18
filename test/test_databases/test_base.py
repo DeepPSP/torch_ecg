@@ -16,7 +16,7 @@ from torch_ecg.databases.base import (
     WFDB_Non_Beat_Annotations,
     WFDB_Rhythm_Annotations,
 )
-from torch_ecg.databases import AFDB
+from torch_ecg.databases import AFDB, list_databases
 
 
 def test_base_database():
@@ -103,3 +103,8 @@ def test_database_info():
         reader = AFDB()
 
     assert isinstance(reader.database_info, DataBaseInfo)
+
+
+def test_list_databases():
+    assert isinstance(list_databases(), list)
+    assert len(list_databases()) > 0

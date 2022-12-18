@@ -126,7 +126,7 @@ class BaseOutput(CFG, ABC):
     @abstractmethod
     def required_fields(self) -> Set[str]:
         """ """
-        raise NotImplementedError
+        raise NotImplementedError("Subclass must implement method `required_fields`")
 
     def append(self, values: Union["BaseOutput", Sequence["BaseOutput"]]) -> None:
         """

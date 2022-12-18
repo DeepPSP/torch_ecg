@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 
 from torch_ecg.components.outputs import (
+    BaseOutput,
     ClassificationOutput,
     MultiLabelClassificationOutput,
     SequenceTaggingOutput,
@@ -231,3 +232,8 @@ class TestRPeaksDetectionOutput:
         output.label = [np.array([205, 700]), np.array([500, 900])]
         metrics = output.compute_metrics(fs=500)
         assert isinstance(metrics, RPeaksDetectionMetrics)
+
+
+def test_base_output():
+    with pytest.raises(NotImplementedError, match="Subclass must implement method `required_fields`"):
+        BaseOutput()

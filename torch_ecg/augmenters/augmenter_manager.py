@@ -1,6 +1,7 @@
 """
 """
 
+import warnings
 from random import sample
 from typing import Any, List, Optional, Sequence, Tuple, Union
 
@@ -190,7 +191,13 @@ class AugmenterManager(torch.nn.Module):
             the list of augmenter names in the new order
 
         """
-        _mapping = {
+        if self.random:
+            warnings.warn(
+                "The augmenters are applied in random order, "
+                "rearranging the augmenters will not take effect.",
+                RuntimeWarning,
+            )
+        _mapping = {  # built-in augmenters
             "".join([w.capitalize() for w in k.split("_")]): k
             for k in "label_smooth,mixup,random_flip,random_masking,random_renormalize,stretch_compress".split(
                 ","
@@ -200,6 +207,7 @@ class AugmenterManager(torch.nn.Module):
         _mapping.update({v: k for k, v in _mapping.items()})
         for k in new_ordering:
             if k not in _mapping:
+                # allow custom augmenters
                 assert k in [
                     am.__class__.__name__ for am in self._augmenters
                 ], f"Unknown augmenter name: `{k}`"

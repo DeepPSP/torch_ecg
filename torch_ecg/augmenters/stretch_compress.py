@@ -207,7 +207,7 @@ class StretchCompress(Augmenter):
         if not self.inplace:
             sig = sig.clone()
         if self.prob == 0:
-            if len(labels) == 1:
+            if len(labels) == 0:
                 return sig
             return (sig, *labels)
         indices = self.get_indices(prob=self.prob, pop_size=batch)
@@ -252,7 +252,7 @@ class StretchCompress(Augmenter):
 def _stretch_compress_one_batch_element(
     ratio: Real, sig: Tensor, *labels: Sequence[Tensor]
 ) -> Tensor:
-    """finished, NOT checked,
+    """
 
     Parameters
     ----------

@@ -52,11 +52,6 @@ def test_augmenter_manager():
     mask2 = torch.randint(0, 3, (32, 5000), dtype=torch.long)
     sig, label, mask1, mask2 = am(sig, label, mask1, mask2)
 
-    am.random = True
-    sig, label, mask1, mask2 = am(sig, label, mask1, mask2)
-
-    assert re.search("augmenters = \\[", repr(am))
-
     am.rearrange(
         new_ordering=[
             "stretch_compress",
@@ -68,6 +63,26 @@ def test_augmenter_manager():
             "mixup",
         ]
     )
+
+    am.random = True
+    sig, label, mask1, mask2 = am(sig, label, mask1, mask2)
+
+    with pytest.warns(
+        RuntimeWarning, match="The augmenters are applied in random order"
+    ):
+        am.random = True
+        am.rearrange(
+            new_ordering=[
+                "mixup",
+                "random_masking",
+                "random_flip",
+                "baseline_wander",
+                "random_renormalize",
+                "label_smooth",
+                "stretch_compress",
+            ]
+        )
+    am.random = False
 
     with pytest.raises(AssertionError, match="Duplicate augmenter names"):
         am.rearrange(
@@ -107,6 +122,8 @@ def test_augmenter_manager():
                 "mixup",
             ]
         )
+
+    assert re.search("augmenters = \\[", repr(am))
 
 
 def test_baseline_wander_augmenter():

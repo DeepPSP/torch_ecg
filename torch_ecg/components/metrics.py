@@ -315,7 +315,7 @@ class ClassificationMetrics(Metrics):
         return self._metrics[f"{self.__prefix}auprc"]
 
     @property
-    def classification_report(self) -> str:
+    def classification_report(self) -> dict:
         if self.__prefix == "macro_":
             return {
                 k.replace("macro_", ""): v
@@ -588,7 +588,7 @@ class WaveDelineationMetrics(Metrics):
         warnings.simplefilter("default")
         self._metrics.update(
             {
-                "jaccard": swm._metrics["jac"],
+                "jaccard": {k: swm._metrics["jac"][v] for k, v in class_map.items()},
                 "macro_jaccard": swm._metrics["macro_jac"],
             }
         )

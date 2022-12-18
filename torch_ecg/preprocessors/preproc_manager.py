@@ -156,17 +156,34 @@ class PreprocManager(ReprMixin, nn.Module):
             the new ordering of the preprocessors
 
         """
-        _mapping = {
+        if self.random:
+            warnings.warn(
+                "The preprocessors are applied in random order, "
+                "rearranging the preprocessors will not take effect.",
+                RuntimeWarning,
+            )
+        _mapping = {  # built-in preprocessors
             "Resample": "resample",
             "BandPass": "bandpass",
             "BaselineRemove": "baseline_remove",
             "Normalize": "normalize",
         }
+        _mapping.update({v: k for k, v in _mapping.items()})
         for k in new_ordering:
             if k not in _mapping:
+                # allow custom preprocessors
+                assert k in [
+                    item.__class__.__name__ for item in self._preprocessors
+                ], f"Unknown preprocessor name: `{k}`"
                 _mapping.update({k: k})
+        assert len(new_ordering) == len(
+            set(new_ordering)
+        ), "Duplicate preprocessor names."
+        assert len(new_ordering) == len(
+            self._preprocessors
+        ), "Number of preprocessors mismatch."
         self._preprocessors.sort(
-            key=lambda aug: new_ordering.index(_mapping[aug.__name__])
+            key=lambda item: new_ordering.index(_mapping[item.__class__.__name__])
         )
 
     def add_(self, pp: nn.Module, pos: int = -1) -> None:
