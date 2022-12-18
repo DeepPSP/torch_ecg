@@ -5,6 +5,7 @@ import pytest
 import torch
 
 from torch_ecg.models.loss import (
+    WeightedBCELoss,
     AsymmetricLoss,
     BCEWithLogitsWithClassWeightLoss,
     FocalLoss,
@@ -22,15 +23,38 @@ targ_mixed_soft = torch.tensor([[0.9, 0.1], [0.1, 0.9], [0.9, 0.1]])
 
 class_weight = torch.tensor([1.0, 2.0])
 
-criterion_bce_cw = BCEWithLogitsWithClassWeightLoss(class_weight=class_weight)
-criterion_focal = FocalLoss(class_weight=class_weight, multi_label=True)
-criterion_asl = AsymmetricLoss()
 
-criterion_mbce = MaskedBCEWithLogitsLoss()
+def test_wbce():
+    """ """
+    criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), PosWeightIsDynamic=True)
+    assert criterion_wbce(torch.sigmoid(inp), targ_1).item() == pytest.approx(
+        0.0, abs=1e-4
+    )
+    assert criterion_wbce(torch.sigmoid(inp), targ_0).item() > 1.0
+    assert criterion_wbce(torch.sigmoid(inp), targ_mixed).item() > 1.0 / 3
+    assert (
+        criterion_wbce(torch.sigmoid(inp), targ_1_soft).item()
+        > criterion_wbce(torch.sigmoid(inp), targ_1).item()
+    )
+    assert (
+        criterion_wbce(torch.sigmoid(inp), targ_0_soft).item()
+        < criterion_wbce(torch.sigmoid(inp), targ_0).item()
+    )
+    assert (
+        criterion_wbce(torch.sigmoid(inp), targ_1).item()
+        < criterion_wbce(torch.sigmoid(inp), targ_mixed_soft).item()
+        < criterion_wbce(torch.sigmoid(inp), targ_0).item()
+    )
+    assert (
+        criterion_wbce(torch.sigmoid(inp), targ_1_soft).item()
+        < criterion_wbce(torch.sigmoid(inp), targ_mixed_soft).item()
+        < criterion_wbce(torch.sigmoid(inp), targ_0_soft).item()
+    )
 
 
 def test_bce_cw():
     """ """
+    criterion_bce_cw = BCEWithLogitsWithClassWeightLoss(class_weight=class_weight)
     for targ in [targ_1, targ_0, targ_1_soft, targ_0_soft]:
         loss_1 = criterion_bce_cw(inp, targ)
         loss_2 = -class_weight * (
@@ -43,6 +67,7 @@ def test_bce_cw():
 
 def test_focal():
     """ """
+    criterion_focal = FocalLoss(class_weight=class_weight, multi_label=True)
     assert criterion_focal(inp, targ_1).item() == pytest.approx(0.0, abs=1e-6)
     assert criterion_focal(inp, targ_0).item() > 1.0
     assert criterion_focal(inp, targ_mixed).item() > 1.0 / 3
@@ -66,6 +91,7 @@ def test_focal():
 
 def test_asl():
     """ """
+    criterion_asl = AsymmetricLoss()
     assert criterion_asl(inp, targ_1).item() == pytest.approx(0.0, abs=1e-6)
     assert criterion_asl(inp, targ_0).item() > 1.0
     assert criterion_asl(inp, targ_mixed).item() > 1.0 / 3
@@ -84,6 +110,7 @@ def test_asl():
 
 
 def test_mbce():
+    criterion_mbce = MaskedBCEWithLogitsLoss()
     weight_mask = torch.ones_like(inp)
     weight_mask[:, 0] = 10.0
     assert criterion_mbce(inp, targ_1, weight_mask).item() == pytest.approx(

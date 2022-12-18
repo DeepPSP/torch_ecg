@@ -45,14 +45,13 @@ def weighted_binary_cross_entropy(
     """
     if not (targets.size() == sigmoid_x.size()):
         raise ValueError(
-            "Target size ({}) must be the same as input size ({})".format(
-                targets.size(), sigmoid_x.size()
-            )
+            f"Target size ({targets.size()}) must be the same as input size ({sigmoid_x.size()})"
         )
 
     loss = (
         -pos_weight * targets * sigmoid_x.log() - (1 - targets) * (1 - sigmoid_x).log()
     )
+    # print(pos_weight, targets, sigmoid_x)
 
     if weight is not None:
         loss = loss * weight
@@ -75,7 +74,7 @@ class WeightedBCELoss(nn.Module):
 
     def __init__(
         self,
-        pos_weight: Tensor = 1,
+        pos_weight: Tensor,
         weight: Optional[Tensor] = None,
         PosWeightIsDynamic: bool = False,
         WeightIsDynamic: bool = False,
@@ -85,7 +84,7 @@ class WeightedBCELoss(nn.Module):
         """
         Parameters
         ----------
-        pos_weight: Tensor, default 1,
+        pos_weight: Tensor,
             Weight for postive samples. Size [1,C]
         weight: Tensor, optional,
             Weight for Each class. Size [1,C]
@@ -101,8 +100,10 @@ class WeightedBCELoss(nn.Module):
         """
         super().__init__()
 
-        self.register_buffer("weight", weight)
         self.register_buffer("pos_weight", pos_weight)
+        if weight is None:
+            weight = torch.ones_like(pos_weight)
+        self.register_buffer("weight", weight)
         self.size_average = size_average
         self.reduce = reduce
         self.PosWeightIsDynamic = PosWeightIsDynamic
@@ -114,7 +115,7 @@ class WeightedBCELoss(nn.Module):
         input: Tensor,
             the prediction tensor, of shape (batch_size, ...)
         target: Tensor,
-            the target tensor, of shape (batch_size, ...)
+            the target tensor, of shape (batch_size, C)
 
         Returns
         -------
@@ -123,9 +124,9 @@ class WeightedBCELoss(nn.Module):
 
         """
         if self.PosWeightIsDynamic:
-            positive_counts = target.sum(dim=0)
+            positive_counts = target.sum(dim=0, keepdim=True)
             nBatch = len(target)
-            self.pos_weight = (nBatch - positive_counts) / (positive_counts + 1e-5)
+            self.pos_weight = (nBatch - positive_counts) / (positive_counts + 1e-7)
 
         return weighted_binary_cross_entropy(
             input,
@@ -235,7 +236,7 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         reduce: Optional[bool] = None,
         reduction: str = "mean",
         multi_label: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         """
         Parameters
