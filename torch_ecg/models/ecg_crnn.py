@@ -100,7 +100,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
         cnn_choice = self.config.cnn.name.lower()
         cnn_config = self.config.cnn[self.config.cnn.name]
-        if "resnet" in cnn_choice:
+        if "resnet" in cnn_choice or "resnext" in cnn_choice:
             self.cnn = ResNet(self.n_leads, **cnn_config)
         elif "multi_scopic" in cnn_choice:
             self.cnn = MultiScopicCNN(self.n_leads, **cnn_config)

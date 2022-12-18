@@ -62,7 +62,7 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MobileNetSeparableConv"
 
     @deprecate_kwargs([["norm", "batch_norm"]])
@@ -220,7 +220,7 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MobileNetV1"
 
     def __init__(self, in_channels: int, **config) -> None:
@@ -451,7 +451,7 @@ class InvertedResidual(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "InvertedResidual"
 
     @deprecate_kwargs([["norm", "batch_norm"]])
@@ -662,7 +662,7 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MobileNetV2"
 
     def __init__(self, in_channels: int, **config: CFG) -> None:
@@ -837,7 +837,7 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
 class InvertedResidualBlock(nn.Sequential, SizeMixin):
     """ """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "InvertedResidualBlock"
 
     @deprecate_kwargs([["norm", "batch_norm"]])
@@ -992,7 +992,7 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
 class MobileNetV3_STEM(nn.Sequential, SizeMixin):
     """ """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MobileNetV3_STEM"
 
     @deprecate_kwargs([["norm", "batch_norm"]])
@@ -1088,7 +1088,7 @@ class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "MobileNetV3"
 
     def __init__(self, in_channels: int, **config: CFG) -> None:

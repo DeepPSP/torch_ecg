@@ -98,9 +98,9 @@ class MITDBDataset(ReprMixin, Dataset):
         # ppm_config.pop("normalize")
         seg_ppm_config = CFG(random=False)
         seg_ppm_config.update(deepcopy(self.config))
-        seg_ppm_config.pop("bandpass")
+        seg_ppm_config.pop("bandpass", None)
         self.ppm = PreprocManager.from_config(ppm_config)
-        self.ppm.rearrange(["bandpass", "baseline_remove", "normalize"])
+        # self.ppm.rearrange(["bandpass", "baseline_remove", "normalize"])
         self.seg_ppm = PreprocManager.from_config(seg_ppm_config)
 
         # create directories if needed

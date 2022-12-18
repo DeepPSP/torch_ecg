@@ -113,7 +113,7 @@ class CINC2021(ReprMixin, Dataset):
         ppm_config = CFG(random=False)
         ppm_config.update(self.config)
         self.ppm = PreprocManager.from_config(ppm_config)
-        self.ppm.rearrange(["bandpass", "normalize"])
+        # self.ppm.rearrange(["bandpass", "normalize"])
 
         self._signals = np.array([], dtype=self.dtype).reshape(
             0, len(self.config.leads), self.siglen

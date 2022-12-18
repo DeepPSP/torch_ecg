@@ -552,26 +552,6 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         return output_shape
 
 
-class ResNetMacroBlock(nn.Sequential, SizeMixin):
-    """NOT finished, NOT checked,"""
-
-    __DEBUG__ = True
-    __name__ = "ResNetMacroBlock"
-
-    def __init__(self) -> None:
-        """ """
-        super().__init__()
-        raise NotImplementedError
-
-    def forward(self):
-        """ """
-        raise NotImplementedError
-
-    def compute_output_shape(self):
-        """ """
-        raise NotImplementedError
-
-
 class ResNetStem(nn.Sequential, SizeMixin):
     """
     the input stem of ResNet
@@ -876,6 +856,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
                 bb_config = self.config.block
                 bb_kw = self.additional_kw
             for block_idx in range(nb):
+                dropout = bb_config.pop("dropout", self.__dropouts[macro_idx])
                 self.add_module(
                     f"{bb.__name__}_{macro_idx}_{block_idx}",
                     bb(
@@ -885,7 +866,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
                         subsample_length=block_subsample_lengths[block_idx],
                         groups=self.config.groups,
                         dilation=1,
-                        dropout=self.__dropouts[macro_idx],
+                        dropout=dropout,
                         **(bb_kw),
                         **(bb_config),
                     ),

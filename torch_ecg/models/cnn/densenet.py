@@ -49,14 +49,12 @@ __all__ = [
 
 class DenseBasicBlock(nn.Module, SizeMixin):
     """
-
     the basic building block for DenseNet,
     consisting of normalization -> activation -> convolution (-> dropout (optional)),
     the output Tensor is the concatenation of old features (input) with new features
-
     """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "DenseBasicBlock"
     __DEFAULT_CONFIG__ = CFG(
         activation="relu",
@@ -192,7 +190,7 @@ class DenseBottleNeck(nn.Module, SizeMixin):
     (normalization -> activation -> convolution of kernel size 1)
     """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "DenseBottleNeck"
     __DEFAULT_CONFIG__ = CFG(
         activation="relu",
@@ -366,7 +364,7 @@ class DenseMacroBlock(nn.Sequential, SizeMixin):
     stacked sequence of builing blocks of similar pattern
     """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "DenseMacroBlock"
     building_block = DenseBottleNeck
 
@@ -462,7 +460,7 @@ class DenseTransition(nn.Sequential, SizeMixin):
     and compression of channels if specified
     """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "DenseTransition"
     __DEFAULT_CONFIG__ = CFG(
         activation="relu",
@@ -571,7 +569,7 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = True
+    __DEBUG__ = False
     __name__ = "DenseNet"
     __DEFAULT_CONFIG__ = CFG(
         bias=False,
