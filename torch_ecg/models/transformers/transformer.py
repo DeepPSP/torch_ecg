@@ -1,13 +1,16 @@
 """
 """
 
+import warnings
 from typing import Any, Optional, Sequence, Union
 
 import torch
 import torch.nn as nn
+from einops.layers.torch import Rearrange
 
 from ...cfg import DEFAULTS
 from ...utils.utils_nn import SizeMixin
+from ...utils.misc import get_kwargs
 
 if DEFAULTS.DTYPE.TORCH == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -54,8 +57,32 @@ class Transformer(nn.Module, SizeMixin):
         self.__hidden_size = hidden_size
         self.__num_layers = num_layers
         self.__num_heads = num_heads
-        self.__batch_first = kwargs.get("batch_first", False)
-        try:
+        self.__batch_first = kwargs.get("batch_first", True)
+
+        if self.__input_size % self.__num_heads != 0:
+            input_size = self.__input_size
+            self.__input_size = self.__input_size // self.__num_heads * self.__num_heads
+            warnings.warn(
+                f"`input_size` {input_size} is not divisible by `num_heads` {self.__num_heads}, "
+                f"adjusted to {self.__input_size}",
+                RuntimeWarning,
+            )
+            if self.__batch_first:
+                self.project = nn.Linear(input_size, self.__input_size)
+            else:
+                self.project = nn.Sequential(
+                    Rearrange(
+                        "seq_len batch_size input_size -> batch_size seq_len input_size"
+                    ),
+                    nn.Linear(input_size, self.__input_size),
+                    Rearrange(
+                        "batch_size seq_len input_size -> seq_len batch_size input_size"
+                    ),
+                )
+        else:
+            self.project = nn.Identity()
+
+        if "batch_first" in get_kwargs(nn.TransformerEncoderLayer):
             encoder_layer = nn.TransformerEncoderLayer(
                 d_model=self.__input_size,
                 nhead=self.__num_heads,
@@ -64,8 +91,7 @@ class Transformer(nn.Module, SizeMixin):
                 batch_first=self.__batch_first,
                 activation=kwargs.get("activation", "relu"),
             )
-        except Exception:
-            self.__batch_first = False
+        else:
             encoder_layer = nn.TransformerEncoderLayer(
                 d_model=self.__input_size,
                 nhead=self.__num_heads,
@@ -73,7 +99,12 @@ class Transformer(nn.Module, SizeMixin):
                 dropout=dropout,
                 activation=kwargs.get("activation", "relu"),
             )
-            print("batch_first only supports torch >= 1.9, defaults to False")
+            if self.__batch_first:
+                warnings.warn(
+                    "`batch_first` only supports torch >= 1.9, defaults to False",
+                    RuntimeWarning,
+                )
+            self.__batch_first = False
         self.encoder = nn.TransformerEncoder(
             encoder_layer, num_layers=self.__num_layers
         )
@@ -92,6 +123,7 @@ class Transformer(nn.Module, SizeMixin):
             of shape (seq_len, batch_size, input_size) or (batch_size, seq_len, input_size)
 
         """
+        x = self.project(x)
         return self.encoder(x)
 
     def compute_output_shape(
