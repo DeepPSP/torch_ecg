@@ -805,9 +805,10 @@ def cls_to_bin(
         ), "`cls_array` should be 1D if num_classes is not specified"
         num_classes = cls_array.max() + 1
     if cls_array.ndim == 1:
-        assert (
-            num_classes > 0 and num_classes == cls_array.max() + 1
-        ), "num_classes must be greater than 0 and equal to the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified"
+        assert num_classes > 0 and num_classes >= cls_array.max() + 1, (
+            "num_classes must be greater than 0 and greater than or equal to "
+            "the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified"
+        )
     if cls_array.ndim == 2 and cls_array.shape[1] == num_classes:
         bin_array = cls_array
     else:

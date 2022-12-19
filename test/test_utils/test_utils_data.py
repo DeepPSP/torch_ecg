@@ -268,9 +268,12 @@ def test_cls_to_bin():
     assert set(np.unique(bin_array)).issubset({0, 1})
     with pytest.raises(
         AssertionError,
-        match="num_classes must be greater than 0 and equal to the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified",
+        match=(
+            "num_classes must be greater than 0 and greater than or equal to "
+            "the max value of `cls_array` if `cls_array` is 1D and `num_classes` is specified"
+        ),
     ):
-        cls_to_bin(cls_array, num_classes=num_classes - 1)
+        cls_to_bin(cls_array, num_classes=cls_array.max() - 1)
 
     cls_array = DEFAULTS.RNG_randint(0, 1, size=(siglen, num_classes))
     bin_array = cls_to_bin(cls_array, num_classes=num_classes)
