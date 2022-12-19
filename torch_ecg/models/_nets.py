@@ -2056,7 +2056,7 @@ class AntiAliasConv(nn.Sequential, SizeMixin):
 
 class BidirectionalLSTM(nn.Module, SizeMixin):
     """
-    from crnn_torch of references.ati_cnn
+    from crnn_torch of references ati_cnn
     """
 
     __name__ = "BidirectionalLSTM"
@@ -2156,7 +2156,8 @@ class StackedLSTM(nn.Sequential, SizeMixin):
     NOTE
     ----
     1. `batch_first` is fixed `False`
-    2. currently, how to correctly pass the argument `hx` between LSTM layers is not known to me, hence should be careful (and not recommended, use `nn.LSTM` and set `num_layers` instead) to use
+    2. currently, how to correctly pass the argument `hx` between LSTM layers is not known to me,
+    hence should be careful (and not recommended, use `nn.LSTM` and set `num_layers` instead) to use
 
     """
 
