@@ -550,25 +550,14 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
         """
         to_concat = [self.init_conv(input)]
-        # if self.__DEBUG__:
-        #     print(f"shape of init conv block output = {to_concat[-1].shape}")
         for idx in range(self.config.down_up_block_num):
             to_concat.append(self.down_blocks[f"down_{idx}"](to_concat[-1]))
-            # if self.__DEBUG__:
-            #     print(f"shape of {idx}-th down block output = {to_concat[-1].shape}")
         up_input = to_concat[-1]
         to_concat = to_concat[-2::-1]
         for idx in range(self.config.down_up_block_num):
-            # if self.__DEBUG__:
-            #     print(f"shape of {idx}-th up block 1st input = {up_input.shape}")
-            #     print(f"shape of {idx}-th up block 2nd input (from down) = {to_concat[idx].shape}")
             up_output = self.up_blocks[f"up_{idx}"](up_input, to_concat[idx])
             up_input = up_output
-            # if self.__DEBUG__:
-            #     print(f"shape of {idx}-th up block output = {up_output.shape}")
         output = self.out_conv(up_output)
-        # if self.__DEBUG__:
-        #     print(f"shape of out_conv layer output = {output.shape}")
 
         # to keep in accordance with other models
         # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)

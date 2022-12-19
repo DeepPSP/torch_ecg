@@ -8,9 +8,10 @@ the main differences to a normal Unet are that
 
 """
 
+import warnings
 from copy import deepcopy
 from itertools import repeat
-from typing import Optional, Sequence, Union
+from typing import Optional, Union, Sequence, List
 
 import numpy as np
 import torch
@@ -31,6 +32,8 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
+from ...model_configs import ECG_SUBTRACT_UNET_CONFIG
+
 
 if DEFAULTS.DTYPE.TORCH == torch.float64:
     torch.set_default_tensor_type(torch.DoubleTensor)
@@ -493,15 +496,20 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
     __DEBUG__ = False
     __name__ = "ECG_SUBTRACT_UNET"
 
-    def __init__(self, classes: Sequence[str], n_leads: int, config: dict) -> None:
+    def __init__(
+        self,
+        classes: Sequence[str],
+        n_leads: int,
+        config: Optional[CFG] = None,
+    ) -> None:
         """
         Parameters
         ----------
         classes: sequence of int,
             name of the classes
         n_leads: int,
-            number of input leads
-        config: dict,
+            number of input leads (number of input channels)
+        config: CFG, optional,
             other hyper-parameters, including kernel sizes, etc.
             ref. the corresponding config file
 
@@ -511,7 +519,12 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         self.n_classes = len(classes)
         self.__out_channels = len(classes)
         self.__in_channels = n_leads
-        self.config = CFG(deepcopy(config))
+        self.config = deepcopy(ECG_SUBTRACT_UNET_CONFIG)
+        if not config:
+            warnings.warn(
+                "No config is provided, using default config.", RuntimeWarning
+            )
+        self.config.update(deepcopy(config) or {})
         if self.__DEBUG__:
             print(
                 f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
@@ -657,15 +670,9 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
 
         # down
         to_concat = [self.init_conv(x)]
-        # if self.__DEBUG__:
-        #     print(f"shape of the init conv block output = {to_concat[-1].shape}")
         for idx in range(self.config.down_up_block_num - 1):
             to_concat.append(self.down_blocks[f"down_{idx}"](to_concat[-1]))
-            # if self.__DEBUG__:
-            #     print(f"shape of the {idx}-th down block output = {to_concat[-1].shape}")
         to_concat.append(self.bottom_block(to_concat[-1]))
-        # if self.__DEBUG__:
-        #     print(f"shape of the bottom block output = {to_concat[-1].shape}")
 
         # up
         up_input = to_concat[-1]
@@ -673,13 +680,9 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         for idx in range(self.config.down_up_block_num):
             up_output = self.up_blocks[f"up_{idx}"](up_input, to_concat[idx])
             up_input = up_output
-            # if self.__DEBUG__:
-            #     print(f"shape of the {idx}-th up block output = {up_output.shape}")
 
         # output
         output = self.out_conv(up_output)
-        # if self.__DEBUG__:
-        #     print(f"shape of out_conv layer output = {output.shape}")
 
         # to keep in accordance with other models
         # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
@@ -715,3 +718,8 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         """
         output_shape = (batch_size, seq_len, self.n_classes)
         return output_shape
+
+    @property
+    def doi(self) -> List[str]:
+        # TODO: add doi
+        return list(set(self.config.get("doi", []) + []))
