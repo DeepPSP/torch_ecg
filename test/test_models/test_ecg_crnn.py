@@ -44,7 +44,9 @@ def test_ecg_crnn():
         * 3
     )
 
-    for cnn_name, rnn_name, attn_name, global_pool in tqdm(grid, total=total):
+    for cnn_name, rnn_name, attn_name, global_pool in tqdm(
+        grid, total=total, mininterval=1
+    ):
         config = deepcopy(ECG_CRNN_CONFIG)
         config.cnn.name = cnn_name
         config.rnn.name = rnn_name

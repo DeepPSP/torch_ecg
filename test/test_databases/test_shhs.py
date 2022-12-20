@@ -4,6 +4,7 @@ TestSHHS: accomplished
 subsampling: accomplished
 """
 
+import time
 from numbers import Real
 from pathlib import Path
 
@@ -29,9 +30,7 @@ reader = SHHS(_CWD / "polysomnography", current_version="0.15.0", lazy=False, ve
 
 class TestSHHS:
     def test_emtpy_db(self):
-        directory = Path("~/tmp/test-empty/").expanduser().resolve()
-        if directory.exists():
-            directory.rmdir()
+        directory = Path(f"~/tmp/test-empty-{int(time.time())}/").expanduser().resolve()
         with pytest.warns(
             RuntimeWarning, match="`.+` does not exist\\. It is now created"
         ):

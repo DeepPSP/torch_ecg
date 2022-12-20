@@ -31,7 +31,7 @@ def test_ecg_seq_lab_net():
     )
     total = 2 * 2 * 4 * 2
 
-    for cnn, rnn, attn, recover_length in tqdm(grid, total=total):
+    for cnn, rnn, attn, recover_length in tqdm(grid, total=total, mininterval=1):
         config = adjust_cnn_filter_lengths(ECG_SEQ_LAB_NET_CONFIG, fs)
         config.cnn.name = cnn
         config.rnn.name = rnn

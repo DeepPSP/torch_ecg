@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import pytest
+from tqdm.auto import tqdm
 
 from torch_ecg.utils.utils_nn import (
     extend_predictions,
@@ -81,18 +82,16 @@ def test_compute_output_shape():
     kw_grid = itertools.product(
         [1, 3, [9], 12],  # kernel_size
         [1, [2], 3, 8],  # stride
-        [
-            [0],
-            1,
-            2,
-            3,
-        ],  # padding
+        [[0], 1, 2, 3],  # padding
         [1, 2, [5], 8],  # dilation
     )
+    kw_grid = list(kw_grid)
 
     # conv
     num_filters = 32
-    for kernel_size, stride, padding, dilation in kw_grid:
+    for kernel_size, stride, padding, dilation in tqdm(
+        kw_grid, mininterval=1, desc="conv"
+    ):
         conv_kw = dict(
             kernel_size=kernel_size,
             stride=stride,
@@ -117,10 +116,39 @@ def test_compute_output_shape():
             assert conv_output_shape == conv_output_tensor.shape
 
     # deconv
+    for kernel_size, stride, padding, dilation in tqdm(
+        kw_grid, mininterval=1, desc="deconv"
+    ):
+        deconv_kw = dict(
+            kernel_size=kernel_size,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+        )
+        for tensor, channel_last in zip([tensor_first, tensor_last], [False, True]):
+            deconv_output_shape = compute_output_shape(
+                "deconv",
+                input_shape=tensor.shape,
+                num_filters=num_filters,
+                output_padding=0,
+                channel_last=channel_last,
+                **deconv_kw
+            )
+            deconv_output_tensor = torch.nn.ConvTranspose1d(
+                in_channels, num_filters, **deconv_kw
+            )(tensor_first)
+            if channel_last:
+                deconv_output_tensor = deconv_output_tensor.permute(0, 2, 1)
+
+            assert deconv_output_shape == deconv_output_tensor.shape
 
     # maxpool
-    for kernel_size, stride, padding, dilation in kw_grid:
-        if padding > kernel_size / 2:
+    for kernel_size, stride, padding, dilation in tqdm(
+        kw_grid, mininterval=1, desc="maxpool"
+    ):
+        _padding = padding if isinstance(padding, int) else padding[0]
+        _kernel_size = kernel_size if isinstance(kernel_size, int) else kernel_size[0]
+        if _padding > _kernel_size / 2:
             continue
         maxpool_kw = dict(
             kernel_size=kernel_size,
@@ -135,7 +163,7 @@ def test_compute_output_shape():
                 num_filters=1,
                 output_padding=0,
                 channel_last=channel_last,
-                **conv_kw
+                **maxpool_kw
             )
             maxpool_output_tensor = torch.nn.MaxPool1d(**maxpool_kw)(tensor_first)
             if channel_last:
@@ -144,7 +172,11 @@ def test_compute_output_shape():
             assert maxpool_output_shape == maxpool_output_tensor.shape
 
     # avgpool
-    for kernel_size, stride, padding, _ in kw_grid:
+    for kernel_size, stride, padding, _ in tqdm(kw_grid, mininterval=1, desc="avgpool"):
+        _padding = padding if isinstance(padding, int) else padding[0]
+        _kernel_size = kernel_size if isinstance(kernel_size, int) else kernel_size[0]
+        if _padding > _kernel_size / 2:
+            continue
         avgpool_kw = dict(
             kernel_size=kernel_size,
             stride=stride,
@@ -155,10 +187,9 @@ def test_compute_output_shape():
                 "avgpool",
                 input_shape=tensor.shape,
                 num_filters=1,
-                stride=1,
                 output_padding=0,
                 channel_last=channel_last,
-                **conv_kw
+                **avgpool_kw
             )
             avgpool_output_tensor = torch.nn.AvgPool1d(**avgpool_kw)(tensor_first)
             if channel_last:

@@ -272,6 +272,9 @@ def test_ReprMixin():
     assert str(some_class) == repr(some_class)
     assert str(some_class) == string
 
+    another_class = AnotherClass(1, 2, 3)
+    assert str(another_class) == repr(another_class)
+
 
 def test_CitationMixin():
     some_class = SomeClass(1, 2, 3)
@@ -347,6 +350,7 @@ def test_add_docstring():
         return a + b
 
     assert func.__doc__ == "This is a new docstring."
+    assert func(1, 2) == 3
 
     @add_docstring("Leading docstring.", mode="prepend")
     def func(a, b):
@@ -354,6 +358,7 @@ def test_add_docstring():
         return a + b
 
     assert func.__doc__ == "Leading docstring.\nThis is a docstring."
+    assert func(1, 2) == 3
 
     @add_docstring("Trailing docstring.", mode="append")
     def func(a, b):
@@ -361,6 +366,7 @@ def test_add_docstring():
         return a + b
 
     assert func.__doc__ == "This is a docstring.\nTrailing docstring."
+    assert func(1, 2) == 3
 
 
 def test_remove_parameters_returns_from_docstring():
@@ -437,19 +443,23 @@ def test_get_kwargs():
 
     kw = get_kwargs(func1, kwonly=False)
     assert kw == {"d": 2, "e": 3, "f": 4}
+    func1(1, 2, 3)
     kw = get_kwargs(func1, kwonly=True)
     assert kw == {}
     kw = get_kwargs(func2, kwonly=False)
     assert kw == {"c": 1, "d": 2, "e": 3, "f": 4}
+    func2(1, 2)
     kw = get_kwargs(func2, kwonly=True)
     assert kw == {"e": 3, "f": 4}
 
     kw = get_kwargs(CLS1, kwonly=False)
     assert kw == {"d": 2, "e": 3, "f": 4}
+    CLS1(1, 2, 3)
     kw = get_kwargs(CLS1, kwonly=True)
     assert kw == {}
     kw = get_kwargs(CLS2, kwonly=False)
     assert kw == {"c": 1, "d": 2, "e": 3, "f": 4}
+    CLS2(1, 2)
     kw = get_kwargs(CLS2, kwonly=True)
     assert kw == {"e": 3, "f": 4}
 
@@ -471,13 +481,17 @@ def test_get_required_args():
 
     kw = get_required_args(func1)
     assert kw == ["a", "b", "c"]
+    func1(1, 2, 3)
     kw = get_required_args(func2)
     assert kw == ["a", "b"]
+    func2(1, 2)
 
     kw = get_required_args(CLS1)
     assert kw == ["a", "b", "c"]
+    CLS1(1, 2, 3)
     kw = get_required_args(CLS2)
     assert kw == ["a", "b"]
+    CLS2(1, 2)
 
 
 def test_add_kwargs():

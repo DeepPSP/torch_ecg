@@ -96,7 +96,9 @@ def test_resnet():
             tresnetL,
             tresnetXL,
             tresnetM_V2,
-        ]
+        ],
+        mininterval=1,
+        desc="Testing ResNet",
     ):
         config = deepcopy(item)
         model = ResNet(in_channels=IN_CHANNELS, **config)
