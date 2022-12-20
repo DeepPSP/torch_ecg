@@ -24,7 +24,7 @@ from ...models._nets import (
     MultiConv,
 )
 from ...model_configs import ECG_UNET_VANILLA_CONFIG
-from ...utils.misc import dict_to_str, add_docstring, CitationMixin
+from ...utils.misc import add_docstring, CitationMixin
 from ...utils.utils_nn import (
     CkptMixin,
     SizeMixin,
@@ -52,7 +52,6 @@ class DoubleConv(MultiConv):
 
     """
 
-    __DEBUG__ = False
     __name__ = "DoubleConv"
 
     def __init__(
@@ -122,7 +121,6 @@ class DownDoubleConv(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "DownDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
@@ -173,10 +171,6 @@ class DownDoubleConv(nn.Sequential, SizeMixin):
         self.__mid_channels = mid_channels if mid_channels is not None else out_channels
         self.__out_channels = out_channels
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         self.add_module(
             "down_sample",
@@ -237,7 +231,6 @@ class UpDoubleConv(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "UpDoubleConv"
     __MODES__ = [
         "nearest",
@@ -303,10 +296,6 @@ class UpDoubleConv(nn.Module, SizeMixin):
         self.__mode = mode.lower()
         assert self.__mode in self.__MODES__
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         # the following has to be checked
         # if bilinear, use the normal convolutions to reduce the number of channels
@@ -411,7 +400,6 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "ECG_UNET"
 
     def __init__(
@@ -443,11 +431,6 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 "No config is provided, using default config.", RuntimeWarning
             )
         self.config.update(deepcopy(config) or {})
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
-            __debug_seq_len = 4000
 
         self.init_conv = DoubleConv(
             in_channels=self.__in_channels,
@@ -461,12 +444,6 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             kernel_initializer=self.config.kernel_initializer,
             kw_initializer=self.config.kw_initializer,
         )
-        if self.__DEBUG__:
-            __debug_output_shape = self.init_conv.compute_output_shape(__debug_seq_len)
-            print(
-                f"given seq_len = {__debug_seq_len}, init_conv output shape = {__debug_output_shape}"
-            )
-            _, _, __debug_seq_len = __debug_output_shape
 
         self.down_blocks = nn.ModuleDict()
         in_channels = self.config.init_num_filters
@@ -481,14 +458,6 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 **(self.config.down_block),
             )
             in_channels = self.config.down_num_filters[idx]
-            if self.__DEBUG__:
-                __debug_output_shape = self.down_blocks[
-                    f"down_{idx}"
-                ].compute_output_shape(__debug_seq_len)
-                print(
-                    f"given seq_len = {__debug_seq_len}, down_{idx} output shape = {__debug_output_shape}"
-                )
-                _, _, __debug_seq_len = __debug_output_shape
 
         self.up_blocks = nn.ModuleDict()
         in_channels = self.config.down_num_filters[-1]
@@ -504,14 +473,6 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 **(self.config.up_block),
             )
             in_channels = self.config.up_num_filters[idx]
-            if self.__DEBUG__:
-                __debug_output_shape = self.up_blocks[f"up_{idx}"].compute_output_shape(
-                    __debug_seq_len
-                )
-                print(
-                    f"given seq_len = {__debug_seq_len}, up_{idx} output shape = {__debug_output_shape}"
-                )
-                _, _, __debug_seq_len = __debug_output_shape
 
         self.out_conv = Conv_Bn_Activation(
             in_channels=self.config.up_num_filters[-1],
@@ -524,11 +485,6 @@ class ECG_UNET(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             kernel_initializer=self.config.kernel_initializer,
             kw_initializer=self.config.kw_initializer,
         )
-        if self.__DEBUG__:
-            __debug_output_shape = self.out_conv.compute_output_shape(__debug_seq_len)
-            print(
-                f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}"
-            )
 
         # for inference
         # if background counted in `classes`, use softmax

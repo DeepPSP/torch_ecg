@@ -24,7 +24,7 @@ from ...models._nets import (  # noqa: F401
     DownSample,
     MultiConv,
 )
-from ...utils.misc import dict_to_str, add_docstring
+from ...utils.misc import add_docstring
 from ...utils.utils_nn import (
     CkptMixin,
     SizeMixin,
@@ -49,7 +49,6 @@ class TripleConv(MultiConv):
     CBA --> (Dropout) --> CBA --> (Dropout) --> CBA --> (Dropout)
     """
 
-    __DEBUG__ = False
     __name__ = "TripleConv"
 
     def __init__(
@@ -93,10 +92,6 @@ class TripleConv(MultiConv):
         else:
             _out_channels = list(out_channels)
             assert _num_convs == len(_out_channels)
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(config)}"
-            )
 
         super().__init__(
             in_channels=in_channels,
@@ -113,7 +108,6 @@ class TripleConv(MultiConv):
 class DownTripleConv(nn.Sequential, SizeMixin):
     """ """
 
-    __DEBUG__ = False
     __name__ = "DownTripleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
@@ -158,10 +152,6 @@ class DownTripleConv(nn.Sequential, SizeMixin):
         self.__in_channels = in_channels
         self.__out_channels = out_channels
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         self.add_module(
             "down_sample",
@@ -214,7 +204,6 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
     the bottom block of the `subtract_unet`
     """
 
-    __DEBUG__ = False
     __name__ = "DownBranchedDoubleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
 
@@ -260,10 +249,6 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
         self.__in_channels = in_channels
         self.__out_channels = out_channels
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         self.down_sample = DownSample(
             down_scale=self.__down_scale,
@@ -347,7 +332,6 @@ class UpTripleConv(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "UpTripleConv"
     __MODES__ = [
         "nearest",
@@ -403,10 +387,6 @@ class UpTripleConv(nn.Module, SizeMixin):
         self.__mode = mode.lower()
         assert self.__mode in self.__MODES__
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         # the following has to be checked
         # if bilinear, use the normal convolutions to reduce the number of channels
@@ -493,7 +473,6 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
     entry 0433 of CPSC2019
     """
 
-    __DEBUG__ = False
     __name__ = "ECG_SUBTRACT_UNET"
 
     def __init__(
@@ -525,11 +504,6 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
                 "No config is provided, using default config.", RuntimeWarning
             )
         self.config.update(deepcopy(config) or {})
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
-            __debug_seq_len = 5000
 
         # TODO: an init batch normalization?
         if self.config.init_batch_norm:
@@ -552,12 +526,6 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
             kernel_initializer=self.config.kernel_initializer,
             kw_initializer=self.config.kw_initializer,
         )
-        if self.__DEBUG__:
-            __debug_output_shape = self.init_conv.compute_output_shape(__debug_seq_len)
-            print(
-                f"given seq_len = {__debug_seq_len}, init_conv output shape = {__debug_output_shape}"
-            )
-            _, _, __debug_seq_len = __debug_output_shape
 
         self.down_blocks = nn.ModuleDict()
         in_channels = self.config.init_num_filters
@@ -573,14 +541,6 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
                 **(self.config.down_block),
             )
             in_channels = self.config.down_num_filters[idx][-1]
-            if self.__DEBUG__:
-                __debug_output_shape = self.down_blocks[
-                    f"down_{idx}"
-                ].compute_output_shape(__debug_seq_len)
-                print(
-                    f"given seq_len = {__debug_seq_len}, down_{idx} output shape = {__debug_output_shape}"
-                )
-                _, _, __debug_seq_len = __debug_output_shape
 
         self.bottom_block = DownBranchedDoubleConv(
             down_scale=self.config.down_scales[-1],
@@ -593,14 +553,6 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
             mode=self.config.down_mode,
             **(self.config.down_block),
         )
-        if self.__DEBUG__:
-            __debug_output_shape = self.bottom_block.compute_output_shape(
-                __debug_seq_len
-            )
-            print(
-                f"given seq_len = {__debug_seq_len}, bottom_block output shape = {__debug_output_shape}"
-            )
-            _, _, __debug_seq_len = __debug_output_shape
 
         self.up_blocks = nn.ModuleDict()
         # in_channels = sum([branch[-1] for branch in self.config.bottom_num_filters])
@@ -618,14 +570,6 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
                 **(self.config.up_block),
             )
             in_channels = self.config.up_num_filters[idx][-1]
-            if self.__DEBUG__:
-                __debug_output_shape = self.up_blocks[f"up_{idx}"].compute_output_shape(
-                    __debug_seq_len
-                )
-                print(
-                    f"given seq_len = {__debug_seq_len}, up_{idx} output shape = {__debug_output_shape}"
-                )
-                _, _, __debug_seq_len = __debug_output_shape
 
         self.out_conv = Conv_Bn_Activation(
             in_channels=self.config.up_num_filters[-1][-1],
@@ -638,11 +582,6 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
             kernel_initializer=self.config.kernel_initializer,
             kw_initializer=self.config.kw_initializer,
         )
-        if self.__DEBUG__:
-            __debug_output_shape = self.out_conv.compute_output_shape(__debug_seq_len)
-            print(
-                f"given seq_len = {__debug_seq_len}, out_conv output shape = {__debug_output_shape}"
-            )
 
         # for inference
         # if background counted in `classes`, use softmax

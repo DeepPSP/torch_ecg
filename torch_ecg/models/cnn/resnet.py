@@ -22,7 +22,7 @@ from ...models._nets import (  # noqa: F401
     ZeroPadding,
     make_attention_layer,
 )
-from ...utils.misc import dict_to_str, add_docstring, CitationMixin
+from ...utils.misc import add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,
@@ -45,7 +45,6 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
     building blocks for `ResNet`, as implemented in ref. [2] of `ResNet`
     """
 
-    __DEBUG__ = False
     __name__ = "ResNetBasicBlock"
     expansion = 1  # not used
 
@@ -101,10 +100,6 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         self.__stride = subsample_length
         self.__groups = groups
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         if (
             self.config.increase_channels_method.lower() == "zero_padding"
@@ -174,10 +169,6 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
 
     def _make_shortcut_layer(self) -> Union[nn.Module, None]:
         """ """
-        if self.__DEBUG__:
-            print(
-                f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}"
-            )
         if self.__down_scale > 1 or self.__increase_channels:
             if self.config.increase_channels_method.lower() == "conv":
                 shortcut = DownSample(
@@ -277,7 +268,6 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "ResNetBottleNeck"
     expansion = 4
     __DEFAULT_BASE_WIDTH__ = 12 * 4
@@ -338,10 +328,6 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         super().__init__()
         self.__num_convs = 3
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
         self.expansion = self.config.get("expansion", self.expansion)
 
         self.__in_channels = in_channels
@@ -357,12 +343,6 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
             neck_num_filters,
             num_filters * self.expansion,
         ]
-        if self.__DEBUG__:
-            print(
-                f"__DEFAULT_BASE_WIDTH__ = {self.__DEFAULT_BASE_WIDTH__}, "
-                f"in_channels = {in_channels}, num_filters = {num_filters}, "
-                f"base_width = {base_width}, neck_num_filters = {neck_num_filters}."
-            )
         self.__base_filter_length = base_filter_length
         self.__kernel_size = [
             base_filter_length,
@@ -456,10 +436,6 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
 
     def _make_shortcut_layer(self) -> Union[nn.Module, None]:
         """ """
-        if self.__DEBUG__:
-            print(
-                f"down_scale = {self.__down_scale}, increase_channels = {self.__increase_channels}"
-            )
         if self.__down_scale > 1 or self.__increase_channels:
             if self.config.increase_channels_method.lower() == "conv":
                 shortcut = DownSample(
@@ -665,7 +641,6 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "ResNet"
     building_block = ResNetBasicBlock
     __DEFAULT_CONFIG__ = CFG(
@@ -711,10 +686,6 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
         if not isinstance(self.config.get("building_block", None), str):
             # for those architectures that have multiple type of building blocks
             self.building_block = []
@@ -763,8 +734,6 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
             )
         else:
             self.additional_kw = CFG()
-        if self.__DEBUG__:
-            print(f"additional_kw = {self.additional_kw}")
 
         self.add_module(
             "input_stem",

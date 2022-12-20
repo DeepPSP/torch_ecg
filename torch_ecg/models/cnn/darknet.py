@@ -37,7 +37,6 @@ __all__ = [
 class DarkNet(nn.Sequential, SizeMixin, CitationMixin):
     """ """
 
-    __DEBUG__ = True
     __name__ = "DarkNet"
 
     def __init__(self, in_channels: int, **config) -> None:

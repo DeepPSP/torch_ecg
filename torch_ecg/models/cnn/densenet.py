@@ -27,7 +27,7 @@ from ...models._nets import (  # noqa: F401
     NonLocalBlock,
     SEBlock,
 )
-from ...utils.misc import dict_to_str, list_sum, add_docstring, CitationMixin
+from ...utils.misc import list_sum, add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,
@@ -54,7 +54,6 @@ class DenseBasicBlock(nn.Module, SizeMixin):
     the output Tensor is the concatenation of old features (input) with new features
     """
 
-    __DEBUG__ = False
     __name__ = "DenseBasicBlock"
     __DEFAULT_CONFIG__ = CFG(
         activation="relu",
@@ -190,7 +189,6 @@ class DenseBottleNeck(nn.Module, SizeMixin):
     (normalization -> activation -> convolution of kernel size 1)
     """
 
-    __DEBUG__ = False
     __name__ = "DenseBottleNeck"
     __DEFAULT_CONFIG__ = CFG(
         activation="relu",
@@ -364,7 +362,6 @@ class DenseMacroBlock(nn.Sequential, SizeMixin):
     stacked sequence of builing blocks of similar pattern
     """
 
-    __DEBUG__ = False
     __name__ = "DenseMacroBlock"
     building_block = DenseBottleNeck
 
@@ -460,7 +457,6 @@ class DenseTransition(nn.Sequential, SizeMixin):
     and compression of channels if specified
     """
 
-    __DEBUG__ = False
     __name__ = "DenseTransition"
     __DEFAULT_CONFIG__ = CFG(
         activation="relu",
@@ -569,7 +565,6 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "DenseNet"
     __DEFAULT_CONFIG__ = CFG(
         bias=False,
@@ -629,10 +624,6 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
         self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config))
         self.__num_blocks = len(self.config.num_layers)
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         self.add_module(
             "init_cba",

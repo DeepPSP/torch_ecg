@@ -29,7 +29,7 @@ from ..models._nets import (  # noqa: F401
     MLP,
     StackedLSTM,
 )
-from ..utils.misc import dict_to_str, CitationMixin
+from ..utils.misc import CitationMixin
 from ..utils.utils_nn import CkptMixin, SizeMixin
 
 if DEFAULTS.DTYPE.TORCH == torch.float64:
@@ -46,7 +46,6 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     classification or sequence labeling using LSTM and using RR intervals as input
     """
 
-    __DEBUG__ = False
     __name__ = "RR_LSTM"
 
     def __init__(
@@ -72,11 +71,6 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             )
         self.config.update(deepcopy(config) or {})
         self.config.batch_first = self.config.get("batch_first", False)
-        if self.__DEBUG__:
-            print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         if self.config.batch_first:
             self.in_rearrange = Rearrange(
@@ -93,9 +87,6 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             bidirectional=self.config.lstm.bidirectional,
             return_sequences=self.config.lstm.retseq,
         )
-
-        if self.__DEBUG__:
-            print(f"\042lstm\042 module has size {self.lstm.module_size}")
 
         attn_input_size = self.lstm.compute_output_shape(None, None)[-1]
 
@@ -242,11 +233,6 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 bias=self.config.clf.crf.proj_bias,
             )
 
-        if self.__DEBUG__ and self.clf:
-            print(
-                f"clf module \042{self.config.clf.name}\042 has size {self.clf.module_size}"
-            )
-
         # for inference, except for crf
         self.softmax = nn.Softmax(dim=-1)
         self.sigmoid = nn.Sigmoid()
@@ -351,7 +337,6 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     classification or sequence labeling using LSTM and using RR intervals as input
     """
 
-    __DEBUG__ = False
     __name__ = "RR_LSTM_v1"
 
     def __init__(
@@ -376,11 +361,6 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 "No config is provided, using default config.", RuntimeWarning
             )
         self.config.update(deepcopy(config) or {})
-        if self.__DEBUG__:
-            print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         self.lstm = StackedLSTM(
             input_size=1,
@@ -390,9 +370,6 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             bidirectional=self.config.lstm.bidirectional,
             return_sequences=self.config.lstm.retseq,
         )
-
-        if self.__DEBUG__:
-            print(f"\042lstm\042 module has size {self.lstm.module_size}")
 
         attn_input_size = self.lstm.compute_output_shape(None, None)[-1]
 
@@ -439,11 +416,6 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         else:
             raise NotImplementedError
 
-        if self.__DEBUG__ and self.attn:
-            print(
-                f"attn module \042{self.config.attn.name}\042 has size {self.attn.module_size}"
-            )
-
         if not self.config.lstm.retseq:
             self.pool = None
             self.clf = None
@@ -476,11 +448,6 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 in_channels=clf_input_size,
                 num_tags=self.n_classes,
                 bias=self.config.clf.crf.proj_bias,
-            )
-
-        if self.__DEBUG__ and self.clf:
-            print(
-                f"clf module \042{self.config.clf.name}\042 has size {self.clf.module_size}"
             )
 
         # for inference, except for crf

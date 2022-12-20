@@ -43,7 +43,6 @@ class EfficientNet(nn.Module, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = True
     __name__ = "EfficientNet"
 
     def __init__(self, in_channels: int, **config) -> None:
@@ -78,7 +77,6 @@ class EfficientNetV2(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = True
     __name__ = "EfficientNetV2"
 
     def __init__(self, in_channels: int, **config) -> None:

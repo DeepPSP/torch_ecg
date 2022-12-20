@@ -53,7 +53,6 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
     """
 
-    __DEBUG__ = False
     __name__ = "ECG_SEQ_LAB_NET"
     __DEFAULT_CONFIG__ = {"recover_length": False}
     __DEFAULT_CONFIG__.update(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
@@ -204,8 +203,7 @@ class ECG_SEQ_LAB_NET_v1(ECG_CRNN_v1):
 
     """
 
-    __DEBUG__ = False
-    __name__ = "ECG_SEQ_LAB_NET"
+    __name__ = "ECG_SEQ_LAB_NET_v1"
     __DEFAULT_CONFIG__ = {"recover_length": False}
     __DEFAULT_CONFIG__.update(deepcopy(ECG_SEQ_LAB_NET_CONFIG))
 

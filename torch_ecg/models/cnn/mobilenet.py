@@ -26,7 +26,7 @@ from ...models._nets import (  # noqa: F401
     MultiConv,
     make_attention_layer,
 )
-from ...utils.misc import dict_to_str, add_docstring, CitationMixin
+from ...utils.misc import add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,
@@ -62,7 +62,6 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "MobileNetSeparableConv"
 
     @deprecate_kwargs([["norm", "batch_norm"]])
@@ -220,7 +219,6 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "MobileNetV1"
 
     def __init__(self, in_channels: int, **config) -> None:
@@ -451,7 +449,6 @@ class InvertedResidual(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "InvertedResidual"
 
     @deprecate_kwargs([["norm", "batch_norm"]])
@@ -662,7 +659,6 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "MobileNetV2"
 
     def __init__(self, in_channels: int, **config: CFG) -> None:
@@ -717,10 +713,6 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         # stem
         if isinstance(self.config.stem.num_filters, int):
@@ -837,7 +829,6 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
 class InvertedResidualBlock(nn.Sequential, SizeMixin):
     """ """
 
-    __DEBUG__ = False
     __name__ = "InvertedResidualBlock"
 
     @deprecate_kwargs([["norm", "batch_norm"]])
@@ -992,7 +983,6 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
 class MobileNetV3_STEM(nn.Sequential, SizeMixin):
     """ """
 
-    __DEBUG__ = False
     __name__ = "MobileNetV3_STEM"
 
     @deprecate_kwargs([["norm", "batch_norm"]])
@@ -1088,7 +1078,6 @@ class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "MobileNetV3"
 
     def __init__(self, in_channels: int, **config: CFG) -> None:
@@ -1157,10 +1146,6 @@ class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         # stem
         self.add_module(

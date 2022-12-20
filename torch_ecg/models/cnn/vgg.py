@@ -9,13 +9,8 @@ import torch
 from torch import nn
 
 from ...cfg import CFG, DEFAULTS
-from ...models._nets import (  # noqa: F401
-    Conv_Bn_Activation,
-    GlobalContextBlock,
-    NonLocalBlock,
-    SEBlock,
-)
-from ...utils.misc import dict_to_str, add_docstring, CitationMixin
+from ...models._nets import Conv_Bn_Activation
+from ...utils.misc import add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_maxpool_output_shape,
@@ -35,7 +30,6 @@ __all__ = [
 class VGGBlock(nn.Sequential, SizeMixin):
     """building blocks of the CNN feature extractor `VGG16`"""
 
-    __DEBUG__ = False
     __name__ = "VGGBlock"
 
     def __init__(
@@ -70,10 +64,6 @@ class VGGBlock(nn.Sequential, SizeMixin):
         self.__out_channels = out_channels
         self.__groups = groups
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         self.add_module(
             "cba_1",
@@ -148,7 +138,6 @@ class VGG16(nn.Sequential, SizeMixin, CitationMixin):
     CNN feature extractor of the CRNN models proposed in refs of `ECG_CRNN`
     """
 
-    __DEBUG__ = False
     __name__ = "VGG16"
 
     def __init__(self, in_channels: int, **config) -> None:
@@ -177,10 +166,6 @@ class VGG16(nn.Sequential, SizeMixin, CitationMixin):
         self.__in_channels = in_channels
         # self.config = deepcopy(ECG_CRNN_CONFIG.cnn.vgg16)
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         module_in_channels = in_channels
         for idx, (nc, nf) in enumerate(

@@ -24,7 +24,6 @@ __all__ = [
 class Transformer(nn.Module, SizeMixin):
     """ """
 
-    __DEBUG__ = True
     __name__ = "Transformer"
 
     def __init__(

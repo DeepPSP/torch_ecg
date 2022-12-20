@@ -22,7 +22,7 @@ from ...models._nets import (  # noqa: F401
     SEBlock,
     SeparableConv,
 )
-from ...utils.misc import dict_to_str, add_docstring, CitationMixin
+from ...utils.misc import add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,
@@ -60,7 +60,6 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
     |-------------------------------- shortcut ------------------------------|
     """
 
-    __DEBUG__ = False
     __name__ = "XceptionMultiConv"
 
     def __init__(
@@ -221,7 +220,6 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "XceptionEntryFlow"
 
     def __init__(
@@ -425,7 +423,6 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "XceptionMiddleFlow"
 
     def __init__(
@@ -574,7 +571,6 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "XceptionExitFlow"
 
     def __init__(
@@ -775,7 +771,6 @@ class Xception(nn.Sequential, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "Xception"
 
     def __init__(self, in_channels: int, **config) -> None:
@@ -794,10 +789,6 @@ class Xception(nn.Sequential, SizeMixin, CitationMixin):
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         entry_flow_in_channels = self.__in_channels
         entry_flow = XceptionEntryFlow(

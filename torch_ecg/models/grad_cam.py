@@ -98,7 +98,6 @@ class ModelOutputs(object):
 class GradCam(object):
     """NOT finished,"""
 
-    __DEBUG__ = True
     __name__ = "GradCam"
 
     def __init__(

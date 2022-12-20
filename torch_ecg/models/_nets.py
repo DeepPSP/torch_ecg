@@ -22,7 +22,6 @@ from torch.nn.utils.rnn import PackedSequence
 
 from ..cfg import CFG
 from ..utils.misc import (
-    dict_to_str,
     list_sum,
     get_required_args,
     get_kwargs,
@@ -897,7 +896,6 @@ class MultiConv(nn.Sequential, SizeMixin):
     perhaps with `Dropout` between the blocks
     """
 
-    __DEBUG__ = False
     __name__ = "MultiConv"
 
     def __init__(
@@ -948,10 +946,6 @@ class MultiConv(nn.Sequential, SizeMixin):
         self.__num_convs = len(self.__out_channels)
         self.config = deepcopy(_DEFAULT_CONV_CONFIGS)
         self.config.update(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         if isinstance(filter_lengths, int):
             kernel_sizes = list(repeat(filter_lengths, self.__num_convs))
@@ -1062,7 +1056,6 @@ class MultiConv(nn.Sequential, SizeMixin):
 class BranchedConv(nn.Module, SizeMixin):
     """branched `MultiConv` blocks"""
 
-    __DEBUG__ = False
     __name__ = "BranchedConv"
 
     def __init__(
@@ -1108,10 +1101,6 @@ class BranchedConv(nn.Module, SizeMixin):
         self.__num_branches = len(self.__out_channels)
         self.config = deepcopy(_DEFAULT_CONV_CONFIGS)
         self.config.update(deepcopy(config))
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         if isinstance(filter_lengths, int):
             kernel_sizes = list(repeat(filter_lengths, self.__num_branches))
@@ -1211,7 +1200,6 @@ class SeparableConv(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "SeparableConv"
 
     def __init__(
@@ -1776,7 +1764,6 @@ class BlurPool(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "BlurPool"
 
     def __init__(
@@ -1949,7 +1936,6 @@ class BlurPool(nn.Module, SizeMixin):
 class AntiAliasConv(nn.Sequential, SizeMixin):
     """ """
 
-    __DEBUG__ = False
     __name__ = "AntiAliasConv"
 
     def __init__(
@@ -2161,7 +2147,6 @@ class StackedLSTM(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "StackedLSTM"
 
     def __init__(
@@ -2377,7 +2362,6 @@ class AML_GatedAttention(nn.Module, SizeMixin):
 class AttentionWithContext(nn.Module, SizeMixin):
     """from 0236 of CPSC2018 challenge"""
 
-    __DEBUG__ = False
     __name__ = "AttentionWithContext"
 
     def __init__(
@@ -2400,21 +2384,15 @@ class AttentionWithContext(nn.Module, SizeMixin):
         self.bias = bias
 
         self.W = Parameter(torch.Tensor(in_channels, in_channels))
-        if self.__DEBUG__:
-            print(f"AttentionWithContext W.shape = {self.W.shape}")
         self.init(self.W)
 
         self.u = Parameter(torch.Tensor(in_channels))
         Initializers.constant(self.u, 1 / in_channels)
-        if self.__DEBUG__:
-            print(f"AttentionWithContext u.shape = {self.u.shape}")
         # self.init(self.u)
 
         if self.bias:
             self.b = Parameter(torch.Tensor(in_channels))
             Initializers.zeros(self.b)
-            if self.__DEBUG__:
-                print(f"AttentionWithContext b.shape = {self.b.shape}")
             # Initializers["zeros"](self.b)
         else:
             self.register_parameter("b", None)
@@ -2443,11 +2421,6 @@ class AttentionWithContext(nn.Module, SizeMixin):
             of shape (batch_size, seq_len)
 
         """
-        if self.__DEBUG__:
-            print(
-                f"AttentionWithContext forward: input.shape = {input.shape}, W.shape = {self.W.shape}"
-            )
-
         # original implementation is tensorflow
         # so we change to channel last format
         input = input.permute(0, 2, 1)
@@ -2455,8 +2428,6 @@ class AttentionWithContext(nn.Module, SizeMixin):
         # (batch_size, seq_len, n_channels) x (n_channels, n_channels)
         # -> (batch_size, seq_len, n_channels)
         uit = torch.tensordot(input, self.W, dims=1)  # the same as torch.matmul
-        if self.__DEBUG__:
-            print(f"AttentionWithContext forward: uit.shape = {uit.shape}")
         if self.bias:
             uit += self.b
         uit = torch.tanh(uit)
@@ -2465,8 +2436,6 @@ class AttentionWithContext(nn.Module, SizeMixin):
         # (batch_size, seq_len, n_channels) x (n_channels,)
         # -> (batch_size, seq_len)
         ait = torch.tensordot(uit, self.u, dims=1)  # the same as torch.matmul
-        if self.__DEBUG__:
-            print(f"AttentionWithContext forward: ait.shape = {ait.shape}")
 
         # softmax along seq_len
         # (batch_size, seq_len)
@@ -2479,20 +2448,12 @@ class AttentionWithContext(nn.Module, SizeMixin):
             a_masked,
             torch.sum(a_masked, dim=-1, keepdim=True) + torch.finfo(torch.float32).eps,
         )
-        if self.__DEBUG__:
-            print(f"AttentionWithContext forward: a_masked.shape = {a_masked.shape}")
 
         # weighted -> sum
         # (batch_size, seq_len, n_channels) x (batch_size, seq_len, 1)
         # -> (batch_size, seq_len, n_channels)
         weighted_input = input * a[..., np.newaxis]
-        if self.__DEBUG__:
-            print(
-                f"AttentionWithContext forward: weighted_input.shape = {weighted_input.shape}"
-            )
         output = torch.sum(weighted_input, dim=-1)
-        if self.__DEBUG__:
-            print(f"AttentionWithContext forward: output.shape = {output.shape}")
         return output
 
     def compute_output_shape(
@@ -2528,7 +2489,6 @@ class _ScaledDotProductAttention(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "_ScaledDotProductAttention"
 
     def forward(
@@ -2537,8 +2497,6 @@ class _ScaledDotProductAttention(nn.Module, SizeMixin):
         """
         all tensors of shape (batch_size, seq_len, features)
         """
-        # if self.__DEBUG__:
-        #     print(f"query.shape = {query.shape}, key.shape = {key.shape}, value.shape = {value.shape}")
         dk = query.shape[-1]
         scores = query.matmul(key.transpose(-2, -1)) / sqrt(
             dk
@@ -2547,8 +2505,6 @@ class _ScaledDotProductAttention(nn.Module, SizeMixin):
             scores = scores.masked_fill(mask == 0, -1e9)
         attention = F.softmax(scores, dim=-1)
         output = attention.matmul(value)
-        # if self.__DEBUG__:
-        #     print(f"scores.shape = {scores.shape}, attention.shape = {attention.shape}, output.shape = {output.shape}")
         return output
 
 
@@ -2565,7 +2521,6 @@ class MultiHeadAttention(nn.MultiheadAttention, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "MultiHeadAttention"
 
     @deprecate_kwargs([["embed_dim", "in_features"], ["num_heads", "head_num"]])
@@ -2641,7 +2596,6 @@ class MultiHeadAttention(nn.MultiheadAttention, SizeMixin):
 class SelfAttention(nn.Module, SizeMixin):
     """ """
 
-    __DEBUG__ = False
     __name__ = "SelfAttention"
 
     @deprecate_kwargs([["embed_dim", "in_features"], ["num_heads", "head_num"]])
@@ -2728,7 +2682,6 @@ class SelfAttention(nn.Module, SizeMixin):
 class AttentivePooling(nn.Module, SizeMixin):
     """ """
 
-    __DEBUG__ = False
     __name__ = "AttentivePooling"
 
     def __init__(
@@ -2906,7 +2859,6 @@ class SeqLin(nn.Sequential, SizeMixin):
     might be useful in learning non-linear classifying hyper-surfaces
     """
 
-    __DEBUG__ = False
     __name__ = "SeqLin"
 
     def __init__(
@@ -3055,7 +3007,6 @@ class MLP(SeqLin):
     alias for sequential linear block
     """
 
-    __DEBUG__ = False
     __name__ = "MLP"
 
     def __init__(
@@ -3109,7 +3060,6 @@ class NonLocalBlock(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "NonLocalBlock"
     __MID_LAYERS__ = ["g", "theta", "phi", "W"]
 
@@ -3255,7 +3205,6 @@ class SEBlock(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "SEBlock"
     __DEFAULT_CONFIG__ = CFG(
         bias=False, activation="relu", kw_activation={"inplace": True}, dropouts=0.0
@@ -3354,7 +3303,6 @@ class GEBlock(nn.Module, SizeMixin):
     [4] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/gather_excite.py
     """
 
-    __DEBUG__ = True
     __name__ = "GEBlock"
 
     def __init__(self, **kwargs: Any) -> None:
@@ -3374,7 +3322,6 @@ class SKBlock(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = True
     __name__ = "SKBlock"
 
     def __init__(self, **kwargs: Any) -> None:
@@ -3395,7 +3342,6 @@ class GlobalContextBlock(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "GlobalContextBlock"
     __POOLING_TYPES__ = ["attn", "avg"]
     __FUSION_TYPES__ = ["add", "mul"]
@@ -3562,7 +3508,6 @@ class BAMBlock(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = True
     __name__ = "BAMBlock"
 
     def __init__(
@@ -3583,7 +3528,6 @@ class CBAMBlock(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "CBAMBlock"
     __POOL_TYPES__ = ["avg", "max", "lp", "lse"]
 
@@ -3813,7 +3757,6 @@ class CoordAttention(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = True
     __name__ = "CoordAttention"
 
     def __init__(
@@ -3859,7 +3802,6 @@ class CRF(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = True
     __name__ = "CRF"
 
     def __init__(self, num_tags: int, batch_first: bool = False) -> None:
@@ -4276,7 +4218,6 @@ class ExtendedCRF(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "ExtendedCRF"
 
     def __init__(self, in_channels: int, num_tags: int, bias: bool = True) -> None:
@@ -4367,7 +4308,6 @@ class SpaceToDepth(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "SpaceToDepth"
 
     def __init__(
@@ -4474,7 +4414,6 @@ class MLDecoder(nn.Module, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "MLDecoder"
 
     @deprecate_kwargs([["num_groups", "num_of_groups"]])

@@ -13,11 +13,8 @@ import torch
 from torch import Tensor, nn
 
 from ...cfg import CFG, DEFAULTS
-from ...models._nets import (  # noqa: F401
-    Conv_Bn_Activation,
-    DownSample,
-)
-from ...utils.misc import dict_to_str, list_sum, add_docstring, CitationMixin
+from ...models._nets import Conv_Bn_Activation, DownSample
+from ...utils.misc import list_sum, add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,
     compute_sequential_output_shape,
@@ -44,7 +41,6 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "MultiScopicBasicBlock"
 
     def __init__(
@@ -214,7 +210,6 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "MultiScopicBranch"
 
     def __init__(
@@ -320,7 +315,6 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
 class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
     """CNN part of the SOTA model from CPSC2019 challenge (entry 0416)"""
 
-    __DEBUG__ = False
     __name__ = "MultiScopicCNN"
 
     def __init__(self, in_channels: int, **config) -> None:
@@ -362,11 +356,6 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
         self.config = CFG(deepcopy(config))
         self.__scopes = self.config.scopes
         self.__num_branches = len(self.__scopes)
-
-        if self.__DEBUG__:
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
 
         self.branches = nn.ModuleDict()
         for idx in range(self.__num_branches):

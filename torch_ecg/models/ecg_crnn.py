@@ -16,7 +16,7 @@ from einops.layers.torch import Rearrange
 from ..cfg import CFG, DEFAULTS
 from ..components.outputs import BaseOutput
 from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
-from ..utils.misc import dict_to_str, CitationMixin
+from ..utils.misc import CitationMixin
 from ..utils.utils_nn import CkptMixin, SizeMixin
 from ._nets import (
     GlobalContextBlock,
@@ -59,7 +59,6 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "ECG_CRNN"
 
     def __init__(
@@ -91,12 +90,6 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 "No config is provided, using default config.", RuntimeWarning
             )
         self.config.update(deepcopy(config) or {})
-        if self.__DEBUG__:
-            print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
-            debug_input_len = 4000
 
         cnn_choice = self.config.cnn.name.lower()
         cnn_config = self.config.cnn[self.config.cnn.name]
@@ -122,13 +115,6 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         else:
             raise NotImplementedError(f"CNN \042{cnn_choice}\042 not implemented yet")
         rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
-
-        if self.__DEBUG__:
-            cnn_output_shape = self.cnn.compute_output_shape(debug_input_len, None)
-            print(
-                f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}, "
-                f"given input_len = {debug_input_len}"
-            )
 
         if self.config.rnn.name.lower() == "none":
             self.rnn_in_rearrange = Rearrange(
@@ -278,9 +264,6 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             raise NotImplementedError(
                 f"Attention \042{self.config.attn.name}\042 not implemented yet"
             )
-
-        if self.__DEBUG__:
-            print(f"clf_input_size = {clf_input_size}")
 
         # global pooling
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:
@@ -516,7 +499,6 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
     """
 
-    __DEBUG__ = False
     __name__ = "ECG_CRNN_v1"
 
     def __init__(
@@ -548,12 +530,6 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 "No config is provided, using default config.", RuntimeWarning
             )
         self.config.update(deepcopy(config) or {})
-        if self.__DEBUG__:
-            print(f"classes (totally {self.n_classes}) for prediction:{self.classes}")
-            print(
-                f"configuration of {self.__name__} is as follows\n{dict_to_str(self.config)}"
-            )
-            debug_input_len = 4000
 
         cnn_choice = self.config.cnn.name.lower()
         cnn_config = self.config.cnn[self.config.cnn.name]
@@ -579,13 +555,6 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         else:
             raise NotImplementedError(f"CNN \042{cnn_choice}\042 not implemented yet")
         rnn_input_size = self.cnn.compute_output_shape(None, None)[1]
-
-        if self.__DEBUG__:
-            cnn_output_shape = self.cnn.compute_output_shape(debug_input_len, None)
-            print(
-                f"cnn output shape (batch_size, features, seq_len) = {cnn_output_shape}, "
-                f"given input_len = {debug_input_len}"
-            )
 
         if self.config.rnn.name.lower() == "none":
             self.rnn = None
@@ -676,9 +645,6 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             raise NotImplementedError(
                 f"Attention \042{self.config.attn.name}\042 not implemented yet"
             )
-
-        if self.__DEBUG__:
-            print(f"clf_input_size = {clf_input_size}")
 
         if self.config.rnn.name.lower() == "lstm" and not self.config.rnn.lstm.retseq:
             self.pool = None
