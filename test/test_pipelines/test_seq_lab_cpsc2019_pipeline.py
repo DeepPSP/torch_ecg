@@ -348,7 +348,12 @@ class CPSC2019Trainer(BaseTrainer):
 
         """
         super().__init__(
-            model, CPSC2019Dataset, model_config, train_config, device, lazy
+            model=model,
+            dataset_cls=CPSC2019Dataset,
+            model_config=model_config,
+            train_config=train_config,
+            device=device,
+            lazy=lazy,
         )
 
     def _setup_dataloaders(
