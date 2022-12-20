@@ -165,6 +165,12 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             )
 
         if not self.config.lstm.retseq:
+            if self.config.global_pool.lower() != "none":
+                warnings.warn(
+                    f"Global pooling \042{self.config.global_pool}\042 is ignored in non-sequence mode",
+                    RuntimeWarning,
+                )
+                self.config.global_pool = "none"
             self.pool = nn.Identity()
             self.pool_rearrange = nn.Identity()
             if self.config.clf.name.lower() == "crf":
@@ -374,7 +380,14 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         attn_input_size = self.lstm.compute_output_shape(None, None)[-1]
 
         if not self.config.lstm.retseq:
+            if self.config.attn.name.lower() != "none":
+                warnings.warn(
+                    "Attention is not supported when lstm is not returning sequences",
+                    RuntimeWarning,
+                )
+                self.config.attn.name = "none"
             self.attn = None
+            clf_input_size = attn_input_size
         elif self.config.attn.name.lower() == "none":
             self.attn = None
             clf_input_size = attn_input_size
@@ -414,11 +427,35 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             )
             clf_input_size = self.attn.compute_output_shape(None, None)[-1]
         else:
-            raise NotImplementedError
+            raise NotImplementedError(
+                f"Attn module \042{self.config.attn.name}\042 not implemented yet."
+            )
 
         if not self.config.lstm.retseq:
+            if self.config.global_pool.lower() != "none":
+                warnings.warn(
+                    f"Global pooling \042{self.config.global_pool}\042 is ignored in non-sequence mode",
+                    RuntimeWarning,
+                )
+                self.config.global_pool = "none"
             self.pool = None
-            self.clf = None
+            if self.config.clf.name.lower() == "crf":
+                warnings.warn(
+                    "CRF layer is not supported in non-sequence mode, using linear instead.",
+                    RuntimeWarning,
+                )
+                self.config.clf.name = "linear"
+                assert (
+                    "linear" in self.config.clf
+                ), "Linear layer not defined in `config`."
+            self.clf = MLP(
+                in_channels=clf_input_size,
+                out_channels=self.config.clf.linear.out_channels + [self.n_classes],
+                activation=self.config.clf.linear.activation,
+                bias=self.config.clf.linear.bias,
+                dropouts=self.config.clf.linear.dropouts,
+                skip_last_activation=True,
+            )
         elif self.config.clf.name.lower() == "linear":
             if self.config.global_pool.lower() == "max":
                 self.pool = nn.AdaptiveMaxPool1d(
@@ -443,6 +480,12 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 skip_last_activation=True,
             )
         elif self.config.clf.name.lower() == "crf":
+            if self.config.global_pool.lower() != "none":
+                warnings.warn(
+                    f"Global pooling \042{self.config.global_pool}\042 is ignored for CRF prediction head.",
+                    RuntimeWarning,
+                )
+                self.config.global_pool = "none"
             self.pool = None
             self.clf = ExtendedCRF(
                 in_channels=clf_input_size,
@@ -527,11 +570,10 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             the output shape of this model, given `seq_len` and `batch_size`
 
         """
-        if self.config.clf.name.lower() == "crf":
-            output_shape = (batch_size, seq_len, self.n_classes)
-        else:
-            # clf is "linear" or lstm.retseq is False
+        if (not self.config.lstm.retseq) or (self.config.global_pool.lower() != "none"):
             output_shape = (batch_size, self.n_classes)
+        else:
+            output_shape = (batch_size, seq_len, self.n_classes)
         return output_shape
 
     @property

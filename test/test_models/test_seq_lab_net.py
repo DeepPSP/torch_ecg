@@ -18,8 +18,9 @@ _TMP_DIR = Path(__file__).parents[1] / "tmp"
 _TMP_DIR.mkdir(exist_ok=True)
 
 
+@torch.no_grad()
 def test_ecg_seq_lab_net():
-    inp = torch.randn(2, 12, 5000)
+    inp = torch.randn(2, 12, 2000)
     fs = 400
     classes = ["N"]
 
@@ -39,6 +40,7 @@ def test_ecg_seq_lab_net():
         config.recover_length = recover_length
 
         model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12, config=config)
+        model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
             seq_len=inp.shape[-1], batch_size=inp.shape[0]
@@ -46,19 +48,43 @@ def test_ecg_seq_lab_net():
         if recover_length:
             assert out.shape[1] == inp.shape[-1]
 
-    with pytest.warns(
-        RuntimeWarning, match="No config is provided, using default config"
-    ):
-        model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12)
+        model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12, config=config)
+        model_v1 = model_v1.eval()
+        out_v1 = model_v1(inp)
+        model.cnn.load_state_dict(model_v1.cnn.state_dict())
+        if model.rnn.__class__.__name__ != "Identity":
+            model.rnn.load_state_dict(model_v1.rnn.state_dict())
+        if model.attn.__class__.__name__ != "Identity":
+            model.attn.load_state_dict(model_v1.attn.state_dict())
+        model.clf.load_state_dict(model_v1.clf.state_dict())
 
     doi = model.doi
     assert isinstance(doi, list)
     assert all([isinstance(d, str) for d in doi])
 
+
+def test_warns_errors():
+    inp = torch.randn(2, 12, 2000)
+    fs = 400
+    classes = ["N"]
+
+    with pytest.warns(
+        RuntimeWarning, match="No config is provided, using default config"
+    ):
+        model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12)
+    with pytest.warns(
+        RuntimeWarning, match="No config is provided, using default config"
+    ):
+        model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12)
+
     with pytest.raises(
         NotImplementedError, match="implement a task specific inference method"
     ):
         model.inference(inp)
+    with pytest.raises(
+        NotImplementedError, match="implement a task specific inference method"
+    ):
+        model_v1.inference(inp)
 
 
 def test_from_v1():

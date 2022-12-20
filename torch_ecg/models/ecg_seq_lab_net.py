@@ -258,8 +258,11 @@ class ECG_SEQ_LAB_NET_v1(ECG_CRNN_v1):
             rnn_output = cnn_output
 
         # attention
-        features = self.attn(rnn_output)  # (batch_size, channels, seq_len)
-        features = features.permute(0, 2, 1)  # (batch_size, seq_len, channels)
+        if self.attn:
+            features = self.attn(rnn_output)  # (batch_size, channels, seq_len)
+        else:
+            features = rnn_output
+        # features = features.permute(0, 2, 1)  # (batch_size, seq_len, channels)
         return features
 
     def forward(self, input: Tensor) -> Tensor:

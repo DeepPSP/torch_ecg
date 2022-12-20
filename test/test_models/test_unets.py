@@ -11,6 +11,7 @@ from torch_ecg.model_configs import ECG_UNET_VANILLA_CONFIG
 from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
 
 
+@torch.no_grad()
 def test_ecg_unet():
     inp = torch.randn(2, 12, 5000)
     fs = 400
@@ -19,6 +20,7 @@ def test_ecg_unet():
     config = adjust_cnn_filter_lengths(ECG_UNET_VANILLA_CONFIG, fs)
 
     model = ECG_UNET(classes=classes, n_leads=12, config=config)
+    model = model.eval()
     out = model(inp)
     assert out.shape == model.compute_output_shape(
         seq_len=inp.shape[-1], batch_size=inp.shape[0]
@@ -39,6 +41,7 @@ def test_ecg_unet():
         model.inference(inp)
 
 
+@torch.no_grad()
 def test_ecg_subtract_unet():
     inp = torch.randn(2, 12, 5000)
     fs = 400
@@ -47,6 +50,7 @@ def test_ecg_subtract_unet():
     config = adjust_cnn_filter_lengths(ECG_SUBTRACT_UNET_CONFIG, fs)
 
     model = ECG_SUBTRACT_UNET(classes=classes, n_leads=12, config=config)
+    model = model.eval()
     out = model(inp)
     assert out.shape == model.compute_output_shape(
         seq_len=inp.shape[-1], batch_size=inp.shape[0]

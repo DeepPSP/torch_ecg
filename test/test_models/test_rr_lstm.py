@@ -31,16 +31,26 @@ def test_rr_lstm():
     for attn_name in ["none"]:
         config.attn.name = attn_name
         model = RR_LSTM(classes=classes, config=config)
+        model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
             seq_len=inp.shape[0], batch_size=inp.shape[1]
         )
+        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = model_v1.eval()
+        out_v1 = model_v1(inp)
+        model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
+        model.lstm.load_state_dict(model_v1.lstm.state_dict())
+        if model.attn.__class__.__name__ != "Identity":
+            model.attn.load_state_dict(model_v1.attn.state_dict())
+        model.clf.load_state_dict(model_v1.clf.state_dict())
     config = deepcopy(RR_LSTM_CONFIG)
     config.clf.name = "crf"
     config.batch_first = True
     for attn_name in ["none"]:
         config.attn.name = attn_name
         model = RR_LSTM(classes=classes, config=config)
+        model = model.eval()
         out = model(inp_bf)
         assert out.shape == model.compute_output_shape(
             seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0]
@@ -51,16 +61,26 @@ def test_rr_lstm():
     for attn_name in ["none", "gc", "nl", "se"]:
         config.attn.name = attn_name
         model = RR_LSTM(classes=classes, config=config)
+        model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
             seq_len=inp.shape[0], batch_size=inp.shape[1]
         )
+        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = model_v1.eval()
+        out_v1 = model_v1(inp)
+        model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
+        model.lstm.load_state_dict(model_v1.lstm.state_dict())
+        if model.attn.__class__.__name__ != "Identity":
+            model.attn.load_state_dict(model_v1.attn.state_dict())
+        model.clf.load_state_dict(model_v1.clf.state_dict())
     config = deepcopy(RR_LSTM_CONFIG)
     config.clf.name = "linear"
     config.batch_first = True
     for attn_name in ["none", "gc", "nl", "se"]:
         config.attn.name = attn_name
         model = RR_LSTM(classes=classes, config=config)
+        model = model.eval()
         out = model(inp_bf)
         assert out.shape == model.compute_output_shape(
             seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0]
@@ -70,15 +90,25 @@ def test_rr_lstm():
     for attn_name in ["none", "gc", "nl", "se"]:
         config.attn.name = attn_name
         model = RR_LSTM(classes=classes, config=config)
+        model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
             seq_len=inp.shape[0], batch_size=inp.shape[1]
         )
+        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = model_v1.eval()
+        out_v1 = model_v1(inp)
+        model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
+        model.lstm.load_state_dict(model_v1.lstm.state_dict())
+        if model.attn.__class__.__name__ != "Identity":
+            model.attn.load_state_dict(model_v1.attn.state_dict())
+        model.clf.load_state_dict(model_v1.clf.state_dict())
     config = deepcopy(RR_AF_VANILLA_CONFIG)
     config.batch_first = True
     for attn_name in ["none", "gc", "nl", "se"]:
         config.attn.name = attn_name
         model = RR_LSTM(classes=classes, config=config)
+        model = model.eval()
         out = model(inp_bf)
         assert out.shape == model.compute_output_shape(
             seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0]
@@ -88,15 +118,25 @@ def test_rr_lstm():
     for attn_name in ["none"]:
         config.attn.name = attn_name
         model = RR_LSTM(classes=classes, config=config)
+        model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
             seq_len=inp.shape[0], batch_size=inp.shape[1]
         )
+        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = model_v1.eval()
+        out_v1 = model_v1(inp)
+        model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
+        model.lstm.load_state_dict(model_v1.lstm.state_dict())
+        if model.attn.__class__.__name__ != "Identity":
+            model.attn.load_state_dict(model_v1.attn.state_dict())
+        model.clf.load_state_dict(model_v1.clf.state_dict())
     config = deepcopy(RR_AF_CRF_CONFIG)
     config.batch_first = True
     for attn_name in ["none"]:
         config.attn.name = attn_name
         model = RR_LSTM(classes=classes, config=config)
+        model = model.eval()
         out = model(inp_bf)
         assert out.shape == model.compute_output_shape(
             seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0]
@@ -107,16 +147,26 @@ def test_rr_lstm():
     config.clf.name = "linear"
     config.attn.name = "none"
     model = RR_LSTM(classes=classes, config=config)
+    model = model.eval()
     out = model(inp)
     assert out.shape == model.compute_output_shape(
         seq_len=inp.shape[0], batch_size=inp.shape[1]
     )
+    model_v1 = RR_LSTM_v1(classes=classes, config=config)
+    model_v1 = model_v1.eval()
+    out_v1 = model_v1(inp)
+    model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
+    model.lstm.load_state_dict(model_v1.lstm.state_dict())
+    if model.attn.__class__.__name__ != "Identity":
+        model.attn.load_state_dict(model_v1.attn.state_dict())
+    model.clf.load_state_dict(model_v1.clf.state_dict())
     config = deepcopy(RR_LSTM_CONFIG)
     config.lstm.retseq = False
     config.clf.name = "linear"
     config.batch_first = True
     config.attn.name = "none"
     model = RR_LSTM(classes=classes, config=config)
+    model = model.eval()
     out = model(inp_bf)
     assert out.shape == model.compute_output_shape(
         seq_len=inp_bf.shape[-1], batch_size=inp_bf.shape[0]
@@ -126,59 +176,100 @@ def test_rr_lstm():
     assert isinstance(doi, list)
     assert all([isinstance(d, str) for d in doi])
 
+    doi = model_v1.doi
+    assert isinstance(doi, list)
+    assert all([isinstance(d, str) for d in doi])
+
+
+def test_warns_errors():
+    in_channels = 1
+    classes = ["NSR", "AF", "PVC", "LBBB", "RBBB", "PAB", "VFL"]
+    inp = torch.randn(100, 2, in_channels)
+
     with pytest.warns(
         RuntimeWarning, match="No config is provided, using default config"
     ):
         model = RR_LSTM(classes=classes)
+    with pytest.warns(
+        RuntimeWarning, match="No config is provided, using default config"
+    ):
+        model_v1 = RR_LSTM_v1(classes=classes)
 
+    config = deepcopy(RR_LSTM_CONFIG)
+    config.lstm.retseq = False
+    config.attn.name = "gc"
+    config.clf.name = "linear"
     with pytest.warns(
         RuntimeWarning,
         match="Attention is not supported when lstm is not returning sequences",
     ):
-        config = deepcopy(RR_LSTM_CONFIG)
-        config.lstm.retseq = False
-        config.attn.name = "gc"
-        config.clf.name = "linear"
         model = RR_LSTM(classes=classes, config=config)
+    with pytest.warns(
+        RuntimeWarning,
+        match="Attention is not supported when lstm is not returning sequences",
+    ):
+        model_v1 = RR_LSTM_v1(classes=classes, config=config)
 
+    config = deepcopy(RR_LSTM_CONFIG)
+    config.lstm.retseq = False
+    config.attn.name = "none"
+    config.clf.name = "crf"
     with pytest.warns(
         RuntimeWarning,
         match="CRF layer is not supported in non-sequence mode, using linear instead",
     ):
-        config = deepcopy(RR_LSTM_CONFIG)
-        config.lstm.retseq = False
-        config.attn.name = "none"
-        config.clf.name = "crf"
         model = RR_LSTM(classes=classes, config=config)
+    with pytest.warns(
+        RuntimeWarning,
+        match="CRF layer is not supported in non-sequence mode, using linear instead",
+    ):
+        model_v1 = RR_LSTM_v1(classes=classes, config=config)
 
+    config = deepcopy(RR_AF_CRF_CONFIG)
+    config.global_pool = "max"
     with pytest.warns(
         RuntimeWarning,
         match="Global pooling \042.+\042 is ignored for CRF prediction head",
     ):
-        config = deepcopy(RR_AF_CRF_CONFIG)
-        config.global_pool = "max"
         model = RR_LSTM(classes=classes, config=config)
+    with pytest.warns(
+        RuntimeWarning,
+        match="Global pooling \042.+\042 is ignored for CRF prediction head",
+    ):
+        model_v1 = RR_LSTM_v1(classes=classes, config=config)
 
     with pytest.raises(
         NotImplementedError, match="implement a task specific inference method"
     ):
         model.inference(inp)
+    with pytest.raises(
+        NotImplementedError, match="implement a task specific inference method"
+    ):
+        model_v1.inference(inp)
 
+    config = deepcopy(RR_LSTM_CONFIG)
+    config.attn.name = "not_implemented"
+    config.attn.not_implemented = {}
     with pytest.raises(
         NotImplementedError, match="Attn module \042.+\042 not implemented yet"
     ):
-        config = deepcopy(RR_LSTM_CONFIG)
-        config.attn.name = "not_implemented"
-        config.attn.not_implemented = {}
         model = RR_LSTM(classes=classes, config=config)
+    with pytest.raises(
+        NotImplementedError, match="Attn module \042.+\042 not implemented yet"
+    ):
+        model_v1 = RR_LSTM_v1(classes=classes, config=config)
 
+    config = deepcopy(RR_LSTM_CONFIG)
+    config.clf.name = "linear"
+    config.global_pool = "not_supported"
     with pytest.raises(
         NotImplementedError, match="Pooling type \042.+\042 not supported"
     ):
-        config = deepcopy(RR_LSTM_CONFIG)
-        config.clf.name = "linear"
-        config.global_pool = "not_supported"
         model = RR_LSTM(classes=classes, config=config)
+    with pytest.raises(
+        NotImplementedError, match="Pooling type \042.+\042 not supported"
+    ):
+        model_v1 = RR_LSTM_v1(classes=classes, config=config)
 
 
 def test_from_v1():

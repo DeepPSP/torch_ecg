@@ -761,9 +761,9 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
                 features,
                 "batch_size channels pool_size -> batch_size (channels pool_size)",
             )
-        else:
-            # features of shape (batch_size, channels) or (batch_size, channels, seq_len)
-            pass
+        elif features.ndim == 3:
+            # (batch_size, channels, seq_len) --> (batch_size, seq_len, channels)
+            features = features.permute(0, 2, 1)
 
         # print(f"clf in shape = {features.shape}")
         pred = self.clf(features)  # batch_size, n_classes
