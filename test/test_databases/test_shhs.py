@@ -90,13 +90,13 @@ class TestSHHS:
             assert len(value) == 2
             assert isinstance(value[0], np.ndarray)
             assert isinstance(value[1], Real) and value[1] > 0
-        psg_data = reader.load_psg_data(
-            0, channel=list(reader.all_signals)[0], physical=False
-        )
-        assert isinstance(psg_data, tuple)
-        assert len(psg_data) == 2
-        assert isinstance(psg_data[0], np.ndarray)
-        assert isinstance(psg_data[1], Real) and psg_data[1] > 0
+        available_signals = reader.get_available_signals(0)
+        for signal in available_signals:
+            psg_data = reader.load_psg_data(0, channel=signal, physical=True)
+            assert isinstance(psg_data, tuple)
+            assert len(psg_data) == 2
+            assert isinstance(psg_data[0], np.ndarray)
+            assert isinstance(psg_data[1], Real) and psg_data[1] > 0
 
     def test_load_data(self):
         data, fs = reader.load_data(0)
