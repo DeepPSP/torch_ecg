@@ -3793,7 +3793,8 @@ class CRF(nn.Module, SizeMixin):
     References
     ----------
     [1] https://github.com/kmkurn/pytorch-crf
-    [2] Lafferty, John, Andrew McCallum, and Fernando CN Pereira. "Conditional random fields: Probabilistic models for segmenting and labeling sequence data." (2001).
+    [2] Lafferty, John, Andrew McCallum, and Fernando CN Pereira.
+        "Conditional random fields: Probabilistic models for segmenting and labeling sequence data." (2001).
     [3] https://repository.upenn.edu/cis_papers/159/
     [4] https://en.wikipedia.org/wiki/Viterbi_algorithm
     [5] https://github.com/s14t284/TorchCRF
@@ -3880,7 +3881,9 @@ class CRF(nn.Module, SizeMixin):
         _device = next(self.parameters()).device
         _reduction = reduction.lower()
         if _reduction not in ("none", "sum", "mean", "token_mean"):
-            raise ValueError(f"invalid reduction: {_reduction}")
+            raise ValueError(
+                f"`reduction` should be one of `none|sum|mean|token_mean`, but got `{reduction}`"
+            )
         if mask is None:
             mask = torch.ones_like(tags, dtype=torch.uint8, device=_device)
 
@@ -3921,7 +3924,8 @@ class CRF(nn.Module, SizeMixin):
             of shape (seq_len, batch_size, num_tags) if batch_first is False,
             of shape (batch_size, seq_len, num_tags) if batch_first is True.
         mask: torch.ByteTensor
-            mask tensor of shape (seq_len, batch_size)
+            mask tensor of shape (seq_len, batch_size) if batch_first is False,
+            of shape (batch_size, seq_len) if batch_first is True.
 
         Returns
         -------

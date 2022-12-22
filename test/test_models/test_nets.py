@@ -935,16 +935,54 @@ def test_attention_blocks():
 def test_crf():
     # CRF, ExtendedCRF,
     num_tags = 26
+    sample_input = torch.randn(SEQ_LEN // 20, BATCH_SIZE, num_tags)
+    labels = torch.randint(0, num_tags, (SEQ_LEN // 20, BATCH_SIZE))
+    mask = torch.randint(0, 2, (SEQ_LEN // 20, BATCH_SIZE))
+    mask[0, :] = 1
+    mask = mask.bool()
 
-    sample_input = torch.randn(BATCH_SIZE, SEQ_LEN // 20, num_tags)
     crf = CRF(num_tags=num_tags, batch_first=False)
-    assert crf(sample_input.permute(1, 0, 2)).shape == crf.compute_output_shape(
+    assert crf(sample_input).shape == crf.compute_output_shape(
         seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
     )
+    nll = crf.neg_log_likelihood(sample_input, labels)
+    assert nll.shape == torch.Size([])
+    nll_1 = crf.neg_log_likelihood(sample_input, labels, mask)
+    assert nll_1.shape == torch.Size([])
+    assert nll_1 < nll
+    nll_1 = crf.neg_log_likelihood(sample_input, labels, mask, reduction="mean")
+    assert nll_1.shape == torch.Size([])
+    nll_1 = crf.neg_log_likelihood(sample_input, labels, mask, reduction="sum")
+    assert nll_1.shape == torch.Size([])
+    nll_1 = crf.neg_log_likelihood(sample_input, labels, mask, reduction="none")
+    assert nll_1.shape == torch.Size([BATCH_SIZE])
+    nll_1 = crf.neg_log_likelihood(sample_input, labels, mask, reduction="token_mean")
+    assert nll_1.shape == torch.Size([])
+    with pytest.raises(
+        ValueError, match="`reduction` should be one of `.+`, but got `.+`"
+    ):
+        crf.neg_log_likelihood(sample_input, labels, mask, reduction="max")
+
+    sample_input = sample_input.permute(1, 0, 2)
+    labels = labels.permute(1, 0)
+    mask = mask.permute(1, 0)
     crf = CRF(num_tags=num_tags, batch_first=True)
     assert crf(sample_input).shape == crf.compute_output_shape(
         seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
     )
+    nll = crf.neg_log_likelihood(sample_input, labels)
+    assert nll.shape == torch.Size([])
+    nll_1 = crf.neg_log_likelihood(sample_input, labels, mask)
+    assert nll_1.shape == torch.Size([])
+    assert nll_1 < nll
+    nll_1 = crf.neg_log_likelihood(sample_input, labels, mask, reduction="mean")
+    assert nll_1.shape == torch.Size([])
+    nll_1 = crf.neg_log_likelihood(sample_input, labels, mask, reduction="sum")
+    assert nll_1.shape == torch.Size([])
+    nll_1 = crf.neg_log_likelihood(sample_input, labels, mask, reduction="none")
+    assert nll_1.shape == torch.Size([BATCH_SIZE])
+    nll_1 = crf.neg_log_likelihood(sample_input, labels, mask, reduction="token_mean")
+    assert nll_1.shape == torch.Size([])
 
     with pytest.raises(
         AssertionError,
