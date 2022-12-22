@@ -21,17 +21,9 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor
 
-from ..cfg import CFG, DEFAULTS
-from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
-from ._nets import (  # noqa: F401
-    SEBlock,
-    SeqLin,
-    StackedLSTM,
-)
 from .ecg_crnn import ECG_CRNN, ECG_CRNN_v1
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
+from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
+from ..cfg import CFG
 
 
 __all__ = [

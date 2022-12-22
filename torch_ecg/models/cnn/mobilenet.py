@@ -11,14 +11,13 @@ References
 
 from copy import deepcopy
 from itertools import repeat
-from typing import Any, Optional, Sequence, Union, List
 from numbers import Real
+from typing import Any, Optional, Sequence, Union, List
 
-import torch
 from torch import Tensor, nn
 from deprecate_kwargs import deprecate_kwargs
 
-from ...cfg import CFG, DEFAULTS
+from ...cfg import CFG
 from ...models._nets import (  # noqa: F401
     Conv_Bn_Activation,
     DownSample,
@@ -32,9 +31,6 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = [

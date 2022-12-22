@@ -17,7 +17,7 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
 
-from ...cfg import DEFAULTS, CFG
+from ...cfg import CFG
 from ...models._nets import (
     Conv_Bn_Activation,
     DownSample,
@@ -32,9 +32,6 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = [

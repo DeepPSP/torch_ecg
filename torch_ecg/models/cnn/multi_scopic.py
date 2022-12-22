@@ -12,7 +12,7 @@ import numpy as np
 import torch
 from torch import Tensor, nn
 
-from ...cfg import CFG, DEFAULTS
+from ...cfg import CFG
 from ...models._nets import Conv_Bn_Activation, DownSample
 from ...utils.misc import list_sum, add_docstring, CitationMixin
 from ...utils.utils_nn import (
@@ -20,9 +20,6 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = [

@@ -5,10 +5,9 @@ the most basic CNN
 from copy import deepcopy
 from typing import Optional, Sequence, Union, List
 
-import torch
 from torch import nn
 
-from ...cfg import CFG, DEFAULTS
+from ...cfg import CFG
 from ...models._nets import Conv_Bn_Activation
 from ...utils.misc import add_docstring, CitationMixin
 from ...utils.utils_nn import (
@@ -17,9 +16,6 @@ from ...utils.utils_nn import (
     compute_sequential_output_shape,
     compute_sequential_output_shape_docstring,
 )
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = [

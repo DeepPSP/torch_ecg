@@ -8,12 +8,8 @@ import torch
 import torch.nn as nn
 from einops.layers.torch import Rearrange
 
-from ...cfg import DEFAULTS
 from ...utils.utils_nn import SizeMixin
 from ...utils.misc import get_kwargs
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = [

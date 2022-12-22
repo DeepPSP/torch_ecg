@@ -17,10 +17,9 @@ __all__ = [
 ]
 
 
-_PROJECT_ROOT = Path(__file__).parent.resolve()
-_PROJECT_CACHE = Path("~").expanduser() / ".cache" / "torch_ecg"
-_PROJECT_CACHE.mkdir(parents=True, exist_ok=True)
-_DATA_CACHE = _PROJECT_CACHE / "data"
+_PACKAGE_CACHE = Path("~").expanduser() / ".cache" / "torch_ecg"
+_PACKAGE_CACHE.mkdir(parents=True, exist_ok=True)
+_DATA_CACHE = _PACKAGE_CACHE / "data"
 _DATA_CACHE.mkdir(parents=True, exist_ok=True)
 
 
@@ -160,6 +159,10 @@ class DTYPE:
             ]
         ), "inconsistent dtype"
 
+    @property
+    def PRECISION(self) -> int:
+        return self.INT
+
 
 FLOAT16 = DTYPE("float16")
 FLOAT32 = DTYPE("float32")
@@ -172,10 +175,10 @@ INT64 = DTYPE("int64")
 
 DEFAULTS = CFG()
 
-DEFAULTS.log_dir = _PROJECT_CACHE / "log"
-DEFAULTS.checkpoints = _PROJECT_CACHE / "checkpoints"
-DEFAULTS.model_dir = _PROJECT_CACHE / "saved_models"
-DEFAULTS.working_dir = _PROJECT_CACHE / "working_dir"
+DEFAULTS.log_dir = _PACKAGE_CACHE / "log"
+DEFAULTS.checkpoints = _PACKAGE_CACHE / "checkpoints"
+DEFAULTS.model_dir = _PACKAGE_CACHE / "saved_models"
+DEFAULTS.working_dir = _PACKAGE_CACHE / "working_dir"
 DEFAULTS.prefix = "TorchECG"
 
 DEFAULTS.DTYPE = FLOAT32

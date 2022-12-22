@@ -13,11 +13,6 @@ import numpy as np
 import torch
 from torch import Tensor, nn
 
-from ..cfg import DEFAULTS
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
-
 
 __all__ = [
     "GradCam",

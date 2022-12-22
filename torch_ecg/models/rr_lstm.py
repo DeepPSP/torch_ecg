@@ -17,7 +17,7 @@ from torch import Tensor, nn
 from einops import rearrange
 from einops.layers.torch import Rearrange
 
-from ..cfg import CFG, DEFAULTS
+from ..cfg import CFG
 from ..components.outputs import BaseOutput
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
 from ..models._nets import (  # noqa: F401
@@ -31,9 +31,6 @@ from ..models._nets import (  # noqa: F401
 )
 from ..utils.misc import CitationMixin
 from ..utils.utils_nn import CkptMixin, SizeMixin
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = [

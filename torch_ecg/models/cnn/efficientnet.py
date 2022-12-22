@@ -9,11 +9,10 @@ References
 
 """
 
-import torch
-from torch import nn
 from typing import List
 
-from ...cfg import DEFAULTS
+from torch import nn
+
 from ...models._nets import (  # noqa: F401
     Conv_Bn_Activation,
     DownSample,
@@ -22,9 +21,6 @@ from ...models._nets import (  # noqa: F401
     SEBlock,
 )
 from ...utils import SizeMixin, CitationMixin
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = [

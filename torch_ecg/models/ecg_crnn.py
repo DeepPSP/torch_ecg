@@ -13,7 +13,7 @@ from torch import Tensor, nn
 from einops import rearrange
 from einops.layers.torch import Rearrange
 
-from ..cfg import CFG, DEFAULTS
+from ..cfg import CFG
 from ..components.outputs import BaseOutput
 from ..model_configs.ecg_crnn import ECG_CRNN_CONFIG
 from ..utils.misc import CitationMixin
@@ -33,9 +33,6 @@ from .cnn.mobilenet import MobileNetV1, MobileNetV2, MobileNetV3
 from .cnn.vgg import VGG16
 from .cnn.xception import Xception
 from .transformers import Transformer
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
 
 
 __all__ = [

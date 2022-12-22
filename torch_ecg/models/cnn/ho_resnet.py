@@ -7,10 +7,9 @@ References
 
 """
 
-import torch
 from torch import nn
 
-from ...cfg import DEFAULTS
+from ...cfg import CFG  # noqa: F401
 from ...models._nets import (  # noqa: F401
     Activations,
     Conv_Bn_Activation,
@@ -20,10 +19,7 @@ from ...models._nets import (  # noqa: F401
     SEBlock,
     ZeroPadding,
 )
-from ...utils import SizeMixin, CitationMixin  # noqa: F401
-
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
+from ...utils import SizeMixin, CitationMixin
 
 
 __all__ = [
@@ -33,7 +29,7 @@ __all__ = [
 ]
 
 
-class MidPointResNet(nn.Module, SizeMixin):
+class MidPointResNet(nn.Module, SizeMixin, CitationMixin):
     """ """
 
     def __init__(self, in_channels: int, **config) -> None:
@@ -41,7 +37,7 @@ class MidPointResNet(nn.Module, SizeMixin):
         raise NotImplementedError
 
 
-class RK4ResNet(nn.Module, SizeMixin):
+class RK4ResNet(nn.Module, SizeMixin, CitationMixin):
     """ """
 
     def __init__(self, in_channels: int, **config) -> None:
@@ -49,7 +45,7 @@ class RK4ResNet(nn.Module, SizeMixin):
         raise NotImplementedError
 
 
-class RK8ResNet(nn.Module, SizeMixin):
+class RK8ResNet(nn.Module, SizeMixin, CitationMixin):
     """ """
 
     def __init__(self, in_channels: int, **config) -> None:

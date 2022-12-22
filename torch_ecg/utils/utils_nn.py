@@ -19,9 +19,6 @@ from torch import Tensor, nn
 from ..cfg import CFG, DEFAULTS
 from .utils_data import cls_to_bin
 
-if DEFAULTS.DTYPE.TORCH == torch.float64:
-    torch.set_default_tensor_type(torch.DoubleTensor)
-
 
 __all__ = [
     "extend_predictions",
