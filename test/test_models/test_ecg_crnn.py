@@ -11,6 +11,7 @@ from tqdm.auto import tqdm
 
 from torch_ecg.models.ecg_crnn import ECG_CRNN, ECG_CRNN_v1
 from torch_ecg.model_configs import ECG_CRNN_CONFIG
+from torch_ecg.model_configs.ati_cnn import ATI_CNN_CONFIG
 
 
 _TMP_DIR = Path(__file__).parents[1] / "tmp"
@@ -165,3 +166,13 @@ def test_from_v1():
     model = ECG_CRNN.from_v1(_TMP_DIR / "ecg_crnn_v1.pth")
     (_TMP_DIR / "ecg_crnn_v1.pth").unlink()
     del model_v1, model
+
+
+def test_ati_cnn():
+    n_leads = 12
+    classes = ["NSR", "AF", "PVC", "LBBB", "RBBB", "PAB", "VFL"]
+    config = deepcopy(ATI_CNN_CONFIG)
+    model = ECG_CRNN(classes=classes, n_leads=n_leads, config=config)
+    inp = torch.randn(2, n_leads, 2000)
+    out = model(inp)
+    assert out.shape == model.compute_output_shape(inp.shape[-1], inp.shape[0])
