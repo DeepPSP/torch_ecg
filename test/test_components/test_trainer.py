@@ -24,7 +24,6 @@ from torch_ecg.databases.physionet_databases.ludb import (
 from torch_ecg.model_configs import ECG_UNET_VANILLA_CONFIG
 from torch_ecg.models.unets.ecg_unet import ECG_UNET
 from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
-from torch_ecg.utils.misc import add_docstring
 from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
 from torch_ecg.utils.utils_nn import default_collate_fn as collate_fn
 
@@ -152,17 +151,6 @@ class ECG_UNET_LUDB(ECG_UNET):
             prob=prob,
             mask=mask,
         )
-
-    @add_docstring(inference.__doc__)
-    def inference_LUDB(
-        self,
-        input: Union[np.ndarray, Tensor],
-        bin_pred_thr: float = 0.5,
-    ) -> WaveDelineationOutput:
-        """
-        alias of `self.inference`
-        """
-        return self.inference(input, bin_pred_thr)
 
 
 class LUDBTrainer(BaseTrainer):
