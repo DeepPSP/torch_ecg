@@ -2,7 +2,7 @@
 TestCINC2020: accomplished
 TestCINC2020Dataset: accomplished
 
-subsampling: NOT implemented
+subsampling: accomplished
 """
 
 from copy import deepcopy
@@ -43,6 +43,27 @@ class TestCINC2020:
             assert len(reader.all_records[db]) == 0
         assert len(reader.all_records["E"]) == 10
         assert len(reader.all_records["F"]) == 20
+
+    def test_subsample(self):
+        ss_ratio = 0.3
+        reader_ss = CINC2020(_CWD, subsample=ss_ratio, verbose=0)
+        assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
+        ss_ratio = 0.1 / len(reader)
+        reader_ss = CINC2020(_CWD, subsample=ss_ratio)
+        assert len(reader_ss) == 1
+
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            CINC2020(_CWD, subsample=0.0)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            CINC2020(_CWD, subsample=1.01)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            CINC2020(_CWD, subsample=-0.1)
 
     def test_load_data(self):
         for rec in reader:
