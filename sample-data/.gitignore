@@ -3,5 +3,7 @@ cinc2021/*.json
 cpsc2021/preprocessed/
 cpsc2021/rr_seq/
 cpsc2021/segments/
+cpsc2021/*.json
+cpsc2021/*.csv
 cpsc2018/*.json
 cpsc2018/*.csv
