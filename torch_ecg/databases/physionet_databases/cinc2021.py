@@ -236,32 +236,6 @@ class CINC2021(PhysioNetDataBase):
             }
         )
 
-        self.db_dir_base = Path(db_dir)
-        self.db_dirs = CFG({tranche: "" for tranche in self.db_tranches})
-        self._all_records = None
-        self.__all_records = None
-        self._stats = pd.DataFrame()
-        self._stats_columns = {
-            "record",
-            "tranche",
-            "tranche_name",
-            "nb_leads",
-            "fs",
-            "nb_samples",
-            "age",
-            "sex",
-            "medical_prescription",
-            "history",
-            "symptom_or_surgery",
-            "diagnosis",
-            "diagnosis_scored",  # in the form of abbreviations
-        }
-        self._ls_rec()  # loads file system structures into self.db_dirs and self._all_records
-        self._aggregate_stats(fast=True)
-
-        self._diagnoses_records_list = None
-        # self._ls_diagnoses_records()
-
         self.fs = CFG(
             {
                 "A": 500,
@@ -327,6 +301,31 @@ class CINC2021(PhysioNetDataBase):
         # currently for simplicity, exceptional records would be ignored
         # fmt: on
 
+        self.db_dir_base = Path(db_dir)
+        self._all_records = None
+        self.__all_records = None
+        self._stats = pd.DataFrame()
+        self._stats_columns = {
+            "record",
+            "tranche",
+            "tranche_name",
+            "nb_leads",
+            "fs",
+            "nb_samples",
+            "age",
+            "sex",
+            "medical_prescription",
+            "history",
+            "symptom_or_surgery",
+            "diagnosis",
+            "diagnosis_scored",  # in the form of abbreviations
+        }
+        self._ls_rec()  # loads file system structures into `self._all_records`
+        self._aggregate_stats(fast=True)
+
+        self._diagnoses_records_list = None
+        # self._ls_diagnoses_records()
+
     def get_subject_id(self, rec: Union[str, int]) -> int:
         """
         Parameters
@@ -361,29 +360,36 @@ class CINC2021(PhysioNetDataBase):
         """
         list all the records and load into `self._all_records`,
         facilitating further uses
-
-        TODO: implement subsampling of records
         """
         filename = "record_list.json"
         record_list_fp = self.db_dir_base / filename
+        write_file = False
         self._df_records = pd.DataFrame()
+        self._all_records = CFG({tranche: [] for tranche in self.db_tranches})
         if record_list_fp.is_file():
-            self._all_records = {
-                k: v
-                for k, v in json.loads(record_list_fp.read_text()).items()
-                if k in self.tranche_names
-            }
+            for k, v in json.loads(record_list_fp.read_text()).items():
+                if k in self.tranche_names:
+                    self._all_records[k] = v
             for tranche in self.db_tranches:
-                self._all_records[tranche] = [
-                    Path(f).name for f in self._all_records[tranche]
-                ]
-                self.db_dirs[tranche] = self._find_dir(self.db_dir_base, tranche, 0)
-                if not self.db_dirs[tranche]:
-                    self.logger.info(
-                        f"failed to find the directory containing tranche {self.tranche_names[tranche]}"
-                    )
-                    # raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
-        else:
+                df_tmp = pd.DataFrame(self._all_records[tranche], columns=["path"])
+                df_tmp["tranche"] = tranche
+                self._df_records = pd.concat(
+                    [self._df_records, df_tmp], ignore_index=True
+                )
+            self._df_records["path"] = self._df_records.path.apply(lambda x: Path(x))
+            self._df_records["record"] = self._df_records.path.apply(lambda x: x.stem)
+
+            self._df_records = self._df_records[
+                self._df_records.path.apply(
+                    lambda x: x.with_suffix(f".{self.rec_ext}").is_file()
+                )
+            ]
+
+        if len(self._df_records) == 0 or any(
+            len(v) == 0 for v in self._all_records.values()
+        ):
+            original_len = len(self._df_records)
+            self._df_records = pd.DataFrame()
             self.logger.info(
                 "Please wait patiently to let the reader find all records of all the tranches..."
             )
@@ -393,38 +399,79 @@ class CINC2021(PhysioNetDataBase):
                 for tranche in self.db_tranches
             }
             self._all_records = get_record_list_recursive3(
-                str(self.db_dir_base), rec_patterns_with_ext
+                str(self.db_dir_base), rec_patterns_with_ext, relative=False
             )
             to_save = deepcopy(self._all_records)
             for tranche in self.db_tranches:
-                tmp_dirname = [Path(f).parent for f in self._all_records[tranche]]
-                if len(set(tmp_dirname)) != 1:
-                    if len(set(tmp_dirname)) > 1:
-                        self.logger.info(
-                            f"records of tranche {tranche} are stored in several folders!"
-                        )
-                        # raise ValueError(f"records of tranche {tranche} are stored in several folders!")
-                    else:
-                        self.logger.info(f"no record found for tranche {tranche}!")
-                        continue
-                        # raise ValueError(f"no record found for tranche {tranche}!")
-                self.db_dirs[tranche] = self.db_dir_base / tmp_dirname[0]
-                self._all_records[tranche] = [
-                    Path(f).name for f in self._all_records[tranche]
-                ]
-            self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
-            record_list_fp.write_text(json.dumps(to_save))
-        self._all_records = CFG(self._all_records)
-        self.__all_records = list_sum(self._all_records.values())
-        for tranche in self.db_tranches:
-            df_tmp = pd.DataFrame()
-            df_tmp["record"] = self._all_records[tranche]
-            df_tmp["path"] = df_tmp["record"].apply(lambda x: self.db_dirs[tranche] / x)
-            df_tmp["tranche"] = tranche
-            self._df_records = pd.concat((self._df_records, df_tmp), ignore_index=True)
-        self._df_records.set_index("record", inplace=True)
+                df_tmp = pd.DataFrame(self._all_records[tranche], columns=["path"])
+                df_tmp["tranche"] = tranche
+                self._df_records = pd.concat(
+                    [self._df_records, df_tmp], ignore_index=True
+                )
+            self._df_records["path"] = self._df_records.path.apply(lambda x: Path(x))
+            self._df_records["record"] = self._df_records.path.apply(lambda x: x.stem)
 
-    def _aggregate_stats(self, fast: bool = False) -> None:
+            self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
+
+            if len(self._df_records) > original_len:
+                write_file = True
+
+            if write_file:
+                record_list_fp.write_text(json.dumps(to_save))
+
+        if len(self._df_records) > 0 and self._subsample is not None:
+            df_tmp = pd.DataFrame()
+            for tranche in self.db_tranches:
+                size = int(round(len(self._all_records[tranche]) * self._subsample))
+                if size > 0:
+                    df_tmp = pd.concat(
+                        [
+                            df_tmp,
+                            self._df_records[
+                                self._df_records.tranche == tranche
+                            ].sample(size, random_state=DEFAULTS.SEED, replace=False),
+                        ],
+                        ignore_index=True,
+                    )
+            if len(df_tmp) == 0:
+                size = min(
+                    len(self._df_records),
+                    max(1, int(round(self._subsample * len(self._df_records)))),
+                )
+                df_tmp = self._df_records.sample(
+                    size, random_state=DEFAULTS.SEED, replace=False
+                )
+            del self._df_records
+            self._df_records = df_tmp.copy()
+            del df_tmp
+            self._all_records = CFG(
+                {
+                    tranche: sorted(
+                        [
+                            Path(x).stem
+                            for x in self._df_records[
+                                self._df_records.tranche == tranche
+                            ]["path"].values
+                        ]
+                    )
+                    for tranche in self.db_tranches
+                }
+            )
+
+        self._all_records = CFG(
+            {
+                tranche: sorted([Path(x).stem for x in self._all_records[tranche]])
+                for tranche in self.db_tranches
+            }
+        )
+        self.__all_records = list_sum(self._all_records.values())
+
+        self._df_records.set_index("record", inplace=True)
+        self._df_records["fs"] = self._df_records.tranche.apply(lambda x: self.fs[x])
+
+        # TODO: perhaps we can load labels and metadata of all records into `self._df_records` here
+
+    def _aggregate_stats(self, fast: bool = False, force_reload: bool = False) -> None:
         """
         aggregate stats on the whole dataset
 
@@ -432,7 +479,10 @@ class CINC2021(PhysioNetDataBase):
         ----------
         fast: bool, default False,
             if True, only load the cached stats,
-            otherwise aggregate from scratch
+            otherwise aggregate from scratch,
+            ignored if `force_reload` is True
+        force_reload: bool, default False,
+            if True, force to reload the stats from scratch
 
         """
         stats_file = "stats.csv"
@@ -440,8 +490,9 @@ class CINC2021(PhysioNetDataBase):
         stats_file_fp = self.db_dir_base / stats_file
         if stats_file_fp.is_file():
             self._stats = pd.read_csv(stats_file_fp, keep_default_na=False)
-        if not fast and (
-            self._stats.empty or self._stats_columns != set(self._stats.columns)
+        if force_reload or (
+            not fast
+            and (self._stats.empty or self._stats_columns != set(self._stats.columns))
         ):
             self.logger.info(
                 "Please wait patiently to let the reader collect statistics on the whole dataset..."
@@ -513,49 +564,6 @@ class CINC2021(PhysioNetDataBase):
                         filter(lambda v: len(v) > 0, row[k].split(list_sep))
                     )
 
-    def _find_dir(self, root: Union[str, Path], tranche: str, level: int = 0) -> Path:
-        """
-        find the directory of a tranche
-
-        Parameters
-        ----------
-        root: str,
-            the root directory at which the data reader is searching
-        tranche: str,
-            the tranche to locate the directory containing it
-        level: int, default 0,
-            an identifier for ternimation of the search, regardless of finding the target directory or not
-
-        Returns
-        -------
-        res: Path,
-            the directory containing the tranche,
-            if is None, then not found
-
-        """
-        # self.logger.info(f"searching for dir for tranche {self.tranche_names[tranche]} with root {root} at level {level}")
-        if level > 2:
-            self.logger.info(
-                f"failed to find the directory containing tranche {self.tranche_names[tranche]}"
-            )
-            return None
-            # raise FileNotFoundError(f"failed to find the directory containing tranche {self.tranche_names[tranche]}")
-        rec_pattern = f"^{self.rec_prefix[tranche]}(?:\\d+).{self.rec_ext}$"
-        res = None
-        root = Path(root)
-        assert root.is_dir()
-        candidates = [f.name for f in root.iterdir()]
-        if len(list(filter(re.compile(rec_pattern).search, candidates))) > 0:
-            res = root
-            return res
-        new_roots = [root / item for item in candidates if (root / item).is_dir()]
-        for r in new_roots:
-            tmp = self._find_dir(r, tranche, level + 1)
-            if tmp:
-                res = tmp
-                return res
-        return res
-
     @property
     def all_records(self) -> Dict[str, List[str]]:
         """list of all records in the dataset"""
@@ -621,8 +629,7 @@ class CINC2021(PhysioNetDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        prefix = "".join(re.findall(r"[A-Z]", rec))
-        tranche = {v: k for k, v in self.rec_prefix.items()}[prefix]
+        tranche = self._df_records.loc[rec, "tranche"]
         return tranche
 
     def get_absolute_path(
@@ -640,16 +647,18 @@ class CINC2021(PhysioNetDataBase):
 
         Returns
         -------
-        Path,
+        abs_fp: Path,
             absolute path of the file
 
         """
         if isinstance(rec, int):
             rec = self[rec]
-        tranche = self._get_tranche(rec)
-        if extension is not None and not extension.startswith("."):
-            extension = f".{extension}"
-        return self.db_dirs[tranche] / f"{rec}{extension or ''}"
+        abs_fp = self._df_records.loc[rec, "path"]
+        if extension is not None:
+            if not extension.startswith("."):
+                extension = f".{extension}"
+            abs_fp = abs_fp.with_suffix(extension)
+        return abs_fp
 
     def get_data_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
         """
@@ -1637,9 +1646,20 @@ class CINC2021(PhysioNetDataBase):
 
         tranche = self._get_tranche(rec)
         if siglen is None:
-            rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz.npy"
+            rec_fp = (
+                self.db_dir
+                / "rsmp-500Hz"
+                / self.tranche_names[tranche]
+                / f"{rec}_500Hz.npy"
+            )
         else:
-            rec_fp = self.db_dirs[tranche] / f"{rec}_500Hz_siglen_{siglen}.npy"
+            rec_fp = (
+                self.db_dir
+                / "rsmp-500Hz"
+                / self.tranche_names[tranche]
+                / f"{rec}_500Hz_siglen_{siglen}.npy"
+            )
+        rec_fp.parent.mkdir(parents=True, exist_ok=True)
         if not rec_fp.is_file():
             # self.logger.info(f"corresponding file {rec_fp.name} does not exist")
             # NOTE: if not exists, create the data file,

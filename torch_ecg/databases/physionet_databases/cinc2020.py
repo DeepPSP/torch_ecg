@@ -259,7 +259,7 @@ class CINC2020(PhysioNetDataBase):
         self.db_dir_base = Path(db_dir)
         self._all_records = None
         self.__all_records = None
-        self._ls_rec()  # loads file system structures into self._all_records
+        self._ls_rec()  # loads file system structures into `self._all_records`
 
         self._diagnoses_records_list = None
         self._ls_diagnoses_records()
@@ -297,11 +297,9 @@ class CINC2020(PhysioNetDataBase):
         self._df_records = pd.DataFrame()
         self._all_records = CFG({tranche: [] for tranche in self.db_tranches})
         if record_list_fp.is_file():
-            self._all_records = {
-                k: v
-                for k, v in json.loads(record_list_fp.read_text()).items()
-                if k in self.tranche_names
-            }
+            for k, v in json.loads(record_list_fp.read_text()).items():
+                if k in self.tranche_names:
+                    self._all_records[k] = v
             for tranche in self.db_tranches:
                 df_tmp = pd.DataFrame(self._all_records[tranche], columns=["path"])
                 df_tmp["tranche"] = tranche
@@ -317,7 +315,11 @@ class CINC2020(PhysioNetDataBase):
                 )
             ]
 
-        if len(self._df_records) == 0:
+        if len(self._df_records) == 0 or any(
+            len(v) == 0 for v in self._all_records.values()
+        ):
+            original_len = len(self._df_records)
+            self._df_records = pd.DataFrame()
             self.logger.info(
                 "Please wait patiently to let the reader find all records of all the tranches..."
             )
@@ -341,7 +343,7 @@ class CINC2020(PhysioNetDataBase):
 
             self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
 
-            if len(self._df_records) > 0:
+            if len(self._df_records) > original_len:
                 write_file = True
 
             if write_file:
@@ -400,7 +402,15 @@ class CINC2020(PhysioNetDataBase):
         # TODO: perhaps we can load labels and metadata of all records into `self._df_records` here
 
     def _ls_diagnoses_records(self, force_reload: bool = False) -> None:
-        """list all the records for all diagnoses"""
+        """
+        list all the records for all diagnoses
+
+        Parameters
+        ----------
+        force_reload: bool, default False,
+            whether to force reload the list of records for each diagnosis
+
+        """
         fn = "diagnoses_records_list.json"
         dr_fp = self.db_dir / fn
         if dr_fp.is_file() and not force_reload:
@@ -451,8 +461,7 @@ class CINC2020(PhysioNetDataBase):
         """
         if isinstance(rec, int):
             rec = self[rec]
-        prefix = "".join(re.findall(r"[A-Z]", rec))
-        tranche = {v: k for k, v in self.rec_prefix.items()}[prefix]
+        tranche = self._df_records.loc[rec, "tranche"]
         return tranche
 
     def get_absolute_path(
@@ -1448,6 +1457,7 @@ class CINC2020(PhysioNetDataBase):
                 / self.tranche_names[tranche]
                 / f"{rec}_500Hz_siglen_{siglen}.npy"
             )
+        rec_fp.parent.mkdir(parents=True, exist_ok=True)
         if not rec_fp.is_file():
             # self.logger.info(f"corresponding file {rec_fp.name} does not exist")
             data = self.load_data(rec, data_format="channel_first", units="mV", fs=None)
