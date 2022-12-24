@@ -361,7 +361,7 @@ class CINC2021(PhysioNetDataBase):
         list all the records and load into `self._all_records`,
         facilitating further uses
         """
-        filename = "record_list.json"
+        filename = f"{self.db_name}-record_list.json"
         record_list_fp = self.db_dir_base / filename
         write_file = False
         self._df_records = pd.DataFrame()
@@ -485,7 +485,7 @@ class CINC2021(PhysioNetDataBase):
             if True, force to reload the stats from scratch
 
         """
-        stats_file = "stats.csv"
+        stats_file = f"{self.db_name}-stats.csv"
         list_sep = ";"
         stats_file_fp = self.db_dir_base / stats_file
         if stats_file_fp.is_file():
@@ -583,7 +583,7 @@ class CINC2021(PhysioNetDataBase):
 
     def _ls_diagnoses_records(self) -> None:
         """list all the records for all diagnoses"""
-        filename = "diagnoses_records_list.json"
+        filename = f"{self.db_name}-diagnoses_records_list.json"
         dr_fp = self.db_dir_base / filename
         if dr_fp.is_file():
             self._diagnoses_records_list = json.loads(dr_fp.read_text())
@@ -1648,14 +1648,14 @@ class CINC2021(PhysioNetDataBase):
         if siglen is None:
             rec_fp = (
                 self.db_dir
-                / "rsmp-500Hz"
+                / f"{self.db_name}-rsmp-500Hz"
                 / self.tranche_names[tranche]
                 / f"{rec}_500Hz.npy"
             )
         else:
             rec_fp = (
                 self.db_dir
-                / "rsmp-500Hz"
+                / f"{self.db_name}-rsmp-500Hz"
                 / self.tranche_names[tranche]
                 / f"{rec}_500Hz_siglen_{siglen}.npy"
             )

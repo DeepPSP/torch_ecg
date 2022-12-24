@@ -1,5 +1,6 @@
 *.npy
 cinc2021/*.json
+cinc2021/*.csv
 cpsc2021/preprocessed/
 cpsc2021/rr_seq/
 cpsc2021/segments/

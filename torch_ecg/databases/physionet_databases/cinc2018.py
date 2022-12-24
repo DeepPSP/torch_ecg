@@ -113,7 +113,7 @@ class CINC2018(PhysioNetDataBase):
             **kwargs,
         )
         self.fs = 200
-        self._subset = kwargs.get("subset", None)
+        self._subset = kwargs.get("subset", "training")
         self.rec_ext = "mat"
         self.ann_ext = "arousal"
 

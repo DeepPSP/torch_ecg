@@ -291,7 +291,7 @@ class CINC2020(PhysioNetDataBase):
         list all the records and load into `self._all_records`,
         facilitating further uses
         """
-        filename = "record_list.json"
+        filename = f"{self.db_name}-record_list.json"
         record_list_fp = self.db_dir / filename
         write_file = False
         self._df_records = pd.DataFrame()
@@ -411,7 +411,7 @@ class CINC2020(PhysioNetDataBase):
             whether to force reload the list of records for each diagnosis
 
         """
-        fn = "diagnoses_records_list.json"
+        fn = f"{self.db_name}-diagnoses_records_list.json"
         dr_fp = self.db_dir / fn
         if dr_fp.is_file() and not force_reload:
             self._diagnoses_records_list = json.loads(dr_fp.read_text())
@@ -1446,14 +1446,14 @@ class CINC2020(PhysioNetDataBase):
         if siglen is None:
             rec_fp = (
                 self.db_dir
-                / "rsmp-500Hz"
+                / f"{self.db_name}-rsmp-500Hz"
                 / self.tranche_names[tranche]
                 / f"{rec}_500Hz.npy"
             )
         else:
             rec_fp = (
                 self.db_dir
-                / "rsmp-500Hz"
+                / f"{self.db_name}-rsmp-500Hz"
                 / self.tranche_names[tranche]
                 / f"{rec}_500Hz_siglen_{siglen}.npy"
             )
