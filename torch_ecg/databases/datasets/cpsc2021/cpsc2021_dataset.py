@@ -1322,15 +1322,15 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
             test_set = (
                 DEFAULTS.RNG_sample(
-                    afp_subjects,
+                    list(afp_subjects),
                     max(1, int(round(len(afp_subjects) * _test_ratio / 100))),
                 ).tolist()
                 + DEFAULTS.RNG_sample(
-                    aff_subjects,
+                    list(aff_subjects),
                     max(1, int(round(len(aff_subjects) * _test_ratio / 100))),
                 ).tolist()
                 + DEFAULTS.RNG_sample(
-                    normal_subjects,
+                    list(normal_subjects),
                     max(1, int(round(len(normal_subjects) * _test_ratio / 100))),
                 ).tolist()
             )
