@@ -298,9 +298,13 @@ class CINC2021Dataset(ReprMixin, Dataset):
         ns = "_ns" if len(self.config.special_classes) == 0 else ""
         file_suffix = f"_siglen_{self.siglen}{ns}.json"
         train_file = (
-            self.reader.db_dir_base / f"train_ratio_{_train_ratio}{file_suffix}"
+            self.reader.db_dir_base
+            / f"{self.reader.db_name}_train_ratio_{_train_ratio}{file_suffix}"
         )
-        test_file = self.reader.db_dir_base / f"test_ratio_{_test_ratio}{file_suffix}"
+        test_file = (
+            self.reader.db_dir_base
+            / f"{self.reader.db_name}_test_ratio_{_test_ratio}{file_suffix}"
+        )
 
         # TODO: use self.reader.df_stats (precomputed and stored in utils/stats.csv)
         # to accelerate the validity examinations

@@ -241,9 +241,13 @@ class CINC2020Dataset(ReprMixin, Dataset):
         ns = "_ns" if len(self.config.special_classes) == 0 else ""
         file_suffix = f"_siglen_{self.siglen}{ns}.json"
         train_file = (
-            self.reader.db_dir_base / f"train_ratio_{_train_ratio}{file_suffix}"
+            self.reader.db_dir_base
+            / f"{self.reader.db_name}_train_ratio_{_train_ratio}{file_suffix}"
         )
-        test_file = self.reader.db_dir_base / f"test_ratio_{_test_ratio}{file_suffix}"
+        test_file = (
+            self.reader.db_dir_base
+            / f"{self.reader.db_name}_test_ratio_{_test_ratio}{file_suffix}"
+        )
 
         if force_recompute or not all([train_file.is_file(), test_file.is_file()]):
             tranche_records = {t: [] for t in _TRANCHES}
