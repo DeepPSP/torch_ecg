@@ -6,7 +6,6 @@ import json
 import time
 import warnings
 from copy import deepcopy
-from functools import reduce
 from random import sample, shuffle
 from typing import List, Optional, Sequence, Set, Tuple, Any
 
@@ -204,7 +203,10 @@ class CINC2020Dataset(ReprMixin, Dataset):
         return len(self._signals)
 
     def _train_test_split(
-        self, train_ratio: float = 0.8, force_recompute: bool = False
+        self,
+        train_ratio: float = 0.8,
+        force_recompute: bool = False,
+        force_valid: bool = False,
     ) -> List[str]:
         """
         do train test split,
@@ -217,6 +219,9 @@ class CINC2020Dataset(ReprMixin, Dataset):
         force_recompute: bool, default False,
             if True, force redo the train-test split,
             regardless of the existing ones stored in json files
+        force_valid: bool, default False,
+            if True, force redo the train-test split
+            if validity check fails
 
         Returns
         -------
@@ -278,9 +283,14 @@ class CINC2020Dataset(ReprMixin, Dataset):
                     split_idx = int(len(tranche_records[t]) * train_ratio)
                     train_set[t] = tranche_records[t][:split_idx]
                     test_set[t] = tranche_records[t][split_idx:]
-                    is_valid = self._check_train_test_split_validity(
-                        train_set[t], test_set[t], set(self.config.tranche_classes[t])
-                    )
+                    if force_valid:
+                        is_valid = self._check_train_test_split_validity(
+                            train_set[t],
+                            test_set[t],
+                            set(self.config.tranche_classes[t]),
+                        )
+                    else:
+                        is_valid = True
             train_file.write_text(json.dumps(train_set, ensure_ascii=False))
             test_file.write_text(json.dumps(test_set, ensure_ascii=False))
         else:
@@ -316,21 +326,19 @@ class CINC2020Dataset(ReprMixin, Dataset):
             the split is valid or not
 
         """
-
-        def add(a, b):
-            return a + b
-
         train_classes = set(
-            reduce(add, [self.reader.get_labels(rec, fmt="a") for rec in train_set])
+            list_sum([self.reader.get_labels(rec, fmt="a") for rec in train_set])
         )
         train_classes.intersection_update(all_classes)
         test_classes = set(
-            reduce(add, [self.reader.get_labels(rec, fmt="a") for rec in test_set])
+            list_sum([self.reader.get_labels(rec, fmt="a") for rec in test_set])
         )
         test_classes.intersection_update(all_classes)
         is_valid = len(all_classes) == len(train_classes) == len(test_classes)
         print(
-            f"all_classes = {all_classes}\ntrain_classes = {train_classes}\ntest_classes = {test_classes}\nis_valid = {is_valid}"
+            f"all_classes = {all_classes}\n"
+            f"train_classes = {train_classes}\ntest_classes = {test_classes}\n"
+            f"is_valid = {is_valid}"
         )
         return is_valid
 

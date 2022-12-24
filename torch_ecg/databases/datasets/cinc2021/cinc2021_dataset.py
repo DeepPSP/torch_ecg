@@ -261,7 +261,10 @@ class CINC2021Dataset(ReprMixin, Dataset):
         return len(self._signals)
 
     def _train_test_split(
-        self, train_ratio: float = 0.8, force_recompute: bool = False
+        self,
+        train_ratio: float = 0.8,
+        force_recompute: bool = False,
+        force_valid: bool = False,
     ) -> List[str]:
         """
         do train test split,
@@ -274,6 +277,9 @@ class CINC2021Dataset(ReprMixin, Dataset):
         force_recompute: bool, default False,
             if True, force redo the train-test split,
             regardless of the existing ones stored in json files
+        force_valid: bool, default False,
+            if True, force redo the train-test split
+            if validity check fails
 
         Returns
         -------
@@ -340,9 +346,14 @@ class CINC2021Dataset(ReprMixin, Dataset):
                     split_idx = int(len(tranche_records[t]) * train_ratio)
                     train_set[t] = tranche_records[t][:split_idx]
                     test_set[t] = tranche_records[t][split_idx:]
-                    is_valid = self._check_train_test_split_validity(
-                        train_set[t], test_set[t], set(self.config.tranche_classes[t])
-                    )
+                    if force_valid:
+                        is_valid = self._check_train_test_split_validity(
+                            train_set[t],
+                            test_set[t],
+                            set(self.config.tranche_classes[t]),
+                        )
+                    else:
+                        is_valid = True
             train_file.write_text(json.dumps(train_set, ensure_ascii=False))
             test_file.write_text(json.dumps(test_set, ensure_ascii=False))
             print(
