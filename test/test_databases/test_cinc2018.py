@@ -166,7 +166,7 @@ class TestCINC2018:
         assert isinstance(ann["arousals"], dict)
         assert isinstance(ann["sleep_stages"], dict)
         assert set(ann["arousals"].keys()) <= set(reader.arousal_types)
-        assert set(ann["sleep_stages"].keys()) <= set(reader.sleep_stages)
+        assert set(ann["sleep_stages"].keys()) <= set(reader.sleep_stage_names)
         for k in ann["arousals"].keys():
             assert isinstance(ann["arousals"][k], list)
             for itv in ann["arousals"][k]:
@@ -198,7 +198,7 @@ class TestCINC2018:
     def test_load_sleep_stages_ann(self):
         sleep_stages_ann = reader.load_sleep_stages_ann(0)
         assert isinstance(sleep_stages_ann, dict)
-        assert set(sleep_stages_ann.keys()) <= set(reader.sleep_stages)
+        assert set(sleep_stages_ann.keys()) <= set(reader.sleep_stage_names)
         for k in sleep_stages_ann.keys():
             assert isinstance(sleep_stages_ann[k], list)
             for itv in sleep_stages_ann[k]:
