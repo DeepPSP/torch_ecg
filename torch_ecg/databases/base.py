@@ -813,7 +813,8 @@ class PhysioNetDataBase(_DataBase):
         Parameters
         ----------
         file_name: str or Path,
-            the name of the file
+            the name of the file,
+            e.g. "data/001a.dat", "training/tr03-0005/tr03-0005.mat", etc.
 
         Returns
         -------
@@ -823,8 +824,9 @@ class PhysioNetDataBase(_DataBase):
         """
         url = posixpath.join(
             wfdb.io.download.PN_INDEX_URL,
-            f"{self.db_name}/{self.version}",
-            f"{Path(file_name).name}?download",
+            self.db_name,
+            self.version,
+            file_name,
         )
         return url
 
