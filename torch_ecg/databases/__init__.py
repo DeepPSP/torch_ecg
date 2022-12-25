@@ -3,11 +3,15 @@
 
 from . import aux_data
 from .base import (
+    PhysioNetDataBase,
+    NSRRDataBase,
+    CPSCDataBase,
     DataBaseInfo,
     BeatAnn,
     WFDB_Beat_Annotations,
     WFDB_Non_Beat_Annotations,
     WFDB_Rhythm_Annotations,
+    PSGDataBaseMixin,
 )
 from .cpsc_databases import CPSC2018, CPSC2019, CPSC2020, CPSC2021
 from .nsrr_databases import SHHS
@@ -24,6 +28,7 @@ from .physionet_databases import (
     MITDB,
     QTDB,
 )
+
 
 __all__ = [
     # from physionet
@@ -47,6 +52,11 @@ __all__ = [
     # other databases
     "CACHET_CADB",
     "SPH",
+    # base classes
+    "PhysioNetDataBase",
+    "NSRRDataBase",
+    "CPSCDataBase",
+    "PSGDataBaseMixin",
     # auxilliary data, functions and classes
     "aux_data",
     "WFDB_Beat_Annotations",
@@ -64,6 +74,10 @@ def list_databases() -> list:
         for db in __all__
         if db
         not in [
+            "PhysioNetDataBase",
+            "NSRRDataBase",
+            "CPSCDataBase",
+            "PSGDataBaseMixin",
             "aux_data",
             "WFDB_Beat_Annotations",
             "WFDB_Non_Beat_Annotations",

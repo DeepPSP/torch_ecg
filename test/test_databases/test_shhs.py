@@ -639,7 +639,7 @@ class TestSHHS:
         rec = reader.rec_with_event_ann[0]
         reader.plot_ann(rec, stage_source="event")
         rec = reader.rec_with_event_profusion_ann[0]
-        reader.plot_ann(rec, stage_source="event_profusion")
+        reader.plot_ann(rec, stage_source="event_profusion", plot_format="hypnogram")
         rec = reader.rec_with_hrv_detailed_ann[0]
         reader.plot_ann(rec, stage_source="hrv")
 
@@ -678,13 +678,6 @@ class TestSHHS:
         ):
             rec = reader.rec_with_event_profusion_ann[0]
             reader.plot_ann(rec, event_source="event_profusion")
-
-        with pytest.raises(
-            NotImplementedError,
-            match="Hypnogram format is not implemented yet",
-        ):
-            rec = reader.rec_with_event_ann[0]
-            reader.plot_ann(rec, event_source="event", plot_format="hypnogram")
 
         with pytest.raises(
             ValueError,

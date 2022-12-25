@@ -24,7 +24,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from string import punctuation
-from typing import Any, List, Optional, Union, Sequence
+from typing import Any, List, Optional, Union, Sequence, Dict
 from numbers import Real
 
 import numpy as np
@@ -57,6 +57,7 @@ __all__ = [
     "DEFAULT_FIG_SIZE_PER_SEC",
     "BeatAnn",
     "DataBaseInfo",
+    "PSGDataBaseMixin",
 ]
 
 
@@ -1218,6 +1219,135 @@ class DataBaseInfo(CitationMixin):
             docstring = f"{docstring}\n{citation}\n"
 
         return docstring
+
+
+class PSGDataBaseMixin:
+    def sleep_stage_intervals_to_mask(
+        self,
+        intervals: Dict[str, List[List[int]]],
+        fs: Optional[int] = None,
+        granularity: int = 30,
+        class_map: Optional[Dict[str, int]] = None,
+    ) -> np.ndarray:
+        """
+        convert sleep stage intervals to sleep stage mask
+
+        Parameters
+        ----------
+        intervals: dict of list of lists of int,
+            sleep stage intervals,
+            keys are sleep stages and
+            values are lists of lists of start and end indices of the sleep stages
+        fs: int, optional,
+            sampling frequency corresponding to the sleep stage intervals,
+            defaults to the sampling frequency of the database
+        granularity: int, default 30,
+            granularity of the sleep stage mask,
+            with unit of seconds
+        class_map: dict, optional,
+            a dictionary mapping sleep stages to integers,
+            if the database reader does not have a `sleep_stage_names` attribute,
+            this argument must be provided
+
+        Returns
+        -------
+        np.ndarray:
+            sleep stage mask
+
+        """
+        fs = fs or self.fs
+        assert fs is not None and fs > 0, "`fs` must be positive"
+        assert granularity > 0, "`granularity` must be positive"
+        if not hasattr(self, "sleep_stage_names"):
+            assert class_map is not None, "`class_map` must be provided"
+        else:
+            class_map = class_map or {
+                k: len(self.sleep_stage_names) - i - 1
+                for i, k in enumerate(self.sleep_stage_names)
+            }
+        intervals = {
+            class_map[k]: [
+                [int(round(s / fs / granularity)), int(round(e / fs / granularity))]
+                for s, e in v
+            ]
+            for k, v in intervals.items()
+        }
+        intervals = {k: [[s, e] for s, e in v if s < e] for k, v in intervals.items()}
+        intervals = {k: v for k, v in intervals.items() if len(v) > 0}
+        siglen = max([e for v in intervals.values() for s, e in v])
+        mask = np.zeros(siglen, dtype=int)
+        for k, v in intervals.items():
+            for s, e in v:
+                mask[s:e] = k
+        return mask
+
+    def plot_hypnogram(
+        self,
+        mask: np.ndarray,
+        granularity: int = 30,
+        class_map: Optional[Dict[str, int]] = None,
+        **kwargs,
+    ) -> tuple:
+        """
+        plot hypnogram
+
+        Parameters
+        ----------
+        mask: np.ndarray,
+            sleep stage mask
+        granularity: int, default 30,
+            granularity of the sleep stage mask to be plotted,
+            with unit of seconds
+        class_map: dict, optional,
+            a dictionary mapping sleep stages to integers,
+            if the database reader does not have a `sleep_stage_names` attribute,
+            this argument must be provided
+        kwargs: dict,
+            keyword arguments passed to `matplotlib.pyplot.plot`
+
+        Returns
+        -------
+        tuple:
+            a tuple of matplotlib figure and axis
+
+        """
+        if not hasattr(self, "sleep_stage_names"):
+            pass
+        else:
+            class_map = class_map or {
+                k: len(self.sleep_stage_names) - i - 1
+                for i, k in enumerate(self.sleep_stage_names)
+            }
+
+        if "plt" not in globals():
+            import matplotlib.pyplot as plt
+
+        fig_width = (
+            len(mask) * granularity / 3600 / 6 * 20
+        )  # stardard width is 20 for 6 hours
+
+        fig, ax = plt.subplots(figsize=(fig_width, 4))
+        color = kwargs.pop("color", "black")
+        ax.plot(mask, color=color, **kwargs)
+
+        # xticks to the format of HH:MM, every half hour
+        xticks = np.arange(0, len(mask), 1800 / granularity)
+        xticklabels = [
+            f"{int(i * granularity / 3600):02d}:{int(i * granularity / 60 % 60):02d}"
+            for i in xticks
+        ]
+        ax.set_xticks(xticks)
+        ax.set_xticklabels(xticklabels, fontsize=14)
+        ax.set_xlabel("Time", fontsize=18)
+        ax.set_xlim(0, len(mask))
+        # yticks to the format of sleep stages
+        yticks = sorted(class_map.values())
+        yticklabels = [k for k, v in sorted(class_map.items(), key=lambda x: x[1])]
+        ax.set_yticks(yticks)
+        ax.set_yticklabels(yticklabels, fontsize=14)
+        ax.set_ylabel("Sleep Stage", fontsize=18)
+
+        return fig, ax
 
 
 DEFAULT_FIG_SIZE_PER_SEC = 4.8

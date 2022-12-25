@@ -20,7 +20,7 @@ from tqdm.auto import tqdm
 from ...cfg import DEFAULTS
 from ...utils.misc import add_docstring
 from ...utils.utils_interval import intervals_union
-from ..base import NSRRDataBase, DataBaseInfo
+from ..base import NSRRDataBase, DataBaseInfo, PSGDataBaseMixin
 
 
 __all__ = [
@@ -202,7 +202,7 @@ _SHHS_INFO = DataBaseInfo(
 
 
 @add_docstring(_SHHS_INFO.format_database_docstring())
-class SHHS(NSRRDataBase):
+class SHHS(NSRRDataBase, PSGDataBaseMixin):
     """ """
 
     __name__ = "SHHS"
@@ -2250,7 +2250,7 @@ class SHHS(NSRRDataBase):
 
         TODO
         ----
-        1. implement the `hypnogram` format
+        1. ~~implement the `hypnogram` format~~
         2. implement plotting of sleep events
         """
         import matplotlib.patches as mpatches
@@ -2262,17 +2262,11 @@ class SHHS(NSRRDataBase):
         if nb_axes == 0:
             raise ValueError("No input data!")
 
-        if plot_format.lower() == "span":
-            pass
-        elif plot_format.lower() == "hypnogram":
-            raise NotImplementedError("Hypnogram format is not implemented yet!")
-        else:
+        if plot_format.lower() not in ["span", "hypnogram"]:
             raise ValueError(
                 f"Unknown plot format `{plot_format}`! "
                 f"`plot_format` can only be one of `span`, `hypnogram`"
             )
-
-        patches = {k: mpatches.Patch(color=c, label=k) for k, c in self.palette.items()}
 
         if df_sleep_stage is not None:
             sleep_stages = {}
@@ -2301,6 +2295,14 @@ class SHHS(NSRRDataBase):
                 raise NotImplementedError(
                     "Plotting of some type of events in `df_sleep_event` has not been implemented yet!"
                 )
+
+        if plot_format.lower() == "hypnogram":
+            stage_mask = df_sleep_stage["sleep_stage"].values
+            stage_mask = len(self.sleep_stage_names) - 1 - stage_mask
+            fig, ax = self.plot_hypnogram(stage_mask, granularity=30)
+            return
+
+        patches = {k: mpatches.Patch(color=c, label=k) for k, c in self.palette.items()}
 
         _, axes = plt.subplots(nb_axes, 1, figsize=(20, 4 * nb_axes), sharex=True)
         plt.subplots_adjust(hspace=0)

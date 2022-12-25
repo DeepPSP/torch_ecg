@@ -20,7 +20,7 @@ from ...utils import (
     get_record_list_recursive3,
     generalized_intervals_intersection,
 )
-from ..base import PhysioNetDataBase, DataBaseInfo
+from ..base import PhysioNetDataBase, DataBaseInfo, PSGDataBaseMixin
 
 
 __all__ = [
@@ -81,7 +81,7 @@ _CINC2018_INFO = DataBaseInfo(
 
 
 @add_docstring(_CINC2018_INFO.format_database_docstring())
-class CINC2018(PhysioNetDataBase):
+class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
     """ """
 
     __name__ = "CINC2018"
@@ -118,7 +118,7 @@ class CINC2018(PhysioNetDataBase):
         self.ann_ext = "arousal"
 
         # fmt: off
-        self.sleep_stages = ["W", "R", "N1", "N2", "N3"]
+        self.sleep_stage_names = ["W", "R", "N1", "N2", "N3"]
         self.arousal_types = [
             "arousal_bruxism", "arousal_noise", "arousal_plm", "arousal_rera", "arousal_snore", "arousal_spontaneous",
             "resp_centralapnea", "resp_cheynestokesbreath", "resp_hypopnea", "resp_hypoventilation",
@@ -518,7 +518,7 @@ class CINC2018(PhysioNetDataBase):
         current_sleep_stage = None
         current_sleep_stage_start = None
         for aux_note, sample in zip(wfdb_ann.aux_note, wfdb_ann.sample.tolist()):
-            if aux_note in self.sleep_stages:
+            if aux_note in self.sleep_stage_names:
                 if current_sleep_stage is not None:
                     sleep_stages[current_sleep_stage].append(
                         [current_sleep_stage_start, sample]
@@ -643,9 +643,32 @@ class CINC2018(PhysioNetDataBase):
         """ """
         raise NotImplementedError
 
-    def plot_ann(self) -> None:
-        """ """
-        raise NotImplementedError
+    def plot_ann(self, rec: Union[str, int]) -> tuple:
+        """
+        plot the sleep stage and arousal annotations of the record `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            name or index of the record
+
+        Returns
+        -------
+        tuple:
+            a tuple of matplotlib figure and axis
+
+        TODO
+        ----
+        plot arousals events
+
+        """
+        ann = self.load_ann(rec)
+        sleep_stages = ann["sleep_stages"]
+        arousals = ann["arousals"]
+        stage_mask = self.sleep_stage_intervals_to_mask(sleep_stages)
+        fig, ax = self.plot_hypnogram(stage_mask)
+        # TODO: plot arousals events
+        return fig, ax
 
     @property
     def database_info(self) -> DataBaseInfo:

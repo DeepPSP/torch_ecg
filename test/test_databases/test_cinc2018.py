@@ -26,8 +26,7 @@ _CWD.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-with pytest.warns(RuntimeWarning):
-    reader = CINC2018(_CWD)
+reader = CINC2018(_CWD)
 
 for file in [
     "training/tr03-0005/tr03-0005-arousal.mat",
@@ -230,4 +229,4 @@ class TestCINC2018:
         pass  # NOTE: not implemented yet
 
     def test_plot_ann(self):
-        pass  # NOTE: not implemented yet
+        reader.plot_ann(0)
