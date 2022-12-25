@@ -377,7 +377,8 @@ class CINC2018(PhysioNetDataBase):
                 "channel_last",
                 "lead_last",
             ], (
-                "`data_format` should be one of `['channel_first', 'lead_first', 'channel_last', 'lead_last']` "
+                "`data_format` should be one of "
+                "`['channel_first', 'lead_first', 'channel_last', 'lead_last']` "
                 f"when the passed number of `channel` is larger than 1, but got `{data_format}`"
             )
 
@@ -386,7 +387,7 @@ class CINC2018(PhysioNetDataBase):
         sampfrom = max(0, sampfrom or 0)
         sampto = min(sampto or wfdb_header.sig_len, wfdb_header.sig_len)
         wfdb_rec = wfdb.rdrecord(
-            frp, sampfrom=sampfrom, sampto=sampto, channels=chn, physical=physical
+            frp, sampfrom=sampfrom, sampto=sampto, channel_names=chn, physical=physical
         )
 
         ret_data = wfdb_rec.p_signal.T if physical else wfdb_rec.d_signal.T
@@ -404,22 +405,19 @@ class CINC2018(PhysioNetDataBase):
     def load_data(
         self,
         rec: Union[str, int],
-        sampfrom: Optional[Real] = None,
-        sampto: Optional[Real] = None,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
         data_format: str = "channel_first",
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
-        load PSG data of the record `rec`
+        load ECG data of the record `rec`
 
         Parameters
         ----------
         rec: str or int,
             name or index of the record
-        channel: str, optional,
-            name of the channel of PSG,
-            if None, then all channels will be returned
         sampfrom: int, optional,
             start index of the data to be loaded
         sampto: int, optional,
@@ -462,13 +460,33 @@ class CINC2018(PhysioNetDataBase):
             data = 1000 * data
         return data
 
+    @add_docstring(load_data.__doc__)
+    def load_ecg_data(
+        self,
+        rec: Union[str, int],
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        data_format: str = "channel_first",
+        units: Union[str, type(None)] = "mV",
+        fs: Optional[Real] = None,
+    ) -> np.ndarray:
+        """alias of `load_data`"""
+        return self.load_data(
+            rec=rec,
+            sampfrom=sampfrom,
+            sampto=sampto,
+            data_format=data_format,
+            units=units,
+            fs=fs,
+        )
+
     def load_ann(
         self,
         rec: Union[str, int],
-        sampfrom: Optional[Real] = None,
-        sampto: Optional[Real] = None,
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
         keep_original: bool = False,
-    ) -> Dict[str, List[List[int]]]:
+    ) -> Dict[str, Dict[str, List[List[int]]]]:
         """
         load sleep stage and arousal annotations of the record `rec`
 
@@ -476,9 +494,9 @@ class CINC2018(PhysioNetDataBase):
         ----------
         rec: str or int,
             name or index of the record
-        sampfrom: real number, optional,
+        sampfrom: int, optional,
             start index of the corresponding PSG data
-        sampto: real number, optional,
+        sampto: int, optional,
             end index of the corresponding PSG data
         keep_original: bool, default False,
             if True, indices will keep the same with the annotation file
@@ -499,7 +517,7 @@ class CINC2018(PhysioNetDataBase):
         arousals = defaultdict(list)
         current_sleep_stage = None
         current_sleep_stage_start = None
-        for aux_note, sample in zip(wfdb_ann.aux_note, wfdb_ann.sample):
+        for aux_note, sample in zip(wfdb_ann.aux_note, wfdb_ann.sample.tolist()):
             if aux_note in self.sleep_stages:
                 if current_sleep_stage is not None:
                     sleep_stages[current_sleep_stage].append(
@@ -548,6 +566,78 @@ class CINC2018(PhysioNetDataBase):
             "sleep_stages": sleep_stages,
             "arousals": arousals,
         }
+
+    def load_sleep_stages_ann(
+        self,
+        rec: Union[str, int],
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        keep_original: bool = False,
+    ) -> Dict[str, List[List[int]]]:
+        """
+        load sleep stage annotations of the record `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            name or index of the record
+        sampfrom: int, optional,
+            start index of the corresponding PSG data
+        sampto: int, optional,
+            end index of the corresponding PSG data
+        keep_original: bool, default False,
+            if True, indices will keep the same with the annotation file
+            otherwise subtract `sampfrom` if specified
+
+        Returns
+        -------
+        dict:
+            a dictionary with keys of sleep stages and
+            values of lists of lists of start and end indices of the sleep stages
+
+        """
+        return self.load_ann(
+            rec=rec,
+            sampfrom=sampfrom,
+            sampto=sampto,
+            keep_original=keep_original,
+        )["sleep_stages"]
+
+    def load_arousals_ann(
+        self,
+        rec: Union[str, int],
+        sampfrom: Optional[int] = None,
+        sampto: Optional[int] = None,
+        keep_original: bool = False,
+    ) -> Dict[str, List[List[int]]]:
+        """
+        load arousal annotations of the record `rec`
+
+        Parameters
+        ----------
+        rec: str or int,
+            name or index of the record
+        sampfrom: int, optional,
+            start index of the corresponding PSG data
+        sampto: int, optional,
+            end index of the corresponding PSG data
+        keep_original: bool, default False,
+            if True, indices will keep the same with the annotation file
+            otherwise subtract `sampfrom` if specified
+
+        Returns
+        -------
+        dict:
+            a dictionary with keys of arousals and
+            values of lists of lists of start and end indices of the arousals
+
+        """
+        return self.load_ann(
+            rec=rec,
+            sampfrom=sampfrom,
+            sampto=sampto,
+            keep_original=keep_original,
+        )["arousals"]
 
     def plot(self) -> None:
         """ """

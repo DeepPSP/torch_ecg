@@ -79,6 +79,7 @@ jobs:
         pytest -v test/test_databases/test_afdb.py
         pytest -v test/test_databases/test_apnea_ecg.py
         pytest -v test/test_databases/test_cinc2017.py
+        pytest -v test/test_databases/test_cinc2018.py
         pytest -v test/test_databases/test_ltafdb.py
         pytest -v test/test_databases/test_ludb.py
         pytest -v test/test_databases/test_mitdb.py
