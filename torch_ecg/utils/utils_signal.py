@@ -3,6 +3,7 @@ utilities for signal processing,
 including spatial, temporal, spatio-temporal domains
 """
 
+import warnings
 from copy import deepcopy
 from numbers import Real
 from typing import Iterable, Optional, Sequence, Tuple, Union
@@ -32,9 +33,8 @@ def smooth(
     mode: str = "valid",
     keep_dtype: bool = True,
 ) -> np.ndarray:
-    """finished, checked
-
-    smooth the 1d data using a window with requested size.
+    """
+    Smooth the 1d data using a window with requested size.
 
     This method is based on the convolution of a scaled window with the signal.
     The signal is prepared by introducing reflected copies of the signal
@@ -465,59 +465,7 @@ def detect_peaks(
             if verbose >= 2:
                 print(f"with detailed prominence = {_p.tolist()}")
 
-    if show:
-        if indnan.size:
-            data[indnan] = np.nan
-        if valley:
-            data = -data
-            if mph is not None:
-                mph = -mph
-        _plot(data, mph, mpd, threshold, edge, valley, ax, ind)
-
     return ind
-
-
-def _plot(x, mph, mpd, threshold, edge, valley, ax, ind):
-    """
-    Plot results of the detect_peaks function, see its help.
-
-    Parameters: ref. the function `detect_peaks`
-
-    """
-    if "plt" not in dir():
-        import matplotlib.pyplot as plt
-
-    if ax is None:
-        _, ax = plt.subplots(1, 1, figsize=(8, 4))
-
-    ax.plot(x, "b", lw=1)
-    if ind.size:
-        label = "valley" if valley else "peak"
-        label = label + "s" if ind.size > 1 else label
-        ax.plot(
-            ind,
-            x[ind],
-            "+",
-            mfc=None,
-            mec="r",
-            mew=2,
-            ms=8,
-            label="%d %s" % (ind.size, label),
-        )
-        ax.legend(loc="best", framealpha=0.5, numpoints=1)
-    ax.set_xlim(-0.02 * x.size, x.size * 1.02 - 1)
-    ymin, ymax = x[np.isfinite(x)].min(), x[np.isfinite(x)].max()
-    yrange = ymax - ymin if ymax > ymin else 1
-    ax.set_ylim(ymin - 0.1 * yrange, ymax + 0.1 * yrange)
-    ax.set_xlabel("Data #", fontsize=14)
-    ax.set_ylabel("Amplitude", fontsize=14)
-    mode = "Valley detection" if valley else "Peak detection"
-    ax.set_title(
-        "%s (mph=%s, mpd=%d, threshold=%s, edge='%s')"
-        % (mode, str(mph), mpd, str(threshold), edge)
-    )
-    # plt.grid()
-    plt.show()
 
 
 def remove_spikes_naive(
@@ -613,8 +561,7 @@ def butter_bandpass(
     high = highcut / nyq
 
     if low <= 0 and high >= 1:
-        b, a = [1], [1]
-        return b, a
+        raise ValueError("frequency out of range!")
 
     if low <= 0:
         Wn = high
@@ -816,9 +763,11 @@ def normalize(
     sig_fmt: str, default "channel_first",
         format of the signal, can be of one of
         "channel_last" (alias "lead_last"), or
-        "channel_first" (alias "lead_first")
+        "channel_first" (alias "lead_first"),
+        ignored if sig is 1d array (single-lead)
     per_channel: bool, default False,
-        if True, normalization will be done per channel
+        if True, normalization will be done per channel,
+        ignored if `sig` is 1d array (single-lead)
 
     Returns
     -------
@@ -831,6 +780,14 @@ def normalize(
     only the mean value will be shifted
 
     """
+    assert sig.ndim in [1, 2, 3], "signal `sig` should be 1d or 2d or 3d array"
+    if sig.ndim == 1 and per_channel:
+        warnings.warn(
+            "per-channel normalization is not supported for 1d signal, "
+            "`per_channel` will be set to False",
+            RuntimeWarning,
+        )
+        per_channel = False
     dtype = sig.dtype
     _method = method.lower()
     assert _method in [
@@ -839,9 +796,17 @@ def normalize(
         "min-max",
     ], f"unknown normalization method `{method}`"
     if not per_channel:
-        assert isinstance(mean, Real) and isinstance(
-            std, Real
-        ), "mean and std should be real numbers in the non per-channel setting"
+        if sig.ndim == 2:
+            assert isinstance(mean, Real) and isinstance(
+                std, Real
+            ), "`mean` and `std` should be real numbers in the non per-channel setting for 2d signal"
+        else:  # sig.ndim == 3
+            assert (isinstance(mean, Real) or np.shape(mean) == (sig.shape[0],)) and (
+                isinstance(std, Real) or np.shape(std) == (sig.shape[0],)
+            ), (
+                f"`mean` and `std` should be real numbers or have shape ({sig.shape[0]},) "
+                "in the non per-channel setting for 3d signal"
+            )
     if isinstance(std, Real):
         assert std > 0, "standard deviation should be positive"
     else:
@@ -854,31 +819,103 @@ def normalize(
     ], f"format `{sig_fmt}` of the signal not supported!"
 
     if isinstance(mean, Iterable):
-        assert np.shape(mean) in [
-            (sig.shape[0],),
-            (sig.shape[-1],),
-        ], f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}"
-        if sig_fmt.lower() in [
-            "channel_first",
-            "lead_first",
-        ]:
-            _mean = np.array(mean, dtype=dtype)[..., np.newaxis]
-        else:
-            _mean = np.array(mean, dtype=dtype)[np.newaxis, ...]
+        assert sig.ndim in [2, 3], "`mean` should be a real number for 1d signal"
+        if sig.ndim == 2:
+            assert np.shape(mean) in [
+                (sig.shape[0],),
+                (sig.shape[-1],),
+            ], f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}"
+            if sig_fmt.lower() in [
+                "channel_first",
+                "lead_first",
+            ]:
+                _mean = np.array(mean, dtype=dtype)[..., np.newaxis]
+            else:
+                _mean = np.array(mean, dtype=dtype)[np.newaxis, ...]
+        else:  # sig.ndim == 3
+            if sig_fmt.lower() in [
+                "channel_first",
+                "lead_first",
+            ]:
+                if np.shape(mean) == (sig.shape[0],):
+                    _mean = np.array(mean, dtype=dtype)[..., np.newaxis, np.newaxis]
+                elif np.shape(mean) == (sig.shape[1],):
+                    _mean = np.repeat(
+                        np.array(mean, dtype=dtype)[np.newaxis, ..., np.newaxis],
+                        sig.shape[0],
+                        axis=0,
+                    )
+                elif np.shape(mean) == sig.shape[:2]:
+                    _mean = np.array(mean, dtype=dtype)[..., np.newaxis]
+                else:
+                    raise AssertionError(
+                        f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}"
+                    )
+            else:  # "channel_last" or "lead_last"
+                if np.shape(mean) == (sig.shape[0],):
+                    _mean = np.array(mean, dtype=dtype)[..., np.newaxis, np.newaxis]
+                elif np.shape(mean) == (sig.shape[-1],):
+                    _mean = np.repeat(
+                        np.array(mean, dtype=dtype)[np.newaxis, np.newaxis, ...],
+                        sig.shape[0],
+                        axis=0,
+                    )
+                elif np.shape(mean) == (sig.shape[0], sig.shape[-1]):
+                    _mean = np.expand_dims(np.array(mean, dtype=dtype), axis=1)
+                else:
+                    raise AssertionError(
+                        f"shape of `mean` = {np.shape(mean)} not compatible with the `sig` = {np.shape(sig)}"
+                    )
     else:
         _mean = mean
     if isinstance(std, Iterable):
-        assert np.shape(std) in [
-            (sig.shape[0],),
-            (sig.shape[-1],),
-        ], f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}"
-        if sig_fmt.lower() in [
-            "channel_first",
-            "lead_first",
-        ]:
-            _std = np.array(std, dtype=dtype)[..., np.newaxis]
-        else:
-            _std = np.array(std, dtype=dtype)[np.newaxis, ...]
+        assert sig.ndim in [2, 3], "`std` should be a real number for 1d signal"
+        if sig.ndim == 2:
+            assert np.shape(std) in [
+                (sig.shape[0],),
+                (sig.shape[-1],),
+            ], f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}"
+            if sig_fmt.lower() in [
+                "channel_first",
+                "lead_first",
+            ]:
+                _std = np.array(std, dtype=dtype)[..., np.newaxis]
+            else:
+                _std = np.array(std, dtype=dtype)[np.newaxis, ...]
+        else:  # sig.ndim == 3
+            if sig_fmt.lower() in [
+                "channel_first",
+                "lead_first",
+            ]:
+                if np.shape(std) == (sig.shape[0],):
+                    _std = np.array(std, dtype=dtype)[..., np.newaxis, np.newaxis]
+                elif np.shape(std) == (sig.shape[1],):
+                    _std = np.repeat(
+                        np.array(std, dtype=dtype)[np.newaxis, ..., np.newaxis],
+                        sig.shape[0],
+                        axis=0,
+                    )
+                elif np.shape(std) == sig.shape[:2]:
+                    _std = np.array(std, dtype=dtype)[..., np.newaxis]
+                else:
+                    raise AssertionError(
+                        f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}"
+                    )
+            else:  # "channel_last" or "lead_last"
+                if np.shape(std) == (sig.shape[0],):
+                    _std = np.array(std, dtype=dtype)[..., np.newaxis, np.newaxis]
+                elif np.shape(std) == (sig.shape[-1],):
+                    _std = np.repeat(
+                        np.array(std, dtype=dtype)[np.newaxis, np.newaxis, ...],
+                        sig.shape[0],
+                        axis=0,
+                    )
+                elif np.shape(std) == (sig.shape[0], sig.shape[-1]):
+                    _std = np.expand_dims(np.array(std, dtype=dtype), axis=1)
+                else:
+                    raise AssertionError(
+                        f"shape of `std` = {np.shape(std)} not compatible with the `sig` = {np.shape(sig)}"
+                    )
     else:
         _std = std
 

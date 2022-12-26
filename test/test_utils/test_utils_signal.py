@@ -114,10 +114,12 @@ def test_detect_peaks():
     ind = detect_peaks(x, mph=-1.2, mpd=20, valley=True)
     assert ind.ndim == 1 and len(ind) > 0
 
-    x = [0, 1, 1, 0, 1, 1, 0]
+    x = [0, 1, 3, 0, 1, -1, 0]
     # detect both edges
     ind = detect_peaks(x, edge="both")
     # assert ind.ndim == 1 and len(ind) > 0
+    assert ind.ndim == 1 and "int" in str(ind.dtype)
+    ind = detect_peaks(x, edge=None, prominence=0.4, verbose=2)
     assert ind.ndim == 1 and "int" in str(ind.dtype)
 
     x = [-2, 1, -2, 2, 1, 1, 3, 0]
@@ -125,6 +127,8 @@ def test_detect_peaks():
     ind = detect_peaks(x, threshold=2)
     # assert ind.ndim == 1 and len(ind) > 0
     assert ind.ndim == 1 and "int" in str(ind.dtype)
+
+    assert len(detect_peaks([0, 1])) == 0
 
 
 def test_remove_spikes_naive():
@@ -192,9 +196,13 @@ def test_butter_bandpass_filter():
         data, lowcut=0.5, highcut=40, fs=fs, order=5, btype="hilo"
     )
     assert filtered_data.shape == data.shape
+    filtered_data = butter_bandpass_filter(data, lowcut=2, highcut=2, fs=fs, order=5)
+    assert filtered_data.shape == data.shape
 
     with pytest.raises(ValueError, match="frequency out of range!"):
         butter_bandpass_filter(data, lowcut=fs, highcut=np.inf, fs=fs, order=5)
+    with pytest.raises(ValueError, match="frequency out of range!"):
+        butter_bandpass_filter(data, lowcut=0, highcut=fs / 2, fs=fs, order=5)
     with pytest.raises(ValueError, match="special btype `lolo` is not supported"):
         butter_bandpass_filter(
             data, lowcut=0.5, highcut=40, fs=fs, order=5, btype="lolo"
@@ -218,6 +226,7 @@ def test_get_ampl():
 
 
 def test_normalize():
+    # 2d signal, channel_first and channel_last
     data = sample_rec.p_signal.T  # (n_channels, n_samples)
     nm_data = normalize(data, method="min-max")
     assert nm_data.shape == data.shape
@@ -234,6 +243,82 @@ def test_normalize():
     )
     assert nm_data.shape == data.shape
 
+    # 1d signal
+    nm_data = normalize(data[0], method="min-max")
+    assert nm_data.shape == data[0].shape
+    nm_data = normalize(data[0], method="z-score")
+    assert nm_data.shape == data[0].shape
+
+    # 3d signal, channel_first
+    data = np.expand_dims(data, axis=0)
+    nm_data = normalize(data, method="min-max")
+    assert nm_data.shape == data.shape
+    nm_data = normalize(data, method="z-score")
+    assert nm_data.shape == data.shape
+    nm_data = normalize(
+        data,
+        method="z-score",
+        mean=DEFAULTS.RNG.uniform(size=(data.shape[0],)),
+        std=DEFAULTS.RNG.uniform(size=(data.shape[0],)),
+        per_channel=True,
+    )
+    assert nm_data.shape == data.shape
+    nm_data = normalize(
+        data,
+        method="z-score",
+        mean=DEFAULTS.RNG.uniform(size=(data.shape[1],)),
+        std=DEFAULTS.RNG.uniform(size=data.shape[:2]),
+        per_channel=True,
+    )
+    assert nm_data.shape == data.shape
+    nm_data = normalize(
+        data,
+        method="z-score",
+        mean=DEFAULTS.RNG.uniform(size=data.shape[:2]),
+        std=DEFAULTS.RNG.uniform(size=(data.shape[1],)),
+        per_channel=True,
+    )
+    assert nm_data.shape == data.shape
+
+    # 3d signal, channel_last
+    data = np.expand_dims(sample_rec.p_signal, axis=0)
+    nm_data = normalize(data, method="min-max", sig_fmt="channel_last")
+    assert nm_data.shape == data.shape
+    nm_data = normalize(data, method="z-score", sig_fmt="channel_last")
+    assert nm_data.shape == data.shape
+    nm_data = normalize(
+        data,
+        method="z-score",
+        mean=DEFAULTS.RNG.uniform(size=(data.shape[0],)),
+        std=DEFAULTS.RNG.uniform(size=(data.shape[0],)),
+        per_channel=True,
+        sig_fmt="channel_last",
+    )
+    assert nm_data.shape == data.shape
+    nm_data = normalize(
+        data,
+        method="z-score",
+        mean=DEFAULTS.RNG.uniform(size=(data.shape[-1],)),
+        std=DEFAULTS.RNG.uniform(size=(data.shape[0], data.shape[-1])),
+        per_channel=True,
+        sig_fmt="channel_last",
+    )
+    assert nm_data.shape == data.shape
+    nm_data = normalize(
+        data,
+        method="z-score",
+        mean=DEFAULTS.RNG.uniform(size=(data.shape[0], data.shape[-1])),
+        std=DEFAULTS.RNG.uniform(size=(data.shape[-1],)),
+        per_channel=True,
+        sig_fmt="channel_last",
+    )
+    assert nm_data.shape == data.shape
+
+    data = sample_rec.p_signal.T
+    with pytest.raises(
+        AssertionError, match="signal `sig` should be 1d or 2d or 3d array"
+    ):
+        normalize(np.expand_dims(data, axis=(0, 1)), method="z-score")
     with pytest.raises(AssertionError, match="unknown normalization method `unknown`"):
         normalize(data, method="unknown")
     with pytest.raises(AssertionError, match="standard deviation should be positive"):
@@ -249,17 +334,35 @@ def test_normalize():
         )
     with pytest.raises(
         AssertionError,
-        match="mean and std should be real numbers in the non per-channel setting",
+        match="`mean` and `std` should be real numbers in the non per-channel setting for 2d signal",
     ):
         normalize(
             data, method="z-score", mean=DEFAULTS.RNG.uniform(size=(data.shape[0],))
         )
     with pytest.raises(
         AssertionError,
-        match="mean and std should be real numbers in the non per-channel setting",
+        match="`mean` and `std` should be real numbers in the non per-channel setting for 2d signal",
     ):
         normalize(
             data, method="z-score", std=DEFAULTS.RNG.uniform(size=(data.shape[0],))
+        )
+    with pytest.raises(
+        AssertionError,
+        match="`mean` and `std` should be real numbers or have shape \\(\\d+,\\) in the non per-channel setting for 3d signal",
+    ):
+        normalize(
+            np.expand_dims(data, axis=0),
+            method="z-score",
+            mean=DEFAULTS.RNG.uniform(size=(data.shape[0],)),
+        )
+    with pytest.raises(
+        AssertionError,
+        match="`mean` and `std` should be real numbers or have shape \\(\\d+,\\) in the non per-channel setting for 3d signal",
+    ):
+        normalize(
+            np.expand_dims(data, axis=0),
+            method="z-score",
+            std=DEFAULTS.RNG.uniform(size=(data.shape[0],)),
         )
     with pytest.raises(
         AssertionError, match="format `channel_first_last` of the signal not supported!"
@@ -283,3 +386,66 @@ def test_normalize():
             std=DEFAULTS.RNG.uniform(size=(data.shape[0] + 1,)),
             per_channel=True,
         )
+    with pytest.raises(
+        AssertionError, match="shape of `mean` = .+ not compatible with the `sig` = .+"
+    ):
+        normalize(
+            np.expand_dims(data, axis=0),
+            method="z-score",
+            mean=DEFAULTS.RNG.uniform(
+                size=(
+                    2,
+                    data.shape[0],
+                )
+            ),
+            per_channel=True,
+        )
+    with pytest.raises(
+        AssertionError, match="shape of `std` = .+ not compatible with the `sig` = .+"
+    ):
+        normalize(
+            np.expand_dims(data, axis=0),
+            method="z-score",
+            std=DEFAULTS.RNG.uniform(
+                size=(
+                    2,
+                    data.shape[0],
+                )
+            ),
+            per_channel=True,
+        )
+    with pytest.raises(
+        AssertionError, match="shape of `mean` = .+ not compatible with the `sig` = .+"
+    ):
+        normalize(
+            np.expand_dims(data.T, axis=0),
+            method="z-score",
+            mean=DEFAULTS.RNG.uniform(
+                size=(
+                    2,
+                    data.shape[0],
+                )
+            ),
+            per_channel=True,
+            sig_fmt="channel_last",
+        )
+    with pytest.raises(
+        AssertionError, match="shape of `std` = .+ not compatible with the `sig` = .+"
+    ):
+        normalize(
+            np.expand_dims(data.T, axis=0),
+            method="z-score",
+            std=DEFAULTS.RNG.uniform(
+                size=(
+                    2,
+                    data.shape[0],
+                )
+            ),
+            per_channel=True,
+            sig_fmt="channel_last",
+        )
+
+    with pytest.warns(
+        RuntimeWarning, match="per-channel normalization is not supported for 1d signal"
+    ):
+        normalize(data[0], method="z-score", per_channel=True)
