@@ -10,15 +10,15 @@ from torch import Tensor
 
 from ..utils.misc import ReprMixin, add_docstring
 from ..utils.utils_data import ECGWaveFormNames
-from ..utils.utils_metrics import (  # noqa: F401
+from ..utils.utils_metrics import (
     QRS_score,
     cls_to_bin,
     metrics_from_confusion_matrix,
     confusion_matrix,
     ovr_confusion_matrix,
-    top_n_accuracy,
     compute_wave_delineation_metrics,
 )
+
 
 __all__ = [
     "Metrics",

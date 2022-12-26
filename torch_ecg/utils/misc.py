@@ -352,7 +352,7 @@ def diff_with_step(a: np.ndarray, step: int = 1, **kwargs) -> np.ndarray:
     """
     if step >= len(a):
         raise ValueError(
-            f"step ({step}) should be less than the length ({len(a)}) of `a`"
+            f"`step` ({step}) should be less than the length ({len(a)}) of `a`"
         )
     d = a[step:] - a[:-step]
     return d
@@ -407,7 +407,8 @@ def plot_single_lead(
     ticks_granularity: int = 0,
     **kwargs,
 ) -> None:
-    """finished, NOT checked,
+    """
+    Plot single lead ECG signal
 
     Parameters
     ----------
@@ -618,19 +619,19 @@ def read_log_txt(
     with open(fp, "r") as f:
         content = f.read().splitlines()
     if isinstance(scalar_startswith, str):
-        field_pattern = f"^({scalar_startswith})"
+        field_pattern = f"({scalar_startswith})"
     else:
-        field_pattern = f"""^({"|".join(scalar_startswith)})"""
+        field_pattern = f"""({"|".join(scalar_startswith)})"""
     summary = []
     new_line = None
     for line in content:
-        if line.startswith(epoch_startswith):
+        if re.findall(f"{epoch_startswith}([\\d]+)", line):
             if new_line:
                 summary.append(new_line)
-            epoch = re.findall("[\\d]+", line)[0]
+            epoch = re.findall(f"{epoch_startswith}([\\d]+)", line)[0]
             new_line = {"epoch": epoch}
         if re.findall(field_pattern, line):
-            field, val = line.split(":")
+            field, val = line.split(":")[-2:]
             field = field.strip()
             val = float(val.strip())
             new_line[field] = val

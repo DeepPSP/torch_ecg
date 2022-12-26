@@ -11,6 +11,15 @@ from torch_ecg.components.metrics import (
     RPeaksDetectionMetrics,
     WaveDelineationMetrics,
 )
+from torch_ecg.utils.utils_metrics import (
+    top_n_accuracy,
+    f_measure,
+    sensitivity,
+    precision,
+    specificity,
+    accuracy,
+    auc,
+)
 
 
 def test_classification_metrics():
@@ -162,3 +171,63 @@ def test_wave_delineation_metrics():
 def test_base_metrics():
     with pytest.raises(TypeError, match="Can't instantiate abstract class"):
         Metrics()
+
+
+def test_metric_functions():
+    # 100 samples, 10 classes
+    labels = DEFAULTS.RNG_randint(0, 9, (100))
+    outputs = DEFAULTS.RNG.uniform(0, 1, (100, 10))
+    acc = top_n_accuracy(labels, outputs, 3)
+    assert isinstance(acc, float)
+    assert 0 <= acc <= 1
+    acc = top_n_accuracy(labels, outputs, [1, 3, 5])
+    assert isinstance(acc, dict)
+    assert acc.keys() == {"top_1_acc", "top_3_acc", "top_5_acc"}
+    assert all(0 <= v <= 1 for v in acc.values())
+
+    macro_score, scores = f_measure(labels, outputs)
+    assert isinstance(macro_score, float)
+    assert isinstance(scores, np.ndarray)
+    assert scores.shape == (10,)
+    assert 0 <= macro_score <= 1
+    assert all(0 <= v <= 1 for v in scores)
+
+    macro_score, scores = precision(labels, outputs)
+    assert isinstance(macro_score, float)
+    assert isinstance(scores, np.ndarray)
+    assert scores.shape == (10,)
+    assert 0 <= macro_score <= 1
+    assert all(0 <= v <= 1 for v in scores)
+
+    macro_score, scores = sensitivity(labels, outputs)
+    assert isinstance(macro_score, float)
+    assert isinstance(scores, np.ndarray)
+    assert scores.shape == (10,)
+    assert 0 <= macro_score <= 1
+    assert all(0 <= v <= 1 for v in scores)
+
+    macro_score, scores = specificity(labels, outputs)
+    assert isinstance(macro_score, float)
+    assert isinstance(scores, np.ndarray)
+    assert scores.shape == (10,)
+    assert 0 <= macro_score <= 1
+    assert all(0 <= v <= 1 for v in scores)
+
+    macro_score, scores = accuracy(labels, outputs)
+    assert isinstance(macro_score, float)
+    assert isinstance(scores, np.ndarray)
+    assert scores.shape == (10,)
+    assert 0 <= macro_score <= 1
+    assert all(0 <= v <= 1 for v in scores)
+
+    macro_auroc, macro_auprc, auroc, auprc = auc(labels, outputs)
+    assert isinstance(macro_auroc, float)
+    assert isinstance(macro_auprc, float)
+    assert isinstance(auroc, np.ndarray)
+    assert isinstance(auprc, np.ndarray)
+    assert auroc.shape == (10,)
+    assert auprc.shape == (10,)
+    assert 0 <= macro_auroc <= 1
+    assert 0 <= macro_auprc <= 1
+    assert all(0 <= v <= 1 for v in auroc)
+    assert all(0 <= v <= 1 for v in auprc)

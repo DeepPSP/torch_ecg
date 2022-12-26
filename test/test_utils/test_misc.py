@@ -21,7 +21,6 @@ from torch_ecg.utils.misc import (  # noqa: F401
     ms2samples,
     samples2ms,
     plot_single_lead,
-    init_logger,
     get_date_str,
     list_sum,
     read_log_txt,
@@ -40,9 +39,13 @@ from torch_ecg.utils.misc import (  # noqa: F401
     add_kwargs,
 )  # noqa: F401
 from torch_ecg.cfg import DEFAULTS, _DATA_CACHE
+from torch_ecg.utils.download import http_get
 
 
 _SAMPLE_DATA_DIR = Path(__file__).parents[2].resolve() / "sample-data"
+
+_TMP_DIR = Path(__file__).parents[2].resolve() / "tmp"
+_TMP_DIR.mkdir(exist_ok=True, parents=True)
 
 
 # create `_DATA_CACHE / "database_citation.csv"`
@@ -128,6 +131,8 @@ def test_dict_to_str():
 
 
 def test_str2bool():
+    assert str2bool(True) is True
+    assert str2bool(False) is False
     assert str2bool("True") is True
     assert str2bool("False") is False
     assert str2bool("true") is True
@@ -149,6 +154,12 @@ def test_diff_with_step():
     assert np.allclose(diff_with_step(data, 1), np.diff(data))
     assert (diff_with_step(data, 2) == 2).all()
     assert (diff_with_step(data, 3) == 3).all()
+
+    with pytest.raises(
+        ValueError,
+        match="`step` \\(.+\\) should be less than the length \\(.+\\) of `a`",
+    ):
+        diff_with_step(data, 101)
 
 
 def test_ms2samples():
@@ -179,10 +190,6 @@ def test_plot_single_lead():
     )
 
 
-def test_init_logger():
-    pass
-
-
 def test_get_date_str():
     assert (
         datetime.datetime.strptime(get_date_str(), "%m-%d_%H-%M")
@@ -200,11 +207,31 @@ def test_list_sum():
 
 
 def test_read_log_txt():
-    pass
+    log_txt_url = (
+        "https://github.com/DeepPSP/cinc2021/blob/master/results/"
+        "20211121-12leads/TorchECG_11-20_21-52_ECG_CRNN_CINC2021_adamw_amsgrad_"
+        "LR_0.0001_BS_64_resnet_nature_comm_bottle_neck_se.txt"
+    )
+    http_get(f"{log_txt_url}?raw=true", dst_dir=str(_TMP_DIR), extract=False)
+    log_txt_file = str(_TMP_DIR / Path(log_txt_url).name)
+    log_txt = read_log_txt(log_txt_file)
+    assert isinstance(log_txt, pd.DataFrame)
+    assert not log_txt.empty
 
 
 def test_read_event_scalars():
-    pass
+    event_scalars_url = (
+        "https://github.com/DeepPSP/cinc2021/blob/master/results/20211121-12leads/"
+        "events.out.tfevents.1637416376.ubuntuECG_CRNN_CINC2021_adamw_amsgrad_"
+        "LR_0.0001_BS_64_resnet_nature_comm_bottle_neck_se"
+    )
+    http_get(f"{event_scalars_url}?raw=true", dst_dir=str(_TMP_DIR), extract=False)
+    event_scalars_file = str(_TMP_DIR / Path(event_scalars_url).name)
+    event_scalars = read_event_scalars(event_scalars_file)
+    assert isinstance(event_scalars, dict)
+    for k, v in event_scalars.items():
+        assert isinstance(k, str)
+        assert isinstance(v, pd.DataFrame)
 
 
 def test_dicts_equal():

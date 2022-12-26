@@ -36,6 +36,7 @@ def top_n_accuracy(
     n: Union[int, Sequence[int]] = 1,
 ) -> Union[float, Dict[str, float]]:
     """
+    Compute top n accuracy.
 
     Parameters
     ----------
@@ -57,7 +58,7 @@ def top_n_accuracy(
     --------
     ```python
     >>> from torch_ecg.cfg import DEFAULTS
-    >>> labels, outputs = DEFAULTS.RNG_randint(0, 10, (100)), DEFAULTS.RNG.uniform(0, 1, (100, 10))  # 100 samples, 10 classes
+    >>> labels, outputs = DEFAULTS.RNG_randint(0, 9, (100)), DEFAULTS.RNG.uniform(0, 1, (100, 10))  # 100 samples, 10 classes
     >>> top_n_accuracy(labels, outputs, 3)
     0.32
     >>> top_n_accuracy(labels, outputs, [1,3,5])
