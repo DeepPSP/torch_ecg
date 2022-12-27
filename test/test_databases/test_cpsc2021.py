@@ -270,7 +270,8 @@ class TestCPSC2021:
             "r_peaks": [122, 1122],
             "t_peaks": [170, 1170],
         }
-        reader.plot(0, sampfrom=1000, sampto=3000, ticks_granularity=0, waves=waves)
+        data = reader.load_data(0, sampfrom=1000, sampto=3000)
+        reader.plot(0, data=data, ticks_granularity=0, waves=waves)
 
     def test_compute_metric(self):
         rec = reader.diagnoses_records_list["AFp"][0]

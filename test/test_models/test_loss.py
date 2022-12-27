@@ -108,6 +108,23 @@ def test_asl():
         < criterion_asl(inp, targ_0_soft).item()
     )
 
+    criterion_asl = AsymmetricLoss(implementation="deep-psp")
+    assert criterion_asl(inp, targ_1).item() == pytest.approx(0.0, abs=1e-6)
+    assert criterion_asl(inp, targ_0).item() > 1.0
+    assert criterion_asl(inp, targ_mixed).item() > 1.0 / 3
+    assert criterion_asl(inp, targ_1_soft).item() > criterion_asl(inp, targ_1).item()
+    assert criterion_asl(inp, targ_0_soft).item() < criterion_asl(inp, targ_0).item()
+    assert (
+        criterion_asl(inp, targ_1).item()
+        < criterion_asl(inp, targ_mixed_soft).item()
+        < criterion_asl(inp, targ_0).item()
+    )
+    assert (
+        criterion_asl(inp, targ_1_soft).item()
+        < criterion_asl(inp, targ_mixed_soft).item()
+        < criterion_asl(inp, targ_0_soft).item()
+    )
+
 
 def test_mbce():
     criterion_mbce = MaskedBCEWithLogitsLoss()

@@ -529,10 +529,10 @@ class SPH(_DataBase):
             elif waves.get("p_peaks", None):
                 p_waves = [
                     [
-                        max(0, p + ms2samples(_PlotCfg.p_onset, fs=self.get_fs(rec))),
+                        max(0, p + ms2samples(_PlotCfg.p_onset, fs=self.fs)),
                         min(
                             _data.shape[1],
-                            p + ms2samples(_PlotCfg.p_offset, fs=self.get_fs(rec)),
+                            p + ms2samples(_PlotCfg.p_offset, fs=self.fs),
                         ),
                     ]
                     for p in waves["p_peaks"]
@@ -547,10 +547,10 @@ class SPH(_DataBase):
             elif waves.get("q_peaks", None) and waves.get("s_peaks", None):
                 qrs = [
                     [
-                        max(0, q + ms2samples(_PlotCfg.q_onset, fs=self.get_fs(rec))),
+                        max(0, q + ms2samples(_PlotCfg.q_onset, fs=self.fs)),
                         min(
                             _data.shape[1],
-                            s + ms2samples(_PlotCfg.s_offset, fs=self.get_fs(rec)),
+                            s + ms2samples(_PlotCfg.s_offset, fs=self.fs),
                         ),
                     ]
                     for q, s in zip(waves["q_peaks"], waves["s_peaks"])
@@ -558,12 +558,10 @@ class SPH(_DataBase):
             elif waves.get("r_peaks", None):
                 qrs = [
                     [
-                        max(
-                            0, r + ms2samples(_PlotCfg.qrs_radius, fs=self.get_fs(rec))
-                        ),
+                        max(0, r + ms2samples(_PlotCfg.qrs_radius, fs=self.fs)),
                         min(
                             _data.shape[1],
-                            r + ms2samples(_PlotCfg.qrs_radius, fs=self.get_fs(rec)),
+                            r + ms2samples(_PlotCfg.qrs_radius, fs=self.fs),
                         ),
                     ]
                     for r in waves["r_peaks"]
@@ -578,10 +576,10 @@ class SPH(_DataBase):
             elif waves.get("t_peaks", None):
                 t_waves = [
                     [
-                        max(0, t + ms2samples(_PlotCfg.t_onset, fs=self.get_fs(rec))),
+                        max(0, t + ms2samples(_PlotCfg.t_onset, fs=self.fs)),
                         min(
                             _data.shape[1],
-                            t + ms2samples(_PlotCfg.t_offset, fs=self.get_fs(rec)),
+                            t + ms2samples(_PlotCfg.t_offset, fs=self.fs),
                         ),
                     ]
                     for t in waves["t_peaks"]
@@ -592,7 +590,7 @@ class SPH(_DataBase):
             p_waves, qrs, t_waves = [], [], []
         palette = {
             "p_waves": "green",
-            "qrs": "red",
+            "qrs": "yellow",
             "t_waves": "pink",
         }
         plot_alpha = 0.4
@@ -642,7 +640,7 @@ class SPH(_DataBase):
             for w in ["p_waves", "qrs", "t_waves"]:
                 for itv in eval(w):
                     axes[idx].axvspan(
-                        itv[0], itv[1], color=palette[w], alpha=plot_alpha
+                        t[itv[0]], t[itv[1]], color=palette[w], alpha=plot_alpha
                     )
             axes[idx].legend(loc="upper left", fontsize=14)
             axes[idx].set_xlim(t[0], t[-1])

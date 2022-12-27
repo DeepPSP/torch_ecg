@@ -198,7 +198,8 @@ class TestCINC2020:
             "r_peaks": [122, 1122],
             "t_peaks": [170, 1170],
         }
-        reader.plot(0, ticks_granularity=0, waves=waves)
+        data = reader.load_data(0)
+        reader.plot(0, data=data, ticks_granularity=0, waves=waves)
 
     def test_compute_all_metrics(self):
         classes = dx_mapping_scored.Abbreviation.tolist()

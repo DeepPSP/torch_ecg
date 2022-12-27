@@ -121,6 +121,13 @@ class TestCACHET_CADB:
         assert isinstance(sid, str)
         assert sid in reader.all_subjects
 
+    def test_get_subject_info(self):
+        info = reader.get_subject_info(0)
+        assert isinstance(info, dict)
+        assert info.keys() == {"age", "gender", "height", "weight"}
+        info = reader.get_subject_info(0, ["age", "gender"])
+        assert info.keys() == {"age", "gender"}
+
     def test_get_record_metadata(self):
         metadata = reader.get_record_metadata(0)
         assert isinstance(metadata, dict)
@@ -129,6 +136,9 @@ class TestCACHET_CADB:
         assert isinstance(reader.url, dict)
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
+        assert isinstance(reader.subject_records, dict)
+        assert isinstance(reader.all_subjects, list)
+        assert isinstance(reader.df_metadata, pd.DataFrame)
 
     def test_plot(self):
         pass  # `plot` not implemented yet
