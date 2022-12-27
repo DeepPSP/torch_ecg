@@ -1086,8 +1086,15 @@ class CPSC2021(PhysioNetDataBase):
                     )
                 for w in ["p_waves", "qrs", "t_waves"]:
                     for itv in eval(w):
+                        itv_start = max(0, itv[0] - idx * line_len)
+                        itv_end = min(itv[1] - idx * line_len, line_len)
+                        if not 0 <= itv_start < itv_end <= line_len:
+                            continue
                         axes[ax_idx].axvspan(
-                            itv[0], itv[1], color=palette[w], alpha=plot_alpha
+                            secs[itv[0] - idx * line_len],
+                            secs[itv[1] - idx * line_len],
+                            color=palette[w],
+                            alpha=plot_alpha,
                         )
                 axes[ax_idx].legend(loc="upper left")
                 axes[ax_idx].set_xlim(secs[0], secs[-1])

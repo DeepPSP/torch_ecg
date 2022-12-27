@@ -12,6 +12,7 @@ from tqdm.auto import tqdm
 from torch_ecg.utils.utils_nn import (
     extend_predictions,
     compute_output_shape,
+    compute_deconv_output_shape,
     compute_sequential_output_shape,
     compute_module_size,
     default_collate_fn,
@@ -34,6 +35,15 @@ class Model1D(torch.nn.Sequential, SizeMixin, CkptMixin):
                 32, out_channels, 5, stride=1, dilation=4, activation="leaky"
             ),
         )
+
+
+class ModelDummy(torch.nn.Module, SizeMixin, CkptMixin):
+    def __init__(self, n_leads: int, config: CFG) -> None:
+        self.config = config
+        super().__init__()
+
+    def forward(self, x):
+        return x
 
 
 def test_extend_predictions():
@@ -141,6 +151,13 @@ def test_compute_output_shape():
                 deconv_output_tensor = deconv_output_tensor.permute(0, 2, 1)
 
             assert deconv_output_shape == deconv_output_tensor.shape
+    compute_deconv_output_shape(
+        input_shape=tensor.shape,
+        num_filters=num_filters,
+        output_padding=0,
+        channel_last=channel_last,
+        **deconv_kw
+    )
 
     # maxpool
     for kernel_size, stride, padding, dilation in tqdm(
@@ -211,6 +228,15 @@ def test_compute_output_shape():
     )
     assert shape_2[2:] == (shape_1[2] + 1 + 3, shape_1[3] + 0 + 2)
 
+    shape_1 = compute_output_shape(
+        "conv",
+        [None, None, None, None],
+        padding=[4, 8],
+        num_filters=32,
+        channel_last=True,
+    )
+    assert shape_1 == (None, None, None, 32)
+
     with pytest.raises(
         AssertionError, match="Unknown layer type `pool`, should be one of"
     ):
@@ -254,9 +280,21 @@ def test_compute_output_shape():
     ):
         compute_output_shape("conv", [None, 12, None], num_filters=None)
     with pytest.raises(
+        ValueError, match="out channel dimension and spatial dimensions are all `None`"
+    ):
+        compute_output_shape(
+            "conv", [None, None, 12], num_filters=None, channel_last=True
+        )
+    with pytest.raises(
         ValueError, match="spatial dimensions should be all `None`, or all not `None`"
     ):
         compute_output_shape("conv", [None, 12, None, 224])  # spatial 2D (total 4D)
+    with pytest.raises(
+        ValueError, match="spatial dimensions should be all `None`, or all not `None`"
+    ):
+        compute_output_shape(
+            "conv", [None, None, 224, 12], channel_last=True
+        )  # spatial 2D (total 4D)
     with pytest.raises(
         ValueError, match="input has 1 dimensions, while kernel has 2 dimensions,"
     ):
@@ -543,6 +581,9 @@ def test_mixin_classes():
     assert isinstance(model_1d.module_size_, str)
     assert isinstance(model_1d.sizeof_, str)
 
+    assert isinstance(model_1d.dtype_, str)
+    assert isinstance(model_1d.device_, str)
+
     save_path = Path(__file__).resolve().parents[1] / "tmp" / "test_mixin.pth"
 
     model_1d.save(save_path, dict(n_leads=12))
@@ -554,3 +595,9 @@ def test_mixin_classes():
     assert repr(model_1d) == repr(loaded_model)
 
     save_path.unlink()
+
+    model_dummy = ModelDummy(12, CFG(out_channels=128))
+    assert model_dummy.module_size == model_dummy.sizeof == 0
+    assert model_dummy.module_size_ == model_dummy.sizeof_ == "0.0B"
+    assert model_dummy.dtype == torch.float32
+    assert model_dummy.device == torch.device("cpu")

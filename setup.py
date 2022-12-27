@@ -22,6 +22,7 @@ extras["test"] = [
     "librosa",
     "torchaudio",
     "torch_audiomentations",
+    "tensorboard",
     "openpyxl",
 ]
 extras["docs"] = [

@@ -634,6 +634,9 @@ class TestSHHS:
             RuntimeWarning, match="one has to apply for a token from `sleepdata.org`"
         ):
             assert reader.url == ""
+            reader.helper()
+            reader.helper("attributes")
+            reader.helper(["methods"])
 
     def test_plot(self):
         rec = reader.rec_with_event_ann[0]

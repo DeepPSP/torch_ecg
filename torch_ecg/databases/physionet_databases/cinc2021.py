@@ -1505,7 +1505,7 @@ class CINC2021(PhysioNetDataBase):
             p_waves, qrs, t_waves = [], [], []
         palette = {
             "p_waves": "green",
-            "qrs": "red",
+            "qrs": "yellow",
             "t_waves": "pink",
         }
         plot_alpha = 0.4
@@ -1564,7 +1564,7 @@ class CINC2021(PhysioNetDataBase):
             for w in ["p_waves", "qrs", "t_waves"]:
                 for itv in eval(w):
                     axes[idx].axvspan(
-                        itv[0], itv[1], color=palette[w], alpha=plot_alpha
+                        t[itv[0]], t[itv[1]], color=palette[w], alpha=plot_alpha
                     )
             axes[idx].legend(loc="upper left", fontsize=14)
             axes[idx].set_xlim(t[0], t[-1])

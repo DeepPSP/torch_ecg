@@ -663,9 +663,14 @@ def read_event_scalars(
     try:
         from tensorflow.python.summary.event_accumulator import EventAccumulator
     except Exception:
-        from tensorboard.backend.event_processing.event_accumulator import (
-            EventAccumulator,
-        )
+        try:
+            from tensorboard.backend.event_processing.event_accumulator import (
+                EventAccumulator,
+            )
+        except Exception:
+            raise ImportError(
+                "cannot import `EventAccumulator` from `tensorflow` or `tensorboard`"
+            )
     event_acc = EventAccumulator(fp)
     event_acc.Reload()
     if keys:

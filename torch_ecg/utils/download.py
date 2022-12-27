@@ -148,8 +148,8 @@ def _stem(path: Union[str, Path]) -> str:
 
     """
     ret = Path(path).stem
-    for _ in range(3):
-        ret = Path(ret).stem
+    if Path(ret).suffix in [".tar", ".gz", ".bz2", ".xz", ".zip", ".7z"]:
+        return _stem(ret)
     return ret
 
 

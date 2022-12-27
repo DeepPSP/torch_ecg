@@ -212,8 +212,17 @@ def test_read_log_txt():
         "20211121-12leads/TorchECG_11-20_21-52_ECG_CRNN_CINC2021_adamw_amsgrad_"
         "LR_0.0001_BS_64_resnet_nature_comm_bottle_neck_se.txt"
     )
-    http_get(f"{log_txt_url}?raw=true", dst_dir=str(_TMP_DIR), extract=False)
-    log_txt_file = str(_TMP_DIR / Path(log_txt_url).name)
+    with pytest.warns(
+        RuntimeWarning,
+        match="filename is given, and it is not a `zip` file or a compressed `tar` file",
+    ):
+        http_get(
+            f"{log_txt_url}?raw=true",
+            dst_dir=str(_TMP_DIR),
+            extract=True,
+            filename="log.txt",
+        )
+    log_txt_file = str(_TMP_DIR / "log.txt")
     log_txt = read_log_txt(log_txt_file)
     assert isinstance(log_txt, pd.DataFrame)
     assert not log_txt.empty

@@ -193,6 +193,7 @@ def test_masks_to_waveforms():
         ECGWaveForm(name="qrs", onset=160, offset=205, peak=np.nan, duration=90.0),
         ECGWaveForm(name="twave", onset=250, offset=340, peak=np.nan, duration=180.0),
     ]
+    assert waveforms["lead_1"][0].duration_ == 50
 
     new_waveforms = masks_to_waveforms(
         masks, class_map=class_map, fs=500, leads=["III", "aVR"]
@@ -294,7 +295,7 @@ def test_generate_weight_mask():
     radius = 0.8
     boundary_weight = 5.0
     weight_mask = generate_weight_mask(
-        target_mask, fg_weight, fs, reduction, radius, boundary_weight
+        target_mask, fg_weight, fs, reduction, radius, boundary_weight, plot=True
     )
 
     assert weight_mask.shape == (50000,)

@@ -193,7 +193,28 @@ class TestCINC2021:
         assert isinstance(reader.database_info, DataBaseInfo)
 
     def test_plot(self):
-        reader.plot(0, leads=["II", 7], ticks_granularity=2)
+        waves = {
+            "p_onsets": [100, 1100],
+            "p_offsets": [110, 1110],
+            "q_onsets": [115, 1115],
+            "s_offsets": [130, 1130],
+            "t_onsets": [150, 1150],
+            "t_offsets": [190, 1190],
+        }
+        reader.plot(0, leads="II", ticks_granularity=2, waves=waves)
+        waves = {
+            "p_peaks": [105, 1105],
+            "q_peaks": [120, 1120],
+            "s_peaks": [125, 1125],
+            "t_peaks": [170, 1170],
+        }
+        reader.plot(0, leads=["II", 7], ticks_granularity=1, waves=waves)
+        waves = {
+            "p_peaks": [105, 1105],
+            "r_peaks": [122, 1122],
+            "t_peaks": [170, 1170],
+        }
+        reader.plot(0, ticks_granularity=0, waves=waves)
 
     def test_compute_metrics(self):
         classes = dx_mapping_scored.Abbreviation.tolist()
