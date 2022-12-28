@@ -30,16 +30,8 @@ from typing import (
 
 import numpy as np
 import pandas as pd
+from bib_lookup import CitationMixin as _CitationMixin
 from deprecated import deprecated
-
-try:
-    from bib_lookup import CitationMixin as _CitationMixin
-except ImportError:
-    __bib_lookup_lowest_version = "0.0.19"
-    raise ImportError(
-        f"`bib-lookup` requires version {__bib_lookup_lowest_version} or higher. "
-        "Please upgrade it via `pip install -U bib-lookup`."
-    )
 
 from ..cfg import DEFAULTS, _DATA_CACHE
 
@@ -814,7 +806,7 @@ def add_docstring(doc: str, mode: str = "replace") -> Callable:
             new_lines = max(0, new_lines) * "\n"
             func_or_cls.__doc__ = doc + new_lines + func_or_cls.__doc__
         else:
-            raise ValueError(f"mode {mode} is not supported")
+            raise ValueError(f"mode `{mode}` is not supported")
         return func_or_cls
 
     return decorator

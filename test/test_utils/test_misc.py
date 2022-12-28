@@ -11,7 +11,7 @@ import pandas as pd
 import torch
 import pytest
 
-from torch_ecg.utils.misc import (  # noqa: F401
+from torch_ecg.utils.misc import (
     get_record_list_recursive,
     get_record_list_recursive2,
     get_record_list_recursive3,
@@ -37,7 +37,7 @@ from torch_ecg.utils.misc import (  # noqa: F401
     get_kwargs,
     get_required_args,
     add_kwargs,
-)  # noqa: F401
+)
 from torch_ecg.cfg import DEFAULTS, _DATA_CACHE
 from torch_ecg.utils.download import http_get
 
@@ -46,11 +46,6 @@ _SAMPLE_DATA_DIR = Path(__file__).parents[2].resolve() / "sample-data"
 
 _TMP_DIR = Path(__file__).parents[2].resolve() / "tmp"
 _TMP_DIR.mkdir(exist_ok=True, parents=True)
-
-
-# create `_DATA_CACHE / "database_citation.csv"`
-# to test backward compatibility of `CitationMixin`
-(_DATA_CACHE / "database_citation.csv").touch(exist_ok=True)
 
 
 class SomeClass(ReprMixin, CitationMixin):
@@ -248,6 +243,25 @@ def test_dicts_equal():
     d2 = {"a": pd.DataFrame([{"hehe": 1, "haha": 2}])[["hehe", "haha"]]}
     assert dicts_equal(d1, d2) is True
     assert dicts_equal(d2, d1) is True
+    d2["a"].columns = ["c1", "c2"]
+    assert dicts_equal(d1, d2) is False
+    assert dicts_equal(d2, d1) is False
+
+    d1 = {"a": pd.DataFrame([{"hehe": 1, "haha": 2}])[["haha", "hehe"]]}
+    d2 = {"a": pd.DataFrame([{"hehe": 2, "haha": 2}])[["hehe", "haha"]]}
+    assert dicts_equal(d1, d2) is False
+    assert dicts_equal(d2, d1) is False
+    d1["a"] = d1["a"]["hehe"]
+    d2["a"] = d2["a"]["haha"]
+    assert dicts_equal(d1, d2) is False
+    assert dicts_equal(d2, d1) is False
+
+    d1 = {"a": pd.DataFrame([{"hehe": 1, "haha": 2}])[["haha", "hehe"]]}
+    d2 = {"a": pd.DataFrame([{"hehe": 2, "haha": 2}])[["hehe", "haha"]]}
+    d1["a"] = d1["a"]["hehe"]
+    d2["a"] = d2["a"]["hehe"]
+    assert dicts_equal(d1, d2) is False
+    assert dicts_equal(d2, d1) is False
 
     d1 = {"a": torch.tensor([1, 2, 3])}
     d2 = {"a": torch.tensor([1, 2, 3])}
@@ -294,6 +308,14 @@ def test_dicts_equal():
     assert dicts_equal(d1, d2, allow_array_diff_types=False) is False
     assert dicts_equal(d2, d1, allow_array_diff_types=False) is False
 
+    d1 = {"a": torch.tensor([1, 2, 3])}
+    d2 = {"a": torch.tensor([1, 2, 3]), "b": torch.tensor([1, 2, 3])}
+    assert dicts_equal(d1, d2) is False
+    assert dicts_equal(d2, d1) is False
+    d2.pop("a")
+    assert dicts_equal(d1, d2) is False
+    assert dicts_equal(d2, d1) is False
+
 
 def test_ReprMixin():
     some_class = SomeClass(1, 2, 3)
@@ -313,6 +335,9 @@ def test_ReprMixin():
 
 
 def test_CitationMixin():
+    # create `_DATA_CACHE / "database_citation.csv"`
+    # to test backward compatibility of `CitationMixin`
+    (_DATA_CACHE / "database_citation.csv").write_text("doi,citation\n")
     some_class = SomeClass(1, 2, 3)
     citation = some_class.get_citation(lookup=True, print_result=False)
     assert isinstance(citation, str) and len(citation) > 0
@@ -404,6 +429,13 @@ def test_add_docstring():
     assert func.__doc__ == "This is a docstring.\nTrailing docstring."
     assert func(1, 2) == 3
 
+    with pytest.raises(ValueError, match="mode `.+` is not supported"):
+
+        @add_docstring("This is a new docstring.", mode="xxx")
+        def func(a, b):
+            """This is a docstring."""
+            return a + b
+
 
 def test_remove_parameters_returns_from_docstring():
     new_docstring = remove_parameters_returns_from_docstring(
@@ -446,10 +478,11 @@ def test_timeout():
 
 
 def test_Timer():
-    timer = Timer()
+    timer = Timer(verbose=2)
+    assert str(timer) == repr(timer)
 
     with timer:
-        time.sleep(0.5)
+        time.sleep(0.05)
         timer.add_timer("xxx")
         # do something
         time.sleep(0.5)
