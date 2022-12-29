@@ -54,6 +54,33 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
     """
     -> n(2 or 3) x (activation -> norm -> sep_conv) (-> optional sub-sample) ->
     |-------------------------------- shortcut ------------------------------|
+
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    num_filters: sequence of int,
+        number of channels produced by the main stream convolutions,
+        the length of `num_filters` also indicates the number of convolutions
+    filter_lengths: int or sequence of int,
+        length(s) of the filters (kernel size)
+    subsample_length: int,
+        stride of the main stream subsample layer
+    subsample_kernel: int, optional,
+        kernel size of the main stream subsample layer,
+        if not set, defaults to `subsample_length`,
+    dilations: int or sequence of int, default 1,
+        dilation(s) of the convolutions
+    groups: int, default 1,
+        connection pattern (of channels) of the inputs and outputs
+    dropouts: float or sequence of float, default 0.0,
+        dropout ratio after each `Conv_Bn_Activation`
+    config: dict,
+        other parameters, including
+        activation choices, weight initializer, batch normalization choices, etc.,
+        for the convolutional layers,
+        and subsampling modes for subsampling layers, etc.
+
     """
 
     __name__ = "XceptionMultiConv"
@@ -70,34 +97,7 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
         dropouts: Union[Sequence[float], float] = 0.0,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        num_filters: sequence of int,
-            number of channels produced by the main stream convolutions,
-            the length of `num_filters` also indicates the number of convolutions
-        filter_lengths: int or sequence of int,
-            length(s) of the filters (kernel size)
-        subsample_length: int,
-            stride of the main stream subsample layer
-        subsample_kernel: int, optional,
-            kernel size of the main stream subsample layer,
-            if not set, defaults to `subsample_length`,
-        dilations: int or sequence of int, default 1,
-            dilation(s) of the convolutions
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        dropouts: float or sequence of float, default 0.0,
-            dropout ratio after each `Conv_Bn_Activation`
-        config: dict,
-            other parameters, including
-            activation choices, weight initializer, batch normalization choices, etc.,
-            for the convolutional layers,
-            and subsampling modes for subsampling layers, etc.
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__num_filters = list(num_filters)
@@ -214,6 +214,38 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
     consisting of 2 initial convolutions which subsamples at the first one,
     followed by several Xception blocks of 2 convolutions and of sub-sampling size 2
 
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    init_num_filters: sequence of int,
+        number of filters (output channels) of the initial convolutions
+    init_filter_lengths: int or sequence of int,
+        filter length(s) (kernel size(s)) of the initial convolutions
+    init_subsample_lengths: int or sequence of int,
+        subsampling length(s) (stride(s)) of the initial convolutions
+    num_filters: sequence of int or sequence of sequences of int,
+        number of filters of the convolutions of Xception blocks
+    filter_lengths: int or sequence of int or sequence of sequences of int,
+        filter length(s) of the convolutions of Xception blocks
+    subsample_lengths: int or sequence of int,
+        subsampling length(s) of the Xception blocks
+    subsample_kernels: int or sequence of int, optional,
+        subsampling kernel size(s) of the Xception blocks
+    dilations: int or sequence of int or sequence of sequences of int, default 1,
+        dilation(s) of the convolutions of Xception blocks
+    groups: int, default 1,
+        connection pattern (of channels) of the inputs and outputs
+    dropouts: float or sequence of float or sequence of sequences of float, default 0.0,
+        dropout(s) after each `Conv_Bn_Activation` blocks in the Xception blocks
+    block_dropouts: float or sequence of float, default 0.0,
+        dropout(s) after the Xception blocks
+    config: dict,
+        other parameters, Xception blocks and initial convolutions, including
+        activation choices, weight initializer, batch normalization choices, etc.
+        for the convolutional layers,
+        and subsampling modes for subsampling layers, etc.
+
     """
 
     __name__ = "XceptionEntryFlow"
@@ -234,40 +266,7 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        init_num_filters: sequence of int,
-            number of filters (output channels) of the initial convolutions
-        init_filter_lengths: int or sequence of int,
-            filter length(s) (kernel size(s)) of the initial convolutions
-        init_subsample_lengths: int or sequence of int,
-            subsampling length(s) (stride(s)) of the initial convolutions
-        num_filters: sequence of int or sequence of sequences of int,
-            number of filters of the convolutions of Xception blocks
-        filter_lengths: int or sequence of int or sequence of sequences of int,
-            filter length(s) of the convolutions of Xception blocks
-        subsample_lengths: int or sequence of int,
-            subsampling length(s) of the Xception blocks
-        subsample_kernels: int or sequence of int, optional,
-            subsampling kernel size(s) of the Xception blocks
-        dilations: int or sequence of int or sequence of sequences of int, default 1,
-            dilation(s) of the convolutions of Xception blocks
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        dropouts: float or sequence of float or sequence of sequences of float, default 0.0,
-            dropout(s) after each `Conv_Bn_Activation` blocks in the Xception blocks
-        block_dropouts: float or sequence of float, default 0.0,
-            dropout(s) after the Xception blocks
-        config: dict,
-            other parameters, Xception blocks and initial convolutions, including
-            activation choices, weight initializer, batch normalization choices, etc.
-            for the convolutional layers,
-            and subsampling modes for subsampling layers, etc.
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__num_filters = list(num_filters)
@@ -417,6 +416,28 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
     Middle flow of the Xception model,
     consisting of several Xception blocks of 3 convolutions and without sub-sampling
 
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    num_filters: sequence of int or sequence of sequences of int,
+        number of filters (output channels) of the convolutions of Xception blocks
+    filter_lengths: int or sequence of int or sequence of sequences of int,
+        filter length(s) of the convolutions of Xception blocks
+    dilations: int or sequence of int or sequence of sequences of int, default 1,
+        dilation(s) of the convolutions of Xception blocks
+    groups: int, default 1,
+        connection pattern (of channels) of the inputs and outputs
+    dropouts: float or sequence of float or sequence of sequences of float, default 0.0,
+        dropout(s) after each `Conv_Bn_Activation` blocks in the Xception blocks
+    block_dropouts: float or sequence of float, default 0.0,
+        dropout(s) after the Xception blocks
+    config: dict,
+        other parameters for Xception blocks, including
+        activation choices, weight initializer, batch normalization choices, etc.
+        for the convolutional layers,
+        and subsampling modes for subsampling layers, etc.
+
     """
 
     __name__ = "XceptionMiddleFlow"
@@ -432,30 +453,7 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        num_filters: sequence of int or sequence of sequences of int,
-            number of filters (output channels) of the convolutions of Xception blocks
-        filter_lengths: int or sequence of int or sequence of sequences of int,
-            filter length(s) of the convolutions of Xception blocks
-        dilations: int or sequence of int or sequence of sequences of int, default 1,
-            dilation(s) of the convolutions of Xception blocks
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        dropouts: float or sequence of float or sequence of sequences of float, default 0.0,
-            dropout(s) after each `Conv_Bn_Activation` blocks in the Xception blocks
-        block_dropouts: float or sequence of float, default 0.0,
-            dropout(s) after the Xception blocks
-        config: dict,
-            other parameters for Xception blocks, including
-            activation choices, weight initializer, batch normalization choices, etc.
-            for the convolutional layers,
-            and subsampling modes for subsampling layers, etc.
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__num_filters = list(num_filters)
@@ -565,6 +563,38 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
     consisting of several Xception blocks of 2 convolutions,
     followed by several separable convolutions
 
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    final_num_filters: sequence of int,
+        number of filters (output channels) of the final convolutions
+    final_filter_lengths: int or sequence of int,
+        filter length(s) of the convolutions of the final convolutions
+    final_subsample_lengths: int or sequence of int,
+        subsampling length(s) (stride(s)) of the final convolutions
+    num_filters: sequence of int or sequence of sequences of int,
+        number of filters of the convolutions of Xception blocks
+    filter_lengths: int or sequence of int or sequence of sequences of int,
+        filter length(s) of the convolutions of Xception blocks
+    subsample_lengths: int or sequence of int,
+        subsampling length(s) of the Xception blocks
+    subsample_kernels: int or sequence of int, optional,
+        subsampling kernel size(s) of the Xception blocks
+    dilations: int or sequence of int or sequence of sequences of int, default 1,
+        dilation(s) of the convolutions of Xception blocks
+    groups: int, default 1,
+        connection pattern (of channels) of the inputs and outputs
+    dropouts: float or sequence of float or sequence of sequences of float, default 0.0,
+        dropout(s) after each `Conv_Bn_Activation` blocks in the Xception blocks
+    block_dropouts: float or sequence of float, default 0.0,
+        dropout(s) after each of the Xception blocks and each of the final convolutions
+    config: dict,
+        other parameters for Xception blocks and final convolutions, including
+        activation choices, weight initializer, batch normalization choices, etc.
+        for the convolutional layers,
+        and subsampling modes for subsampling layers, etc.
+
     """
 
     __name__ = "XceptionExitFlow"
@@ -584,40 +614,7 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        final_num_filters: sequence of int,
-            number of filters (output channels) of the final convolutions
-        final_filter_lengths: int or sequence of int,
-            filter length(s) of the convolutions of the final convolutions
-        final_subsample_lengths: int or sequence of int,
-            subsampling length(s) (stride(s)) of the final convolutions
-        num_filters: sequence of int or sequence of sequences of int,
-            number of filters of the convolutions of Xception blocks
-        filter_lengths: int or sequence of int or sequence of sequences of int,
-            filter length(s) of the convolutions of Xception blocks
-        subsample_lengths: int or sequence of int,
-            subsampling length(s) of the Xception blocks
-        subsample_kernels: int or sequence of int, optional,
-            subsampling kernel size(s) of the Xception blocks
-        dilations: int or sequence of int or sequence of sequences of int, default 1,
-            dilation(s) of the convolutions of Xception blocks
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        dropouts: float or sequence of float or sequence of sequences of float, default 0.0,
-            dropout(s) after each `Conv_Bn_Activation` blocks in the Xception blocks
-        block_dropouts: float or sequence of float, default 0.0,
-            dropout(s) after each of the Xception blocks and each of the final convolutions
-        config: dict,
-            other parameters for Xception blocks and final convolutions, including
-            activation choices, weight initializer, batch normalization choices, etc.
-            for the convolutional layers,
-            and subsampling modes for subsampling layers, etc.
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__num_filters = list(num_filters)
@@ -759,6 +756,16 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
 
 class Xception(nn.Sequential, SizeMixin, CitationMixin):
     """
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    config: dict,
+        other hyper-parameters of the Module, ref. corresponding config file
+        key word arguments that have to be set in 3 sub-dict,
+        namely in "entry_flow", "middle_flow", and "exit_flow",
+        ref. corresponding docstring of each class
+
     References
     ----------
     [1] Chollet, François. "Xception: Deep learning with depthwise separable convolutions." Proceedings of the IEEE conference on computer vision and pattern recognition. 2017.
@@ -770,18 +777,7 @@ class Xception(nn.Sequential, SizeMixin, CitationMixin):
     __name__ = "Xception"
 
     def __init__(self, in_channels: int, **config) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        config: dict,
-            other hyper-parameters of the Module, ref. corresponding config file
-            key word arguments that have to be set in 3 sub-dict,
-            namely in "entry_flow", "middle_flow", and "exit_flow",
-            ref. corresponding docstring of each class
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))

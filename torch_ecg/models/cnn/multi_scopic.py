@@ -36,6 +36,19 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
 
     (conv -> activation) * N --> bn --> down_sample
 
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    scopes: sequence of int,
+        scopes of the convolutional layers, via `dilation`
+    num_filters: int or sequence of int,
+        number of filters of the convolutional layer(s)
+    filter_lengths: int or sequence of int,
+        filter length(s) (kernel size(s)) of the convolutional layer(s)
+    subsample_length: int,
+        subsample length (ratio) at the last layer of the block
+
     """
 
     __name__ = "MultiScopicBasicBlock"
@@ -50,21 +63,7 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
         groups: int = 1,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        scopes: sequence of int,
-            scopes of the convolutional layers, via `dilation`
-        num_filters: int or sequence of int,
-            number of filters of the convolutional layer(s)
-        filter_lengths: int or sequence of int,
-            filter length(s) (kernel size(s)) of the convolutional layer(s)
-        subsample_length: int,
-            subsample length (ratio) at the last layer of the block
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__scopes = scopes
@@ -205,6 +204,31 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
     branch path of the CNN part of the SOTA model
     from CPSC2019 challenge (entry 0416)
 
+    Parameters
+    ----------
+    in_channels: int,
+        number of features (channels) of the input
+    scopes: sequence of sequences of int,
+        scopes (in terms of `dilation`) for the convolutional layers,
+        each sequence of int is for one branch
+    num_filters: sequence of int, or sequence of sequences of int,
+        number of filters for the convolutional layers,
+        if is sequence of int,
+        then convolutionaly layers in one branch will have the same number of filters
+    filter_lengths: sequence of int, or sequence of sequences of int,
+        filter length (kernel size) of the convolutional layers,
+        if is sequence of int,
+        then convolutionaly layers in one branch will have the same filter length
+    subsample_lengths: int, or sequence of int,
+        subsample length (stride) of the convolutional layers,
+        if is sequence of int,
+        then convolutionaly layers in one branch will have the same subsample length
+    groups: int, default 1,
+        connection pattern (of channels) of the inputs and outputs
+    config: dict,
+        other hyper-parameters, including
+        dropout, activation choices, weight initializer, etc.
+
     """
 
     __name__ = "MultiScopicBranch"
@@ -219,33 +243,7 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
         groups: int = 1,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of features (channels) of the input
-        scopes: sequence of sequences of int,
-            scopes (in terms of `dilation`) for the convolutional layers,
-            each sequence of int is for one branch
-        num_filters: sequence of int, or sequence of sequences of int,
-            number of filters for the convolutional layers,
-            if is sequence of int,
-            then convolutionaly layers in one branch will have the same number of filters
-        filter_lengths: sequence of int, or sequence of sequences of int,
-            filter length (kernel size) of the convolutional layers,
-            if is sequence of int,
-            then convolutionaly layers in one branch will have the same filter length
-        subsample_lengths: int, or sequence of int,
-            subsample length (stride) of the convolutional layers,
-            if is sequence of int,
-            then convolutionaly layers in one branch will have the same subsample length
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        config: dict,
-            other hyper-parameters, including
-            dropout, activation choices, weight initializer, etc.
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__scopes = scopes
@@ -310,44 +308,46 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
 
 
 class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
-    """CNN part of the SOTA model from CPSC2019 challenge (entry 0416)"""
+    """
+    CNN part of the SOTA model from CPSC2019 challenge (entry 0416)
+
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    config: dict,
+        other hyper-parameters of the Module, ref. corresponding config file
+        key word arguments that have to be set:
+        scopes: sequence of sequences of sequences of int,
+            scopes (in terms of dilation) of each convolution
+        num_filters: sequence of sequences (of int or of sequences of int),
+            number of filters of the convolutional layers,
+            with granularity to each block of each branch,
+            or to each convolution of each block of each branch
+        filter_lengths: sequence of sequences (of int or of sequences of int),
+            filter length(s) (kernel size(s)) of the convolutions,
+            with granularity to each block of each branch,
+            or to each convolution of each block of each branch
+        subsample_lengths: sequence of int or sequence of sequences of int,
+            subsampling length(s) (ratio(s)) of all blocks,
+            with granularity to each branch or to each block of each branch,
+            each subsamples after the last convolution of each block
+        dropouts: sequence of int or sequence of sequences of int,
+            dropout rates of all blocks,
+            with granularity to each branch or to each block of each branch,
+            each dropouts at the last of each block
+        groups: int,
+            connection pattern (of channels) of the inputs and outputs
+        block: dict,
+            other parameters that can be set for the building blocks
+        for a full list of configurable parameters, ref. corr. config file
+
+    """
 
     __name__ = "MultiScopicCNN"
 
     def __init__(self, in_channels: int, **config) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        config: dict,
-            other hyper-parameters of the Module, ref. corresponding config file
-            key word arguments that have to be set:
-            scopes: sequence of sequences of sequences of int,
-                scopes (in terms of dilation) of each convolution
-            num_filters: sequence of sequences (of int or of sequences of int),
-                number of filters of the convolutional layers,
-                with granularity to each block of each branch,
-                or to each convolution of each block of each branch
-            filter_lengths: sequence of sequences (of int or of sequences of int),
-                filter length(s) (kernel size(s)) of the convolutions,
-                with granularity to each block of each branch,
-                or to each convolution of each block of each branch
-            subsample_lengths: sequence of int or sequence of sequences of int,
-                subsampling length(s) (ratio(s)) of all blocks,
-                with granularity to each branch or to each block of each branch,
-                each subsamples after the last convolution of each block
-            dropouts: sequence of int or sequence of sequences of int,
-                dropout rates of all blocks,
-                with granularity to each branch or to each block of each branch,
-                each dropouts at the last of each block
-            groups: int,
-                connection pattern (of channels) of the inputs and outputs
-            block: dict,
-                other parameters that can be set for the building blocks
-            for a full list of configurable parameters, ref. corr. config file
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))

@@ -57,6 +57,17 @@ from .resnet import (  # building blocks; vanilla resnet; cpsc2018 resnet; small
     tresnetS,
     tresnetXL,
 )
+from .regnet import (
+    regnet_16_8,
+    regnet_27_24,
+    regnet_23_168,
+    regnet_bottle_neck,
+    regnet_bottle_neck_B,
+    regnet_bottle_neck_D,
+    regnet_bottle_neck_se,
+    regnet_bottle_neck_nl,
+    regnet_bottle_neck_gc,
+)
 from .vgg import vgg16, vgg16_leadwise, vgg_block_basic, vgg_block_mish, vgg_block_swish
 from .xception import xception_leadwise  # vanilla xception; custom xception
 from .xception import xception_vanilla
@@ -124,6 +135,17 @@ __all__ = [
     "cpsc_block_swish",
     "cpsc_2018",
     "cpsc_2018_leadwise",
+    # regnet building blocks
+    "regnet_bottle_neck",
+    "regnet_bottle_neck_B",
+    "regnet_bottle_neck_D",
+    "regnet_bottle_neck_se",
+    "regnet_bottle_neck_nl",
+    "regnet_bottle_neck_gc",
+    # regnet
+    "regnet_16_8",
+    "regnet_27_24",
+    "regnet_23_168",
     # multi_scopic
     "multi_scopic_block",
     "multi_scopic",

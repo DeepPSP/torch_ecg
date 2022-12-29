@@ -48,6 +48,9 @@ from .cnn import (  # noqa: F401
     tresnetN,
     tresnetP,
     tresnetS,
+    regnet_16_8,
+    regnet_27_24,
+    regnet_23_168,
     vgg16,
     vgg16_leadwise,
     vgg_block_basic,
@@ -203,6 +206,21 @@ ECG_CRNN_CONFIG.cnn.resnet_stanford = deepcopy(resnet_stanford)
 ECG_CRNN_CONFIG.cnn.resnet_stanford.block = deepcopy(resnet_block_stanford)
 ECG_CRNN_CONFIG.cnn.resnet_stanford = adjust_cnn_filter_lengths(
     ECG_CRNN_CONFIG.cnn.resnet_stanford, ECG_CRNN_CONFIG.fs
+)
+
+ECG_CRNN_CONFIG.cnn.regnet_16_8 = deepcopy(regnet_16_8)
+ECG_CRNN_CONFIG.cnn.regnet_16_8 = adjust_cnn_filter_lengths(
+    ECG_CRNN_CONFIG.cnn.regnet_16_8, ECG_CRNN_CONFIG.fs
+)
+
+ECG_CRNN_CONFIG.cnn.regnet_27_24 = deepcopy(regnet_27_24)
+ECG_CRNN_CONFIG.cnn.regnet_27_24 = adjust_cnn_filter_lengths(
+    ECG_CRNN_CONFIG.cnn.regnet_27_24, ECG_CRNN_CONFIG.fs
+)
+
+ECG_CRNN_CONFIG.cnn.regnet_23_168 = deepcopy(regnet_23_168)
+ECG_CRNN_CONFIG.cnn.regnet_23_168 = adjust_cnn_filter_lengths(
+    ECG_CRNN_CONFIG.cnn.regnet_23_168, ECG_CRNN_CONFIG.fs
 )
 
 ECG_CRNN_CONFIG.cnn.multi_scopic = deepcopy(multi_scopic)

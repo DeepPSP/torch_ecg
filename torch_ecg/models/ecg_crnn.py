@@ -29,6 +29,7 @@ from ._nets import (
 from .cnn.densenet import DenseNet
 from .cnn.multi_scopic import MultiScopicCNN
 from .cnn.resnet import ResNet
+from .cnn.regnet import RegNet
 from .cnn.mobilenet import MobileNetV1, MobileNetV2, MobileNetV3
 from .cnn.vgg import VGG16
 from .cnn.xception import Xception
@@ -92,6 +93,8 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         cnn_config = self.config.cnn[self.config.cnn.name]
         if "resnet" in cnn_choice or "resnext" in cnn_choice:
             self.cnn = ResNet(self.n_leads, **cnn_config)
+        elif "regnet" in cnn_choice:
+            self.cnn = RegNet(self.n_leads, **cnn_config)
         elif "multi_scopic" in cnn_choice:
             self.cnn = MultiScopicCNN(self.n_leads, **cnn_config)
         elif "mobile_net" in cnn_choice or "mobilenet" in cnn_choice:

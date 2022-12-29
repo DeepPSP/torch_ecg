@@ -24,7 +24,26 @@ __all__ = [
 
 
 class VGGBlock(nn.Sequential, SizeMixin):
-    """building blocks of the CNN feature extractor `VGG16`"""
+    """
+    building blocks of the CNN feature extractor `VGG16`
+
+    Parameters
+    ----------
+    num_convs: int,
+        number of convolutional layers
+    in_channels: int,
+        number of channels in the input
+    out_channels: int,
+        number of channels produced by the convolutional layers
+    groups: int, default 1,
+        connection pattern (of channels) of the inputs and outputs
+    config: dict,
+        other parameters, including
+        filter length (kernel size), activation choices,
+        weight initializer, batch normalization choices, etc. for the convolutional layers;
+        and pool size for the pooling layer
+
+    """
 
     __name__ = "VGGBlock"
 
@@ -36,24 +55,7 @@ class VGGBlock(nn.Sequential, SizeMixin):
         groups: int = 1,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        num_convs: int,
-            number of convolutional layers
-        in_channels: int,
-            number of channels in the input
-        out_channels: int,
-            number of channels produced by the convolutional layers
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        config: dict,
-            other parameters, including
-            filter length (kernel size), activation choices,
-            weight initializer, batch normalization choices, etc. for the convolutional layers;
-            and pool size for the pooling layer
-
-        """
+        """ """
         super().__init__()
         self.__num_convs = num_convs
         self.__in_channels = in_channels
@@ -132,32 +134,32 @@ class VGGBlock(nn.Sequential, SizeMixin):
 class VGG16(nn.Sequential, SizeMixin, CitationMixin):
     """
     CNN feature extractor of the CRNN models proposed in refs of `ECG_CRNN`
+
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    config: dict,
+        other hyper-parameters of the Module, including
+        number of convolutional layers, number of filters for each layer,
+        and more for `VGGBlock`.
+        key word arguments that have to be set:
+        num_convs: sequence of int,
+            number of convolutional layers for each `VGGBlock`
+        num_filters: sequence of int,
+            number of filters for each `VGGBlock`
+        groups: int,
+            connection pattern (of channels) of the inputs and outputs
+        block: dict,
+            other parameters that can be set for `VGGBlock`
+        for a full list of configurable parameters, ref. corr. config file
+
     """
 
     __name__ = "VGG16"
 
     def __init__(self, in_channels: int, **config) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        config: dict,
-            other hyper-parameters of the Module, including
-            number of convolutional layers, number of filters for each layer,
-            and more for `VGGBlock`.
-            key word arguments that have to be set:
-            num_convs: sequence of int,
-                number of convolutional layers for each `VGGBlock`
-            num_filters: sequence of int,
-                number of filters for each `VGGBlock`
-            groups: int,
-                connection pattern (of channels) of the inputs and outputs
-            block: dict,
-                other parameters that can be set for `VGGBlock`
-            for a full list of configurable parameters, ref. corr. config file
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         # self.config = deepcopy(ECG_CRNN_CONFIG.cnn.vgg16)

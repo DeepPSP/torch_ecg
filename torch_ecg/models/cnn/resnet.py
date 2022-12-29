@@ -83,6 +83,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
 
     __name__ = "ResNetBasicBlock"
     expansion = 1  # not used
+    __DEFAULT_BASE_WIDTH__ = 12 * 4  # not used
     __DEFAULT_CONFIG__ = _DEFAULT_BLOCK_CONFIG.copy()
 
     def __init__(
@@ -274,7 +275,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
     """
     bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
     as for 1D ECG, should be of the "baby-giant-baby" pattern?
-    
+
     Parameters
     ----------
     in_channels: int,
@@ -292,7 +293,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         for more details, ref. `nn.Conv1d`
     dilation: int, default 1,
         dilation of the conv layers
-    base_width: int, default 12*4,
+    base_width: real number, default 12*4,
         number of filters per group for the neck conv layer
         usually number of filters of the initial conv layer of the whole ResNet
     base_groups: int, default 1,
@@ -328,7 +329,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         subsample_length: int,
         groups: int = 1,
         dilation: int = 1,
-        base_width: int = 12 * 4,
+        base_width: Real = 12 * 4,
         base_groups: int = 1,
         base_filter_length: int = 1,
         attn: Optional[dict] = None,
@@ -540,7 +541,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
 
 
 class ResNetStem(nn.Sequential, SizeMixin):
-    f"""
+    """
     the input stem of ResNet
 
     Parameters
@@ -688,6 +689,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
         kw_activation={"inplace": True},
         kernel_initializer="he_normal",
         kw_initializer={},
+        base_groups=1,
         dropouts=0,
     )
 

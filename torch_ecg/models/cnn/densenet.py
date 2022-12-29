@@ -48,7 +48,29 @@ class DenseBasicBlock(nn.Module, SizeMixin):
     """
     the basic building block for DenseNet,
     consisting of normalization -> activation -> convolution (-> dropout (optional)),
-    the output Tensor is the concatenation of old features (input) with new features
+    the output Tensor is the concatenation of old features (input) with new features.
+
+    Parameters
+    ----------
+    in_channels: int,
+        number of features (channels) of the input
+    growth_rate: int,
+        number of features of (channels) output from the main stream,
+        further concatenated to the shortcut,
+        hence making the final number of output channels grow by this value
+    filter_length: int,
+        length (size) of the filter kernels
+    groups: int, default 1,
+        pattern of connections between inputs and outputs,
+        for more details, ref. `nn.Conv1d`
+    bias: bool, default False,
+        if True, the convolutional layer has `bias` set `True`, otherwise `False`
+    dropout: float, default 0.0,
+        dropout rate of the new features produced from the main stream
+    config: dict,
+        other hyper-parameters, including
+        activation choices, memory_efficient choices, etc.
+
     """
 
     __name__ = "DenseBasicBlock"
@@ -68,29 +90,7 @@ class DenseBasicBlock(nn.Module, SizeMixin):
         dropout: float = 0.0,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of features (channels) of the input
-        growth_rate: int,
-            number of features of (channels) output from the main stream,
-            further concatenated to the shortcut,
-            hence making the final number of output channels grow by this value
-        filter_length: int,
-            length (size) of the filter kernels
-        groups: int, default 1,
-            pattern of connections between inputs and outputs,
-            for more details, ref. `nn.Conv1d`
-        bias: bool, default False,
-            if True, the convolutional layer has `bias` set `True`, otherwise `False`
-        dropout: float, default 0.0,
-            dropout rate of the new features produced from the main stream
-        config: dict,
-            other hyper-parameters, including
-            activation choices, memory_efficient choices, etc.
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__growth_rate = growth_rate
@@ -184,6 +184,30 @@ class DenseBottleNeck(nn.Module, SizeMixin):
     bottleneck modification of `DenseBasicBlock`,
     with an additional prefixed sequence of
     (normalization -> activation -> convolution of kernel size 1)
+
+    Parameters
+    ----------
+    in_channels: int,
+        number of features (channels) of the input
+    growth_rate: int,
+        number of features of (channels) output from the main stream,
+        further concatenated to the shortcut,
+        hence making the final number of output channels grow by this value
+    bn_size: int,
+        base width of intermediate layers (the bottleneck)
+    filter_length: int,
+        length (size) of the filter kernels of the second convolutional layer
+    groups: int, default 1,
+        pattern of connections between inputs and outputs,
+        for more details, ref. `nn.Conv1d`
+    bias: bool, default False,
+        if True, the convolutional layer has `bias` set `True`, otherwise `False`
+    dropout: float, default 0.0,
+        dropout rate of the new features produced from the main stream
+    config: dict,
+        other hyper-parameters, including
+        activation choices, memory_efficient choices, etc.
+
     """
 
     __name__ = "DenseBottleNeck"
@@ -204,31 +228,7 @@ class DenseBottleNeck(nn.Module, SizeMixin):
         dropout: float = 0.0,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of features (channels) of the input
-        growth_rate: int,
-            number of features of (channels) output from the main stream,
-            further concatenated to the shortcut,
-            hence making the final number of output channels grow by this value
-        bn_size: int,
-            base width of intermediate layers (the bottleneck)
-        filter_length: int,
-            length (size) of the filter kernels of the second convolutional layer
-        groups: int, default 1,
-            pattern of connections between inputs and outputs,
-            for more details, ref. `nn.Conv1d`
-        bias: bool, default False,
-            if True, the convolutional layer has `bias` set `True`, otherwise `False`
-        dropout: float, default 0.0,
-            dropout rate of the new features produced from the main stream
-        config: dict,
-            other hyper-parameters, including
-            activation choices, memory_efficient choices, etc.
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__growth_rate = growth_rate
@@ -356,7 +356,35 @@ class DenseBottleNeck(nn.Module, SizeMixin):
 class DenseMacroBlock(nn.Sequential, SizeMixin):
     """
     macro blocks for `DenseNet`,
-    stacked sequence of builing blocks of similar pattern
+    stacked sequence of builing blocks of similar pattern.
+
+    Parameters
+    ----------
+    in_channels: int,
+        number of features (channels) of the input
+    num_layers: int,
+        number of building block layers
+    growth_rates: sequence of int, or int,
+        growth rate(s) for each building block layers,
+        if is sequence of int, should have length equal to `num_layers`
+    bn_size: int,
+        base width of intermediate layers for `DenseBottleNeck`,
+        not used for `DenseBasicBlock`
+    filter_lengths: sequence of int, or int,
+        filter lengths(s) (kernel size(s)) for each building block layers,
+        if is sequence of int, should have length equal to `num_layers`
+    groups: int, default 1,
+        pattern of connections between inputs and outputs,
+        for more details, ref. `nn.Conv1d`
+    bias: bool, default False,
+        if True, the convolutional layer has `bias` set `True`, otherwise `False`
+    dropout: float, default 0.0,
+        dropout rate of the new features produced from the main stream
+    config: dict,
+        other hyper-parameters, including
+        extra kw for `DenseBottleNeck`, and
+        activation choices, memory_efficient choices, etc.
+
     """
 
     __name__ = "DenseMacroBlock"
@@ -374,35 +402,7 @@ class DenseMacroBlock(nn.Sequential, SizeMixin):
         dropout: float = 0.0,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of features (channels) of the input
-        num_layers: int,
-            number of building block layers
-        growth_rates: sequence of int, or int,
-            growth rate(s) for each building block layers,
-            if is sequence of int, should have length equal to `num_layers`
-        bn_size: int,
-            base width of intermediate layers for `DenseBottleNeck`,
-            not used for `DenseBasicBlock`
-        filter_lengths: sequence of int, or int,
-            filter lengths(s) (kernel size(s)) for each building block layers,
-            if is sequence of int, should have length equal to `num_layers`
-        groups: int, default 1,
-            pattern of connections between inputs and outputs,
-            for more details, ref. `nn.Conv1d`
-        bias: bool, default False,
-            if True, the convolutional layer has `bias` set `True`, otherwise `False`
-        dropout: float, default 0.0,
-            dropout rate of the new features produced from the main stream
-        config: dict,
-            other hyper-parameters, including
-            extra kw for `DenseBottleNeck`, and
-            activation choices, memory_efficient choices, etc.
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__num_layers = num_layers
@@ -451,7 +451,26 @@ class DenseTransition(nn.Sequential, SizeMixin):
     """
     transition blocks between `DenseMacroBlock`s,
     used to perform sub-sampling,
-    and compression of channels if specified
+    and compression of channels if specified.
+
+    Parameters
+    ----------
+    in_channels: int,
+        number of features (channels) of the input
+    compression: float, default 1.0,
+        compression factor,
+        proportion of the number of output channels to the number of input channels
+    subsample_length: int, default 2,
+        subsampling length (size)
+    groups: int, default 1,
+        pattern of connections between inputs and outputs,
+        for more details, ref. `nn.Conv1d`
+    bias: bool, default False,
+        if True, the convolutional layer has `bias` set `True`, otherwise `False`
+    config: dict,
+        other parameters, including
+        activation choices, subsampling mode (method), etc.
+
     """
 
     __name__ = "DenseTransition"
@@ -470,26 +489,7 @@ class DenseTransition(nn.Sequential, SizeMixin):
         bias: bool = False,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of features (channels) of the input
-        compression: float, default 1.0,
-            compression factor,
-            proportion of the number of output channels to the number of input channels
-        subsample_length: int, default 2,
-            subsampling length (size)
-        groups: int, default 1,
-            pattern of connections between inputs and outputs,
-            for more details, ref. `nn.Conv1d`
-        bias: bool, default False,
-            if True, the convolutional layer has `bias` set `True`, otherwise `False`
-        config: dict,
-            other parameters, including
-            activation choices, subsampling mode (method), etc.
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__compression = compression
@@ -542,6 +542,47 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
     """
     The core part of the SOTA model (framework) of CPSC2020
 
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    config: dict,
+        other hyper-parameters of the Module, ref. corresponding config file
+        key word arguments that have to be set:
+        num_layers: sequence of int,
+            number of building block layers of each dense (macro) block
+        init_num_filters: sequence of int,
+            number of filters of the first convolutional layer
+        init_filter_length: sequence of int,
+            filter length (kernel size) of the first convolutional layer
+        init_conv_stride: int,
+            stride of the first convolutional layer
+        init_pool_size: int,
+            pooling kernel size of the first pooling layer
+        init_pool_stride: int,
+            pooling stride of the first pooling layer
+        growth_rates: int or sequence of int or sequence of sequences of int,
+            growth rates of the building blocks,
+            with granularity to the whole network, or to each dense (macro) block,
+            or to each building block
+        filter_lengths: int or sequence of int or sequence of sequences of int,
+            filter length(s) (kernel size(s)) of the convolutions,
+            with granularity to the whole network, or to each macro block,
+            or to each building block
+        subsample_lengths: int or sequence of int,
+            subsampling length(s) (ratio(s)) of the transition blocks
+        compression: float,
+            compression factor of the transition blocks
+        bn_size: int,
+            bottleneck base width, used only when building block is `DenseBottleNeck`
+        dropouts: int,
+            dropout ratio of each building block
+        groups: int,
+            connection pattern (of channels) of the inputs and outputs
+        block: dict,
+            other parameters that can be set for the building blocks
+        for a full list of configurable parameters, ref. corr. config file
+
     References
     ----------
     [1] G. Huang, Z. Liu, L. Van Der Maaten and K. Q. Weinberger, "Densely Connected Convolutional Networks," 2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI, 2017, pp. 2261-2269, doi: 10.1109/CVPR.2017.243.
@@ -573,49 +614,7 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
     )
 
     def __init__(self, in_channels: int, **config) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        config: dict,
-            other hyper-parameters of the Module, ref. corresponding config file
-            key word arguments that have to be set:
-            num_layers: sequence of int,
-                number of building block layers of each dense (macro) block
-            init_num_filters: sequence of int,
-                number of filters of the first convolutional layer
-            init_filter_length: sequence of int,
-                filter length (kernel size) of the first convolutional layer
-            init_conv_stride: int,
-                stride of the first convolutional layer
-            init_pool_size: int,
-                pooling kernel size of the first pooling layer
-            init_pool_stride: int,
-                pooling stride of the first pooling layer
-            growth_rates: int or sequence of int or sequence of sequences of int,
-                growth rates of the building blocks,
-                with granularity to the whole network, or to each dense (macro) block,
-                or to each building block
-            filter_lengths: int or sequence of int or sequence of sequences of int,
-                filter length(s) (kernel size(s)) of the convolutions,
-                with granularity to the whole network, or to each macro block,
-                or to each building block
-            subsample_lengths: int or sequence of int,
-                subsampling length(s) (ratio(s)) of the transition blocks
-            compression: float,
-                compression factor of the transition blocks
-            bn_size: int,
-                bottleneck base width, used only when building block is `DenseBottleNeck`
-            dropouts: int,
-                dropout ratio of each building block
-            groups: int,
-                connection pattern (of channels) of the inputs and outputs
-            block: dict,
-                other parameters that can be set for the building blocks
-            for a full list of configurable parameters, ref. corr. config file
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
