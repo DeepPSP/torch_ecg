@@ -36,13 +36,54 @@ __all__ = [
 ]
 
 
+_DEFAULT_BLOCK_CONFIG = {
+    "increase_channels_method": "conv",
+    "subsample_mode": "conv",
+    "activation": "relu",
+    "kw_activation": {"inplace": True},
+    "kernel_initializer": "he_normal",
+    "kw_initializer": {},
+    "bias": False,
+}
+
+
 class ResNetBasicBlock(nn.Module, SizeMixin):
     """
     building blocks for `ResNet`, as implemented in ref. [2] of `ResNet`
+
+    Parameters
+    ----------
+    in_channels: int,
+        number of features (channels) of the input
+    num_filters: int,
+        number of filters for the convolutional layers
+    filter_length: int,
+        length (size) of the filter kernels
+    subsample_lengths: int,
+        subsample length,
+        including pool size for short cut, and stride for the top convolutional layer
+    groups: int, default 1,
+        pattern of connections between inputs and outputs,
+        for more details, ref. `nn.Conv1d`
+    dilation: int, default 1,
+        not used
+    attn: dict, optional,
+        attention mechanism for the neck conv layer,
+        if None, no attention mechanism is used,
+        keys:
+            "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+            "pos": int, position of the attention mechanism,
+            other keys are specific to the attention mechanism
+    config: dict,
+        other hyper-parameters, including
+        increase channel method, subsample method, dropouts,
+        activation choices, weight initializer, and short cut patterns, etc.
+
     """
 
     __name__ = "ResNetBasicBlock"
     expansion = 1  # not used
+    __DEFAULT_CONFIG__ = _DEFAULT_BLOCK_CONFIG.copy()
 
     def __init__(
         self,
@@ -55,36 +96,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         attn: Optional[dict] = None,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of features (channels) of the input
-        num_filters: int,
-            number of filters for the convolutional layers
-        filter_length: int,
-            length (size) of the filter kernels
-        subsample_lengths: int,
-            subsample length,
-            including pool size for short cut, and stride for the top convolutional layer
-        groups: int, default 1,
-            pattern of connections between inputs and outputs,
-            for more details, ref. `nn.Conv1d`
-        dilation: int, default 1,
-            not used
-        attn: dict, optional,
-            attention mechanism for the neck conv layer,
-            if None, no attention mechanism is used,
-            keys:
-                "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
-                "pos": int, position of the attention mechanism,
-                other keys are specific to the attention mechanism
-        config: dict,
-            other hyper-parameters, including
-            increase channel method, subsample method, dropouts,
-            activation choices, weight initializer, and short cut patterns, etc.
-
-        """
+        """ """
         super().__init__()
         if dilation > 1:
             raise NotImplementedError(f"Dilation > 1 not supported in {self.__name__}")
@@ -95,7 +107,8 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         self.__down_scale = subsample_length
         self.__stride = subsample_length
         self.__groups = groups
-        self.config = CFG(deepcopy(config))
+        self.config = CFG(self.__DEFAULT_CONFIG__.copy())
+        self.config.update(config)
 
         if (
             self.config.increase_channels_method.lower() == "zero_padding"
@@ -261,12 +274,51 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
     """
     bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
     as for 1D ECG, should be of the "baby-giant-baby" pattern?
+    
+    Parameters
+    ----------
+    in_channels: int,
+        number of features (channels) of the input
+    num_filters: sequence of int,
+        number of filters for the neck conv layer
+    filter_length: int,
+        lengths (sizes) of the filter kernels for the neck conv layer
+    subsample_length: int,
+        subsample length,
+        including pool size for short cut,
+        and stride for the (top or neck) conv layer
+    groups: int, default 1,
+        pattern of connections between inputs and outputs of the neck conv layer,
+        for more details, ref. `nn.Conv1d`
+    dilation: int, default 1,
+        dilation of the conv layers
+    base_width: int, default 12*4,
+        number of filters per group for the neck conv layer
+        usually number of filters of the initial conv layer of the whole ResNet
+    base_groups: int, default 1,
+        pattern of connections between inputs and outputs of conv layers at the two ends,
+        should divide `groups`
+    base_filter_length: int, default 1,
+        lengths (sizes) of the filter kernels for conv layers at the two ends
+    attn: dict, optional,
+        attention mechanism for the neck conv layer,
+        if None, no attention mechanism is used,
+        keys:
+            "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+            "pos": int, position of the attention mechanism,
+            other keys are specific to the attention mechanism
+    config: dict,
+        other hyper-parameters, including
+        increase channel method, subsample method, dropout,
+        activation choices, weight initializer, and short cut patterns, etc.
 
     """
 
     __name__ = "ResNetBottleNeck"
     expansion = 4
     __DEFAULT_BASE_WIDTH__ = 12 * 4
+    __DEFAULT_CONFIG__ = _DEFAULT_BLOCK_CONFIG.copy()
+    __DEFAULT_CONFIG__["subsample_at"] = 0
 
     def __init__(
         self,
@@ -282,48 +334,11 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         attn: Optional[dict] = None,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of features (channels) of the input
-        num_filters: sequence of int,
-            number of filters for the neck conv layer
-        filter_length: int,
-            lengths (sizes) of the filter kernels for the neck conv layer
-        subsample_length: int,
-            subsample length,
-            including pool size for short cut,
-            and stride for the (top or neck) conv layer
-        groups: int, default 1,
-            pattern of connections between inputs and outputs of the neck conv layer,
-            for more details, ref. `nn.Conv1d`
-        dilation: int, default 1,
-            dilation of the conv layers
-        base_width: int, default 12*4,
-            number of filters per group for the neck conv layer
-            usually number of filters of the initial conv layer of the whole ResNet
-        base_groups: int, default 1,
-            pattern of connections between inputs and outputs of conv layers at the two ends,
-            should divide `groups`
-        base_filter_length: int, default 1,
-            lengths (sizes) of the filter kernels for conv layers at the two ends
-        attn: dict, optional,
-            attention mechanism for the neck conv layer,
-            if None, no attention mechanism is used,
-            keys:
-                "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
-                "pos": int, position of the attention mechanism,
-                other keys are specific to the attention mechanism
-        config: dict,
-            other hyper-parameters, including
-            increase channel method, subsample method, dropout,
-            activation choices, weight initializer, and short cut patterns, etc.
-
-        """
+        """ """
         super().__init__()
         self.__num_convs = 3
-        self.config = CFG(deepcopy(config))
+        self.config = CFG(self.__DEFAULT_CONFIG__.copy())
+        self.config.update(config)
         self.expansion = self.config.get("expansion", self.expansion)
 
         self.__in_channels = in_channels
@@ -525,8 +540,33 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
 
 
 class ResNetStem(nn.Sequential, SizeMixin):
-    """
+    f"""
     the input stem of ResNet
+
+    Parameters
+    ----------
+    in_channels: int,
+        the number of input channels
+    out_channels: int or sequence of int,
+        the number of output channels
+    filter_lengths: int or sequence of int,
+        the length of the filter, or equivalently,
+        the kernel size(s) of the convolutions
+    conv_stride: int,
+        the stride of the convolution
+    pool_size: int,
+        the size of the pooling window
+    pool_stride: int,
+        the stride of the pooling window
+    subsample_mode: str,
+        the mode of subsampling, can be one of
+        {DownSample.__MODES__},
+        or "s2d" (with aliases "space_to_depth", "SpaceToDepth")
+    groups: int,
+        the number of groups for the convolution
+    config: dict,
+        the other configs for convolution and pooling
+
     """
 
     __name__ = "ResNetStem"
@@ -543,32 +583,7 @@ class ResNetStem(nn.Sequential, SizeMixin):
         groups: int = 1,
         **config,
     ) -> None:
-        f"""
-        Parameters
-        ----------
-        in_channels: int,
-            the number of input channels
-        out_channels: int or sequence of int,
-            the number of output channels
-        filter_lengths: int or sequence of int,
-            the length of the filter, or equivalently,
-            the kernel size(s) of the convolutions
-        conv_stride: int,
-            the stride of the convolution
-        pool_size: int,
-            the size of the pooling window
-        pool_stride: int,
-            the stride of the pooling window
-        subsample_mode: str,
-            the mode of subsampling, can be one of
-            {DownSample.__MODES__},
-            or "s2d" (with aliases "space_to_depth", "SpaceToDepth")
-        groups: int,
-            the number of groups for the convolution
-        config: dict,
-            the other configs for convolution and pooling
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -625,6 +640,35 @@ class ResNetStem(nn.Sequential, SizeMixin):
 
 class ResNet(nn.Sequential, SizeMixin, CitationMixin):
     """
+
+    Parameters
+    ----------
+    in_channels: int,
+        number of channels in the input
+    config: dict,
+        other hyper-parameters of the Module, ref. corresponding config file
+        keyword arguments that have to be set:
+        bias: bool,
+            if True, each convolution will have a bias term
+        num_blocks: sequence of int,
+            number of building blocks in each macro block
+        filter_lengths: int or sequence of int or sequence of sequences of int,
+            filter length(s) (kernel size(s)) of the convolutions,
+            with granularity to the whole network, to each macro block,
+            or to each building block
+        subsample_lengths: int or sequence of int or sequence of sequences of int,
+            subsampling length(s) (ratio(s)) of all blocks,
+            with granularity to the whole network, to each macro block,
+            or to each building block,
+            the former 2 subsample at the first building block
+        groups: int,
+            connection pattern (of channels) of the inputs and outputs
+        stem: dict,
+            other parameters that can be set for the input stem
+        block: dict,
+            other parameters that can be set for the building blocks
+            for a full list of configurable parameters, ref. corr. config file
+
     References
     ----------
     [1] https://github.com/awni/ecg
@@ -648,36 +692,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
     )
 
     def __init__(self, in_channels: int, **config) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        config: dict,
-            other hyper-parameters of the Module, ref. corresponding config file
-            keyword arguments that have to be set:
-            bias: bool,
-                if True, each convolution will have a bias term
-            num_blocks: sequence of int,
-                number of building blocks in each macro block
-            filter_lengths: int or sequence of int or sequence of sequences of int,
-                filter length(s) (kernel size(s)) of the convolutions,
-                with granularity to the whole network, to each macro block,
-                or to each building block
-            subsample_lengths: int or sequence of int or sequence of sequences of int,
-                subsampling length(s) (ratio(s)) of all blocks,
-                with granularity to the whole network, to each macro block,
-                or to each building block,
-                the former 2 subsample at the first building block
-            groups: int,
-                connection pattern (of channels) of the inputs and outputs
-            stem: dict,
-                other parameters that can be set for the input stem
-            block: dict,
-                other parameters that can be set for the building blocks
-            for a full list of configurable parameters, ref. corr. config file
-
-        """
+        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
@@ -731,6 +746,8 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
         else:
             self.additional_kw = CFG()
 
+        stem_config = CFG(self.config.stem)
+        stem_config.pop("num_filters", None)
         self.add_module(
             "input_stem",
             ResNetStem(
@@ -739,7 +756,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
                 # bottleneck use "base_groups"
                 groups=self.config.get("base_groups", self.config.groups),
                 activation=self.config.activation,
-                **self.config.stem,
+                **stem_config,
             ),
         )
 
