@@ -16,7 +16,7 @@ from ...._preprocessors import PreprocManager
 from ....cfg import CFG
 from ....databases import LUDB as LR
 from ....utils.misc import ReprMixin
-from .ludb_cfg import LUDBTrainCfg  # noqa: F401
+
 
 __all__ = [
     "LUDBDataset",

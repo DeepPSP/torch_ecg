@@ -5,7 +5,7 @@ utilities for convertions of data, labels, masks, etc.
 
 import os
 import warnings
-from collections import namedtuple, Counter  # noqa: F401
+from collections import Counter
 from copy import deepcopy
 from dataclasses import dataclass
 from numbers import Real

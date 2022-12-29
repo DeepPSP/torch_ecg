@@ -19,12 +19,7 @@ import scipy.signal as SS
 from ...cfg import DEFAULTS
 from ...utils.download import http_get
 from ...utils.misc import add_docstring
-from ..base import (  # noqa: F401
-    DEFAULT_FIG_SIZE_PER_SEC,
-    _DataBase,
-    DataBaseInfo,
-    _PlotCfg,
-)  # noqa: F401
+from ..base import _DataBase, DataBaseInfo
 
 
 __all__ = [

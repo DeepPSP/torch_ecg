@@ -4,10 +4,9 @@ QT Database
 """
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Union  # noqa: F401
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd  # noqa: F401
 import wfdb
 
 from ...cfg import CFG

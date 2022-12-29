@@ -1,4 +1,4 @@
-from . import ecg_arrhythmia_knowledge as EAK  # noqa: F401
+from . import ecg_arrhythmia_knowledge as EAK
 from .download import http_get
 from .misc import (
     get_record_list_recursive3,

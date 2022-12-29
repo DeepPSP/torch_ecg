@@ -6,7 +6,6 @@ pandas==1.2.2
 scikit-learn==0.24.1
 wfdb==3.2.0
 opencv-python
-packaging
 easydict
 torch==1.10.0
 torchaudio==0.10.0

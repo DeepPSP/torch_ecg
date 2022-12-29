@@ -44,7 +44,6 @@ import numpy as np
 import torch
 from torch import nn
 from torch.nn.parallel import DataParallel as DP
-from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 
@@ -55,7 +54,7 @@ except ModuleNotFoundError:
 
     sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 
-from cfg import BaseCfg, ModelCfg, TrainCfg  # noqa: F401
+from cfg import ModelCfg, TrainCfg
 from dataset import CINC2020
 from model import ECG_CRNN_CINC2020
 from scoring_metrics import evaluate_12ECG_score

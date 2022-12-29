@@ -20,13 +20,7 @@ import torch
 from torch import Tensor, nn
 
 from ...cfg import CFG
-from ...models._nets import (  # noqa: F401
-    Conv_Bn_Activation,
-    DownSample,
-    GlobalContextBlock,
-    NonLocalBlock,
-    SEBlock,
-)
+from ...models._nets import Conv_Bn_Activation, DownSample
 from ...utils.misc import list_sum, add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,

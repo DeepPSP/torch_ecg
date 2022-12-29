@@ -20,7 +20,7 @@ from torch_ecg.cfg import CFG, DEFAULTS
 from torch_ecg.databases.aux_data.cinc2020_aux_data import get_class_weight
 from torch_ecg.model_configs import ECG_CRNN_CONFIG
 from torch_ecg.utils import ecg_arrhythmia_knowledge as EAK
-from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths  # noqa: F401
+
 
 __all__ = [
     "BaseCfg",

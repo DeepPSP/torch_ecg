@@ -12,7 +12,6 @@ from typing import Any, Optional, Sequence, Union, List
 
 import numpy as np
 import pandas as pd
-import wfdb  # noqa: F401
 
 from ...cfg import DEFAULTS
 from ...utils.misc import get_record_list_recursive3, add_docstring

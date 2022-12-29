@@ -26,14 +26,11 @@ from ...utils.misc import (
     add_docstring,
 )
 from ...utils.utils_interval import generalized_intervals_intersection
-from ..base import (  # noqa: F401
+from ..base import (
     DEFAULT_FIG_SIZE_PER_SEC,
     DataBaseInfo,
-    CPSCDataBase,
     PhysioNetDataBase,
     WFDB_Beat_Annotations,
-    WFDB_Non_Beat_Annotations,
-    WFDB_Rhythm_Annotations,
     _PlotCfg,
 )
 

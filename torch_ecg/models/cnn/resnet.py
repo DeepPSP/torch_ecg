@@ -12,11 +12,10 @@ import torch.nn.functional as F
 from torch import Tensor, nn
 
 from ...cfg import CFG
-from ...models._nets import (  # noqa: F401
+from ...models._nets import (
     Activations,
     Conv_Bn_Activation,
     DownSample,
-    MultiConv,
     SpaceToDepth,
     ZeroPadding,
     make_attention_layer,

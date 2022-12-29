@@ -18,7 +18,7 @@ import torch
 from torch import Tensor, nn
 
 from ...cfg import CFG
-from ...models._nets import (  # noqa: F401
+from ...models._nets import (
     BranchedConv,
     Conv_Bn_Activation,
     DownSample,

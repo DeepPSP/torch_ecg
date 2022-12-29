@@ -9,7 +9,6 @@ import numpy as np
 import torch
 from torch import Tensor
 from torch.nn.parallel import DataParallel as DP
-from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader, Dataset
 
 from torch_ecg.cfg import CFG, DEFAULTS

@@ -12,15 +12,7 @@ from typing import Optional, Sequence, Union, List
 from torch import Tensor, nn
 
 from ...cfg import CFG
-from ...models._nets import (  # noqa: F401
-    Conv_Bn_Activation,
-    DownSample,
-    GlobalContextBlock,
-    MultiConv,
-    NonLocalBlock,
-    SEBlock,
-    SeparableConv,
-)
+from ...models._nets import DownSample, MultiConv
 from ...utils.misc import add_docstring, CitationMixin
 from ...utils.utils_nn import (
     SizeMixin,

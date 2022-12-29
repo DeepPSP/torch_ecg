@@ -14,9 +14,6 @@ import pytest
 from tqdm.auto import tqdm
 
 from torch_ecg.models._nets import (
-    Mish,
-    Swish,
-    Hardswish,
     Initializers,
     Activations,
     # Normalizations,
@@ -68,30 +65,6 @@ SAMPLE_INPUT = torch.randn(BATCH_SIZE, IN_CHANNELS, SEQ_LEN)
 
 @torch.no_grad()
 def test_activations():
-    # Mish, Swish, Hardswish
-    # get_activation
-
-    mish = Mish(inplace=False)
-    swish = Swish()
-    hard_swish = Hardswish()
-
-    out = mish(SAMPLE_INPUT)
-    assert out.shape == SAMPLE_INPUT.shape
-    out = swish(SAMPLE_INPUT)
-    assert out.shape == SAMPLE_INPUT.shape
-    out = hard_swish(SAMPLE_INPUT)
-    assert out.shape == SAMPLE_INPUT.shape
-
-    assert get_activation(None) is None
-
-    assert get_activation("mish") == Mish
-    assert isinstance(get_activation(Mish, dict(inplace=False)), Mish)
-    assert get_activation(Mish, dict(inplace=False)) != mish
-    assert get_activation(mish, dict(inplace=True)) == mish
-
-    assert isinstance(get_activation("mish", {}), Mish)
-    assert isinstance(get_activation(Mish, {}), Mish)
-    assert isinstance(get_activation(mish, {}), Mish)
 
     for name in Activations:
         act = get_activation(name)

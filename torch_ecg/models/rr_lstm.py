@@ -20,7 +20,7 @@ from einops.layers.torch import Rearrange
 from ..cfg import CFG
 from ..components.outputs import BaseOutput
 from ..model_configs.rr_lstm import RR_LSTM_CONFIG
-from ..models._nets import (  # noqa: F401
+from ..models._nets import (
     ExtendedCRF,
     GlobalContextBlock,
     NonLocalBlock,

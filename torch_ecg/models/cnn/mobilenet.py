@@ -18,9 +18,8 @@ from torch import Tensor, nn
 from deprecate_kwargs import deprecate_kwargs
 
 from ...cfg import CFG
-from ...models._nets import (  # noqa: F401
+from ...models._nets import (
     Conv_Bn_Activation,
-    DownSample,
     Initializers,
     MultiConv,
     make_attention_layer,

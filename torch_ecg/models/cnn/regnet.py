@@ -13,15 +13,10 @@ import torch
 from torch import nn
 
 from ...cfg import CFG
-from ...models._nets import (  # noqa: F401
-    Activations,
-    Initializers,
+from ...models._nets import (
     Conv_Bn_Activation,
     DownSample,
-    MultiConv,
     SpaceToDepth,
-    ZeroPadding,
-    make_attention_layer,
 )
 from ...utils.misc import add_docstring, CitationMixin
 from ...utils.utils_nn import (

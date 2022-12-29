@@ -15,7 +15,6 @@ import torch
 import torch.nn.functional as F
 from deprecated import deprecated
 from deprecate_kwargs import deprecate_kwargs
-from packaging import version
 from torch import Tensor, nn
 from torch.nn import Parameter
 from torch.nn.utils.rnn import PackedSequence
@@ -35,9 +34,6 @@ from ..utils.utils_nn import (
 )
 
 __all__ = [
-    "Mish",
-    "Swish",
-    "Hardswish",
     "Initializers",
     "Activations",
     "Normalizations",
@@ -82,91 +78,6 @@ __all__ = [
 ]
 
 
-if version.parse(torch.__version__) >= version.parse("1.5.0"):
-
-    def _true_divide(dividend, divisor):
-        return torch.true_divide(dividend, divisor)
-
-else:
-
-    def _true_divide(dividend, divisor):
-        return dividend / divisor
-
-
-# ---------------------------------------------
-# activations
-try:
-    Mish = nn.Mish  # pytorch added in version 1.9
-    Mish.__name__ = "Mish"
-except Exception:
-
-    class Mish(nn.Module):
-        """The Mish activation"""
-
-        __name__ = "Mish"
-
-        def __init__(self):
-            """ """
-            super().__init__()
-
-        def forward(self, input: Tensor) -> Tensor:
-            """ """
-            return input * (torch.tanh(F.softplus(input)))
-
-
-try:
-    Swish = nn.SiLU  # pytorch added in version 1.7
-    Swish.__name__ = "Swish"
-    SiLU = nn.SiLU
-except Exception:
-
-    class Swish(nn.Module):
-        """The Swish activation"""
-
-        __name__ = "Swish"
-
-        def __init__(self):
-            """ """
-            super().__init__()
-
-        def forward(self, input: Tensor) -> Tensor:
-            """ """
-            return input * F.sigmoid(input)
-
-    SiLU = Swish
-    SiLU.__name__ = "SiLU"
-
-
-try:
-    Hardswish = nn.Hardswish  # pytorch added in version 1.6
-    Hardswish.__name__ = "Hardswish"
-except Exception:
-
-    class Hardswish(nn.Module):
-        r"""
-        Applies the hardswish function, element-wise, as described in the paper:
-        `Searching for MobileNetV3`_.
-        .. math::
-            \text{Hardswish}(x) = \begin{cases}
-                0 & \text{if~} x \le -3, \\
-                x & \text{if~} x \ge +3, \\
-                x \cdot (x + 3) /6 & \text{otherwise}
-            \end{cases}
-        .. _`Searching for MobileNetV3`:
-            https://arxiv.org/abs/1905.02244
-
-        """
-        __name__ = "Hardswish"
-
-        def __init__(self):
-            """ """
-            super().__init__()
-
-        def forward(self, input: Tensor) -> Tensor:
-            """ """
-            return torch.clamp(input * (3 + input) / 6, min=0, max=input)
-
-
 # ---------------------------------------------
 # initializers
 Initializers = CFG()
@@ -189,17 +100,17 @@ Initializers.constant = nn.init.constant_
 # ---------------------------------------------
 # activations
 Activations = CFG()
-Activations.mish = Mish
-Activations.swish = Swish
-Activations.hardswish = Hardswish
-Activations.hard_swish = Hardswish
+Activations.mish = nn.Mish
+Activations.swish = nn.SiLU
+Activations.hardswish = nn.Hardswish
+Activations.hard_swish = nn.Hardswish
 Activations.relu = nn.ReLU
 Activations.relu6 = nn.ReLU6
 Activations.rrelu = nn.RReLU
 Activations.leaky = nn.LeakyReLU
 Activations.leaky_relu = Activations.leaky
 Activations.gelu = nn.GELU
-Activations.silu = SiLU
+Activations.silu = nn.SiLU
 Activations.elu = nn.ELU
 Activations.celu = nn.CELU
 Activations.selu = nn.SELU
@@ -2444,7 +2355,7 @@ class AttentionWithContext(nn.Module, SizeMixin):
             a_masked = a * mask
         else:
             a_masked = a
-        a_masked = _true_divide(
+        a_masked = torch.true_divide(
             a_masked,
             torch.sum(a_masked, dim=-1, keepdim=True) + torch.finfo(torch.float32).eps,
         )

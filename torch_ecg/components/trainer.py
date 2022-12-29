@@ -15,10 +15,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import torch
-import torch_optimizer as extra_optim  # noqa: F401
 from torch import nn, optim
-from torch.nn.parallel import DataParallel as DP  # noqa: F401
-from torch.nn.parallel import DistributedDataParallel as DDP  # noqa: F401
 from torch.utils.data import DataLoader
 from torch.utils.data.dataset import Dataset
 from tqdm.auto import tqdm

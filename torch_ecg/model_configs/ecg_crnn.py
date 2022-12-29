@@ -6,13 +6,13 @@ from copy import deepcopy
 
 from ..cfg import CFG
 from ..utils.utils_nn import adjust_cnn_filter_lengths
-from .attn import (  # noqa: F401
+from .attn import (
     global_context,
     non_local,
     squeeze_excitation,
     transformer,
 )
-from .cnn import (  # noqa: F401
+from .cnn import (
     densenet_leadwise,
     densenet_vanilla,
     multi_scopic,
@@ -21,10 +21,7 @@ from .cnn import (  # noqa: F401
     mobilenet_v1_vanilla,
     mobilenet_v2_vanilla,
     mobilenet_v3_small,
-    resnet_block_basic,
     resnet_block_stanford,
-    resnet_bottle_neck,
-    resnet_cpsc2018,
     resnet_cpsc2018_leadwise,
     resnet_nature_comm,
     resnet_nature_comm_bottle_neck,
@@ -60,8 +57,9 @@ from .cnn import (  # noqa: F401
     xception_leadwise,
     xception_vanilla,
 )
-from .mlp import linear  # noqa: F401
-from .rnn import attention, lstm  # noqa: F401
+from .mlp import linear
+from .rnn import lstm
+
 
 __all__ = [
     "ECG_CRNN_CONFIG",

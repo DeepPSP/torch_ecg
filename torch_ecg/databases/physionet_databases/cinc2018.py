@@ -14,7 +14,7 @@ import scipy.signal as SS
 import wfdb
 from tqdm.auto import tqdm
 
-from ...cfg import DEFAULTS  # noqa: F401
+from ...cfg import DEFAULTS
 from ...utils import (
     add_docstring,
     get_record_list_recursive3,
