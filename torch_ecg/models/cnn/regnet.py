@@ -140,9 +140,10 @@ class AnyStage(nn.Sequential, SizeMixin):
         groups = num_filters // group_width
         base_width = block_cls.__DEFAULT_BASE_WIDTH__ / groups
 
+        block_in_channels = in_channels
         for i in range(num_blocks):
             block = block_cls(
-                in_channels=in_channels if i == 0 else num_filters,
+                in_channels=block_in_channels,
                 num_filters=num_filters,
                 filter_length=filter_length,
                 subsample_length=subsample_length if i == 0 else 1,
@@ -150,6 +151,7 @@ class AnyStage(nn.Sequential, SizeMixin):
                 base_width=base_width,
                 **self.block_config,
             )
+            block_in_channels = block.compute_output_shape()[1]
             self.add_module(f"block_{stage_index}_{i}", block)
 
     @staticmethod

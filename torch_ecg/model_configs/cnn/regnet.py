@@ -83,4 +83,4 @@ regnet_S.subsample_lengths = [2, 2, 2, 2]
 regnet_S.num_filters = [32, 64, 128, 256]
 regnet_S.group_widths = [8, 16, 32, 64]
 regnet_S.block = deepcopy(resnet_bottle_neck_se)
-regnet_S.block.expansion = 2
+regnet_S.block.expansion = 4
