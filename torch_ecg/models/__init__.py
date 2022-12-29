@@ -3,6 +3,7 @@
 
 from .cnn import (
     ResNet,
+    RegNet,
     VGG16,
     Xception,
     DenseNet,
@@ -24,6 +25,7 @@ from . import _nets
 __all__ = [
     # CNN backbone
     "ResNet",
+    "RegNet",
     "VGG16",
     "Xception",
     "DenseNet",

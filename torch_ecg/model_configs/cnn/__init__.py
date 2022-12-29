@@ -61,6 +61,7 @@ from .regnet import (
     regnet_16_8,
     regnet_27_24,
     regnet_23_168,
+    regnet_S,
     regnet_bottle_neck,
     regnet_bottle_neck_B,
     regnet_bottle_neck_D,
@@ -146,6 +147,7 @@ __all__ = [
     "regnet_16_8",
     "regnet_27_24",
     "regnet_23_168",
+    "regnet_S",
     # multi_scopic
     "multi_scopic_block",
     "multi_scopic",

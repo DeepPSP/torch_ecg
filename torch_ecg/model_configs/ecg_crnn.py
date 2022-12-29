@@ -51,6 +51,7 @@ from .cnn import (  # noqa: F401
     regnet_16_8,
     regnet_27_24,
     regnet_23_168,
+    regnet_S,
     vgg16,
     vgg16_leadwise,
     vgg_block_basic,
@@ -221,6 +222,11 @@ ECG_CRNN_CONFIG.cnn.regnet_27_24 = adjust_cnn_filter_lengths(
 ECG_CRNN_CONFIG.cnn.regnet_23_168 = deepcopy(regnet_23_168)
 ECG_CRNN_CONFIG.cnn.regnet_23_168 = adjust_cnn_filter_lengths(
     ECG_CRNN_CONFIG.cnn.regnet_23_168, ECG_CRNN_CONFIG.fs
+)
+
+ECG_CRNN_CONFIG.cnn.regnet_S = deepcopy(regnet_S)
+ECG_CRNN_CONFIG.cnn.regnet_S = adjust_cnn_filter_lengths(
+    ECG_CRNN_CONFIG.cnn.regnet_S, ECG_CRNN_CONFIG.fs
 )
 
 ECG_CRNN_CONFIG.cnn.multi_scopic = deepcopy(multi_scopic)

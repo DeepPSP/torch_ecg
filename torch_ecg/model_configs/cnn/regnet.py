@@ -21,6 +21,7 @@ __all__ = [
     "regnet_16_8",
     "regnet_27_24",
     "regnet_23_168",
+    "regnet_S",
     "regnet_bottle_neck",
     "regnet_bottle_neck_B",
     "regnet_bottle_neck_D",
@@ -70,3 +71,16 @@ regnet_23_168.group_widths = 168
 regnet_23_168.w_a = 69.86
 regnet_23_168.w_0 = 320
 regnet_23_168.w_m = 2.0
+
+
+regnet_S = CFG()
+regnet_S.fs = 500
+regnet_S.stem = deepcopy(resnet_stem)
+
+regnet_S.num_blocks = [2, 2, 2, 2]
+regnet_S.filter_lengths = [13, 11, 7, 5]
+regnet_S.subsample_lengths = [2, 2, 2, 2]
+regnet_S.num_filters = [32, 64, 128, 256]
+regnet_S.group_widths = [8, 16, 32, 64]
+regnet_S.block = deepcopy(resnet_bottle_neck_se)
+regnet_S.block.expansion = 2
