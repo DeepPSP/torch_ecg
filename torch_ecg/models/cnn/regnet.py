@@ -385,17 +385,15 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
 
         if self.config.get("num_filters", None) is not None:
             warnings.warn(
-                "num_filters are computed from config.w_a, config.w_0, config.w_m, "
-                "if config.num_blocks is not provided. "
+                "`num_filters` are computed from `config.w_a`, `config.w_0`, `config.w_m`, "
+                "if `config.num_blocks` is not provided. "
                 "This may not be the intended behavior.",
                 RuntimeWarning,
             )
-            assert {"w_a", "w_0", "w_m", "tot_blocks"}.issubset(
-                set(self.config.keys())
-            ), (
-                "If `num_blocks` is not provided, then `w_a`, `w_0`, `w_m`, "
-                "and `tot_blocks` must be provided."
-            )
+        assert {"w_a", "w_0", "w_m", "tot_blocks"}.issubset(set(self.config.keys())), (
+            "If `config.num_blocks` is not provided, then `config.w_a`, `config.w_0`, `config.w_m`, "
+            "and `config.tot_blocks` must be provided."
+        )
         QUANT = 8
         if (
             self.config.w_a < 0

@@ -14,7 +14,7 @@ IN_CHANNELS = 12
 
 @torch.no_grad()
 def test_xception():
-    inp = torch.randn(2, IN_CHANNELS, 5000)
+    inp = torch.randn(2, IN_CHANNELS, 2000)
 
     for item in [xception_vanilla, xception_leadwise]:
         config = deepcopy(item)

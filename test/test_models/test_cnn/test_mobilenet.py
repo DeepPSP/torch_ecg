@@ -22,7 +22,7 @@ IN_CHANNELS = 12
 
 @torch.no_grad()
 def test_mobilenet():
-    inp = torch.randn(2, IN_CHANNELS, 5000)
+    inp = torch.randn(2, IN_CHANNELS, 2000)
 
     config = deepcopy(mobilenet_v1_vanilla)
     model = MobileNetV1(in_channels=IN_CHANNELS, **config)

@@ -92,7 +92,12 @@ class DenseBasicBlock(nn.Module, SizeMixin):
         self.__groups = groups
         self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         self.config.update(deepcopy(config))
-        assert all([in_channels % groups == 0, growth_rate % groups == 0])
+        assert (
+            in_channels % groups == 0
+        ), f"`in_channels` (= `{in_channels}`) must be divisible by `groups` (= `{groups}`)"
+        assert (
+            growth_rate % groups == 0
+        ), f"`growth_rate` (= `{growth_rate}`) must be divisible by `groups` (= `{groups}`)"
 
         self.bac = Conv_Bn_Activation(
             in_channels=self.__in_channels,
@@ -139,9 +144,9 @@ class DenseBasicBlock(nn.Module, SizeMixin):
                 list_sum(
                     [
                         [
-                            input[..., iw_per_group * i : iw_per_group * (i + 1), ...],
+                            input[:, iw_per_group * i : iw_per_group * (i + 1), :],
                             new_features[
-                                ..., nfw_per_group * i : nfw_per_group * (i + 1), ...
+                                :, nfw_per_group * i : nfw_per_group * (i + 1), :
                             ],
                         ]
                         for i in range(self.__groups)
@@ -313,9 +318,9 @@ class DenseBottleNeck(nn.Module, SizeMixin):
                 list_sum(
                     [
                         [
-                            input[..., iw_per_group * i : iw_per_group * (i + 1), ...],
+                            input[:, iw_per_group * i : iw_per_group * (i + 1), :],
                             new_features[
-                                ..., nfw_per_group * i : nfw_per_group * (i + 1), ...
+                                :, nfw_per_group * i : nfw_per_group * (i + 1), :
                             ],
                         ]
                         for i in range(self.__groups)
@@ -427,6 +432,7 @@ class DenseMacroBlock(nn.Sequential, SizeMixin):
                     growth_rate=self.__growth_rates[idx],
                     bn_size=self.__bn_size,
                     filter_length=self.__filter_lengths[idx],
+                    groups=self.__groups,
                     bias=bias,
                     dropout=dropout,
                     **(self.config),
@@ -579,8 +585,10 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
 
     References
     ----------
-    [1] G. Huang, Z. Liu, L. Van Der Maaten and K. Q. Weinberger, "Densely Connected Convolutional Networks," 2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI, 2017, pp. 2261-2269, doi: 10.1109/CVPR.2017.243.
-    [2] G. Huang, Z. Liu, G. Pleiss, L. Van Der Maaten and K. Weinberger, "Convolutional Networks with Dense Connectivity," in IEEE Transactions on Pattern Analysis and Machine Intelligence, doi: 10.1109/TPAMI.2019.2918284.
+    [1] G. Huang, Z. Liu, L. Van Der Maaten and K. Q. Weinberger, "Densely Connected Convolutional Networks,"
+        2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI, 2017, pp. 2261-2269, doi: 10.1109/CVPR.2017.243.
+    [2] G. Huang, Z. Liu, G. Pleiss, L. Van Der Maaten and K. Weinberger, "Convolutional Networks with Dense Connectivity,"
+        in IEEE Transactions on Pattern Analysis and Machine Intelligence, doi: 10.1109/TPAMI.2019.2918284.
     [3] https://github.com/pytorch/vision/blob/master/torchvision/models/densenet.py
     [4] https://github.com/gpleiss/efficient_densenet_pytorch/blob/master/models/densenet.py
     [5] https://github.com/bamos/densenet.pytorch/blob/master/densenet.py
@@ -647,27 +655,30 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
             )
         else:
             self.__growth_rates = list(self.config.growth_rates)
-        assert (
-            len(self.__growth_rates) == self.__num_blocks
-        ), f"`config.growth_rates` indicates {len(self.__growth_rates)} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
+        assert len(self.__growth_rates) == self.__num_blocks, (
+            f"`config.growth_rates` indicates {len(self.__growth_rates)} macro blocks, "
+            f"while `config.num_layers` indicates {self.__num_blocks}"
+        )
         if isinstance(self.config.filter_lengths, int):
             self.__filter_lengths = list(
                 repeat(self.config.filter_lengths, self.__num_blocks)
             )
         else:
             self.__filter_lengths = list(self.config.filter_lengths)
-            assert (
-                len(self.__filter_lengths) == self.__num_blocks
-            ), f"`config.filter_lengths` indicates {len(self.__filter_lengths)} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
+            assert len(self.__filter_lengths) == self.__num_blocks, (
+                f"`config.filter_lengths` indicates {len(self.__filter_lengths)} macro blocks, "
+                f"while `config.num_layers` indicates {self.__num_blocks}"
+            )
         if isinstance(self.config.subsample_lengths, int):
             self.__subsample_lengths = list(
                 repeat(self.config.subsample_lengths, self.__num_blocks - 1)
             )
         else:
             self.__subsample_lengths = list(self.config.subsample_lengths)
-            assert (
-                len(self.__subsample_lengths) == self.__num_blocks - 1
-            ), f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)+1} macro blocks, while `config.num_layers` indicates {self.__num_blocks}"
+            assert len(self.__subsample_lengths) == self.__num_blocks - 1, (
+                f"`config.subsample_lengths` indicates {len(self.__subsample_lengths)+1} macro blocks, "
+                f"while `config.num_layers` indicates {self.__num_blocks}"
+            )
 
         macro_in_channels = self.config.init_num_filters
         for idx, macro_num_layers in enumerate(self.config.num_layers):

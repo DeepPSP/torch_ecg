@@ -33,4 +33,5 @@ densenet_vanilla.transition = CFG()
 
 densenet_leadwise = deepcopy(densenet_vanilla)
 densenet_leadwise.init_num_filters = 12 * 8
+densenet_leadwise.growth_rates = 12
 densenet_leadwise.groups = 12
