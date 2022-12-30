@@ -599,12 +599,13 @@ class LUDB(PhysioNetDataBase):
         row = row.iloc[0]
         info = row.to_dict()
         if fields is not None:
-            assert fields in self._df_subject_info.columns or set(fields).issubset(
-                set(self._df_subject_info.columns)
-            ), "No such field(s)!"
             if isinstance(fields, str):
+                assert fields in self._df_subject_info.columns, f"No field `{fields}`"
                 info = info[fields]
             else:
+                assert set(fields).issubset(
+                    set(self._df_subject_info.columns)
+                ), f"No field(s) {set(fields).difference(set(self._df_subject_info.columns))}"
                 info = {k: v for k, v in info.items() if k in fields}
         return info
 
@@ -662,22 +663,25 @@ class LUDB(PhysioNetDataBase):
             import matplotlib.pyplot as plt
 
             plt.MultipleLocator.MAXTICKS = 3000
-        _leads = self._normalize_leads(leads)
 
-        # lead_list = self.load_ann(rec)["df_leads"]["lead_name"].tolist()
-        # _lead_indices = [lead_list.index(ld) for ld in leads]
-        _lead_indices = [self.all_leads.index(ld) for ld in _leads]
-        if data is None:
-            _data = self.load_data(rec, data_format="channel_first", units="μV")[
-                _lead_indices
-            ]
-        else:
+        if data is not None:
+            assert leads is not None, "`leads` must be specified when `data` is given"
+            data = np.atleast_2d(data)
+            _leads = self._normalize_leads(leads)
+            _lead_indices = [self.all_leads.index(ld) for ld in _leads]
+            assert len(_leads) == data.shape[0], "number of leads must match data"
             units = self._auto_infer_units(data)
             self.logger.info(f"input data is auto detected to have units in {units}")
             if units.lower() == "mv":
                 _data = 1000 * data
             else:
                 _data = data
+        else:
+            _leads = self._normalize_leads(leads)
+            _lead_indices = [self.all_leads.index(ld) for ld in _leads]
+            _data = self.load_data(rec, data_format="channel_first", units="μV")[
+                _lead_indices
+            ]
 
         if same_range:
             y_ranges = np.ones((_data.shape[0],)) * np.max(np.abs(_data)) + 100
@@ -687,10 +691,10 @@ class LUDB(PhysioNetDataBase):
         if data is None and waves is None:
             waves = self.load_ann(rec, leads=_leads)["waves"]
 
+        pwaves = {ld: [] for ld in _leads}
+        qrs = {ld: [] for ld in _leads}
+        twaves = {ld: [] for ld in _leads}
         if waves is not None:
-            pwaves = {ld: [] for ld in _leads}
-            qrs = {ld: [] for ld in _leads}
-            twaves = {ld: [] for ld in _leads}
             for l_idx, l_w in waves.items():
                 for wv in l_w:
                     itv = [wv.onset, wv.offset]
@@ -787,7 +791,6 @@ def compute_metrics(
     mask_format: str = "channel_first",
 ) -> Dict[str, Dict[str, float]]:
     """
-
     compute metrics
     (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
     for multiple evaluations
@@ -852,7 +855,6 @@ def compute_metrics_waveform(
     fs: Real,
 ) -> Dict[str, Dict[str, float]]:
     """
-
     compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
     of evaluations on a multiple samples (differ by records, or leads)
 
@@ -973,7 +975,6 @@ def _compute_metrics_waveform(
     truths: Sequence[ECGWaveForm], preds: Sequence[ECGWaveForm], fs: Real
 ) -> Dict[str, Dict[str, float]]:
     """
-
     compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
     of evaluations on a single sample (the same record, the same lead)
 
@@ -1059,7 +1060,6 @@ def _compute_metrics_base(
     truths: Sequence[Real], preds: Sequence[Real], fs: Real
 ) -> Dict[str, float]:
     """
-
     Parameters
     ----------
     truths: sequence of real numbers,

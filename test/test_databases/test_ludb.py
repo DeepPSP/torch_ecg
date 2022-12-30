@@ -89,6 +89,15 @@ class TestLUDB:
         masks = reader.load_masks(0, leads=[1, 7], mask_format="lead_last")
         assert masks.shape == data.T.shape
 
+    def test_load_subject_info(self):
+        subject_info = reader.load_subject_info(0)
+        assert isinstance(subject_info, dict)
+        subject_info = reader.load_subject_info(0, fields=["Sex", "Age"])
+        assert isinstance(subject_info, dict)
+        assert subject_info.keys() == {"Sex", "Age"}
+        subject_info = reader.load_subject_info(0, fields="Sex")
+        assert isinstance(subject_info, str)
+
     def test_from_masks(self):
         ann = reader.from_masks(reader.load_masks(0), leads=reader.all_leads)
         ann_1 = reader.load_ann(0)["waves"]
@@ -109,6 +118,8 @@ class TestLUDB:
 
     def test_plot(self):
         reader.plot(0, leads=["I", 5], ticks_granularity=2)
+        data = reader.load_data(0, leads="III", data_format="flat")
+        reader.plot(0, data=data, leads="III")
 
 
 config = deepcopy(LUDBTrainCfg)

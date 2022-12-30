@@ -11,6 +11,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from torch_ecg.databases import MITDB, WFDB_Rhythm_Annotations, DataBaseInfo
@@ -101,6 +102,11 @@ class TestMITDB:
         )
         assert np.allclose(rpeaks, rpeaks_1 - 2000)
 
+    def test_get_lead_names(self):
+        lead_names = reader._get_lead_names(0)
+        assert isinstance(lead_names, list)
+        assert all(isinstance(lead_name, str) for lead_name in lead_names)
+
     def test_meta_data(self):
         assert isinstance(reader.version, str) and re.match(
             PHYSIONET_DB_VERSION_PATTERN, reader.version
@@ -108,6 +114,15 @@ class TestMITDB:
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
+        assert isinstance(reader.df_stats, pd.DataFrame)
+        assert not reader.df_stats.empty
+        assert isinstance(reader.df_stats_expanded, pd.DataFrame)
+        assert not reader.df_stats_expanded.empty
+        assert isinstance(reader.df_stats_expanded_boolean, pd.DataFrame)
+        assert not reader.df_stats_expanded_boolean.empty
+        assert isinstance(reader.db_stats, dict)
+        assert isinstance(reader.beat_types_records, dict)
+        assert isinstance(reader.rhythm_types_records, dict)
 
     def test_plot(self):
         pass  # `plot` not implemented yet
