@@ -17,7 +17,7 @@ from torch_ecg.models._nets import (
     Initializers,
     Activations,
     # Normalizations,
-    # Bn_Activation,
+    Bn_Activation,
     Conv_Bn_Activation,
     CBA,
     MultiConv,
@@ -54,6 +54,7 @@ from torch_ecg.models._nets import (
     get_activation,
     get_normalization,
     # internal
+    _ScaledDotProductAttention,
 )
 
 
@@ -69,12 +70,20 @@ def test_activations():
     for name in Activations:
         act = get_activation(name)
         assert act == Activations[name]
-        act = get_activation(name, {})
+        if name == "softmax":
+            kw = dict(dim=-1)
+        else:
+            kw = {}
+        act = get_activation(name, kw)
         if name not in ["glu"]:
             assert act(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
     act = get_activation("leaky", kw_act=dict(negative_slope=0.1))
     assert act.negative_slope == 0.1
+
+    mish = torch.nn.Mish()
+    act = get_activation(mish)
+    assert act is mish
 
     class SomeClass:
         def __init__(self, a, b):
@@ -153,6 +162,34 @@ def test_normalization():
 def test_initializer():
     for name in Initializers:
         assert inspect.isfunction(Initializers[name])
+
+
+@torch.no_grad()
+def test_ba():
+    grid = itertools.product(
+        ["batch_norm", "group_norm"],  # norm
+        ["mish", "leaky"],  # activation
+        [0.0, 0.1],  # dropout
+    )
+    for norm, activation, dropout in grid:
+        if norm == "group_norm":
+            kw_norm = dict(num_groups=IN_CHANNELS)
+        else:
+            kw_norm = None
+        ba = Bn_Activation(
+            num_features=IN_CHANNELS,
+            norm=norm,
+            activation=activation,
+            kw_norm=kw_norm,
+            dropout=dropout,
+        )
+        assert ba(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
+
+    with pytest.raises(ValueError, match="normalization `.+` not supported"):
+        Bn_Activation(num_features=IN_CHANNELS, norm="not_supported")
+
+    with pytest.raises(ValueError, match="unknown type of normalization: `.+`"):
+        Bn_Activation(num_features=IN_CHANNELS, norm=1)
 
 
 @torch.no_grad()
@@ -321,13 +358,22 @@ def test_cba():
             kernel_initializer="not_supported",
         )
 
-    with pytest.raises(ValueError, match="normalization method `.+` not supported"):
+    with pytest.raises(ValueError, match="normalization `.+` not supported"):
         Conv_Bn_Activation(
             in_channels=IN_CHANNELS,
             out_channels=IN_CHANNELS * 3,
             kernel_size=5,
             stride=1,
             norm="not_supported",
+        )
+
+    with pytest.raises(ValueError, match="unknown type of normalization: `.+`"):
+        Conv_Bn_Activation(
+            in_channels=IN_CHANNELS,
+            out_channels=IN_CHANNELS * 3,
+            kernel_size=5,
+            stride=1,
+            norm=1,
         )
 
     with pytest.raises(ValueError, match="`ordering` \\(.+\\) not supported"):
@@ -395,11 +441,6 @@ def test_cba():
 
 
 @torch.no_grad()
-def test_assign_weights_lead_wise():
-    pass
-
-
-@torch.no_grad()
 def test_multi_conv():
     mc = MultiConv(
         in_channels=IN_CHANNELS,
@@ -414,6 +455,7 @@ def test_multi_conv():
     assert mc(SAMPLE_INPUT).shape == mc.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
+    assert mc.in_channels == IN_CHANNELS
 
 
 @torch.no_grad()
@@ -436,6 +478,7 @@ def test_branched_conv():
     assert [t.shape for t in out_tensors] == bc.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
+    assert bc.in_channels == IN_CHANNELS
 
 
 @torch.no_grad()
@@ -452,6 +495,7 @@ def test_separable_conv():
     assert sc(SAMPLE_INPUT).shape == sc.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
+    assert sc.in_channels == IN_CHANNELS
 
 
 @torch.no_grad()
@@ -478,6 +522,13 @@ def test_blur_pool():
         assert bp(SAMPLE_INPUT).shape == bp.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
+    assert bp.in_channels == IN_CHANNELS
+    repr(bp)
+
+    with pytest.raises(
+        NotImplementedError, match="Filter size of \\d+ is not implemented"
+    ):
+        BlurPool(in_channels=IN_CHANNELS, down_scale=3, filt_size=10)
 
 
 @torch.no_grad()
@@ -506,6 +557,7 @@ def test_anti_alias_conv():
     assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
+    assert aac.in_channels == IN_CHANNELS
 
 
 @torch.no_grad()
@@ -513,19 +565,19 @@ def test_down_sample():
     grid = itertools.product(
         [1, 2, 5],  # down_scale
         ["max", "avg", "lp", "conv", "blur"],  # mode
-        [True, False],  # batch_norm
+        [True, False],  # norm
         [None, 5, 11],  # kernel_size
         [None, IN_CHANNELS * 2],  # out_channels
         # [0, 1, 2],  # padding
         [0],  # padding, TODO: test padding other than 0
     )
-    for down_scale, mode, batch_norm, kernel_size, out_channels, padding in grid:
-        # print(down_scale, mode, batch_norm, kernel_size, out_channels)
+    for down_scale, mode, norm, kernel_size, out_channels, padding in grid:
+        # print(down_scale, mode, norm, kernel_size, out_channels)
         ds = DownSample(
             in_channels=IN_CHANNELS,
             down_scale=down_scale,
             mode=mode,
-            batch_norm=batch_norm,
+            norm=norm,
             kernel_size=kernel_size,
             out_channels=out_channels,
             padding=padding,
@@ -533,6 +585,11 @@ def test_down_sample():
         assert ds(SAMPLE_INPUT).shape == ds.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
+    assert ds.in_channels == IN_CHANNELS
+
+    for mode in ["nearest", "area", "linear", "lse"]:
+        with pytest.raises(NotImplementedError):
+            ds = DownSample(in_channels=IN_CHANNELS, down_scale=2, mode=mode)
 
 
 @torch.no_grad()
@@ -653,23 +710,15 @@ def test_self_attention():
     grid = itertools.product(
         [True, False],  # bias
         [2, 6, 12],  # num_heads
-        [
-            "mish",
-            "relu",
-            "leaky_relu",
-            "gelu",
-            "tanh",
-            "sigmoid",
-            "softmax",
-        ],  # activation
+        [0.0, 0.1],  # dropout
     )
     sample_input = torch.randn(SEQ_LEN // 10, BATCH_SIZE, IN_CHANNELS)
-    for bias, num_heads, activation in grid:
+    for bias, num_heads, dropout in grid:
         sa = SelfAttention(
             embed_dim=IN_CHANNELS,
             num_heads=num_heads,
             bias=bias,
-            activation=activation,
+            dropout=dropout,
         )
         assert sa(sample_input).shape == sa.compute_output_shape(
             seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
@@ -684,11 +733,16 @@ def test_attentive_pooling():
         [0, 0.1, 0.5],  # dropout
     )
     for mid_channels, activation, dropout in grid:
+        if activation == "softmax":
+            kw_activation = dict(dim=-1)
+        else:
+            kw_activation = {}
         ap = AttentivePooling(
             in_channels=IN_CHANNELS,
             mid_channels=mid_channels,
             activation=activation,
             dropout=dropout,
+            kw_activation=kw_activation,
         )
         assert ap(SAMPLE_INPUT).shape == ap.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -1014,3 +1068,10 @@ def test_droppath():
     assert dp(SAMPLE_INPUT).shape == dp.compute_output_shape(
         input_shape=SAMPLE_INPUT.shape
     )
+
+
+@torch.no_grad()
+def test_ScaledDotProductAttention():
+    model = _ScaledDotProductAttention()
+    query, key, value = [torch.randn(2, 12, 2000) for _ in range(3)]
+    assert model(query, key, value).shape == torch.Size([2, 12, 2000])

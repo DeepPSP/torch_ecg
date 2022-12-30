@@ -13,7 +13,6 @@ from typing import Any, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import torch
 import torch.nn.functional as F
-from deprecated import deprecated
 from deprecate_kwargs import deprecate_kwargs
 from torch import Tensor, nn
 from torch.nn import Parameter
@@ -49,8 +48,6 @@ __all__ = [
     "BlurPool",
     "BidirectionalLSTM",
     "StackedLSTM",
-    # "AML_Attention",
-    # "AML_GatedAttention",
     "AttentionWithContext",
     "MultiHeadAttention",
     "SelfAttention",
@@ -254,7 +251,7 @@ _DEFAULT_CONV_CONFIGS = CFG(
 # basic building blocks of CNN
 class Bn_Activation(nn.Sequential, SizeMixin):
     """
-    batch normalization --> activation
+    normalization --> activation
     """
 
     __name__ = "Bn_Activation"
@@ -263,8 +260,9 @@ class Bn_Activation(nn.Sequential, SizeMixin):
     def __init__(
         self,
         num_features: int,
-        batch_norm: Union[bool, str, nn.Module],
-        activation: Union[str, nn.Module],
+        batch_norm: Union[str, nn.Module] = "batch_norm",
+        activation: Union[str, nn.Module] = "relu",
+        kw_norm: Optional[dict] = None,
         kw_activation: Optional[dict] = None,
         dropout: float = 0.0,
     ) -> None:
@@ -273,11 +271,13 @@ class Bn_Activation(nn.Sequential, SizeMixin):
         ----------
         num_features: int,
             number of features (channels) of the input (and output)
-        batch_norm: bool or str or Module, default True,
+        batch_norm: str or Module, default "batch_norm",
             (batch) normalization, or other normalizations, e.g. group normalization
-            (the name of) the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
-        activation: str or Module,
+            (the name of) the Module itself
+        activation: str or Module, default "relu",
             name of the activation or an activation `Module`
+        kw_norm: dict, optional,
+            key word arguments for `batch_norm`
         kw_activation: dict, optional,
             key word arguments for `activation`
         dropout: float, default 0.0,
@@ -289,21 +289,33 @@ class Bn_Activation(nn.Sequential, SizeMixin):
         self.__kw_activation = kw_activation or {}
         self.__dropout = dropout
         act_layer = get_activation(activation, kw_activation or {})
-        act_name = f"activation_{type(act_layer).__name__}"
 
-        self.add_module(  # TODO: add other normalizations
-            "batch_norm",
-            nn.BatchNorm1d(num_features),
-        )
-        self.add_module(
-            act_name,
-            act_layer,
-        )
+        kw_norm = kw_norm or {}
+        if isinstance(batch_norm, str):
+            bn_cls = get_normalization(batch_norm)
+            if bn_cls in [nn.BatchNorm1d, nn.InstanceNorm1d]:
+                kw_norm["num_features"] = self.__num_features
+            elif bn_cls == nn.GroupNorm:
+                assert (
+                    "num_groups" in kw_norm
+                ), "`num_groups` must be specified for `GroupNorm`"
+                kw_norm["num_channels"] = self.__num_features
+            elif bn_cls == nn.LayerNorm:
+                assert (
+                    "normalized_shape" in kw_norm
+                ), "`normalized_shape` must be specified for `LayerNorm`"
+            else:
+                raise ValueError(f"normalization `{batch_norm}` not supported yet!")
+            bn_layer = get_normalization(batch_norm, kw_norm)
+        elif isinstance(batch_norm, nn.Module):
+            bn_layer = batch_norm
+        else:
+            raise ValueError(f"unknown type of normalization: `{type(batch_norm)}`")
+
+        self.add_module("norm", bn_layer)
+        self.add_module("act", act_layer)
         if self.__dropout > 0:
-            self.add_module(
-                "dropout",
-                nn.Dropout(self.__dropout),
-            )
+            self.add_module("dropout", nn.Dropout(self.__dropout))
 
     def forward(self, input: Tensor) -> Tensor:
         """
@@ -525,32 +537,23 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
             if isinstance(batch_norm, bool):
                 bn_layer = nn.BatchNorm1d(bn_in_channels, **kw_bn)
             elif isinstance(batch_norm, str):
-                if batch_norm.lower() in [
-                    "batch_norm",
-                    "batch_normalization",
-                ]:
-                    bn_layer = nn.BatchNorm1d(bn_in_channels, **kw_bn)
-                elif batch_norm.lower() in [
-                    "instance_norm",
-                    "instance_normalization",
-                ]:
-                    bn_layer = nn.InstanceNorm1d(bn_in_channels, **kw_bn)
-                elif batch_norm.lower() in [
-                    "group_norm",
-                    "group_normalization",
-                ]:
-                    bn_layer = nn.GroupNorm(self.__groups, bn_in_channels, **kw_bn)
-                elif batch_norm.lower() in [
-                    "layer_norm",
-                    "layer_normalization",
-                ]:
-                    bn_layer = nn.LayerNorm(**kw_bn)
+                bn_cls = get_normalization(batch_norm)
+                if bn_cls in [nn.BatchNorm1d, nn.InstanceNorm1d]:
+                    kw_bn["num_features"] = bn_in_channels
+                elif bn_cls == nn.GroupNorm:
+                    kw_bn["num_channels"] = bn_in_channels
+                    kw_bn["num_groups"] = self.__groups
+                elif bn_cls == nn.LayerNorm:
+                    assert (
+                        "normalized_shape" in kw_bn
+                    ), "`normalized_shape` must be specified for `LayerNorm`"
                 else:
-                    raise ValueError(
-                        f"normalization method `{batch_norm}` not supported yet!"
-                    )
-            else:
+                    raise ValueError(f"normalization `{batch_norm}` not supported yet!")
+                bn_layer = get_normalization(batch_norm, kw_bn)
+            elif isinstance(batch_norm, nn.Module):
                 bn_layer = batch_norm
+            else:
+                raise ValueError(f"unknown type of normalization: `{type(batch_norm)}`")
         else:
             bn_layer = None
             if "b" in self.__ordering:
@@ -2202,74 +2205,6 @@ class StackedLSTM(nn.Sequential, SizeMixin):
 
 # ---------------------------------------------
 # attention mechanisms, from various sources
-@deprecated(reason="not checked yet")
-class AML_Attention(nn.Module, SizeMixin):
-    """NOT checked,
-
-    the feature extraction part is eliminated,
-    with only the attention left,
-
-    References
-    ----------
-    [1] https://github.com/AMLab-Amsterdam/AttentionDeepMIL/blob/master/model.py#L6
-
-    """
-
-    __name__ = "AML_Attention"
-
-    def __init__(self, L: int, D: int, K: int) -> None:
-        """NOT checked,"""
-        super().__init__()
-        self.L = L
-        self.D = D
-        self.K = K
-
-        self.attention = nn.Sequential(
-            nn.Linear(self.L, self.D), nn.Tanh(), nn.Linear(self.D, self.K)
-        )
-
-    def forward(self, input: Tensor) -> Tensor:
-        """ """
-        A = self.attention(input)  # NxK
-        return A
-
-
-@deprecated(reason="not checked yet")
-class AML_GatedAttention(nn.Module, SizeMixin):
-    """NOT checked,
-
-    the feature extraction part is eliminated,
-    with only the attention left,
-
-    TODO: compare with `nn.MultiheadAttention`
-
-    References
-    ----------
-    [1] https://github.com/AMLab-Amsterdam/AttentionDeepMIL/blob/master/model.py#L72
-
-    """
-
-    __name__ = "AML_GatedAttention"
-
-    def __init__(self, L: int, D: int, K: int) -> None:
-        """NOT checked,"""
-        super().__init__()
-        self.L = L
-        self.D = D
-        self.K = K
-
-        self.attention_V = nn.Sequential(nn.Linear(self.L, self.D), nn.Tanh())
-        self.attention_U = nn.Sequential(nn.Linear(self.L, self.D), nn.Sigmoid())
-        self.attention_weights = nn.Linear(self.D, self.K)
-
-    def forward(self, input: Tensor) -> Tensor:
-        """ """
-        A_V = self.attention_V(input)  # NxD
-        A_U = self.attention_U(input)  # NxD
-        A = self.attention_weights(A_V * A_U)  # element wise multiplication # NxK
-        return A
-
-
 class AttentionWithContext(nn.Module, SizeMixin):
     """from 0236 of CPSC2018 challenge"""
 
@@ -2516,7 +2451,6 @@ class SelfAttention(nn.Module, SizeMixin):
         head_num: int,
         dropout: float = 0.0,
         bias: bool = True,
-        activation: Optional[Union[str, nn.Module]] = "relu",
         **kwargs: Any,
     ) -> None:
         """
@@ -2530,8 +2464,6 @@ class SelfAttention(nn.Module, SizeMixin):
             dropout factor for out projection weight of MHA
         bias: bool, default True,
             whether to use the bias term
-        activation: str or Module, default "relu",
-            The activation after each linear transformation.
         kwargs: dict, optional,
             extra parameters
 
@@ -2566,7 +2498,6 @@ class SelfAttention(nn.Module, SizeMixin):
 
         """
         output, _ = self.mha(input, input, input)
-        # output = self.mha(input, input, input)
         return output
 
     def compute_output_shape(

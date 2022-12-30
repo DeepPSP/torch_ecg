@@ -646,7 +646,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
     in_channels: int,
         number of channels in the input
     config: dict,
-        other hyper-parameters of the Module, ref. corresponding config file
+        hyper-parameters of the Module, ref. corresponding config file
         keyword arguments that have to be set:
         bias: bool,
             if True, each convolution will have a bias term

@@ -274,6 +274,37 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
     [1] https://arxiv.org/abs/2003.13678
     [2] https://github.com/pytorch/vision/blob/master/torchvision/models/regnet.py
 
+    Parameters
+    ----------
+    in_channels: int,
+        the number of input channels
+    config: dict,
+        hyper-parameters of the Module, ref. corresponding config file
+        keyword arguments that have to be set:
+        filter_lengths: int or sequence of int,
+            filter length(s) (kernel size(s)) of the convolutions,
+            with granularity to the whole network, to each stage
+        subsample_lengths: int or sequence of int,
+            subsampling length(s) (ratio(s)) of all blocks,
+            with granularity to the whole network, to each stage
+        tot_blocks: int,
+            the total number of building blocks
+        w_a, w_0, w_m: float,
+            the parameters for the widths generating function
+        group_widths: int or sequence of int,
+            the number of channels in each group,
+            with granularity to the whole network, to each stage
+        num_blocks: sequence of int, optional,
+            the number of blocks in each stage,
+            if not given, will be computed from tot_blocks and w_a, w_0, w_m
+        num_filters: int or sequence of int, optional,
+            the number of filters in each stage,
+            if not given, will be computed from tot_blocks and w_a, w_0, w_m
+        stem: dict,
+            the config of the input stem
+        block: dict,
+            other parameters that can be set for the building blocks
+
     """
 
     __name__ = "RegNet"
