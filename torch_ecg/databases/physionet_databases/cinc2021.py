@@ -1505,8 +1505,8 @@ class CINC2021(PhysioNetDataBase):
             p_waves, qrs, t_waves = [], [], []
         palette = {
             "p_waves": "green",
-            "qrs": "yellow",
-            "t_waves": "pink",
+            "qrs": "red",
+            "t_waves": "yellow",
         }
         plot_alpha = 0.4
 
@@ -1890,8 +1890,7 @@ class CINC2021(PhysioNetDataBase):
     def download(self) -> None:
         """ """
         for url in self.url:
-            http_get(url, self.db_dir_base, extract=False)
-        prepare_dataset(self.db_dir_base, verbose=True)
+            http_get(url, self.db_dir_base, extract=True)
         self._ls_rec()
 
     def __len__(self) -> int:
@@ -2342,167 +2341,3 @@ def compute_challenge_metric(
 # alias
 compute_metrics = compute_all_metrics
 compute_metrics_detailed = compute_all_metrics_detailed
-
-
-def prepare_dataset(
-    input_directory: Union[str, Path],
-    output_directory: Optional[Union[str, Path]] = None,
-    tranches: Optional[Sequence[str]] = None,
-    verbose: bool = False,
-) -> None:
-    """
-
-    Parameters
-    ----------
-    input_directory: str or Path,
-        directory containing the .tar.gz files of the records and headers
-    output_directory: str or Path, optional,
-        directory to store the extracted records and headers, under specific organization,
-        if not specified, defaults to `input_directory`
-    tranches: sequence of str, optional,
-        the tranches to extract
-    verbose: bool, default False,
-        printint verbosity
-
-    NOTE
-    ----
-    currently, for updating headers only, corresponding .tar.gz file of records should be presented
-
-    """
-    import tarfile
-
-    _tranches = "CPSC,CPSC_Extra,StPetersburg,PTB,PTB_XL,Georgia,CUSPHNFH".split(",")
-
-    _dir = Path(input_directory).absolute()
-    # ShaoxingUniv (CUSPHNFH) is the union of ChapmanShaoxing and Ningbo
-    if "WFDB_ShaoxingUniv.tar.gz" in input_directory.iterdir():
-        flag_CUSPHNFH = False
-        _data_files = CINC2021.data_files[:-2]
-        _header_files = CINC2021.header_files[:-2]
-    else:
-        flag_CUSPHNFH = True
-        _data_files = deepcopy(CINC2021.data_files)
-        _header_files = deepcopy(CINC2021.header_files)
-    _data_files = [
-        item.name for item in _dir.glob("WFDB_*.tar.gz") if item.name in _data_files
-    ]
-    _header_files = [
-        item.name for item in _dir.glob("*Headers.tar.gz") if item.name in _header_files
-    ]
-    _output_directory = Path(output_directory or input_directory)
-    assert all(
-        [
-            CINC2021.header_files[CINC2021.data_files.index(item)] in _header_files
-            for item in _data_files
-        ]
-    ), "header files corresponding to some data files not found"
-
-    if flag_CUSPHNFH:
-        (_output_directory / "WFDB_CUSPHNFH").mkdir(parents=True, exist_ok=True)
-
-    acc = 0
-    for i, df in enumerate(_data_files):
-        if tranches and _tranches[CINC2021.data_files.index(df)] not in tranches:
-            continue
-        acc += 1
-        if df in [
-            "WFDB_ChapmanShaoxing.tar.gz",
-            "WFDB_Ningbo.tar.gz",
-        ]:
-            df_name = "WFDB_CUSPHNFH"
-        else:
-            df_name = df.replace(".tar.gz", "")
-        if len((_output_directory / df_name).glob("*.mat")) > 0:
-            pass
-        else:
-            with tarfile.open(str(_dir / df), "r:gz") as tar:
-                for member in tar.getmembers():
-                    if member.isfile():
-                        member.name = Path(member.name).name
-                        # header files will not be extracted,
-                        # instead, they will be extracted from corresponding headers-only .tar.gz file
-                        if Path(member.name).suffix == ".hea":
-                            continue
-                        tar.extract(member, str(_output_directory / df_name))
-                        if verbose:
-                            print(
-                                f"extracted '{str(_output_directory / df_name / member.name)}'"
-                            )
-        print(f"finish extracting {df}")
-        time.sleep(3)
-        # corresponding header files
-        hf = CINC2021.header_files[CINC2021.data_files.index(df)]
-        with tarfile.open(str(_dir / hf), "r:gz") as tar:
-            for member in tar.getmembers():
-                if member.isfile():
-                    member.name = Path(member.name).name
-                    tar.extract(member, str(_output_directory / df_name))
-                    if verbose:
-                        print(
-                            f"extracted '{str(_output_directory / df_name / member.name)}'"
-                        )
-        print(f"finish extracting {hf}")
-        print(
-            f"{df_name} done! --- {acc}/{len(tranches) if tranches else len(_data_files)}"
-        )
-        if i < len(_data_files) - 1:
-            time.sleep(3)
-
-
-def get_parser() -> dict:
-    """ """
-    import argparse
-
-    description = "Prepare the dataset, uncompressing the .tar.gz files, and replacing the header files."
-    parser = argparse.ArgumentParser(
-        description=description,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument(
-        "-i",
-        "--input_directory",
-        type=str,
-        required=True,
-        help="input directory, containing .tar.gz files of records and headers",
-        dest="input_directory",
-    )
-    parser.add_argument(
-        "-o",
-        "--output_directory",
-        type=str,
-        help="output directory",
-        dest="output_directory",
-    )
-    _tranches = list("ABCDEFG")
-    parser.add_argument(
-        "-t",
-        "--tranches",
-        type=str,
-        help=f"""list of tranches, a subset of {",".join(_tranches)}, separated by comma""",
-        dest="tranches",
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="verbosity",
-        dest="verbose",
-    )
-
-    args = vars(parser.parse_args())
-
-    return args
-
-
-if __name__ == "__main__":
-    # usage example:
-    # python prepare_dataset.py --help (check for details of arguments)
-    # python prepare_dataset.py -i "E:/Data/CinC2021/" -t "PTB,Georgia" -v
-    args = get_parser()
-    input_directory = args.get("input_directory")
-    output_directory = args.get("output_directory", None)
-    tranches = args.get("tranches", None)
-    verbose = args.get("verbose", False)
-    if tranches:
-        tranches = tranches.split(",")
-    prepare_dataset(input_directory, output_directory, tranches, verbose)

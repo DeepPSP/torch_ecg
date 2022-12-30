@@ -1101,47 +1101,6 @@ class CINC2020(PhysioNetDataBase):
 
         return subject_info
 
-    def save_challenge_predictions(
-        self,
-        rec: Union[str, int],
-        output_dir: Union[str, Path],
-        scores: List[Real],
-        labels: List[int],
-        classes: List[str],
-    ) -> None:
-        """NOT finished, NOT checked, need updating,
-
-        TODO: update for the official phase
-
-        Parameters
-        ----------
-        rec: str,
-            name of the record
-        output_dir: str or Path,
-            directory to save the predictions
-        scores: list of real,
-            raw predictions
-        labels: list of int,
-            0 or 1, binary predictions
-        classes: list of str,
-            SNOMED CT Code of binary predictions
-
-        """
-        if isinstance(rec, int):
-            rec = self[rec]
-        new_file = f"{rec}.csv"
-        output_file = Path(output_dir) / new_file
-
-        # Include the filename as the recording number
-        recording_string = f"#{rec}"
-        class_string = ",".join(classes)
-        label_string = ",".join(str(i) for i in labels)
-        score_string = ",".join(str(i) for i in scores)
-
-        output_file.write_text(
-            "\n".join([recording_string, class_string, label_string, score_string, ""])
-        )
-
     def plot(
         self,
         rec: Union[str, int],
@@ -1311,8 +1270,8 @@ class CINC2020(PhysioNetDataBase):
             p_waves, qrs, t_waves = [], [], []
         palette = {
             "p_waves": "green",
-            "qrs": "yellow",
-            "t_waves": "pink",
+            "qrs": "red",
+            "t_waves": "yellow",
         }
         plot_alpha = 0.4
 

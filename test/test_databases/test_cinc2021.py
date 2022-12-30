@@ -125,14 +125,23 @@ class TestCINC2021:
         for rec in reader:
             labels_1 = reader.get_labels(rec)
             labels_2 = reader.get_labels(rec, fmt="f")
-            labels_3 = reader.get_labels(rec, fmt="a")
+            labels_3 = reader.get_labels(rec, fmt="a", normalize=False)
             labels_4 = reader.get_labels(rec, scored_only=False)
             assert len(labels_1) == len(labels_2) == len(labels_3) <= len(labels_4)
             assert set(labels_1) <= set(labels_4)
+        with pytest.raises(
+            ValueError, match="`fmt` should be one of `a`, `f`, `s`, but got `.+`"
+        ):
+            reader.get_labels(rec, fmt="xxx")
 
     def test_get_fs(self):
         for rec in reader:
             assert reader.get_fs(rec) in reader.fs.values()
+        assert isinstance(reader.get_fs(0, from_hea=False), int)
+
+    def test_get_subject_id(self):
+        for rec in reader:
+            assert isinstance(reader.get_subject_id(rec), int)
 
     def test_get_subject_info(self):
         for rec in reader:
@@ -182,9 +191,15 @@ class TestCINC2021:
             reader.all_records
         ) == len(reader.tranche_names) == len(reader.db_tranches)
         assert reader.get_citation() is None  # printed
+        with pytest.warns(
+            RuntimeWarning,
+            match="the dataframe of stats is empty, try using _aggregate_stats",
+        ):
+            assert reader.df_stats.empty
         assert set(reader.diagnoses_records_list.keys()) >= set(
             dx_mapping_scored.Abbreviation
         )
+        assert not reader.df_stats.empty
         assert set(reader._check_exceptions()) <= set(reader.exceptional_records)
         df_1 = reader._compute_cooccurrence(tranches="F")
         df_2 = reader._compute_cooccurrence(tranches="FG")

@@ -165,6 +165,13 @@ class TestCINC2020:
             assert data_2.ndim == 2 and data_2.shape[0] == 12
             assert np.allclose(data_1, data_2.T)
 
+    def test_get_subject_id(self):
+        for rec in reader:
+            assert isinstance(reader.get_subject_id(rec), int)
+
+    def test_check_nan(self):
+        reader._check_nan(tranches="ABCDE")
+
     def test_meta_data(self):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert isinstance(reader.url, list) and len(reader.url) == len(
