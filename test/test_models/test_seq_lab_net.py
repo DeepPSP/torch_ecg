@@ -61,6 +61,9 @@ def test_ecg_seq_lab_net():
     doi = model.doi
     assert isinstance(doi, list)
     assert all([isinstance(d, str) for d in doi])
+    doi = model_v1.doi
+    assert isinstance(doi, list)
+    assert all([isinstance(d, str) for d in doi])
 
 
 def test_warns_errors():

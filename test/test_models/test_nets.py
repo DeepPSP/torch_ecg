@@ -183,7 +183,9 @@ def test_ba():
             kw_norm=kw_norm,
             dropout=dropout,
         )
-        assert ba(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
+        assert ba(SAMPLE_INPUT).shape == ba.compute_output_shape(
+            seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
 
     with pytest.raises(ValueError, match="normalization `.+` not supported"):
         Bn_Activation(num_features=IN_CHANNELS, norm="not_supported")
@@ -526,9 +528,13 @@ def test_blur_pool():
     repr(bp)
 
     with pytest.raises(
-        NotImplementedError, match="Filter size of \\d+ is not implemented"
+        NotImplementedError, match="Filter size of `\\d+` is not implemented"
     ):
         BlurPool(in_channels=IN_CHANNELS, down_scale=3, filt_size=10)
+    with pytest.raises(
+        NotImplementedError, match="Padding type of `.+` is not implemented"
+    ):
+        BlurPool(in_channels=IN_CHANNELS, down_scale=3, pad_type="xxx")
 
 
 @torch.no_grad()
@@ -703,6 +709,7 @@ def test_multi_head_attention():
         assert mha(q, k, v)[0].shape == mha.compute_output_shape(
             seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
         )
+    repr(mha)
 
 
 @torch.no_grad()
@@ -723,6 +730,11 @@ def test_self_attention():
         assert sa(sample_input).shape == sa.compute_output_shape(
             seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
         )
+    with pytest.raises(
+        ValueError,
+        match="`in_features`\\(\\d+\\) should be divisible by `head_num`\\(\\d+\\)",
+    ):
+        SelfAttention(embed_dim=IN_CHANNELS, num_heads=5)
 
 
 @torch.no_grad()
@@ -747,6 +759,7 @@ def test_attentive_pooling():
         assert ap(SAMPLE_INPUT).shape == ap.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
+    assert ap.in_channels == IN_CHANNELS
 
 
 @torch.no_grad()
@@ -811,20 +824,21 @@ def test_mlp():
             "xavier_normal",
             "kaiming_uniform",
             "kaiming_normal",
-        ],  # initializer
+        ],  # kernel_initializer
     )
-    for activation, dropout, bias, initializer in grid:
+    for activation, dropout, bias, kernel_initializer in grid:
         mlp = MLP(
             in_channels=IN_CHANNELS,
             out_channels=out_channels,
             activation=activation,
-            dropout=dropout,
+            kernel_initializer=kernel_initializer,
             bias=bias,
-            initializer=initializer,
+            dropout=dropout,
         )
         assert mlp(SAMPLE_INPUT.permute(0, 2, 1)).shape == mlp.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
+    assert mlp.in_channels == IN_CHANNELS
 
     with pytest.raises(
         AssertionError,
@@ -861,6 +875,7 @@ def test_attention_blocks():
         assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
+    assert nl.in_channels == IN_CHANNELS
 
     with pytest.raises(
         AssertionError, match="`filter_lengths` must be an int or a dict, but got `.+`"
@@ -891,6 +906,7 @@ def test_attention_blocks():
         assert se(SAMPLE_INPUT).shape == se.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
+    assert se.in_channels == IN_CHANNELS
 
     grid_gc = itertools.product(
         [4, 16],  # ratio
@@ -914,6 +930,7 @@ def test_attention_blocks():
         assert gc(sample_input).shape == gc.compute_output_shape(
             seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
         )
+    assert gc.in_channels == IN_CHANNELS * 16
 
     with pytest.raises(
         AssertionError,
@@ -956,11 +973,20 @@ def test_attention_blocks():
         assert cbam(sample_input).shape == cbam.compute_output_shape(
             seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
         )
+    assert cbam.gate_channels == IN_CHANNELS * 16
+    assert cbam.in_channels == IN_CHANNELS * 16
+
+    for attn in ["ca", "sk", "ge", "bam"]:
+        with pytest.raises(NotImplementedError):
+            make_attention_layer(IN_CHANNELS, name=attn)
+
+    with pytest.raises(ValueError, match="Unknown attention type: `.+`"):
+        make_attention_layer(IN_CHANNELS, name="xxx")
 
 
 @torch.no_grad()
 def test_crf():
-    # CRF, ExtendedCRF,
+    # CRF
     num_tags = 26
     sample_input = torch.randn(SEQ_LEN // 20, BATCH_SIZE, num_tags)
     labels = torch.randint(0, num_tags, (SEQ_LEN // 20, BATCH_SIZE))
@@ -972,6 +998,7 @@ def test_crf():
     assert crf(sample_input).shape == crf.compute_output_shape(
         seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
     )
+    repr(crf)
     nll = crf.neg_log_likelihood(sample_input, labels)
     assert nll.shape == torch.Size([])
     nll_1 = crf.neg_log_likelihood(sample_input, labels, mask)
@@ -1017,12 +1044,14 @@ def test_crf():
     ):
         CRF(num_tags=-1)
 
+    # ExtendedCRF
     sample_input = torch.randn(BATCH_SIZE, SEQ_LEN // 20, IN_CHANNELS)
     for bias in [True, False]:
         crf = ExtendedCRF(in_channels=IN_CHANNELS, num_tags=num_tags, bias=bias)
         assert crf(sample_input).shape == crf.compute_output_shape(
             seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
         )
+    assert crf.in_channels == IN_CHANNELS
 
 
 @torch.no_grad()
@@ -1037,6 +1066,7 @@ def test_s2d():
         assert s2d(SAMPLE_INPUT).shape == s2d.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
+    assert s2d.in_channels == IN_CHANNELS
 
 
 @torch.no_grad()
@@ -1056,6 +1086,7 @@ def test_mldecoder():
         assert mldecoder(SAMPLE_INPUT).shape == mldecoder.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
+    assert mldecoder.in_channels == IN_CHANNELS
 
     with pytest.raises(NotImplementedError, match="Not implemented for `zsl` is `.+`"):
         MLDecoder(in_channels=IN_CHANNELS, out_channels=IN_CHANNELS * 8, zsl=True)
@@ -1065,9 +1096,14 @@ def test_mldecoder():
 def test_droppath():
     # DropPath
     dp = DropPath()
+    dp.train()
     assert dp(SAMPLE_INPUT).shape == dp.compute_output_shape(
         input_shape=SAMPLE_INPUT.shape
     )
+    repr(dp)
+    dp.eval()
+    out = dp(SAMPLE_INPUT)
+    assert out is SAMPLE_INPUT
 
 
 @torch.no_grad()

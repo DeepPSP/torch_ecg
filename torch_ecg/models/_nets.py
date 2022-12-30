@@ -1109,7 +1109,8 @@ class SeparableConv(nn.Sequential, SizeMixin):
 
     References
     ----------
-    [1] Kaiser, Lukasz, Aidan N. Gomez, and Francois Chollet. "Depthwise separable convolutions for neural machine translation." arXiv preprint arXiv:1706.03059 (2017).
+    [1] Kaiser, Lukasz, Aidan N. Gomez, and Francois Chollet.
+        "Depthwise separable convolutions for neural machine translation." arXiv preprint arXiv:1706.03059 (2017).
     [2] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
 
     """
@@ -1289,8 +1290,10 @@ class DeformConv(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] Dai, J., Qi, H., Xiong, Y., Li, Y., Zhang, G., Hu, H., & Wei, Y. (2017). Deformable convolutional networks. In Proceedings of the IEEE international conference on computer vision (pp. 764-773).
-    [2] Zhu, X., Hu, H., Lin, S., & Dai, J. (2019). Deformable convnets v2: More deformable, better results. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 9308-9316).
+    [1] Dai, J., Qi, H., Xiong, Y., Li, Y., Zhang, G., Hu, H., & Wei, Y. (2017). Deformable convolutional networks.
+        In Proceedings of the IEEE international conference on computer vision (pp. 764-773).
+    [2] Zhu, X., Hu, H., Lin, S., & Dai, J. (2019). Deformable convnets v2: More deformable, better results.
+        In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 9308-9316).
     [3] https://github.com/open-mmlab/mmcv/blob/master/mmcv/ops/deform_conv.py
 
     """
@@ -1332,7 +1335,7 @@ class DeformConv(nn.Module, SizeMixin):
 class DownSample(nn.Sequential, SizeMixin):
     """
     NOTE: this down sampling module allows changement of number of channels,
-    via additional convolution, with some abuse of terminology
+    via additional convolution, with some abuse of terminology.
 
     the "conv" mode is not simply down "sampling" if `group` != `in_channels`
 
@@ -1671,7 +1674,8 @@ class BlurPool(nn.Module, SizeMixin):
 
     References
     ----------
-    1. Zhang, Richard. "Making convolutional networks shift-invariant again." International conference on machine learning. PMLR, 2019.
+    1. Zhang, Richard. "Making convolutional networks shift-invariant again."
+       International conference on machine learning. PMLR, 2019.
     2. https://github.com/adobe/antialiased-cnns/blob/master/antialiased_cnns/blurpool.py
     3. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py
     4. https://github.com/kornia/kornia/blob/master/kornia/filters/blur_pool.py
@@ -1733,7 +1737,7 @@ class BlurPool(nn.Module, SizeMixin):
             a = np.array([1.0, 6.0, 15.0, 20.0, 15.0, 6.0, 1.0])
         else:
             raise NotImplementedError(
-                f"Filter size of {self.__filt_size} is not implemented"
+                f"Filter size of `{self.__filt_size}` is not implemented"
             )
 
         # saved and restored in the state_dict, but not trained by the optimizer
@@ -1789,7 +1793,9 @@ class BlurPool(nn.Module, SizeMixin):
         elif self.__pad_type == "zero":
             PadLayer = ZeroPad1d
         else:
-            print(f"Pad type [{self.__pad_type}] not recognized")
+            raise NotImplementedError(
+                f"Padding type of `{self.__pad_type}` is not implemented"
+            )
         return PadLayer(self.__pad_sizes)
 
     def compute_output_shape(
@@ -2244,15 +2250,6 @@ class AttentionWithContext(nn.Module, SizeMixin):
             self.register_parameter("b", None)
             # self.register_parameter("u", None)
 
-    def compute_mask(self, input: Tensor, input_mask: Optional[Tensor] = None) -> None:
-        """
-        Parameters
-        ----------
-        to write
-
-        """
-        return None
-
     def forward(self, input: Tensor, mask: Optional[Tensor] = None) -> Tensor:
         """
         Parameters
@@ -2615,7 +2612,6 @@ class ZeroPadding(nn.Module, SizeMixin):
     """
     zero padding for increasing channels,
     degenerates to `identity` if in and out channels are equal
-
     """
 
     __name__ = "ZeroPadding"
@@ -2897,7 +2893,8 @@ class NonLocalBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] Wang, Xiaolong, et al. "Non-local neural networks." Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.
+    [1] Wang, Xiaolong, et al. "Non-local neural networks."
+        Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.
     [2] https://github.com/AlexHex7/Non-local_pytorch
 
     """
@@ -3040,8 +3037,12 @@ class SEBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] J. Hu, L. Shen, S. Albanie, G. Sun and E. Wu, "Squeeze-and-Excitation Networks," in IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 42, no. 8, pp. 2011-2023, 1 Aug. 2020, doi: 10.1109/TPAMI.2019.2913372.
-    [2] J. Hu, L. Shen and G. Sun, "Squeeze-and-Excitation Networks," 2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition, Salt Lake City, UT, 2018, pp. 7132-7141, doi: 10.1109/CVPR.2018.00745.
+    [1] J. Hu, L. Shen, S. Albanie, G. Sun and E. Wu, "Squeeze-and-Excitation Networks,"
+        in IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 42, no. 8,
+        pp. 2011-2023, 1 Aug. 2020, doi: 10.1109/TPAMI.2019.2913372.
+    [2] J. Hu, L. Shen and G. Sun, "Squeeze-and-Excitation Networks,"
+        2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition, Salt Lake City, UT,
+        2018, pp. 7132-7141, doi: 10.1109/CVPR.2018.00745.
     [3] https://github.com/hujie-frank/SENet
     [4] https://github.com/moskomule/senet.pytorch/blob/master/senet/se_module.py
 
@@ -3139,7 +3140,9 @@ class GEBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] Hu, J., Shen, L., Albanie, S., Sun, G., & Vedaldi, A. (2018). Gather-excite: Exploiting feature context in convolutional neural networks. Advances in neural information processing systems, 31, 9401-9411.
+    [1] Hu, J., Shen, L., Albanie, S., Sun, G., & Vedaldi, A. (2018).
+        Gather-excite: Exploiting feature context in convolutional neural networks.
+        Advances in neural information processing systems, 31, 9401-9411.
     [2] https://github.com/hujie-frank/GENet
     [3] https://github.com/BayesWatch/pytorch-GENet
     [4] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/gather_excite.py
@@ -3147,7 +3150,7 @@ class GEBlock(nn.Module, SizeMixin):
 
     __name__ = "GEBlock"
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, in_channels: int, **kwargs: Any) -> None:
         """ """
         super().__init__()
         raise NotImplementedError
@@ -3159,14 +3162,15 @@ class SKBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] Li, X., Wang, W., Hu, X., & Yang, J. (2019). Selective kernel networks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 510-519).
+    [1] Li, X., Wang, W., Hu, X., & Yang, J. (2019). Selective kernel networks.
+        In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 510-519).
     [2] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/sknet.py
 
     """
 
     __name__ = "SKBlock"
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, in_channels: int, **kwargs: Any) -> None:
         """ """
         super().__init__()
         raise NotImplementedError
@@ -3178,7 +3182,8 @@ class GlobalContextBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] Cao, Yue, et al. "Gcnet: Non-local networks meet squeeze-excitation networks and beyond." Proceedings of the IEEE International Conference on Computer Vision Workshops. 2019.
+    [1] Cao, Yue, et al. "Gcnet: Non-local networks meet squeeze-excitation networks and beyond."
+        Proceedings of the IEEE International Conference on Computer Vision Workshops. 2019.
     [2] https://github.com/xvjiarui/GCNet/blob/master/mmdet/ops/gcb/context_block.py
     [3] entry 0436 of CPSC2019
 
@@ -3352,9 +3357,7 @@ class BAMBlock(nn.Module, SizeMixin):
 
     __name__ = "BAMBlock"
 
-    def __init__(
-        self,
-    ):
+    def __init__(self, in_channels: int, **kwargs: Any):
         """ """
         raise NotImplementedError
 
@@ -3365,7 +3368,8 @@ class CBAMBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    1. Woo, Sanghyun, et al. "Cbam: Convolutional block attention module." Proceedings of the European conference on computer vision (ECCV). 2018.
+    1. Woo, Sanghyun, et al. "Cbam: Convolutional block attention module."
+       Proceedings of the European conference on computer vision (ECCV). 2018.
     2. https://github.com/Jongchan/attention-module/blob/master/MODELS/cbam.py
 
     """
@@ -3587,6 +3591,14 @@ class CBAMBlock(nn.Module, SizeMixin):
         """
         return (batch_size, self.__gate_channels, seq_len)
 
+    @property
+    def in_channels(self) -> int:
+        return self.__gate_channels
+
+    @property
+    def gate_channels(self) -> int:
+        return self.__gate_channels
+
 
 class CoordAttention(nn.Module, SizeMixin):
     """
@@ -3594,17 +3606,15 @@ class CoordAttention(nn.Module, SizeMixin):
 
     References
     ----------
-    1. Hou, Qibin, Daquan Zhou, and Jiashi Feng. "Coordinate attention for efficient mobile network design." Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021.
+    1. Hou, Qibin, Daquan Zhou, and Jiashi Feng. "Coordinate attention for efficient mobile network design."
+       Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021.
     2. https://github.com/Andrew-Qibin/CoordAttention
 
     """
 
     __name__ = "CoordAttention"
 
-    def __init__(
-        self,
-        **kwargs: Any,
-    ) -> None:
+    def __init__(self, in_channels: int, **kwargs: Any) -> None:
         """ """
         raise NotImplementedError
 
@@ -4419,14 +4429,15 @@ class MLDecoder(nn.Module, SizeMixin):
 
     @property
     def in_channels(self) -> int:
-        return self.__in_channels
+        return self.decoder.embed_standart.in_features
 
 
 class DropPath(nn.Module, SizeMixin):
     """
     References
     ----------
-    1. Huang, Gao, et al. "Deep networks with stochastic depth." European conference on computer vision. Springer, Cham, 2016.
+    1. Huang, Gao, et al. "Deep networks with stochastic depth."
+       European conference on computer vision. Springer, Cham, 2016.
     2. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/drop.py
 
     """
@@ -4536,6 +4547,7 @@ def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
     key = "name" if "name" in config else "type"
     assert key in config, "config must contain key 'name' or 'type'"
     name = config[key].lower()
+    config.pop(key)
     if name in ["se"]:
         return SEBlock(in_channels, **config)
     elif name in ["gc"]:
@@ -4558,6 +4570,6 @@ def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
         return BAMBlock(in_channels, **config)
     else:
         try:
-            return eval(f"""{config[key]}(in_channels, **config)""")
+            return eval(f"""{name}(in_channels, **config)""")
         except Exception:
-            raise ValueError(f"Unknown attention type: {config[key]}")
+            raise ValueError(f"Unknown attention type: `{name}`")

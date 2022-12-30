@@ -100,30 +100,6 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
 
         return pred
 
-    def _recover_length(self, pred: Tensor, seq_len: int) -> Tensor:
-        """
-        recover the length of `pred` to `seq_len`
-
-        Parameters
-        ----------
-        pred: Tensor,
-            of shape (batch_size, seq_len//factor, n_classes)
-        seq_len: int,
-            length to recover to
-
-        Returns
-        -------
-        Tensor,
-            of shape (batch_size, seq_len, n_classes)
-
-        """
-        return F.interpolate(
-            pred.permute(0, 2, 1),
-            size=seq_len,
-            mode="linear",
-            align_corners=True,
-        ).permute(0, 2, 1)
-
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
@@ -283,30 +259,6 @@ class ECG_SEQ_LAB_NET_v1(ECG_CRNN_v1):
             ).permute(0, 2, 1)
 
         return pred
-
-    def _recover_length(self, pred: Tensor, seq_len: int) -> Tensor:
-        """
-        recover the length of `pred` to `seq_len`
-
-        Parameters
-        ----------
-        pred: Tensor,
-            of shape (batch_size, seq_len//factor, n_classes)
-        seq_len: int,
-            length to recover to
-
-        Returns
-        -------
-        Tensor,
-            of shape (batch_size, seq_len, n_classes)
-
-        """
-        return F.interpolate(
-            pred.permute(0, 2, 1),
-            size=seq_len,
-            mode="linear",
-            align_corners=True,
-        ).permute(0, 2, 1)
 
     @property
     def doi(self) -> List[str]:
