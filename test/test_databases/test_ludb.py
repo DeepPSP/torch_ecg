@@ -94,8 +94,12 @@ class TestLUDB:
         assert isinstance(subject_info, dict)
         subject_info = reader.load_subject_info(0, fields=["Sex", "Age"])
         assert isinstance(subject_info, dict)
+        assert subject_info.keys() == {"Sex", "Age"}
         subject_info = reader.load_subject_info(0, fields="Sex")
         assert isinstance(subject_info, str)
+
+    def test_get_subject_id(self):
+        assert isinstance(reader.get_subject_id(0), int)
 
     def test_from_masks(self):
         ann = reader.from_masks(reader.load_masks(0), leads=reader.all_leads)

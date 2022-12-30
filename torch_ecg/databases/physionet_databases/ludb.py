@@ -218,6 +218,15 @@ class LUDB(PhysioNetDataBase):
         )
         self.class_map = CFG(p=1, N=2, t=3, i=0)  # an extra isoelectric
 
+        self._df_subject_info = None
+        self._ls_rec()
+
+    def _ls_rec(self) -> None:
+        """
+        find all records (relative path without file extension),
+        and save into `self._all_records` for further use
+        """
+        super()._ls_rec()
         if (self.db_dir / "ludb.csv").is_file():
             # newly added in version 1.0.1
             self._df_subject_info = pd.read_csv(self.db_dir / "ludb.csv")
@@ -246,11 +255,23 @@ class LUDB(PhysioNetDataBase):
                 ]
             )
 
-        self._ls_rec()
-
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """ """
-        raise NotImplementedError
+        """
+        Attach a `subject_id` to the record, in order to facilitate further uses
+
+        Parameters
+        ----------
+        rec: str or int,
+            record name or index of the record in `self.all_records`
+
+        Returns
+        -------
+        int, a `subject_id` attached to the record `rec`
+
+        """
+        if isinstance(rec, int):
+            rec = self[rec]
+        return int(rec)
 
     def get_absolute_path(
         self, rec: Union[str, int], extension: Optional[str] = None
