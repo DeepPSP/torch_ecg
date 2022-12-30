@@ -154,3 +154,6 @@ class TestLTAFDB:
 
     def test_plot(self):
         reader.plot(0, leads=0, ticks_granularity=2, sampfrom=1000, sampto=3000)
+        reader.plot(0, ticks_granularity=0, sampfrom=1000, sampto=3000)
+        data = reader.load_data(0, sampfrom=1000, sampto=3000)
+        reader.plot(0, data=data, ticks_granularity=1)

@@ -94,7 +94,6 @@ class TestLUDB:
         assert isinstance(subject_info, dict)
         subject_info = reader.load_subject_info(0, fields=["Sex", "Age"])
         assert isinstance(subject_info, dict)
-        assert subject_info.keys() == {"Sex", "Age"}
         subject_info = reader.load_subject_info(0, fields="Sex")
         assert isinstance(subject_info, str)
 

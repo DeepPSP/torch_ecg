@@ -180,20 +180,22 @@ class TestCINC2018:
                 assert isinstance(itv[0], int)
                 assert isinstance(itv[1], int)
 
-        ann = reader.load_ann(0, sampfrom=10000, sampto=50000, keep_original=False)
-        ann_1 = reader.load_ann(0, sampfrom=10000, sampto=50000, keep_original=True)
+        SAMPFROM = 10000
+        SAMPTO = reader.get_siglen(0) - 100
+        ann = reader.load_ann(0, sampfrom=SAMPFROM, sampto=SAMPTO, keep_original=False)
+        ann_1 = reader.load_ann(0, sampfrom=SAMPFROM, sampto=SAMPTO, keep_original=True)
         assert set(ann["arousals"].keys()) == set(ann_1["arousals"].keys())
         assert set(ann["sleep_stages"].keys()) == set(ann_1["sleep_stages"].keys())
         for k in ann["arousals"].keys():
             assert len(ann["arousals"][k]) == len(ann_1["arousals"][k])
-            for itv in ann["arousals"][k]:
-                assert itv[0] == ann_1["arousals"][k][0][0] - 10000
-                assert itv[1] == ann_1["arousals"][k][0][1] - 10000
+            for idx, itv in enumerate(ann["arousals"][k]):
+                assert itv[0] == ann_1["arousals"][k][idx][0] - SAMPFROM
+                assert itv[1] == ann_1["arousals"][k][idx][1] - SAMPFROM
         for k in ann["sleep_stages"].keys():
             assert len(ann["sleep_stages"][k]) == len(ann_1["sleep_stages"][k])
-            for itv in ann["sleep_stages"][k]:
-                assert itv[0] == ann_1["sleep_stages"][k][0][0] - 10000
-                assert itv[1] == ann_1["sleep_stages"][k][0][1] - 10000
+            for idx, itv in enumerate(ann["sleep_stages"][k]):
+                assert itv[0] == ann_1["sleep_stages"][k][idx][0] - SAMPFROM
+                assert itv[1] == ann_1["sleep_stages"][k][idx][1] - SAMPFROM
 
     def test_load_sleep_stages_ann(self):
         sleep_stages_ann = reader.load_sleep_stages_ann(0)

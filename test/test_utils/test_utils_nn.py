@@ -601,3 +601,6 @@ def test_mixin_classes():
     assert model_dummy.module_size_ == model_dummy.sizeof_ == "0.0B"
     assert model_dummy.dtype == torch.float32
     assert model_dummy.device == torch.device("cpu")
+    inp = torch.randn(1, 12, 1000)
+    out = model_dummy(inp)
+    assert inp is out
