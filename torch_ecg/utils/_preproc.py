@@ -1,4 +1,9 @@
 """
+WARNING
+-------
+This module is deprecated, please use `torch_ecg._preprocessors` instead.
+
+
 preprocess of (single lead) ecg signal:
     band pass (dep. on purpose?) --> remove baseline (?) --> find rpeaks
     --> wave delineation (?, put into several stand alone files)
@@ -10,7 +15,6 @@ NOTE:
 References:
 -----------
 [1] https://github.com/PIA-Group/BioSPPy
-[2] to add
 
 """
 
@@ -28,7 +32,6 @@ from scipy.ndimage.filters import median_filter
 
 from ..cfg import CFG
 from .misc import list_sum, ms2samples
-from .utils_data import get_mask
 from .rpeaks import (
     christov_detect,
     engzee_detect,
@@ -38,6 +41,7 @@ from .rpeaks import (
     ssf_detect,
     xqrs_detect,
 )
+
 
 __all__ = [
     "preprocess_multi_lead_signal",
@@ -55,11 +59,8 @@ QRS_DETECTORS = {
     "christov": christov_detect,
     "engzee": engzee_detect,
     "gamboa": gamboa_detect,
-    # "seq_lab": seq_lab_net_detect,
 }
-DL_QRS_DETECTORS = [
-    # "seq_lab",  # currently set empty
-]
+
 # ecg signal preprocessing configurations
 PreprocCfg = CFG()
 # PreprocCfg.fs = 500
@@ -117,8 +118,6 @@ def preprocess_multi_lead_signal(
         - "filtered_ecg": the array of the processed ecg signal
         - "rpeaks": the array of indices of rpeaks; empty if `rpeak_fn` is not given
 
-    NOTE: currently NEVER set verbose >= 3
-
     """
     assert sig_fmt.lower() in [
         "channel_first",
@@ -136,18 +135,11 @@ def preprocess_multi_lead_signal(
         results = pool.starmap(
             func=preprocess_single_lead_signal,
             iterable=[
-                (filtered_ecg[lead, ...], fs, bl_win, band_fs, rpeak_fn, verbose)
+                (filtered_ecg[lead, ...], fs, bl_win, band_fs, rpeak_fn)
                 for lead in range(filtered_ecg.shape[0])
             ],
         )
     for lead in range(filtered_ecg.shape[0]):
-        # filtered_metadata = preprocess_single_lead_signal(
-        #     raw_sig=filtered_ecg[lead,...],
-        #     fs=fs,
-        #     bl_win=bl_win,
-        #     band_fs=band_fs,
-        #     rpeak_fn=rpeak_fn
-        # )
         filtered_metadata = results[lead]
         filtered_ecg[lead, ...] = filtered_metadata["filtered_ecg"]
         rpeaks_candidates.append(filtered_metadata["rpeaks"])
@@ -156,14 +148,8 @@ def preprocess_multi_lead_signal(
                 f"for the {lead}-th lead, rpeaks_candidates = {filtered_metadata['rpeaks']}"
             )
 
-    if rpeak_fn and rpeak_fn in DL_QRS_DETECTORS:
-        rpeaks = rpeaks_detect_multi_leads(
-            sig=filtered_ecg,
-            fs=fs,
-            sig_fmt=sig_fmt,
-            rpeak_fn=rpeak_fn,
-            verbose=verbose,
-        )
+    if sig_fmt.lower() in ["channel_last", "lead_last"]:
+        rpeaks = merge_rpeaks(rpeaks_candidates, raw_sig.T, fs, verbose)
     else:
         rpeaks = merge_rpeaks(rpeaks_candidates, raw_sig, fs, verbose)
     retval = CFG(
@@ -239,7 +225,7 @@ def preprocess_single_lead_signal(
             frequency=band_fs,
         )["signal"]
 
-    if rpeak_fn and rpeak_fn not in DL_QRS_DETECTORS:
+    if rpeak_fn:
         rpeaks = QRS_DETECTORS[rpeak_fn.lower()](filtered_ecg, fs).astype(int)
     else:
         rpeaks = np.array([], dtype=int)
@@ -250,22 +236,6 @@ def preprocess_single_lead_signal(
             "rpeaks": rpeaks,
         }
     )
-
-    if verbose >= 3:
-        from cfg import PlotCfg
-        from utils.misc import plot_single_lead
-
-        t = np.arange(len(filtered_ecg)) / fs
-        waves = {
-            "qrs": get_mask(
-                shape=len(filtered_ecg),
-                critical_points=rpeaks,
-                left_bias=ms2samples(PlotCfg.qrs_radius, fs),
-                right_bias=ms2samples(PlotCfg.qrs_radius, fs),
-                return_fmt="intervals",
-            )
-        }
-        plot_single_lead(t=t, sig=filtered_ecg, ticks_granularity=2, waves=waves)
 
     return retval
 

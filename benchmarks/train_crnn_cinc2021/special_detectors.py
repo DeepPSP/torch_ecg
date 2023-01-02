@@ -43,7 +43,7 @@ from torch_ecg.utils.ecg_arrhythmia_knowledge import (
 )
 from torch_ecg.utils.misc import ms2samples, samples2ms
 from torch_ecg.utils.utils_data import get_mask
-from torch_ecg.utils.preproc import preprocess_multi_lead_signal
+from torch_ecg.utils._preproc import preprocess_multi_lead_signal
 from torch_ecg.utils.utils_signal import detect_peaks, get_ampl
 
 __all__ = [

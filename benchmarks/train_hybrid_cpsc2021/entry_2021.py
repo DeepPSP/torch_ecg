@@ -25,12 +25,12 @@ from model import (
 )
 
 from torch_ecg.cfg import CFG
-from torch_ecg.utils.preproc import preprocess_multi_lead_signal, remove_spikes_naive
+from torch_ecg.utils._preproc import preprocess_multi_lead_signal
 from torch_ecg.utils.utils_interval import (
     generalized_intervals_intersection,
     generalized_intervals_union,
 )
-from torch_ecg.utils.utils_signal import normalize
+from torch_ecg.utils.utils_signal import normalize, remove_spikes_naive
 
 """
 Written by:  Xingyao Wang, Chengyu Liu
