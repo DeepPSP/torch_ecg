@@ -65,7 +65,7 @@ jobs:
         du -sh ~/tmp/nsrr-data/*
     - name: Run test with pytest and collect coverage
       run: |
-        pytest --cov --ignore=test/test_pipelines -v test
+        pytest --cov=torch_ecg --ignore=test/test_pipelines -v test
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
     - name: Remove downloaded NSRR data
