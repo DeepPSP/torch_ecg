@@ -510,15 +510,6 @@ def pantompkins(sig, fs):
     return detector.qrs_inds
 
 
-# Determine whether the signal contains a peak at index ind.
-# Check if it is the max value amoung samples ind-radius to ind+radius
-def ispeak_radius(sig, siglen, ind, radius):
-    if sig[ind] == max(sig[max(0, ind - radius) : min(siglen, ind + radius)]):
-        return True
-    else:
-        return False
-
-
 # Find all peaks in a signal. Simple algorithm which marks a
 # peak if the <radius> samples on its left and right are
 # all not bigger than it.
