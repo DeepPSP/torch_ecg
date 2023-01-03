@@ -9,6 +9,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
+import json
 import pandas as pd
 import pytest
 
@@ -354,6 +355,7 @@ class TestCINC2021Dataset:
             config.input_len,
         )
         assert ds.labels.shape == (len(ds.records), len(config.classes))
+        assert str(ds) == repr(ds)
 
     def test_to(self):
         new_ds = CINC2021Dataset(config, training=False, lazy=False)
@@ -414,3 +416,31 @@ class TestCINC2021Dataset:
 
     def test_check_nan(self):
         ds._check_nan()
+
+    def test_train_test_split(self):
+        ds.train_test_split()
+
+        ns = "_ns" if len(ds.config.special_classes) == 0 else ""
+        _test_ratio = 20
+        _train_ratio = 100 - _test_ratio
+        file_suffix = f"_siglen_{ds.siglen}{ns}.json"
+        train_file = (
+            ds.reader.db_dir_base
+            / f"{ds.reader.db_name}_train_ratio_{_train_ratio}{file_suffix}"
+        )
+        test_file = (
+            ds.reader.db_dir_base
+            / f"{ds.reader.db_name}_test_ratio_{_test_ratio}{file_suffix}"
+        )
+        assert train_file.exists() and test_file.exists()
+
+        train_set = json.loads(train_file.read_text())
+        test_set = json.loads(test_file.read_text())
+
+        _TRANCHES = list("ABEFG")
+        for t in _TRANCHES:
+            self._check_train_test_split_validity(
+                train_set[t],
+                test_set[t],
+                set(ds.config.tranche_classes[t]),
+            )

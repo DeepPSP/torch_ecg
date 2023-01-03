@@ -48,7 +48,6 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union, Any
 import numpy as np
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
-import torch
 from torch.utils.data.dataset import Dataset
 from tqdm.auto import tqdm
 
@@ -131,10 +130,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         self.reader = CR(db_dir=self.config.db_dir, **reader_kwargs)
         # assert self.config.db_dir is not None, "db_dir must be specified"
         self.config.db_dir = self.reader.db_dir
-        if self.config.torch_dtype == torch.float64:
-            self.dtype = np.float64
-        else:
-            self.dtype = np.float32
+        self.dtype = self.config.np_dtype
         self.allowed_preproc = list(
             set(
                 [

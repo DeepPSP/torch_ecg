@@ -28,6 +28,7 @@ MITDBTrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 MITDBTrainCfg.fs = 360
 MITDBTrainCfg.n_leads = 2  # or 1
 MITDBTrainCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
+MITDBTrainCfg.np_dtype = DEFAULTS.DTYPE.NP
 
 MITDBTrainCfg.beat_types = [
     "N",

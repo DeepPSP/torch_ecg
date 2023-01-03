@@ -48,6 +48,7 @@ LUDBTrainCfg.bias_thr = int(0.075 * LUDBTrainCfg.fs)  # TODO: renew this const
 # detected waves that are within `skip_dist` from two ends of the signal will be ignored,
 LUDBTrainCfg.skip_dist = int(0.5 * LUDBTrainCfg.fs)
 LUDBTrainCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
+LUDBTrainCfg.np_dtype = DEFAULTS.DTYPE.NP
 
 LUDBTrainCfg.fs = 500
 LUDBTrainCfg.train_ratio = 0.8

@@ -83,6 +83,7 @@ def _assign_classes(cfg: CFG, special_classes: List[str]) -> None:
 
 CINC2021TrainCfg = CFG()
 CINC2021TrainCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
+CINC2021TrainCfg.np_dtype = DEFAULTS.DTYPE.NP
 
 # configs of files
 CINC2021TrainCfg.db_dir = None

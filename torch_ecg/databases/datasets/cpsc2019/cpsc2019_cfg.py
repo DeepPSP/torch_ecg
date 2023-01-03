@@ -34,6 +34,7 @@ CPSC2019TrainCfg.bias_thr = (
 # as in the official entry function
 CPSC2019TrainCfg.skip_dist = 0.5 * CPSC2019TrainCfg.fs
 CPSC2019TrainCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
+CPSC2019TrainCfg.np_dtype = DEFAULTS.DTYPE.NP
 
 CPSC2019TrainCfg.final_model_name = None
 CPSC2019TrainCfg.keep_checkpoint_max = 20

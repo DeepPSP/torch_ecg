@@ -147,3 +147,6 @@ class TestCPSC2019Dataset:
             data, bin_mask = ds_1[i]
             assert data.ndim == 2 and data.shape == (1, config_1.input_len)
             assert bin_mask.ndim == 2 and bin_mask.shape == (config_1.input_len, 1)
+
+    def test_properties(self):
+        assert str(ds) == repr(ds)

@@ -72,10 +72,7 @@ class CINC2020Dataset(ReprMixin, Dataset):
         )  # ["A", "B", "AB", "E", "F"]
         self.tranches = self.config.tranches_for_training
         self.training = training
-        if self.config.torch_dtype == torch.float64:
-            self.dtype = np.float64
-        else:
-            self.dtype = np.float32
+        self.dtype = self.config.np_dtype
         assert not self.tranches or self.tranches in self._TRANCHES
         if self.tranches:
             self.all_classes = self.config.tranche_classes[self.tranches]
@@ -415,10 +412,7 @@ class FastDataReader(ReprMixin, Dataset):
         self.records = records
         self.config = config
         self.ppm = ppm
-        if self.config.torch_dtype == torch.float64:
-            self.dtype = np.float64
-        else:
-            self.dtype = np.float32
+        self.dtype = self.config.np_dtype
 
     def __len__(self) -> int:
         """ """

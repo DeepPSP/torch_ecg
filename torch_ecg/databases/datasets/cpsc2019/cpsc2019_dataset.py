@@ -10,7 +10,6 @@ from random import shuffle
 from typing import List, Optional, Sequence, Tuple, Any
 
 import numpy as np
-import torch
 from torch.utils.data.dataset import Dataset
 from tqdm.auto import tqdm
 
@@ -68,10 +67,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         self.n_classes = 1
         self.lazy = lazy
 
-        if self.config.torch_dtype == torch.float64:
-            self.dtype = np.float64
-        else:
-            self.dtype = np.float32
+        self.dtype = self.config.np_dtype
 
         self.siglen = self.config.input_len  # alias, for simplicity
         self.records = []

@@ -170,5 +170,8 @@ class TestMITDBDataset:
 
         # `ds_rhythm` and `ds_af` have bugs now
 
+    def test_properties(self):
+        assert str(ds) == repr(ds)
+
     def test_plot_seg(self):
         pass  # `plot_seg` not implemented yet

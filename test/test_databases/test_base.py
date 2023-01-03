@@ -17,6 +17,7 @@ from torch_ecg.databases.base import (
     WFDB_Rhythm_Annotations,
 )
 from torch_ecg.databases import AFDB, list_databases
+from torch_ecg.databases.datasets import list_datasets
 
 
 def test_base_database():
@@ -108,3 +109,9 @@ def test_database_info():
 def test_list_databases():
     assert isinstance(list_databases(), list)
     assert len(list_databases()) > 0
+
+
+def test_list_datasets():
+    assert isinstance(list_datasets(), list)
+    assert len(list_datasets()) > 0
+    assert all(item.endswith("Dataset") for item in list_datasets())

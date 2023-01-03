@@ -8,7 +8,6 @@ from random import randint, shuffle
 from typing import List, Optional, Sequence, Tuple, Any
 
 import numpy as np
-import torch
 from torch.utils.data.dataset import Dataset
 from tqdm.auto import tqdm
 
@@ -59,10 +58,7 @@ class LUDBDataset(ReprMixin, Dataset):
         self.reader = LR(db_dir=self.config.db_dir, **reader_kwargs)
         self.config.db_dir = self.reader.db_dir
         self.training = training
-        if self.config.torch_dtype == torch.float64:
-            self.dtype = np.float64
-        else:
-            self.dtype = np.float32
+        self.dtype = self.config.np_dtype
         self.classes = self.config.classes
         self.n_classes = len(self.classes)
         self.siglen = self.config.input_len
@@ -217,10 +213,7 @@ class FastDataReader(ReprMixin, Dataset):
         self.records = records
         self.config = config
         self.ppm = ppm
-        if self.config.torch_dtype == torch.float64:
-            self.dtype = np.float64
-        else:
-            self.dtype = np.float32
+        self.dtype = self.config.np_dtype
 
         if self.config.leads is None:
             self.leads = self.reader.all_leads

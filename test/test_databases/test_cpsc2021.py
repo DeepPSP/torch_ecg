@@ -426,6 +426,7 @@ class TestCPSC2021Dataset:
         assert (
             len(ds_2) == len(ds_2.segments) < len(list_sum(ds_2.all_segments.values()))
         )
+        assert str(ds) == repr(ds)
 
     def test_plot_seg(self):
         ds.plot_seg(ds.segments[0], ticks_granularity=2)

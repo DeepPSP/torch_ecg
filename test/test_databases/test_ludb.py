@@ -158,3 +158,5 @@ class TestLUDBDataset:
 
         assert ds_1.signals is None
         assert ds_1.labels is None
+
+        assert str(ds) == repr(ds)

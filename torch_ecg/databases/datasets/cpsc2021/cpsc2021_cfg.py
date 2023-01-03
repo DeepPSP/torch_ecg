@@ -26,6 +26,7 @@ CPSC2021TrainCfg.checkpoints.mkdir(parents=True, exist_ok=True)
 CPSC2021TrainCfg.fs = 200
 CPSC2021TrainCfg.n_leads = 2
 CPSC2021TrainCfg.torch_dtype = DEFAULTS.DTYPE.TORCH
+CPSC2021TrainCfg.np_dtype = DEFAULTS.DTYPE.NP
 
 CPSC2021TrainCfg.class_fn2abbr = {  # fullname to abbreviation
     "non atrial fibrillation": "N",
