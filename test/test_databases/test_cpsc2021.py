@@ -2,7 +2,7 @@
 TestCPSC2021: accomplished
 TestCPSC2021Dataset: accomplished
 
-subsampling: NOT implemented
+subsampling: accomplished
 """
 
 import json
@@ -69,6 +69,27 @@ _ANS_MAT_FILE = ans_mat_file
 class TestCPSC2021:
     def test_len(self):
         assert len(reader) == 18
+
+    def test_subsample(self):
+        ss_ratio = 0.3
+        reader_ss = CPSC2021(_CWD, subsample=ss_ratio, verbose=0)
+        assert len(reader_ss) == pytest.approx(len(reader) * ss_ratio, abs=1)
+        ss_ratio = 0.1 / len(reader)
+        reader_ss = CPSC2021(_CWD, subsample=ss_ratio)
+        assert len(reader_ss) == 1
+
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            CPSC2021(_CWD, subsample=0.0)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            CPSC2021(_CWD, subsample=1.01)
+        with pytest.raises(
+            AssertionError, match="`subsample` must be in \\(0, 1\\], but got `.+`"
+        ):
+            CPSC2021(_CWD, subsample=-0.1)
 
     def test_load_data(self):
         data = reader.load_data(0)
@@ -180,6 +201,9 @@ class TestCPSC2021:
         ):
             reader.load_ann(rec, sampto=sig_len + 1000)
 
+        with pytest.raises(ValueError, match="Invalid `sampfrom` and `sampto`"):
+            reader.load_ann(0, sampfrom=1000, sampto=500)
+
         # aliases
         assert (reader.load_rpeaks(rec) == reader.load_ann(rec, field="rpeaks")).all()
         assert (
@@ -199,7 +223,7 @@ class TestCPSC2021:
         assert onset_score_mask.sum() > onset_score_mask_1.sum()
         assert offset_score_mask.sum() > offset_score_mask_1.sum()
         onset_score_mask_1, offset_score_mask_1 = reader.gen_endpoint_score_mask(
-            rec, bias={1: 1, 2: 1}
+            rec, bias={1: 1, 2: 1}, verbose=2
         )
         assert onset_score_mask.sum() < onset_score_mask_1.sum()
         assert offset_score_mask.sum() < offset_score_mask_1.sum()
@@ -223,6 +247,7 @@ class TestCPSC2021:
         dr_fp = new_reader.db_dir_base / fn
         if dr_fp.is_file():
             dr_fp.unlink()
+        new_reader._stats = pd.DataFrame()
         new_reader._diagnoses_records_list = None
 
         assert new_reader.diagnoses_records_list is not None
@@ -428,5 +453,27 @@ class TestCPSC2021Dataset:
         )
         assert str(ds) == repr(ds)
 
+    def test_load_seg_seq_lab(self):
+        seg_data = ds._load_seg_data(ds.segments[0])
+        seg_seq_lab = ds._load_seg_seq_lab(ds.segments[0], reduction=1)
+        assert seg_seq_lab.shape == (seg_data.shape[1], 1)
+        seg_seq_lab = ds._load_seg_seq_lab(ds.segments[0], reduction=8)
+        assert seg_seq_lab.shape == (seg_data.shape[1] // 8, 1)
+
+    def test_load_rr_seq(self):
+        rr_seq = ds_1._load_rr_seq(ds_1.rr_seq[0])
+        assert isinstance(rr_seq, dict)
+        assert rr_seq.keys() == {"rr", "label", "interval"}
+        assert rr_seq["rr"].shape == rr_seq["label"].shape == (ds_1.seglen, 1)
+        assert rr_seq["interval"].shape == (2,)
+
     def test_plot_seg(self):
         ds.plot_seg(ds.segments[0], ticks_granularity=2)
+
+    def test_clear_cached_segments(self):
+        ds._clear_cached_segments(recs=[ds.reader.all_records[0]])
+        ds._clear_cached_segments()
+
+    def test_clear_cached_rr_seq(self):
+        ds_1._clear_cached_rr_seq(recs=[ds_1.reader.all_records[0]])
+        ds_1._clear_cached_rr_seq()

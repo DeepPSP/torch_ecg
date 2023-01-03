@@ -18,10 +18,9 @@ import pandas as pd
 import scipy.io as sio
 import wfdb
 
-from ...cfg import CFG
+from ...cfg import CFG, DEFAULTS
 from ...utils.misc import (
     get_record_list_recursive3,
-    list_sum,
     ms2samples,
     add_docstring,
 )
@@ -127,7 +126,6 @@ class CPSC2021(PhysioNetDataBase):
             "training_I",
             "training_II",
         ]
-        self.db_dirs = CFG({t: None for t in self.db_tranches})
 
         self.fs = 200
         self.spacing = 1000 / self.fs
@@ -167,6 +165,7 @@ class CPSC2021(PhysioNetDataBase):
             "sig_len_sec",
             "revised",
         ]
+        self._df_records = pd.DataFrame()
         self._ls_rec()
         self._aggregate_stats()
 
@@ -188,36 +187,45 @@ class CPSC2021(PhysioNetDataBase):
         """
         list all the records and load into `self._all_records`,
         facilitating further uses
-
-        TODO: implement subsampling of records
         """
+        self._df_records = pd.DataFrame()
+        self._df_records["path"] = get_record_list_recursive3(
+            self.db_dir_base, self.rec_patterns_with_ext, relative=False
+        )
+        self._df_records["path"] = self._df_records["path"].apply(lambda x: Path(x))
+        self._df_records["record"] = self._df_records["path"].apply(lambda x: x.stem)
+        self._df_records["subject_id"] = self._df_records["record"].apply(
+            lambda rec: int(rec.split("_")[1])
+        )
+        self._df_records["record_id"] = self._df_records["record"].apply(
+            lambda rec: int(rec.split("_")[2])
+        )
+        self._df_records["tranche"] = self._df_records["subject_id"].apply(
+            lambda x: "training_I" if x <= 53 else "training_II"
+        )
+
+        if self._subsample is not None:
+            size = min(
+                len(self._df_records),
+                max(1, int(round(self._subsample * len(self._df_records)))),
+            )
+            self.logger.debug(
+                f"subsample `{size}` records from `{len(self._df_records)}`"
+            )
+            self._df_records = self._df_records.sample(
+                n=size, random_state=DEFAULTS.SEED, replace=False
+            )
+
+        self._df_records.set_index("record", inplace=True)
+
         self._all_records = CFG({t: [] for t in self.db_tranches})
         self._all_subjects = CFG({t: [] for t in self.db_tranches})
         self._subject_records = CFG({t: [] for t in self.db_tranches})
 
-        self._ls_rec_split()
-        if self.__all_records is not None and len(self.__all_records) > 0:
-            pass
-        else:
-            for rec in get_record_list_recursive3(
-                self.db_dir_base, self.rec_patterns_with_ext
-            ):
-                rec_dir = self.db_dir_base / Path(rec).parent
-                rec_name = Path(rec).name
-                if int(self.get_subject_id(rec_name)) > 53:
-                    tranche = self.db_tranches[1]
-                else:
-                    tranche = self.db_tranches[0]
-                if self.db_dirs[tranche] is None:
-                    self.db_dirs[tranche] = rec_dir
-                elif self.db_dirs[tranche] != rec_dir:
-                    raise ValueError(
-                        "Records from the same tranche should be in the same directory"
-                        f" (some in {str(self.db_dirs[tranche])}, and some other in {str(rec_dir)})"
-                    )
-                self._all_records[tranche].append(rec_name)
-
         for t in self.db_tranches:
+            self._all_records[t] = sorted(
+                self._df_records[self._df_records["tranche"] == t].index.tolist()
+            )
             self._all_subjects[t] = sorted(
                 list(set([self.get_subject_id(rec) for rec in self._all_records[t]])),
                 key=lambda s: int(s),
@@ -239,58 +247,16 @@ class CPSC2021(PhysioNetDataBase):
         self._all_subjects_inv = {
             s: t for t, l_s in self._all_subjects.items() for s in l_s
         }
-        self.__all_records = sorted(list_sum(self._all_records.values()))
+        self.__all_records = sorted(self._df_records.index.tolist())
         self.__all_subjects = sorted(
-            list_sum(self._all_subjects.values()), key=lambda s: int(s)
+            self._df_records["subject_id"].apply(str).unique().tolist()
         )
-
-    def _ls_rec_split(self) -> None:
-        """
-        list all the records assuming the records
-        are split into two folders (training_I and training_II)
-
-        TODO: implement subsampling of records
-        """
-        fn = "RECORDS"
-        rev_fn = "REVISED_RECORDS"
-        for t in self.db_tranches:
-            dir_candidate = self.db_dir_base / t.replace("training_", "training") / t
-            if dir_candidate.is_dir():
-                dir_tranche = dir_candidate
-            else:
-                dir_tranche = self.db_dir_base / t
-            if dir_tranche.is_dir():
-                self.db_dirs[t] = dir_tranche
-
-            record_list_fp = dir_tranche / fn
-            if record_list_fp.is_file():
-                self._all_records[t] = record_list_fp.read_text().splitlines()
-            else:
-                self._all_records[t] = []
-            if len(self._all_records[t]) == self.nb_records[t]:
-                pass
-            else:
-                if not dir_tranche.is_dir():
-                    continue
-                self.logger.info(
-                    "Please wait patiently to let the reader find all records..."
-                )
-                start = time.time()
-                self._all_records[t] = get_record_list_recursive3(
-                    str(dir_tranche), self.rec_patterns_with_ext
-                )
-                self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
-                record_list_fp.write_text("\n".join(self._all_records[t]))
-
-            record_list_fp = dir_tranche / rev_fn
-            if record_list_fp.is_file():
-                self.__revised_records.extend(record_list_fp.read_text().splitlines())
 
     def _aggregate_stats(self) -> None:
         """aggregate stats on the whole dataset"""
         stats_file = "stats.csv"
         stats_file_fp = self.db_dir_base / stats_file
-        if stats_file_fp.is_file():
+        if stats_file_fp.is_file() and self._subsample is None:
             self._stats = pd.read_csv(stats_file_fp)
 
         if self._stats.empty or set(self._stats_columns) != set(self._stats.columns):
@@ -325,19 +291,12 @@ class CPSC2021(PhysioNetDataBase):
                 by=["subject_id", "record_id"], ignore_index=True
             )
             self._stats = self._stats[self._stats_columns]
-            self._stats.to_csv(stats_file_fp, index=False)
+            if self._subsample is None:
+                self._stats.to_csv(stats_file_fp, index=False)
             self.logger.info(f"Done in {time.time() - start:.5f} seconds!")
         else:
             pass  # currently no need to parse the loaded csv file
         self._stats["subject_id"] = self._stats["subject_id"].apply(lambda s: str(s))
-        self.__all_records = self._stats["record"].tolist()
-        self._df_records = self._stats[["record", "tranche", "subject_id"]].copy(
-            deep=True
-        )
-        self._df_records["path"] = self._df_records["record"].apply(
-            lambda s: self.db_dirs[self._all_records_inv[s]] / s
-        )
-        self._df_records.set_index("record", inplace=True)
 
     @property
     def all_subjects(self) -> List[str]:
@@ -358,7 +317,7 @@ class CPSC2021(PhysioNetDataBase):
         """list all the records for all diagnoses"""
         fn = "diagnoses_records_list.json"
         dr_fp = self.db_dir_base / fn
-        if dr_fp.is_file():
+        if dr_fp.is_file() and self._subsample is None:
             self._diagnoses_records_list = json.loads(dr_fp.read_text())
         else:
             start = time.time()
@@ -378,9 +337,10 @@ class CPSC2021(PhysioNetDataBase):
                     d: self.df_stats[self.df_stats["label"] == d]["record"].tolist()
                     for d in self._labels_f2a.values()
                 }
-            dr_fp.write_text(
-                json.dumps(self._diagnoses_records_list, ensure_ascii=False)
-            )
+            if self._subsample is None:
+                dr_fp.write_text(
+                    json.dumps(self._diagnoses_records_list, ensure_ascii=False)
+                )
         self._diagnoses_records_list = CFG(self._diagnoses_records_list)
 
     @property
@@ -392,6 +352,8 @@ class CPSC2021(PhysioNetDataBase):
 
     def get_subject_id(self, rec: Union[str, int]) -> str:
         """
+        get the subject id of the record `rec`
+
         Parameters
         ----------
         rec: str or int,
@@ -423,15 +385,18 @@ class CPSC2021(PhysioNetDataBase):
 
         Returns
         -------
-        Path,
+        abs_path: Path,
             absolute path of the file
 
         """
         if isinstance(rec, int):
             rec = self[rec]
-        if extension is not None and not extension.startswith("."):
-            extension = f".{extension}"
-        return self.db_dirs[self._all_records_inv[rec]] / f"{rec}{extension or ''}"
+        abs_path = self._df_records.loc[rec, "path"]
+        if extension is not None:
+            if not extension.startswith("."):
+                extension = f".{extension}"
+            abs_path = abs_path.with_suffix(extension)
+        return abs_path
 
     def _validate_samp_interval(
         self,
@@ -537,10 +502,7 @@ class CPSC2021(PhysioNetDataBase):
                     RuntimeWarning,
                 )
             return ann
-        elif field.lower() in [
-            "raw",
-            "wfdb",
-        ]:
+        elif field.lower() in ["raw", "wfdb"]:
             return ann
 
         try:
@@ -790,7 +752,10 @@ class CPSC2021(PhysioNetDataBase):
         return label
 
     def gen_endpoint_score_mask(
-        self, rec: Union[str, int], bias: dict = {1: 1, 2: 0.5}
+        self,
+        rec: Union[str, int],
+        bias: dict = {1: 1, 2: 0.5},
+        verbose: Optional[int] = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         generate the scoring mask for the onsets and offsets of af episodes,
@@ -802,6 +767,8 @@ class CPSC2021(PhysioNetDataBase):
         bias: dict, default {1:1, 2:0.5},
             keys are bias (with ±) in terms of number of rpeaks
             values are corresponding scores
+        verbose: int, optional,
+            verbosity level, if None, use `self.verbose`
 
         Returns
         -------
@@ -823,7 +790,7 @@ class CPSC2021(PhysioNetDataBase):
             ).sample,
             af_intervals=self.load_af_episodes(rec, fmt="c_intervals"),
             bias=bias,
-            verbose=self.verbose,
+            verbose=verbose or self.verbose,
         )
         return masks
 
