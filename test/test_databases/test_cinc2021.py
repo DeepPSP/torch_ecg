@@ -95,11 +95,11 @@ class TestCINC2021:
             assert np.allclose(data_1, data)
 
         with pytest.raises(AssertionError, match="Invalid data_format: `flat`"):
-            reader.load_data(rec, data_format="flat")
+            reader.load_data(0, data_format="flat")
         with pytest.raises(
             ValueError, match="backend `numpy` not supported for loading data"
         ):
-            reader.load_data(rec, backend="numpy")
+            reader.load_data(0, backend="numpy")
 
     def test_load_ann(self):
         for rec in reader:
@@ -109,6 +109,7 @@ class TestCINC2021:
             assert isinstance(ann_1, dict)
             assert dicts_equal(ann_1, ann_2)
             assert isinstance(ann_3, str)
+        reader.load_ann(0)
 
         with pytest.raises(
             ValueError, match="backend `numpy` not supported for loading annotations"
@@ -120,6 +121,7 @@ class TestCINC2021:
         for rec in reader:
             header = reader.load_header(rec)
             assert dicts_equal(header, reader.load_ann(rec))
+        reader.load_header(0)
 
     def test_get_labels(self):
         for rec in reader:
@@ -132,7 +134,7 @@ class TestCINC2021:
         with pytest.raises(
             ValueError, match="`fmt` should be one of `a`, `f`, `s`, but got `.+`"
         ):
-            reader.get_labels(rec, fmt="xxx")
+            reader.get_labels(0, fmt="xxx")
 
     def test_get_fs(self):
         for rec in reader:
@@ -142,6 +144,7 @@ class TestCINC2021:
     def test_get_subject_id(self):
         for rec in reader:
             assert isinstance(reader.get_subject_id(rec), int)
+        assert isinstance(reader.get_subject_id(0), int)
 
     def test_get_subject_info(self):
         for rec in reader:
@@ -158,6 +161,7 @@ class TestCINC2021:
             assert info_1.keys() <= info.keys()
             for k, v in info_1.items():
                 assert info[k] == v
+        reader.get_subject_info(0)
 
     def test_get_tranche_class_distribution(self):
         dist = reader.get_tranche_class_distribution(list("ABCDE"))
@@ -176,6 +180,7 @@ class TestCINC2021:
             assert np.allclose(data, data_1.T)
             data_1 = reader.load_resampled_data(rec, siglen=2000)
             assert data_1.ndim == 3 and data_1.shape[1:] == (12, 2000)
+        reader.load_resampled_data(0)
 
     def test_load_raw_data(self):
         for rec in reader:
@@ -184,6 +189,7 @@ class TestCINC2021:
             assert data_1.ndim == 2 and data_1.shape[1] == 12
             assert data_2.ndim == 2 and data_2.shape[0] == 12
             assert np.allclose(data_1, data_2.T)
+        reader.load_raw_data(0)
 
     def test_meta_data(self):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0

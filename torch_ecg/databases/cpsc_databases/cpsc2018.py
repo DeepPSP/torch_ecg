@@ -4,6 +4,7 @@ The China Physiological Signal Challenge 2018:
 Automatic identification of the rhythm/morphology abnormalities in 12-lead ECGs
 """
 
+import re
 import warnings
 from pathlib import Path
 from typing import Any, List, Optional, Union, Sequence
@@ -79,8 +80,7 @@ class CPSC2018(CPSCDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """finished, to be improved,
-
+        """
         Parameters
         ----------
         db_dir: str or Path, optional,
@@ -227,7 +227,8 @@ class CPSC2018(CPSCDataBase):
             )
 
     def get_subject_id(self, rec: Union[int, str]) -> int:
-        """not finished,
+        """
+        Attach a unique `subject_id` to each record
 
         Parameters
         ----------
@@ -240,7 +241,16 @@ class CPSC2018(CPSCDataBase):
             the `subject_id` corr. to `rec`
 
         """
-        raise NotImplementedError
+        if isinstance(rec, int):
+            rec = self[rec]
+        s2d = {
+            "A": "11",
+            "B": "12",
+        }
+        prefix = "".join(re.findall(r"[A-Z]", rec))
+        n = rec.replace(prefix, "")
+        sid = int(f"{s2d[prefix]}{'0'*(8-len(n))}{n}")
+        return sid
 
     def load_data(
         self,
@@ -250,6 +260,8 @@ class CPSC2018(CPSCDataBase):
         units: str = "mV",
     ) -> np.ndarray:
         """
+        Load the ECG data of a record
+
         Parameters
         ----------
         rec: int or str,
@@ -303,7 +315,7 @@ class CPSC2018(CPSCDataBase):
 
     def load_ann(self, rec: Union[str, int], ann_format: str = "n") -> List[str]:
         """
-        read labels (diagnoses or arrhythmias) of a record
+        Load labels (diagnoses or arrhythmias) of a record
 
         Parameters
         ----------
@@ -345,6 +357,8 @@ class CPSC2018(CPSCDataBase):
         self, rec: Union[int, str], items: Optional[List[str]] = None
     ) -> dict:
         """
+        Get subject information (e.g sex, age, etc.)
+
         Parameters
         ----------
         rec: int or str,

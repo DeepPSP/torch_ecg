@@ -328,6 +328,8 @@ class CINC2021(PhysioNetDataBase):
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
         """
+        Attach a unique `subject_id` to each record
+
         Parameters
         ----------
         rec: str or int,

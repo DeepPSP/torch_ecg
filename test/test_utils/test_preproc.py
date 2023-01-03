@@ -7,6 +7,7 @@ import numpy as np
 
 from torch_ecg.utils._preproc import (
     preprocess_multi_lead_signal,
+    preprocess_single_lead_signal,
     rpeaks_detect_multi_leads,
 )
 from torch_ecg.databases import CINC2021
@@ -36,6 +37,33 @@ def test_preprocess_multi_lead_signal():
         raw_data.T,
         fs,
         sig_fmt="channel_last",
+        bl_win=[0.2, 0.6],
+        band_fs=[0.5, 45],
+    )
+    assert isinstance(data, dict)
+    assert data.keys() == {"filtered_ecg", "rpeaks"}
+    assert data["filtered_ecg"].shape == raw_data.shape
+    assert len(data["rpeaks"]) == 0
+
+
+def test_preprocess_single_lead_signal():
+    raw_data = reader.load_data(0, leads=["II"]).squeeze()
+    fs = reader.get_fs(0)
+    data = preprocess_single_lead_signal(
+        raw_data,
+        fs,
+        bl_win=[0.2, 0.6],
+        band_fs=[0.5, 45],
+        rpeak_fn="gqrs",
+        verbose=2,
+    )
+    assert isinstance(data, dict)
+    assert data.keys() == {"filtered_ecg", "rpeaks"}
+    assert data["filtered_ecg"].shape == raw_data.shape
+    assert data["rpeaks"].ndim == 1
+    data = preprocess_single_lead_signal(
+        raw_data,
+        fs,
         bl_win=[0.2, 0.6],
         band_fs=[0.5, 45],
     )

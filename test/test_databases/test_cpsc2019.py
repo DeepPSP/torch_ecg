@@ -85,13 +85,25 @@ class TestCPSC2019:
         rpeaks = reader.load_rpeak_indices(0)
         assert np.allclose(rpeaks, reader.load_ann(0))
 
+    def test_get_subject_id(self):
+        assert isinstance(reader.get_subject_id(0), int)
+
     def test_meta_data(self):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
+        all_annotations = reader.all_annotations
+        assert isinstance(all_annotations, list) and len(all_annotations) == len(reader)
+        all_references = reader.all_references
+        assert isinstance(all_references, list) and len(all_references) == len(reader)
+        assert all_annotations == all_references
 
     def test_plot(self):
         reader.plot(0, ticks_granularity=2)
+        data = reader.load_data(0, data_format="flat")
+        reader.plot(0, data=data, ticks_granularity=1)
+        data = reader.load_data(0, units="μV", data_format="flat")
+        reader.plot(0, data=data, ticks_granularity=0)
 
     def test_compute_metrics(self):
         rpeaks_truths = np.array([500, 1000])

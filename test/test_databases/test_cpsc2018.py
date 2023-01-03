@@ -64,6 +64,7 @@ class TestCPSC2018:
             assert np.allclose(data_1, data * 1000)
             data_1 = reader.load_data(rec, data_format="lead_last")
             assert data.shape == data_1.T.shape
+        reader.load_data(0)
 
     def test_load_ann(self):
         for rec in reader:
@@ -89,12 +90,20 @@ class TestCPSC2018:
             ann_1 = reader.load_ann(rec, ann_format="n")
             ann_2 = reader.get_labels(rec, ann_format="n")
             assert ann_1 == ann_2
+        reader.get_labels(0, ann_format="n")
+        reader.load_ann(0, ann_format="n")
+
+    def test_get_subject_id(self):
+        for rec in reader:
+            assert isinstance(reader.get_subject_id(rec), int)
+        assert isinstance(reader.get_subject_id(0), int)
 
     def test_get_subject_info(self):
         for rec in reader:
             info = reader.get_subject_info(rec)
             assert isinstance(info, dict)
             assert info.keys() == {"age", "sex"}
+        info = reader.get_subject_info(0, items=["age"])
 
     def test_meta_data(self):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0

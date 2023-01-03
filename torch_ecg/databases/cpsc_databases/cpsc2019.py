@@ -7,7 +7,7 @@ Challenging QRS Detection and Heart Rate Estimation from Single-Lead ECG Recordi
 import json
 from numbers import Real
 from pathlib import Path
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union, List
 
 import numpy as np
 import pandas as pd
@@ -167,17 +167,18 @@ class CPSC2019(CPSCDataBase):
         records_fn.write_text(json.dumps(records_json, ensure_ascii=False))
 
     @property
-    def all_annotations(self):
+    def all_annotations(self) -> List[str]:
         """ """
         return self._all_annotations
 
     @property
-    def all_references(self):
+    def all_references(self) -> List[str]:
         """ """
         return self._all_annotations
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """not finished,
+        """
+        Attach a unique subject id to each record
 
         Parameters
         ----------
@@ -190,8 +191,9 @@ class CPSC2019(CPSCDataBase):
             the `subject_id` corr. to `rec_no`
 
         """
-        pid = 0
-        raise NotImplementedError
+        if isinstance(rec, int):
+            rec = self[rec]
+        return int(f"19{int(rec.split('_')[1]):08d}")
 
     def get_absolute_path(
         self,
@@ -234,6 +236,8 @@ class CPSC2019(CPSCDataBase):
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
+        load the ECG data of the record `rec`
+
         Parameters
         ----------
         rec: str or int,

@@ -69,6 +69,11 @@ class TestCPSC2020:
         assert np.allclose(data_1, data_3 / 1000, atol=1e-2)
         assert data_4.shape == (1, 4000)
 
+        with pytest.raises(ValueError, match="Invalid `data_format`"):
+            reader.load_data(0, data_format="invalid")
+        with pytest.raises(ValueError, match="Invalid `units`"):
+            reader.load_data(0, units="invalid")
+
     def test_load_ann(self):
         ann = reader.load_ann(0, sampfrom=1000, sampto=9000)
         assert ann.keys() == {"SPB_indices", "PVC_indices"}
@@ -109,13 +114,38 @@ class TestCPSC2020:
         with pytest.raises(ValueError, match="Invalid `test_rec_num`"):
             reader.train_test_split_rec(test_rec_num=0)
 
+    def test_get_subject_id(self):
+        assert isinstance(reader.get_subject_id(0), int)
+
     def test_meta_data(self):
         assert isinstance(reader.webpage, str) and len(reader.webpage) > 0
         assert reader.get_citation() is None  # printed
         assert isinstance(reader.database_info, DataBaseInfo)
+        all_annotations = reader.all_annotations
+        assert isinstance(all_annotations, list) and len(all_annotations) == len(reader)
+        all_references = reader.all_references
+        assert isinstance(all_references, list) and len(all_references) == len(reader)
+        assert all_annotations == all_references
 
     def test_plot(self):
-        reader.plot(0, ticks_granularity=2, sampfrom=2000, sampto=4000)
+        rec = "A04"
+        sampfrom = 2000
+        sampto = 12000
+        reader.plot(
+            "A04",
+            ticks_granularity=2,
+            sampfrom=sampfrom,
+            sampto=sampto,
+            rpeak_inds=[2500, 3500],
+        )
+        data = reader.load_data(
+            rec, sampfrom=sampfrom, sampto=sampto, data_format="flat"
+        )
+        reader.plot(rec, data=data, ticks_granularity=1, rpeak_inds=[500, 1500])
+        data = reader.load_data(
+            rec, sampfrom=sampfrom, sampto=sampto, units="μV", data_format="flat"
+        )
+        reader.plot(rec, data=data, ticks_granularity=0)
 
     def test_compute_metrics(self):
         sbp_true_0 = reader.load_ann(0)["SPB_indices"]

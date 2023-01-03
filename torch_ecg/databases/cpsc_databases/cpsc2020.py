@@ -38,16 +38,16 @@ _CPSC2020_INFO = DataBaseInfo(
     4. sampling frequency = 400 Hz
     5. Detailed information:
         rec   ?AF   Length(h)   # N beats   # V beats   # S beats   # Total beats
-        A01   No	25.89       109,062     0           24          109,086
-        A02   Yes	22.83       98,936      4,554       0           103,490
-        A03   Yes	24.70       137,249     382         0           137,631
-        A04   No	24.51       77,812      19,024      3,466       100,302
-        A05   No	23.57       94,614  	1	        25	        94,640
-        A06   No	24.59       77,621  	0	        6	        77,627
-        A07   No	23.11	    73,325  	15,150	    3,481	    91,956
-        A08   Yes	25.46	    115,518 	2,793	    0	        118,311
-        A09   No	25.84	    88,229  	2	        1,462	    89,693
-        A10   No	23.64	    72,821	    169	        9,071	    82,061
+        A01   No    25.89       109,062     0           24          109,086
+        A02   Yes   22.83       98,936      4,554       0           103,490
+        A03   Yes   24.70       137,249     382         0           137,631
+        A04   No    24.51       77,812      19,024      3,466       100,302
+        A05   No    23.57       94,614      1           25          94,640
+        A06   No    24.59       77,621      0           6           77,627
+        A07   No    23.11       73,325      15,150      3,481       91,956
+        A08   Yes   25.46       115,518     2,793       0           118,311
+        A09   No    25.84       88,229      2           1,462       89,693
+        A10   No    23.64       72,821      169         9,071       82,061
     6. challenging factors for accurate detection of SPB and PVC:
         amplitude variation; morphological variation; noise
     """,
@@ -76,9 +76,9 @@ _CPSC2020_INFO = DataBaseInfo(
     3. PVC and SPB can also co-exist, as illustrated via the following code (from CINC2020):
         >>> from utils.scoring_aux_data import dx_cooccurrence_all
         >>> dx_cooccurrence_all.loc[["PVC","VPB"], ["PAC","SVPB",]]
-        PAC	SVPB
-        PVC	14	1
-        VPB	27	0
+        PAC SVPB
+        PVC 14 1
+        VPB 27 0
         and also from the following code:
         >>> for rec in dr.all_records:
         >>>     ann = dr.load_ann(rec)
@@ -273,7 +273,8 @@ class CPSC2020(CPSCDataBase):
         return self._all_annotations
 
     def get_subject_id(self, rec: Union[int, str]) -> int:
-        """not finished,
+        """
+        Attach a unique subject id to each record
 
         Parameters
         ----------
@@ -286,8 +287,9 @@ class CPSC2020(CPSCDataBase):
             the `subject_id` corr. to `rec_no`
 
         """
-        pid = 0
-        raise NotImplementedError
+        if isinstance(rec, int):
+            rec = self[rec]
+        return int(f"20{int(rec[1:]):08d}")
 
     def get_absolute_path(
         self,
@@ -331,6 +333,8 @@ class CPSC2020(CPSCDataBase):
         fs: Optional[Real] = None,
     ) -> np.ndarray:
         """
+        load the ECG data of the record `rec`
+
         Parameters
         ----------
         rec: str or int,
@@ -365,12 +369,12 @@ class CPSC2020(CPSCDataBase):
             data = data.T
         elif data_format.lower() in ["flat", "plain"]:
             data = data.flatten()
-        elif data_format.lower() in ["channel_last", "lead_last"]:
-            pass
-        else:
-            raise ValueError(f"invalid `data_format`: {data_format}")
+        elif data_format.lower() not in ["channel_last", "lead_last"]:
+            raise ValueError(f"Invalid `data_format`: {data_format}")
         if units.lower() in ["uv", "muv", "μv"]:
             data = (1000 * data).astype(int)
+        elif units.lower() != "mv":
+            raise ValueError(f"Invalid `units`: {units}")
         return data
 
     def load_ann(
