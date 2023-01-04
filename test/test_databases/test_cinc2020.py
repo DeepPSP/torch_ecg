@@ -319,7 +319,7 @@ class TestCINC2020Dataset:
         ds._check_nan()
 
     def test_train_test_split(self):
-        ds.train_test_split()
+        ds._train_test_split()
 
         ns = "_ns" if len(ds.config.special_classes) == 0 else ""
         _test_ratio = 20
@@ -340,7 +340,7 @@ class TestCINC2020Dataset:
 
         _TRANCHES = list("ABEF")
         for t in _TRANCHES:
-            self._check_train_test_split_validity(
+            ds._check_train_test_split_validity(
                 train_set[t],
                 test_set[t],
                 set(ds.config.tranche_classes[t]),

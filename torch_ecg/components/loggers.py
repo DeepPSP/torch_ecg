@@ -6,7 +6,6 @@ with reference to `loggers` of `textattack` and `loggers` of `pytorch-lightning`
 """
 
 import csv
-import importlib
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -26,7 +25,7 @@ __all__ = [
     "TxtLogger",
     "CSVLogger",
     "TensorBoardXLogger",
-    "WandbLogger",
+    # "WandbLogger",
     "LoggerManager",
 ]
 
@@ -464,69 +463,69 @@ class TensorBoardXLogger(BaseLogger):
         return str(self.log_dir / self.log_file)
 
 
-class WandbLogger(BaseLogger):
-    """ """
+# class WandbLogger(BaseLogger):
+#     """ """
 
-    __name__ = "WandbLogger"
+#     __name__ = "WandbLogger"
 
-    def __init__(
-        self,
-        log_dir: Optional[Union[str, Path]] = None,
-        log_suffix: Optional[str] = None,
-        project: Optional[str] = None,
-        entity: Optional[str] = None,
-        hyperparameters: Optional[dict] = None,
-    ) -> None:
-        """
-        to write docstring
-        """
-        self.__wandb = importlib.import_module("wandb")
-        self._log_dir = Path(log_dir or DEFAULTS.log_dir)
-        self._log_dir.mkdir(parents=True, exist_ok=True)
-        self._log_suffix = log_suffix
-        self._project = project
-        self._entity = entity
-        self._hyperparameters = hyperparameters
-        self.__wandb.init(
-            name=self._log_suffix,
-            dir=self._log_dir,
-            config=self._hyperparameters,
-            project=self._project,
-            entity=self._entity,
-        )
+#     def __init__(
+#         self,
+#         log_dir: Optional[Union[str, Path]] = None,
+#         log_suffix: Optional[str] = None,
+#         project: Optional[str] = None,
+#         entity: Optional[str] = None,
+#         hyperparameters: Optional[dict] = None,
+#     ) -> None:
+#         """
+#         to write docstring
+#         """
+#         self.__wandb = importlib.import_module("wandb")
+#         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
+#         self._log_dir.mkdir(parents=True, exist_ok=True)
+#         self._log_suffix = log_suffix
+#         self._project = project
+#         self._entity = entity
+#         self._hyperparameters = hyperparameters
+#         self.__wandb.init(
+#             name=self._log_suffix,
+#             dir=self._log_dir,
+#             config=self._hyperparameters,
+#             project=self._project,
+#             entity=self._entity,
+#         )
 
-    def log_metrics(
-        self, metrics: Dict[str, float], step: Optional[int] = None
-    ) -> None:
-        """ """
-        self.__wandb.log(metrics, step=step)
+#     def log_metrics(
+#         self, metrics: Dict[str, float], step: Optional[int] = None
+#     ) -> None:
+#         """ """
+#         self.__wandb.log(metrics, step=step)
 
-    def log_message(self, msg: str, level: int = logging.INFO) -> None:
-        pass
+#     def log_message(self, msg: str, level: int = logging.INFO) -> None:
+#         pass
 
-    def flush(self) -> None:
-        """ """
-        pass
+#     def flush(self) -> None:
+#         """ """
+#         pass
 
-    def close(self) -> None:
-        """ """
-        self.__wandb.finish()
+#     def close(self) -> None:
+#         """ """
+#         self.__wandb.finish()
 
-    @classmethod
-    def from_config(cls, config: Dict[str, Any]) -> "WandbLogger":
-        """ """
-        return cls(
-            config.get("log_dir", None),
-            config.get("log_suffix", None),
-            config.get("project", None),
-            config.get("entity", None),
-            config.get("hyperparameters", None),
-        )
+#     @classmethod
+#     def from_config(cls, config: Dict[str, Any]) -> "WandbLogger":
+#         """ """
+#         return cls(
+#             config.get("log_dir", None),
+#             config.get("log_suffix", None),
+#             config.get("project", None),
+#             config.get("entity", None),
+#             config.get("hyperparameters", None),
+#         )
 
-    @property
-    def filename(self) -> str:
-        """ """
-        return self.__wandb.run.dir
+#     @property
+#     def filename(self) -> str:
+#         """ """
+#         return self.__wandb.run.dir
 
 
 class LoggerManager(ReprMixin):
@@ -564,10 +563,10 @@ class LoggerManager(ReprMixin):
         """ """
         self.loggers.append(TensorBoardXLogger(self._log_dir, self._log_suffix))
 
-    def _add_wandb_logger(self, **kwargs: dict) -> None:
-        """ """
-        raise NotImplementedError("NOT tested yet!")
-        # self.loggers.append(WandbLogger(self._log_dir, self._log_suffix, **kwargs))
+    # def _add_wandb_logger(self, **kwargs: dict) -> None:
+    #     """ """
+    #     raise NotImplementedError("NOT tested yet!")
+    # self.loggers.append(WandbLogger(self._log_dir, self._log_suffix, **kwargs))
 
     def log_metrics(
         self,
@@ -680,9 +679,9 @@ class LoggerManager(ReprMixin):
             lm._add_csv_logger()
         if config.get("tensorboardx_logger", True):
             lm._add_tensorboardx_logger()
-        if config.get("wandb_logger", False):
-            kwargs = config.get("wandb_logger", {})
-            lm._add_wandb_logger(**kwargs)
+        # if config.get("wandb_logger", False):
+        #     kwargs = config.get("wandb_logger", {})
+        #     lm._add_wandb_logger(**kwargs)
         return lm
 
     def extra_repr_keys(self) -> List[str]:

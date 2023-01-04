@@ -1,5 +1,7 @@
 """
 neural architecture search
+
+TODO: replace this module with Ray Tune
 """
 
 from typing import Sequence
