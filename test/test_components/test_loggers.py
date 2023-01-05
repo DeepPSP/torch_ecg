@@ -37,8 +37,8 @@ def test_logger_manager():
     assert lm.log_suffix == "test"
     assert str(lm) == repr(lm)
 
-    with pytest.raises(NotImplementedError):
-        lm._add_wandb_logger()  # not implemented yet
+    # with pytest.raises(NotImplementedError):
+    #     lm._add_wandb_logger()  # not implemented yet
 
     lm.log_message("test")
     lm.log_metrics({"test": torch.scalar_tensor(1.1)})

@@ -11,6 +11,7 @@ from .attn import (
     non_local,
     squeeze_excitation,
     transformer,
+    self_attention,
 )
 from .cnn import (
     densenet_leadwise,
@@ -282,6 +283,8 @@ ECG_CRNN_CONFIG.attn.gc = deepcopy(global_context)
 ECG_CRNN_CONFIG.attn.nl = deepcopy(non_local)
 
 ECG_CRNN_CONFIG.attn.transformer = deepcopy(transformer)
+
+ECG_CRNN_CONFIG.attn.sa = deepcopy(self_attention)
 
 
 # global pooling

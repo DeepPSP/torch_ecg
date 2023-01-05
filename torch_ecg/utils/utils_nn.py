@@ -887,6 +887,8 @@ def _default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor
     try:
         n_fields = len(batch[0])
     except Exception:
+        raise ValueError("Invalid batch")
+    if n_fields == 0:
         raise ValueError("No data")
     ret = []
     for i in range(n_fields):
@@ -895,17 +897,6 @@ def _default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor
         values = torch.from_numpy(values)
         ret.append(values)
     return tuple(ret)
-
-
-if torch.__version__ >= "1.5.0":
-
-    def _true_divide(dividend, divisor):
-        return torch.true_divide(dividend, divisor)
-
-else:
-
-    def _true_divide(dividend, divisor):
-        return dividend / divisor
 
 
 def _adjust_cnn_filter_lengths(

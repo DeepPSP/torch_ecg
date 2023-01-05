@@ -420,6 +420,12 @@ def test_default_collate_fn():
     assert tensors["tensor_2"].shape == (batch_size, *shape_2)
     assert tensors["tensor_3"].shape == (batch_size, *shape_3)
 
+    with pytest.raises(ValueError, match="Invalid batch"):
+        default_collate_fn([1])
+
+    with pytest.raises(ValueError, match="No data"):
+        default_collate_fn([tuple()])
+
 
 def test_compute_receptive_field():
     assert (

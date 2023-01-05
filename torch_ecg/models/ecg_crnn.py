@@ -105,7 +105,9 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             elif "v3" in cnn_choice:
                 self.cnn = MobileNetV3(self.n_leads, **cnn_config)
             else:
-                raise ValueError(f"{cnn_choice} is not supported for {self.__name__}")
+                raise ValueError(
+                    f"CNN \042{cnn_choice}\042 is not supported for {self.__name__}"
+                )
         elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
             self.cnn = DenseNet(self.n_leads, **cnn_config)
         elif "vgg16" in cnn_choice:
@@ -227,7 +229,9 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             self.attn_in_rearrange = nn.Identity()
             self.attn = SelfAttention(
                 in_features=attn_input_size,
-                head_num=self.config.attn.sa.head_num,
+                num_heads=self.config.attn.sa.get(
+                    "num_heads", self.config.attn.sa.get("head_num")
+                ),
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,
             )
@@ -547,7 +551,9 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             elif "v3" in cnn_choice:
                 self.cnn = MobileNetV3(self.n_leads, **cnn_config)
             else:
-                raise ValueError(f"{cnn_choice} is not supported for {self.__name__}")
+                raise ValueError(
+                    f"CNN \042{cnn_choice}\042 is not supported for {self.__name__}"
+                )
         elif "densenet" in cnn_choice or "dense_net" in cnn_choice:
             self.cnn = DenseNet(self.n_leads, **cnn_config)
         elif "vgg16" in cnn_choice:
@@ -628,7 +634,9 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             # NOTE: this branch NOT tested
             self.attn = SelfAttention(
                 in_features=attn_input_size,
-                head_num=self.config.attn.sa.head_num,
+                num_heads=self.config.attn.sa.get(
+                    "num_heads", self.config.attn.sa.get("head_num")
+                ),
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,
             )

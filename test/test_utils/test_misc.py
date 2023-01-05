@@ -48,6 +48,11 @@ _TMP_DIR = Path(__file__).parents[2].resolve() / "tmp"
 _TMP_DIR.mkdir(exist_ok=True, parents=True)
 
 
+# create `_DATA_CACHE / "database_citation.csv"`
+# to test backward compatibility of `CitationMixin`
+(_DATA_CACHE / "database_citation.csv").write_text("doi,citation\n")
+
+
 class SomeClass(ReprMixin, CitationMixin):
     def __init__(self, aaa, bb, c):
         self.aaa = aaa
@@ -335,9 +340,6 @@ def test_ReprMixin():
 
 
 def test_CitationMixin():
-    # create `_DATA_CACHE / "database_citation.csv"`
-    # to test backward compatibility of `CitationMixin`
-    (_DATA_CACHE / "database_citation.csv").write_text("doi,citation\n")
     some_class = SomeClass(1, 2, 3)
     citation = some_class.get_citation(lookup=True, print_result=False)
     assert isinstance(citation, str) and len(citation) > 0

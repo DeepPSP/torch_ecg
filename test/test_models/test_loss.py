@@ -51,6 +51,17 @@ def test_wbce():
         < criterion_wbce(torch.sigmoid(inp), targ_0_soft).item()
     )
 
+    criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), reduce=False)
+    criterion_wbce(torch.sigmoid(inp), targ_1)
+    criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), size_average=False)
+    criterion_wbce(torch.sigmoid(inp), targ_1)
+
+    with pytest.raises(
+        ValueError, match="Target size \\(.+\\) must be the same as input size \\(.+\\)"
+    ):
+        criterion_wbce = WeightedBCELoss(torch.ones((1, 2)))
+        criterion_wbce(torch.sigmoid(inp), targ_1[:, 0:1])
+
 
 def test_bce_cw():
     """ """
@@ -87,6 +98,12 @@ def test_focal():
         < criterion_focal(inp, targ_mixed_soft).item()
         < criterion_focal(inp, targ_0_soft).item()
     )
+    assert torch.allclose(criterion_focal.alpha, class_weight, atol=1e-3)
+
+    criterion_focal = FocalLoss(
+        class_weight=class_weight.unsqueeze(0), multi_label=False, reduction="sum"
+    )
+    criterion_focal(inp, targ_1)
 
 
 def test_asl():
@@ -124,6 +141,15 @@ def test_asl():
         < criterion_asl(inp, targ_mixed_soft).item()
         < criterion_asl(inp, targ_0_soft).item()
     )
+
+    criterion_asl = AsymmetricLoss(disable_torch_grad_focal_loss=True, reduction="sum")
+    criterion_asl(inp, targ_1)
+
+    criterion_asl = AsymmetricLoss(disable_torch_grad_focal_loss=True, reduction="none")
+    criterion_asl(inp, targ_1)
+
+    with pytest.raises(ValueError, match="`prob_margin` must be non-negative"):
+        AsymmetricLoss(prob_margin=-0.1)
 
 
 def test_mbce():

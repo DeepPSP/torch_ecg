@@ -106,3 +106,18 @@ def test_spectrogram():
     transform = Spectrogram(**config)
     spec = transform(waveform)
     assert spec.shape == (32, n_bins, 154)
+    config["power"] = 1.0
+    config["pad"] = 16
+    transform = Spectrogram(**config)
+    spec = transform(waveform)
+    assert spec.shape == (32, n_bins, 157)
+
+    with pytest.warns(
+        RuntimeWarning,
+        match="The use of pseudo complex type in spectrogram is now deprecated",
+    ):
+        new_config = config.copy()
+        new_config["power"] = None
+        new_config["return_complex"] = False
+        transform = Spectrogram(**new_config)
+        spec = transform(waveform)

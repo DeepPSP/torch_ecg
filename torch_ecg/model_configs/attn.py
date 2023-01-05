@@ -9,6 +9,7 @@ __all__ = [
     "squeeze_excitation",
     "global_context",
     "transformer",
+    "self_attention",
 ]
 
 
@@ -46,3 +47,9 @@ transformer.num_heads = 8
 transformer.num_layers = 1
 transformer.dropout = 0.1
 transformer.activation = "relu"
+
+
+self_attention = CFG()
+self_attention.num_heads = 8
+self_attention.dropout = 0.1
+self_attention.bias = True

@@ -2468,7 +2468,7 @@ class SelfAttention(nn.Module, SizeMixin):
         super().__init__()
         if in_features % head_num != 0:
             raise ValueError(
-                f"`in_features`({in_features}) should be divisible by `head_num`({head_num})"
+                f"`in_features`({in_features}) should be divisible by `num_heads`({head_num})"
             )
         self.in_features = in_features
         self.head_num = head_num

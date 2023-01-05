@@ -732,7 +732,7 @@ def test_self_attention():
         )
     with pytest.raises(
         ValueError,
-        match="`in_features`\\(\\d+\\) should be divisible by `head_num`\\(\\d+\\)",
+        match="`in_features`\\(\\d+\\) should be divisible by `num_heads`\\(\\d+\\)",
     ):
         SelfAttention(embed_dim=IN_CHANNELS, num_heads=5)
 

@@ -96,13 +96,13 @@ def test_detect_peaks():
         + DEFAULTS.RNG.normal(size=(200,)) / 5
     )
     # set minimum peak height = 0 and minimum peak distance = 20
-    ind = detect_peaks(x, mph=0, mpd=20)
+    ind = detect_peaks(x, mph=0, mpd=20, verbose=2)
     # assert ind.ndim == 1 and len(ind) > 0
     assert ind.ndim == 1 and "int" in str(ind.dtype)
 
     x = [0, 1, 0, 2, 0, 3, 0, 2, 0, 1, 0]
     # set minimum peak distance = 2
-    ind = detect_peaks(x, mpd=2)
+    ind = detect_peaks(x, mpd=2, verbose=2)
     # assert ind.ndim == 1 and len(ind) > 0
     assert ind.ndim == 1 and "int" in str(ind.dtype)
 
@@ -111,12 +111,12 @@ def test_detect_peaks():
         + DEFAULTS.RNG.normal(size=(200,)) / 5
     )
     # detection of valleys instead of peaks
-    ind = detect_peaks(x, mph=-1.2, mpd=20, valley=True)
+    ind = detect_peaks(x, mph=-1.2, mpd=20, valley=True, verbose=2)
     assert ind.ndim == 1 and len(ind) > 0
 
     x = [0, 1, 3, 0, 1, -1, 0]
     # detect both edges
-    ind = detect_peaks(x, edge="both")
+    ind = detect_peaks(x, edge="both", verbose=2)
     # assert ind.ndim == 1 and len(ind) > 0
     assert ind.ndim == 1 and "int" in str(ind.dtype)
     ind = detect_peaks(x, edge=None, prominence=0.4, verbose=2)
@@ -124,11 +124,11 @@ def test_detect_peaks():
 
     x = [-2, 1, -2, 2, 1, 1, 3, 0]
     # set threshold = 2
-    ind = detect_peaks(x, threshold=2)
+    ind = detect_peaks(x, threshold=2, verbose=2)
     # assert ind.ndim == 1 and len(ind) > 0
     assert ind.ndim == 1 and "int" in str(ind.dtype)
 
-    assert len(detect_peaks([0, 1])) == 0
+    assert len(detect_peaks([0, 1], verbose=2)) == 0
 
 
 def test_remove_spikes_naive():
@@ -148,6 +148,7 @@ def test_remove_spikes_naive():
     sig[pos] = 15
     pos = DEFAULTS.RNG_randint(0, siglen - 1, 10)
     sig[pos] = -15
+    sig[0] = np.nan
     new_sig = remove_spikes_naive(sig, threshold=50, inplace=False)
     assert (new_sig <= 50).all() and (new_sig >= -50).all()
     assert (not (new_sig <= 10).all()) and (not (new_sig >= -10).all())

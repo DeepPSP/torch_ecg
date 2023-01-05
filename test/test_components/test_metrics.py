@@ -231,3 +231,9 @@ def test_metric_functions():
     assert 0 <= macro_auprc <= 1
     assert all(0 <= v <= 1 for v in auroc)
     assert all(0 <= v <= 1 for v in auprc)
+
+    with pytest.raises(
+        ValueError,
+        match="outputs must be of shape \\(n_samples, n_classes\\) to compute AUC",
+    ):
+        auc(labels, outputs[:, 0])

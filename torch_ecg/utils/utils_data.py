@@ -308,7 +308,6 @@ def ensure_lead_fmt(
         lead_dim == 0 and fmt.lower() in ["lead_last", "channel_last"]
     ):
         out_values = out_values.T
-        return out_values
     elif fmt.lower() not in [
         "lead_first",
         "channel_first",
@@ -914,21 +913,14 @@ def generate_weight_mask(
         )
         weight_mask += weight
     if plot:
-        try:
-            import matplotlib.pyplot as plt
-        except ModuleNotFoundError:
-            plt = None
-            warnings.warn(
-                "matplotlib is not installed, plotting is skipped", RuntimeWarning
-            )
+        import matplotlib.pyplot as plt
 
-        if plt is not None:
-            fig, ax = plt.subplots(figsize=(12, 6))
-            ax.plot(target_mask, label="target mask")
-            ax.plot(weight_mask, label="weight mask")
-            ax.set_xlabel("samples")
-            ax.set_ylabel("weight")
-            ax.legend(loc="best")
-            plt.show()
+        fig, ax = plt.subplots(figsize=(12, 6))
+        ax.plot(target_mask, label="target mask")
+        ax.plot(weight_mask, label="weight mask")
+        ax.set_xlabel("samples")
+        ax.set_ylabel("weight")
+        ax.legend(loc="best")
+        plt.show()
 
     return weight_mask
