@@ -730,9 +730,9 @@ def test_self_attention():
         assert sa(sample_input).shape == sa.compute_output_shape(
             seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
         )
-    with pytest.raises(
-        ValueError,
-        match="`in_features`\\(\\d+\\) should be divisible by `num_heads`\\(\\d+\\)",
+    with pytest.warns(
+        RuntimeWarning,
+        match="`embed_dim`\\(.+\\) is not divisible by `num_heads`\\(.+\\)",
     ):
         SelfAttention(embed_dim=IN_CHANNELS, num_heads=5)
 

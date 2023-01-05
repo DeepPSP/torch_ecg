@@ -2466,19 +2466,29 @@ class SelfAttention(nn.Module, SizeMixin):
 
         """
         super().__init__()
+        # if in_features % head_num != 0:
+        #     raise ValueError(
+        #         f"`in_features`({in_features}) should be divisible by `num_heads`({head_num})"
+        #     )
         if in_features % head_num != 0:
-            raise ValueError(
-                f"`in_features`({in_features}) should be divisible by `num_heads`({head_num})"
+            self.embed_dim = in_features // head_num * head_num
+            self.project = nn.Linear(in_features, self.embed_dim)
+            warnings.warn(
+                f"`embed_dim`({in_features}) is not divisible by `num_heads`({head_num}), "
+                f"so the `embed_dim` is changed to {self.embed_dim} via a linear projection layer.",
+                RuntimeWarning,
             )
-        self.in_features = in_features
-        self.head_num = head_num
+        else:
+            self.embed_dim = in_features
+            self.project = nn.Identity()
+        self.num_heads = head_num
         self.dropout = dropout
         self.bias = bias
         self.mha = nn.MultiheadAttention(
-            in_features,
-            head_num,
-            dropout=dropout,
-            bias=bias,
+            self.embed_dim,
+            self.num_heads,
+            dropout=self.dropout,
+            bias=self.bias,
         )
 
     def forward(self, input: Tensor) -> Tensor:
@@ -2494,7 +2504,8 @@ class SelfAttention(nn.Module, SizeMixin):
             the output tensor, shape = (seq_len, batch_size, in_features)
 
         """
-        output, _ = self.mha(input, input, input)
+        output = self.project(input)
+        output, _ = self.mha(output, output, output)
         return output
 
     def compute_output_shape(
@@ -2514,7 +2525,7 @@ class SelfAttention(nn.Module, SizeMixin):
             the output shape, given `seq_len` and `batch_size`
 
         """
-        output_shape = (seq_len, batch_size, self.in_features)
+        output_shape = (seq_len, batch_size, self.embed_dim)
         return output_shape
 
 

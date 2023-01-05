@@ -147,8 +147,10 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             # NOTE: this branch NOT tested
             self.attn_in_rearrange = nn.Identity()
             self.attn = SelfAttention(
-                in_features=attn_input_size,
-                head_num=self.config.attn.sa.head_num,
+                embed_dim=attn_input_size,
+                num_heads=self.config.attn.sa.get(
+                    "num_heads", self.config.attn.sa.get("head_num")
+                ),
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,
             )
@@ -417,8 +419,10 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         elif self.config.attn.name.lower() == "sa":  # self_attention
             # NOTE: this branch NOT tested
             self.attn = SelfAttention(
-                in_features=attn_input_size,
-                head_num=self.config.attn.sa.head_num,
+                embed_dim=attn_input_size,
+                num_heads=self.config.attn.sa.get(
+                    "num_heads", self.config.attn.sa.get("head_num")
+                ),
                 dropout=self.config.attn.sa.dropout,
                 bias=self.config.attn.sa.bias,
             )

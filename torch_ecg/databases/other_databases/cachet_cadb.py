@@ -412,7 +412,7 @@ class CACHET_CADB(_DataBase):
                 rec = self[rec]
         if rec == "short_format":
             if self._short_format_file is None:
-                raise ValueError("short format file not found")
+                raise ValueError("Short format file not found")
             return self.__short_format_data
         elif rec not in self.all_records:
             raise ValueError(f"Invalid record name: `{rec}`")
@@ -721,7 +721,15 @@ class CACHET_CADB(_DataBase):
 
     def download(self, files: Optional[Union[str, Sequence[str]]]) -> None:
         """
-        download the database from the dtu website
+        download the database from the DTU website
+
+        Parameters
+        ----------
+        files: str or list of str, optional,
+            files to download, can be subset of
+            "CACHET-CADB.zip", "cachet-cadb_short_format_without_context.hdf5.zip";
+            if is None, download all files,
+
         """
         warnings.warn(
             "The files are large, and the connections are unstable. "

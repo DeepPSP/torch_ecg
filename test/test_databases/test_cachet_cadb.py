@@ -35,6 +35,21 @@ http_get(
 reader = CACHET_CADB(_CWD)
 
 
+def download_short_format_data_with_retry(n: int = 3):
+    try:
+        with pytest.warns(
+            RuntimeWarning,
+            match="The files are large, and the connections are unstable",
+        ):
+            reader.download("cachet-cadb_short_format_without_context.hdf5.zip")
+    except Exception as e:
+        if n > 0:
+            download_short_format_data_with_retry(n - 1)
+
+
+download_short_format_data_with_retry()
+
+
 class TestCACHET_CADB:
     def test_len(self):
         assert len(reader) == 2
@@ -56,8 +71,13 @@ class TestCACHET_CADB:
             reader.load_data(0, data_format="xxx")
         with pytest.raises(ValueError, match="Invalid `units`: kV"):
             reader.load_data(0, units="kV")
-        with pytest.raises(ValueError, match="short format file not found"):
+        # with pytest.raises(ValueError, match="Short format file not found"):
+        #     reader.load_data(-1)
+        try:
             reader.load_data(-1)
+        except ValueError as e:
+            # downloading short format file might fail
+            assert str(e) == "Short format file not found"
         with pytest.raises(ValueError, match="Invalid record name: `xxx`"):
             reader.load_data("xxx")
 
@@ -97,8 +117,13 @@ class TestCACHET_CADB:
         assert isinstance(ann, pd.DataFrame)
         assert ann.columns.tolist() == ["Start", "End", "Class"]
 
-        with pytest.raises(ValueError, match="Short format file not found"):
+        # with pytest.raises(ValueError, match="Short format file not found"):
+        #     reader.load_ann(-1)
+        try:
             reader.load_ann(-1)
+        except ValueError as e:
+            # downloading short format file might fail
+            assert str(e) == "Short format file not found"
         with pytest.raises(ValueError, match="Invalid record name: `xxx`"):
             reader.load_ann("xxx")
         with pytest.raises(ValueError, match="`ann_format`: `np` not supported"):
@@ -140,5 +165,31 @@ class TestCACHET_CADB:
         assert isinstance(reader.all_subjects, list)
         assert isinstance(reader.df_metadata, pd.DataFrame)
 
+    def test_get_absolute_path(self):
+        rec = 0
+        for ext in [
+            "header",
+            "annotation",
+            "signal",
+            "annotation-context",
+            "signal-ecg",
+            "signal-acc",
+            "signal-angularrate",
+            "signal-hr_live",
+            "signal-hrvrmssd_live",
+        ]:
+            abs_path = reader.get_absolute_path(rec, ext)
+            assert abs_path.exists()
+
     def test_plot(self):
         pass  # `plot` not implemented yet
+
+    def test_download(self):
+        with pytest.raises(
+            AssertionError, match="`files` should be a subset of `.+`"
+        ), pytest.warns(RuntimeWarning):
+            reader.download(files="xxx")
+        with pytest.raises(
+            AssertionError, match="`files` should be a subset of `.+`"
+        ), pytest.warns(RuntimeWarning):
+            reader.download(files=["xxx"])

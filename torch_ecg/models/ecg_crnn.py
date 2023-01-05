@@ -228,7 +228,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
             # NOTE: this branch NOT tested
             self.attn_in_rearrange = nn.Identity()
             self.attn = SelfAttention(
-                in_features=attn_input_size,
+                embed_dim=attn_input_size,
                 num_heads=self.config.attn.sa.get(
                     "num_heads", self.config.attn.sa.get("head_num")
                 ),
@@ -633,7 +633,7 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         elif self.config.attn.name.lower() == "sa":  # self_attention
             # NOTE: this branch NOT tested
             self.attn = SelfAttention(
-                in_features=attn_input_size,
+                embed_dim=attn_input_size,
                 num_heads=self.config.attn.sa.get(
                     "num_heads", self.config.attn.sa.get("head_num")
                 ),
