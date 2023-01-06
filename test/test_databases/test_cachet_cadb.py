@@ -35,19 +35,19 @@ http_get(
 reader = CACHET_CADB(_CWD)
 
 
-def download_short_format_data_with_retry(n: int = 3):
-    try:
-        with pytest.warns(
-            RuntimeWarning,
-            match="The files are large, and the connections are unstable",
-        ):
-            reader.download("cachet-cadb_short_format_without_context.hdf5.zip")
-    except Exception as e:
-        if n > 0:
-            download_short_format_data_with_retry(n - 1)
+# def download_short_format_data_with_retry(n: int = 3):
+#     try:
+#         with pytest.warns(
+#             RuntimeWarning,
+#             match="The files are large, and the connections are unstable",
+#         ):
+#             reader.download("cachet-cadb_short_format_without_context.hdf5.zip")
+#     except Exception as e:
+#         if n > 0:
+#             download_short_format_data_with_retry(n - 1)
 
 
-download_short_format_data_with_retry()
+# download_short_format_data_with_retry()
 
 
 class TestCACHET_CADB:
@@ -71,13 +71,13 @@ class TestCACHET_CADB:
             reader.load_data(0, data_format="xxx")
         with pytest.raises(ValueError, match="Invalid `units`: kV"):
             reader.load_data(0, units="kV")
-        # with pytest.raises(ValueError, match="Short format file not found"):
-        #     reader.load_data(-1)
-        try:
+        with pytest.raises(ValueError, match="Short format file not found"):
             reader.load_data(-1)
-        except ValueError as e:
-            # downloading short format file might fail
-            assert str(e) == "Short format file not found"
+        # try:
+        #     reader.load_data(-1)
+        # except ValueError as e:
+        #     # downloading short format file might fail
+        #     assert str(e) == "Short format file not found"
         with pytest.raises(ValueError, match="Invalid record name: `xxx`"):
             reader.load_data("xxx")
 
@@ -117,13 +117,13 @@ class TestCACHET_CADB:
         assert isinstance(ann, pd.DataFrame)
         assert ann.columns.tolist() == ["Start", "End", "Class"]
 
-        # with pytest.raises(ValueError, match="Short format file not found"):
-        #     reader.load_ann(-1)
-        try:
+        with pytest.raises(ValueError, match="Short format file not found"):
             reader.load_ann(-1)
-        except ValueError as e:
-            # downloading short format file might fail
-            assert str(e) == "Short format file not found"
+        # try:
+        #     reader.load_ann(-1)
+        # except ValueError as e:
+        #     # downloading short format file might fail
+        #     assert str(e) == "Short format file not found"
         with pytest.raises(ValueError, match="Invalid record name: `xxx`"):
             reader.load_ann("xxx")
         with pytest.raises(ValueError, match="`ann_format`: `np` not supported"):
