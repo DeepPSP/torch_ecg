@@ -35,7 +35,9 @@ class CutMix(Augmenter):
 
     References
     ----------
-    1. Yun, S., Han, D., Oh, S. J., Chun, S., Choe, J., & Yoo, Y. (2019). CutMix: Regularization strategy to train strong classifiers with localizable features. In Proceedings of the IEEE/CVF International Conference on Computer Vision (pp. 6023-6032).
+    1. Yun, S., Han, D., Oh, S. J., Chun, S., Choe, J., & Yoo, Y. (2019).
+       CutMix: Regularization strategy to train strong classifiers with localizable features.
+       In Proceedings of the IEEE/CVF International Conference on Computer Vision (pp. 6023-6032).
     2. https://github.com/clovaai/CutMix-PyTorch/blob/master/train.py
     3. https://github.com/ildoonet/cutmix/blob/master/cutmix/cutmix.py
 
@@ -46,17 +48,20 @@ class CutMix(Augmenter):
     def __init__(
         self,
         fs: Optional[int] = None,
+        num_mix: int = 1,
         alpha: Real = 0.5,
         beta: Optional[Real] = None,
         prob: float = 0.5,
         inplace: bool = True,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         """
         Parameters
         ----------
         fs: int, optional,
             Sampling frequency, by default None.
+        num_mix: int, default 1,
+            Number of mixtures.
         alpha: float, default 0.5,
             Beta distribution parameter.
         beta: float, optional,
@@ -71,8 +76,15 @@ class CutMix(Augmenter):
         """
         super().__init__()
         self.fs = fs
+        self.num_mix = num_mix
+        assert (
+            isinstance(self.num_mix, int) and self.num_mix > 0
+        ), f"`num_mix` must be a positive integer, but got `{self.num_mix}`"
         self.alpha = alpha
         self.beta = beta or self.alpha
+        assert (
+            self.alpha > 0 and self.beta > 0
+        ), f"`alpha` and `beta` must be positive, but got `{self.alpha}` and `{self.beta}`"
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.inplace = inplace
@@ -82,7 +94,7 @@ class CutMix(Augmenter):
         sig: Tensor,
         label: Tensor,
         *extra_tensors: Sequence[Tensor],
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Tuple[Tensor, ...]:
         """
         Parameters
@@ -90,7 +102,7 @@ class CutMix(Augmenter):
         sig: Tensor,
             the ECGs to be augmented, of shape (batch, lead, siglen)
         label: Tensor,
-            class labels, of shape (batch, num_classes) or (batch,);
+            class labels, of shape (batch, num_classes);
             or segmentation masks, of shape (batch, siglen, num_classes)
         extra_tensors: Sequence[Tensor], optional,
             other tensors to be augmented, by default None.
@@ -103,38 +115,61 @@ class CutMix(Augmenter):
             augmented tensors.
 
         """
-        batch, lead, siglen = sig.shape
-        lam = torch.from_numpy(
-            DEFAULTS.RNG.beta(self.alpha, self.beta, size=batch),
-            dtype=sig.dtype,
-            device=sig.device,
-        )
-        indices = np.arange(batch, dtype=int)
-        ori = self.get_indices(prob=self.prob, pop_size=batch)
-        perm = deepcopy(ori)
-        shuffle(perm)
-        indices[ori] = perm
-        indices = torch.from_numpy(indices).long()
-        intervals = self._make_intervals(lam, siglen)
+        assert label.ndim != 1, "`label` should NOT be categorical labels"
 
         if not self.inplace:
             sig = sig.clone()
             label = label.clone()
             extra_tensors = [t.clone() for t in extra_tensors]
+        else:
+            extra_tensors = list(extra_tensors)  # make it mutable
+        batch, lead, siglen = sig.shape
 
-        # TODO: perform cutmix in batch
+        for _ in range(self.num_mix):
+            indices = np.arange(batch, dtype=int)
+            # original indices chosen by probability
+            ori = self.get_indices(prob=self.prob, pop_size=batch)
+            # permuted indices
+            perm = deepcopy(ori)
+            shuffle(perm)
+            indices[ori] = perm
+            indices = torch.from_numpy(indices).long()
 
-        raise NotImplementedError
+            lam = torch.from_numpy(
+                # DEFAULTS.RNG.beta(self.alpha, self.beta, size=len(ori)),
+                DEFAULTS.RNG.beta(self.alpha, self.beta, size=batch),
+            ).to(
+                dtype=sig.dtype, device=sig.device
+            )  # shape: (batch,)
+            intervals = _make_intervals(lam, siglen)
 
-    def _make_intervals(self, lam: Tensor, siglen: int) -> np.ndarray:
-        """ """
-        _lam = (lam.numpy() * siglen).astype(int)
-        intervals = np.zeros((lam.shape[0], 2), dtype=int)
-        intervals[:, 0] = np.minimum(
-            DEFAULTS.RNG_randint(0, siglen, size=lam.shape[0]), siglen - _lam
-        )
-        intervals[:, 1] = intervals[:, 0] + _lam
-        return intervals
+            # perform cutmix in batch
+            # set values of sig enclosed by intervals to 0
+            mask = torch.ones_like(sig)
+            for i, (start, end) in enumerate(intervals):
+                mask[i, :, start:end] = 0
+            sig = sig * mask + sig[indices] * (1 - mask)
+
+            if label.ndim == 2:
+                # one-hot labels, shape (batch, num_classes)
+                label = label * lam.view(-1, 1) + label[indices] * (1 - lam.view(-1, 1))
+            else:
+                # segmentation masks, shape (batch, siglen, num_classes)
+                label = label * lam.view(-1, 1, 1) + label[indices] * (
+                    1 - lam.view(-1, 1, 1)
+                )
+
+            for i, t in enumerate(extra_tensors):
+                if t.ndim == 2:
+                    extra_tensors[i] = t * lam.view(-1, 1) + t[indices] * (
+                        1 - lam.view(-1, 1)
+                    )
+                else:
+                    extra_tensors[i] = t * lam.view(-1, 1, 1) + t[indices] * (
+                        1 - lam.view(-1, 1, 1)
+                    )
+
+        return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
         return [
@@ -143,3 +178,29 @@ class CutMix(Augmenter):
             "prob",
             "inplace",
         ] + super().extra_repr_keys()
+
+
+def _make_intervals(lam: Tensor, siglen: int) -> np.ndarray:
+    """
+    make intervals for cutmix
+
+    Parameters
+    ----------
+    lam: Tensor,
+        lambda for cutmix, of shape (n,)
+    siglen: int,
+        length of the signal
+
+    Returns
+    -------
+    np.ndarray,
+        intervals for cutmix, of shape (n, 2)
+
+    """
+    _lam = (lam.numpy() * siglen).astype(int)
+    intervals = np.zeros((lam.shape[0], 2), dtype=int)
+    intervals[:, 0] = np.minimum(
+        DEFAULTS.RNG_randint(0, siglen, size=lam.shape[0]), siglen - _lam
+    )
+    intervals[:, 1] = intervals[:, 0] + _lam
+    return intervals

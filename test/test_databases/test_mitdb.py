@@ -134,7 +134,7 @@ config.db_dir = _CWD
 # tasks: "qrs_detection", "rhythm_segmentation", "af_event", "beat_classification", "rr_lstm"
 TASK = "qrs_detection"
 ds = MITDBDataset(config, task=TASK, training=True, lazy=True, subsample=0.2)
-ds.persistence()
+ds.persistence(verbose=2)
 ds.reset_task(TASK, lazy=False)
 
 ds_rhythm = MITDBDataset(

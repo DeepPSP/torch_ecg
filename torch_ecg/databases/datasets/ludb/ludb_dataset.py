@@ -53,7 +53,7 @@ class LUDBDataset(ReprMixin, Dataset):
         self.config = deepcopy(config)
         if reader_kwargs.pop("db_dir", None) is not None:
             warnings.warn(
-                "db_dir is specified in both config and reader_kwargs", RuntimeWarning
+                "`db_dir` is specified in both config and reader_kwargs", RuntimeWarning
             )
         self.reader = LR(db_dir=self.config.db_dir, **reader_kwargs)
         self.config.db_dir = self.reader.db_dir

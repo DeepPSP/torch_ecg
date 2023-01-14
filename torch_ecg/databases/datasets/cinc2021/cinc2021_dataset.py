@@ -64,7 +64,7 @@ class CINC2021Dataset(ReprMixin, Dataset):
         self.config = deepcopy(config)
         if reader_kwargs.pop("db_dir", None) is not None:
             warnings.warn(
-                "db_dir is specified in both config and reader_kwargs", RuntimeWarning
+                "`db_dir` is specified in both config and reader_kwargs", RuntimeWarning
             )
         self.reader = CR(db_dir=self.config.db_dir, **reader_kwargs)
         # assert self.config.db_dir is not None, "db_dir must be specified"

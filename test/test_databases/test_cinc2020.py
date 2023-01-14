@@ -99,6 +99,12 @@ class TestCINC2020:
             assert isinstance(ann_1, dict)
             assert dicts_equal(ann_1, ann_2)
             assert isinstance(ann_3, str)
+        ann_1 = reader.load_ann(0, backend="wfdb")
+        ann_2 = reader.load_ann(0, backend="naive")
+        ann_3 = reader.load_ann(0, raw=True)
+        assert isinstance(ann_1, dict)
+        assert dicts_equal(ann_1, ann_2)
+        assert isinstance(ann_3, str)
 
         with pytest.raises(
             ValueError, match="backend `numpy` not supported for loading annotations"
@@ -119,6 +125,11 @@ class TestCINC2020:
             labels_4 = reader.get_labels(rec, scored_only=False)
             assert len(labels_1) == len(labels_2) == len(labels_3) <= len(labels_4)
             assert set(labels_1) <= set(labels_4)
+
+        with pytest.raises(
+            AssertionError, match="`fmt` should be one of `a`, `f`, `s`, but got `.+`"
+        ):
+            reader.get_labels(0, fmt="flat")
 
     def test_get_fs(self):
         for rec in reader:
@@ -157,6 +168,7 @@ class TestCINC2020:
             assert np.allclose(data, data_1.T)
             data_1 = reader.load_resampled_data(rec, siglen=2000)
             assert data_1.ndim == 3 and data_1.shape[1:] == (12, 2000)
+        reader.load_resampled_data(0)
 
     def test_load_raw_data(self):
         for rec in reader:
@@ -165,10 +177,12 @@ class TestCINC2020:
             assert data_1.ndim == 2 and data_1.shape[1] == 12
             assert data_2.ndim == 2 and data_2.shape[0] == 12
             assert np.allclose(data_1, data_2.T)
+        reader.load_raw_data(0, backend="wfdb")
 
     def test_get_subject_id(self):
         for rec in reader:
             assert isinstance(reader.get_subject_id(rec), int)
+        assert isinstance(reader.get_subject_id(0), int)
 
     def test_check_nan(self):
         reader._check_nan(tranches="ABCDE")
@@ -193,7 +207,7 @@ class TestCINC2020:
             "t_onsets": [150, 1150],
             "t_offsets": [190, 1190],
         }
-        reader.plot(0, leads="II", ticks_granularity=2, waves=waves)
+        reader.plot(0, leads="II", ticks_granularity=2, waves=waves, same_range=True)
         waves = {
             "p_peaks": [105, 1105],
             "q_peaks": [120, 1120],

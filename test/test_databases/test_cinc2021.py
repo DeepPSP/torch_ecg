@@ -95,6 +95,9 @@ class TestCINC2021:
             data_1 = reader.load_data(rec, backend="scipy")
             assert np.allclose(data_1, data)
 
+        reader.load_data(0, leads=2)
+        reader.load_data(0, leads="aVR")
+
         with pytest.raises(AssertionError, match="Invalid data_format: `flat`"):
             reader.load_data(0, data_format="flat")
         with pytest.raises(
@@ -237,7 +240,7 @@ class TestCINC2021:
             "t_peaks": [170, 1170],
         }
         data = reader.load_data(0)
-        reader.plot(0, data=data, ticks_granularity=0, waves=waves)
+        reader.plot(0, data=data, ticks_granularity=0, waves=waves, same_range=True)
 
     def test_compute_metrics(self):
         classes = dx_mapping_scored.Abbreviation.tolist()

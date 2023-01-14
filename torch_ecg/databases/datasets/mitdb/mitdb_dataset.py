@@ -11,7 +11,6 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union, Any
 import numpy as np
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
-import torch
 from torch.utils.data.dataset import Dataset
 from tqdm.auto import tqdm
 
@@ -37,7 +36,6 @@ __all__ = [
 class MITDBDataset(ReprMixin, Dataset):
     """ """
 
-    __DEBUG__ = False
     __name__ = "MITDBDataset"
 
     def __init__(
@@ -70,15 +68,12 @@ class MITDBDataset(ReprMixin, Dataset):
         self.config = deepcopy(config)
         if reader_kwargs.pop("db_dir", None) is not None:
             warnings.warn(
-                "db_dir is specified in both config and reader_kwargs", RuntimeWarning
+                "`db_dir` is specified in both config and reader_kwargs", RuntimeWarning
             )
         self.reader = DR(db_dir=self.config.db_dir, **reader_kwargs)
         # assert self.config.db_dir is not None, "db_dir must be specified"
         self.config.db_dir = self.reader.db_dir
-        if self.config.torch_dtype == torch.float64:
-            self.dtype = np.float64
-        else:
-            self.dtype = np.float32
+        self.dtype = self.config.np_dtype
         self.allowed_preproc = list(
             set(
                 [
@@ -155,7 +150,6 @@ class MITDBDataset(ReprMixin, Dataset):
             self.records = split_res.test
 
         if self.task in ["beat_classification"]:
-            # finished, tested
             self._all_data, self._all_labels = [], []
             if self.lazy:
                 return
@@ -203,10 +197,10 @@ class MITDBDataset(ReprMixin, Dataset):
             self.segments_json = self.segments_base_dir / "segments.json"
             self._ls_segments()
             self.segments = list_sum([self.__all_segments[rec] for rec in self.records])
-            if self.__DEBUG__:
-                self.segments = DEFAULTS.RNG_sample(
-                    self.segments, int(len(self.segments) * 0.01)
-                ).tolist()
+            # if self.__DEBUG__:
+            #     self.segments = DEFAULTS.RNG_sample(
+            #         self.segments, int(len(self.segments) * 0.01)
+            #     ).tolist()
             if self.training:
                 DEFAULTS.RNG.shuffle(self.segments)
             # preload data
@@ -253,10 +247,10 @@ class MITDBDataset(ReprMixin, Dataset):
             self.rr_seq_json = self.rr_seq_base_dir / "rr_seq.json"
             self._ls_rr_seq()
             self.rr_seq = list_sum([self.__all_rr_seq[rec] for rec in self.records])
-            if self.__DEBUG__:
-                self.rr_seq = DEFAULTS.RNG_sample(
-                    self.rr_seq, int(len(self.rr_seq) * 0.01)
-                ).tolist()
+            # if self.__DEBUG__:
+            #     self.rr_seq = DEFAULTS.RNG_sample(
+            #         self.rr_seq, int(len(self.rr_seq) * 0.01)
+            #     ).tolist()
             if self.training:
                 DEFAULTS.RNG.shuffle(self.rr_seq)
             # preload data
@@ -637,25 +631,6 @@ class MITDBDataset(ReprMixin, Dataset):
         )
 
         self.__set_task(original_task, lazy=original_lazy)
-
-    def _get_rec_suffix(self, operations: List[str]) -> str:
-        """
-        get suffix of the filename of the preprocessed ecg signal
-
-        Parameters
-        ----------
-        operations: list of str,
-            names of operations to perform (or has performed),
-            should be sublist of `self.allowed_preproc`
-
-        Returns
-        -------
-        suffix: str,
-            suffix of the filename of the preprocessed ecg signal
-
-        """
-        suffix = "-".join(sorted([item.lower() for item in operations]))
-        return suffix
 
     def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> None:
         """
@@ -1460,20 +1435,3 @@ class FastDataReader(ReprMixin, Dataset):
             "reader",
             "ppm",
         ]
-
-
-def _get_rec_suffix(operations: List[str]) -> str:
-    """
-    Parameters
-    ----------
-    operations: list of str,
-        names of operations to perform (or has performed),
-
-    Returns
-    -------
-    suffix: str,
-        suffix of the filename of the preprocessed ecg signal
-
-    """
-    suffix = "-".join(sorted([item.lower() for item in operations]))
-    return suffix
