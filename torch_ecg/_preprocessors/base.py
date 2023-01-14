@@ -7,11 +7,11 @@ from numbers import Real
 from typing import List, Optional, Tuple
 
 import numpy as np
+from biosppy.signals.tools import filter_signal
+from scipy.ndimage import median_filter
 
 # from scipy.signal import medfilt
 # https://github.com/scipy/scipy/issues/9680
-from biosppy.signals.tools import filter_signal
-from scipy.ndimage import median_filter
 
 from ..utils.misc import ReprMixin
 from ..utils.utils_signal import butter_bandpass_filter

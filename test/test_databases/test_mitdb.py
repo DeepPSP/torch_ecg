@@ -1,8 +1,8 @@
 """
 TestMITDB: accomplished
-TestMITDBDataset: NOT accomplished
+TestMITDBDataset: partially accomplished
 
-subsampling: NOT tested
+subsampling: accomplished
 """
 
 import re
@@ -137,13 +137,17 @@ ds = MITDBDataset(config, task=TASK, training=True, lazy=True, subsample=0.2)
 ds.persistence()
 ds.reset_task(TASK, lazy=False)
 
-ds_rhythm = MITDBDataset(config, task="rhythm_segmentation", training=True, lazy=False)
+ds_rhythm = MITDBDataset(
+    config, task="rhythm_segmentation", training=True, lazy=False, subsample=0.2
+)
 
-ds_af = MITDBDataset(config, task="af_event", training=True, lazy=False)
+ds_af = MITDBDataset(config, task="af_event", training=True, lazy=False, subsample=0.2)
 
-ds_beat = MITDBDataset(config, task="beat_classification", training=True, lazy=False)
+ds_beat = MITDBDataset(
+    config, task="beat_classification", training=True, lazy=False, subsample=0.2
+)
 
-ds_rr = MITDBDataset(config, task="rr_lstm", training=True, lazy=False)
+ds_rr = MITDBDataset(config, task="rr_lstm", training=True, lazy=False, subsample=0.2)
 
 
 class TestMITDBDataset:
@@ -170,8 +174,55 @@ class TestMITDBDataset:
 
         # `ds_rhythm` and `ds_af` have bugs now
 
+    def test_load_seg_data(self):
+        seg = ds.all_segments[list(ds.all_segments)[0]][0]
+        data = ds._load_seg_data(seg)
+        assert data.ndim == 2
+        assert data.shape == (config.n_leads, config[TASK].input_len)
+
+    def test_load_seg_ann(self):
+        seg = ds.all_segments[list(ds.all_segments)[0]][0]
+        ann = ds._load_seg_ann(seg)
+        assert isinstance(ann, dict)
+        for k, v in ann.items():
+            assert isinstance(v, np.ndarray) and v.ndim == 1
+
+    def test_load_seg_mask(self):
+        seg = ds.all_segments[list(ds.all_segments)[0]][0]
+        mask = ds._load_seg_mask(seg)
+        assert isinstance(mask, np.ndarray) and mask.ndim == 2
+
+    def test_load_seg_seq_lab(self):
+        seg = ds.all_segments[list(ds.all_segments)[0]][0]
+        mask = ds._load_seg_mask(seg)
+        seq_lab = ds._load_seg_seq_lab(seg, reduction=8)
+        assert isinstance(seq_lab, np.ndarray) and seq_lab.ndim == 2
+        assert mask.shape[0] == seq_lab.shape[0] * 8
+
+    def test_load_rr_seq(self):
+        rr = ds_rr.all_rr_seq[list(ds_rr.all_rr_seq)[0]][0]
+        data = ds_rr._load_rr_seq(rr)
+        assert isinstance(data, dict) and len(data) > 0
+        for k, v in data.items():
+            assert isinstance(v, np.ndarray)
+
     def test_properties(self):
         assert str(ds) == repr(ds)
+        assert isinstance(ds.all_segments, dict) and len(ds.all_segments) > 0
+        assert isinstance(ds_rr.all_rr_seq, dict) and len(ds_rr.all_rr_seq) > 0
 
     def test_plot_seg(self):
-        pass  # `plot_seg` not implemented yet
+        # `plot_seg` not implemented yet
+        seg = ds.all_segments[list(ds.all_segments)[0]][0]
+        with pytest.raises(NotImplementedError):
+            ds.plot_seg(seg)
+
+    def test_clear_cached_segments(self):
+        rec = list(ds.all_segments)[0]
+        ds._clear_cached_segments([rec])
+        ds._clear_cached_segments()
+
+    def test_clear_cached_rr_seq(self):
+        rec = list(ds_rr.all_rr_seq)[0]
+        ds_rr._clear_cached_rr_seq([rec])
+        ds_rr._clear_cached_rr_seq()

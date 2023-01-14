@@ -11,6 +11,7 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union, Any
 import numpy as np
 from scipy import signal as SS
 from scipy.io import loadmat, savemat
+import torch
 from torch.utils.data.dataset import Dataset
 from tqdm.auto import tqdm
 
@@ -74,7 +75,10 @@ class MITDBDataset(ReprMixin, Dataset):
         self.reader = DR(db_dir=self.config.db_dir, **reader_kwargs)
         # assert self.config.db_dir is not None, "db_dir must be specified"
         self.config.db_dir = self.reader.db_dir
-        self.dtype = self.config.np_dtype
+        if self.config.torch_dtype == torch.float64:
+            self.dtype = np.float64
+        else:
+            self.dtype = np.float32
         self.allowed_preproc = list(
             set(
                 [
@@ -391,6 +395,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _get_seg_data_path(self, seg: str) -> Path:
         """
+        get the path of the data file of the segment
+
         Parameters
         ----------
         seg: str,
@@ -408,6 +414,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _get_seg_ann_path(self, seg: str) -> Path:
         """
+        get the path of the annotation file of the segment
+
         Parameters
         ----------
         seg: str,
@@ -425,6 +433,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _load_seg_data(self, seg: str) -> np.ndarray:
         """
+        load data of the segment
+
         Parameters
         ----------
         seg: str,
@@ -442,6 +452,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _load_seg_ann(self, seg: str) -> dict:
         """
+        load annotations of the segment
+
         Parameters
         ----------
         seg: str,
@@ -469,6 +481,8 @@ class MITDBDataset(ReprMixin, Dataset):
         self, seg: str, task: Optional[str] = None
     ) -> Union[np.ndarray, Dict[str, np.ndarray]]:
         """
+        load mask(s) of the segment
+
         Parameters
         ----------
         seg: str,
@@ -506,6 +520,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _load_seg_seq_lab(self, seg: str, reduction: int) -> np.ndarray:
         """
+        load sequence label of the segment
+
         Parameters
         ----------
         seg: str,
@@ -538,6 +554,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _get_rr_seq_path(self, seq_name: str) -> Path:
         """
+        get path of the data file of the rr_seq
+
         Parameters
         ----------
         seq_name: str,
@@ -555,6 +573,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _load_rr_seq(self, seq_name: str) -> Dict[str, np.ndarray]:
         """
+        load metadata of sequence of rr intervals
+
         Parameters
         ----------
         seq_name: str,
@@ -620,6 +640,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _get_rec_suffix(self, operations: List[str]) -> str:
         """
+        get suffix of the filename of the preprocessed ecg signal
+
         Parameters
         ----------
         operations: list of str,
@@ -947,6 +969,8 @@ class MITDBDataset(ReprMixin, Dataset):
         self, rec: str, segments: List[CFG], update_segments_json: bool = False
     ) -> None:
         """
+        save the segments to disk
+
         Parameters
         ----------
         rec: str,
@@ -984,6 +1008,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _clear_cached_segments(self, recs: Optional[Sequence[str]] = None) -> None:
         """
+        clear the cached segments of the records
+
         Parameters
         ----------
         recs: sequence of str, optional
@@ -1056,7 +1082,21 @@ class MITDBDataset(ReprMixin, Dataset):
         update_rr_seq_json: bool = False,
         verbose: int = 0,
     ) -> None:
-        """ """
+        """
+        slice sequences of rr intervals into fixed length (sub)sequences for one record
+
+        Parameters
+        ----------
+        rec: str,
+            filename of the record
+        force_recompute: bool, default False,
+            if True, recompute regardless of possible existing files
+        update_rr_seq_json: bool, default False,
+            if True, the file `self.rr_seq_json` will be updated
+        verbose: int, default 0,
+            print verbosity
+
+        """
         self.__assert_task(["rr_lstm"])
         rec_rr_seq = self.__all_rr_seq[rec]
         if (not force_recompute) and len(rec_rr_seq) > 0:
@@ -1164,6 +1204,8 @@ class MITDBDataset(ReprMixin, Dataset):
         self, rec: str, rr_seq: List[CFG], update_rr_seq_json: bool = False
     ) -> None:
         """
+        save rr_seq to disk
+
         Parameters
         ----------
         rec: str,
@@ -1189,6 +1231,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _clear_cached_rr_seq(self, recs: Optional[Sequence[str]] = None) -> None:
         """
+        clear the cached rr sequences
+
         Parameters
         ----------
         recs: sequence of str, optional
@@ -1209,6 +1253,8 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def _get_rec_name(self, seg_or_rr: str) -> str:
         """
+        get the record name from the segment or rr_seq name
+
         Parameters
         ----------
         seg_or_rr: str,
@@ -1262,9 +1308,10 @@ class MITDBDataset(ReprMixin, Dataset):
 
     def __assert_task(self, tasks: List[str]) -> None:
         """ """
-        assert (
-            self.task in tasks
-        ), f"DO NOT call this method when the current task is {self.task}. Switch task using `reset_task`"
+        assert self.task in tasks, (
+            f"DO NOT call this method when the current task is {self.task}. "
+            "Switch task using `reset_task`"
+        )
 
     def plot_seg(self, seg: str, ticks_granularity: int = 0) -> None:
         """
