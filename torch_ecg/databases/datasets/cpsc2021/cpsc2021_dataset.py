@@ -900,7 +900,8 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         siglen = data.shape[1]
         # offline augmentations are done, including strech-or-compress, ...
         if self.config.stretch_compress != 0:
-            sign = DEFAULTS.RNG_sample(self.config.stretch_compress_choices, 1)[0]
+            stretch_compress_choices = [0, 1, -1]
+            sign = DEFAULTS.RNG_sample(stretch_compress_choices, 1)[0]
             if sign != 0:
                 sc_ratio = self.config.stretch_compress
                 sc_ratio = (

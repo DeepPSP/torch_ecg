@@ -130,10 +130,17 @@ class TestMITDB:
 
 config = deepcopy(MITDBTrainCfg)
 config.db_dir = _CWD
+config.stretch_compress = 5  # 5%
 
 # tasks: "qrs_detection", "rhythm_segmentation", "af_event", "beat_classification", "rr_lstm"
 TASK = "qrs_detection"
-ds = MITDBDataset(config, task=TASK, training=True, lazy=True, subsample=0.2)
+
+with pytest.warns(
+    RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"
+):
+    ds = MITDBDataset(
+        config, task=TASK, training=True, lazy=True, subsample=0.2, db_dir=_CWD
+    )
 ds.persistence(verbose=2)
 ds.reset_task(TASK, lazy=False)
 

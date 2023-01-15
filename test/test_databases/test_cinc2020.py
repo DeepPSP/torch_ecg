@@ -127,7 +127,7 @@ class TestCINC2020:
             assert set(labels_1) <= set(labels_4)
 
         with pytest.raises(
-            AssertionError, match="`fmt` should be one of `a`, `f`, `s`, but got `.+`"
+            ValueError, match="`fmt` should be one of `a`, `f`, `s`, but got `.+`"
         ):
             reader.get_labels(0, fmt="flat")
 
@@ -295,7 +295,10 @@ class TestCINC2020:
 config = deepcopy(CINC2020TrainCfg)
 config.db_dir = _CWD
 
-ds = CINC2020Dataset(config, training=False, lazy=False)
+with pytest.warns(
+    RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"
+):
+    ds = CINC2020Dataset(config, training=False, lazy=False, db_dir=_CWD)
 
 
 class TestCINC2020Dataset:

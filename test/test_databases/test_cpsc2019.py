@@ -120,7 +120,10 @@ config = deepcopy(CPSC2019TrainCfg)
 config.db_dir = _CWD
 config.recover_length = False
 
-ds = CPSC2019Dataset(config, training=False, lazy=False)
+with pytest.warns(
+    RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"
+):
+    ds = CPSC2019Dataset(config, training=False, lazy=False, db_dir=_CWD)
 
 
 config_1 = deepcopy(config)

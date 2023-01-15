@@ -388,8 +388,12 @@ class TestCPSC2021:
 
 config = deepcopy(CPSC2021TrainCfg)
 config.db_dir = _CWD
+config.stretch_compress = 5  # 5%
 
-ds = CPSC2021Dataset(config, task="main", training=False, lazy=False)
+with pytest.warns(
+    RuntimeWarning, match="`db_dir` is specified in both config and reader_kwargs"
+):
+    ds = CPSC2021Dataset(config, task="main", training=False, lazy=False, db_dir=_CWD)
 ds.persistence(verbose=2)
 
 
