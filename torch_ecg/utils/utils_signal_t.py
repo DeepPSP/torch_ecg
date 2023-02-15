@@ -25,71 +25,73 @@ def normalize(
     inplace: bool = True,
 ) -> torch.Tensor:
     r"""
-    Perform z-score normalization on `sig`,
+    Perform z-score normalization on :attr:`sig`,
     to make it has fixed mean and standard deviation,
-    or perform min-max normalization on `sig`,
-    or normalize `sig` using `mean` and `std` via (sig - mean) / std.
+    or perform min-max normalization on :attr:`sig`,
+    or normalize :attr:`sig` using :attr:`mean` and :attr:`std`
+    via :math:`(sig - mean) / std`.
     More precisely,
 
-        .. math::
-            \begin{align*}
-            \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
-            \text{Naive normalization:} & \frac{sig - m}{s} \\
-            \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
-            \end{align*}
+    .. math::
+
+        \begin{align*}
+        \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
+        \text{Naive normalization:} & \frac{sig - m}{s} \\
+        \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+        \end{align*}
 
     Parameters
     ----------
-    sig: Tensor,
+    sig : torch.Tensor
         signal to be normalized, assumed to have shape (..., n_leads, siglen)
-    method: str, default "z-score",
-        normalization method, one of "z-score", "min-max", "naive", case insensitive
-    mean: real number or array_like, default 0.0,
-        mean value of the normalized signal,
+    method : str, default "z-score"
+        Normalization method, one of "z-score", "min-max", "naive", case insensitive
+    mean : real number or array_like, default 0.0
+        Mean value of the normalized signal,
         or mean values for each lead of the normalized signal, if `method` is "z-score";
         mean values to be subtracted from the original signal, if `method` is "naive";
         useless if `method` is "min-max"
-    std: real number or array_like, default 1.0,
-        standard deviation of the normalized signal,
+    std : real number or array_like, default 1.0
+        Standard deviation of the normalized signal,
         or standard deviations for each lead of the normalized signal, if `method` is "z-score";
         std to be divided from the original signal, if `method` is "naive";
         useless if `method` is "min-max"
-    per_channel: bool, default False,
-        if True, normalization will be done per channel, not strictly required per channel;
+    per_channel : bool, default False
+        If True, normalization will be done per channel, not strictly required per channel;
         if False, normalization will be done per sample, strictly required per sample
-    inplace: bool, default True,
-        if True, normalization will be done inplace (on `sig`)
+    inplace : bool, default True
+        If True, normalization will be done inplace (on `sig`)
 
     Returns
     -------
-    sig: Tensor,
-        the normalized signal
+    sig : torch.Tensor
+        The normalized signal
 
     NOTE
     ----
     in cases where normalization is infeasible (std = 0),
     only the mean value will be shifted
 
-    feasible shapes of `sig` and `std`, `mean` are as follows
+    feasible shapes of :attr:`sig` and :attr:`std`, :attr:`mean` are as follows
 
-    | shape of `sig` | `per_channel` |                shape of `std` or `mean                                     |
+    | shape of :attr:`sig` | :attr:`per_channel` | shape of :attr:`std` or :attr:`mean |
     |----------------|---------------|----------------------------------------------------------------------------|
     |    (b,l,s)     |     False     | scalar, (b,), (b,1), (b,1,1)                                               |
     |    (b,l,s)     |     True      | scalar, (b,), (l,), (b,1), (b,l), (l,1), (1,l), (b,1,1), (b,l,1), (1,l,1,) |
     |    (l,s)       |     False     | scalar,                                                                    |
     |    (l,s)       |     True      | scalar, (l,), (l,1), (1,l)                                                 |
 
-    `scalar` includes native scalar or scalar tensor. One can check by
+    :attr:`scalar` includes native scalar or scalar tensor. One can check by
 
-    ```python
-    (b, l, s) = 2, 12, 20
-    for shape in [(b,), (l,), (b,1), (b,l), (l,1), (1,l), (b,1,1), (b,l,1), (1,l,1,)]:
-        nm_sig = normalize(torch.randn(b,l,s), per_channel=True, mean=torch.rand(*shape))
-    for shape in [(b,), (b,1), (b,1,1)]:
-        nm_sig = normalize(torch.randn(b,l,s), per_channel=False, mean=torch.rand(*shape))
-    for shape in [(l,), (l,1), (1,l)]:
-        nm_sig = normalize(torch.randn(l,s), per_channel=True, mean=torch.rand(*shape))
-    ```
+    .. code-block:: python
+
+        (b, l, s) = 2, 12, 20
+        for shape in [(b,), (l,), (b,1), (b,l), (l,1), (1,l), (b,1,1), (b,l,1), (1,l,1,)]:
+            nm_sig = normalize(torch.randn(b,l,s), per_channel=True, mean=torch.rand(*shape))
+        for shape in [(b,), (b,1), (b,1,1)]:
+            nm_sig = normalize(torch.randn(b,l,s), per_channel=False, mean=torch.rand(*shape))
+        for shape in [(l,), (l,1), (1,l)]:
+            nm_sig = normalize(torch.randn(l,s), per_channel=True, mean=torch.rand(*shape))
 
     """
     _method = method.lower()

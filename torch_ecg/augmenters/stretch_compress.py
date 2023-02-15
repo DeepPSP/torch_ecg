@@ -27,14 +27,14 @@ class StretchCompress(Augmenter):
 
     Example
     -------
-    ```python
-    sc = StretchCompress()
-    sig = torch.randn((32, 12, 5000))
-    labels = torch.randint(0, 2, (32, 5000, 26))
-    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
-    mask = torch.randint(0, 2, (32, 5000, 3), dtype=torch.float32)
-    sig, label, mask = sc(sig, label, mask)
-    ```
+    .. code-block:: python
+
+        sc = StretchCompress()
+        sig = torch.randn((32, 12, 5000))
+        labels = torch.randint(0, 2, (32, 5000, 26))
+        label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+        mask = torch.randint(0, 2, (32, 5000, 3), dtype=torch.float32)
+        sig, label, mask = sc(sig, label, mask)
 
     """
 
@@ -358,7 +358,7 @@ class StretchCompressOffline(ReprMixin):
 
     Example
     -------
-    ```python
+    .. code-block:: python
     sco = StretchCompressOffline()
     seglen = 600
     sig = torch.randn((12, 60000)).numpy()

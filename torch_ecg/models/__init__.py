@@ -1,4 +1,44 @@
 """
+Models
+======
+
+This module contains the model architectures for ECG various tasks.
+
+.. currentmodule:: torch_ecg.models
+
+Convolutional neural backbones
+------------------------------
+.. autosummary::
+    :toctree: generated/
+
+    ResNet
+    RegNet
+    VGG16
+    Xception
+    DenseNet
+    MobileNetV1
+    MobileNetV2
+    MobileNetV3
+    MultiScopicCNN
+
+Downstream task models
+----------------------
+.. autosummary::
+    :toctree: generated/
+
+    ECG_UNET
+    ECG_SUBTRACT_UNET
+    ECG_CRNN
+    ECG_SEQ_LAB_NET
+    RR_LSTM
+
+Saliency analysis
+-----------------
+.. autosummary::
+    :toctree: generated/
+
+    GradCam
+
 """
 
 from .cnn import (

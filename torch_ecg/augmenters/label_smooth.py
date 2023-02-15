@@ -19,11 +19,11 @@ class LabelSmooth(Augmenter):
 
     Examples
     --------
-    ```python
-    ls = LabelSmooth()
-    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
-    _, label = ls(None, label)
-    ```
+    .. code-block:: python
+
+        ls = LabelSmooth()
+        label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+        _, label = ls(None, label)
 
     """
 
@@ -37,18 +37,20 @@ class LabelSmooth(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """
+        """Initialize the LabelSmooth augmenter.
+
         Parameters
         ----------
-        fs: int, optional,
-            sampling frequency of the ECGs to be augmented
-        smoothing: float, default 0.1,
-            the smoothing factor
-        prob: float, default 0.5,
-            the probability of applying label smoothing
-        inplace: bool, default True,
-            if True, the input tensor will be modified inplace
-        kwargs: keyword arguments
+        fs : int, optional
+            Sampling frequency of the ECGs to be augmented
+        smoothing : float, default 0.1
+            The smoothing factor
+        prob : float, default 0.5
+            The probability of applying label smoothing
+        inplace : bool, default True
+            If True, the input tensor will be modified inplace
+        **kwargs: dict, optional
+            Additional keyword arguments
 
         """
         super().__init__()

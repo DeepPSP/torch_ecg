@@ -1248,7 +1248,7 @@ class DataBaseInfo(CitationMixin):
             issues = "\n".join(issues)
         references = ["References", "-" * 10] + [
             # f"""{idx+1}. <a name="ref{idx+1}"></a> {line}"""
-            f"""{idx+1}. {line}"""
+            f""".. [{idx+1}] {line}"""
             for idx, line in enumerate(self.references)
         ]
         references = "\n".join(references)
@@ -1263,18 +1263,20 @@ class DataBaseInfo(CitationMixin):
         )
 
         if self.status is not None and len(self.status) > 0:
-            docstring = f"{self.status}\n{docstring}"
+            docstring = f"{self.status}\n\n{docstring}"
 
         lookup = False
         citation = self.get_citation(lookup=lookup, print_result=False)
+        # TODO: change format from markdown to rst
         if citation.startswith("@"):
+            citation = textwrap.indent(citation, indent)
             citation = textwrap.indent(
-                f"""Citation\n--------\n```latex\n{citation}\n```""", indent
+                f"""Citation\n--------\n.. code-block:: bibtex\n\n{citation}""", indent
             )
-            docstring = f"{docstring}\n{citation}\n"
+            docstring = f"{docstring}\n\n{citation}\n"
         elif not lookup:
             citation = textwrap.indent(f"""Citation\n--------\n{citation}""", indent)
-            docstring = f"{docstring}\n{citation}\n"
+            docstring = f"{docstring}\n\n{citation}\n"
 
         return docstring
 

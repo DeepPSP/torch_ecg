@@ -26,20 +26,20 @@ class CutMix(Augmenter):
 
     Examples
     --------
-    ```python
-    cm = CutMix(prob=0.7)
-    sig = torch.randn(32, 12, 5000)
-    lb = torch.randint(0, 2, (32, 5000, 2), dtype=torch.float32)  # 2 classes mask
-    sig, lb = cm(sig, lb)
-    ```
+    .. code-block:: python
+
+        cm = CutMix(prob=0.7)
+        sig = torch.randn(32, 12, 5000)
+        lb = torch.randint(0, 2, (32, 5000, 2), dtype=torch.float32)  # 2 classes mask
+        sig, lb = cm(sig, lb)
 
     References
     ----------
-    1. Yun, S., Han, D., Oh, S. J., Chun, S., Choe, J., & Yoo, Y. (2019).
+    .. [1] Yun, S., Han, D., Oh, S. J., Chun, S., Choe, J., & Yoo, Y. (2019).
        CutMix: Regularization strategy to train strong classifiers with localizable features.
        In Proceedings of the IEEE/CVF International Conference on Computer Vision (pp. 6023-6032).
-    2. https://github.com/clovaai/CutMix-PyTorch/blob/master/train.py
-    3. https://github.com/ildoonet/cutmix/blob/master/cutmix/cutmix.py
+    .. [2] https://github.com/clovaai/CutMix-PyTorch/blob/master/train.py
+    .. [3] https://github.com/ildoonet/cutmix/blob/master/cutmix/cutmix.py
 
     """
 
@@ -55,22 +55,23 @@ class CutMix(Augmenter):
         inplace: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
+        """Initialize the CutMix augmenter
+
         Parameters
         ----------
-        fs: int, optional,
+        fs: int, optional
             Sampling frequency, by default None.
-        num_mix: int, default 1,
+        num_mix: int, default 1
             Number of mixtures.
-        alpha: float, default 0.5,
+        alpha: float, default 0.5
             Beta distribution parameter.
-        beta: float, optional,
+        beta: float, optional
             Beta distribution parameter, by default equal to `alpha`.
-        prob: float, default 0.5,
+        prob: float, default 0.5
             Probability of applying this augmenter.
-        inplace: bool, default True,
+        inplace: bool, default True
             Whether to perform this augmentation in-place.
-        kwargs: Any,
+        **kwargs: dict, optional
             Other arguments for `Augmenter`.
 
         """
@@ -96,23 +97,24 @@ class CutMix(Augmenter):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any,
     ) -> Tuple[Tensor, ...]:
-        """
+        """Forward method
+
         Parameters
         ----------
-        sig: Tensor,
-            the ECGs to be augmented, of shape (batch, lead, siglen)
-        label: Tensor,
-            class labels, of shape (batch, num_classes);
+        sig: torch.Tensor
+            The ECGs to be augmented, of shape (batch, lead, siglen)
+        label: torch.Tensor
+            Class labels, of shape (batch, num_classes);
             or segmentation masks, of shape (batch, siglen, num_classes)
-        extra_tensors: Sequence[Tensor], optional,
-            other tensors to be augmented, by default None.
-        kwargs: Any,
-            other arguments.
+        extra_tensors: Sequence[torch.Tensor], optional
+            Other tensors to be augmented, by default ``None``.
+        kwargs: dict, optional
+            Other arguments.
 
         Returns
         -------
-        Tuple[Tensor, ...],
-            augmented tensors.
+        tuple of torch.Tensor
+            Augmented tensors.
 
         """
         assert label.ndim != 1, "`label` should NOT be categorical labels"
@@ -182,19 +184,19 @@ class CutMix(Augmenter):
 
 def _make_intervals(lam: Tensor, siglen: int) -> np.ndarray:
     """
-    make intervals for cutmix
+    Make intervals for cutmix
 
     Parameters
     ----------
-    lam: Tensor,
-        lambda for cutmix, of shape (n,)
-    siglen: int,
-        length of the signal
+    lam : torch.Tensor
+        Parameter ``lambda`` for cutmix, of shape (n,)
+    siglen : int
+        Length of the signal
 
     Returns
     -------
-    np.ndarray,
-        intervals for cutmix, of shape (n, 2)
+    numpy.ndarray
+        Intervals for cutmix, of shape (n, 2)
 
     """
     _lam = (lam.numpy() * siglen).astype(int)

@@ -24,12 +24,13 @@ class Normalize(torch.nn.Module):
     or normalize `sig` using `mean` and `std` via (sig - mean) / std.
     More precisely,
 
-        .. math::
-            \begin{align*}
-            \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
-            \text{Naive normalization:} & \frac{sig - m}{s} \\
-            \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
-            \end{align*}
+    .. math::
+
+        \begin{align*}
+        \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
+        \text{Naive normalization:} & \frac{sig - m}{s} \\
+        \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+        \end{align*}
 
     """
 
@@ -107,8 +108,9 @@ class MinMaxNormalize(Normalize):
     r"""
     Min-Max normalization, defined as
 
-        .. math::
-            \frac{sig - \min(sig)}{\max(sig) - \min(sig)}
+    .. math::
+
+        \frac{sig - \min(sig)}{\max(sig) - \min(sig)}
 
     """
 
@@ -132,11 +134,12 @@ class MinMaxNormalize(Normalize):
 
 
 class NaiveNormalize(Normalize):
-    """
+    r"""
     Naive normalization via
 
-        .. math::
-            \frac{sig - m}{s}
+    .. math::
+
+        \frac{sig - m}{s}
 
     """
 
@@ -176,8 +179,9 @@ class ZScoreNormalize(Normalize):
     r"""
     Z-score normalization via
 
-        .. math::
-            \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+    .. math::
+
+        \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
 
     """
 
@@ -191,7 +195,8 @@ class ZScoreNormalize(Normalize):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """
+        """Initialize the ZScoreNormalize preprocessor.
+
         Parameters
         ----------
         mean: real number or array_like, default 0.0,

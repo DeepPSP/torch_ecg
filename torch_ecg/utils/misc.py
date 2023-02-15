@@ -707,20 +707,19 @@ def dicts_equal(d1: dict, d2: dict, allow_array_diff_types: bool = True) -> bool
     NOTE
     ----
     the existence of numpy array, torch Tensor, pandas DataFrame and Series would probably
-    cause errors when directly use the default `__eq__` method of dict,
-    for example `{"a": np.array([1,2])} == {"a": np.array([1,2])}` would raise the following
-    ```python
-    ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
-    ```
+    cause errors when directly use the default ``__eq__`` method of dict,
+    for example :code:`{"a": np.array([1,2])} == {"a": np.array([1,2])}` would raise the following
+
+    .. code-block:: python
+
+        ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
 
     Example
     -------
-    ```python
     >>> d1 = {"a": pd.DataFrame([{"hehe":1,"haha":2}])[["haha","hehe"]]}
     >>> d2 = {"a": pd.DataFrame([{"hehe":1,"haha":2}])[["hehe","haha"]]}
     >>> dicts_equal(d1, d2)
     True
-    ```
 
     """
     import torch

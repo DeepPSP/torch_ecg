@@ -23,11 +23,11 @@ class RandomRenormalize(Augmenter):
 
     Examples
     --------
-    ```python
-    rrn = RandomRenormalize()
-    sig = torch.randn(32, 12, 5000)
-    sig, _ = rrn(sig, None)
-    ```
+    .. code-block:: python
+
+        rrn = RandomRenormalize()
+        sig = torch.randn(32, 12, 5000)
+        sig, _ = rrn(sig, None)
 
     """
 

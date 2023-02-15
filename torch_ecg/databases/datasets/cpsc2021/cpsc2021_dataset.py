@@ -6,31 +6,31 @@ NOTE
 In order to avoid potential error in the methods of slicing signals and rr intervals,
 one can check using the following code
 
-```python
-from torch_ecg.databases.datasets.cpsc2021 import CPSC2021Dataset, CPSC2021TrainCfg
+.. code-block:: python
 
-ds_train = CPSC2021Dataset(CPSC2021TrainCfg, task="qrs_detection", training=True)
-ds_val = CPSC2021Dataset(CPSC2021TrainCfg, task="qrs_detection", training=False)
-err_list = []
-for idx, seg in enumerate(ds_train.segments):
-    sig, lb = ds_train[idx]
-    if sig.shape != (2,6000) or lb.shape != (750, 1):
-        print("\n"+f"segment {seg} has sig.shape = {sig.shape}, lb.shape = {lb.shape}"+"\n")
-        err_list.append(seg)
-    print(f"{idx+1}/{len(ds_train)}", end="\r")
-for idx, seg in enumerate(ds_val.segments):
-    sig, lb = ds_val[idx]
-    if sig.shape != (2,6000) or lb.shape != (750, 1):
-        print("\n"+f"segment {seg} has sig.shape = {sig.shape}, lb.shape = {lb.shape}"+"\n")
-        err_list.append(seg)
-    print(f"{idx+1}/{len(ds_val)}", end="\r")
-for idx, seg in enumerate(err_list):
-    path = ds_train._get_seg_data_path(seg)
-    os.remove(path)
-    path = ds_train._get_seg_ann_path(seg)
-    os.remove(path)
-    print(f"{idx+1}/{len(err_list)}", end="\r")
-```
+    from torch_ecg.databases.datasets.cpsc2021 import CPSC2021Dataset, CPSC2021TrainCfg
+
+    ds_train = CPSC2021Dataset(CPSC2021TrainCfg, task="qrs_detection", training=True)
+    ds_val = CPSC2021Dataset(CPSC2021TrainCfg, task="qrs_detection", training=False)
+    err_list = []
+    for idx, seg in enumerate(ds_train.segments):
+        sig, lb = ds_train[idx]
+        if sig.shape != (2,6000) or lb.shape != (750, 1):
+            print("\n"+f"segment {seg} has sig.shape = {sig.shape}, lb.shape = {lb.shape}"+"\n")
+            err_list.append(seg)
+        print(f"{idx+1}/{len(ds_train)}", end="\r")
+    for idx, seg in enumerate(ds_val.segments):
+        sig, lb = ds_val[idx]
+        if sig.shape != (2,6000) or lb.shape != (750, 1):
+            print("\n"+f"segment {seg} has sig.shape = {sig.shape}, lb.shape = {lb.shape}"+"\n")
+            err_list.append(seg)
+        print(f"{idx+1}/{len(ds_val)}", end="\r")
+    for idx, seg in enumerate(err_list):
+        path = ds_train._get_seg_data_path(seg)
+        os.remove(path)
+        path = ds_train._get_seg_ann_path(seg)
+        os.remove(path)
+        print(f"{idx+1}/{len(err_list)}", end="\r")
 
 and similarly for the task of `rr_lstm`
 

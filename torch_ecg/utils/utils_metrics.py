@@ -56,14 +56,12 @@ def top_n_accuracy(
 
     Examples
     --------
-    ```python
     >>> from torch_ecg.cfg import DEFAULTS
     >>> labels, outputs = DEFAULTS.RNG_randint(0, 9, (100)), DEFAULTS.RNG.uniform(0, 1, (100, 10))  # 100 samples, 10 classes
     >>> top_n_accuracy(labels, outputs, 3)
     0.32
     >>> top_n_accuracy(labels, outputs, [1,3,5])
     {'top_1_acc': 0.12, 'top_3_acc': 0.32, 'top_5_acc': 0.52}
-    ```
 
     """
     assert (
@@ -202,23 +200,23 @@ _METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
 
     Parameters
     ----------
-    labels: np.ndarray or Tensor,
-        binary labels, of shape: (n_samples, n_classes),
+    labels: numpy.ndarray or torch.Tensor
+        Binary labels, of shape: (n_samples, n_classes),
         or indices of each label class, of shape: (n_samples,)
-    outputs: np.ndarray or Tensor,
-        probability outputs, of shape: (n_samples, n_classes),
+    outputs: numpy.ndarray or torch.Tensor
+        Probability outputs, of shape: (n_samples, n_classes),
         or binary outputs, of shape: (n_samples, n_classes),
         or indices of each class predicted, of shape: (n_samples,)
-    num_classes: int, optional,
-        number of classes,
-        if `labels` and `outputs` are both of shape (n_samples,),
-        then `num_classes` must be specified.
-    weights: np.ndarray or Tensor, optional,
-        weights for each class, of shape: (n_classes,),
+    num_classes: int, optional
+        Number of classes,
+        if ``labels`` and ``outputs`` are both of shape (n_samples,),
+        then ``num_classes`` must be specified.
+    weights: numpy.ndarray or torch.Tensor, optional
+        Weights for each class, of shape: (n_classes,),
         used to compute macro {metric}.
-    thr: float, default: 0.5,
-        threshold for binary classification,
-        valid only if `outputs` is of shape (n_samples, n_classes).
+    thr: float, default: 0.5
+        Threshold for binary classification,
+        valid only if ``outputs`` is of shape (n_samples, n_classes).
 """
 
 
@@ -236,8 +234,8 @@ def metrics_from_confusion_matrix(
     """
     Returns
     -------
-    metrics: dict,
-        metrics computed from the one-vs-rest confusion matrix
+    metrics : dict
+        Metrics computed from the one-vs-rest confusion matrix
 
     Examples
     --------
@@ -258,10 +256,9 @@ def metrics_from_confusion_matrix(
     >>> # RuntimeWarning: `outputs` is probably binary, AUC may be incorrect
     >>> metrics = metrics_from_confusion_matrix(labels, outputs)
 
-
     References
     ----------
-    1. https://en.wikipedia.org/wiki/Precision_and_recall
+    .. [1] https://en.wikipedia.org/wiki/Precision_and_recall
 
     """
     outputs_ndim = np.ndim(outputs)

@@ -63,14 +63,12 @@ def overlaps(interval: Interval, another: Interval) -> int:
 
     Examples
     --------
-    ```python
     >>> overlaps([1,2], [2,3])
     0
     >>> overlaps([1,2], [3,4])
     -1
     >>> overlaps([1,2], [0,3])
     1
-    ```
 
     """
     # in case a or b is not in ascending order
@@ -102,7 +100,6 @@ def validate_interval(
 
     Examples
     --------
-    ```python
     >>> validate_interval([1, 2, 3])
     (False, [])
     >>> validate_interval([2, 1])
@@ -113,7 +110,6 @@ def validate_interval(
     (True, [[1, 4], [4, 8]])
     >>> validate_interval([])
     (False, [])
-    ```
 
     """
     if (not isinstance(interval, (list, tuple))) or (len(interval) == 0):
@@ -154,7 +150,6 @@ def in_interval(
 
     Examples
     --------
-    ```python
     >>> in_interval(-1.3, [0, 2])
     False
     >>> in_interval(1.5, [1, 2])
@@ -167,7 +162,6 @@ def in_interval(
     False
     >>> in_interval(2, [1, 2], right_closed=True)
     True
-    ```
 
     """
     itv = sorted(interval)
@@ -209,7 +203,6 @@ def in_generalized_interval(
 
     Examples
     --------
-    ```python
     >>> in_generalized_interval(1.5, [[1, 2], [3, 4]])
     True
     >>> in_generalized_interval(2.5, [[1, 3], [2, 4]])
@@ -224,7 +217,6 @@ def in_generalized_interval(
     False
     >>> in_generalized_interval(1, [[0, 1], [3, 4]], right_closed=True)
     True
-    ```
 
     """
     is_in = False
@@ -256,7 +248,6 @@ def intervals_union(
 
     Examples
     --------
-    ```python
     >>> intervals_union([[1, 2], [3, 4]])
     [[1, 2], [3, 4]]
     >>> intervals_union([[1, 2], [2, 3]])
@@ -265,7 +256,6 @@ def intervals_union(
     [[1, 2], [2, 3]]
     >>> intervals_union([[1, 2.1], [1.6, 4], [3.1, 10.9]])
     [[1, 10.9]]
-    ```
 
     """
     # list_add = lambda list1, list2: list1+list2
@@ -336,14 +326,12 @@ def generalized_intervals_union(
 
     Examples
     --------
-    ```python
     >>> generalized_intervals_union(([[1, 2], [3, 7]], [[40,90], [-30, -10]]))
     [[-30, -10], [1, 2], [3, 7], [40, 90]]
     >>> generalized_intervals_union(([[1, 2], [3, 7]], [[4,9], [-3, 1]]))
     [[-3, 2], [3, 9]]
     >>> generalized_intervals_union(([[1, 2], [3, 7]], [[4,9], [-3, 1]]), join_book_endeds=False)
     [[-3, 1], [1, 2], [3, 9]]
-    ```
 
     """
     all_intervals = [itv for gnr_itv in interval_list for itv in gnr_itv]
@@ -371,7 +359,6 @@ def intervals_intersection(
 
     Examples
     --------
-    ```python
     >>> intervals_intersection([[1, 2], [3, 4]])
     []
     >>> intervals_intersection([[1, 2], [2, 3]])
@@ -382,7 +369,6 @@ def intervals_intersection(
     []
     >>> intervals_intersection([[1, 2.1], [1.6, 4], [0.7, 1.9]])
     [1.6, 1.9]
-    ```
 
     """
     if [] in interval_list:
@@ -423,14 +409,12 @@ def generalized_intervals_intersection(
 
     Examples
     --------
-    ```python
     >>> generalized_intervals_intersection([[1, 2], [3, 7]], [[40,90], [-30, -10]])
     []
     >>> generalized_intervals_intersection([[1, 5], [12, 33]], [[4, 9], [-3, 3], [33, 99]])
     [[1, 3], [4, 5]]
     >>> generalized_intervals_intersection([[1, 5], [12, 33]], [[4, 9], [-3, 3], [33, 99]], drop_degenerate=False)
     [[1, 3], [4, 5], [33, 33]]
-    ```
 
     """
     this = intervals_union(generalized_interval)
@@ -475,14 +459,12 @@ def generalized_interval_complement(
 
     Examples
     --------
-    ```python
     >>> generalized_interval_complement([1, 100], [[5, 33], [40, 50], [60, 140]])
     [[1, 5], [33, 40], [50, 60]]
     >>> generalized_interval_complement([1, 10], [[40, 66], [111, 300]])
     [[1, 10]]
     >>> generalized_interval_complement([150, 200], [[40, 66], [111, 300]])
     []
-    ```
 
     """
     rearranged_intervals = intervals_union(generalized_interval)
@@ -559,7 +541,6 @@ def get_optimal_covering(
 
     Examples
     --------
-    ```python
     >>> total_interval = [0, 100]
     >>> to_cover = [[7,33], 66, [82, 89]]
     >>> get_optimal_covering(total_interval, to_cover, 10, 5)
@@ -584,7 +565,6 @@ def get_optimal_covering(
     [[0, 40], [60, 100]]
     >>> get_optimal_covering(total_interval, to_cover, 1000, 1, traceback=True)
     ([[0, 100]], [[0, 1, 2]])
-    ```
 
     """
     assert validate_interval(total_interval)[
@@ -816,12 +796,10 @@ def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
 
     Examples
     --------
-    ```python
     >>> tot_rng = 10
     >>> sublist = [0, 2, 3, 4, 7, 9]
     >>> find_max_cont_len(sublist, tot_rng)
     {'max_cont_len': 3, 'max_cont_sublist_start': 1, 'max_cont_sublist': [2, 3, 4]}
-    ```
 
     """
     complementary_sublist = (
@@ -856,7 +834,6 @@ def interval_len(interval: Interval) -> Real:
 
     Examples
     --------
-    ```python
     >>> interval_len([0, 10])
     10
     >>> interval_len([10, 10])
@@ -865,7 +842,6 @@ def interval_len(interval: Interval) -> Real:
     10
     >>> interval_len([])
     0
-    ```
 
     """
     interval.sort()
@@ -888,7 +864,6 @@ def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
 
     Examples
     --------
-    ```python
     >>> generalized_interval_len([[0, 10], [20, 30]])
     20
     >>> generalized_interval_len([[10, 10], [20, 30]])
@@ -899,7 +874,6 @@ def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
     30
     >>> generalized_interval_len([])
     0
-    ```
 
     """
     gi_len = sum([interval_len(item) for item in intervals_union(generalized_interval)])
@@ -925,7 +899,6 @@ def find_extrema(signal: Union[np.ndarray, Sequence], mode: str = "both") -> np.
 
     Examples
     --------
-    ```python
     >>> x = np.linspace(0, 2 * np.pi, 100)
     >>> y = np.sin(x)
     >>> find_extrema(y, mode="max")
@@ -934,7 +907,6 @@ def find_extrema(signal: Union[np.ndarray, Sequence], mode: str = "both") -> np.
     array([74])
     >>> find_extrema(y, mode="both")
     array([25, 74])
-    ```
 
     """
     # check inputs
@@ -976,7 +948,6 @@ def is_intersect(
 
     Examples
     --------
-    ```python
     >>> is_intersect([0, 10], [5, 15])
     True
     >>> is_intersect([0, 10], [10, 15])
@@ -985,7 +956,6 @@ def is_intersect(
     False
     >>> is_intersect([0, 10], [[5, 20], [25, 30]])
     True
-    ```
 
     """
     if (
@@ -1043,7 +1013,6 @@ def max_disjoint_covering(
 
     Examples
     --------
-    ```python
     >>> max_disjoint_covering([])
     ([], [])
     >>> max_disjoint_covering([[0, 10]])
@@ -1052,7 +1021,6 @@ def max_disjoint_covering(
     ([[1, 4], [4, 6], [8, 9]], [0, 2, 3])
     >>> max_disjoint_covering([[1, 4], [2, 3], [4, 6], [8, 9]], allow_book_endeds=False, traceback=False)
     ([[2, 3], [4, 6], [8, 9]], [])
-    ```
 
     References
     ----------

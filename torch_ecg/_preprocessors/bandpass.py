@@ -7,6 +7,7 @@ import numpy as np
 
 from .base import PreProcessor, preprocess_multi_lead_signal
 
+
 __all__ = [
     "BandPass",
 ]
@@ -28,14 +29,16 @@ class BandPass(PreProcessor):
         """
         Parameters
         ----------
-        lowcut: real number, optional,
+        lowcut : real number, optional
             low cutoff frequency
-        highcut: real number, optional,
+        highcut : real number, optional
             high cutoff frequency
-        filter_type: str, default "butter",
+        filter_type : str, default "butter"
             type of the bandpass filter, can be "butter" or "fir"
-        filter_order: int, optional,
+        filter_order : int, optional
             order of the bandpass filter
+        **kwargs : dict, optional
+            other arguments for `PreProcessor`
 
         """
         self.lowcut = lowcut
@@ -56,19 +59,19 @@ class BandPass(PreProcessor):
 
         Parameters
         ----------
-        sig: ndarray,
+        sig : np.ndarray
             the ECG signal, can be
             1d array, which is a single-lead ECG
             2d array, which is a multi-lead ECG of "lead_first" format
             3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)
-        fs: int,
+        fs : int
             sampling frequency of the ECG signal
 
         Returns
         -------
-        filtered_sig: ndarray,
+        filtered_sig : np.ndarray
             the bandpass filtered ECG signal
-        fs: int,
+        fs : int
             the sampling frequency of the filtered ECG signal
 
         """
@@ -83,9 +86,7 @@ class BandPass(PreProcessor):
         return filtered_sig, fs
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        return the extra keys for `__repr__`
-        """
+        """Extra keys for `__repr__` and `__str__`"""
         return [
             "lowcut",
             "highcut",

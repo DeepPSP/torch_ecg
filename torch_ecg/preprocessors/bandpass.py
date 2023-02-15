@@ -8,6 +8,7 @@ import torch
 
 from .._preprocessors.base import preprocess_multi_lead_signal
 
+
 __all__ = [
     "BandPass",
 ]

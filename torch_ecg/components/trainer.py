@@ -558,31 +558,31 @@ class BaseTrainer(ReprMixin, ABC):
 
         Examples
         --------
-        ```python
-        if train_dataset is None:
-            train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
-        if val_dataset is None:
-            val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
-        num_workers = 4
-        self.train_loader = DataLoader(
-            dataset=train_dataset,
-            batch_size=self.batch_size,
-            shuffle=True,
-            num_workers=num_workers,
-            pin_memory=True,
-            drop_last=False,
-            collate_fn=self.collate_fn,
-        )
-        self.val_loader = DataLoader(
-            dataset=val_dataset,
-            batch_size=self.batch_size,
-            shuffle=True,
-            num_workers=num_workers,
-            pin_memory=True,
-            drop_last=False,
-            collate_fn=self.collate_fn,
-        )
-        ```
+        .. code-block:: python
+
+            if train_dataset is None:
+                train_dataset = self.dataset_cls(config=self.train_config, training=True, lazy=False)
+            if val_dataset is None:
+                val_dataset = self.dataset_cls(config=self.train_config, training=False, lazy=False)
+            num_workers = 4
+            self.train_loader = DataLoader(
+                dataset=train_dataset,
+                batch_size=self.batch_size,
+                shuffle=True,
+                num_workers=num_workers,
+                pin_memory=True,
+                drop_last=False,
+                collate_fn=self.collate_fn,
+            )
+            self.val_loader = DataLoader(
+                dataset=val_dataset,
+                batch_size=self.batch_size,
+                shuffle=True,
+                num_workers=num_workers,
+                pin_memory=True,
+                drop_last=False,
+                collate_fn=self.collate_fn,
+            )
 
         """
         raise NotImplementedError

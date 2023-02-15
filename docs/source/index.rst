@@ -6,6 +6,12 @@
 Welcome to torch-ecg's documentation!
 =====================================
 
+ECG Deep Learning Framework Implemented using PyTorch.
+
+The system design is depicted as follows
+
+.. image:: _static/images/system_design.jpg
+
 .. toctree::
    :caption: Getting started
    :maxdepth: 1

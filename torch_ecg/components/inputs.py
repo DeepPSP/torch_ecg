@@ -57,13 +57,11 @@ class InputConfig(CFG):
 
         Examples
         --------
-        ```python
         >>> input_config = InputConfig(
         ...     input_type="waveform",
         ...     n_channels=12,
         ...     n_samples=5000,
         ... )
-        ```
 
         """
         super().__init__(
@@ -250,7 +248,6 @@ class WaveformInput(BaseInput):
 
     Examples
     --------
-    ```python
     >>> from torch_ecg.cfg import DEFAULTS
     >>> BATCH_SIZE = 32
     >>> N_CHANNELS = 12
@@ -277,7 +274,6 @@ class WaveformInput(BaseInput):
     >>> waveform = DEFAULTS.RNG.uniform(size=(N_CHANNELS, N_SAMPLES))
     >>> inputer(waveform).shape
     torch.Size([12, 5000])
-    ```
 
     """
 
@@ -336,7 +332,6 @@ class FFTInput(BaseInput):
 
     Examples
     --------
-    ```python
     >>> from torch_ecg.cfg import DEFAULTS
     >>> BATCH_SIZE = 32
     >>> N_CHANNELS = 12
@@ -375,7 +370,6 @@ class FFTInput(BaseInput):
     2
     >>> inputer(waveform).shape == inputer.compute_input_shape(waveform.shape)
     True
-    ```
 
     """
 
@@ -546,7 +540,6 @@ class SpectrogramInput(_SpectralInput):
 
     Examples
     --------
-    ```python
     >>> from torch_ecg.cfg import DEFAULTS
     >>> BATCH_SIZE = 32
     >>> N_CHANNELS = 12
@@ -567,7 +560,6 @@ class SpectrogramInput(_SpectralInput):
     >>> spectrogram = inputer(waveform)
     >>> spectrogram.shape == inputer.compute_input_shape(waveform.shape)
     True
-    ```
 
     """
     )

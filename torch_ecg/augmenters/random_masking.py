@@ -22,12 +22,12 @@ class RandomMasking(Augmenter):
 
     Examples
     --------
-    ```python
-    rm = RandomMasking(fs=500, prob=0.7)
-    sig = torch.randn(32, 12, 5000)
-    critical_points = [np.arange(250, 5000 - 250, step=400) for _ in range(32)]
-    sig, _ = rm(sig, None, critical_points=critical_points)
-    ```
+    .. code-block:: python
+
+        rm = RandomMasking(fs=500, prob=0.7)
+        sig = torch.randn(32, 12, 5000)
+        critical_points = [np.arange(250, 5000 - 250, step=400) for _ in range(32)]
+        sig, _ = rm(sig, None, critical_points=critical_points)
 
     """
 

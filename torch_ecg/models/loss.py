@@ -212,17 +212,20 @@ class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
 class FocalLoss(nn.modules.loss._WeightedLoss):
     r"""
     the focal loss is computed as follows:
+
     .. math::
+
         \operatorname{FL}(p_t) = -\alpha_t (1 - p_t)^{\gamma} \, \log(p_t)
+
     Where:
        - :math:`p_t` is the model's estimated probability for each class.
 
     References
     ----------
-    1. Lin, Tsung-Yi, et al. "Focal loss for dense object detection." Proceedings of the IEEE international conference on computer vision. 2017.
-    2. https://github.com/kornia/kornia/blob/master/kornia/losses/focal.py
-    3. https://github.com/clcarwin/focal_loss_pytorch/blob/master/focalloss.py
-    4. https://discuss.pytorch.org/t/is-this-a-correct-implementation-for-focal-loss-in-pytorch/43327
+    .. [1] Lin, Tsung-Yi, et al. "Focal loss for dense object detection." Proceedings of the IEEE international conference on computer vision. 2017.
+    .. [2] https://github.com/kornia/kornia/blob/master/kornia/losses/focal.py
+    .. [3] https://github.com/clcarwin/focal_loss_pytorch/blob/master/focalloss.py
+    .. [4] https://discuss.pytorch.org/t/is-this-a-correct-implementation-for-focal-loss-in-pytorch/43327
 
     """
     __name__ = "FocalLoss"
@@ -324,19 +327,21 @@ class AsymmetricLoss(nn.Module):
     r"""
     The asymmetric loss is defined as
 
-        .. math::
-            ASL = \begin{cases} L_+ := (1-p)^{\gamma_+} \log(p) \\ L_- := (p_m)^{\gamma_-} \log(1-p_m) \end{cases}
+    .. math::
+
+        ASL = \begin{cases} L_+ := (1-p)^{\gamma_+} \log(p) \\ L_- := (p_m)^{\gamma_-} \log(1-p_m) \end{cases}
 
     where :math:`p_m = \max(p-m, 0)` is the shifted probability, with probability margin :math:`m`.
     The loss on one label of one sample is
 
-        .. math::
-            L = -yL_+ - (1-y)L_-
+    .. math::
+
+        L = -yL_+ - (1-y)L_-
 
     References
     ----------
-    1. Ridnik, Tal, et al. "Asymmetric Loss for Multi-Label Classification." Proceedings of the IEEE/CVF International Conference on Computer Vision. 2021.
-    2. https://github.com/Alibaba-MIIL/ASL/
+    .. [1] Ridnik, Tal, et al. "Asymmetric Loss for Multi-Label Classification." Proceedings of the IEEE/CVF International Conference on Computer Vision. 2021.
+    .. [2] https://github.com/Alibaba-MIIL/ASL/
 
     """
 
@@ -351,7 +356,8 @@ class AsymmetricLoss(nn.Module):
         reduction: str = "mean",
         implementation: str = "alibaba-miil",
     ) -> None:
-        """
+        """Initialize the asymmetric loss
+
         Parameters
         ----------
         gamma_neg: real number, default 4,

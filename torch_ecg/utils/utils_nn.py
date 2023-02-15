@@ -63,17 +63,17 @@ def extend_predictions(
 
     Examples
     --------
-    ```python
-    >>> n_records, n_classes = 10, 3
-    >>> classes = ["NSR", "AF", "PVC"]
-    >>> extended_classes = ["AF", "RBBB", "PVC", "NSR"]
-    >>> scalar_pred = torch.rand(n_records, n_classes)
-    >>> extended_pred = extend_predictions(scalar_pred, classes, extended_classes)
-    >>> bin_pred = torch.randint(0, 2, (n_records, n_classes))
-    >>> extended_pred = extend_predictions(bin_pred, classes, extended_classes)
-    >>> cate_pred = torch.randint(0, n_classes, (n_records,))
-    >>> extended_pred = extend_predictions(cate_pred, classes, extended_classes)
-    ```
+    .. code-block:: python
+
+        n_records, n_classes = 10, 3
+        classes = ["NSR", "AF", "PVC"]
+        extended_classes = ["AF", "RBBB", "PVC", "NSR"]
+        scalar_pred = torch.rand(n_records, n_classes)
+        extended_pred = extend_predictions(scalar_pred, classes, extended_classes)
+        bin_pred = torch.randint(0, 2, (n_records, n_classes))
+        extended_pred = extend_predictions(bin_pred, classes, extended_classes)
+        cate_pred = torch.randint(0, n_classes, (n_records,))
+        extended_pred = extend_predictions(cate_pred, classes, extended_classes)
 
     """
     assert len(set(classes) - set(extended_classes)) == 0, (
@@ -690,7 +690,6 @@ def compute_module_size(
 
     Examples
     --------
-    ```python
     >>> import torch
     >>> class Model(torch.nn.Sequential):
             def __init__(self):
@@ -711,7 +710,6 @@ def compute_module_size(
     '0.4K'
     >>> compute_module_size(model, human=True)
     '40.0B'
-    ```
 
     """
     if requires_grad:
@@ -767,6 +765,7 @@ def compute_receptive_field(
     like on the edges, whose receptive field is definitely different
 
     .. math::
+
         Let the layers has kernel size, stride, dilation $(k_n, s_n, d_n)$ respectively.
         Let each feature map has receptive field length $r_n$,
         and difference of receptive fields of adjacent positions be $f_n$.
@@ -800,14 +799,12 @@ def compute_receptive_field(
 
     Examples
     --------
-    ```python
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2])
     90
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[2,1,2,4,1,8,8,8,1])
     484
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[4,1,4,8,1,16,32,64,1])
     1984
-    ```
 
     this is the receptive fields of the output feature maps
     of the 3 branches of the multi-scopic net, using its original hyper-parameters,

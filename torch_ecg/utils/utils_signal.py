@@ -63,14 +63,14 @@ def smooth(
 
     Examples
     --------
-    ```python
-    >>> t = np.linspace(-2, 2, 50)
-    >>> x = np.sin(t) + np.random.randn(len(t)) * 0.1
-    >>> y = smooth(x)
-    ```
+    .. code-block:: python
 
-    See also:
-    ---------
+        t = np.linspace(-2, 2, 50)
+        x = np.sin(t) + np.random.randn(len(t)) * 0.1
+        y = smooth(x)
+
+    See also
+    --------
     np.hanning, np.hamming, np.bartlett, np.blackman, np.convolve
     scipy.signal.lfilter
 
@@ -81,7 +81,7 @@ def smooth(
 
     References
     ----------
-    [1] https://scipy-cookbook.readthedocs.io/items/SignalSmooth.html
+    .. [1] https://scipy-cookbook.readthedocs.io/items/SignalSmooth.html
 
     """
     radius = min(len(x), window_len)
@@ -157,16 +157,16 @@ def resample_irregular_timeseries(
 
     Examples
     --------
-    ```python
-    >>> fs = 100
-    >>> t_irr = np.sort(np.random.rand(fs)) * 1000
-    >>> vals = np.random.randn(fs)
-    >>> sig = np.stack([t_irr, vals], axis=1)
-    >>> sig_reg = resample_irregular_timeseries(sig, output_fs=fs * 2, return_with_time=True)
-    >>> sig_reg = resample_irregular_timeseries(sig, output_fs=fs, method="interp1d")
-    >>> t_irr_2 = np.sort(np.random.rand(2 * fs)) * 1000
-    >>> sig_reg = resample_irregular_timeseries(sig, tnew=t_irr_2, return_with_time=True)
-    ```
+    .. code-block:: python
+
+        fs = 100
+        t_irr = np.sort(np.random.rand(fs)) * 1000
+        vals = np.random.randn(fs)
+        sig = np.stack([t_irr, vals], axis=1)
+        sig_reg = resample_irregular_timeseries(sig, output_fs=fs * 2, return_with_time=True)
+        sig_reg = resample_irregular_timeseries(sig, output_fs=fs, method="interp1d")
+        t_irr_2 = np.sort(np.random.rand(2 * fs)) * 1000
+        sig_reg = resample_irregular_timeseries(sig, tnew=t_irr_2, return_with_time=True)
 
     NOTE
     ----
@@ -302,33 +302,33 @@ def detect_peaks(
 
     Examples
     --------
-    ```python
-    >>> x = np.random.randn(100)
-    >>> x[60:81] = np.nan
-    >>> # detect all peaks and plot data
-    >>> ind = detect_peaks(x, show=True)
-    >>> print(ind)
+    .. code-block:: python
 
-    >>> x = np.sin(2*np.pi*5*np.linspace(0, 1, 200)) + np.random.randn(200)/5
-    >>> # set minimum peak height = 0 and minimum peak distance = 20
-    >>> detect_peaks(x, mph=0, mpd=20, show=True)
+        x = np.random.randn(100)
+        x[60:81] = np.nan
+        # detect all peaks and plot data
+        ind = detect_peaks(x, show=True)
+        print(ind)
 
-    >>> x = [0, 1, 0, 2, 0, 3, 0, 2, 0, 1, 0]
-    >>> # set minimum peak distance = 2
-    >>> detect_peaks(x, mpd=2, show=True)
+        x = np.sin(2*np.pi*5*np.linspace(0, 1, 200)) + np.random.randn(200)/5
+        # set minimum peak height = 0 and minimum peak distance = 20
+        detect_peaks(x, mph=0, mpd=20, show=True)
 
-    >>> x = np.sin(2*np.pi*5*np.linspace(0, 1, 200)) + np.random.randn(200)/5
-    >>> # detection of valleys instead of peaks
-    >>> detect_peaks(x, mph=-1.2, mpd=20, valley=True, show=True)
+        x = [0, 1, 0, 2, 0, 3, 0, 2, 0, 1, 0]
+        # set minimum peak distance = 2
+        detect_peaks(x, mpd=2, show=True)
 
-    >>> x = [0, 1, 1, 0, 1, 1, 0]
-    >>> # detect both edges
-    >>> detect_peaks(x, edge="both", show=True)
+        x = np.sin(2*np.pi*5*np.linspace(0, 1, 200)) + np.random.randn(200)/5
+        # detection of valleys instead of peaks
+        detect_peaks(x, mph=-1.2, mpd=20, valley=True, show=True)
 
-    >>> x = [-2, 1, -2, 2, 1, 1, 3, 0]
-    >>> # set threshold = 2
-    >>> detect_peaks(x, threshold = 2, show=True)
-    ```
+        x = [0, 1, 1, 0, 1, 1, 0]
+        # detect both edges
+        detect_peaks(x, edge="both", show=True)
+
+        x = [-2, 1, -2, 2, 1, 1, 3, 0]
+        # set threshold = 2
+        detect_peaks(x, threshold = 2, show=True)
 
     Version history
     ---------------
@@ -492,15 +492,15 @@ def remove_spikes_naive(
 
     Examples
     --------
-    ```python
-    >>> sig = np.random.randn(1000)
-    >>> pos = np.random.randint(0, 1000, 10)
-    >>> sig[pos] = 100
-    >>> sig = remove_spikes_naive(sig)
-    >>> pos = np.random.randint(0, 1000, 1)
-    >>> sig[pos] = np.nan
-    >>> sig = remove_spikes_naive(sig)
-    ```
+    .. code-block:: python
+
+        sig = np.random.randn(1000)
+        pos = np.random.randint(0, 1000, 10)
+        sig[pos] = 100
+        sig = remove_spikes_naive(sig)
+        pos = np.random.randint(0, 1000, 1)
+        sig[pos] = np.nan
+        sig = remove_spikes_naive(sig)
 
     """
     dtype = sig.dtype
@@ -738,12 +738,13 @@ def normalize(
     or normalize `sig` using `mean` and `std` via (sig - mean) / std.
     More precisely,
 
-        .. math::
-            \begin{align*}
-            \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
-            \text{Naive normalization:} & \frac{sig - m}{s} \\
-            \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
-            \end{align*}
+    .. math::
+
+        \begin{align*}
+        \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
+        \text{Naive normalization:} & \frac{sig - m}{s} \\
+        \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+        \end{align*}
 
     Parameters
     ----------

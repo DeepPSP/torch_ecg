@@ -79,7 +79,6 @@ def get_mask(
 
     Examples
     --------
-    ```python
     >>> mask = get_mask((12, 5000), np.arange(250, 5000 - 250, 400), 50, 50)
     >>> mask.shape
     (12, 5000)
@@ -88,7 +87,6 @@ def get_mask(
     >>> intervals = get_mask((12, 5000), np.arange(250, 5000 - 250, 400), 50, 50, return_fmt="intervals")
     >>> intervals
     [[200, 300], [600, 700], [1000, 1100], [1400, 1500], [1800, 1900], [2200, 2300], [2600, 2700], [3000, 3100], [3400, 3500], [3800, 3900], [4200, 4300], [4600, 4700]]
-    ```
 
     """
     if isinstance(shape, int):
@@ -130,7 +128,6 @@ def class_weight_to_sample_weight(
 
     Examples
     --------
-    ```python
     >>> y = np.array([0, 0, 0, 0, 1, 1, 1, 2])
     >>> class_weight_to_sample_weight(y, class_weight="balanced").tolist()
     [0.25, 0.25, 0.25, 0.25, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 1.0]
@@ -143,7 +140,6 @@ def class_weight_to_sample_weight(
     [0.3333333333333333, 0.3333333333333333, 0.6666666666666666, 0.3333333333333333, 1.0, 0.6666666666666666, 0.3333333333333333, 0.6666666666666666]
     >>> class_weight_to_sample_weight(y, class_weight=[1, 2, 3])
     AssertionError: if `y` are of type str, then class_weight should be "balanced" or a dict
-    ```
 
     """
     if not class_weight:
@@ -288,14 +284,12 @@ def ensure_lead_fmt(
 
     Examples
     --------
-    ```python
     >>> values = np.random.randn(5000, 12)
     >>> new_values = ensure_lead_fmt(values, fmt="lead_first")
     >>> new_values.shape
     (5000, 12)
     >>> np.allclose(values, new_values.T)
     True
-    ```
 
     """
     dtype = values.dtype
@@ -356,7 +350,6 @@ def ensure_siglen(
 
     Examples
     --------
-    ```python
     >>> values = np.random.randn(12, 4629)
     >>> new_values = ensure_siglen(values, 5000, fmt="lead_first")
     >>> new_values.shape
@@ -367,7 +360,6 @@ def ensure_siglen(
     >>> new_values = ensure_siglen(values, 4000, tolerance=0.2, fmt="lead_first")
     >>> new_values.shape
     (1, 12, 4000)
-    ```
 
     """
     dtype = values.dtype
@@ -506,7 +498,6 @@ def masks_to_waveforms(
 
     Examples
     --------
-    ```python
     >>> class_map = {
     ...     "pwave": 1,
     ...     "qrs": 2,
@@ -519,7 +510,6 @@ def masks_to_waveforms(
     >>> waveforms = masks_to_waveforms(masks, class_map=class_map, fs=500, leads=["III", "aVR"])
     >>> waveforms["III"][0]
     ECGWaveForm(name='pwave', onset=100, offset=150, peak=nan, duration=100.0)
-    ```
 
     """
     if masks.ndim == 1:
@@ -600,7 +590,6 @@ def mask_to_intervals(
 
     Examples
     --------
-    ```python
     >>> mask = np.zeros(100, dtype=int)
     >>> mask[10: 20] = 1
     >>> mask[80: 95] = 1
@@ -613,7 +602,6 @@ def mask_to_intervals(
     {0: [[0, 10], [20, 50], [60, 80], [95, 100]], 1: [[10, 20], [80, 95]], 2: [[50, 60]]}
     >>> mask_to_intervals(mask, vals=[1, 2], right_inclusive=True)
     {1: [[10, 19], [80, 94]], 2: [[50, 59]]}
-    ```
 
     """
     if vals is None:
@@ -667,11 +655,9 @@ def uniform(low: Real, high: Real, num: int) -> List[float]:
 
     Examples
     --------
-    ```python
     >>> arr = uniform(0, 1, 10)
     >>> all([0 <= x <= 1 for x in arr])
     True
-    ```
 
     """
     arr = [DEFAULTS.RNG.uniform(low, high) for _ in range(num)]
@@ -788,12 +774,10 @@ def cls_to_bin(
 
     Examples
     --------
-    ```python
     >>> cls_array = torch.randint(0, 26, size=(1000,))
     >>> bin_array = cls_to_bin(cls_array)
     >>> cls_array = np.random.randint(0, 26, size=(1000,))
     >>> bin_array = cls_to_bin(cls_array)
-    ```
 
     """
     if isinstance(cls_array, Tensor):
@@ -855,7 +839,6 @@ def generate_weight_mask(
 
     Examples
     --------
-    ```python
     >>> target_mask = np.zeros(50000, dtype=int)
     >>> target_mask[500:14000] = 1
     >>> target_mask[35800:44600] = 1
@@ -875,7 +858,6 @@ def generate_weight_mask(
     ... )
     >>> weight_mask.shape
     (5000,)
-    ```
 
     """
     assert target_mask.ndim == 1, "`target_mask` should be 1D"

@@ -41,12 +41,12 @@ class CRNN_CINC2022(ECG_CRNN):
 
         Usage
         -----
-        ```python
-        from cfg import ModelCfg
-        task = "classification"
-        model_cfg = deepcopy(ModelCfg[task])
-        model = ECG_CRNN_CINC2022(model_cfg)
-        ````
+        .. code-block:: python
+
+            from cfg import ModelCfg
+            task = "classification"
+            model_cfg = deepcopy(ModelCfg[task])
+            model = ECG_CRNN_CINC2022(model_cfg)
 
         """
         if config is None:

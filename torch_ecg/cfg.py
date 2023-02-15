@@ -30,7 +30,6 @@ class CFG(dict):
 
     Examples
     --------
-    ```python
     >>> c = CFG(hehe={"a": 1, "b": 2})
     >>> c.update(hehe={"a": [-1]})
     >>> c
@@ -42,7 +41,6 @@ class CFG(dict):
     [-1]
     >>> c
     {'hehe': {'b': 2, 'c': -10}}
-    ```
 
     """
 
@@ -91,7 +89,7 @@ class CFG(dict):
         ----------
         new_cfg : MutableMapping, optional
             the new configuration, by default None
-        kwargs : Any, optional
+        **kwargs : dict, optional
             key value pairs, by default None
 
         """

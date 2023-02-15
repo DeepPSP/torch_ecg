@@ -4548,11 +4548,11 @@ def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
 
     Examples
     --------
-    ```python
-    from torch_ecg.model_configs.attn import squeeze_excitation
-    from torch_ecg.models._nets import make_attention_layer
-    layer = make_attention_layer(in_channels=128, name="se", **squeeze_excitation)
-    ```
+    .. code-block:: python
+
+        from torch_ecg.model_configs.attn import squeeze_excitation
+        from torch_ecg.models._nets import make_attention_layer
+        layer = make_attention_layer(in_channels=128, name="se", **squeeze_excitation)
 
     """
     key = "name" if "name" in config else "type"

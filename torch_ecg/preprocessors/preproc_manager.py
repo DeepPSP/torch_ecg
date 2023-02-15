@@ -25,20 +25,20 @@ class PreprocManager(ReprMixin, nn.Module):
 
     Examples
     --------
-    ```python
-    import torch
-    from torch_ecg.cfg import CFG
-    from torch_ecg.preprocessors import PreprocManager
+    .. code-block:: python
 
-    config = CFG(
-        random=False,
-        bandpass={"fs":500},
-        normalize={"method": "min-max"},
-    )
-    ppm = PreprocManager.from_config(config)
-    sig = torch.randn(2, 12, 8000)
-    sig = ppm(sig)
-    ```
+        import torch
+        from torch_ecg.cfg import CFG
+        from torch_ecg.preprocessors import PreprocManager
+
+        config = CFG(
+            random=False,
+            bandpass={"fs":500},
+            normalize={"method": "min-max"},
+        )
+        ppm = PreprocManager.from_config(config)
+        sig = torch.randn(2, 12, 8000)
+        sig = ppm(sig)
 
     """
 

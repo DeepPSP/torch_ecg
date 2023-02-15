@@ -25,33 +25,33 @@ __all__ = [
 
 class AugmenterManager(torch.nn.Module):
     """
-    The `Module` to manage the augmenters
+    The ``torch`` ``Module`` to manage the augmenters
 
     Examples
     --------
-    ```python
-    import torch
-    from torch_ecg.cfg import CFG
-    from torch_ecg.augmenters import AugmenterManager
+    .. code-block:: python
 
-    config = CFG(
-        random=False,
-        fs=500,
-        baseline_wander={},
-        label_smooth={},
-        mixup={},
-        random_flip={},
-        random_masking={},
-        random_renormalize={},
-        stretch_compress={},
-    )
-    am = AugmenterManager.from_config(config)
-    sig = torch.randn(32, 12, 5000)
-    label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
-    mask1 = torch.randint(0, 2, (32, 5000, 3), dtype=torch.float32)
-    mask2 = torch.randint(0, 3, (32, 5000), dtype=torch.long)
-    sig, label, mask1, mask2 = am(sig, label, mask1, mask2)
-    ```
+        import torch
+        from torch_ecg.cfg import CFG
+        from torch_ecg.augmenters import AugmenterManager
+
+        config = CFG(
+            random=False,
+            fs=500,
+            baseline_wander={},
+            label_smooth={},
+            mixup={},
+            random_flip={},
+            random_masking={},
+            random_renormalize={},
+            stretch_compress={},
+        )
+        am = AugmenterManager.from_config(config)
+        sig = torch.randn(32, 12, 5000)
+        label = torch.randint(0, 2, (32, 26), dtype=torch.float32)
+        mask1 = torch.randint(0, 2, (32, 5000, 3), dtype=torch.float32)
+        mask2 = torch.randint(0, 3, (32, 5000), dtype=torch.long)
+        sig, label, mask1, mask2 = am(sig, label, mask1, mask2)
 
     """
 

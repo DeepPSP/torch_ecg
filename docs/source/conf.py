@@ -56,6 +56,8 @@ extensions = [
     "sphinx.ext.mathjax",
     "recommonmark",
     # 'sphinx.ext.autosectionlabel',
+    "sphinx_multiversion",
+    # "numpydoc",
 ]
 
 intersphinx_mapping = {
@@ -70,6 +72,8 @@ intersphinx_mapping = {
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
+
+html_sidebars = {"*": ["versions.html"]}
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
