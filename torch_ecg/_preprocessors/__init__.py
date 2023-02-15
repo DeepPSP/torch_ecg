@@ -1,5 +1,26 @@
 """
-preprocessors for signals of numpy array format
+Preprocessors for signals of numpy array format
+===============================================
+
+This module contains a set of preprocessors for signals of numpy array format.
+
+.. currentmodule:: torch_ecg._preprocessors
+
+.. autosummary::
+    :toctree: generated/
+
+    PreprocManager
+    PreProcessor
+    BandPass
+    BaselineRemove
+    Normalize
+    MinMaxNormalize
+    NaiveNormalize
+    ZScoreNormalize
+    Resample
+    preprocess_multi_lead_signal
+    preprocess_single_lead_signal
+
 """
 
 from .bandpass import BandPass

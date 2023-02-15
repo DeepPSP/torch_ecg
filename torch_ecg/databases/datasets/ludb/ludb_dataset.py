@@ -25,7 +25,6 @@ __all__ = [
 class LUDBDataset(ReprMixin, Dataset):
     """ """
 
-    __DEBUG__ = False
     __name__ = "LUDBDataset"
 
     def __init__(

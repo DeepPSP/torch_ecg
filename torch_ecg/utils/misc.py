@@ -814,18 +814,20 @@ def add_docstring(doc: str, mode: str = "replace") -> Callable:
 
 def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
     """
+    Default class representation
+
     Parameters
     ----------
-    c: object,
+    c : object,
         the object to be represented
-    align: str, default "center",
+    align : str, default "center",
         the alignment of the class arguments
-    depth: int, default 1,
+    depth : int, default 1,
         the depth of the class arguments to display
 
     Returns
     -------
-    str,
+    str
         the representation of the class
 
     """

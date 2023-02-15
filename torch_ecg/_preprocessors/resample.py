@@ -1,6 +1,4 @@
-"""
-resample the signal into fixed sampling frequency or length
-"""
+"""resample the signal into fixed sampling frequency or length"""
 
 from numbers import Real
 from typing import Any, List, Optional, Tuple

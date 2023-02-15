@@ -1,4 +1,21 @@
 """
+PyTorch ECG Datasets for training neural networks
+=================================================
+
+This module contains PyTorch ECG datasets for training neural networks.
+
+.. currentmodule:: torch_ecg.databases.datasets
+
+.. autosummary::
+    :toctree: generated/
+
+    CINC2020Dataset
+    CINC2021Dataset
+    CPSC2019Dataset
+    CPSC2021Dataset
+    LUDBDataset
+    MITDBDataset
+
 """
 
 # fmt: off

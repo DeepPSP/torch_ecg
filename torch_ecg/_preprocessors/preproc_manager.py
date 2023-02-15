@@ -1,5 +1,4 @@
-"""
-"""
+"""Manager of preprocessors."""
 
 import warnings
 from random import sample
@@ -25,21 +24,19 @@ class PreprocManager(ReprMixin):
 
     Examples
     --------
-    ```python
-    import torch
-    from torch_ecg.cfg import CFG
-    from torch_ecg._preprocessors import PreprocManager
+    >>> import torch
+    >>> from torch_ecg.cfg import CFG
+    >>> from torch_ecg._preprocessors import PreprocManager
 
-    config = CFG(
-        random=False,
-        resample={"fs": 500},
-        bandpass={"filter_type": "fir"},
-        normalize={"method": "min-max"},
-    )
-    ppm = PreprocManager.from_config(config)
-    sig = torch.randn(12, 80000).numpy()
-    sig, fs = ppm(sig, 200)
-    ```
+    >>> config = CFG(
+    ...     random=False,
+    ...     resample={"fs": 500},
+    ...     bandpass={"filter_type": "fir"},
+    ...     normalize={"method": "min-max"},
+    ... )
+    >>> ppm = PreprocManager.from_config(config)
+    >>> sig = torch.randn(12, 80000).numpy()
+    >>> sig, fs = ppm(sig, 200)
 
     """
 

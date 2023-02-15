@@ -1,4 +1,69 @@
 """
+ECG Database readers
+====================
+
+This module contains ECG database readers.
+
+.. currentmodule:: torch_ecg.databases
+
+Base classes
+------------------
+.. autosummary::
+    :toctree: generated/
+
+    PhysioNetDataBase
+    NSRRDataBase
+    CPSCDataBase
+    PSGDataBaseMixin
+
+PhysioNet database readers
+--------------------------
+.. autosummary::
+    :toctree: generated/
+
+    AFDB
+    ApneaECG
+    CINC2017
+    CINC2018
+    CINC2020
+    CINC2021
+    LTAFDB
+    LUDB
+    MITDB
+    QTDB
+
+CPSC database readers
+---------------------
+.. autosummary::
+    :toctree: generated/
+
+    CPSC2018
+    CPSC2019
+    CPSC2020
+    CPSC2021
+
+NSRR database readers
+---------------------
+.. autosummary::
+    :toctree: generated/
+
+    SHHS
+
+Other database readers
+----------------------
+.. autosummary::
+    :toctree: generated/
+
+    CACHET_CADB
+    SPH
+
+Miscellaneous
+-------------
+.. autosummary::
+    :toctree: generated/
+
+    BeatAnn
+
 """
 
 from . import aux_data

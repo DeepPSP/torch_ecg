@@ -27,7 +27,6 @@ __all__ = [
 class CPSC2019Dataset(ReprMixin, Dataset):
     """ """
 
-    __DEBUG__ = False
     __name__ = "CPSC2019Dataset"
 
     def __init__(

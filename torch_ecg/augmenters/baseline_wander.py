@@ -1,6 +1,4 @@
-"""
-add baseline wander composed of sinusoidal and Gaussian noise to the ECGs
-"""
+"""add baseline wander composed of sinusoidal and Gaussian noise to the ECGs"""
 
 import multiprocessing as mp
 from itertools import repeat
@@ -16,6 +14,7 @@ from ..cfg import DEFAULTS
 from ..utils.utils_signal import get_ampl
 from .base import Augmenter
 
+
 __all__ = [
     "BaselineWanderAugmenter",
 ]
@@ -27,12 +26,10 @@ class BaselineWanderAugmenter(Augmenter):
 
     Examples
     --------
-    ```python
-    blw = BaselineWanderAugmenter(300, prob=0.7)
-    sig = torch.randn(32, 12, 5000)
-    label = torch.ones((32, 20))
-    sig, _ = blw(sig, label)
-    ```
+    >>> blw = BaselineWanderAugmenter(300, prob=0.7)
+    >>> sig = torch.randn(32, 12, 5000)
+    >>> label = torch.ones((32, 20))
+    >>> sig, _ = blw(sig, label)
 
     """
 
@@ -51,47 +48,47 @@ class BaselineWanderAugmenter(Augmenter):
         """
         Parameters
         ----------
-        fs: int,
+        fs : int,
             sampling frequency of the ECGs to be augmented
-        bw_fs: ndarray, optional,
+        bw_fs : ndarray, optional,
             frequencies of the sinusoidal noises,
             of shape (n,),
             defaults to [0.33, 0.1, 0.05, 0.01]
-        ampl_ratio: ndarray, optional,
+        ampl_ratio : ndarray, optional,
             candidate ratios of noise amplitdes compared to the original ECGs for each `fs`,
             of shape (m,n),
-            defaults to
-            ```python
-            np.array(
-                [
-                    [0.01, 0.01, 0.02, 0.03],  # low
-                    [0.01, 0.02, 0.04, 0.05],  # low
-                    [0.1, 0.06, 0.04, 0.02],  # low
-                    [0.02, 0.04, 0.07, 0.1],  # low
-                    [0.05, 0.1, 0.16, 0.25],  # medium
-                    [0.1, 0.15, 0.25, 0.3],  # high
-                    [0.25, 0.25, 0.3, 0.35],  # extremely high
-                ]
-            )
-            ```
-        gaussian: ndarray, optional,
+            defaults to::
+
+                np.array(
+                    [
+                        [0.01, 0.01, 0.02, 0.03],  # low
+                        [0.01, 0.02, 0.04, 0.05],  # low
+                        [0.1, 0.06, 0.04, 0.02],  # low
+                        [0.02, 0.04, 0.07, 0.1],  # low
+                        [0.05, 0.1, 0.16, 0.25],  # medium
+                        [0.1, 0.15, 0.25, 0.3],  # high
+                        [0.25, 0.25, 0.3, 0.35],  # extremely high
+                    ]
+                )
+
+        gaussian : ndarray, optional,
             candidate mean and std of the Gaussian noises,
             of shape (k, 2),
-            defaults to
-            ```python
-            np.array(
-                [  # mean and std, in terms of ratio
-                    [0.0, 0.001],
-                    [0.0, 0.003],
-                    [0.0, 0.01],
-                ]
-            )
-            ```
-        prob: float, default 0.5,
+            defaults to::
+
+                np.array(
+                    [  # mean and std, in terms of ratio
+                        [0.0, 0.001],
+                        [0.0, 0.003],
+                        [0.0, 0.01],
+                    ]
+                )
+
+        prob : float, default 0.5,
             probability of performing the augmentation
-        inplace: bool, default True,
+        inplace : bool, default True,
             if True, ECG signal tensors will be modified inplace
-        kwargs: Keyword arguments.
+        kwargs : Keyword arguments.
 
         """
         super().__init__()
@@ -169,23 +166,23 @@ class BaselineWanderAugmenter(Augmenter):
         """
         Parameters
         ----------
-        sig: Tensor,
+        sig : Tensor,
             the ECGs to be augmented, of shape (batch, lead, siglen)
-        label: Tensor, optional,
+        label : Tensor, optional,
             label tensor of the ECGs,
             not used, but kept for consistency with other augmenters
-        extra_tensors: sequence of Tensors, optional,
+        extra_tensors : sequence of Tensors, optional,
             not used, but kept for consistency with other augmenters
-        kwargs: keyword arguments,
+        kwargs : keyword arguments,
             not used, but kept for consistency with other augmenters
 
         Returns
         -------
-        sig: Tensor,
+        sig : Tensor,
             the augmented ECGs
-        label: Tensor,
+        label : Tensor,
             label tensor of the augmented ECGs, unchanged
-        extra_tensors: sequence of Tensors, optional,
+        extra_tensors : sequence of Tensors, optional,
             if set in the input arguments, unchanged
 
         """
@@ -211,16 +208,18 @@ class BaselineWanderAugmenter(Augmenter):
 
 def _get_ampl(sig: Tensor, fs: int) -> Tensor:
     """
+    get the amplitude of each lead
+
     Parameters
     ----------
-    sig: Tensor,
+    sig : Tensor,
         the ECG signal tensor, of shape (batch, lead, siglen)
-    fs: int,
+    fs : int,
         sampling frequency of the ECGs
 
     Returns
     -------
-    ampl: Tensor,
+    ampl : Tensor,
         amplitude of each lead, of shape (batch, lead, 1)
 
     """
@@ -241,16 +240,16 @@ def _gen_gaussian_noise(siglen: int, mean: Real = 0, std: Real = 0) -> np.ndarra
 
     Parameters
     ----------
-    siglen: int,
+    siglen : int,
         length of the noise signal
-    mean: real number, default 0,
+    mean : real number, default 0,
         mean of the noise
-    std: real number, default 0,
+    std : real number, default 0,
         standard deviation of the noise
 
     Returns
     -------
-    gn: ndarray,
+    gn : ndarray,
         the gaussian noise of given length, mean, and standard deviation
 
     """
@@ -271,22 +270,22 @@ def _gen_sinusoidal_noise(
 
     Parameters
     ----------
-    siglen: int,
+    siglen : int,
         length of the (noise) signal
-    start_phase: real number,
+    start_phase : real number,
         start phase, with units in degrees
-    end_phase: real number,
+    end_phase : real number,
         end phase, with units in degrees
-    amplitude: real number,
+    amplitude : real number,
         amplitude of the sinusoidal curve
-    amplitude_mean: real number,
+    amplitude_mean : real number,
         mean amplitude of an extra Gaussian noise
-    amplitude_std: real number, default 0,
+    amplitude_std : real number, default 0,
         standard deviation of an extra Gaussian noise
 
     Returns
     -------
-    sn: ndarray,
+    sn : ndarray,
         the sinusoidal noise of given length, amplitude, start phase, and end phase
 
     """
@@ -308,20 +307,20 @@ def _gen_baseline_wander(
 
     Parameters
     ----------
-    siglen: int,
+    siglen : int,
         length of the (noise) signal
-    fs: real number,
+    fs : real number,
         sampling frequency of the original signal
-    bw_fs: real number, or list of real numbers,
+    bw_fs : real number, or list of real numbers,
         frequency (frequencies) of the baseline wander
-    amplitude: real number, or list of real numbers,
+    amplitude : real number, or list of real numbers,
         amplitude of the baseline wander (corr. to each frequency band)
-    amplitude_gaussian: 2-tuple of real number, default [0,0],
+    amplitude_gaussian : 2-tuple of real number, default [0,0],
         mean and std of amplitude of an extra Gaussian noise
 
     Returns
     -------
-    bw: ndarray,
+    bw : ndarray,
         the baseline wander of given length, amplitude, frequency
 
     Example
@@ -359,22 +358,22 @@ def gen_baseline_wander(
 
     Parameters
     ----------
-    sig: Tensor,
+    sig : Tensor,
         the ECGs to be augmented, of shape (batch, lead, siglen)
-    fs: real number,
+    fs : real number,
         sampling frequency of the original signal
-    bw_fs: real number, or list of real numbers,
+    bw_fs : real number, or list of real numbers,
         frequency (frequencies) of the baseline wander
-    ampl_ratio: ndarray, optional,
+    ampl_ratio : ndarray, optional,
         candidate ratios of noise amplitdes compared to the original ECGs for each `fs`,
         of shape (m,n)
-    gaussian: ndarray, optional,
+    gaussian : ndarray, optional,
         candidate mean and std of the Gaussian noises,
         of shape (k, 2)
 
     Returns
     -------
-    bw: ndarray,
+    bw : ndarray,
         the baseline wander of given length, amplitude, frequency,
         of shape (batch, lead, siglen)
 

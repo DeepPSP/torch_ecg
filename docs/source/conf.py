@@ -11,18 +11,35 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 # import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import sys
+from pathlib import Path
+
+import sphinx_rtd_theme
+
+try:
+    import stanford_theme
+except Exception:
+    stanford_theme = None
+
+import recommonmark  # noqa: F401
+from recommonmark.transform import AutoStructify
+
+
+project_root = Path(__file__).resolve().parents[2]
+src_root = project_root / "torch_ecg"
+docs_root = Path(__file__).resolve().parents[0]
+
+sys.path.insert(0, str(project_root))
 
 
 # -- Project information -----------------------------------------------------
 
-project = "torch_ecg"
+project = "torch-ecg"
 copyright = "2021, WEN Hao, KANG Jingsu"
 author = "WEN Hao, KANG Jingsu"
 
 # The full version, including alpha/beta/rc tags
-release = "0.1"
+release = Path(src_root / "version.py").read_text().split("=")[1].strip()[1:-1]
 
 
 # -- General configuration ---------------------------------------------------
@@ -30,7 +47,26 @@ release = "0.1"
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
+    "recommonmark",
+    # 'sphinx.ext.autosectionlabel',
+]
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "np": ("https://numpy.org/doc/stable/", None),
+    "torch": ("https://pytorch.org/docs/stable/", None),
+    "wfdb": ("https://wfdb.readthedocs.io/en/latest/", None),
+    "biosppy": ("https://biosppy.readthedocs.io/en/stable/", None),
+    # "matplotlib": ("https://matplotlib.org/stable/", None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -46,9 +82,54 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "alabaster"
+if stanford_theme:
+    html_theme = "stanford_theme"
+    html_theme_path = [stanford_theme.get_html_theme_path()]
+else:
+    html_theme = "sphinx_rtd_theme"
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# htmlhelp_basename = "Recommonmarkdoc"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
+
+master_doc = "index"
+
+
+def setup(app):
+    app.add_config_value(
+        "recommonmark_config",
+        {
+            "url_resolver": lambda url: github_doc_root + url,  # noqa: F821
+            "auto_toc_tree_section": "Contents",
+        },
+        True,
+    )
+    app.add_transform(AutoStructify)
+
+
+latex_documents = [
+    (
+        master_doc,
+        f"{project}.tex",
+        f"{project} Documentation",
+        author,
+        "manual",
+    ),
+]
+
+man_pages = [(master_doc, project, f"{project} Documentation", [author], 1)]
+
+texinfo_documents = [
+    (
+        master_doc,
+        project,
+        f"{project} Documentation",
+        author,
+        project,
+        "ECG Deep Learning Framework Implemented using PyTorch.",
+        "Miscellaneous",
+    ),
+]

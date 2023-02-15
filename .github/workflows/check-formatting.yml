@@ -5,7 +5,7 @@ name: Formatting with black & flake8
 
 on:
   push:
-    branches: [ dev, master ]
+    branches: [ dev, doc, master ]
   pull_request:
     branches: [ master ]
 

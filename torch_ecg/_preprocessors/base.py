@@ -1,5 +1,4 @@
-"""
-"""
+"""Base class for preprocessors"""
 
 from abc import ABC, abstractmethod
 from itertools import repeat

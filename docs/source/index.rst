@@ -3,13 +3,32 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to torch_ecg's documentation!
+Welcome to torch-ecg's documentation!
 =====================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :caption: Getting started
+   :maxdepth: 1
 
+   install
+   tutorial
+
+.. toctree::
+   :caption: API Reference
+   :maxdepth: 1
+
+   databases
+   models
+   augmenters
+   preprocessors
+   components
+   utils
+
+.. toctree::
+   :caption: Examples
+   :maxdepth: 1
+
+   examples
 
 
 Indices and tables

@@ -1,5 +1,4 @@
-"""
-"""
+"""BandPass filter preprocessor"""
 
 from numbers import Real
 from typing import Any, List, Optional, Tuple

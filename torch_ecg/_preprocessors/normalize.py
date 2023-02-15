@@ -1,6 +1,4 @@
-"""
-normalization of the signals
-"""
+"""normalization of the signals"""
 
 from numbers import Real
 from typing import Any, List, Tuple, Union

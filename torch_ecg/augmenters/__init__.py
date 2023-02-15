@@ -1,4 +1,26 @@
 """
+Augmenters for training ECG neural networks
+===========================================
+
+Augmenters are used to augment the training data.
+
+.. currentmodule:: torch_ecg.augmenters
+
+.. autosummary::
+    :toctree: generated/
+
+    AugmenterManager
+    Augmenter
+    BaselineWanderAugmenter
+    CutMix
+    LabelSmooth
+    Mixup
+    RandomFlip
+    RandomMasking
+    RandomRenormalize
+    StretchCompress
+    StretchCompressOffline
+
 """
 
 from .augmenter_manager import AugmenterManager
