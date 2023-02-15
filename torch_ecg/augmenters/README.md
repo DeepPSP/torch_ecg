@@ -46,7 +46,7 @@ Augmenters can be stochastic along the batch dimension and (or) the channel dime
 
 This technique is sometimes used by researchers and in challenges (e.g. the authors' rank 3 solutions to the problem of supraventricular premature beats (SPB) detection in CPSC2020), but its efficacy still needs proving and should not be used when preprocessing contains band-pass filtering and/or detrending. The following is an example from the record `A01` of `CPSC2020` (`sampfrom = 0, sampto = 4000`), with default configs of this augmenter.
 
-![aug_bl](/images/aug_bl.jpg)
+![aug_bl](/docs/source/_static/images/aug_bl.jpg)
 
 ## cutmix
 

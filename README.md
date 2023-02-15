@@ -14,9 +14,9 @@ ECG Deep Learning Framework Implemented using PyTorch.
 
 The system design is depicted as follows
 
-<!-- ![system_design](images/system_design.jpg) -->
+<!-- ![system_design](docs/source/_static/images/system_design.jpg) -->
 <p align="middle">
-  <img src="/images/system_design.jpg" width="80%" />
+  <img src="/docs/source/_static/images/system_design.jpg" width="80%" />
 </p>
 
 <!-- toc -->
