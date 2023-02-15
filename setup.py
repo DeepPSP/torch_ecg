@@ -11,28 +11,15 @@ cwd = Path(__file__).absolute().parent
 
 long_description = (cwd / "README.md").read_text(encoding="utf-8")
 
+install_requires = (cwd / "requirements.txt").read_text(encoding="utf-8").splitlines()
+
 extras = {}
-extras["test"] = [
-    "black==22.3.0",
-    "flake8",
-    "pytest",
-    "pytest-xdist",
-    "pytest-cov",
-    "pcg-springer-features",
-    "librosa",
-    "torchaudio",
-    "torch_audiomentations",
-    "tensorboard",
-    "openpyxl",
-]
-extras["docs"] = [
-    "recommonmark",
-    "nbsphinx",
-    "sphinx-autobuild",
-    "sphinx-rtd-theme",
-    "sphinx-markdown-tables",
-    "sphinx-copybutton",
-]
+extras["test"] = (
+    (cwd / "test/requirements.txt").read_text(encoding="utf-8").splitlines()
+)
+extras["docs"] = (
+    (cwd / "docs/requirements.txt").read_text(encoding="utf-8").splitlines()
+)
 extras["dev"] = extras["docs"] + extras["test"]
 
 
@@ -70,6 +57,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.6",
-    install_requires=open("requirements.txt").readlines(),
+    install_requires=install_requires,
     extras_require=extras,
 )

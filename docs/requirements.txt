@@ -1,0 +1,7 @@
+recommonmark
+nbsphinx
+sphinx-autobuild
+sphinx-rtd-theme
+sphinx-markdown-tables
+sphinx-copybutton
+sphinx-multiversion

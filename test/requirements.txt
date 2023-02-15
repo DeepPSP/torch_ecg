@@ -1,0 +1,11 @@
+black==22.3.0
+flake8
+pytest
+pytest-xdist
+pytest-cov
+pcg-springer-features
+librosa
+torchaudio
+torch_audiomentations
+tensorboard
+openpyxl

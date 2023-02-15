@@ -18,6 +18,6 @@ requests
 xmltodict
 einops
 matplotlib
-protobuf==3.19.4  # https://github.com/lanpa/tensorboardX/issues/663
+protobuf==3.19.4
 bib-lookup>=0.0.19
 typing-extensions
