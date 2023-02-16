@@ -14,7 +14,17 @@ __all__ = [
 
 
 class BandPass(PreProcessor):
-    """ """
+    """
+    Bandpass filtering preprocessor.
+
+    Examples
+    --------
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> sig = DEFAULTS.RNG.randn(1000)
+    >>> pp = BandPass(lowcut=0.5, highcut=45, filter_type="butter", filter_order=4)
+    >>> sig, _ = pp(sig, 500)
+
+    """
 
     __name__ = "BandPass"
 
@@ -26,19 +36,20 @@ class BandPass(PreProcessor):
         filter_order: Optional[int] = None,
         **kwargs: Any
     ) -> None:
-        """
+        """Initialize the BandPass preprocessor.
+
         Parameters
         ----------
         lowcut : real number, optional
-            low cutoff frequency
+            Low cutoff frequency
         highcut : real number, optional
-            high cutoff frequency
+            High cutoff frequency.
         filter_type : str, default "butter"
-            type of the bandpass filter, can be "butter" or "fir"
+            Type of the bandpass filter, can be "butter" or "fir".
         filter_order : int, optional
-            order of the bandpass filter
+            Order of the bandpass filter.
         **kwargs : dict, optional
-            other arguments for `PreProcessor`
+            Other arguments for ``PreProcessor``.
 
         """
         self.lowcut = lowcut
@@ -55,24 +66,24 @@ class BandPass(PreProcessor):
 
     def apply(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
         """
-        apply the preprocessor to `sig`
+        Apply the preprocessor to ``sig``.
 
         Parameters
         ----------
-        sig : np.ndarray
-            the ECG signal, can be
-            1d array, which is a single-lead ECG
-            2d array, which is a multi-lead ECG of "lead_first" format
+        sig : numpy.ndarray
+            The ECG signal, can be
+            1d array, which is a single-lead ECG;
+            2d array, which is a multi-lead ECG of "lead_first" format;
             3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)
         fs : int
-            sampling frequency of the ECG signal
+            Sampling frequency of the ECG signal.
 
         Returns
         -------
-        filtered_sig : np.ndarray
-            the bandpass filtered ECG signal
+        filtered_sig : numpy.ndarray
+            The bandpass filtered ECG signal.
         fs : int
-            the sampling frequency of the filtered ECG signal
+            Sampling frequency of the filtered ECG signal.
 
         """
         self._check_sig(sig)
@@ -86,7 +97,7 @@ class BandPass(PreProcessor):
         return filtered_sig, fs
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for `__repr__` and `__str__`"""
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "lowcut",
             "highcut",

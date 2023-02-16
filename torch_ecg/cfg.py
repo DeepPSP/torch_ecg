@@ -25,8 +25,8 @@ _DATA_CACHE.mkdir(parents=True, exist_ok=True)
 
 class CFG(dict):
     """
-    this class is created in order to renew the `update` method,
-    to fit the hierarchical structure of configurations
+    This class is created in order to renew the :meth:`update` method,
+    to fit the hierarchical structure of configurations.
 
     Examples
     --------
@@ -47,7 +47,6 @@ class CFG(dict):
     __name__ = "CFG"
 
     def __init__(self, *args, **kwargs) -> None:
-        """ """
         if len(args) > 1:
             raise TypeError(f"expected at most 1 arguments, got {len(args)}")
         elif len(args) == 1:
@@ -83,14 +82,14 @@ class CFG(dict):
 
     def update(self, new_cfg: Optional[MutableMapping] = None, **kwargs: Any) -> None:
         """
-        the new hierarchical update method
+        The new hierarchical update method.
 
         Parameters
         ----------
         new_cfg : MutableMapping, optional
-            the new configuration, by default None
+            The new configuration, by default None.
         **kwargs : dict, optional
-            key value pairs, by default None
+            Key value pairs, by default None.
 
         """
         _new_cfg = new_cfg or CFG()
@@ -110,14 +109,14 @@ class CFG(dict):
 
     def pop(self, key: str, default: Optional[Any] = None) -> Any:
         """
-        the updated pop method
+        The updated pop method.
 
         Parameters
         ----------
         key : str
-            the key to pop
+            The key to pop.
         default : Any, optional
-            the default value, by default None
+            The default value, by default None.
 
         """
         if key in self:
@@ -125,16 +124,35 @@ class CFG(dict):
         return super().pop(key, default)
 
     def __repr__(self) -> str:
-        """ """
         return repr({k: v for k, v in self.items() if not callable(v)})
 
     def __str__(self) -> str:
-        """ """
         return str({k: v for k, v in self.items() if not callable(v)})
 
 
 @dataclass
 class DTYPE:
+    """
+    A dataclass to store the dtype information.
+
+    Attributes
+    ----------
+    STR : str
+        The string representation of the dtype.
+    NP : np.dtype
+        The numpy dtype.
+    TORCH : torch.dtype
+        The torch dtype.
+    INT : int
+        The int representation of the dtype, mainly used for `wfdb.rdrecord`.
+
+    Examples
+    --------
+    >>> dtype = DTYPE("int16")
+    >>> dtype
+    DTYPE(STR='int16', NP=dtype('int16'), TORCH=torch.int16, INT=16)
+
+    """
 
     STR: str
     NP: np.dtype = None
@@ -199,12 +217,12 @@ DEFAULTS.RNG_randint = partial(DEFAULTS.RNG.integers, endpoint=True)
 
 def set_seed(seed: int) -> None:
     """
-    set the seed of the random number generator
+    Set the seed of the random number generator.
 
     Parameters
     ----------
-    seed: int,
-        the seed to be set
+    seed : int
+        The seed to be set.
 
     """
 
@@ -223,12 +241,12 @@ DEFAULTS.set_seed = set_seed
 
 def change_dtype(dtype: Union[str, np.dtype, torch.dtype]) -> None:
     """
-    change the dtype of the defaults
+    Change the dtype of the defaults.
 
     Parameters
     ----------
-    dtype: str or np.dtype or torch.dtype,
-        the dtype to be set
+    dtype: str or numpy.dtype or torch.dtype,
+        The dtype to be set.
 
     """
     # fmt: off

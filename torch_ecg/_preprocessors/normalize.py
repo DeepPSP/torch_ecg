@@ -1,4 +1,4 @@
-"""normalization of the signals"""
+"""Normalization of the signals."""
 
 from numbers import Real
 from typing import Any, List, Tuple, Union
@@ -18,19 +18,27 @@ __all__ = [
 
 class Normalize(PreProcessor):
     r"""
-    perform z-score normalization on `sig`,
-    to make it has fixed mean and standard deviation,
-    or perform min-max normalization on `sig`,
-    or normalize `sig` using `mean` and `std` via (sig - mean) / std.
+    Perform z-score normalization on ``sig``,
+    to make it has fixed mean and standard deviation;
+    or perform min-max normalization on ``sig``,
+    or normalize ``sig`` using ``mean`` and ``std`` via
+    :math:`(sig - mean) / std`.
     More precisely,
 
     .. math::
 
         \begin{align*}
-        \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
-        \text{Naive normalization:} & \frac{sig - m}{s} \\
-        \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+        \text{Min-Max normalization:} & \quad \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
+        \text{Naive normalization:} & \quad \frac{sig - m}{s} \\
+        \text{Z-score normalization:} & \quad \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
         \end{align*}
+
+    Examples
+    --------
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> sig = DEFAULTS.RNG.randn(1000)
+    >>> pp = Normalize(method="z-score", mean=0.0, std=1.0)
+    >>> sig, _ = pp(sig, 500)
 
     """
 
@@ -44,22 +52,23 @@ class Normalize(PreProcessor):
         per_channel: bool = False,
         **kwargs: Any,
     ) -> None:
-        """
+        """Initialize the Normalize preprocessor.
+
         Parameters
         ----------
-        method: str, default "z-score",
-            normalization method, case insensitive, can be one of
-            "naive", "min-max", "z-score",
-        mean: real number or ndarray, default 0.0,
-            mean value of the normalized signal,
-            or mean values for each lead of the normalized signal,
-            useless if `method` is "min-max"
-        std: real number or ndarray, default 1.0,
-            standard deviation of the normalized signal,
-            or standard deviations for each lead of the normalized signal,
-            useless if `method` is "min-max"
-        per_channel: bool, default False,
-            if True, normalization will be done per channel
+        method : str, default "z-score"
+            Normalization method, case insensitive, can be one of
+            "naive", "min-max", "z-score".
+        mean : real number or numpy.ndarray, default 0.0
+            Mean value of the normalized signal,
+            or mean values for each lead of the normalized signal.
+            Useless if `method` is "min-max".
+        std : real number or numpy.ndarray, default 1.0
+            Standard deviation of the normalized signal,
+            or standard deviations for each lead of the normalized signal.
+            Useless if `method` is "min-max".
+        per_channel : bool, default False
+            If True, normalization will be done per channel.
 
         """
         self.method = method.lower()
@@ -82,25 +91,25 @@ class Normalize(PreProcessor):
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """
-        apply the preprocessor to `sig`
+        Apply the preprocessor to ``sig``.
 
         Parameters
         ----------
-        sig: ndarray,
-            the ECG signal, can be
-            1d array, which is a single-lead ECG
-            2d array, which is a multi-lead ECG of "lead_first" format
-            3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)
-        fs: real number,
-            sampling frequency of the ECG signal,
-            not used
+        sig : numpy.ndarray
+            The ECG signal, can be
+            1d array, which is a single-lead ECG;
+            2d array, which is a multi-lead ECG of "lead_first" format;
+            3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen).
+        fs : real number
+            Sampling frequency of the ECG signal.
+            **NOT** used currently.
 
         Returns
         -------
-        normalized_sig: ndarray,
-            the normalized ECG signal
-        fs: int,
-            the sampling frequency of the normalized ECG signal
+        normalized_sig : numpy.ndarray,
+            The normalized ECG signal
+        fs : int,
+            The sampling frequency of the normalized ECG signal
 
         """
         self._check_sig(sig)
@@ -115,9 +124,7 @@ class Normalize(PreProcessor):
         return normalized_sig, fs
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        return the extra keys for `__repr__`
-        """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "method",
             "mean",
@@ -134,6 +141,13 @@ class MinMaxNormalize(Normalize):
 
         \frac{sig - \min(sig)}{\max(sig) - \min(sig)}
 
+    Examples
+    --------
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> sig = DEFAULTS.RNG.randn(1000)
+    >>> pp = MinMaxNormalize()
+    >>> sig, _ = pp(sig, 500)
+
     """
 
     __name__ = "MinMaxNormalize"
@@ -142,19 +156,18 @@ class MinMaxNormalize(Normalize):
         self,
         per_channel: bool = False,
     ) -> None:
-        """
+        """Initialize the MinMaxNormalize preprocessor.
+
         Parameters
         ----------
-        per_channel: bool, default False,
-            if True, normalization will be done per channel
+        per_channel : bool, default False
+            If True, normalization will be done per channel
 
         """
         super().__init__(method="min-max", per_channel=per_channel)
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        return the extra keys for `__repr__`
-        """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "per_channel",
         ] + super().extra_repr_keys()
@@ -168,6 +181,13 @@ class NaiveNormalize(Normalize):
 
         \frac{sig - m}{s}
 
+    Examples
+    --------
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> sig = DEFAULTS.RNG.randn(1000)
+    >>> pp = NaiveNormalize()
+    >>> sig, _ = pp(sig, 500)
+
     """
 
     __name__ = "NaiveNormalize"
@@ -179,15 +199,16 @@ class NaiveNormalize(Normalize):
         per_channel: bool = False,
         **kwargs: Any,
     ) -> None:
-        """
+        """Initialize the NaiveNormalize preprocessor.
+
         Parameters
         ----------
-        mean: real number or ndarray, default 0.0,
-            value(s) to be subtracted
-        std: real number or ndarray, default 1.0,
-            value(s) to be divided
-        per_channel: bool, default False,
-            if True, normalization will be done per channel
+        mean : real number or numpy.ndarray, default 0.0
+            Value(s) to be subtracted.
+        std : real number or numpy.ndarray, default 1.0
+            Value(s) to be divided.
+        per_channel : bool, default False
+            If True, normalization will be done per channel.
 
         """
         super().__init__(
@@ -198,9 +219,7 @@ class NaiveNormalize(Normalize):
         )
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        return the extra keys for `__repr__`
-        """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "mean",
             "std",
@@ -216,6 +235,13 @@ class ZScoreNormalize(Normalize):
 
         \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
 
+    Examples
+    --------
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> sig = DEFAULTS.RNG.randn(1000)
+    >>> pp = ZScoreNormalize()
+    >>> sig, _ = pp(sig, 500)
+
     """
 
     __name__ = "ZScoreNormalize"
@@ -227,17 +253,18 @@ class ZScoreNormalize(Normalize):
         per_channel: bool = False,
         **kwargs: Any,
     ) -> None:
-        """
+        """Initialize the ZScoreNormalize preprocessor.
+
         Parameters
         ----------
-        mean: real number or ndarray, default 0.0,
-            mean value of the normalized signal,
-            or mean values for each lead of the normalized signal,
-        std: real number or ndarray, default 1.0,
-            standard deviation of the normalized signal,
-            or standard deviations for each lead of the normalized signal,
-        per_channel: bool, default False,
-            if True, normalization will be done per channel
+        mean : real number or numpy.ndarray, default 0.0
+            Mean value of the normalized signal,
+            or mean values for each lead of the normalized signal.
+        std : real number or numpy.ndarray, default 1.0
+            Standard deviation of the normalized signal,
+            or standard deviations for each lead of the normalized signal.
+        per_channel : bool, default False
+            If True, normalization will be done per channel.
 
         """
         super().__init__(
@@ -248,9 +275,7 @@ class ZScoreNormalize(Normalize):
         )
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        return the extra keys for `__repr__`
-        """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "mean",
             "std",

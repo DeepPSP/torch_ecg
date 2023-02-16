@@ -13,6 +13,7 @@ from .baseline_remove import BaselineRemove
 from .normalize import Normalize
 from .resample import Resample
 
+
 __all__ = [
     "PreprocManager",
 ]
@@ -20,14 +21,13 @@ __all__ = [
 
 class PreprocManager(ReprMixin):
     """
-    Manager of preprocessors
+    Manager of preprocessors.
 
     Examples
     --------
     >>> import torch
     >>> from torch_ecg.cfg import CFG
     >>> from torch_ecg._preprocessors import PreprocManager
-
     >>> config = CFG(
     ...     random=False,
     ...     resample={"fs": 500},
@@ -45,13 +45,14 @@ class PreprocManager(ReprMixin):
     def __init__(
         self, *pps: Optional[Tuple[PreProcessor, ...]], random: bool = False
     ) -> None:
-        """
+        """Initialize the PreprocManager.
+
         Parameters
         ----------
-        pps: tuple of `PreProcessor`, optional,
-            the sequence of preprocessors to be added to the manager
-        random: bool, default False,
-            whether to apply the augmenters in random order
+        pps : tuple of ``PreProcessor``, optional
+            The sequence of preprocessors to be added to the manager.
+        random : bool, default False
+            Whether to apply the augmenters in random order.
 
         """
         super().__init__()
@@ -59,36 +60,70 @@ class PreprocManager(ReprMixin):
         self._preprocessors = list(pps)
 
     def _add_bandpass(self, **config: dict) -> None:
-        """ """
+        """
+        Add a bandpass preprocessor to the manager.
+
+        Parameters
+        ----------
+        **config : dict
+            The configuration of the bandpass preprocessor.
+
+        """
         self._preprocessors.append(BandPass(**config))
 
     def _add_baseline_remove(self, **config: dict) -> None:
-        """ """
+        """
+        Add a baseline remove preprocessor to the manager.
+
+        Parameters
+        ----------
+        **config : dict
+            The configuration of the baseline remove preprocessor.
+
+        """
         self._preprocessors.append(BaselineRemove(**config))
 
     def _add_normalize(self, **config: dict) -> None:
-        """ """
+        """
+        Add a normalize preprocessor to the manager.
+
+        Parameters
+        ----------
+        **config : dict
+            The configuration of the normalize preprocessor.
+
+        """
         self._preprocessors.append(Normalize(**config))
 
     def _add_resample(self, **config: dict) -> None:
-        """ """
+        """
+        Add a resample preprocessor to the manager.
+
+        Parameters
+        ----------
+        **config : dict
+            The configuration of the resample preprocessor.
+
+        """
         self._preprocessors.append(Resample(**config))
 
     def __call__(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
         """
+        The main function of the manager, which applies the preprocessors
+
         Parameters
         ----------
-        sig: np.ndarray,
-            the signal to be preprocessed
-        fs: int,
-            the sampling frequency of the signal
+        sig : numpy.ndarray
+            The signal to be preprocessed.
+        fs : int
+            Sampling frequency of the signal.
 
         Returns
         -------
-        pp_sig: np.ndarray,
-            the preprocessed signal
-        new_fs: int,
-            the sampling frequency of the preprocessed signal
+        pp_sig : numpy.ndarray
+            The preprocessed signal.
+        new_fs : int
+            Sampling frequency of the preprocessed signal.
 
         """
         if len(self.preprocessors) == 0:
@@ -107,16 +142,18 @@ class PreprocManager(ReprMixin):
     @classmethod
     def from_config(cls, config: dict) -> "PreprocManager":
         """
+        Create a new instance of ``PreprocManager`` from a configuration.
+
         Parameters
         ----------
-        config: dict,
-            the configuration of the preprocessors,
+        config : dict
+            The configuration of the preprocessors,
             better to be an `OrderedDict`
 
         Returns
         -------
-        ppm: PreprocManager,
-            a new instance of `PreprocManager`
+        ppm : ``PreprocManager``
+            A new instance of ``PreprocManager``
 
         """
         ppm = cls(random=config.get("random", False))
@@ -147,10 +184,12 @@ class PreprocManager(ReprMixin):
 
     def rearrange(self, new_ordering: List[str]) -> None:
         """
+        Rearrange the preprocessors.
+
         Parameters
         ----------
-        new_ordering: list of str,
-            the new ordering of the preprocessors
+        new_ordering : list of str,
+            The new ordering of the preprocessors
 
         """
         if self.random:
@@ -185,17 +224,18 @@ class PreprocManager(ReprMixin):
 
     def add_(self, pp: PreProcessor, pos: int = -1) -> None:
         """
-        add a (custom) preprocessor to the manager,
-        this method is preferred against directly manipulating
-        the internal list of preprocessors via `PreprocManager.preprocessors.append(pp)`
+        Add a (custom) preprocessor to the manager.
+        This method is preferred against directly manipulating
+        the internal list of preprocessors via
+        :code:`PreprocManager.preprocessors.append(pp)`.
 
         Parameters
         ----------
-        pp: PreProcessor,
-            the preprocessor to be added
-        pos: int, default -1,
-            the position to insert the preprocessor,
-            should be >= -1, with -1 the indicator of the end
+        pp : ``PreProcessor``
+            The ``preprocessor`` to be added.
+        pos : int, default -1
+            The position to insert the preprocessor,
+            should be >= -1, with -1 the indicator of the end.
 
         """
         assert isinstance(pp, PreProcessor)
@@ -219,9 +259,7 @@ class PreprocManager(ReprMixin):
         return len(self.preprocessors) == 0
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        return the extra keys for `__repr__`
-        """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return super().extra_repr_keys() + [
             "random",
             "preprocessors",

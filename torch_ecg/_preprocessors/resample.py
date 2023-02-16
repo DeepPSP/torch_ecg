@@ -1,4 +1,4 @@
-"""resample the signal into fixed sampling frequency or length"""
+"""Resample the signal into fixed sampling frequency or length."""
 
 from numbers import Real
 from typing import Any, List, Optional, Tuple
@@ -8,28 +8,42 @@ import scipy.signal as SS
 
 from .base import PreProcessor
 
+
 __all__ = [
     "Resample",
 ]
 
 
 class Resample(PreProcessor):
-    """ """
+    """
+    Resample the signal into fixed sampling frequency or length.
+
+    Examples
+    --------
+    >>> from torch_ecg.cfg import DEFAULTS
+    >>> sig = DEFAULTS.RNG.randn(1000)
+    >>> pp = Resample(fs=500)
+    >>> sig, _ = pp(sig, 250)
+
+    """
 
     __name__ = "Resample"
 
     def __init__(
         self, fs: Optional[int] = None, siglen: Optional[int] = None, **kwargs: Any
     ) -> None:
-        """
+        """Initialize the Resample preprocessor.
+
         Parameters
         ----------
-        fs: int, optional,
-            sampling frequency of the resampled ECG
-        siglen: int, optional,
-            number of samples in the resampled ECG
+        fs : int, optional
+            Sampling frequency of the resampled ECG.
+        siglen : int, optional
+            Number of samples in the resampled ECG.
 
-        NOTE that one and only one of `fs` and `siglen` should be set
+        NOTE
+        ----
+        One and only one of ``fs`` and ``siglen`` should be set.
 
         """
         self.fs = fs
@@ -40,24 +54,24 @@ class Resample(PreProcessor):
 
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
         """
-        apply the preprocessor to `sig`
+        Apply the preprocessor to ``sig``.
 
         Parameters
         ----------
-        sig: ndarray,
-            the ECG signal, can be
-            1d array, which is a single-lead ECG
-            2d array, which is a multi-lead ECG of "lead_first" format
-            3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)
-        fs: real number,
-            sampling frequency of the ECG signal
+        sig : numpy.ndarray
+            The ECG signal, can be
+            1d array, which is a single-lead ECG;
+            2d array, which is a multi-lead ECG of "lead_first" format;
+            3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen).
+        fs : real number
+            Sampling frequency of the ECG signal.
 
         Returns
         -------
-        rsmp_sig: ndarray,
-            the resampled ECG signal
-        new_fs: int,
-            the sampling frequency of the resampled ECG signal
+        rsmp_sig : numpy.ndarray
+            The resampled ECG signal.
+        new_fs : int,
+            Sampling frequency of the resampled ECG signal.
 
         """
         self._check_sig(sig)
@@ -70,9 +84,7 @@ class Resample(PreProcessor):
         return rsmp_sig, new_fs
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        return the extra keys for `__repr__`
-        """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "fs",
             "siglen",
