@@ -20,6 +20,7 @@ import torch
 from ..cfg import DEFAULTS
 from ..utils.misc import ReprMixin, get_date_str, init_logger
 
+
 __all__ = [
     "BaseLogger",
     "TxtLogger",

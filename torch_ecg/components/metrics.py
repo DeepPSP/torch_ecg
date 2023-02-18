@@ -43,9 +43,7 @@ class Metrics(ReprMixin, ABC):
 
 
 class ClassificationMetrics(Metrics):
-    """
-    Metrics for the task of classification
-    """
+    """Metrics for the task of classification"""
 
     __name__ = "ClassificationMetrics"
 

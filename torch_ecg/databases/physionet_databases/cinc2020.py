@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Classification of 12-lead ECGs: the PhysioNet/Computing in Cardiology Challenge 2020
-"""
 
 import io
 import json

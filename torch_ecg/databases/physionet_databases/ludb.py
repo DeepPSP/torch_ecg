@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Lobachevsky University Electrocardiography Database
-"""
 
 from copy import deepcopy
 from numbers import Real

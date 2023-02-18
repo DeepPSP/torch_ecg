@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Apnea-ECG Database - The PhysioNet Computing in Cardiology Challenge 2000
-"""
 
 from datetime import datetime
 from pathlib import Path

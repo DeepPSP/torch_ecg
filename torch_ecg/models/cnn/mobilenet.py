@@ -3,9 +3,9 @@ MobileNets, from V1 to V3
 
 References
 ----------
-[1] Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017). Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
-[2] Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
-[3] Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019). Searching for mobilenetv3. In Proceedings of the IEEE International Conference on Computer Vision (pp. 1314-1324).
+.. [1] Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017). Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
+.. [2] Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
+.. [3] Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019). Searching for mobilenetv3. In Proceedings of the IEEE International Conference on Computer Vision (pp. 1314-1324).
 
 """
 
@@ -51,45 +51,48 @@ _DEFAULT_CONV_CONFIGS_MobileNetV1 = CFG(
 
 
 class MobileNetSeparableConv(nn.Sequential, SizeMixin):
-    """
-    similar to `_nets.SeparableConv`,
-    the difference is that there are normalization and activation between depthwise conv and pointwise conv
+    """Separable convolution.
+
+    Similar to `_nets.SeparableConv`,
+    the difference is that there are normalization and activation
+    between depthwise conv and pointwise conv.
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input signal
-    out_channels: int,
-        number of channels produced by the convolution
-    kernel_size: int,
-        size (length) of the convolution kernel
-    stride: int,
-        stride (subsample length) of the convolution
-    padding: int, optional,
-        zero-padding added to both sides of the input
-    dilation: int, default 1,
-        spacing between the kernel points
-    groups: int, default 1,
-        connection pattern (of channels) of the inputs and outputs
-    batch_norm: bool or str or Module, default True,
-        (batch) normalization, or other normalizations, e.g. group normalization
-        (the name of) the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
-    activation: str or Module, default "relu6",
-        name or Module of the activation,
-        if is str, can be one of
-        "mish", "swish", "relu", "leaky", "leaky_relu", "linear", "hardswish", "relu6"
-        "linear" is equivalent to `activation=None`
-    kernel_initializer: str or callable (function), optional,
-        a function to initialize kernel weights of the convolution,
-        or name or the initialzer, can be one of the keys of `Initializers`
-    bias: bool, default True,
-        if True, adds a learnable bias to the output
-    depth_multiplier: int, default 1,
-        multiplier of the number of output channels of the depthwise convolution
-    width_multiplier: float, default 1.0,
-        multiplier of the number of output channels of the pointwise convolution
-    kwargs: dict, optional,
-        extra parameters, including `ordering`, etc.
+    in_channels : int
+        Number of channels in the input signal.
+    out_channels : int
+        Number of channels produced by the convolution.
+    kernel_size : int
+        Size (length) of the convolution kernel.
+    stride : int
+        Stride (subsample length) of the convolution.
+    padding : int, optional
+        Zero-padding added to both sides of the input.
+    dilation: int, default 1
+        Spacing between the kernel points.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    batch_norm : bool or str or torch.nn.Module, default True
+        (batch) normalization, or other normalizations, e.g. group normalization.
+        (the name of) the Module itself or
+        (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.
+    activation : str or torch.nn.Module, default "relu6"
+        Name or Module of the activation.
+        If is str, can be one of
+        "mish", "swish", "relu", "leaky", "leaky_relu", "linear", "hardswish", "relu6".
+        "linear" is equivalent to ``activation=None``.
+    kernel_initializer : str or callable, optional
+        A function to initialize kernel weights of the convolution,
+        or name or the initialzer, can be one of the keys of ``Initializers``.
+    bias : bool, default True
+        If True, adds a learnable bias to the output.
+    depth_multiplier : int, default 1
+        Multiplier of the number of output channels of the depthwise convolution.
+    width_multiplier : float, default 1.0
+        Multiplier of the number of output channels of the pointwise convolution.
+    kwargs : dict, optional,
+        Extra parameters, including :attr:`ordering`, etc.
 
     """
 
@@ -113,7 +116,6 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
         width_multiplier: float = 1.0,
         **kwargs: Any,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -197,9 +199,10 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
 
 
 class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
-    """
-    Similar to Xception, but without skip connections,
-    separable convolutions are slightly different too
+    """MobileNet V1.
+
+    Similar to ``Xception``, but without skip connections.
+    Separable convolutions are slightly different too
 
     normal conv
     --> entry flow (separable convs, down sample and double channels every other conv)
@@ -229,9 +232,9 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
 
     References
     ----------
-    1. Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017).
-       Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
-    2. https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/keras/applications/mobilenet.py
+    .. [1] Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017).
+           Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
+    .. [2] https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/keras/applications/mobilenet.py
 
     """
 

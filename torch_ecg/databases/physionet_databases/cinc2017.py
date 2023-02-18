@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-AF Classification from a Short Single Lead ECG Recording
--- The PhysioNet Computing in Cardiology Challenge 2017
-"""
 
 import math
 import time

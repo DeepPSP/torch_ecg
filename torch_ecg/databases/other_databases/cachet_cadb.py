@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Contextualized Ambulatory Electrocardiography Arrhythmia Dataset (CACHET-CADB)
-"""
 
 import re
 import warnings

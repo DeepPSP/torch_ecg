@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-The 2nd China Physiological Signal Challenge (CPSC 2019):
-Challenging QRS Detection and Heart Rate Estimation from Single-Lead ECG Recordings
-"""
 
 import json
 from numbers import Real

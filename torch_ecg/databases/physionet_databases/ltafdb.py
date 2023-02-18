@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Long Term AF Database
-"""
 
 import json
 import math

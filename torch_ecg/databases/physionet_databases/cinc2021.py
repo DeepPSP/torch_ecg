@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Will Two Do? Varying Dimensions in Electrocardiography:
-The PhysioNet/Computing in Cardiology Challenge 2021
-"""
 
 import io
 import json

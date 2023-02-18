@@ -38,7 +38,10 @@ __all__ = [
 
 
 class BaseTrainer(ReprMixin, ABC):
-    """ """
+    """
+    Abstract base class for trainers,
+    in order to replace the functions for classes in the training pipelines.
+    """
 
     __name__ = "BaseTrainer"
     __DEFATULT_CONFIGS__ = {

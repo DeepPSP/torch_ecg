@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-You Snooze You Win - The PhysioNet Computing in Cardiology Challenge 2018
-"""
 
 from collections import defaultdict
 from numbers import Real

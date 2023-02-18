@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-The 3rd China Physiological Signal Challenge 2020:
-Searching for Premature Ventricular Contraction (PVC) and Supraventricular Premature Beat (SPB) from Long-term ECGs
-"""
 
 import math
 from numbers import Real

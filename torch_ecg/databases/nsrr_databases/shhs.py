@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Sleep Heart Health Study (SHHS) database
-"""
 
 import itertools
 import re

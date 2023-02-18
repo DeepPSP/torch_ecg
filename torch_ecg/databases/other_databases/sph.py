@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Shandong Provincial Hospital Database
-"""
 
 import time
 from copy import deepcopy

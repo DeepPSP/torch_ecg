@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-remarks: commonly used functions related to intervals
+Remarks: commonly used functions related to intervals
 
-NOTE
-----
+.. note::
+
     `Interval` refers to interval of the form [a,b]
     `GeneralizedInterval` refers to some (finite) union of `Interval`s
-TODO:
+
+.. todo::
+
     1. unify `Interval` and `GeneralizedInterval`, by letting `Interval` be of the form [[a,b]]
     2. distinguish openness and closedness
 
@@ -987,7 +989,7 @@ def max_disjoint_covering(
     verbose: int = 0,
 ) -> Tuple[GeneralizedInterval, List[int]]:
     """
-    find the largest (the largest interval length) covering of a sequence of intervals
+    Find the largest (the largest interval length) covering of a sequence of intervals
 
     NOTE
     ----
@@ -1006,10 +1008,10 @@ def max_disjoint_covering(
 
     Returns
     -------
-    covering: GeneralizedInterval,
-        the maximum non-overlapping (disjoint) subset of `intervals`
-    covering_inds: list of int,
-        indices in `intervals` of the intervals of `covering_inds`
+    covering : :class:`GeneralizedInterval`
+        The maximum non-overlapping (disjoint) subset of `intervals`
+    covering_inds : list of int
+        Indices in `intervals` of the intervals of `covering_inds`
 
     Examples
     --------
@@ -1024,8 +1026,8 @@ def max_disjoint_covering(
 
     References
     ----------
-    [1] https://en.wikipedia.org/wiki/Maximum_disjoint_set
-    [2] https://www.geeksforgeeks.org/maximal-disjoint-intervals/
+    .. [1] https://en.wikipedia.org/wiki/Maximum_disjoint_set
+    .. [2] https://www.geeksforgeeks.org/maximal-disjoint-intervals/
 
     """
     if len(intervals) <= 1:

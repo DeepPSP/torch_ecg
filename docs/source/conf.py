@@ -66,8 +66,8 @@ intersphinx_mapping = {
     "np": ("https://numpy.org/doc/stable/", None),
     "torch": ("https://pytorch.org/docs/stable/", None),
     "wfdb": ("https://wfdb.readthedocs.io/en/latest/", None),
-    "biosppy": ("https://biosppy.readthedocs.io/en/stable/", None),
-    # "matplotlib": ("https://matplotlib.org/stable/", None),
+    # "biosppy": ("https://biosppy.readthedocs.io/en/stable/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
 }
 
 # Add any paths that contain templates here, relative to this directory.

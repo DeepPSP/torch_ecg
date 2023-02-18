@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-MIT-BIH Atrial Fibrillation Database
-"""
 
 import math
 from copy import deepcopy
