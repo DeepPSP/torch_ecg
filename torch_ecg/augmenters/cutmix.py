@@ -15,6 +15,7 @@ from torch import Tensor
 from .base import Augmenter
 from ..cfg import DEFAULTS
 
+
 __all__ = [
     "CutMix",
 ]
@@ -97,18 +98,18 @@ class CutMix(Augmenter):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any,
     ) -> Tuple[Tensor, ...]:
-        """Forward method
+        """Forward method to perform CutMix augmentation
 
         Parameters
         ----------
         sig: torch.Tensor
-            The ECGs to be augmented, of shape (batch, lead, siglen)
+            Batched ECGs to be augmented, of shape (batch, lead, siglen).
         label: torch.Tensor
-            Class labels, of shape (batch, num_classes);
-            or segmentation masks, of shape (batch, siglen, num_classes)
+            Class (one-hot) labels, of shape (batch, num_classes);
+            or segmentation masks, of shape (batch, siglen, num_classes).
         extra_tensors: Sequence[torch.Tensor], optional
-            Other tensors to be augmented, by default ``None``.
-        kwargs: dict, optional
+            Other tensors to be augmented, by default None.
+        **kwargs: dict, optional
             Other arguments.
 
         Returns
@@ -174,6 +175,7 @@ class CutMix(Augmenter):
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "alpha",
             "beta",
@@ -184,19 +186,19 @@ class CutMix(Augmenter):
 
 def _make_intervals(lam: Tensor, siglen: int) -> np.ndarray:
     """
-    Make intervals for cutmix
+    Make intervals for cutmix.
 
     Parameters
     ----------
     lam : torch.Tensor
-        Parameter ``lambda`` for cutmix, of shape (n,)
+        Parameter ``lambda`` for cutmix, of shape (n,).
     siglen : int
-        Length of the signal
+        Length of the signal.
 
     Returns
     -------
     numpy.ndarray
-        Intervals for cutmix, of shape (n, 2)
+        Intervals for cutmix, of shape (n, 2).
 
     """
     _lam = (lam.numpy() * siglen).astype(int)

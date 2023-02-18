@@ -42,22 +42,26 @@ class RandomRenormalize(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """
+        """Initialize the RandomRenormalize augmenter.
+
         Parameters
         ----------
-        mean: array_like, default [-0.05,0.1],
-            range of mean value of the re-normalized signal, of shape (2,);
-            or range of mean values for each lead of the re-normalized signal, of shape (lead, 2).
-        std: array_like, default [0.08,0.32],
-            range of standard deviation of the re-normalized signal, of shape (2,);
-            or range of standard deviations for each lead of the re-normalized signal, of shape (lead, 2).
-        per_channel: bool, default False,
-            if True, re-normalization will be done per channel
-        prob: float, default 0.5,
+        mean : array_like, default [-0.05, 0.1]
+            Range of mean value of the re-normalized signal, of shape (2,);
+            or range of mean values for each lead of the re-normalized signal,
+            of shape (lead, 2).
+        std : array_like, default [0.08, 0.32]
+            Range of standard deviation of the re-normalized signal, of shape (2,);
+            or range of standard deviations for each lead of the re-normalized signal,
+            of shape (lead, 2).
+        per_channel : bool, default False
+            If True, re-normalization will be done per channel.
+        prob : float, default 0.5
             Probability of applying the random re-normalization augmenter.
-        inplace: bool, default True,
+        inplace : bool, default True
             Whether to apply the random re-normalization augmenter in-place.
-        kwargs: keyword arguments
+        kwargs : dict, optional
+            Additional keyword arguments.
 
         """
         super().__init__()
@@ -80,27 +84,28 @@ class RandomRenormalize(Augmenter):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """
+        """Forward function of the RandomRenormalize augmenter.
+
         Parameters
         ----------
-        sig: Tensor,
-            the input ECG tensor, of shape (batch, lead, siglen)
-        label: Tensor, optional,
-            the input ECG label tensor,
-            not used, but kept for compatibility with other augmenters
-        extra_tensors: sequence of Tensors, optional,
-            not used, but kept for consistency with other augmenters
-        kwargs: keyword arguments,
-            not used, but kept for consistency with other augmenters
+        sig : torch.Tensor
+            The input ECG tensor, of shape (batch, lead, siglen).
+        label : torch.Tensor, optional
+            The input ECG label tensor.
+            Not used, but kept for compatibility with other augmenters.
+        extra_tensors : sequence of torch.Tensor, optional,
+            Not used, but kept for consistency with other augmenters.
+        kwargs : dict, optional
+            Not used, but kept for consistency with other augmenters.
 
         Returns
         -------
-        sig: Tensor,
-            the randomly re-normalized ECG tensor.
-        label: Tensor,
-            the label tensor of the augmented ECGs, unchanged
+        sig : torch.Tensor
+            The randomly re-normalized ECG tensor.
+        label : torch.Tensor
+            The label tensor of the augmented ECGs, unchanged.
         extra_tensors: sequence of Tensors, optional,
-            if set in the input arguments, unchanged
+            Unchanged extra tensors.
 
         """
         batch, lead, siglen = sig.shape
@@ -138,7 +143,7 @@ class RandomRenormalize(Augmenter):
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """ """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "mean",
             "std",

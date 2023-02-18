@@ -33,9 +33,10 @@ class Mixup(Augmenter):
 
     References
     ----------
-    1. Zhang, Hongyi, et al. "mixup: Beyond Empirical Risk Minimization." International Conference on Learning Representations. 2018.
-    2. https://arxiv.org/abs/1710.09412
-    3. https://github.com/facebookresearch/mixup-cifar10/blob/master/train.py
+    .. [1] Zhang, Hongyi, et al. "mixup: Beyond Empirical Risk Minimization."
+           International Conference on Learning Representations. 2018.
+    .. [2] https://arxiv.org/abs/1710.09412
+    .. [3] https://github.com/facebookresearch/mixup-cifar10/blob/master/train.py
 
     """
 
@@ -50,21 +51,23 @@ class Mixup(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """
+        """Initialize the Mixup augmenter.
+
         Parameters
         ----------
-        fs: int, optional,
-            sampling frequency of the ECGs to be augmented
-        alpha: real number, default 0.5,
+        fs : int, optional
+            Sampling frequency of the ECGs to be augmented.
+        alpha : real number, default 0.5
             alpha parameter of the Beta distribution used in Mixup.
-        beta: real number, optional,
+        beta : real number, optional
             beta parameter of the Beta distribution used in Mixup,
-            default to alpha.
-        prob: float, default 0.5,
-            probability of applying Mixup.
-        inplace: bool, default True,
-            if True, ECG signal tensors will be modified inplace
-        kwargs: Keyword arguments.
+            defaults to ``alpha``.
+        prob : float, default 0.5
+            Probability of applying Mixup.
+        inplace : bool, default True
+            If True, ECG signal tensors will be modified inplace.
+        **kwargs : dict, optional
+            Additional keyword arguments, not used.
 
         """
         super().__init__()
@@ -82,26 +85,27 @@ class Mixup(Augmenter):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """
+        """Forward method of the Mixup augmenter.
+
         Parameters
         ----------
-        sig: Tensor,
-            the ECGs to be augmented, of shape (batch, lead, siglen)
-        label: Tensor,
-            label tensor of the ECGs
-        extra_tensors: sequence of Tensors, optional,
-            not used, but kept for consistency with other augmenters
-        kwargs: keyword arguments,
-            not used, but kept for consistency with other augmenters
+        sig : torch.Tensor
+            Batched ECGs to be augmented, of shape (batch, lead, siglen).
+        label : torch.Tensor
+            Label tensor of the ECGs.
+        extra_tensors: sequence of torch.Tensor, optional
+            Not used, but kept for consistency with other augmenters.
+        **kwargs : dict, optional
+            Not used, but kept for consistency with other augmenters.
 
         Returns
         -------
-        sig: Tensor,
-            the augmented ECGs
-        label: Tensor,
-            the augmented label
-        extra_tensors: sequence of Tensors, optional,
-            if set in the input arguments, unchanged
+        sig : torch.Tensor,
+            The augmented ECGs.
+        label : torch.Tensor
+            The augmented labels.
+        extra_tensors: sequence of torch.Tensor, optional
+            Unchanged extra tensors.
 
         """
         batch, lead, siglen = sig.shape
@@ -130,7 +134,7 @@ class Mixup(Augmenter):
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """ """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "alpha",
             "beta",

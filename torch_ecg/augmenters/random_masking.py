@@ -42,23 +42,25 @@ class RandomMasking(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """
+        """Initialize the RandomMasking augmenter.
+
         Parameters
         ----------
-        fs: int,
-            sampling frequency of the ECGs to be augmented
-        mask_value: real number, default 0.0,
-            value to mask with.
-        mask_width: sequence of real numbers, default [0.08,0.18],
-            width range of the masking window, with units in seconds
-        prob: sequence of real numbers or real number, default [0.3,0.15],
-            probabilities of masking ECG signals,
+        fs : int
+            Sampling frequency of the ECGs to be augmented.
+        mask_value : real number, default 0.0
+            Value to mask with.
+        mask_width : sequence of real numbers, default [0.08,0.18]
+            Width range of the masking window, with units in seconds
+        prob : sequence of real numbers or real number, default [0.3,0.15]
+            Probabilities of masking ECG signals,
             the first probality is for the batch dimension,
             the second probability is for the lead dimension.
-            note that 0.15 is approximately the proportion of QRS complexes in ECGs.
-        inplace: bool, default True,
-            whether to mask inplace or not
-        kwargs: Keyword arguments.
+            Note that 0.15 is approximately the proportion of QRS complexes in ECGs.
+        inplace : bool, default True
+            Whether to mask inplace or not
+        kwargs : dict, optional
+            Additional keyword arguments
 
         """
         super().__init__()
@@ -83,30 +85,31 @@ class RandomMasking(Augmenter):
         critical_points: Optional[Sequence[Sequence[int]]] = None,
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """
+        """Forward method of the RandomMasking augmenter.
+
         Parameters
         ----------
-        sig: Tensor,
-            the ECGs to be augmented, of shape (batch, lead, siglen)
-        label: Tensor,
-            label tensor of the ECGs,
-            not used, but kept for compatibility with other augmenters
-        extra_tensors: sequence of Tensors, optional,
-            not used, but kept for consistency with other augmenters
-        critical_points: sequence of sequences of integers,
-            if given, random masking will be performed in windows centered at these points,
-            this is useful for example when one wants to randomly mask QRS complexes
-        kwargs: keyword arguments,
-            not used, but kept for consistency with other augmenters
+        sig : torch.Tensor
+            Batched ECGs to be augmented, of shape (batch, lead, siglen).
+        label : torch.Tensor
+            Label tensor of the ECGs.
+            Not used, but kept for compatibility with other augmenters.
+        extra_tensors : sequence of torch.Tensor, optional
+            Not used, but kept for consistency with other augmenters
+        critical_points : sequence of sequences of int, optional
+            If given, random masking will be performed in windows centered at these points.
+            This is useful for example when one wants to randomly mask QRS complexes.
+        kwargs : dict, optional
+            Not used, but kept for consistency with other augmenters.
 
         Returns
         -------
-        sig: Tensor,
-            the augmented ECGs, of shape (batch, lead, siglen)
-        label: Tensor,
-            the label tensor of the augmented ECGs, unchanged
-        extra_tensors: sequence of Tensors, optional,
-            if set in the input arguments, unchanged
+        sig : torch.Tensor
+            The augmented ECGs, of shape (batch, lead, siglen).
+        label : torch.Tensor
+            Label tensor of the augmented ECGs, unchanged.
+        extra_tensors : sequence of torch.Tensor, optional
+            Unchanged extra tensors.
 
         """
         batch, lead, siglen = sig.shape
@@ -142,7 +145,7 @@ class RandomMasking(Augmenter):
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """ """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "fs",
             "mask_value",
