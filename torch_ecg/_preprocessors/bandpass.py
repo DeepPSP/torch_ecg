@@ -1,4 +1,4 @@
-"""BandPass filter preprocessor"""
+"""BandPass filter preprocessor."""
 
 from numbers import Real
 from typing import Any, List, Optional, Tuple
@@ -14,15 +14,29 @@ __all__ = [
 
 
 class BandPass(PreProcessor):
-    """
-    Bandpass filtering preprocessor.
+    """Bandpass filtering preprocessor.
+
+    Parameters
+    ----------
+    lowcut : numbers.Real, optional
+        Low cutoff frequency
+    highcut : numbers.Real, optional
+        High cutoff frequency.
+    filter_type : {"butter", "fir"}, optional
+        Type of the bandpass filter, default "butter".
+    filter_order : int, optional
+        Order of the bandpass filter.
+    **kwargs : dict, optional
+        Other arguments for :class:`~torch_ecg._preprocessors.PreProcessor`.
 
     Examples
     --------
-    >>> from torch_ecg.cfg import DEFAULTS
-    >>> sig = DEFAULTS.RNG.randn(1000)
-    >>> pp = BandPass(lowcut=0.5, highcut=45, filter_type="butter", filter_order=4)
-    >>> sig, _ = pp(sig, 500)
+    .. code-block:: python
+
+        from torch_ecg.cfg import DEFAULTS
+        sig = DEFAULTS.RNG.randn(1000)
+        pp = BandPass(lowcut=0.5, highcut=45, filter_type="butter", filter_order=4)
+        sig, _ = pp(sig, 500)
 
     """
 
@@ -36,22 +50,6 @@ class BandPass(PreProcessor):
         filter_order: Optional[int] = None,
         **kwargs: Any
     ) -> None:
-        """Initialize the BandPass preprocessor.
-
-        Parameters
-        ----------
-        lowcut : real number, optional
-            Low cutoff frequency
-        highcut : real number, optional
-            High cutoff frequency.
-        filter_type : str, default "butter"
-            Type of the bandpass filter, can be "butter" or "fir".
-        filter_order : int, optional
-            Order of the bandpass filter.
-        **kwargs : dict, optional
-            Other arguments for ``PreProcessor``.
-
-        """
         self.lowcut = lowcut
         self.highcut = highcut
         assert any(
@@ -65,24 +63,23 @@ class BandPass(PreProcessor):
         self.filter_order = filter_order
 
     def apply(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
-        """
-        Apply the preprocessor to ``sig``.
+        """Apply the preprocessor to `sig`.
 
         Parameters
         ----------
         sig : numpy.ndarray
             The ECG signal, can be
-            1d array, which is a single-lead ECG;
-            2d array, which is a multi-lead ECG of "lead_first" format;
-            3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen)
+                - 1d array, which is a single-lead ECG;
+                - 2d array, which is a multi-lead ECG of "lead_first" format;
+                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
         fs : int
             Sampling frequency of the ECG signal.
 
         Returns
         -------
-        filtered_sig : numpy.ndarray
-            The bandpass filtered ECG signal.
-        fs : int
+        filtered_sig : :class:`numpy.ndarray`
+            Bandpass filtered ECG signal.
+        fs : :class:`int`
             Sampling frequency of the filtered ECG signal.
 
         """

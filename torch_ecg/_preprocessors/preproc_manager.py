@@ -20,23 +20,34 @@ __all__ = [
 
 
 class PreprocManager(ReprMixin):
-    """
-    Manager of preprocessors.
+    """Manager of preprocessors.
+
+    This class is used to manage a sequence of preprocessors. It can be used to
+    add preprocessors to the manager, and apply the preprocessors to a signal.
+
+    Parameters
+    ----------
+    pps : tuple of :class:`~torch_ecg._preprocessors.PreProcessor`, optional
+        The sequence of preprocessors to be added to the manager.
+    random : bool, default False
+        Whether to apply the augmenters in random order.
 
     Examples
     --------
-    >>> import torch
-    >>> from torch_ecg.cfg import CFG
-    >>> from torch_ecg._preprocessors import PreprocManager
-    >>> config = CFG(
-    ...     random=False,
-    ...     resample={"fs": 500},
-    ...     bandpass={"filter_type": "fir"},
-    ...     normalize={"method": "min-max"},
-    ... )
-    >>> ppm = PreprocManager.from_config(config)
-    >>> sig = torch.randn(12, 80000).numpy()
-    >>> sig, fs = ppm(sig, 200)
+    .. code-block:: python
+
+        import torch
+        from torch_ecg.cfg import CFG
+        from torch_ecg._preprocessors import PreprocManager
+        config = CFG(
+            random=False,
+            resample={"fs": 500},
+            bandpass={"filter_type": "fir"},
+            normalize={"method": "min-max"},
+        )
+        ppm = PreprocManager.from_config(config)
+        sig = torch.randn(12, 80000).numpy()
+        sig, fs = ppm(sig, 200)
 
     """
 
@@ -45,23 +56,12 @@ class PreprocManager(ReprMixin):
     def __init__(
         self, *pps: Optional[Tuple[PreProcessor, ...]], random: bool = False
     ) -> None:
-        """Initialize the PreprocManager.
-
-        Parameters
-        ----------
-        pps : tuple of ``PreProcessor``, optional
-            The sequence of preprocessors to be added to the manager.
-        random : bool, default False
-            Whether to apply the augmenters in random order.
-
-        """
         super().__init__()
         self.random = random
         self._preprocessors = list(pps)
 
     def _add_bandpass(self, **config: dict) -> None:
-        """
-        Add a bandpass preprocessor to the manager.
+        """Add a bandpass preprocessor to the manager.
 
         Parameters
         ----------
@@ -72,8 +72,7 @@ class PreprocManager(ReprMixin):
         self._preprocessors.append(BandPass(**config))
 
     def _add_baseline_remove(self, **config: dict) -> None:
-        """
-        Add a baseline remove preprocessor to the manager.
+        """Add a baseline remove preprocessor to the manager.
 
         Parameters
         ----------
@@ -84,8 +83,7 @@ class PreprocManager(ReprMixin):
         self._preprocessors.append(BaselineRemove(**config))
 
     def _add_normalize(self, **config: dict) -> None:
-        """
-        Add a normalize preprocessor to the manager.
+        """Add a normalize preprocessor to the manager.
 
         Parameters
         ----------
@@ -96,8 +94,7 @@ class PreprocManager(ReprMixin):
         self._preprocessors.append(Normalize(**config))
 
     def _add_resample(self, **config: dict) -> None:
-        """
-        Add a resample preprocessor to the manager.
+        """Add a resample preprocessor to the manager.
 
         Parameters
         ----------
@@ -108,8 +105,7 @@ class PreprocManager(ReprMixin):
         self._preprocessors.append(Resample(**config))
 
     def __call__(self, sig: np.ndarray, fs: int) -> Tuple[np.ndarray, int]:
-        """
-        The main function of the manager, which applies the preprocessors
+        """The main function of the manager, which applies the preprocessors
 
         Parameters
         ----------
@@ -141,19 +137,19 @@ class PreprocManager(ReprMixin):
 
     @classmethod
     def from_config(cls, config: dict) -> "PreprocManager":
-        """
-        Create a new instance of ``PreprocManager`` from a configuration.
+        """Create a new instance of
+        :class:`~torch_ecg._preprocessors.PreprocManager` from a configuration.
 
         Parameters
         ----------
         config : dict
             The configuration of the preprocessors,
-            better to be an `OrderedDict`
+            better to be an :class:`~collections.OrderedDict`.
 
         Returns
         -------
-        ppm : ``PreprocManager``
-            A new instance of ``PreprocManager``
+        ppm : PreprocManager
+            A new instance of :class:`~torch_ecg._preprocessors.PreprocManager`.
 
         """
         ppm = cls(random=config.get("random", False))
@@ -183,13 +179,12 @@ class PreprocManager(ReprMixin):
         return ppm
 
     def rearrange(self, new_ordering: List[str]) -> None:
-        """
-        Rearrange the preprocessors.
+        """Rearrange the preprocessors.
 
         Parameters
         ----------
-        new_ordering : list of str,
-            The new ordering of the preprocessors
+        new_ordering : :class:`list` of :class:`str`
+            The new ordering of the preprocessors.
 
         """
         if self.random:
@@ -223,16 +218,16 @@ class PreprocManager(ReprMixin):
         )
 
     def add_(self, pp: PreProcessor, pos: int = -1) -> None:
-        """
-        Add a (custom) preprocessor to the manager.
+        """Add a (custom) preprocessor to the manager.
+
         This method is preferred against directly manipulating
         the internal list of preprocessors via
         :code:`PreprocManager.preprocessors.append(pp)`.
 
         Parameters
         ----------
-        pp : ``PreProcessor``
-            The ``preprocessor`` to be added.
+        pp : PreProcessor
+            The :class:`~torch_ecg._preprocessors.PreProcessor` to be added.
         pos : int, default -1
             The position to insert the preprocessor,
             should be >= -1, with -1 the indicator of the end.

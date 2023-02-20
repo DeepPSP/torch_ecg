@@ -8,6 +8,7 @@ This module contains a set of preprocessors for signals of numpy array format.
 
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     PreprocManager
     PreProcessor

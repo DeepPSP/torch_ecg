@@ -30,18 +30,17 @@ class PreProcessor(ReprMixin, ABC):
 
     @abstractmethod
     def apply(self, sig: np.ndarray, fs: Real) -> Tuple[np.ndarray, int]:
-        """
-        Apply the preprocessor to ``sig``.
+        """Apply the preprocessor to `sig`.
 
         Parameters
         ----------
         sig : numpy.ndarray
             The ECG signal, can be
-            1d array, which is a single-lead ECG;
-            2d array, which is a multi-lead ECG of "lead_first" format;
-            3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen).
-        fs : real number
-            Sampling frequency of the ECG signal
+                - 1d array, which is a single-lead ECG;
+                - 2d array, which is a multi-lead ECG of "lead_first" format;
+                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
+        fs : numbers.Real
+            Sampling frequency of the ECG signal.
 
         """
         raise NotImplementedError
@@ -52,16 +51,15 @@ class PreProcessor(ReprMixin, ABC):
         return self.apply(sig, fs)
 
     def _check_sig(self, sig: np.ndarray) -> None:
-        """
-        Check validity of the signal.
+        """Check validity of the signal.
 
         Parameters
         ----------
         sig : numpy.ndarray
-            the ECG signal, can be
-            1d array, which is a single-lead ECG;
-            2d array, which is a multi-lead ECG of "lead_first" format;
-            3d array, which is a tensor of several ECGs, of shape (batch, lead, siglen).
+            The ECG signal, can be
+                - 1d array, which is a single-lead ECG;
+                - 2d array, which is a multi-lead ECG of "lead_first" format;
+                - 3d array, which is a tensor of several ECGs, of shape ``(batch, lead, siglen)``.
 
         """
         if sig.ndim not in [1, 2, 3]:
@@ -82,42 +80,43 @@ def preprocess_multi_lead_signal(
     filter_type: str = "butter",
     filter_order: Optional[int] = None,
 ) -> np.ndarray:
-    """
-    Perform preprocessing for multi-lead ecg signal (with units in mV),
+    """Perform preprocessing for multi-lead ECG signal (with units in mV).
+
     preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
-    Also works for single-lead ecg signal (sig_fmt="channel_first").
+    Also works for single-lead ECG signal (setting ``sig_fmt="channel_first"``).
 
     Parameters
     ----------
     raw_sig : numpy.ndarray
-        The raw ecg signal, with units in mV.
-    fs : real number
-        Sampling frequency of ``raw_sig``.
+        The raw ECG signal, with units in mV.
+    fs : numbers.Real
+        Sampling frequency of `raw_sig`.
     sig_fmt : str, default "channel_first"
-        Format of the multi-lead ecg signal,
+        Format of the multi-lead ECG signal,
         "channel_last" (alias "lead_last"), or
-        "channel_first" (alias "lead_first", original).
-    bl_win : list (of 2 real numbers), optional
-        Window (units in second) of baseline removal using :meth:`median_filter`,
+        "channel_first" (alias "lead_first").
+    bl_win : list of numbers.Real, optional
+        Window (units in second) of baseline removal
+        using :meth:`~scipy.ndimage.median_filter`,
         the first is the shorter one, the second the longer one,
-        a typical pair is [0.2, 0.6].
+        a typical pair is ``[0.2, 0.6]``.
         If is None or empty, baseline removal will not be performed.
-    band_fs : list (of 2 real numbers), optional
+    band_fs : list of numbers.Real, optional
         Frequency band of the bandpass filter,
-        a typical pair is [0.5, 45].
+        a typical pair is ``[0.5, 45]``.
         Be careful when detecting paced rhythm.
-        If is None or empty, bandpass filtering will not be performed
-    filter_type : str, default "butter"
-        Type of the bandpass filter, can be "butter" or "fir".
+        If is None or empty, bandpass filtering will not be performed.
+    filter_type : {"butter", "fir"}, optional
+        Type of the bandpass filter, default "butter".
     filter_order : int, optional
-        Order of the bandpass filter,
+        Order of the bandpass filter.
 
     Returns
     -------
-    filtered_ecg: numpy.ndarray,
-        The array of the processed ecg signal.
+    filtered_ecg : numpy.ndarray
+        The array of the processed ECG signal.
         The format of the signal is kept the same with the original signal,
-        i.e. ``sig_fmt``
+        i.e. `sig_fmt`.
 
     """
     raw_sig = np.asarray(raw_sig)
@@ -196,40 +195,41 @@ def preprocess_single_lead_signal(
     filter_type: str = "butter",
     filter_order: Optional[int] = None,
 ) -> np.ndarray:
-    """
-    Perform preprocessing for single lead ecg signal (with units in mV).
+    """Perform preprocessing for single lead ECG signal (with units in mV).
+
     Preprocessing may include median filter, bandpass filter, and rpeaks detection, etc.
 
     Parameters
     ----------
     raw_sig : numpy.ndarray
-        Raw ecg signal, with units in mV.
-    fs : real number
-        Sampling frequency of ``raw_sig``.
-    bl_win : list (of 2 real numbers), optional
-        Window (units in second) of baseline removal using :meth:`median_filter`,
+        Raw ECG signal, with units in mV.
+    fs : numbers.Real
+        Sampling frequency of `raw_sig`.
+    bl_win : list (of 2 numbers.Real), optional
+        Window (units in second) of baseline removal
+        using :meth:`~scipy.ndimage.median_filter`,
         the first is the shorter one, the second the longer one,
-        a typical pair is [0.2, 0.6].
+        a typical pair is ``[0.2, 0.6]``.
         If is None or empty, baseline removal will not be performed.
-    band_fs : list (of 2 real numbers), optional
+    band_fs : list of numbers.Real, optional
         Frequency band of the bandpass filter,
-        a typical pair is [0.5, 45].
+        a typical pair is ``[0.5, 45]``.
         Be careful when detecting paced rhythm.
         If is None or empty, bandpass filtering will not be performed.
-    filter_type : str, default "butter"
-        Type of the bandpass filter, can be "butter" or "fir".
+    filter_type : {"butter", "fir"}, optional
+        Type of the bandpass filter, default "butter".
     filter_order : int, optional,
         Order of the bandpass filter.
 
     Returns
     -------
-    filtered_ecg: numpy.ndarray,
-        the array of the processed ecg signal
+    filtered_ecg : numpy.ndarray
+        The array of the processed ECG signal.
 
     NOTE
     ----
     Bandpass filter uses FIR filters, an alternative can be Butterworth filter,
-    e.g. :meth:`butter_bandpass_filter` in :meth:`utils.utils_singal`.
+    e.g. :meth:`~torch_ecg.utils.butter_bandpass_filter`.
 
     """
     filtered_ecg = np.asarray(raw_sig)
