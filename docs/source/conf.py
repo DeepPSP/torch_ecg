@@ -64,6 +64,8 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "np": ("https://numpy.org/doc/stable/", None),
+    # "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
     "torch": ("https://pytorch.org/docs/stable/", None),
     "wfdb": ("https://wfdb.readthedocs.io/en/latest/", None),
     # "biosppy": ("https://biosppy.readthedocs.io/en/stable/", None),
@@ -93,6 +95,11 @@ else:
     html_theme = "sphinx_rtd_theme"
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # htmlhelp_basename = "Recommonmarkdoc"
+
+html_theme_options = {
+    "collapse_navigation": True,
+    "display_version": True,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
