@@ -27,7 +27,7 @@ class PreprocManager(ReprMixin):
 
     Parameters
     ----------
-    pps : tuple of :class:`~torch_ecg._preprocessors.PreProcessor`, optional
+    pps : Tuple[PreProcessor], optional
         The sequence of preprocessors to be added to the manager.
     random : bool, default False
         Whether to apply the augmenters in random order.
@@ -138,7 +138,7 @@ class PreprocManager(ReprMixin):
     @classmethod
     def from_config(cls, config: dict) -> "PreprocManager":
         """Create a new instance of
-        :class:`~torch_ecg._preprocessors.PreprocManager` from a configuration.
+        :class:`PreprocManager` from a configuration.
 
         Parameters
         ----------
@@ -149,7 +149,7 @@ class PreprocManager(ReprMixin):
         Returns
         -------
         ppm : PreprocManager
-            A new instance of :class:`~torch_ecg._preprocessors.PreprocManager`.
+            A new instance of :class:`PreprocManager`.
 
         """
         ppm = cls(random=config.get("random", False))
@@ -183,7 +183,7 @@ class PreprocManager(ReprMixin):
 
         Parameters
         ----------
-        new_ordering : :class:`list` of :class:`str`
+        new_ordering : List[str]
             The new ordering of the preprocessors.
 
         """
@@ -227,7 +227,7 @@ class PreprocManager(ReprMixin):
         Parameters
         ----------
         pp : PreProcessor
-            The :class:`~torch_ecg._preprocessors.PreProcessor` to be added.
+            The :class:`PreProcessor` to be added.
         pos : int, default -1
             The position to insert the preprocessor,
             should be >= -1, with -1 the indicator of the end.

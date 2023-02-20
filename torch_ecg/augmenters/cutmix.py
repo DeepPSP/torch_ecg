@@ -22,8 +22,24 @@ __all__ = [
 
 
 class CutMix(Augmenter):
-    """
-    CutMix augmentation
+    """CutMix augmentation.
+
+    Parameters
+    ----------
+    fs: int, optional
+        Sampling frequency, by default None.
+    num_mix: int, default 1
+        Number of mixtures.
+    alpha: float, default 0.5
+        Beta distribution parameter.
+    beta: float, optional
+        Beta distribution parameter, by default equal to `alpha`.
+    prob: float, default 0.5
+        Probability of applying this augmenter.
+    inplace: bool, default True
+        Whether to perform this augmentation in-place.
+    **kwargs: dict, optional
+        Additional keyword arguments.
 
     Examples
     --------
@@ -56,26 +72,6 @@ class CutMix(Augmenter):
         inplace: bool = True,
         **kwargs: Any,
     ) -> None:
-        """Initialize the CutMix augmenter
-
-        Parameters
-        ----------
-        fs: int, optional
-            Sampling frequency, by default None.
-        num_mix: int, default 1
-            Number of mixtures.
-        alpha: float, default 0.5
-            Beta distribution parameter.
-        beta: float, optional
-            Beta distribution parameter, by default equal to `alpha`.
-        prob: float, default 0.5
-            Probability of applying this augmenter.
-        inplace: bool, default True
-            Whether to perform this augmentation in-place.
-        **kwargs: dict, optional
-            Other arguments for `Augmenter`.
-
-        """
         super().__init__()
         self.fs = fs
         self.num_mix = num_mix
@@ -98,23 +94,23 @@ class CutMix(Augmenter):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any,
     ) -> Tuple[Tensor, ...]:
-        """Forward method to perform CutMix augmentation
+        """Forward method to perform CutMix augmentation.
 
         Parameters
         ----------
         sig: torch.Tensor
-            Batched ECGs to be augmented, of shape (batch, lead, siglen).
+            Batched ECGs to be augmented, of shape ``(batch, lead, siglen)``.
         label: torch.Tensor
-            Class (one-hot) labels, of shape (batch, num_classes);
-            or segmentation masks, of shape (batch, siglen, num_classes).
+            Class (one-hot) labels, of shape ``(batch, num_classes)``;
+            or segmentation masks, of shape ``(batch, siglen, num_classes)``.
         extra_tensors: Sequence[torch.Tensor], optional
             Other tensors to be augmented, by default None.
         **kwargs: dict, optional
-            Other arguments.
+            Additional keyword arguments.
 
         Returns
         -------
-        tuple of torch.Tensor
+        Tuple[torch.Tensor]
             Augmented tensors.
 
         """
@@ -185,13 +181,12 @@ class CutMix(Augmenter):
 
 
 def _make_intervals(lam: Tensor, siglen: int) -> np.ndarray:
-    """
-    Make intervals for cutmix.
+    """Make intervals for cutmix.
 
     Parameters
     ----------
     lam : torch.Tensor
-        Parameter ``lambda`` for cutmix, of shape (n,).
+        Parameter ``lambda`` for cutmix, of shape ``(n,)``.
     siglen : int
         Length of the signal.
 

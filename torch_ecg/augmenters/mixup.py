@@ -19,8 +19,23 @@ __all__ = [
 
 
 class Mixup(Augmenter):
-    """
-    Mixup augmentor.
+    """Mixup augmentor.
+
+    Parameters
+    ----------
+    fs : int, optional
+        Sampling frequency of the ECGs to be augmented.
+    alpha : numbers.Real, default 0.5
+        alpha parameter of the Beta distribution used in Mixup.
+    beta : numbers.Real, optional
+        beta parameter of the Beta distribution used in Mixup,
+        defaults to `alpha`.
+    prob : float, default 0.5
+        Probability of applying Mixup.
+    inplace : bool, default True
+        If True, ECG signal tensors will be modified inplace.
+    **kwargs : dict, optional
+        Additional keyword arguments, not used.
 
     Examples
     --------
@@ -51,25 +66,6 @@ class Mixup(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """Initialize the Mixup augmenter.
-
-        Parameters
-        ----------
-        fs : int, optional
-            Sampling frequency of the ECGs to be augmented.
-        alpha : real number, default 0.5
-            alpha parameter of the Beta distribution used in Mixup.
-        beta : real number, optional
-            beta parameter of the Beta distribution used in Mixup,
-            defaults to ``alpha``.
-        prob : float, default 0.5
-            Probability of applying Mixup.
-        inplace : bool, default True
-            If True, ECG signal tensors will be modified inplace.
-        **kwargs : dict, optional
-            Additional keyword arguments, not used.
-
-        """
         super().__init__()
         self.fs = fs
         self.alpha = alpha
@@ -90,10 +86,10 @@ class Mixup(Augmenter):
         Parameters
         ----------
         sig : torch.Tensor
-            Batched ECGs to be augmented, of shape (batch, lead, siglen).
+            Batched ECGs to be augmented, of shape ``(batch, lead, siglen)``.
         label : torch.Tensor
             Label tensor of the ECGs.
-        extra_tensors: sequence of torch.Tensor, optional
+        extra_tensors: Sequence[torch.Tensor], optional
             Not used, but kept for consistency with other augmenters.
         **kwargs : dict, optional
             Not used, but kept for consistency with other augmenters.
@@ -104,7 +100,7 @@ class Mixup(Augmenter):
             The augmented ECGs.
         label : torch.Tensor
             The augmented labels.
-        extra_tensors: sequence of torch.Tensor, optional
+        extra_tensors : Sequence[torch.Tensor], optional
             Unchanged extra tensors.
 
         """

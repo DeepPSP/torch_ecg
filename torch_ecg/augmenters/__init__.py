@@ -8,6 +8,7 @@ Augmenters are used to augment the training data.
 
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     AugmenterManager
     Augmenter

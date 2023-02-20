@@ -16,8 +16,22 @@ __all__ = [
 
 
 class RandomFlip(Augmenter):
-    """
-    Randomly flip the ECGs along the voltage axis.
+    """Randomly flip the ECGs along the voltage axis.
+
+    Parameters
+    ----------
+    fs : int, optional
+        Sampling frequency of the ECGs to be augmented
+    per_channel : bool, default True
+        Whether to flip each channel independently.
+    prob : float or Sequence[float], default ``[0.4, 0.2]``
+        Probability of performing flip,
+        the first probality is for the batch dimension,
+        the second probability is for the lead dimension.
+    inplace : bool, default True
+        If True, ECG signal tensors will be modified inplace.
+    kwargs : dict, optional
+        Additional keyword arguments.
 
     Examples
     --------
@@ -39,24 +53,6 @@ class RandomFlip(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """Initialize the RandomFlip augmenter
-
-        Parameters
-        ----------
-        fs : int, optional
-            Sampling frequency of the ECGs to be augmented
-        per_channel : bool, default True
-            Whether to flip each channel independently.
-        prob : sequence of float or float, default [0.4, 0.2]
-            Probability of performing flip,
-            the first probality is for the batch dimension,
-            the second probability is for the lead dimension.
-        inplace : bool, default True
-            If True, ECG signal tensors will be modified inplace
-        kwargs : dict, optional
-            Additional keyword arguments
-
-        """
         super().__init__()
         self.fs = fs
         self.per_channel = per_channel
@@ -77,29 +73,29 @@ class RandomFlip(Augmenter):
         *extra_tensors: Sequence[Tensor],
         **kwargs: Any
     ) -> Tuple[Tensor, ...]:
-        """Forward function of the RandomFlip augmenter
+        """Forward function of the RandomFlip augmenter.
 
         Parameters
         ----------
         sig : torch.Tensor
-            The ECGs to be augmented, of shape (batch, lead, siglen)
+            The ECGs to be augmented, of shape ``(batch, lead, siglen)``.
         label : torch.Tensor, optional
-            Label tensor of the ECGs,
-            not used, but kept for consistency with other augmenters
-        extra_tensors : sequence of torch.Tensors, optional
-            Not used, but kept for consistency with other augmenters
+            Label tensor of the ECGs.
+            Not used, but kept for consistency with other augmenters.
+        extra_tensors : Sequence[torch.Tensor], optional
+            Not used, but kept for consistency with other augmenters.
         kwargs : dict, optional
-            Additional keyword arguments,
-            not used, but kept for consistency with other augmenters
+            Additional keyword arguments.
+            Not used, but kept for consistency with other augmenters.
 
         Returns
         -------
         sig : torch.Tensor
-            The augmented ECGs
+            The augmented ECGs.
         label : torch.Tensor
-            The label tensor of the augmented ECGs, unchanged
-        extra_tensors : sequence of torch.Tensors, optional
-            If set in the input arguments, unchanged
+            The label tensor of the augmented ECGs, unchanged.
+        extra_tensors : Sequence[torch.Tensor], optional
+            Unchanged extra tensors.
 
         """
         batch, lead, siglen = sig.shape

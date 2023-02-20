@@ -27,7 +27,7 @@ class BandPass(PreProcessor):
     filter_order : int, optional
         Order of the bandpass filter.
     **kwargs : dict, optional
-        Other arguments for :class:`~torch_ecg._preprocessors.PreProcessor`.
+        Other arguments for :class:`PreProcessor`.
 
     Examples
     --------

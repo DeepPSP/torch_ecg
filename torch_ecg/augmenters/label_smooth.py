@@ -14,8 +14,20 @@ __all__ = [
 
 
 class LabelSmooth(Augmenter):
-    """
-    Label smoothing augmentation.
+    """Label smoothing augmentation.
+
+    Parameters
+    ----------
+    fs : int, optional
+        Sampling frequency of the ECGs to be augmented.
+    smoothing : float, default 0.1
+        The smoothing factor.
+    prob : float, default 0.5
+        Probability of applying label smoothing.
+    inplace : bool, default True
+        If True, the input tensor will be modified inplace.
+    **kwargs : dict, optional
+        Additional keyword arguments.
 
     Examples
     --------
@@ -37,22 +49,6 @@ class LabelSmooth(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """Initialize the LabelSmooth augmenter.
-
-        Parameters
-        ----------
-        fs : int, optional
-            Sampling frequency of the ECGs to be augmented.
-        smoothing : float, default 0.1
-            The smoothing factor.
-        prob : float, default 0.5
-            Probability of applying label smoothing.
-        inplace : bool, default True
-            If True, the input tensor will be modified inplace.
-        **kwargs : dict, optional
-            Additional keyword arguments.
-
-        """
         super().__init__()
         self.fs = fs
         self.smoothing = smoothing
@@ -72,12 +68,13 @@ class LabelSmooth(Augmenter):
         Parameters
         ----------
         sig : torch.Tensor
-            Batched ECGs to be augmented, of shape (batch, lead, siglen).
+            Batched ECGs to be augmented, of shape ``(batch, lead, siglen)``.
             Not used, but kept for compatibility with other augmenters.
         label : torch.Tensor
             The input label tensor,
-            of shape (batch_size, n_classes) or (batch_size, seq_len, n_classes).
-        extra_tensors : sequence of torch.Tensor, optional
+            of shape ``(batch_size, n_classes)``
+            or ``(batch_size, seq_len, n_classes)``.
+        extra_tensors : Sequence[torch.Tensor], optional
             Not used, but kept for consistency with other augmenters.
         **kwargs : dict, optional
             Not used, but kept for consistency with other augmenters.
@@ -86,10 +83,11 @@ class LabelSmooth(Augmenter):
         -------
         sig : torch.Tensor
             The input ECG tensor, unchanged.
-        label: torch.Tensor
+        label : torch.Tensor
             The output label tensor
-            of shape (batch_size, n_classes) or (batch_size, seq_len, n_classes).
-        extra_tensors: sequence of torch.Tensor, optional
+            of shape ``(batch_size, n_classes)``
+            or ``(batch_size, seq_len, n_classes)``.
+        extra_tensors : Sequence[torch.Tensor], optional
             Unchanged extra tensors.
 
         """

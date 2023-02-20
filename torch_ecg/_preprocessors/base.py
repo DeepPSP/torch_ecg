@@ -95,13 +95,13 @@ def preprocess_multi_lead_signal(
         Format of the multi-lead ECG signal,
         "channel_last" (alias "lead_last"), or
         "channel_first" (alias "lead_first").
-    bl_win : list of numbers.Real, optional
+    bl_win : List[numbers.Real], optional
         Window (units in second) of baseline removal
         using :meth:`~scipy.ndimage.median_filter`,
         the first is the shorter one, the second the longer one,
         a typical pair is ``[0.2, 0.6]``.
         If is None or empty, baseline removal will not be performed.
-    band_fs : list of numbers.Real, optional
+    band_fs : List[numbers.Real], optional
         Frequency band of the bandpass filter,
         a typical pair is ``[0.5, 45]``.
         Be careful when detecting paced rhythm.

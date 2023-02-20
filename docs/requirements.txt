@@ -1,5 +1,7 @@
 recommonmark
 nbsphinx
+sphinx-theme
+pydata-sphinx-theme
 sphinx-autobuild
 sphinx-rtd-theme
 sphinx-markdown-tables

@@ -17,9 +17,27 @@ __all__ = [
 
 
 class RandomRenormalize(Augmenter):
-    """
-    Randomly re-normalize the ECG tensor,
+    """Randomly re-normalize the ECG tensor,
     using the Z-score normalization method.
+
+    Parameters
+    ----------
+    mean : array_like, default ``[-0.05, 0.1]``
+        Range of mean value of the re-normalized signal, of shape ``(2,)``;
+        or range of mean values for each lead of the re-normalized signal,
+        of shape ``(lead, 2)``.
+    std : array_like, default ``[0.08, 0.32]``
+        Range of standard deviation of the re-normalized signal, of shape ``(2,)``;
+        or range of standard deviations for each lead of the re-normalized signal,
+        of shape ``(lead, 2)``.
+    per_channel : bool, default False
+        If True, re-normalization will be done per channel.
+    prob : float, default 0.5
+        Probability of applying the random re-normalization augmenter.
+    inplace : bool, default True
+        Whether to apply the random re-normalization augmenter in-place.
+    kwargs : dict, optional
+        Additional keyword arguments.
 
     Examples
     --------
@@ -42,28 +60,6 @@ class RandomRenormalize(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """Initialize the RandomRenormalize augmenter.
-
-        Parameters
-        ----------
-        mean : array_like, default [-0.05, 0.1]
-            Range of mean value of the re-normalized signal, of shape (2,);
-            or range of mean values for each lead of the re-normalized signal,
-            of shape (lead, 2).
-        std : array_like, default [0.08, 0.32]
-            Range of standard deviation of the re-normalized signal, of shape (2,);
-            or range of standard deviations for each lead of the re-normalized signal,
-            of shape (lead, 2).
-        per_channel : bool, default False
-            If True, re-normalization will be done per channel.
-        prob : float, default 0.5
-            Probability of applying the random re-normalization augmenter.
-        inplace : bool, default True
-            Whether to apply the random re-normalization augmenter in-place.
-        kwargs : dict, optional
-            Additional keyword arguments.
-
-        """
         super().__init__()
         self.mean = np.array(mean)
         self.mean_mean = self.mean.mean(axis=-1, keepdims=True)
@@ -89,11 +85,11 @@ class RandomRenormalize(Augmenter):
         Parameters
         ----------
         sig : torch.Tensor
-            The input ECG tensor, of shape (batch, lead, siglen).
+            The input ECG tensor, of shape ``(batch, lead, siglen)``.
         label : torch.Tensor, optional
             The input ECG label tensor.
             Not used, but kept for compatibility with other augmenters.
-        extra_tensors : sequence of torch.Tensor, optional,
+        extra_tensors : Sequence[torch.Tensor], optional,
             Not used, but kept for consistency with other augmenters.
         kwargs : dict, optional
             Not used, but kept for consistency with other augmenters.
@@ -104,7 +100,7 @@ class RandomRenormalize(Augmenter):
             The randomly re-normalized ECG tensor.
         label : torch.Tensor
             The label tensor of the augmented ECGs, unchanged.
-        extra_tensors: sequence of Tensors, optional,
+        extra_tensors: Sequence[torch.Tensor], optional,
             Unchanged extra tensors.
 
         """

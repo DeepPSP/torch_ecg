@@ -23,8 +23,24 @@ __all__ = [
 
 
 class StretchCompress(Augmenter):
-    """
-    Stretch-or-compress augmenter on ECG tensors.
+    """Stretch-or-compress augmenter on ECG tensors.
+
+    Rescaling the ECGs by a factor sampled from a normal distribution
+    along the time axis.
+
+    Parameters
+    ----------
+    ratio : numbers.Real, default 6
+        Mean ratio of the stretch or compress.
+        If it is in the interval[1, 100],
+        then it will be transformed to [0, 1].
+        The ratio of one batch element is sampled from a normal distribution.
+    prob : float, default 0.5
+        Probability of the augmenter to be applied.
+    inplace : bool, default True
+        If True, the input ECGs will be modified inplace.
+    kwargs : dict, optional
+        Additional keyword arguments.
 
     Example
     -------
@@ -44,22 +60,6 @@ class StretchCompress(Augmenter):
     def __init__(
         self, ratio: Real = 6, prob: float = 0.5, inplace: bool = True, **kwargs: Any
     ) -> None:
-        """Initialize the StretchCompress augmenter.
-
-        Parameters
-        ----------
-        ratio : real number, default 6
-            Mean ratio of the stretch or compress.
-            If it is in [1, 100], will be transformed to [0, 1].
-            The ratio of one batch element is sampled from a normal distribution
-        prob : float, default 0.5
-            Probability of the augmenter to be applied
-        inplace : bool, default True
-            If True, the input ECGs will be modified inplace,
-        kwargs : dict, optional
-            Additional keyword arguments.
-
-        """
         super().__init__()
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
@@ -80,21 +80,21 @@ class StretchCompress(Augmenter):
         ----------
         sig : torch.Tensor
             Batched ECGs to be stretched or compressed,
-            of shape (batch, lead, siglen).
-        labels : sequence of torch.Tensor, optional
+            of shape ``(batch, lead, siglen)``.
+        labels : Sequence[torch.Tensor], optional
             Label tensors of the ECGs,
-            If set, labels of ndim = 3, of shape (batch, label_len, channels)
+            If set, labels of ``ndim = 3``, of shape ``(batch, label_len, channels)``
             will be stretched or compressed.
-            ``siglen`` should be divisible by ``label_len``.
+            `siglen` should be divisible by `label_len`.
         kwargs : dict, optional
             Not used, but kept for consistency with other augmenters.
 
         Returns
         -------
         sig : torch.Tensor
-            The stretched or compressed ECG tensors
-        labels : sequence of torch.Tensor, optional
-            The stretched or compressed label tensors
+            The stretched or compressed ECG tensors.
+        labels : Sequence[torch.Tensor], optional
+            The stretched or compressed label tensors.
 
         """
         batch, lead, siglen = sig.shape
@@ -196,17 +196,18 @@ class StretchCompress(Augmenter):
         ----------
         sig : torch.Tensor
             Batched ECGs to be stretched or compressed,
-            of shape (batch, lead, siglen).
-        labels : sequence of torch.Tensor, optional
+            of shape ``(batch, lead, siglen)``.
+        labels : Sequence[torch.Tensor], optional
             Label tensors of the ECGs.
-            If set, should be of ndim 3, of shapes (batch, label_len, n_classes).
-            ``siglen`` should be divisible by ``label_len``.
+            If set, should be of ``ndim = 3``,
+            and of shapes ``(batch, label_len, n_classes)``.
+            `siglen` should be divisible by `label_len`.
 
         Returns
         -------
         sig : torch.Tensor
             The stretched or compressed ECG tensors.
-        labels : sequence of torch.Tensor, optional
+        labels : Sequence[torch.Tensor], optional
             The stretched or compressed label tensors.
 
         """
@@ -259,28 +260,29 @@ class StretchCompress(Augmenter):
 def _stretch_compress_one_batch_element(
     ratio: Real, sig: Tensor, *labels: Sequence[Tensor]
 ) -> Tensor:
-    """
-    Stretch or compress one batch element of the ECGs.
+    """Stretch or compress one batch element of the ECGs.
 
     Parameters
     ----------
-    ratio : Real
+    ratio : numbers.Real
         Ratio of the stretch/compress.
     sig : torch.Tensor
-        The ECGs to be stretched or compressed, of shape (1, lead, siglen)
-    labels : sequence of torch.Tensor, optional
+        The ECGs to be stretched or compressed,
+        of shape ``(1, lead, siglen)``.
+    labels : Sequence[torch.Tensor], optional
         Label tensors of the ECGs.
-        If set, each should be of ndim 3, of shape (1, label_len, channels).
+        If set, each should be of ``ndim = 3``,
+        and of shape ``(1, label_len, channels)``.
         ``siglen`` should be divisible by ``label_len``.
 
     Returns
     -------
     sig : torch.Tensor
         The stretched or compressed ECG tensor,
-        of shape (lead, siglen).
-    labels : sequence of torch.Tensor, optional
+        of shape ``(lead, siglen)``.
+    labels : Sequence[torch.Tensor], optional
         The stretched or compressed label tensors,
-        of shapes (label_len, channels).
+        of shapes ``(label_len, channels)``.
 
     """
     labels = list(labels)
@@ -362,10 +364,25 @@ def _stretch_compress_one_batch_element(
 
 
 class StretchCompressOffline(ReprMixin):
-    """
+    """Offline stretch-or-compress augmenter.
+
     Stretch-or-compress augmenter on
     orginal length-varying ECG signals (in the form of numpy arrays),
-    for the purpose of offline data generation
+    for the purpose of offline data generation.
+
+    Parameters
+    ----------
+    ratio : numbers.Real, default 6
+        Mean ratio of the stretch or compress.
+        If it is in the interval [1, 100],
+        then it will be transformed to [0, 1].
+        The ratio of one batch element is sampled from a normal distribution.
+    prob : float, default 0.5
+        Probability of the augmenter to be applied.
+    overlap : float, default 0.5
+        Overlap of offline generated data.
+    critical_overlap : float, default 0.85
+        Overlap of the critical region of the ECG.
 
     Example
     -------
@@ -389,22 +406,6 @@ class StretchCompressOffline(ReprMixin):
         overlap: float = 0.5,
         critical_overlap: float = 0.85,
     ) -> None:
-        """Initialize the StretchCompressOffline augmenter.
-
-        Parameters
-        ----------
-        ratio : real number, default 6
-            Mean ratio of the stretch or compress.
-            If it is in [1, 100], will be transformed to [0, 1].
-            The ratio of one batch element is sampled from a normal distribution.
-        prob : float, default 0.5
-            Probability of the augmenter to be applied.
-        overlap : float, default 0.5
-            Overlap of offline generated data.
-        critical_overlap : float, default 0.85
-            Overlap of the critical region of the ECG.
-
-        """
         self.prob = prob
         assert 0 <= self.prob <= 1, "Probability must be between 0 and 1"
         self.ratio = ratio
@@ -429,8 +430,7 @@ class StretchCompressOffline(ReprMixin):
         *labels: Sequence[np.ndarray],
         critical_points: Optional[Sequence[int]] = None,
     ) -> List[Tuple[Union[np.ndarray, int], ...]]:
-        """
-        Generate stretched or compressed segments from the ECGs.
+        """Generate stretched or compressed segments from the ECGs.
 
         Parameters
         ----------
@@ -438,13 +438,13 @@ class StretchCompressOffline(ReprMixin):
             Length of the ECG segments to be generated.
         sig : numpy.ndarray,
             THe ECGs to generate stretched or compressed segments,
-            of shape (lead, siglen).
+            of shape ``(lead, siglen)``.
         labels : numpy.ndarray, optional
-            Labels of the ECGs, of shape (label_len, channels).
+            Labels of the ECGs, of shape ``(label_len, channels)``.
             For example, when doing segmentation,
-            ``label_len`` should be divisible by ``siglen``,
-            ``channels`` should be the same as the number of classes.
-        critical_points : sequence of int, optional
+            `label_len` should be divisible by `siglen`,
+            `channels` should be the same as the number of classes.
+        critical_points : Sequence[int], optional
             Indices of the critical points of the ECG,
             usually have larger overlap by :attr:`self.critical_overlap`.
 
@@ -453,7 +453,7 @@ class StretchCompressOffline(ReprMixin):
         list
             list of generated segments,
             consisting segments of the form
-            (seg, label1, label2, ..., start_idx, end_idx).
+            ``(seg, label1, label2, ..., start_idx, end_idx)``.
 
         """
         siglen = sig.shape[1]
@@ -513,8 +513,7 @@ class StretchCompressOffline(ReprMixin):
         start_idx: Optional[int] = None,
         end_idx: Optional[int] = None,
     ) -> Tuple[Union[np.ndarray, int], ...]:
-        """
-        Internal function to generate a stretched or compressed segment.
+        """Internal function to generate a stretched or compressed segment.
 
         Parameters
         ----------
@@ -522,25 +521,25 @@ class StretchCompressOffline(ReprMixin):
             Length of the ECG segments to be generated.
         sig : numpy.ndarray
             ECGs to generate stretched or compressed segments,
-            of shape (lead, siglen).
+            of shape ``(lead, siglen)``.
         labels : numpy.ndarray, optional
-            lLbels of the ECGs, of shape (label_len, channels).
+            lLbels of the ECGs, of shape ``(label_len, channels)``.
             For example, when doing segmentation,
-            ``label_len`` should be divisible by ``siglen``,
-            ``channels`` should be the same as the number of classes.
+            `label_len` should be divisible by `siglen`,
+            `channels` should be the same as the number of classes.
         start_idx : int, optional
-            Start index of the segment in :attr:`sig`.
+            Start index of the segment in `sig`.
         end_idx : int, optional
-            End index of the segment in :attr:`sig`.
-            If :attr:`start_idx` is set, then :attr:`end_idx` is ignored.
-            At least one of :attr:`start_idx` and :attr:`end_idx` should be set.
+            End index of the segment in `sig`.
+            If `start_idx` is set, then `end_idx` is ignored.
+            At least one of `start_idx` and `end_idx` should be set.
 
         Returns
         -------
         tuple
             Tuple of generated segment,
             consisting of segments of the form
-            (seg, label1, label2, ..., start_idx, end_idx).
+            ``(seg, label1, label2, ..., start_idx, end_idx)``.
 
         """
         assert not all(

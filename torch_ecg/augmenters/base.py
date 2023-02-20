@@ -22,17 +22,17 @@ _augmenter_forward_doc = """Forward method of the augmenter.
         Parameters
         ----------
         sig : torch.Tensor
-            Batched ECGs to be augmented, of shape (batch, lead, siglen).
+            Batched ECGs to be augmented, of shape ``(batch, lead, siglen)``.
         label : torch.Tensor, optional
             Batched labels of the ECGs.
-        extra_tensors : sequence of torch.Tensor, optional
+        *extra_tensors : Sequence[torch.Tensor], optional
             Extra tensors to be augmented, e.g. masks for custom loss functions, etc.
         **kwargs: dict, optional
             Additional keyword arguments to be passed to the augmenters.
 
         Returns
         -------
-        sequence of torch.Tensor
+        Sequence[torch.Tensor]
             The augmented ECGs, labels, and optional extra tensors.
 
         """
@@ -41,7 +41,9 @@ _augmenter_forward_doc = """Forward method of the augmenter.
 class Augmenter(ReprMixin, nn.Module, ABC):
     """Base class for augmenters.
 
-    An Augmentor do data augmentation for ECGs and labels
+    An Augmentor performs data augmentation on the input ECGs,
+    labels, and optional extra tensors.
+
     """
 
     __name__ = "Augmentor"
@@ -66,8 +68,10 @@ class Augmenter(ReprMixin, nn.Module, ABC):
     def get_indices(
         self, prob: float, pop_size: int, scale_ratio: float = 0.1
     ) -> List[int]:
-        """
-        Compute a random list of indices in the range [0, pop_size-1].
+        """Get a list of indices to be selected.
+
+        A random list of indices in the range ``[0, pop_size-1]``
+        is generated, with the probability of each index to be selected.
 
         Parameters
         ----------
@@ -80,13 +84,13 @@ class Augmenter(ReprMixin, nn.Module, ABC):
 
         Returns
         -------
-        indices : list of int,
+        indices : List[int],
             A list of indices.
 
         TODO
         ----
-        Add parameter :attr:`min_dist` so that
-        any 2 selected indices are at least :attr:`min_dist` apart.
+        Add parameter `min_dist` so that
+        any 2 selected indices are at least `min_dist` apart.
 
         """
         k = DEFAULTS.RNG.normal(pop_size * prob, scale_ratio * pop_size)

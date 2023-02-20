@@ -24,8 +24,14 @@ __all__ = [
 
 
 class AugmenterManager(torch.nn.Module):
-    """
-    The ``torch`` ``Module`` to manage the augmenters
+    """The :class:`~torch.nn.Module` to manage the augmenters.
+
+    Parameters
+    ----------
+    aug : tuple of :class:`Augmenter`, optional
+        The augmenters to be added to the manager.
+    random : bool, default False
+        Whether to apply the augmenters in random order.
 
     Examples
     --------
@@ -60,23 +66,12 @@ class AugmenterManager(torch.nn.Module):
     def __init__(
         self, *augs: Optional[Tuple[Augmenter, ...]], random: bool = False
     ) -> None:
-        """Initialize the ``AugmenterManager``.
-
-        Parameters
-        ----------
-        aug : tuple of ``Augmenter``, optional
-            The augmenters to be added to the manager.
-        random : bool, default False
-            Whether to apply the augmenters in random order.
-
-        """
         super().__init__()
         self.random = random
         self._augmenters = list(augs)
 
     def _add_baseline_wander(self, **config: dict) -> None:
-        """
-        Add the baseline wander augmenter to the manager.
+        """Add the baseline wander augmenter to the manager.
 
         Parameters
         ----------
@@ -87,8 +82,7 @@ class AugmenterManager(torch.nn.Module):
         self._augmenters.append(BaselineWanderAugmenter(**config))
 
     def _add_label_smooth(self, **config: dict) -> None:
-        """
-        Add the label smooth augmenter to the manager.
+        """Add the label smooth augmenter to the manager.
 
         Parameters
         ----------
@@ -99,8 +93,7 @@ class AugmenterManager(torch.nn.Module):
         self._augmenters.append(LabelSmooth(**config))
 
     def _add_mixup(self, **config: dict) -> None:
-        """
-        Add the mixup augmenter to the manager.
+        """Add the mixup augmenter to the manager.
 
         Parameters
         ----------
@@ -111,8 +104,7 @@ class AugmenterManager(torch.nn.Module):
         self._augmenters.append(Mixup(**config))
 
     def _add_random_flip(self, **config: dict) -> None:
-        """
-        Add the random flip augmenter to the manager.
+        """Add the random flip augmenter to the manager.
 
         Parameters
         ----------
@@ -123,8 +115,7 @@ class AugmenterManager(torch.nn.Module):
         self._augmenters.append(RandomFlip(**config))
 
     def _add_random_masking(self, **config: dict) -> None:
-        """
-        Add the random masking augmenter to the manager.
+        """Add the random masking augmenter to the manager.
 
         Parameters
         ----------
@@ -135,8 +126,7 @@ class AugmenterManager(torch.nn.Module):
         self._augmenters.append(RandomMasking(**config))
 
     def _add_random_renormalize(self, **config: dict) -> None:
-        """
-        Add the random renormalize augmenter to the manager.
+        """Add the random renormalize augmenter to the manager.
 
         Parameters
         ----------
@@ -147,8 +137,7 @@ class AugmenterManager(torch.nn.Module):
         self._augmenters.append(RandomRenormalize(**config))
 
     def _add_stretch_compress(self, **config: dict) -> None:
-        """
-        Add the stretch compress augmenter to the manager.
+        """Add the stretch compress augmenter to the manager.
 
         Parameters
         ----------
@@ -202,19 +191,18 @@ class AugmenterManager(torch.nn.Module):
 
     @classmethod
     def from_config(cls, config: dict) -> "AugmenterManager":
-        """
-        Create an ``AugmenterManager`` from a configuration.
+        """Create an :class:`AugmenterManager` from a configuration.
 
         Parameters
         ----------
         config : dict
             The configuration of the augmenters,
-            better to be an `OrderedDict`
+            better to be an :class:`~collections.OrderedDict`.
 
         Returns
         -------
-        am : ``AugmenterManager``
-            A new instance of ``AugmenterManager``.
+        am : :class:`AugmenterManager`
+            A new instance of :class:`AugmenterManager`.
 
         """
         am = cls(random=config.get("random", False))
@@ -242,8 +230,7 @@ class AugmenterManager(torch.nn.Module):
         return am
 
     def rearrange(self, new_ordering: List[str]) -> None:
-        """
-        Rearrange the augmenters in the manager.
+        """Rearrange the augmenters in the manager.
 
         Parameters
         ----------

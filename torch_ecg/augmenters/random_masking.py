@@ -17,8 +17,25 @@ __all__ = [
 
 
 class RandomMasking(Augmenter):
-    """
-    Randomly mask ECGs with a probability.
+    """Randomly mask ECGs with a probability.
+
+    Parameters
+    ----------
+    fs : int
+        Sampling frequency of the ECGs to be augmented.
+    mask_value : numbers.Real, default 0.0
+        Value to mask with.
+    mask_width : Sequence[numbers.Real], default ``[0.08, 0.18]``
+        Width range of the masking window, with units in seconds
+    prob : numbers.Real or Sequence[numbers.Real], default ``[0.3, 0.15]``
+        Probabilities of masking ECG signals,
+        the first probality is for the batch dimension,
+        the second probability is for the lead dimension.
+        Note that 0.15 is approximately the proportion of QRS complexes in ECGs.
+    inplace : bool, default True
+        Whether to mask inplace or not.
+    kwargs : dict, optional
+        Additional keyword arguments.
 
     Examples
     --------
@@ -42,27 +59,6 @@ class RandomMasking(Augmenter):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """Initialize the RandomMasking augmenter.
-
-        Parameters
-        ----------
-        fs : int
-            Sampling frequency of the ECGs to be augmented.
-        mask_value : real number, default 0.0
-            Value to mask with.
-        mask_width : sequence of real numbers, default [0.08,0.18]
-            Width range of the masking window, with units in seconds
-        prob : sequence of real numbers or real number, default [0.3,0.15]
-            Probabilities of masking ECG signals,
-            the first probality is for the batch dimension,
-            the second probability is for the lead dimension.
-            Note that 0.15 is approximately the proportion of QRS complexes in ECGs.
-        inplace : bool, default True
-            Whether to mask inplace or not
-        kwargs : dict, optional
-            Additional keyword arguments
-
-        """
         super().__init__()
         self.fs = fs
         self.prob = prob
@@ -90,13 +86,13 @@ class RandomMasking(Augmenter):
         Parameters
         ----------
         sig : torch.Tensor
-            Batched ECGs to be augmented, of shape (batch, lead, siglen).
+            Batched ECGs to be augmented, of shape ``(batch, lead, siglen)``.
         label : torch.Tensor
             Label tensor of the ECGs.
             Not used, but kept for compatibility with other augmenters.
-        extra_tensors : sequence of torch.Tensor, optional
-            Not used, but kept for consistency with other augmenters
-        critical_points : sequence of sequences of int, optional
+        extra_tensors : Sequence[torch.Tensor], optional
+            Not used, but kept for consistency with other augmenters.
+        critical_points : Sequence[Sequence[int]], optional
             If given, random masking will be performed in windows centered at these points.
             This is useful for example when one wants to randomly mask QRS complexes.
         kwargs : dict, optional
@@ -105,10 +101,10 @@ class RandomMasking(Augmenter):
         Returns
         -------
         sig : torch.Tensor
-            The augmented ECGs, of shape (batch, lead, siglen).
+            The augmented ECGs, of shape ``(batch, lead, siglen)``.
         label : torch.Tensor
             Label tensor of the augmented ECGs, unchanged.
-        extra_tensors : sequence of torch.Tensor, optional
+        extra_tensors : Sequence[torch.Tensor], optional
             Unchanged extra tensors.
 
         """
