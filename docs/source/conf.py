@@ -76,6 +76,14 @@ autodoc_default_options = {
     "show-inheritance": True,
 }
 
+html_context = {
+    "display_github": True,  # Integrate GitHub
+    "github_user": "DeepPSP",  # Username
+    "github_repo": "torch_ecg",  # Repo name
+    "github_version": "master",  # Version
+    "conf_py_path": "/docs/source/",  # Path in the checkout to the docs root
+}
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -108,7 +116,13 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ["_static"]
+html_static_path = ["_static"]
+
+# These paths are either relative to html_static_path
+# or fully qualified paths (eg. https://...)
+html_css_files = [
+    "css/custom.css",
+]
 
 master_doc = "index"
 
