@@ -7,4 +7,5 @@ sphinx-rtd-theme
 sphinx-markdown-tables
 sphinx-copybutton
 sphinx-multiversion
+sphinxcontrib-napoleon
 numpydoc

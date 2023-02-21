@@ -94,6 +94,16 @@ html_sidebars = {"*": ["versions.html"]}
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+# Napoleon settings
+napoleon_custom_sections = [
+    "ABOUT",
+    "ISSUES",
+    "Usage",
+    "Citation",
+    "TODO",
+]
+# napoleon_custom_section_rename = False # True is default for backwards compatibility.
+
 
 # -- Options for HTML output -------------------------------------------------
 
