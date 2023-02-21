@@ -18,7 +18,7 @@ import tensorboardX
 import torch
 
 from ..cfg import DEFAULTS
-from ..utils.misc import ReprMixin, get_date_str, init_logger
+from ..utils.misc import ReprMixin, get_date_str, init_logger, add_docstring
 
 
 __all__ = [
@@ -31,13 +31,58 @@ __all__ = [
 ]
 
 
+_log_metrics_doc = """Log metrics.
+
+        Parameters
+        ----------
+        metrics : dict
+            The metrics to be logged.
+        step : int, optional
+            The number of (global) steps of training.
+        epoch: int, optional,
+            The epoch number of training.
+        part : str, optional
+            The part of the training data the metrics computed from,
+            can be "train" or "val" or "test", etc.
+
+        """
+
+_log_message_doc = """Log a message.
+
+        Parameters
+        ----------
+        msg : str
+            The message to be logged.
+        level : {logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL}, optional
+            The level of the message.
+
+        """
+
+_epoch_start_doc = """Message logged at the start of each epoch.
+
+        Parameters
+        ----------
+        epoch : int
+            The number of the epoch.
+
+        """
+
+_epoch_end_doc = """Actions to be performed at the end of each epoch.
+
+        Parameters
+        ----------
+        epoch : int
+            The number of the epoch.
+
+        """
+
+
 class BaseLogger(ReprMixin, ABC):
-    """
-    the abstract base class of all loggers
-    """
+    """The abstract base class of all loggers."""
 
     __name__ = "BaseLogger"
 
+    @add_docstring(_log_metrics_doc)
     @abstractmethod
     def log_metrics(
         self,
@@ -46,100 +91,66 @@ class BaseLogger(ReprMixin, ABC):
         epoch: Optional[int] = None,
         part: str = "train",
     ) -> None:
-        """
-        Parameters
-        ----------
-        metrics: dict,
-            the metrics to be logged
-        step: int, optional,
-            the number of (global) steps of training
-        epoch: int, optional,
-            the epoch number of training
-        part: str, optional,
-            the part of the training data the metrics computed from,
-            can be "train" or "val" or "test", etc.
-
-        """
         raise NotImplementedError
 
+    @add_docstring(_log_message_doc)
     @abstractmethod
     def log_message(self, msg: str, level: int = logging.INFO) -> None:
-        """
-        log a message
-
-        Parameters
-        ----------
-        msg: str,
-            the message to be logged
-        level: int, optional,
-            the level of the message,
-            can be logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
-
-        """
         raise NotImplementedError
 
     @abstractmethod
     def flush(self) -> None:
-        """ """
+        """Flush the logger."""
         raise NotImplementedError
 
     @abstractmethod
     def close(self) -> None:
-        """ """
+        """Close the logger."""
         raise NotImplementedError
 
     @classmethod
     @abstractmethod
     def from_config(cls, config: Dict[str, Any]) -> Any:
-        """ """
+        """Initialize the logger from a config dict."""
         raise NotImplementedError
 
+    @add_docstring(_epoch_start_doc)
     def epoch_start(self, epoch: int) -> None:
-        """
-        actions to be performed at the start of each epoch
-
-        Parameters
-        ----------
-        epoch: int,
-            the number of the epoch
-
-        """
         pass
 
+    @add_docstring(_epoch_end_doc)
     def epoch_end(self, epoch: int) -> None:
-        """
-        actions to be performed at the end of each epoch
-
-        Parameters
-        ----------
-        epoch: int,
-            the number of the epoch
-
-        """
         pass
 
     @property
     def log_dir(self) -> str:
-        """ """
+        """Directory to save the log file."""
         return self._log_dir
 
     @property
     @abstractmethod
     def filename(self) -> str:
-        """ """
+        """Filename of the log file."""
         raise NotImplementedError
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        extra keys to be displayed in the repr of the logger
-        """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return super().extra_repr_keys() + [
             "filename",
         ]
 
 
 class TxtLogger(BaseLogger):
-    """ """
+    """Logger that logs to a text file.
+
+    Parameters
+    ----------
+    log_dir : str or path.Path, optional
+        The directory to save the log file.
+    log_suffix : str, optional
+        The suffix of the log file.
+
+    """
 
     __name__ = "TxtLogger"
 
@@ -148,15 +159,6 @@ class TxtLogger(BaseLogger):
         log_dir: Optional[Union[str, Path]] = None,
         log_suffix: Optional[str] = None,
     ) -> None:
-        """
-        Parameters
-        ----------
-        log_dir: str or Path, optional,
-            the directory to save the log file
-        log_suffix: str, optional,
-            the suffix of the log file
-
-        """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         self._log_dir.mkdir(parents=True, exist_ok=True)
         if log_suffix is None:
@@ -167,6 +169,7 @@ class TxtLogger(BaseLogger):
         self.logger = init_logger(self.log_dir, self.log_file, verbose=1)
         self.step = -1
 
+    @add_docstring(_log_metrics_doc)
     def log_metrics(
         self,
         metrics: Dict[str, Union[Real, torch.Tensor]],
@@ -174,20 +177,6 @@ class TxtLogger(BaseLogger):
         epoch: Optional[int] = None,
         part: str = "train",
     ) -> None:
-        """
-        Parameters
-        ----------
-        metrics: dict,
-            the metrics to be logged
-        step: int, optional,
-            the number of (global) steps of training
-        epoch: int, optional,
-            the epoch number of training
-        part: str, optional,
-            the part of the training data the metrics computed from,
-            can be "train" or "val" or "test", etc.
-
-        """
         if step is not None:
             self.step = step
         else:
@@ -212,63 +201,34 @@ class TxtLogger(BaseLogger):
         )
         self.log_message(msg)
 
+    @add_docstring(_log_message_doc)
     def log_message(self, msg: str, level: int = logging.INFO) -> None:
-        """
-        log a message
-
-        Parameters
-        ----------
-        msg: str,
-            the message to be logged
-        level: int, optional,
-            the level of the message,
-            can be logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
-
-        """
         self.logger.log(level, msg)
 
     @property
     def long_sep(self) -> str:
-        """ """
         return "-" * 110
 
     @property
     def short_sep(self) -> str:
-        """ """
         return "-" * 50
 
+    @add_docstring(_epoch_start_doc)
     def epoch_start(self, epoch: int) -> None:
-        """
-        message logged at the start of each epoch
-
-        Parameters
-        ----------
-        epoch: int,
-            the number of the epoch
-
-        """
         self.logger.info(f"Train epoch_{epoch}:\n{self.long_sep}")
 
+    @add_docstring(_epoch_end_doc)
     def epoch_end(self, epoch: int) -> None:
-        """
-        message logged at the end of each epoch
-
-        Parameters
-        ----------
-        epoch: int,
-            the number of the epoch
-
-        """
         self.logger.info(f"{self.long_sep}\n")
 
     def flush(self) -> None:
-        """ """
+        """Flush the log file."""
         for h in self.logger.handlers:
             if hasattr(h, "flush"):
                 h.flush()
 
     def close(self) -> None:
-        """ """
+        """Close the log file."""
         for h in self.logger.handlers:
             h.close()
             self.logger.removeHandler(h)
@@ -276,17 +236,38 @@ class TxtLogger(BaseLogger):
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "TxtLogger":
-        """ """
+        """Create a logger from a config.
+
+        Parameters
+        ----------
+        config : dict
+            The config to create the logger.
+
+        Returns
+        -------
+        TxtLogger
+            The instance of the created logger.
+
+        """
         return cls(config.get("log_dir", None), config.get("log_suffix", None))
 
     @property
     def filename(self) -> str:
-        """ """
+        """Filename of the log file."""
         return str(self.log_dir / self.log_file)
 
 
 class CSVLogger(BaseLogger):
-    """ """
+    """Logger that logs to a CSV file.
+
+    Parameters
+    ----------
+    log_dir : str or path.Path, optional
+        The directory to save the log file.
+    log_suffix : str, optional
+        The suffix of the log file.
+
+    """
 
     __name__ = "CSVLogger"
 
@@ -295,15 +276,6 @@ class CSVLogger(BaseLogger):
         log_dir: Optional[Union[str, Path]] = None,
         log_suffix: Optional[str] = None,
     ) -> None:
-        """
-        Parameters
-        ----------
-        log_dir: str or Path, optional,
-            the directory to save the log file
-        log_suffix: str, optional,
-            the suffix of the log file
-
-        """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         self._log_dir.mkdir(parents=True, exist_ok=True)
         if log_suffix is None:
@@ -315,6 +287,7 @@ class CSVLogger(BaseLogger):
         self.step = -1
         self._flushed = True
 
+    @add_docstring(_log_metrics_doc)
     def log_metrics(
         self,
         metrics: Dict[str, Union[Real, torch.Tensor]],
@@ -322,20 +295,6 @@ class CSVLogger(BaseLogger):
         epoch: Optional[int] = None,
         part: str = "train",
     ) -> None:
-        """
-        Parameters
-        ----------
-        metrics: dict,
-            the metrics to be logged
-        step: int, optional,
-            the number of (global) steps of training
-        epoch: int, optional,
-            the epoch number of training
-        part: str, optional,
-            the part of the training data the metrics computed from,
-            can be "train" or "val" or "test", etc.
-
-        """
         if step is not None:
             self.step = step
         else:
@@ -360,33 +319,53 @@ class CSVLogger(BaseLogger):
         pass
 
     def flush(self) -> None:
-        """ """
+        """Flush the log file."""
         if not self._flushed:
             self.logger.to_csv(self.filename, quoting=csv.QUOTE_NONNUMERIC, index=False)
             self._flushed = True
 
     def close(self) -> None:
-        """ """
+        """Close the log file."""
         self.flush()
 
     def __del__(self):
-        """ """
         self.flush()
         del self
 
     @classmethod
-    def from_config(cls, config: Dict[str, Any]) -> "TxtLogger":
-        """ """
+    def from_config(cls, config: Dict[str, Any]) -> "CSVLogger":
+        """Create a logger from a config.
+
+        Parameters
+        ----------
+        config : dict
+            The config to create the logger.
+
+        Returns
+        -------
+        CSVLogger
+            The instance of the created logger.
+
+        """
         return cls(config.get("log_dir", None), config.get("log_suffix", None))
 
     @property
     def filename(self) -> str:
-        """ """
+        """Filename of the log file."""
         return str(self.log_dir / self.log_file)
 
 
 class TensorBoardXLogger(BaseLogger):
-    """ """
+    """Logger that logs to a TensorBoardX file.
+
+    Parameters
+    ----------
+    log_dir : str or path.Path, optional
+        The directory to save the log file.
+    log_suffix : str, optional
+        The suffix of the log file.
+
+    """
 
     __name__ = "TensorBoardXLogger"
 
@@ -395,15 +374,6 @@ class TensorBoardXLogger(BaseLogger):
         log_dir: Optional[Union[str, Path]] = None,
         log_suffix: Optional[str] = None,
     ) -> None:
-        """
-        Parameters
-        ----------
-        log_dir: str, optional,
-            the directory to save the log file
-        log_suffix: str, optional,
-            the suffix of the log file
-
-        """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         self._log_dir.mkdir(parents=True, exist_ok=True)
         self.logger = tensorboardX.SummaryWriter(
@@ -412,6 +382,7 @@ class TensorBoardXLogger(BaseLogger):
         self.log_file = self.logger.file_writer.event_writer._ev_writer._file_name
         self.step = -1
 
+    @add_docstring(_log_metrics_doc)
     def log_metrics(
         self,
         metrics: Dict[str, Union[Real, torch.Tensor]],
@@ -419,20 +390,6 @@ class TensorBoardXLogger(BaseLogger):
         epoch: Optional[int] = None,
         part: str = "train",
     ) -> None:
-        """
-        Parameters
-        ----------
-        metrics: dict,
-            the metrics to be logged
-        step: int, optional,
-            the number of (global) steps of training
-        epoch: int, optional,
-            the epoch number of training
-        part: str, optional,
-            the part of the training data the metrics computed from,
-            can be "train" or "val" or "test", etc.
-
-        """
         if step is not None:
             self.step = step
         else:
@@ -446,21 +403,33 @@ class TensorBoardXLogger(BaseLogger):
         pass
 
     def flush(self) -> None:
-        """ """
+        """Flush the log file."""
         self.logger.flush()
 
     def close(self) -> None:
-        """ """
+        """Close the log file."""
         self.logger.close()
 
     @classmethod
-    def from_config(cls, config: Dict[str, Any]) -> "TxtLogger":
-        """ """
+    def from_config(cls, config: Dict[str, Any]) -> "TensorBoardXLogger":
+        """Create a logger from a config.
+
+        Parameters
+        ----------
+        config : dict
+            The config to create the logger.
+
+        Returns
+        -------
+        TensorBoardXLogger
+            The instance of the created logger.
+
+        """
         return cls(config.get("log_dir", None), config.get("log_suffix", None))
 
     @property
     def filename(self) -> str:
-        """ """
+        """Filename of the log file."""
         return str(self.log_dir / self.log_file)
 
 
@@ -530,7 +499,19 @@ class TensorBoardXLogger(BaseLogger):
 
 
 class LoggerManager(ReprMixin):
-    """ """
+    """Manager of loggers.
+
+    This class manages multiple loggers and provides a unified interface to
+    log metrics and messages.
+
+    Parameters
+    ----------
+    log_dir : str or path.Path, optional
+        The directory to save the log file.
+    log_suffix : str, optional
+        The suffix of the log file.
+
+    """
 
     __name__ = "LoggerManager"
 
@@ -539,29 +520,20 @@ class LoggerManager(ReprMixin):
         log_dir: Optional[Union[str, Path]] = None,
         log_suffix: Optional[str] = None,
     ) -> None:
-        """
-        Parameters
-        ----------
-        log_dir: str or Path, optional,
-            the directory to save the log file
-        log_suffix: str, optional,
-            the suffix of the log file
-
-        """
         self._log_dir = Path(log_dir or DEFAULTS.log_dir)
         self._log_suffix = log_suffix
         self._loggers = []
 
     def _add_txt_logger(self) -> None:
-        """ """
+        """Add a text logger to the manager."""
         self.loggers.append(TxtLogger(self._log_dir, self._log_suffix))
 
     def _add_csv_logger(self) -> None:
-        """ """
+        """Add a csv logger to the manager."""
         self.loggers.append(CSVLogger(self._log_dir, self._log_suffix))
 
     def _add_tensorboardx_logger(self) -> None:
-        """ """
+        """Add a tensorboardx logger to the manager."""
         self.loggers.append(TensorBoardXLogger(self._log_dir, self._log_suffix))
 
     # def _add_wandb_logger(self, **kwargs: dict) -> None:
@@ -569,6 +541,7 @@ class LoggerManager(ReprMixin):
     #     raise NotImplementedError("NOT tested yet!")
     # self.loggers.append(WandbLogger(self._log_dir, self._log_suffix, **kwargs))
 
+    @add_docstring(_log_metrics_doc)
     def log_metrics(
         self,
         metrics: Dict[str, Union[Real, torch.Tensor]],
@@ -576,101 +549,62 @@ class LoggerManager(ReprMixin):
         epoch: Optional[int] = None,
         part: str = "train",
     ) -> None:
-        """
-        Parameters
-        ----------
-        metrics: dict,
-            the metrics to be logged
-        step: int, optional,
-            the number of (global) steps of training
-        epoch: int, optional,
-            the epoch number of training
-        part: str, optional,
-            the part of the training data the metrics computed from,
-            can be "train" or "val" or "test", etc.
-
-        """
         for lgs in self.loggers:
             lgs.log_metrics(metrics, step, epoch, part)
 
+    @add_docstring(_log_message_doc)
     def log_message(self, msg: str, level: int = logging.INFO) -> None:
-        """
-        log a message
-
-        Parameters
-        ----------
-        msg: str,
-            the message to be logged
-        level: int, optional,
-            the level of the message,
-            can be logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL
-
-        """
         for lgs in self.loggers:
             lgs.log_message(msg, level)
 
+    @add_docstring(_epoch_start_doc)
     def epoch_start(self, epoch: int) -> None:
-        """
-        action at the start of an epoch
-
-        Parameters
-        ----------
-        epoch: int,
-            the epoch number
-
-        """
         for lgs in self.loggers:
             lgs.epoch_start(epoch)
 
+    @add_docstring(_epoch_end_doc)
     def epoch_end(self, epoch: int) -> None:
-        """
-        action at the end of an epoch
-
-        Parameters
-        ----------
-        epoch: int,
-            the epoch number
-
-        """
         for lgs in self.loggers:
             lgs.epoch_end(epoch)
 
     def flush(self) -> None:
-        """ """
+        """Flush the loggers."""
         for lgs in self.loggers:
             lgs.flush()
 
     def close(self) -> None:
-        """ """
+        """Close the loggers."""
         for lgs in self.loggers:
             lgs.close()
 
     @property
     def loggers(self) -> List[BaseLogger]:
-        """ """
+        """List of loggers."""
         return self._loggers
 
     @property
     def log_dir(self) -> str:
-        """ """
+        """Directory to save the log file."""
         return self._log_dir
 
     @property
     def log_suffix(self) -> str:
-        """ """
+        """Suffix of the log file."""
         return self._log_suffix
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "LoggerManager":
-        """
+        """Create a logger manager from a configuration.
+
         Parameters
         ----------
-        config: dict,
-            the configuration of the logger manager
+        config : dict
+            The configuration of the logger manager.
 
         Returns
         -------
         LoggerManager
+            The instance of the created logger manager.
 
         """
         lm = cls(config.get("log_dir", None), config.get("log_suffix", None))
@@ -686,9 +620,7 @@ class LoggerManager(ReprMixin):
         return lm
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        extra keys to be displayed in the repr of the logger
-        """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return super().extra_repr_keys() + [
             "loggers",
         ]

@@ -46,12 +46,12 @@ def normalize(
         signal to be normalized, assumed to have shape (..., n_leads, siglen)
     method : str, default "z-score"
         Normalization method, one of "z-score", "min-max", "naive", case insensitive
-    mean : real number or array_like, default 0.0
+    mean : numbers.Real or array_like, default 0.0
         Mean value of the normalized signal,
         or mean values for each lead of the normalized signal, if `method` is "z-score";
         mean values to be subtracted from the original signal, if `method` is "naive";
         useless if `method` is "min-max"
-    std : real number or array_like, default 1.0
+    std : numbers.Real or array_like, default 1.0
         Standard deviation of the normalized signal,
         or standard deviations for each lead of the normalized signal, if `method` is "z-score";
         std to be divided from the original signal, if `method` is "naive";

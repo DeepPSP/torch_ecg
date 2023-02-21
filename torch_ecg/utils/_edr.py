@@ -38,10 +38,10 @@ def phs_edr(
         sampling frequency of the signal
     rpeaks: array-like,
         indices of R peaks in the signal
-    winL_t: real number, default 40,
+    winL_t: numbers.Real, default 40,
         left length of the window at R peaks for the computation of the area of a QRS complex,
         with units in milliseconds
-    winR_t: real number, default 40,
+    winR_t: numbers.Real, default 40,
         right length of the window at R peaks for the computation of the area of a QRS complex,
         with units in milliseconds
     return_with_time: bool, default True,

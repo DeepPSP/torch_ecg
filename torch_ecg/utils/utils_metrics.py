@@ -1,5 +1,4 @@
-"""
-utilities for computing metrics.
+"""Utilities for computing metrics.
 
 NOTE that only the widely used metrics are implemented here,
 challenge (e.g. CinC, CPSC series) specific metrics are not included.
@@ -35,24 +34,24 @@ def top_n_accuracy(
     outputs: Union[np.ndarray, Tensor],
     n: Union[int, Sequence[int]] = 1,
 ) -> Union[float, Dict[str, float]]:
-    """
-    Compute top n accuracy.
+    """Compute top n accuracy.
 
     Parameters
     ----------
-    labels: np.ndarray or Tensor,
-        labels of class indices,
-        of shape (batch_size,) or (batch_size, d_1, ..., d_m)
-    outputs: np.ndarray or Tensor,
-        predicted probabilities, of shape (batch_size, num_classes) or (batch_size, d_1, ..., d_m, num_classes)
-        of shape (batch_size, num_classes) or (batch_size, num_classes, d_1, ..., d_m)
-    n: int or list of int,
-        top n to be considered
+    labels : numpy.ndarray or torch.Tensor
+        Labels of class indices,
+        of shape ``(batch_size,)`` or ``(batch_size, d_1, ..., d_m)``.
+    outputs : numpy.ndarray or torch.Tensor
+        Predicted probabilities, of shape ``(batch_size, num_classes)``
+        or ``(batch_size, d_1, ..., d_m, num_classes)``
+        or ``(batch_size, num_classes, d_1, ..., d_m)``.
+    n : int or list of int
+        Top n to be considered.
 
     Returns
     -------
-    acc: float or dict of float,
-        top n accuracy
+    acc : float or dict of float
+        Top n accuracy
 
     Examples
     --------
@@ -95,26 +94,27 @@ def confusion_matrix(
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
 ) -> np.ndarray:
-    """
-    Compute a binary confusion matrix, where the columns are expert labels and rows are classifier labels.
+    """Compute a binary confusion matrix
+
+    The columns are ground truth labels and rows are predicted labels.
 
     Parameters
     ----------
-    labels: np.ndarray or Tensor,
-        binary labels, of shape: (n_samples, n_classes)
-        or indices of each label class, of shape: (n_samples,)
-    outputs: np.ndarray or Tensor,
-        binary outputs, of shape: (n_samples, n_classes)
-        or indices of each class predicted, of shape: (n_samples,)
-    num_classes: int, optional,
-        number of classes,
-        if `labels` and `outputs` are both of shape (n_samples,),
+    labels : numpy.ndarray or torch.Tensor
+        Binary labels, of shape ``(n_samples, n_classes)``,
+        or indices of each label class, of shape ``(n_samples,)``.
+    outputs : numpy.ndarray or torch.Tensor
+        Binary outputs, of shape ``(n_samples, n_classes)``,
+        or indices of each class predicted, of shape ``(n_samples,)``.
+    num_classes : int, optional
+        Number of classes.
+        If `labels` and `outputs` are both of shape ``(n_samples,)``,
         then `num_classes` must be specified.
 
     Returns
     -------
-    cm: np.ndarray,
-        confusion matrix, of shape: (n_classes, n_classes)
+    cm : numpy.ndarray
+        Confusion matrix, of shape ``(n_classes, n_classes)``.
 
     """
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
@@ -142,27 +142,27 @@ def one_vs_rest_confusion_matrix(
     outputs: Union[np.ndarray, Tensor],
     num_classes: Optional[int] = None,
 ) -> np.ndarray:
-    """
-    Compute binary one-vs-rest confusion matrices,
-    where the columns are expert labels and rows are classifier labels.
+    """Compute binary one-vs-rest confusion matrices.
+
+    Columns are ground truth labels and rows are predicted labels.
 
     Parameters
     ----------
-    labels: np.ndarray or Tensor,
-        binary labels, of shape: (n_samples, n_classes)
-        or indices of each label class, of shape: (n_samples,)
-    outputs: np.ndarray or Tensor,
-        binary outputs, of shape: (n_samples, n_classes)
-        or indices of each class predicted, of shape: (n_samples,)
-    num_classes: int, optional,
-        number of classes,
-        if `labels` and `outputs` are both of shape (n_samples,),
+    labels : numpy.ndarray or torch.Tensor
+        Binary labels, of shape ``(n_samples, n_classes)``,
+        or indices of each label class, of shape ``(n_samples,)``.
+    outputs : numpy.ndarray or torch.Tensor
+        Binary outputs, of shape ``(n_samples, n_classes)``,
+        or indices of each class predicted, of shape ``(n_samples,)``.
+    num_classes : int, optional
+        number of classes.
+        If `labels` and `outputs` are both of shape ``(n_samples,)``,
         then `num_classes` must be specified.
 
     Returns
     -------
-    ovr_cm: np.ndarray,
-        one-vs-rest confusion matrix, of shape: (n_classes, 2, 2)
+    ovr_cm : numpy.ndarray,
+        One-vs-rest confusion matrix, of shape ``(n_classes, 2, 2)``.
 
     """
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
@@ -200,23 +200,23 @@ _METRICS_FROM_CONFUSION_MATRIX_PARAMS = """
 
     Parameters
     ----------
-    labels: numpy.ndarray or torch.Tensor
-        Binary labels, of shape: (n_samples, n_classes),
-        or indices of each label class, of shape: (n_samples,)
-    outputs: numpy.ndarray or torch.Tensor
-        Probability outputs, of shape: (n_samples, n_classes),
-        or binary outputs, of shape: (n_samples, n_classes),
-        or indices of each class predicted, of shape: (n_samples,)
-    num_classes: int, optional
-        Number of classes,
-        if ``labels`` and ``outputs`` are both of shape (n_samples,),
-        then ``num_classes`` must be specified.
-    weights: numpy.ndarray or torch.Tensor, optional
-        Weights for each class, of shape: (n_classes,),
+    labels : numpy.ndarray or torch.Tensor
+        Binary labels, of shape ``(n_samples, n_classes)``,
+        or indices of each label class, of shape ``(n_samples,)``.
+    outputs : numpy.ndarray or torch.Tensor
+        Probability outputs, of shape ``(n_samples, n_classes)``,
+        or binary outputs, of shape ``(n_samples, n_classes)``,
+        or indices of each class predicted, of shape ``(n_samples,)``.
+    num_classes : int, optional
+        Number of classes.
+        If `labels` and `outputs` are both of shape ``(n_samples,)``,
+        then `num_classes` must be specified.
+    weights : numpy.ndarray or torch.Tensor, optional
+        Weights for each class, of shape ``(n_classes,)``,
         used to compute macro {metric}.
-    thr: float, default: 0.5
+    thr : float, default: 0.5
         Threshold for binary classification,
-        valid only if ``outputs`` is of shape (n_samples, n_classes).
+        valid only if `outputs` is of shape ``(n_samples, n_classes)``.
 """
 
 
@@ -235,7 +235,7 @@ def metrics_from_confusion_matrix(
     Returns
     -------
     metrics : dict
-        Metrics computed from the one-vs-rest confusion matrix
+        Metrics computed from the one-vs-rest confusion matrix.
 
     Examples
     --------
@@ -455,10 +455,10 @@ def f_measure(
     """
     Returns
     -------
-    macro_f1: float,
-        macro F1-measure
-    f1: np.ndarray,
-        F1-measures for each class, of shape: (n_classes,)
+    macro_f1 : float
+        Macro-averaged F1-measure.
+    f1 : numpy.ndarray
+        F1-measures for each class, of shape: ``(n_classes,)``.
 
     """
     m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
@@ -482,10 +482,10 @@ def sensitivity(
     """
     Returns
     -------
-    macro_sens: float,
-        macro sensitivity
-    sens: np.ndarray,
-        sensitivities for each class, of shape: (n_classes,)
+    macro_sens : float
+        Macro-averaged sensitivity.
+    sens : numpy.ndarray
+        Sensitivities for each class, of shape ``(n_classes,)``.
 
     """
     m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
@@ -515,10 +515,10 @@ def precision(
     """
     Returns
     -------
-    macro_prec: float,
-        macro precision
-    prec: np.ndarray,
-        precisions for each class, of shape: (n_classes,)
+    macro_prec : float
+        Macro-averaged precision.
+    prec : numpy.ndarray
+        Precisions for each class, of shape ``(n_classes,)``.
 
     """
     m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
@@ -546,10 +546,10 @@ def specificity(
     """
     Returns
     -------
-    macro_spec: float,
-        macro specificity
-    spec: np.ndarray,
-        specificities for each class, of shape: (n_classes,)
+    macro_spec : float
+        Macro-averaged specificity.
+    spec : numpy.ndarray
+        Specificities for each class, of shape ``(n_classes,)``.
 
     """
     m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights, thr)
@@ -578,14 +578,14 @@ def auc(
     """
     Returns
     -------
-    macro_auroc: float,
-        macro AUROC
-    macro_auprc: float,
-        macro AUPRC
-    auprc: np.ndarray,
-        AUPRCs for each class, of shape: (n_classes,)
-    auprc: np.ndarray,
-        AUPRCs for each class, of shape: (n_classes,)
+    macro_auroc : float
+        Macro-averaged AUROC.
+    macro_auprc : float
+        Macro-averaged AUPRC.
+    auprc : numpy.ndarray
+        AUPRCs for each class, of shape ``(n_classes,)``.
+    auprc : numpy.ndarray
+        AUPRCs for each class, of shape ``(n_classes,)``.
 
     """
     if outputs.ndim == 1:
@@ -613,10 +613,10 @@ def accuracy(
     """
     Returns
     -------
-    macro_acc: float,
-        the macro accuracy
-    acc: np.ndarray,
-        accuracies for each class, of shape: (n_classes,)
+    macro_acc : float
+        Macro-averaged accuracy.
+    acc: numpy.ndarray,
+        Accuracies for each class, of shape ``(n_classes,)``.
 
     """
     m = metrics_from_confusion_matrix(labels, outputs, num_classes, weights)
@@ -635,20 +635,22 @@ def QRS_score(
 
     Parameters
     ----------
-    rpeaks_truths: sequence,
-        sequence of ground truths of rpeaks locations (indices) from multiple records
-    rpeaks_preds: sequence,
-        predictions of ground truths of rpeaks locations (indices) for multiple records
-    fs: real number,
-        sampling frequency of ECG signal
-    thr: float, default 0.075,
-        threshold for a prediction to be truth positive,
-        with units in seconds
+    rpeaks_truths : array_like
+        array of ground truths of rpeaks locations (indices)
+        from multiple records.
+    rpeaks_preds : array_like
+        predictions of ground truths of rpeaks locations (indices)
+        for multiple records.
+    fs : numbers.Real
+        Sampling frequency of ECG signal
+    thr : float, default 0.075
+        Threshold for a prediction to be truth positive,
+        with units in seconds.
 
     Returns
     -------
-    rec_acc: float,
-        accuracy of predictions
+    rec_acc : float
+        Accuracy of predictions.
 
     """
     assert len(rpeaks_truths) == len(
@@ -704,27 +706,27 @@ def cls_to_bin(
     num_classes: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Convert categorical (of shape (n_samples,)) labels and outputs
-    to binary (of shape (n_samples, n_classes)) labels and outputs if applicable.
+    Convert categorical (of shape ``(n_samples,)``) labels and outputs
+    to binary (of shape ``(n_samples, n_classes)``) labels and outputs if applicable.
 
     Parameters
     ----------
-    labels: ndarray or Tensor,
-        categorical labels of shape (n_samples,)
-        or binary labels of shape (n_samples, n_classes)
-    outputs: ndarray or Tensor,
-        categorical outputs of shape (n_samples,)
-        or binary outputs of shape (n_samples, n_classes)
-    num_classes: int, optional,
-        number of classes,
-        required if both `labels` and `outputs` are categorical
+    labels : numpy.ndarray or torch.Tensor
+        Categorical labels of shape ``(n_samples,)``,
+        or binary labels of shape ``(n_samples, n_classes)``.
+    outputs : numpy.ndarray or torch.Tensor
+        Categorical outputs of shape ``(n_samples,)``,
+        or binary outputs of shape ``(n_samples, n_classes)``.
+    num_classes : int, optional
+        Number of classes.
+        Required if both `labels` and `outputs` are categorical.
 
     Returns
     -------
-    labels: ndarray,
-        binary labels of shape (n_samples, n_classes)
-    outputs: ndarray,
-        binary outputs of shape (n_samples, n_classes)
+    labels : numpy.ndarray
+        Binary labels of shape ``(n_samples, n_classes)``.
+    outputs: numpy.ndarray
+        Binary outputs of shape ``(n_samples, n_classes)``.
 
     """
     if isinstance(labels, Tensor):
@@ -748,20 +750,19 @@ def cls_to_bin(
 
 
 def _cls_to_bin(cls: np.ndarray, shape: Tuple[int]) -> np.ndarray:
-    """
-    Convert categorical array to binary array.
+    """Convert categorical array to binary array.
 
     Parameters
     ----------
-    cls: ndarray,
-        categorical array of shape (n_samples,)
+    cls : numpy.ndarray
+        Categorical array of shape ``(n_samples,)``.
     shape: tuple,
-        shape of binary array
+        Shape of binary array.
 
     Returns
     -------
-    bin_: ndarray,
-        binarized array of `cls` of shape (n_samples, n_classes)
+    numpy.ndarray
+        Binarized array of `cls` of shape ``(n_samples, n_classes)``.
 
     """
     bin_ = np.zeros(shape)
@@ -779,40 +780,41 @@ def compute_wave_delineation_metrics(
     tol: Real = 0.15,
 ) -> Dict[str, Dict[str, float]]:
     f"""
-
-    compute metrics for the task of ECG wave delineation
+    Compute metrics for the task of ECG wave delineation
     (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
-    for multiple evaluations
+    for multiple evaluations.
 
     Parameters
     ----------
-    truth_masks: sequence of ndarray,
-        a sequence of ground truth masks,
-        each of which can also hold multiple masks from different samples (differ by record or by lead).
-        Each mask is of shape (n_channels, n_timesteps) or (n_timesteps, n_channels)
-    pred_masks: sequence of ndarray,
-        predictions corresponding to `truth_masks`,
+    truth_masks : Sequence[numpy.ndarray]
+        A sequence of ground truth masks,
+        each of which can also hold multiple masks from different samples
+        (differ by record or by lead).
+        Each mask is of shape ``(n_channels, n_timesteps)``
+        or ``(n_timesteps, n_channels)``.
+    pred_masks : Sequence[numpy.ndarray]
+        Predictions corresponding to `truth_masks`,
         of the same shapes.
-    class_map: dict,
-        class map, mapping names to waves to numbers from 0 to n_classes-1,
+    class_map : dict
+        Class map, mapping names to waves to numbers from 0 to n_classes-1,
         the keys should contain {", ".join([f'"{item}"' for item in ECGWaveFormNames])}.
-    fs: real number,
-        sampling frequency of the signal corresponding to the masks,
+    fs : numbers.Real
+        Sampling frequency of the signal corresponding to the masks,
         used to compute the duration of each waveform,
-        hence the error and standard deviations of errors
-    mask_format: str, default "channel_first",
-        format of the mask, one of the following:
-        'channel_last' (alias 'lead_last'), or
-        'channel_first' (alias 'lead_first')
-    tol: float, default 0.15,
-        tolerance for the duration of the waveform,
-        with units in seconds
+        and thus the error and standard deviations of errors.
+    mask_format : str, default "channel_first"
+        Format of the mask, one of the following:
+        "channel_last" (alias "lead_last"), or
+        "channel_first" (alias "lead_first")
+    tol : float, default 0.15
+        Tolerance for the duration of the waveform,
+        with units in seconds.
 
     Returns
     -------
-    scorings: dict,
-        with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
-        each scoring is a dict consisting of the following metrics:
+    scorings : dict
+        scorings of onsets and offsets of pwaves, qrs complexes, twaves.
+        Each scoring is a dict consisting of the following metrics:
         sensitivity, precision, f1_score, mean_error, standard_deviation
 
     """
@@ -852,32 +854,32 @@ def compute_metrics_waveform(
     tol: Real = 0.15,
 ) -> Dict[str, Dict[str, float]]:
     """
-
-    compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
-    of evaluations on a multiple samples (differ by records, or leads)
+    compute the sensitivity, precision, f1_score, mean error
+    and standard deviation of the mean errors,
+    of evaluations on a multiple samples (differ by records, or leads).
 
     Parameters
     ----------
-    truth_waveforms: sequence of sequence of `ECGWaveForm`s,
-        the ground truth,
-        each element is a sequence of `ECGWaveForm`s from the same sample
-    pred_waveforms: sequence of sequence of `ECGWaveForm`s,
-        the predictions corresponding to `truth_waveforms`,
-        each element is a sequence of `ECGWaveForm`s from the same sample
-    fs: real number,
-        sampling frequency of the signal corresponding to the waveforms,
+    truth_waveforms : Sequence[Sequence[ECGWaveForm]]
+        The ground truth,
+        each element is a sequence of `ECGWaveForm`s from the same sample.
+    pred_waveforms : Sequence[Sequence[ECGWaveForm]]
+        The predictions corresponding to `truth_waveforms`,
+        each element is a sequence of :class:`ECGWaveForm` from the same sample.
+    fs : numbers.Real
+        Sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
-        hence the error and standard deviations of errors
-    tol: float, default 0.15,
-        tolerance for the duration of the waveform,
-        with units in seconds
+        and thus the error and standard deviations of errors.
+    tol : float, default 0.15
+        Tolerance for the duration of the waveform,
+        with units in seconds.
 
     Returns
     -------
-    scorings: dict,
-        with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
-        each scoring is a dict consisting of the following metrics:
-        sensitivity, precision, f1_score, mean_error, standard_deviation
+    scorings : dict
+        Scorings of onsets and offsets of pwaves, qrs complexes, twaves.
+        Each scoring is a dict consisting of the following metrics:
+        sensitivity, precision, f1_score, mean_error, standard_deviation.
 
     """
     truth_positive = dict(
@@ -959,29 +961,29 @@ def _compute_metrics_waveform(
     tol: Real = 0.15,
 ) -> Dict[str, Dict[str, float]]:
     """
-
-    compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
+    compute the sensitivity, precision, f1_score, mean error
+    and standard deviation of the mean errors,
     of evaluations on a single sample (the same record, the same lead)
 
     Parameters
     ----------
-    truths: sequence of `ECGWaveForm`s,
-        the ground truth
-    preds: sequence of `ECGWaveForm`s,
-        the predictions corresponding to `truths`,
-    fs: real number,
-        sampling frequency of the signal corresponding to the waveforms,
+    truths : Sequence[ECGWaveForm]
+        The ground truth
+    preds : Sequence[ECGWaveForm]
+        The predictions corresponding to `truths`.
+    fs : numbers.Real
+        Sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
-        hence the error and standard deviations of errors
-    tol: float, default 0.15,
-        tolerance for the duration of the waveform,
-        with units in seconds
+        and thus the error and standard deviations of errors.
+    tol : float, default 0.15,
+        Tolerance for the duration of the waveform,
+        with units in seconds.
 
     Returns
     -------
-    scorings: dict,
-        with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
-        each scoring is a dict consisting of the following metrics:
+    scorings : dict
+        Scorings of onsets and offsets of pwaves, qrs complexes, twaves.
+        Each scoring is a dict consisting of the following metrics:
         truth_positive, false_negative, false_positive, errors,
         sensitivity, precision, f1_score, mean_error, standard_deviation
 
@@ -1043,32 +1045,35 @@ def _compute_metrics_waveform(
 def _compute_metrics_base(
     truths: Sequence[Real], preds: Sequence[Real], fs: Real, tol: Real = 0.15
 ) -> Dict[str, float]:
-    r"""
+    r"""Base function for computing the metrics of the onset and offset of a waveform.
 
     Parameters
     ----------
-    truths: sequence of real numbers,
-        ground truth of indices of corresponding critical points
-    preds: sequence of real numbers,
-        predicted indices of corresponding critical points
-    fs: real number,
-        sampling frequency of the signal corresponding to the critical points,
+    truths : Sequence[numbers.Real]
+        Ground truth of indices of corresponding critical points.
+    preds : Sequence[numbers.Real]
+        Predicted indices of corresponding critical points.
+    fs : numbers.Real
+        Sampling frequency of the signal corresponding to the critical points,
         used to compute the duration of each waveform,
-        hence the error and standard deviations of errors
-    tol: float, default 0.15,
-        tolerance for the duration of the waveform,
-        with units in seconds
+        and thus the error and standard deviations of errors.
+    tol : float, default 0.15
+        Tolerance for the duration of the waveform,
+        with units in seconds.
 
     Returns
     -------
-    tuple of metrics:
+    tuple
+        Tuple of metrics:
         truth_positive, false_negative, false_positive, errors,
-        sensitivity, precision, f1_score, mean_error, standard_deviation
-        see ref. \[[1](#ref1)\]
+        sensitivity, precision, f1_score, mean_error, standard_deviation.
+        See [#1]_ for more details.
 
     References
     ----------
-    1. <a name="ref1"></a> Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov. "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics. Springer, Cham, 2019.
+    .. [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov.
+           "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics.
+           Springer, Cham, 2019.
 
     """
     _tolerance = round(tol * fs)

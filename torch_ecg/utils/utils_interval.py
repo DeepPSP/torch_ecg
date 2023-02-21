@@ -137,7 +137,7 @@ def in_interval(
 
     Parameters
     ----------
-    val: real number,
+    val: numbers.Real,
         the value to be checked
     interval: Interval,
         the interval to be checked
@@ -189,7 +189,7 @@ def in_generalized_interval(
 
     Parameters
     ----------
-    val: real number,
+    val: numbers.Real,
         the value to be checked
     generalized_interval: union of `Interval`s,
         the interval to be checked
@@ -508,11 +508,11 @@ def get_optimal_covering(
         the total interval that the covering is picked from
     to_cover: list,
         a list of intervals to cover
-    min_len: real number,
+    min_len: numbers.Real,
         minimun length (positive) of the intervals of the covering
-    split_threshold: real number,
+    split_threshold: numbers.Real,
         minumun distance (positive) of intervals of the covering
-    isolated_point_dist_threshold: real number, default 0.0,
+    isolated_point_dist_threshold: numbers.Real, default 0.0,
         the minimum distance (non-negative) of isolated points in `to_cover`
         to the interval boundaries of the interval containing the point in the covering.
         If one wants the isolated points to be centered in the interval containing the point,
@@ -786,7 +786,7 @@ def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
     ----------
     sublist: Interval,
         a sublist
-    tot_rng: real number,
+    tot_rng: numbers.Real,
         the total range
 
     Returns
@@ -831,7 +831,7 @@ def interval_len(interval: Interval) -> Real:
 
     Returns
     -------
-    itv_len: real number,
+    itv_len: numbers.Real,
         the `length` of `interval`
 
     Examples
@@ -861,7 +861,7 @@ def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
 
     Returns
     -------
-    gi_len: real number,
+    gi_len: numbers.Real,
         the `length` of `generalized_interval`
 
     Examples

@@ -413,16 +413,16 @@ class ECGWaveForm:
     ----------
     name: str,
         name of the wave, e.g. "N", "p", "t", etc.
-    onset: real number,
+    onset: numbers.Real,
         onset index of the wave,
         np.nan for unknown/unannotated onset
-    offset: real number,
+    offset: numbers.Real,
         offset index of the wave,
         np.nan for unknown/unannotated offset
-    peak: real number,
+    peak: numbers.Real,
         peak index of the wave,
         np.nan for unknown/unannotated peak
-    duration: real number,
+    duration: numbers.Real,
         duration of the wave, with units in milliseconds,
         np.nan for unknown/unannotated duration
 
@@ -479,7 +479,7 @@ def masks_to_waveforms(
     class_map: dict,
         class map, mapping names to waves to numbers from 0 to n_classes-1,
         the keys should contain "pwave", "qrs", "twave"
-    fs: real number,
+    fs: numbers.Real,
         sampling frequency of the signal corresponding to the `masks`,
         used to compute the duration of each waveform
     mask_format: str, default "channel_first",
@@ -641,9 +641,9 @@ def uniform(low: Real, high: Real, num: int) -> List[float]:
 
     Parameters
     ----------
-    low: real number,
+    low: numbers.Real,
         lower bound of the interval of the uniform distribution
-    high: real number,
+    high: numbers.Real,
         upper bound of the interval of the uniform distribution
     num: int,
         number of random numbers to generate
@@ -819,15 +819,15 @@ def generate_weight_mask(
     ----------
     target_mask: ndarray,
         the target mask, assumed to be 1d and binary
-    fg_weight: real number,
+    fg_weight: numbers.Real,
         foreground (value 1) weight, usually > 1
-    fs: real number,
+    fs: numbers.Real,
         sampling frequency of the signal
-    reduction: real number,
+    reduction: numbers.Real,
         reduction ratio of the mask w.r.t. the signal
-    radius: real number,
+    radius: numbers.Real,
         radius of the boundary, with units in seconds
-    boundary_weight: real number,
+    boundary_weight: numbers.Real,
         weight for the boundaries (positions where values change) of the target map
     plot: bool, default False,
         if True, target_mask and the result weight_mask will be plotted

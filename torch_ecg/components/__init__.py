@@ -20,6 +20,7 @@ Output classes
 --------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     ClassificationOutput
     MultiLabelClassificationOutput
@@ -32,6 +33,7 @@ Loggers
 -------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     LoggerManager
 
@@ -39,6 +41,7 @@ Metrics
 -------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     ClassificationMetrics
     RPeaksDetectionMetrics
@@ -48,6 +51,7 @@ Trainer
 -------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     BaseTrainer
 

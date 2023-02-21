@@ -10,6 +10,7 @@ Neural network auxiliary functions and classes
 ----------------------------------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     extend_predictions
     compute_output_shape
@@ -29,6 +30,7 @@ Signal processing functions
 ---------------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     smooth
     resample_irregular_timeseries
@@ -44,6 +46,7 @@ Data operations
 ---------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     get_mask
     class_weight_to_sample_weight
@@ -60,6 +63,7 @@ Interval operations
 -------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     overlaps
     validate_interval
@@ -81,6 +85,7 @@ Metrics computations
 --------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     top_n_accuracy
     confusion_matrix
@@ -93,6 +98,7 @@ Decorators and Mixins
 ---------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     add_docstring
     remove_parameters_returns_from_docstring
@@ -107,6 +113,7 @@ Path operations
 ---------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     get_record_list_recursive3
 
@@ -114,6 +121,7 @@ String operations
 -----------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     dict_to_str
     str2bool
@@ -124,6 +132,7 @@ Miscellaneous
 -------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     init_logger
     list_sum

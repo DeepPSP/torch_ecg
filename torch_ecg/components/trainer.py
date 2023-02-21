@@ -1,7 +1,6 @@
 """
 Abstract base class for trainers,
-in order to replace the functions for classes in the training pipelines
-
+in order to replace the functions for classes in the training pipelines.
 """
 
 import logging
@@ -16,8 +15,7 @@ from typing import Dict, List, Optional, Tuple, Union
 import numpy as np
 import torch
 from torch import nn, optim
-from torch.utils.data import DataLoader
-from torch.utils.data.dataset import Dataset
+from torch.utils.data import DataLoader, Dataset
 from tqdm.auto import tqdm
 
 from ..augmenters import AugmenterManager
@@ -38,9 +36,47 @@ __all__ = [
 
 
 class BaseTrainer(ReprMixin, ABC):
-    """
-    Abstract base class for trainers,
-    in order to replace the functions for classes in the training pipelines.
+    """Abstract base class for trainers.
+
+    A trainer is a class that contains the training pipeline,
+    and is responsible for training a model.
+
+    Parameters
+    ----------
+    model : torch.nn.Module
+        The model to be trained
+    dataset_cls : torch.utils.data.Dataset
+        The class of dataset to be used for training,
+        `dataset_cls` should be inherited from :class:`~torch.utils.data.Dataset`,
+        and be initialized via :code:`dataset_cls(config, training=True)`.
+    model_config : dict
+        The configuration of the model,
+        used to keep a record in the checkpoints.
+    train_config : dict
+        The configuration of the training,
+        including configurations for the data loader, for the optimization, etc.
+        Will also be recorded in the checkpoints.
+        `train_config` should at least contain the following keys:
+            - "monitor": str
+            - "loss": str
+            - "n_epochs": int
+            - "batch_size": int
+            - "learning_rate": float
+            - "lr_scheduler": str
+                - "lr_step_size": int, optional, depending on the scheduler
+                - "lr_gamma": float, optional, depending on the scheduler
+                - "max_lr": float, optional, depending on the scheduler
+            - "optimizer": str
+                - "decay": float, optional, depending on the optimizer
+                - "momentum": float, optional, depending on the optimizer
+    collate_fn : callable, optional
+        The collate function for the data loader,
+        defaults to :meth:`default_collate_fn`.
+    device : torch.device, optional
+        The device to be used for training.
+    lazy : bool, default False
+        Whether to initialize the data loader lazily.
+
     """
 
     __name__ = "BaseTrainer"
@@ -63,44 +99,6 @@ class BaseTrainer(ReprMixin, ABC):
         device: Optional[torch.device] = None,
         lazy: bool = False,
     ) -> None:
-        """
-        Parameters
-        ----------
-        model: Module,
-            the model to be trained
-        dataset_cls: Dataset,
-            the class of dataset to be used for training,
-            `dataset_cls` should be inherited from `torch.utils.data.Dataset`,
-            and be initialized like `dataset_cls(config, training=True)`,
-        model_config: dict,
-            the configuration of the model,
-            used to keep a record in the checkpoints
-        train_config: dict,
-            the configuration of the training,
-            including configurations for the data loader, for the optimization, etc.
-            will also be recorded in the checkpoints.
-            `train_config` should at least contain the following keys:
-                "monitor": str,
-                "loss": str,
-                "n_epochs": int,
-                "batch_size": int,
-                "learning_rate": float,
-                "lr_scheduler": str,
-                    "lr_step_size": int, optional, depending on the scheduler
-                    "lr_gamma": float, optional, depending on the scheduler
-                    "max_lr": float, optional, depending on the scheduler
-                "optimizer": str,
-                    "decay": float, optional, depending on the optimizer
-                    "momentum": float, optional, depending on the optimizer
-        collate_fn: callable, optional,
-            the collate function for the data loader,
-            defaults to `default_collate_fn`
-        device: torch.device, optional,
-            the device to be used for training
-        lazy: bool, default False,
-            whether to initialize the data loader lazily
-
-        """
         self.model = model
         if type(self.model).__name__ in [
             "DataParallel",
@@ -140,7 +138,14 @@ class BaseTrainer(ReprMixin, ABC):
         self.epoch_loss = 0
 
     def train(self) -> OrderedDict:
-        """ """
+        """Train the model.
+
+        Returns
+        -------
+        best_state_dict : OrderedDict
+            The state dict of the best model.
+
+        """
         self._setup_optimizer()
 
         self._setup_scheduler()
@@ -286,13 +291,12 @@ class BaseTrainer(ReprMixin, ABC):
         return self.best_state_dict
 
     def train_one_epoch(self, pbar: tqdm) -> None:
-        """
-        train one epoch, and update the progress bar
+        """Train one epoch, and update the progress bar
 
         Parameters
         ----------
-        pbar: tqdm,
-            the progress bar for training
+        pbar : tqdm
+            The progress bar for training.
 
         """
         for epoch_step, data in enumerate(self.train_loader):
@@ -346,21 +350,21 @@ class BaseTrainer(ReprMixin, ABC):
     @property
     @abstractmethod
     def batch_dim(self) -> int:
-        """
-        batch dimension, usually 0,
-        but can be 1 for some models, e.g. RR_LSTM
+        """The batch dimension
+
+        Usually 0, but can be 1 for some models, e.g. :class:`~torch_ecg.models.RR_LSTM`.
         """
         raise NotImplementedError
 
     @property
     @abstractmethod
     def extra_required_train_config_fields(self) -> List[str]:
-        """ """
+        """Extra required fields in `train_config`."""
         raise NotImplementedError
 
     @property
     def required_train_config_fields(self) -> List[str]:
-        """ """
+        """Required fields in `train_config`."""
         return [
             "classes",
             # "monitor",  # can be None
@@ -373,41 +377,44 @@ class BaseTrainer(ReprMixin, ABC):
         ] + self.extra_required_train_config_fields
 
     def _validate_train_config(self) -> None:
-        """ """
+        """Validate the `train_config`.
+
+        Check if all required fields are present.
+        """
         for field in self.required_train_config_fields:
             if field not in self.train_config:
                 raise ValueError(f"{field} is missing in train_config!")
 
     @property
     def save_prefix(self) -> str:
+        """The prefix of the saved model name."""
         return f"{self._model.__name__}_epoch"
 
     @property
     def train_config(self) -> CFG:
-        """ """
         return self._train_config
 
     @abstractmethod
     def run_one_step(self, *data: Tuple[torch.Tensor, ...]) -> Tuple[torch.Tensor, ...]:
-        """
-        run one step of training on one batch of data,
+        """Run one step of training on one batch of data.
 
         Parameters
         ----------
-        data: tuple of Tensors,
-            the data to be processed for training one step (batch),
+        data : Tuple[torch.Tensor]
+            The data to be processed for training one step (batch),
             should be of the following order:
-            signals, labels, *extra_tensors
+            ``signals, labels, *extra_tensors``.
 
         Returns
         -------
-        tuple of Tensors,
-            the output of the model for one step (batch) data,
-            along with labels and extra tensors,
-            should be of the following order:
-            preds, labels, *extra_tensors,
-            preds usually are NOT the logits,
-            but tensors before fed into `sigmoid` or `softmax` to get the logits
+        Tuple[torch.Tensor]
+            The output of the model for one step (batch) data,
+            along with labels and extra tensors.
+            Should be of the following order:
+            ``preds, labels, *extra_tensors``.
+            `preds` usually are NOT the logits,
+            but tensors before fed into :meth:`~torch.sigmoid`
+            or :meth:`~torch.softmax` to get the logits.
 
         """
         raise NotImplementedError
@@ -415,31 +422,29 @@ class BaseTrainer(ReprMixin, ABC):
     @torch.no_grad()
     @abstractmethod
     def evaluate(self, data_loader: DataLoader) -> Dict[str, float]:
-        """
-        do evaluation on the given data loader
+        """Do evaluation on the given data loader.
 
         Parameters
         ----------
-        data_loader: DataLoader,
-            the data loader to evaluate on
+        data_loader : torch.utils.data.DataLoader
+            The data loader to evaluate on.
 
         Returns
         -------
-        dict,
-            the evaluation results (metrics)
+        dict
+            The evaluation results (metrics).
 
         """
         raise NotImplementedError
 
     def _update_lr(self, eval_res: Optional[dict] = None) -> None:
-        """finished, NOT checked,
-
-        update learning rate using lr_scheduler, perhaps based on the eval_res
+        """Update learning rate using lr_scheduler,
+        perhaps based on the `eval_res`.
 
         Parameters
         ----------
-        eval_res: dict,
-            the evaluation results (metrics)
+        eval_res : dict, optional
+            The evaluation results (metrics).
 
         """
         if self.train_config.lr_scheduler.lower() == "none":
@@ -460,11 +465,12 @@ class BaseTrainer(ReprMixin, ABC):
             self.scheduler.step()
 
     def _setup_from_config(self, train_config: dict) -> None:
-        """
+        """Setup the trainer from the training configuration.
+
         Parameters
         ----------
-        train_config: dict,
-            training configuration
+        train_config : dict
+            The training configuration.
 
         """
         _default_config = CFG(deepcopy(self.__DEFATULT_CONFIGS__))
@@ -500,17 +506,17 @@ class BaseTrainer(ReprMixin, ABC):
         self._setup_augmenter_manager()
 
     def extra_log_suffix(self) -> str:
-        """ """
+        """Extra suffix for the log file name."""
         return f"{self._model.__name__}_{self.train_config.optimizer}_LR_{self.lr}_BS_{self.batch_size}"
 
     def _setup_log_manager(self) -> None:
-        """ """
+        """Setup the log manager."""
         config = {"log_suffix": self.extra_log_suffix()}
         config.update(self.train_config)
         self.log_manager = LoggerManager.from_config(config=config)
 
     def _setup_directories(self) -> None:
-        """ """
+        """Setup the directories for saving checkpoints and logs."""
         if not self.train_config.get("model_dir", None):
             self._train_config.model_dir = self.train_config.checkpoints
         self._train_config.model_dir = Path(self._train_config.model_dir)
@@ -518,7 +524,7 @@ class BaseTrainer(ReprMixin, ABC):
         self.train_config.model_dir.mkdir(parents=True, exist_ok=True)
 
     def _setup_callbacks(self) -> None:
-        """ """
+        """Setup the callbacks."""
         self._train_config.monitor = self.train_config.get("monitor", None)
         if self.train_config.monitor is None:
             assert (
@@ -540,7 +546,7 @@ class BaseTrainer(ReprMixin, ABC):
             )
 
     def _setup_augmenter_manager(self) -> None:
-        """ """
+        """Setup the augmenter manager."""
         self.augmenter_manager = AugmenterManager.from_config(config=self.train_config)
 
     @abstractmethod
@@ -549,15 +555,14 @@ class BaseTrainer(ReprMixin, ABC):
         train_dataset: Optional[Dataset] = None,
         val_dataset: Optional[Dataset] = None,
     ) -> None:
-        """
-        setup the dataloaders for training and validation
+        """Setup the dataloaders for training and validation.
 
         Parameters
         ----------
-        train_dataset: Dataset, optional,
-            the training dataset
-        val_dataset: Dataset, optional,
-            the validation dataset
+        train_dataset : torch.utils.data.Dataset, optional
+            The training dataset.
+        val_dataset : torch.utils.data.Dataset, optional
+            The validation dataset
 
         Examples
         --------
@@ -603,7 +608,7 @@ class BaseTrainer(ReprMixin, ABC):
         return 0
 
     def _setup_optimizer(self) -> None:
-        """ """
+        """Setup the optimizer."""
         if self.train_config.optimizer.lower() == "adam":
             optimizer_kwargs = get_kwargs(optim.Adam)
             optimizer_kwargs.update(
@@ -647,7 +652,7 @@ class BaseTrainer(ReprMixin, ABC):
             )
 
     def _setup_scheduler(self) -> None:
-        """ """
+        """Setup the learning rate scheduler."""
         if (
             self.train_config.lr_scheduler is None
             or self.train_config.lr_scheduler.lower() == "none"
@@ -687,7 +692,7 @@ class BaseTrainer(ReprMixin, ABC):
             )
 
     def _setup_criterion(self) -> None:
-        """ """
+        """Setup the loss function."""
         loss_kw = self.train_config.get("loss_kw", {})
         for k, v in loss_kw.items():
             if isinstance(v, torch.Tensor):
@@ -717,16 +722,17 @@ class BaseTrainer(ReprMixin, ABC):
             )
 
     def _check_model_config_compatability(self, model_config: dict) -> bool:
-        """
+        """Check if `model_config` is compatible with the current model configuration.
+
         Parameters
         ----------
-        model_config: dict,
-            model configuration from elsewhere (e.g. from a checkpoint),
-            which should be compatible with the current model configuration
+        model_config : dict
+            Model configuration from elsewhere (e.g. from a checkpoint),
+            which should be compatible with the current model configuration.
 
         Returns
         -------
-        bool,
+        bool
             True if compatible, False otherwise
 
         """
@@ -735,14 +741,17 @@ class BaseTrainer(ReprMixin, ABC):
     def resume_from_checkpoint(self, checkpoint: Union[str, dict]) -> None:
         """NOT finished, NOT checked,
 
-        resume a training process from a checkpoint
+        Resume a training process from a checkpoint.
 
         Parameters
         ----------
-        checkpoint: str or dict,
-            if is str, the path of the checkpoint, which is a `.pth.tar` file containing a dict,
-            `checkpoint` should contain "model_state_dict", "optimizer_state_dict", "model_config", "train_config", "epoch"
-            to resume a training process
+        checkpoint : str or dict
+            If it is str, then it is the path of the checkpoint,
+            which is a ``.pth.tar`` file containing a dict.
+            `checkpoint` should contain at least
+            "model_state_dict", "optimizer_state_dict",
+            "model_config", "train_config", "epoch"
+            to resume a training process.
 
         """
         if isinstance(checkpoint, str):
@@ -770,11 +779,12 @@ class BaseTrainer(ReprMixin, ABC):
         # TODO: resume optimizer, etc.
 
     def save_checkpoint(self, path: str) -> None:
-        """
+        """Save the current state of the trainer to a checkpoint.
+
         Parameters
         ----------
-        path: str,
-            path to save the checkpoint
+        path : str
+            Path to save the checkpoint
 
         """
         torch.save(
@@ -789,13 +799,7 @@ class BaseTrainer(ReprMixin, ABC):
         )
 
     def extra_repr_keys(self) -> List[str]:
-        """
-        Returns
-        -------
-        list of str,
-            extra keys to display in the string representation of the trainer
-
-        """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "train_config",
         ]

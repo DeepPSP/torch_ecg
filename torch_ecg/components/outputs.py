@@ -29,83 +29,94 @@ __all__ = [
 
 
 _KNOWN_ISSUES = """
-    Known Issues
-    ------------
-    - fields of type `dict` are not well supported due to the limitations of the base class `CFG`, for example:{}
+    NOTE
+    ----
+    Known issues:
+        - fields of type `dict` are not well supported due to the limitations of the base class `CFG`, for example
+
+        .. code-block:: python
+
+        {}
     """
 _ClassificationOutput_ISSUE_EXAMPLE = """
-    >>> output = ClassificationOutput(classes=["AF", "N", "SPB"], pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})
-    >>> output
-    {'classes': ['AF', 'N', 'SPB'],
-        'prob': array([[1., 1., 1.]]),
-        'pred': array([[1., 1., 1.]]),
-        'd': {'d': 1}}
-    >>> output.d  # has to access via `output["d"]`
-    AttributeError: 'ClassificationOutput' object has no attribute 'd'
+            >>> output = ClassificationOutput(classes=["AF", "N", "SPB"], pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})
+            >>> output
+            {'classes': ['AF', 'N', 'SPB'],
+                'prob': array([[1., 1., 1.]]),
+                'pred': array([[1., 1., 1.]]),
+                'd': {'d': 1}}
+            >>> output.d  # has to access via `output["d"]`
+            AttributeError: 'ClassificationOutput' object has no attribute 'd'
     """
 _MultiLabelClassificationOutput_ISSUE_EXAMPLE = """
-    >>> output = MultiLabelClassificationOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})
-    >>> output
-    {'classes': ['AF', 'N', 'SPB'],
-        'prob': array([[1., 1., 1.]]),
-        'pred': array([[1., 1., 1.]]),
-        'thr': 0.5,
-        'd': {'d': 1}}
-    >>> output.d  # has to access via `output["d"]`
-    AttributeError: 'MultiLabelClassificationOutput' object has no attribute 'd'
+            >>> output = MultiLabelClassificationOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3)), prob=np.ones((1,3)), d={"d":1})
+            >>> output
+            {'classes': ['AF', 'N', 'SPB'],
+                'prob': array([[1., 1., 1.]]),
+                'pred': array([[1., 1., 1.]]),
+                'thr': 0.5,
+                'd': {'d': 1}}
+            >>> output.d  # has to access via `output["d"]`
+            AttributeError: 'MultiLabelClassificationOutput' object has no attribute 'd'
     """
 _SequenceTaggingOutput_ISSUE_EXAMPLE = """
-    >>> output = SequenceTaggingOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})
-    >>> output
-    {'classes': ['AF', 'N', 'SPB'],
-        'prob': array([[[1., 1., 1.],
-                [1., 1., 1.],
-                [1., 1., 1.]]]),
-        'pred': array([[[1., 1., 1.],
-                [1., 1., 1.],
-                [1., 1., 1.]]]),
-        'thr': 0.5,
-        'd': {'d': 1}}
-    >>> output.d  # has to access via `output["d"]`
-    AttributeError: 'SequenceTaggingOutput' object has no attribute 'd'
+            >>> output = SequenceTaggingOutput(classes=["AF", "N", "SPB"], thr=0.5, pred=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})
+            >>> output
+            {'classes': ['AF', 'N', 'SPB'],
+                'prob': array([[[1., 1., 1.],
+                        [1., 1., 1.],
+                        [1., 1., 1.]]]),
+                'pred': array([[[1., 1., 1.],
+                        [1., 1., 1.],
+                        [1., 1., 1.]]]),
+                'thr': 0.5,
+                'd': {'d': 1}}
+            >>> output.d  # has to access via `output["d"]`
+            AttributeError: 'SequenceTaggingOutput' object has no attribute 'd'
     """
 _WaveDelineationOutput_ISSUE_EXAMPLE = """
-    >>> output = WaveDelineationOutput(classes=["N", "P", "Q",], thr=0.5, mask=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})
-    >>> output
-    {'classes': ['AF', 'N', 'SPB'],
-        'prob': array([[[1., 1., 1.],
-                [1., 1., 1.],
-                [1., 1., 1.]]]),
-        'mask': array([[[1., 1., 1.],
-                [1., 1., 1.],
-                [1., 1., 1.]]]),
-        'd': {'d': 1}}
-    >>> output.d  # has to access via `output["d"]`
-    AttributeError: 'WaveDelineationOutput' object has no attribute 'd'
+            >>> output = WaveDelineationOutput(classes=["N", "P", "Q",], thr=0.5, mask=np.ones((1,3,3)), prob=np.ones((1,3,3)), d={"d":1})
+            >>> output
+            {'classes': ['AF', 'N', 'SPB'],
+                'prob': array([[[1., 1., 1.],
+                        [1., 1., 1.],
+                        [1., 1., 1.]]]),
+                'mask': array([[[1., 1., 1.],
+                        [1., 1., 1.],
+                        [1., 1., 1.]]]),
+                'd': {'d': 1}}
+            >>> output.d  # has to access via `output["d"]`
+            AttributeError: 'WaveDelineationOutput' object has no attribute 'd'
     """
 _RPeaksDetectionOutput_ISSUE_EXAMPLE = """
-    >>> output = RPeaksDetectionOutput(rpeak_indices=[[2]], thr=0.5, prob=np.ones((1,3,3)), d={"d":1})
-    >>> output
-    {'rpeak_indices': [[2]],
-        'prob': array([[[1., 1., 1.],
-                [1., 1., 1.],
-                [1., 1., 1.]]]),
-        'thr': 0.5,
-        'd': {'d': 1}}
-    >>> output.d  # has to access via `output["d"]`
-    AttributeError: 'RPeaksDetectionOutput' object has no attribute 'd'
+            >>> output = RPeaksDetectionOutput(rpeak_indices=[[2]], thr=0.5, prob=np.ones((1,3,3)), d={"d":1})
+            >>> output
+            {'rpeak_indices': [[2]],
+                'prob': array([[[1., 1., 1.],
+                        [1., 1., 1.],
+                        [1., 1., 1.]]]),
+                'thr': 0.5,
+                'd': {'d': 1}}
+            >>> output.d  # has to access via `output["d"]`
+            AttributeError: 'RPeaksDetectionOutput' object has no attribute 'd'
     """
 
 
 class BaseOutput(CFG, ABC):
-    """
-    Base class for all outputs
+    """Base class for all outputs.
+
+    Parameters
+    ----------
+    *args : sequence
+        Positional arguments.
+    **kwargs : dict
+        Keyword arguments.
+
     """
 
     __name__ = "BaseOutput"
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """ """
         super().__init__(*args, **kwargs)
         pop_fields = [
             k
@@ -125,17 +136,16 @@ class BaseOutput(CFG, ABC):
 
     @abstractmethod
     def required_fields(self) -> Set[str]:
-        """ """
+        """The required fields of the output class."""
         raise NotImplementedError("Subclass must implement method `required_fields`")
 
     def append(self, values: Union["BaseOutput", Sequence["BaseOutput"]]) -> None:
-        """
-        append other `Output`s to self
+        """Append other :class:`Output`s to `self`
 
         Parameters
         ----------
-        values: `Output` or sequence of `Output`,
-            the values to be appended
+        values : Output or Sequence[Output]
+            The values to be appended.
 
         """
         if not isinstance(values, Sequence):
@@ -170,22 +180,23 @@ class ClassificationOutput(BaseOutput):
     """
     Class that maintains the output of a (typically single-label) classification task.
 
-    Required parameters for `__init__`
-    ----------------------------------
-    classes : sequence of str,
-        class names
-    prob : np.ndarray,
-        probabilities of each class,
-        of shape (batch_size, num_classes)
-    pred : np.ndarray,
-        predicted class indices, or binary predictions,
-        of shape (batch_size,) or (batch_size, num_classes)
+    Parameters
+    ----------
+    classes : Sequence[str]
+        Class names.
+    prob : numpy.ndarray
+        Probabilities of each class,
+        of shape ``(batch_size, num_classes)``.
+    pred : numpy.ndarray
+        Predicted class indices of shape ``(batch_size,)``,
+        or binary predictions of shape ``(batch_size, num_classes)``.
+
     """
 
     __name__ = "ClassificationOutput"
 
     def required_fields(self) -> Set[str]:
-        """ """
+        """The required fields of the output class."""
         return set(
             [
                 "classes",
@@ -195,13 +206,12 @@ class ClassificationOutput(BaseOutput):
         )
 
     def compute_metrics(self) -> ClassificationMetrics:
-        """
-        compute metrics from the output
+        """Compute metrics from the output.
 
         Returns
         -------
-        metrics : `ClassificationMetrics`
-            metrics computed from the output
+        metrics : ClassificationMetrics
+            Metrics computed from the output.
 
         """
         assert hasattr(self, "labels") or hasattr(
@@ -220,24 +230,25 @@ class MultiLabelClassificationOutput(BaseOutput):
     """
     Class that maintains the output of a multi-label classification task.
 
-    Required parameters for `__init__`
-    ----------------------------------
-    classes : sequence of str,
+    Parameters
+    ----------
+    classes : Sequence[str]
         class names
-    thr : float,
+    thr : float
         threshold for making binary predictions
-    prob : np.ndarray,
-        probabilities of each class,
-        of shape (batch_size, num_classes)
-    pred : np.ndarray,
-        binary predictions,
-        of shape (batch_size, num_classes)
+    prob : numpy.ndarray
+        Probabilities of each class,
+        of shape ``(batch_size, num_classes)``
+    pred : numpy.ndarray
+        Binary predictions,
+        of shape ``(batch_size, num_classes)``.
+
     """
 
     __name__ = "MultiLabelClassificationOutput"
 
     def required_fields(self) -> Set[str]:
-        """ """
+        """The required fields of the output class."""
         return set(
             [
                 "classes",
@@ -248,18 +259,17 @@ class MultiLabelClassificationOutput(BaseOutput):
         )
 
     def compute_metrics(self, macro: bool = True) -> ClassificationMetrics:
-        """
-        compute metrics from the output
+        """Compute metrics from the output.
 
         Parameters
         ----------
-        macro: bool,
-            whether to use macro-averaged metrics
+        macro : bool
+            Whether to use macro-averaged metrics or not.
 
         Returns
         -------
-        metrics : `ClassificationMetrics`
-            metrics computed from the output
+        metrics : ClassificationMetrics
+            Metrics computed from the output.
 
         """
         assert hasattr(self, "labels") or hasattr(
@@ -273,26 +283,27 @@ class MultiLabelClassificationOutput(BaseOutput):
 
 @add_docstring(_KNOWN_ISSUES.format(_SequenceTaggingOutput_ISSUE_EXAMPLE), "append")
 class SequenceTaggingOutput(BaseOutput):
-    """
-    Class that maintains the output of a sequence tagging task.
+    """Class that maintains the output of a sequence tagging task.
 
-    Required parameters for `__init__`
-    ----------------------------------
-    classes : sequence of str,
-        class names
-    prob : np.ndarray,
-        probabilities of each class at each time step (each sample point),
-        of shape (batch_size, signal_length, num_classes)
-    pred : np.ndarray,
-        predicted class indices at each time step (each sample point),
+    Parameters
+    ----------
+    classes : Sequence[str]
+        Class names.
+    prob : numpy.ndarray
+        Probabilities of each class at each time step (each sample point),
+        of shape ``(batch_size, signal_length, num_classes)``.
+    pred : numpy.ndarray
+        Predicted class indices at each time step (each sample point),
+        of shape ``(batch_size, signal_length)``;
         or binary predictions at each time step (each sample point),
-        of shape (batch_size, signal_length), or (batch_size, signal_length, num_classes)
+        of shape ``(batch_size, signal_length, num_classes)``.
+
     """
 
     __name__ = "SequenceTaggingOutput"
 
     def required_fields(self) -> Set[str]:
-        """ """
+        """The required fields of the output class."""
         return set(
             [
                 "classes",
@@ -302,18 +313,17 @@ class SequenceTaggingOutput(BaseOutput):
         )
 
     def compute_metrics(self, macro: bool = True) -> ClassificationMetrics:
-        """
-        compute metrics from the output
+        """Compute metrics from the output.
 
         Parameters
         ----------
-        macro: bool,
-            whether to use macro-averaged metrics
+        macro : bool
+            Whether to use macro-averaged metrics or not.
 
         Returns
         -------
-        metrics : `ClassificationMetrics`
-            metrics computed from the output
+        metrics : ClassificationMetrics
+            Metrics computed from the output.
 
         """
         assert hasattr(self, "labels") or hasattr(
@@ -335,26 +345,25 @@ SequenceLabellingOutput.__name__ = "SequenceLabellingOutput"
 
 @add_docstring(_KNOWN_ISSUES.format(_WaveDelineationOutput_ISSUE_EXAMPLE), "append")
 class WaveDelineationOutput(SequenceTaggingOutput):
-    """
-    Class that maintains the output of a wave delineation task.
+    """Class that maintains the output of a wave delineation task.
 
-    Required parameters for `__init__`
-    ----------------------------------
-    classes : sequence of str,
-        class names
-    prob : np.ndarray,
-        probabilities of each class at each time step (each sample point),
-        of shape (batch_size, signal_length, num_classes)
-    mask : np.ndarray,
-        predicted class indices at each time step (each sample point),
+    Parameters
+    ----------
+    classes : Sequence[str]
+        class names.
+    prob : numpy.ndarray
+        Probabilities of each class at each time step (each sample point),
+        of shape ``(batch_size, signal_length, num_classes)``.
+    mask : numpy.ndarray
+        Predicted class indices at each time step (each sample point),
         or binary predictions at each time step (each sample point),
-        of shape (batch_size, num_channels, signal_length)
+        of shape ``(batch_size, num_channels, signal_length)``.
     """
 
     __name__ = "WaveDelineationOutput"
 
     def required_fields(self) -> Set[str]:
-        """ """
+        """The required fields of the output class."""
         return set(
             [
                 "classes",
@@ -363,6 +372,31 @@ class WaveDelineationOutput(SequenceTaggingOutput):
             ]
         )
 
+    @add_docstring(
+        f"""Compute metrics from the output
+
+        Parameters
+        ----------
+        fs : numbers.Real
+            Sampling frequency of the signal corresponding to the masks,
+            used to compute the duration of each waveform,
+            and thus the error and standard deviations of errors.
+        class_map : dict
+            Class map, mapping names to waves to numbers from 0 to n_classes-1,
+            the keys should contain {", ".join([f'"{item}"' for item in ECGWaveFormNames])}.
+        macro : bool
+            Whether to use macro-averaged metrics or not.
+        tol : float, default 0.15
+            Tolerance for the duration of the waveform,
+            with units in seconds.
+
+        Returns
+        -------
+        metrics : WaveDelineationMetrics
+            Metrics computed from the output
+
+        """
+    )
     def compute_metrics(
         self,
         fs: int,
@@ -370,30 +404,6 @@ class WaveDelineationOutput(SequenceTaggingOutput):
         macro: bool = True,
         tol: float = 0.15,
     ) -> ClassificationMetrics:
-        f"""
-        compute metrics from the output
-
-        Parameters
-        ----------
-        fs: real number,
-            sampling frequency of the signal corresponding to the masks,
-            used to compute the duration of each waveform,
-            hence the error and standard deviations of errors
-        class_map: dict,
-            class map, mapping names to waves to numbers from 0 to n_classes-1,
-            the keys should contain {", ".join([f'"{item}"' for item in ECGWaveFormNames])}
-        macro: bool,
-            whether to use macro-averaged metrics
-        tol: float, default 0.15,
-            tolerance for the duration of the waveform,
-            with units in seconds
-
-        Returns
-        -------
-        metrics : `WaveDelineationMetrics`
-            metrics computed from the output
-
-        """
         assert hasattr(self, "labels") or hasattr(
             self, "label"
         ), "`labels` or `label` must be stored in the output for computing metrics"
@@ -419,7 +429,7 @@ class RPeaksDetectionOutput(BaseOutput):
     __name__ = "RPeaksDetectionOutput"
 
     def required_fields(self) -> Set[str]:
-        """ """
+        """The required fields of the output class."""
         return set(
             [
                 "rpeak_indices",

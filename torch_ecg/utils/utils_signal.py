@@ -482,7 +482,7 @@ def remove_spikes_naive(
     ----------
     sig: ndarray,
         1d signal with potential spikes
-    threshold: real number,
+    threshold: numbers.Real,
         values of `sig` that are larger than `threshold` will be removed
 
     Returns
@@ -658,8 +658,8 @@ def get_ampl(
     Parameters
     ----------
     sig: ndarray,
-        (ecg) signal
-    fs: real number,
+        (ECG) signal
+    fs: numbers.Real,
         sampling frequency of the signal
     fmt: str, default "lead_first",
         format of the signal,
@@ -753,11 +753,11 @@ def normalize(
     method: str,
         normalization method, case insensitive, can be one of
         "naive", "min-max", "z-score",
-    mean: real number or array_like, default 0.0,
+    mean: numbers.Real or array_like, default 0.0,
         mean value of the normalized signal,
         or mean values for each lead of the normalized signal,
         useless if `method` is "min-max"
-    std: real number or array_like, default 1.0,
+    std: numbers.Real or array_like, default 1.0,
         standard deviation of the normalized signal,
         or standard deviations for each lead of the normalized signal,
         useless if `method` is "min-max"

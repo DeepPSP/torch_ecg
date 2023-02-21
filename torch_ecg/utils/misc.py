@@ -356,9 +356,9 @@ def ms2samples(t: Real, fs: Real) -> int:
 
     Parameters
     ----------
-    t: real number,
+    t: numbers.Real,
         time with units in ms
-    fs: real number,
+    fs: numbers.Real,
         sampling frequency of a signal
 
     Returns
@@ -379,12 +379,12 @@ def samples2ms(n_samples: int, fs: Real) -> Real:
     ----------
     n_samples: int,
         number of sample points
-    fs: real number,
+    fs: numbers.Real,
         sampling frequency of a signal
 
     Returns
     -------
-    t: real number,
+    t: numbers.Real,
         time duration correponding to `n_samples`
 
     """
@@ -854,7 +854,8 @@ def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
 
 class ReprMixin(object):
     """
-    Mixin class for enhanced __repr__ and __str__ methods.
+    Mixin class for enhanced
+    :meth:`__repr__` and :meth:`__str__` methods.
     """
 
     def __repr__(self) -> str:
@@ -863,7 +864,7 @@ class ReprMixin(object):
     __str__ = __repr__
 
     def extra_repr_keys(self) -> List[str]:
-        """ """
+        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return []
 
 
@@ -909,8 +910,8 @@ class CitationMixin(_CitationMixin):
         print_result: bool = True,
     ) -> Union[str, type(None)]:
         """
-        override the default method to make the `print_result` argument
-        have default value `True`.
+        Overrides the default method to make the `print_result` argument
+        have default value ``True``.
 
         """
         return super().get_citation(
