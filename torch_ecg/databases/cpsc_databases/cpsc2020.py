@@ -33,85 +33,118 @@ _CPSC2020_INFO = DataBaseInfo(
     3. A02, A03, A08 are patient with atrial fibrillation
     4. sampling frequency = 400 Hz
     5. Detailed information:
-        rec   ?AF   Length(h)   # N beats   # V beats   # S beats   # Total beats
-        A01   No    25.89       109,062     0           24          109,086
-        A02   Yes   22.83       98,936      4,554       0           103,490
-        A03   Yes   24.70       137,249     382         0           137,631
-        A04   No    24.51       77,812      19,024      3,466       100,302
-        A05   No    23.57       94,614      1           25          94,640
-        A06   No    24.59       77,621      0           6           77,627
-        A07   No    23.11       73,325      15,150      3,481       91,956
-        A08   Yes   25.46       115,518     2,793       0           118,311
-        A09   No    25.84       88,229      2           1,462       89,693
-        A10   No    23.64       72,821      169         9,071       82,061
+
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+        | rec | ?AF | Length(h) | # N beats | # V beats | # S beats | # Total beats |
+        +=====+=====+===========+===========+===========+===========+===============+
+        | A01 | No  | 25.89     | 109,062   | 0         | 24        | 109,086       |
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+        | A02 | Yes | 22.83     | 98,936    | 4,554     | 0         | 103,490       |
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+        | A03 | Yes | 24.70     | 137,249   | 382       | 0         | 137,631       |
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+        | A04 | No  | 24.51     | 77,812    | 19,024    | 3,466     | 100,302       |
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+        | A05 | No  | 23.57     | 94,614    | 1         | 25        | 94,640        |
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+        | A06 | No  | 24.59     | 77,621    | 0         | 6         | 77,627        |
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+        | A07 | No  | 23.11     | 73,325    | 15,150    | 3,481     | 91,956        |
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+        | A08 | Yes | 25.46     | 115,518   | 2,793     | 0         | 118,311       |
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+        | A09 | No  | 25.84     | 88,229    | 2         | 1,462     | 89,693        |
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+        | A10 | No  | 23.64     | 72,821    | 169       | 9,071     | 82,061        |
+        +-----+-----+-----------+-----------+-----------+-----------+---------------+
+
     6. challenging factors for accurate detection of SPB and PVC:
-        amplitude variation; morphological variation; noise
+       amplitude variation; morphological variation; noise
     """,
     note="""
     1. the records can roughly be classified into 4 groups:
-        N:  A01, A03, A05, A06
-        V:  A02, A08
-        S:  A09, A10
-        VS: A04, A07
+
+        +----+--------------------+
+        | N  | A01, A03, A05, A06 |
+        +----+--------------------+
+        | V  | A02, A08           |
+        +----+--------------------+
+        | S  | A09, A10           |
+        +----+--------------------+
+        | VS | A04, A07           |
+        +----+--------------------+
+
     2. as premature beats and atrial fibrillation can co-exists
-        (via the following code, and data from CINC2020),
-        the situation becomes more complicated.
-        >>> from utils.scoring_aux_data import dx_cooccurrence_all
-        >>> dx_cooccurrence_all.loc["AF", ["PAC","PVC","SVPB","VPB"]]
-        PAC     20
-        PVC     19
-        SVPB     4
-        VPB     20
-        Name: AF, dtype: int64
-        this could also be seen from this dataset, via the following code as an example:
-        >>> from data_reader import CPSC2020Reader as CR
-        >>> db_dir = "/media/cfs/wenhao71/data/CPSC2020/TrainingSet/"
-        >>> dr = CR(db_dir)
-        >>> rec = dr.all_records[1]
-        >>> dr.plot(rec, sampfrom=0, sampto=4000, ticks_granularity=2)
+       (via the following code, and data from CINC2020),
+       the situation becomes more complicated.
+
+       .. code-block:: python
+
+            >>> from utils.scoring_aux_data import dx_cooccurrence_all
+            >>> dx_cooccurrence_all.loc["AF", ["PAC","PVC","SVPB","VPB"]]
+            PAC     20
+            PVC     19
+            SVPB     4
+            VPB     20
+            Name: AF, dtype: int64
+
+       this could also be seen from this dataset, via the following code as an example:
+
+       .. code-block:: python
+
+            >>> from data_reader import CPSC2020Reader as CR
+            >>> db_dir = "/media/cfs/wenhao71/data/CPSC2020/TrainingSet/"
+            >>> dr = CR(db_dir)
+            >>> rec = dr.all_records[1]
+            >>> dr.plot(rec, sampfrom=0, sampto=4000, ticks_granularity=2)
+
     3. PVC and SPB can also co-exist, as illustrated via the following code (from CINC2020):
-        >>> from utils.scoring_aux_data import dx_cooccurrence_all
-        >>> dx_cooccurrence_all.loc[["PVC","VPB"], ["PAC","SVPB",]]
-        PAC SVPB
-        PVC 14 1
-        VPB 27 0
-        and also from the following code:
-        >>> for rec in dr.all_records:
-        >>>     ann = dr.load_ann(rec)
-        >>>     spb = ann["SPB_indices"]
-        >>>     pvc = ann["PVC_indices"]
-        >>>     if len(np.diff(spb)) > 0:
-        >>>         print(f"{rec}: min dist among SPB = {np.min(np.diff(spb))}")
-        >>>     if len(np.diff(pvc)) > 0:
-        >>>         print(f"{rec}: min dist among PVC = {np.min(np.diff(pvc))}")
-        >>>     diff = [s-p for s,p in product(spb, pvc)]
-        >>>     if len(diff) > 0:
-        >>>         print(f"{rec}: min dist between SPB and PVC = {np.min(np.abs(diff))}")
-        A01: min dist among SPB = 630
-        A02: min dist among SPB = 696
-        A02: min dist among PVC = 87
-        A02: min dist between SPB and PVC = 562
-        A03: min dist among SPB = 7044
-        A03: min dist among PVC = 151
-        A03: min dist between SPB and PVC = 3750
-        A04: min dist among SPB = 175
-        A04: min dist among PVC = 156
-        A04: min dist between SPB and PVC = 178
-        A05: min dist among SPB = 182
-        A05: min dist between SPB and PVC = 22320
-        A06: min dist among SPB = 455158
-        A07: min dist among SPB = 603
-        A07: min dist among PVC = 153
-        A07: min dist between SPB and PVC = 257
-        A08: min dist among SPB = 2903029
-        A08: min dist among PVC = 106
-        A08: min dist between SPB and PVC = 350
-        A09: min dist among SPB = 180
-        A09: min dist among PVC = 7719290
-        A09: min dist between SPB and PVC = 1271
-        A10: min dist among SPB = 148
-        A10: min dist among PVC = 708
-        A10: min dist between SPB and PVC = 177
+
+       .. code-block:: python
+
+            >>> from utils.scoring_aux_data import dx_cooccurrence_all
+            >>> dx_cooccurrence_all.loc[["PVC","VPB"], ["PAC","SVPB",]]
+            PAC SVPB
+            PVC 14 1
+            VPB 27 0
+            and also from the following code:
+            >>> for rec in dr.all_records:
+            >>>     ann = dr.load_ann(rec)
+            >>>     spb = ann["SPB_indices"]
+            >>>     pvc = ann["PVC_indices"]
+            >>>     if len(np.diff(spb)) > 0:
+            >>>         print(f"{rec}: min dist among SPB = {np.min(np.diff(spb))}")
+            >>>     if len(np.diff(pvc)) > 0:
+            >>>         print(f"{rec}: min dist among PVC = {np.min(np.diff(pvc))}")
+            >>>     diff = [s-p for s,p in product(spb, pvc)]
+            >>>     if len(diff) > 0:
+            >>>         print(f"{rec}: min dist between SPB and PVC = {np.min(np.abs(diff))}")
+            A01: min dist among SPB = 630
+            A02: min dist among SPB = 696
+            A02: min dist among PVC = 87
+            A02: min dist between SPB and PVC = 562
+            A03: min dist among SPB = 7044
+            A03: min dist among PVC = 151
+            A03: min dist between SPB and PVC = 3750
+            A04: min dist among SPB = 175
+            A04: min dist among PVC = 156
+            A04: min dist between SPB and PVC = 178
+            A05: min dist among SPB = 182
+            A05: min dist between SPB and PVC = 22320
+            A06: min dist among SPB = 455158
+            A07: min dist among SPB = 603
+            A07: min dist among PVC = 153
+            A07: min dist between SPB and PVC = 257
+            A08: min dist among SPB = 2903029
+            A08: min dist among PVC = 106
+            A08: min dist between SPB and PVC = 350
+            A09: min dist among SPB = 180
+            A09: min dist among PVC = 7719290
+            A09: min dist between SPB and PVC = 1271
+            A10: min dist among SPB = 148
+            A10: min dist among PVC = 708
+            A10: min dist between SPB and PVC = 177
+
     """,
     usage=[
         "ECG arrhythmia (PVC, SPB) detection",
@@ -122,33 +155,65 @@ _CPSC2020_INFO = DataBaseInfo(
        which might be caused by motion artefacts (or AF?);
        a lot less (more than 1000) rpeaks would be detected for A04.
        numeric details are as follows:
-       ----------------------------------------------
-       rec   ?AF    # beats by xqrs     # Total beats
-       A01   No     109502              109,086
-       A02   Yes    119562              103,490
-       A03   Yes    135912              137,631
-       A04   No     92746               100,302
-       A05   No     94674               94,640
-       A06   No     77955               77,627
-       A07   No     98390               91,956
-       A08   Yes    126908              118,311
-       A09   No     89972               89,693
-       A10   No     83509               82,061
+
+            +-----+-----+-----------------+---------------+
+            | rec | ?AF | # beats by xqrs | # Total beats |
+            +=====+=====+=================+===============+
+            | A01 | No  | 109,502         | 109,086       |
+            +-----+-----+-----------------+---------------+
+            | A02 | Yes | 119,562         | 103,490       |
+            +-----+-----+-----------------+---------------+
+            | A03 | Yes | 135,912         | 137,631       |
+            +-----+-----+-----------------+---------------+
+            | A04 | No  | 92,746          | 100,302       |
+            +-----+-----+-----------------+---------------+
+            | A05 | No  | 94,674          | 94,640        |
+            +-----+-----+-----------------+---------------+
+            | A06 | No  | 77,955          | 77,627        |
+            +-----+-----+-----------------+---------------+
+            | A07 | No  | 98,390          | 91,956        |
+            +-----+-----+-----------------+---------------+
+            | A08 | Yes | 126,908         | 118,311       |
+            +-----+-----+-----------------+---------------+
+            | A09 | No  | 89,972          | 89,693        |
+            +-----+-----+-----------------+---------------+
+            | A10 | No  | 83,509          | 82,061        |
+            +-----+-----+-----------------+---------------+
+
     2. (fixed by an official update) A04 has duplicate "PVC_indices" (13534856,27147621,35141190 all appear twice):
-       before correction of `load_ann`:
-       >>> from collections import Counter
-       >>> db_dir = "/mnt/wenhao71/data/CPSC2020/TrainingSet/"
-       >>> data_gen = CPSC2020Reader(db_dir=db_dir,working_dir=db_dir)
-       >>> rec = 4
-       >>> ann = data_gen.load_ann(rec)
-       >>> Counter(ann["PVC_indices"]).most_common()[:4]
-       would produce [(13534856, 2), (27147621, 2), (35141190, 2), (848, 1)]
+       before correction of `load_ann`
+
+       .. code-block:: python
+
+            >>> from collections import Counter
+            >>> db_dir = "/mnt/wenhao71/data/CPSC2020/TrainingSet/"
+            >>> data_gen = CPSC2020Reader(db_dir=db_dir,working_dir=db_dir)
+            >>> rec = 4
+            >>> ann = data_gen.load_ann(rec)
+            >>> Counter(ann["PVC_indices"]).most_common()[:4]
+            [(13534856, 2), (27147621, 2), (35141190, 2), (848, 1)]
+
     3. when extracting morphological features using augmented rpeaks for A04,
-       `RuntimeWarning: invalid value encountered in double_scalars` would raise
-       for `R_value = (R_value - y_min) / (y_max - y_min)` and
-       for `y_values[n] = (y_values[n] - y_min) / (y_max - y_min)`.
-       this is caused by the 13882273-th sample, which is contained in "PVC_indices",
+
+       .. code-block:: python
+
+            RuntimeWarning: invalid value encountered in double_scalars
+
+       would raise for
+
+       .. math::
+
+            R\\_value = (R\\_value - y_min) / (y\\_max - y\\_min)
+
+       and for
+
+       .. math::
+
+            y\\_values[n] = (y\\_values[n] - y\\_min) / (y\\_max - y\\_min).
+
+       This is caused by the 13882273-th sample, which is contained in "PVC_indices",
        however, whether it is a PVC beat, or just motion artefact, is in doubt!
+
     """,
     references=[
         "http://www.icbeb.org/CPSC2020.html",
@@ -160,7 +225,20 @@ _CPSC2020_INFO = DataBaseInfo(
 
 @add_docstring(_CPSC2020_INFO.format_database_docstring())
 class CPSC2020(CPSCDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments
+
+    """
 
     def __init__(
         self,
@@ -169,18 +247,6 @@ class CPSC2020(CPSCDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="cpsc2020",
             db_dir=db_dir,
@@ -219,7 +285,9 @@ class CPSC2020(CPSCDataBase):
         }
 
     def _ls_rec(self) -> None:
-        """ """
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in a dataframe.
+        """
         self._df_records = pd.DataFrame()
         n_records = 10
         all_records = [f"A{i:02d}" for i in range(1, 1 + n_records)]
@@ -260,27 +328,24 @@ class CPSC2020(CPSCDataBase):
 
     @property
     def all_annotations(self):
-        """ """
         return self._all_annotations
 
     @property
     def all_references(self):
-        """ """
         return self._all_annotations
 
     def get_subject_id(self, rec: Union[int, str]) -> int:
-        """
-        Attach a unique subject id to each record
+        """Attach a unique subject id to each record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
 
         Returns
         -------
-        pid: int,
-            the `subject_id` corr. to `rec_no`
+        pid : int
+            the ``subject_id`` corr. to `rec`.
 
         """
         if isinstance(rec, int):
@@ -293,22 +358,21 @@ class CPSC2020(CPSCDataBase):
         extension: Optional[str] = None,
         ann: bool = False,
     ) -> Path:
-        """
-        get the absolute path of the record `rec`
+        """Get the absolute path of the record `rec`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        extension: str, optional,
-            extension of the file
-        ann: bool, default False,
-            whether to get the annotation file path or not
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        extension : str, optional
+            Extension of the file.
+        ann : bool, default False
+            Whether to get the annotation file path or not.
 
         Returns
         -------
-        abs_path: Path,
-            absolute path of the file
+        abs_path : pathlib.Path
+            Absolute path of the file.
 
         """
         if isinstance(rec, int):
@@ -328,31 +392,33 @@ class CPSC2020(CPSCDataBase):
         units: str = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        load the ECG data of the record `rec`
+        """Load the ECG data of the record `rec`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ecg data,
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        sampfrom : int, optional
+            Start index of the data to be loaded.
+        sampto : int, optional
+            End index of the data to be loaded.
+        data_format : str, default "channel_first"
+            Format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first"), or
-            "flat" (alias "plain")
-        units: str or None, default "mV",
-            units of the output signal, can also be "μV", with aliases of "uV", "muV"
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
+            "flat" (alias "plain").
+        units : str or None, default "mV"
+            Units of the output signal,
+            can also be "μV" (with aliases "uV", "muV").
+        fs : numbers.Real, optional
+            Frequency of the output signal.
+            if not None, the loaded data will be resampled to this frequency;
+            if None, the loaded data will be returned as is.
 
         Returns
         -------
-        data: ndarray,
-            the ECG data
+        data : numpy.ndarray
+            The loaded ECG data.
 
         """
         rec_fp = self.get_absolute_path(rec, self.rec_ext)
@@ -379,21 +445,23 @@ class CPSC2020(CPSCDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
     ) -> Dict[str, np.ndarray]:
-        """
+        """Load the annotations of the record `rec`.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        sampfrom : int, optional
+            Start index of the data to be loaded.
+        sampto : int, optional
+            End index of the data to be loaded.
 
         Returns
         -------
-        ann: dict,
-            with items (ndarray) "SPB_indices" and "PVC_indices",
-            which record the indices of SPBs and PVCs
+        ann : dict
+            Annotation dictionary with items (:class:`~numpy.ndarray`)
+            "SPB_indices" and "PVC_indices",
+            which record the indices of SPBs and PVCs.
 
         """
         ann_fp = self.get_absolute_path(rec, self.ann_ext, ann=True)
@@ -414,18 +482,19 @@ class CPSC2020(CPSCDataBase):
         return ann
 
     def train_test_split_rec(self, test_rec_num: int = 2) -> Dict[str, List[str]]:
-        """
-        split the records into train set and test set
+        """Split the records into train set and test (val) set.
 
         Parameters
         ----------
-        test_rec_num: int,
-            number of records for the test set
+        test_rec_num : int, default 2
+            Number of records for the test (val) set.
 
         Returns
         -------
-        split_res: dict,
-            with items `train`, `test`, both being list of record names
+        split_res : dict
+            Split result dictionary,
+            with items "train", "test",
+            both of which are lists of record names.
 
         """
         if test_rec_num == 1:
@@ -467,29 +536,30 @@ class CPSC2020(CPSCDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
     ) -> List[List[int]]:
-        """
-        locate the sample indices of premature beats in a record,
-        in the form of a list of lists,
-        each list contains the interval of sample indices of premature beats
+        """Locate the sample indices of premature beats in a record.
+
+        The locations are in the form of a list of lists, and
+        each list contains the interval of sample indices of premature beats.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        premature_type: str, optional,
-            premature beat type, can be one of "SPB", "PVC"
-        window: real number, default 10,
-            window length of each premature beat,
-            with units in seconds
-        sampfrom: int, optional,
-            start index of the premature beats to locate
-        sampto: int, optional,
-            end index of the premature beats to locate
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        premature_type : str, optional
+            Premature beat type, can be one of "SPB", "PVC".
+            If not specified, both SPBs and PVCs will be located.
+        window : numbers.Real, default 10
+            Window length of each premature beat,
+            with units in seconds.
+        sampfrom : int, optional
+            Start index of the premature beats to locate.
+        sampto : int, optional
+            End index of the premature beats to locate.
 
         Returns
         -------
-        premature_intervals: list,
-            list of intervals of premature beats
+        premature_intervals : list
+            List of intervals of premature beats.
 
         """
         ann = self.load_ann(rec)
@@ -526,29 +596,32 @@ class CPSC2020(CPSCDataBase):
         sampto: Optional[int] = None,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
     ) -> None:
-        """
+        """Plot the ECG signal of a record.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data: ndarray, optional,
-            ECG signal to plot,
-            if given, data of `rec` will not be used,
-            this is useful when plotting filtered data
-        ann: dict, optional,
-            annotations for `data`, covering those from annotation files,
-            "SPB_indices", "PVC_indices", each of ndarray values,
-            ignored if `data` is None
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        data : numpy.ndarray, optional
+            ECG signal to plot.
+            If given, data of `rec` will not be used.
+            This is useful when plotting filtered data.
+        ann : dict, optional
+            Annotations for `data`, covering those from annotation files,
+            with items "SPB_indices", "PVC_indices",
+            each of which is a :class:`~numpy.ndarray`.
+            Ignored if `data` is None.
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        sampfrom: int, optional,
-            start index of the data to plot
-        sampto: int, optional,
-            end index of the data to plot
-        rpeak_inds: array_like, optional,
-            indices of R peaks,
-            if `data` is None, then indices should be the absolute indices in the record
+        sampfrom : int, optional
+            Start index of the data to plot.
+        sampto : int, optional
+            End index of the data to plot.
+        rpeak_inds : array_like, optional
+            Indices of R peaks.
+            If `data` is None,
+            then indices should be the absolute indices in the record.
 
         """
         if isinstance(rec, int):
@@ -697,23 +770,25 @@ def compute_metrics(
     pvc_pred: List[np.ndarray],
     verbose: int = 0,
 ) -> Union[Tuple[int], dict]:
-    """
-    Score Function for all (test) records
+    """Score Function for all (test) records.
 
     Parameters
     ----------
-    sbp_true, pvc_true, sbp_pred, pvc_pred: list of ndarray,
-    verbose: int
+    sbp_true, pvc_true, sbp_pred, pvc_pred : List[numpy.ndarray]
+        List of numpy arrays of true and predicted SBP and PVC indices.
+    verbose : int
+        Verbosity level.
 
     Returns
     -------
-    retval: tuple or dict,
-        tuple of (negative) scores for each ectopic beat type (SBP, PVC), or
-        dict of more scoring details, including
-        - total_loss: sum of loss of each ectopic beat type (PVC and SPB)
-        - true_positive: number of true positives of each ectopic beat type
-        - false_positive: number of false positives of each ectopic beat type
-        - false_negative: number of false negatives of each ectopic beat type
+    retval : tuple or dict
+        Tuple of (negative) scores for each ectopic beat type (SBP, PVC),
+        or dict of more scoring details, including
+
+            - total_loss: sum of loss of each ectopic beat type (PVC and SPB)
+            - true_positive: number of true positives of each ectopic beat type
+            - false_positive: number of false positives of each ectopic beat type
+            - false_negative: number of false negatives of each ectopic beat type
 
     """
     BaseCfg = CFG()
@@ -788,168 +863,3 @@ def compute_metrics(
         retval = Score1, Score2
 
     return retval
-
-
-# out-dated functions
-
-# def _ann_to_beat_ann_epoch_v1(
-#     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
-# ) -> dict:
-#     """
-#     the naive method to label beat types using annotations provided by the dataset
-
-#     Parameters
-#     ----------
-#     rpeaks: ndarray,
-#         rpeaks for forming beats
-#     ann: dict,
-#         with items (ndarray) "SPB_indices" and "PVC_indices",
-#         which record the indices of SPBs and PVCs
-#     bias_thr: real number,
-#         tolerance for using annotations (PVC, SPB indices provided by the dataset),
-#         to label the type of beats given by `rpeaks`
-
-#     Returns
-#     -------
-#     retval: dict, with the following items
-#         - ann_matched: dict of ndarray,
-#             indices of annotations ("SPB_indices" and "PVC_indices")
-#             that match some beat from `rpeaks`.
-#             for v1, this term is always the same as `ann`, hence useless
-#         - beat_ann: ndarray,
-#             label for each beat from `rpeaks`
-
-#     """
-#     beat_ann = np.array(["N" for _ in range(len(rpeaks))])
-#     for idx, r in enumerate(rpeaks):
-#         if any([abs(r - p) < bias_thr for p in ann["SPB_indices"]]):
-#             beat_ann[idx] = "S"
-#         elif any([abs(r - p) < bias_thr for p in ann["PVC_indices"]]):
-#             beat_ann[idx] = "V"
-#     ann_matched = ann.copy()
-#     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
-#     return retval
-
-
-# def _ann_to_beat_ann_epoch_v2(
-#     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
-# ) -> dict:
-#     """has flaws, deprecated,
-
-#     similar to `_ann_to_beat_ann_epoch_v1`, but records those matched annotations,
-#     for further post-process, adding those beats that are in annotation,
-#     but not detected by the signal preprocessing algorithms (qrs detection)
-
-#     however, the comparison process (the block inside the outer `for` loop)
-#     is not quite correct
-
-#     Parameters
-#     ----------
-#     rpeaks: ndarray,
-#         rpeaks for forming beats
-#     ann: dict,
-#         with items (ndarray) "SPB_indices" and "PVC_indices",
-#         which record the indices of SPBs and PVCs
-#     bias_thr: real number,
-#         tolerance for using annotations (PVC, SPB indices provided by the dataset),
-#         to label the type of beats given by `rpeaks`
-
-#     Returns
-#     -------
-#     retval: dict, with the following items
-#         - ann_matched: dict of ndarray,
-#             indices of annotations ("SPB_indices" and "PVC_indices")
-#             that match some beat from `rpeaks`
-#         - beat_ann: ndarray,
-#             label for each beat from `rpeaks`
-
-#     """
-#     beat_ann = np.array(["N" for _ in range(len(rpeaks))], dtype="<U1")
-#     # used to add back those beat that is not detected via proprocess algorithm
-#     _ann = {k: v.astype(int).tolist() for k, v in ann.items()}
-#     for idx_r, r in enumerate(rpeaks):
-#         found = False
-#         for idx_a, a in enumerate(_ann["SPB_indices"]):
-#             if abs(r - a) < bias_thr:
-#                 found = True
-#                 beat_ann[idx_r] = "S"
-#                 del _ann["SPB_indices"][idx_a]
-#                 break
-#         if found:
-#             continue
-#         for idx_a, a in enumerate(_ann["PVC_indices"]):
-#             if abs(r - a) < bias_thr:
-#                 found = True
-#                 beat_ann[idx_r] = "V"
-#                 del _ann["PVC_indices"][idx_a]
-#                 break
-#     ann_matched = {
-#         k: np.array([a for a in v if a not in _ann[k]], dtype=int)
-#         for k, v in ann.items()
-#     }
-#     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
-#     return retval
-#     # _ann["SPB_indices"] = [a for a in _ann["SPB_indices"] if prev_r<a<next_r]
-#     # _ann["PVC_indices"] = [a for a in _ann["PVC_indices"] if prev_r<a<next_r]
-#     # augmented_rpeaks = np.concatenate((rpeaks, np.array(_ann["SPB_indices"]), np.array(_ann["PVC_indices"])))
-#     # beat_ann = np.concatenate((beat_ann, np.array(["S" for _ in _ann["SPB_indices"]], dtype="<U1"), np.array(["V" for _ in _ann["PVC_indices"]], dtype="<U1")))
-#     # sorted_indices = np.argsort(augmented_rpeaks)
-#     # augmented_rpeaks = augmented_rpeaks[sorted_indices].astype(int)
-#     # beat_ann = beat_ann[sorted_indices].astype("<U1")
-
-#     # retval = dict(augmented_rpeaks=augmented_rpeaks, beat_ann=beat_ann)
-#     # return retval
-
-
-# def _ann_to_beat_ann_epoch_v3(
-#     rpeaks: np.ndarray, ann: Dict[str, np.ndarray], bias_thr: Real
-# ) -> dict:
-#     """
-#     similar to `_ann_to_beat_ann_epoch_v2`, but more reasonable
-
-#     Parameters
-#     ----------
-#     rpeaks: ndarray,
-#         rpeaks for forming beats
-#     ann: dict,
-#         with items (ndarray) "SPB_indices" and "PVC_indices",
-#         which record the indices of SPBs and PVCs
-#     bias_thr: real number,
-#         tolerance for using annotations (PVC, SPB indices provided by the dataset),
-#         to label the type of beats given by `rpeaks`
-
-#     Returns
-#     -------
-#     retval: dict, with the following items
-#         - ann_matched: dict of ndarray,
-#             indices of annotations ("SPB_indices" and "PVC_indices")
-#             that match some beat from `rpeaks`
-#         - beat_ann: ndarray,
-#             label for each beat from `rpeaks`
-
-#     """
-#     beat_ann = np.array(["N" for _ in range(len(rpeaks))], dtype="<U1")
-#     ann_matched = {k: [] for k, v in ann.items()}
-#     for idx_r, r in enumerate(rpeaks):
-#         dist_to_spb = np.abs(r - ann["SPB_indices"])
-#         dist_to_pvc = np.abs(r - ann["PVC_indices"])
-#         if len(dist_to_spb) == 0:
-#             dist_to_spb = np.array([np.inf])
-#         if len(dist_to_pvc) == 0:
-#             dist_to_pvc = np.array([np.inf])
-#         argmin = np.argmin([np.min(dist_to_spb), np.min(dist_to_pvc), bias_thr])
-#         if argmin == 2:
-#             pass
-#         elif argmin == 1:
-#             beat_ann[idx_r] = "V"
-#             ann_matched["PVC_indices"].append(
-#                 ann["PVC_indices"][np.argmin(dist_to_pvc)]
-#             )
-#         elif argmin == 0:
-#             beat_ann[idx_r] = "S"
-#             ann_matched["SPB_indices"].append(
-#                 ann["SPB_indices"][np.argmin(dist_to_spb)]
-#             )
-#     ann_matched = {k: np.array(v) for k, v in ann_matched.items()}
-#     retval = dict(ann_matched=ann_matched, beat_ann=beat_ann)
-#     return retval

@@ -46,24 +46,56 @@ _CPSC2021_INFO = DataBaseInfo(
     2. dataset provides variable-length ECG fragments extracted from lead I and lead II of the long-term source ECG data, each sampled at 200 Hz
     3. AF event is limited to be no less than 5 heart beats
     4. training set in the 1st stage consists of 730 records, extracted from the Holter records from 12 AF patients and 42 non-AF patients (usually including other abnormal and normal rhythms); training set in the 2nd stage consists of 706 records from 37 AF patients (18 PAF patients) and 14 non-AF patients
-    5. test set comprises data from the same source as the training set as well as DIFFERENT data source, which are NOT to be released at any point
-    6. annotations are standardized according to PhysioBank Annotations (Ref. [2] or PhysioNetDataBase.helper), and include the beat annotations (R peak location and beat type), the rhythm annotations (rhythm change flag and rhythm type) and the diagnosis of the global rhythm
-    7. classification of a record is stored in corresponding .hea file, which can be accessed via the attribute `comments` of a wfdb Record obtained using `wfdb.rdheader`, `wfdb.rdrecord`, and `wfdb.rdsamp`; beat annotations and rhythm annotations can be accessed using the attributes `symbol`, `aux_note` of a wfdb Annotation obtained using `wfdb.rdann`, corresponding indices in the signal can be accessed via the attribute `sample`
+    5. test set comprises data from the same source as the training set as well as DIFFERENT data source, which are **NOT** to be released at any point
+    6. annotations are standardized according to PhysioBank Annotations (Ref. [2]_ or :meth:`PhysioNetDataBase.helper`), and include the beat annotations (R peak location and beat type), the rhythm annotations (rhythm change flag and rhythm type) and the diagnosis of the global rhythm
+    7. classification of a record is stored in corresponding .hea file, which can be accessed via the attribute `comments` of a wfdb Record obtained using :func:`wfdb.rdheader`, :func:`wfdb.rdrecord`, and :func:`wfdb.rdsamp`; beat annotations and rhythm annotations can be accessed using the attributes `symbol`, `aux_note` of a ``wfdb`` Annotation obtained using :func:`wfdb.rdann`, corresponding indices in the signal can be accessed via the attribute `sample`
     8. challenge task:
-        (1). clasification of rhythm types: non-AF rhythm (N), persistent AF rhythm (AFf) and paroxysmal AF rhythm (AFp)
-        (2). locating of the onset and offset for any AF episode prediction
+
+        - clasification of rhythm types: non-AF rhythm (N), persistent AF rhythm (AFf) and paroxysmal AF rhythm (AFp)
+        - locating of the onset and offset for any AF episode prediction
+
     9. challenge metrics:
-        (1) metrics (Ur, scoring matrix) for classification:
-                Prediction
-                N        AFf        AFp
-        N      +1        -1         -0.5
-        AFf    -2        +1          0
-        AFp    -1         0         +1
-        (2) metric (Ue) for detecting onsets and offsets for AF events (episodes):
-        +1 if the detected onset (or offset) is within ±1 beat of the annotated position, and +0.5 if within ±2 beats
-        (3) final score (U):
-        U = \dfrac{1}{N} \sum\limits_{i=1}^N \left( Ur_i + \dfrac{Ma_i}{\max\{Mr_i, Ma_i\}} \right)
-        where N is the number of records, Ma is the number of annotated AF episodes, Mr the number of predicted AF episodes
+
+        - metrics (Ur, scoring matrix) for classification:
+
+          .. tikz:: The scoring matrix for the recording-level classification result.
+            :align: center
+            :libs: shapes,arrows,decorations.pathmorphing,backgrounds,positioning,fit,petri,calc,hobby
+
+            \tikzstyle{rect} = [rectangle, text width = 50, text centered, inner sep = 3pt, minimum height = 50]
+            \tikzstyle{txt} = [rectangle, text centered, inner sep = 3pt, minimum height = 1.5]
+
+            \node[rect, fill = green!25] at (0,0) (31) {$-0.5$};
+            \node[rect, fill = green!10, right = 0 of 31] (32) {$0$};
+            \node[rect, fill = red!30, right = 0 of 32] (33) {$+1$};
+            \node[rect, fill = green!40, above = 0 of 31] (21) {$-1$};
+            \node[rect, fill = red!30, above = 0 of 32] (22) {$+1$};
+            \node[rect, fill = green!10, above = 0 of 33] (23) {$0$};
+            \node[rect, fill = red!30, above = 0 of 21] (11) {$+1$};
+            \node[rect, fill = green!60, above = 0 of 22] (12) {$-2$};
+            \node[rect, fill = green!40, above = 0 of 23] (13) {$-1$};
+
+            \node[txt, below = 0 of 31] {N};
+            \node[txt, below = 0 of 32] (anchor_h) {AF$_{\text{f}}$};
+            \node[txt, below = 0 of 33] {AF$_{\text{p}}$};
+            \node[txt, left = 0 of 31] {AF$_{\text{p}}$};
+            \node[txt, left = 0 of 21] (anchor_v) {AF$_{\text{f}}$};
+            \node[txt, left = 0 of 11] {N};
+
+            \node[txt, below = 0 of anchor_h] {\large\textbf{Annotation (Label)}};
+            \node[txt, left = 0.6 of anchor_v, rotate = 90, anchor = north] {\large\textbf{Prediction}};
+
+        - metric (Ue) for detecting onsets and offsets for AF events (episodes): +1 if the detected onset (or offset) is within ±1 beat of the annotated position, and +0.5 if within ±2 beats.
+        - final score (U):
+
+          .. math::
+
+            U = \dfrac{1}{N} \sum\limits_{i=1}^N \left( Ur_i + \dfrac{Ma_i}{\max\{Mr_i, Ma_i\}} \right)
+
+          where :math:`N` is the number of records,
+          :math:`Ma` is the number of annotated AF episodes,
+          :math:`Mr` is the number of predicted AF episodes.
+
     """,
     note="""
     1. if an ECG record is classified as AFf, the provided onset and offset locations should be the first and last record points. If an ECG record is classified as N, the answer should be an empty list
@@ -81,12 +113,26 @@ _CPSC2021_INFO = DataBaseInfo(
         "https://www.physionet.org/content/cpsc2021/1.0.0/",
         "https://archive.physionet.org/physiobank/annotations.shtml",
     ],
+    doi="10.13026/ksya-qw89",
 )
 
 
 @add_docstring(_CPSC2021_INFO.format_database_docstring())
 class CPSC2021(PhysioNetDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments
+
+    """
 
     __name__ = "CPSC2021"
 
@@ -97,18 +143,6 @@ class CPSC2021(PhysioNetDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="cpsc2021",
             db_dir=db_dir,
@@ -174,15 +208,13 @@ class CPSC2021(PhysioNetDataBase):
 
     @property
     def all_records(self) -> List[str]:
-        """ """
         if self.__all_records is None:
             self._ls_rec()
         return self.__all_records
 
     def _ls_rec(self) -> None:
-        """
-        list all the records and load into `self._all_records`,
-        facilitating further uses
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in a dataframe.
         """
         self._df_records = pd.DataFrame()
         self._df_records["path"] = get_record_list_recursive3(
@@ -249,7 +281,7 @@ class CPSC2021(PhysioNetDataBase):
         )
 
     def _aggregate_stats(self) -> None:
-        """aggregate stats on the whole dataset"""
+        """Aggregate stats on the whole dataset."""
         stats_file = "stats.csv"
         stats_file_fp = self.db_dir_base / stats_file
         if stats_file_fp.is_file() and self._subsample is None:
@@ -296,21 +328,18 @@ class CPSC2021(PhysioNetDataBase):
 
     @property
     def all_subjects(self) -> List[str]:
-        """ """
         return self.__all_subjects
 
     @property
     def subject_records(self) -> CFG:
-        """ """
         return self._subject_records
 
     @property
     def df_stats(self) -> pd.DataFrame:
-        """ """
         return self._stats
 
     def _ls_diagnoses_records(self) -> None:
-        """list all the records for all diagnoses"""
+        """List all the records for all diagnoses."""
         fn = "diagnoses_records_list.json"
         dr_fp = self.db_dir_base / fn
         if dr_fp.is_file() and self._subsample is None:
@@ -341,24 +370,22 @@ class CPSC2021(PhysioNetDataBase):
 
     @property
     def diagnoses_records_list(self):
-        """ """
         if self._diagnoses_records_list is None:
             self._ls_diagnoses_records()
         return self._diagnoses_records_list
 
     def get_subject_id(self, rec: Union[str, int]) -> str:
-        """
-        get the subject id of the record `rec`
+        """Attach a unique subject id to each record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
 
         Returns
         -------
-        sid: str,
-            subject id corresponding to the record
+        sid : str
+            Subject id corresponding to the record.
 
         """
         if isinstance(rec, int):
@@ -369,20 +396,19 @@ class CPSC2021(PhysioNetDataBase):
     def get_absolute_path(
         self, rec: Union[str, int], extension: Optional[str] = None
     ) -> Path:
-        """
-        get the absolute path of the record `rec`
+        """Get the absolute path of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        extension: str, optional,
-            extension of the file
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        extension : str, optional
+            Extension of the file.
 
         Returns
         -------
-        abs_path: Path,
-            absolute path of the file
+        abs_path : pathlib.Path
+            Absolute path of the file.
 
         """
         if isinstance(rec, int):
@@ -400,25 +426,23 @@ class CPSC2021(PhysioNetDataBase):
         sampfrom: Optional[int] = None,
         sampto: Optional[int] = None,
     ) -> Tuple[int, int]:
-        """
-        validate `sampfrom` and `sampto` so that they are reasonable
+        """Validate `sampfrom` and `sampto` so that they are reasonable.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        sampfrom : int, optional
+            Start index of the data to be loaded.
+        sampto : int, optional
+            End index of the data to be loaded.
 
         Returns
         -------
-        (sf, st): tuple of int,
-        sf: int,
-            index sampling from
-        st: int,
-            index sampling to
+        sf : int
+            Index sampling from.
+        st : int
+            Index sampling to.
 
         """
         if isinstance(rec, int):
@@ -446,35 +470,37 @@ class CPSC2021(PhysioNetDataBase):
         sampto: Optional[int] = None,
         **kwargs: Any,
     ) -> Union[dict, np.ndarray, List[List[int]], str]:
-        """
-        load annotations of the record
+        """Load annotations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        field: str, optional
-            field of the annotation, can be one of "rpeaks", "af_episodes", "label", "raw", "wfdb";
-            if not specified, all fields of the annotation will be returned in the form of a dict,
-            if is "raw" or "wfdb", then the corresponding wfdb "Annotation" will be returned
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        kwargs: dict,
-            key word arguments for functions loading rpeaks, af_episodes, and label respectively,
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        field : {"rpeaks", "af_episodes", "label", "raw", "wfdb"}, optional
+            Field of the annotation.
+            If is None, all fields of the annotation will be returned in the form of a dict.
+            If is "raw" or "wfdb", then the corresponding wfdb "Annotation" will be returned.
+        sampfrom : int, optional
+            Start index of the annotation to be loaded.
+        sampto: int, optional
+            End index of the annotation to be loaded.
+        kwargs : dict
+            Key word arguments for functions
+            loading rpeaks, af_episodes, and label respectively,
             including:
-            fs: int, optional,
-                the resampling frequency
-            fmt: str,
-                format of af_episodes, or format of label,
-                for more details, ref. corresponding functions
-            used only when field is specified,
+
+                - fs: int, optional,
+                  the resampling frequency
+                - fmt: str,
+                  format of af_episodes, or format of label,
+                  for more details, ref. corresponding functions.
+
+            Used only when `field` is specified (not None).
 
         Returns
         -------
-        ann: dict, or list, or ndarray, or str,
-            annotaton of the record
+        ann : dict or list or numpy.ndarray or str
+            Annotaton of the record.
 
         """
         sf, st = self._validate_samp_interval(rec, sampfrom, sampto)
@@ -518,35 +544,35 @@ class CPSC2021(PhysioNetDataBase):
         valid_only: bool = True,
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        load position (in terms of samples) of rpeaks
+        """Load position (in terms of samples) of rpeaks.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        ann: Annotation, optional,
-            the wfdb Annotation of the record,
-            if None, corresponding annotation file will be read
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
-        valid_only: bool, default True,
-            if True, only valid rpeaks will be returned,
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        ann : wfdb.Annotation, optional
+            The wfdb Annotation of the record.
+            If is None, corresponding annotation file will be read.
+        sampfrom : int, optional
+            Start index of the rpeak positions to be loaded.
+        sampto : int, optional
+            End index of the rpeak positions to be loaded.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
+        valid_only : bool, default True
+            If True, only valid rpeaks will be returned,
             otherwise, all indices in the `sample` field of the annotation will be returned.
-            Valid rpeaks are those with symbol in `WFDB_Beat_Annotations`;
-            symbols in `WFDB_Non_Beat_Annotations` are considered as invalid rpeaks
-        fs: real number, optional,
-            if not None, positions of the loaded rpeaks will be ajusted according to this sampling frequency
+            Valid rpeaks are those with symbol in `WFDB_Beat_Annotations`.
+            Symbols in `WFDB_Non_Beat_Annotations` are considered as invalid rpeaks
+        fs : numbers.Real, optional
+            If not None, positions of the loaded rpeaks
+            will be ajusted according to this sampling frequency.
 
         Returns
         -------
-        rpeaks: ndarray,
-            position (in terms of samples) of rpeaks of the record
+        rpeaks : numpy.ndarray
+            Position (in terms of samples) of rpeaks of the record.
 
         """
         if ann is None:
@@ -604,35 +630,37 @@ class CPSC2021(PhysioNetDataBase):
         fs: Optional[Real] = None,
         fmt: str = "intervals",
     ) -> Union[List[List[int]], np.ndarray]:
-        """
-        load the episodes of atrial fibrillation, in terms of intervals or mask
+        """Load the episodes of atrial fibrillation,
+        in terms of intervals or mask.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        ann: Annotation, optional,
-            the wfdb Annotation of the record,
-            if None, corresponding annotation file will be read
-        sampfrom: int, optional,
-            start index of the data to be loaded,
-            not used when `fmt` is "c_intervals"
-        sampto: int, optional,
-            end index of the data to be loaded,
-            not used when `fmt` is "c_intervals"
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
-            works only when `fmt` is not "c_intervals"
-        fs: real number, optional,
-            if not None, positions of the loaded intervals or mask will be ajusted according to this sampling frequency
-        fmt: str, default "intervals",
-            format of the episodes of atrial fibrillation, can be one of "intervals", "mask", "c_intervals"
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        ann : wfdb.Annotation, optional
+            The wfdb Annotation of the record.
+            If is None, corresponding annotation file will be read.
+        sampfrom : int, optional
+            Start index of the AF episodes to be loaded.
+            Not used when `fmt` is "c_intervals".
+        sampto : int, optional
+            End index of the AF episodes to be loaded.
+            Not used when `fmt` is "c_intervals".
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
+            Valid only when `fmt` is not "c_intervals".
+        fs : numbers.Real, optional
+            If not None, positions of the loaded intervals
+            or mask will be ajusted according to this sampling frequency.
+            Otherwise, the sampling frequency of the record will be used.
+        fmt : {"intervals", "mask", "c_intervals"}, optional
+            Format of the episodes of atrial fibrillation, by default "intervals".
 
         Returns
         -------
-        af_episodes: list or ndarray,
-            episodes of atrial fibrillation, in terms of intervals or mask
+        af_episodes : list or numpy.ndarray
+            Episodes of atrial fibrillation, in terms of intervals or mask.
 
         """
         header = wfdb.rdheader(str(self.get_absolute_path(rec)))
@@ -708,33 +736,36 @@ class CPSC2021(PhysioNetDataBase):
         sampto: Optional[int] = None,
         fmt: str = "a",
     ) -> str:
-        """
-        load (classifying) label of the record,
-        among the following three classes:
-        "non atrial fibrillation",
-        "paroxysmal atrial fibrillation",
-        "persistent atrial fibrillation",
+        """Load (classifying) label of the record.
+
+        The three classes are:
+
+            - "non atrial fibrillation",
+            - "paroxysmal atrial fibrillation",
+            - "persistent atrial fibrillation".
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        ann: Annotation, optional,
-            not used, to keep in accordance with other methods
-        sampfrom: int, optional,
-            not used, to keep in accordance with other methods
-        sampto: int, optional,
-            not used, to keep in accordance with other methods
-        fmt: str, default "a",
-            format of the label, case in-sensitive, can be one of:
-            "f", "fullname": the full name of the label
-            "a", "abbr", "abbrevation": abbreviation for the label
-            "n", "num", "number": class number of the label (in accordance with the settings of the offical class map)
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        ann : wfdb.Annotation, optional
+            Not used, to keep in accordance with other methods.
+        sampfrom : int, optional
+            Not used, to keep in accordance with other methods.
+        sampto : int, optional
+            Not used, to keep in accordance with other methods.
+        fmt : str, default "a"
+            Format of the label, case in-sensitive, can be one of
+
+                - "f", "fullname": the full name of the label
+                - "a", "abbr", "abbrevation": abbreviation for the label
+                - "n", "num", "number": class number of the label
+                  (in accordance with the settings of the offical class map)
 
         Returns
         -------
-        label: str,
-            classifying label of the record
+        label : str
+            Classifying label of the record.
 
         """
         header = wfdb.rdheader(str(self.get_absolute_path(rec)))
@@ -753,28 +784,29 @@ class CPSC2021(PhysioNetDataBase):
         bias: dict = {1: 1, 2: 0.5},
         verbose: Optional[int] = None,
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        generate the scoring mask for the onsets and offsets of af episodes,
+        """Generate the scoring mask for the onsets and offsets of af episodes.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        bias: dict, default {1:1, 2:0.5},
-            keys are bias (with ±) in terms of number of rpeaks
-            values are corresponding scores
-        verbose: int, optional,
-            verbosity level, if None, use `self.verbose`
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        bias : dict, default {1: 1, 2: 0.5}
+            Bias for the scoring of the onsets and offsets of af episodes.
+            Keys are bias (with ±) in terms of number of rpeaks, and
+            values are corresponding scores.
+        verbose : int, optional
+            Verbosity level. If is None, :attr:`self.verbose` will be used.
 
         Returns
         -------
-        (onset_score_mask, offset_score_mask): 2-tuple of ndarray,
-            scoring mask for the onset and offsets predictions of af episodes
+        onset_score_mask, offset_score_mask: Tuple[numpy.ndarray]
+            2-tuple of :class:`~numpy.ndarray`, which are the
+            scoring mask for the onset and offsets predictions of af episodes.
 
         NOTE
         ----
-        the onsets in `af_intervals` are 0.15s ahead of the corresponding R peaks,
-        while the offsets in `af_intervals` are 0.15s behind the corresponding R peaks,
+        The onsets in `af_intervals` are 0.15s ahead of the corresponding R peaks,
+        while the offsets in `af_intervals` are 0.15s behind the corresponding R peaks.
 
         """
         if isinstance(rec, int):
@@ -802,50 +834,52 @@ class CPSC2021(PhysioNetDataBase):
         waves: Optional[Dict[str, Sequence[int]]] = None,
         **kwargs,
     ) -> None:
-        """
+        """Plot the signals of a record.
+
         plot the signals of a record or external signals (units in μV),
         with metadata (labels, episodes of atrial fibrillation, etc.),
-        possibly also along with wave delineations
+        possibly also along with wave delineations.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data: ndarray, optional,
-            (2-lead) ECG signal to plot,
-            should be of the format "channel_first", and compatible with `leads`
-            if given, data of `rec` will not be used,
-            this is useful when plotting filtered data
-        ann: dict, optional,
-            annotations for `data`,
-            ignored if `data` is None
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        data : numpy.ndarray, optional
+            (2-lead) ECG signal to plot.
+            Should be of the format "channel_first", and compatible with `leads`.
+            If given, data of `rec` will not be used.
+            This is useful when plotting filtered data.
+        ann : dict, optional
+            Annotations for `data`.
+            Ignored if `data` is None.
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        sampfrom: int, optional,
-            start index of the data to plot
-        sampto: int, optional,
-            end index of the data to plot
-        leads: str or list of str, optional,
-            the leads to plot
-        waves: dict, optional,
-            indices of the wave critical points, including
+        sampfrom : int, optional
+            Start index of the data to plot.
+        sampto : int, optional
+            End index of the data to plot.
+        leads : str or List[str], optional
+            Names of the leads to plot.
+        waves : dict, optional
+            Indices of the wave critical points, including
             "p_onsets", "p_peaks", "p_offsets",
             "q_onsets", "q_peaks", "r_peaks", "s_peaks", "s_offsets",
             "t_onsets", "t_peaks", "t_offsets"
-        kwargs: dict,
+        kwargs : dict, optional
+            Additional keyword arguments to pass to :func:`matplotlib.pyplot.plot`.
 
         TODO
         ----
-        1. slice too long records, and plot separately for each segment
-        2. plot waves using `axvspan`
+        1. Slice too long records, and plot separately for each segment.
+        2. Plot waves using :func:`~matplotlib.pyplot.axvspan`.
 
         NOTE
         ----
-        1. `Locator` of `plt` has default `MAXTICKS` equal to 1000,
-        if not modifying this number, at most 40 seconds of signal could be plotted once
-        2. raw data usually have very severe baseline drifts,
-        hence the isoelectric line is not plotted
+        1. `Locator` of ``plt`` has default `MAXTICKS` of 1000.
+           If not modifying this number, at most 40 seconds of signal could be plotted once.
+        2. Raw data usually have very severe baseline drifts,
+           hence the isoelectric line is not plotted.
 
         Contributors: Jeethan, and WEN Hao
 

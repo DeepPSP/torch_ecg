@@ -58,6 +58,7 @@ extensions = [
     # 'sphinx.ext.autosectionlabel',
     "sphinx_multiversion",
     # "numpydoc",
+    "sphinxcontrib.tikz",
 ]
 
 intersphinx_mapping = {

@@ -37,22 +37,25 @@ _CPSC2019_INFO = DataBaseInfo(
     issues="""
     1. there're 13 records with unusual large values (> 20 mV):
         data_00098, data_00167, data_00173, data_00223, data_00224, data_00245, data_00813,
-        data_00814, data_00815, data_00833, data_00841, data_00949, data_00950
-        >>> for rec in dr.all_records:
-        >>>     data = dr.load_data(rec)
-        >>>     if np.max(data) > 20:
-        >>>         print(f"{rec} has max value ({np.max(data)} mV) > 20 mV")
-        data_00173 has max value (32.72031811111111 mV) > 20 mV
-        data_00223 has max value (32.75516713333333 mV) > 20 mV
-        data_00224 has max value (32.7519272 mV) > 20 mV
-        data_00245 has max value (32.75305293939394 mV) > 20 mV
-        data_00813 has max value (32.75865595876289 mV) > 20 mV
-        data_00814 has max value (32.75865595876289 mV) > 20 mV
-        data_00815 has max value (32.75558282474227 mV) > 20 mV
-        data_00833 has max value (32.76330123809524 mV) > 20 mV
-        data_00841 has max value (32.727626558139534 mV) > 20 mV
-        data_00949 has max value (32.75699667692308 mV) > 20 mV
-        data_00950 has max value (32.769551661538465 mV) > 20 mV
+        data_00814, data_00815, data_00833, data_00841, data_00949, data_00950.
+
+        .. code-block:: python
+
+            >>> for rec in dr.all_records:
+            >>>     data = dr.load_data(rec)
+            >>>     if np.max(data) > 20:
+            >>>         print(f"{rec} has max value ({np.max(data)} mV) > 20 mV")
+            data_00173 has max value (32.72031811111111 mV) > 20 mV
+            data_00223 has max value (32.75516713333333 mV) > 20 mV
+            data_00224 has max value (32.7519272 mV) > 20 mV
+            data_00245 has max value (32.75305293939394 mV) > 20 mV
+            data_00813 has max value (32.75865595876289 mV) > 20 mV
+            data_00814 has max value (32.75865595876289 mV) > 20 mV
+            data_00815 has max value (32.75558282474227 mV) > 20 mV
+            data_00833 has max value (32.76330123809524 mV) > 20 mV
+            data_00841 has max value (32.727626558139534 mV) > 20 mV
+            data_00949 has max value (32.75699667692308 mV) > 20 mV
+            data_00950 has max value (32.769551661538465 mV) > 20 mV
     2. rpeak references (annotations) loaded from files has dtype = uint16, which would produce unexpected large positive values when subtracting values larger than it, rather than the correct negative value. This might cause confusion in computing metrics when using annotations subtracting (instead of being subtracted by) predictions.
     3. official scoring function has errors, which would falsely omit the interval between the 0-th and the 1-st ref rpeaks, thus potentially missing false positive
     """,
@@ -65,7 +68,20 @@ _CPSC2019_INFO = DataBaseInfo(
 
 @add_docstring(_CPSC2019_INFO.format_database_docstring())
 class CPSC2019(CPSCDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     __name__ = "CPSC2019"
 
@@ -76,19 +92,6 @@ class CPSC2019(CPSCDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """finished, to be improved,
-
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="cpsc2019",
             db_dir=db_dir,
@@ -117,7 +120,9 @@ class CPSC2019(CPSCDataBase):
         self._ls_rec()
 
     def _ls_rec(self) -> None:
-        """ """
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in a dataframe.
+        """
         records_fn = self.db_dir / "records.json"
         self._all_records = [f"data_{i:05d}" for i in range(1, 1 + self.n_records)]
         self._all_annotations = [f"R_{i:05d}" for i in range(1, 1 + self.n_records)]
@@ -164,27 +169,24 @@ class CPSC2019(CPSCDataBase):
 
     @property
     def all_annotations(self) -> List[str]:
-        """ """
         return self._all_annotations
 
     @property
     def all_references(self) -> List[str]:
-        """ """
         return self._all_annotations
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """
-        Attach a unique subject id to each record
+        """Attach a unique subject id to each record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
 
         Returns
         -------
-        pid: int,
-            the `subject_id` corr. to `rec_no`
+        pid : int
+            The ``subject_id`` corr. to `rec`.
 
         """
         if isinstance(rec, int):
@@ -197,22 +199,22 @@ class CPSC2019(CPSCDataBase):
         extension: Optional[str] = None,
         ann: bool = False,
     ) -> Path:
-        """
-        get the absolute path of the record `rec`
+        """Get the absolute path of the record `rec`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        extension: str, optional,
-            extension of the file
-        ann: bool, default False,
-            whether to get the annotation file path or not
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        extension : str, optional
+            Extension of the file.
+            If not provided, no extension will be added.
+        ann : bool, default False
+            Whether to get the annotation file path or not.
 
         Returns
         -------
-        Path,
-            absolute path of the file
+        Path
+            Absolute path of the file.
 
         """
         if isinstance(rec, int):
@@ -231,27 +233,27 @@ class CPSC2019(CPSCDataBase):
         units: str = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        load the ECG data of the record `rec`
+        """Load the ECG data of the record `rec`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data_format: str, default "channel_first",
-            format of the ecg data,
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        data_format : str, default "channel_first"
+            Format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first"), or
-            "flat" (alias "plain")
-        units: str or None, default "mV",
-            units of the output signal, can also be "μV", with aliases of "uV", "muV"
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
+            "flat" (alias "plain").
+        units : str or None, default "mV"
+            Units of the output signal, can also be "μV" (with aliases "uV", "muV").
+        fs : numbers.Real, optional
+            If provided, the loaded data will be resampled to this frequency,
+            otherwise the original sampling frequency will be used.
 
         Returns
         -------
-        data: ndarray,
-            the ECG data
+        data : numpy.ndarray,
+            The loaded ECG data.
 
         """
         fp = self.get_absolute_path(rec, self.rec_ext)
@@ -271,18 +273,17 @@ class CPSC2019(CPSCDataBase):
         return data
 
     def load_ann(self, rec: Union[int, str]) -> np.ndarray:
-        """
-        load the annotations (indices of R peaks) of the record `rec`
+        """Load the annotations (indices of R peaks) of the record `rec`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
 
         Returns
         -------
-        ann: ndarray,
-            array of indices of R peaks
+        ann : numpy.ndarray,
+            Array of indices of R peaks.
 
         """
         fp = self.get_absolute_path(rec, self.ann_ext, ann=True)
@@ -311,20 +312,21 @@ class CPSC2019(CPSCDataBase):
         ticks_granularity: int = 0,
         **kwargs: Any,
     ) -> None:
-        """
+        """Plot the ECG data of the record `rec`.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data: ndarray, optional,
-            ECG signal to plot,
-            if given, data of `rec` will not be used,
-            this is useful when plotting filtered data
-        ann: ndarray, optional,
-            annotations (rpeak indices) for `data`,
-            ignored if `data` is None
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        data : numpy.ndarray, optional
+            ECG signal to plot.
+            If provided, data of `rec` will not be used,
+            which is useful when plotting filtered data.
+        ann : numpy.ndarray, optional
+            Annotations (rpeak indices) for `data`.
+            Ignored if `data` is None.
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
 
         """
@@ -382,7 +384,6 @@ class CPSC2019(CPSCDataBase):
 
     @property
     def url(self) -> str:
-        # return "http://2019.icbeb.org/file/train.rar"
         return "https://www.dropbox.com/s/75nee0pqdy3f9r2/CPSC2019-train.zip?dl=1"
 
     @property
@@ -401,27 +402,27 @@ def compute_metrics(
     thr: float = 0.075,
     verbose: int = 0,
 ) -> float:
-    """
-    metric (scoring) function modified from the official one, with errors fixed
+    """Metric (scoring) function modified from the official one,
+    with errors fixed.
 
     Parameters
     ----------
-    rpeaks_truths: sequence,
-        sequence of ground truths of rpeaks locations from multiple records
-    rpeaks_preds: sequence,
-        predictions of ground truths of rpeaks locations for multiple records
-    fs: real number,
-        sampling frequency of ECG signal
-    thr: float, default 0.075,
-        threshold for a prediction to be truth positive,
-        with units in seconds,
-    verbose: int, default 0,
-        print verbosity
+    rpeaks_truths : sequence
+        Sequence of ground truths of rpeaks locations from multiple records.
+    rpeaks_preds : sequence
+        Predictions of ground truths of rpeaks locations for multiple records.
+    fs : numbers.Real
+        Sampling frequency of ECG signal.
+    thr : float, default 0.075
+        Threshold for a prediction to be truth positive,
+        with units in seconds.
+    verbose : int, default 0
+        Verbosity level for printing.
 
     Returns
     -------
-    rec_acc: float,
-        accuracy of predictions
+    rec_acc : float
+        Accuracy of predictions.
 
     """
     assert len(rpeaks_truths) == len(rpeaks_preds), (

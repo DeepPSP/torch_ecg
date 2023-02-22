@@ -24,33 +24,48 @@ __all__ = [
 _CPSC2018_INFO = DataBaseInfo(
     title="""
     The China Physiological Signal Challenge 2018:
-    Automatic identification of the rhythm/morphology abnormalities in 12-lead ECGs
+    Automatic identification of the rhythm/morphology abnormalities in 12-lead ECGs.
     """,
     about="""
-    1. training set contains 6,877 (female: 3178; male: 3699) 12 leads ECG recordings lasting from 6 s to just 60 s
-    2. ECG recordings were sampled as 500 Hz
-    3. the training data can be downloaded using links in Ref.[1], but the link in Ref.[2] is recommended. File structure will be assumed to follow Ref.[2]
-    4. the training data are in the `channel first` format
+    1. training set contains 6,877 (female: 3178; male: 3699) 12 leads ECG recordings lasting from 6 s to just 60 s.
+    2. ECG recordings were sampled as 500 Hz.
+    3. the training data can be downloaded using links in [1]_, but the link in [2]_ is recommended. File structure will be assumed to follow [2]_
+    4. the training data are in the ``channel first`` format.
     5. types of abnormal rhythm/morphology + normal in the training set:
-            name                                    abbr.       number of records
-        (0) Normal                                  N           918
-        (1) Atrial fibrillation                     AF          1098
-        (2) First-degree atrioventricular block     I-AVB       704
-        (3) Left bundle brunch block                LBBB        207
-        (4) Right bundle brunch block               RBBB        1695
-        (5) Premature atrial contraction            PAC         556
-        (6) Premature ventricular contraction       PVC         672
-        (7) ST-segment depression                   STD         825
-        (8) ST-segment elevated                     STE         202
+        +-----+-------------------------------------+-------+-------------------+
+        | No. |   name                              | abbr. | number of records |
+        +=====+=====================================+=======+===================+
+        | 0   | Normal                              | N     | 918               |
+        +-----+-------------------------------------+-------+-------------------+
+        | 1   | Atrial fibrillation                 | AF    | 1098              |
+        +-----+-------------------------------------+-------+-------------------+
+        | 2   | First-degree atrioventricular block | I-AVB | 704               |
+        +-----+-------------------------------------+-------+-------------------+
+        | 3   | Left bundle brunch block            | LBBB  | 207               |
+        +-----+-------------------------------------+-------+-------------------+
+        | 4   | Right bundle brunch block           | RBBB  | 1695              |
+        +-----+-------------------------------------+-------+-------------------+
+        | 5   | Premature atrial contraction        | PAC   | 556               |
+        +-----+-------------------------------------+-------+-------------------+
+        | 6   | Premature ventricular contraction   | PVC   | 672               |
+        +-----+-------------------------------------+-------+-------------------+
+        | 7   | ST-segment depression               | STD   | 825               |
+        +-----+-------------------------------------+-------+-------------------+
+        | 8   | ST-segment elevated                 | STE   | 202               |
+        +-----+-------------------------------------+-------+-------------------+
     6. ordering of the leads in the data of all the records are
-        ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]
-    7. meanings in the .hea files: to write
-    8. knowledge about the abnormal rhythms: ref. cls.get_disease_knowledge
+
+        .. code-block:: python
+
+            ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]
+
+    7. meanings in the .hea files: **to write**
+    8. knowledge about the abnormal rhythms: ref. :meth:`get_disease_knowledge`.
     """,
-    note=r"""
-    1. Ages of records A0608, A1549, A1876, A2299, A5990 are "NaN"
-    2. CINC2020 (ref. \[(2)[#ref2]\]) released totally 3453 unused training data of CPSC2018, whose filenames start with "Q".
-    These file names are not "continuous". The last record is "Q3581"
+    note="""
+    1. Ages of records A0608, A1549, A1876, A2299, A5990 are "NaN".
+    2. CINC2020 (ref. [2]_) released totally 3453 unused training data of CPSC2018, whose filenames start with "Q".
+    These file names are not "continuous". The last record is "Q3581".
     """,
     usage=[
         "ECG arrythmia detection",
@@ -63,9 +78,22 @@ _CPSC2018_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_CPSC2018_INFO.format_database_docstring())
+@add_docstring(_CPSC2018_INFO.format_database_docstring(), mode="prepend")
 class CPSC2018(CPSCDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     __name__ = "CPSC2018"
 
@@ -76,18 +104,6 @@ class CPSC2018(CPSCDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="cpsc2018",
             db_dir=db_dir,
@@ -167,7 +183,9 @@ class CPSC2018(CPSCDataBase):
         self._ls_rec()
 
     def _ls_rec(self) -> None:
-        """ """
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in a dataframe.
+        """
         self._df_records = pd.DataFrame()
         self._df_records["path"] = get_record_list_recursive(
             self.db_dir, self.rec_ext, relative=False
@@ -223,18 +241,17 @@ class CPSC2018(CPSCDataBase):
             )
 
     def get_subject_id(self, rec: Union[int, str]) -> int:
-        """
-        Attach a unique `subject_id` to each record
+        """Attach a unique ``subject_id`` to each record.
 
         Parameters
         ----------
-        rec: int or str,
-            record name or index of the record in `self.all_records`
+        rec : int or str
+            Record name or index of the record in :attr:`self.all_records`.
 
         Returns
         -------
-        pid: int,
-            the `subject_id` corr. to `rec`
+        pid : int
+            The ``subject_id`` corr. to `rec`.
 
         """
         if isinstance(rec, int):
@@ -255,25 +272,25 @@ class CPSC2018(CPSCDataBase):
         data_format="channel_first",
         units: str = "mV",
     ) -> np.ndarray:
-        """
-        Load the ECG data of a record
+        """Load the ECG data of a record.
 
         Parameters
         ----------
-        rec: int or str,
-            record name or index of the record in `self.all_records`
-        leads: str or int or sequence of str or int, optional,
-            the leads to load,
-            None or "all" for all leads,
-        data_format: str, default "channel_first",
-            format of the ECG data, "channel_last" or "channel_first" (original)
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
+        rec : int or str
+            Record name or index of the record in :attr:`self.all_records`.
+        leads : str or int or Sequence[str] or Sequence[int], optional
+            The leads to load,
+            None or "all" for all leads.
+        data_format : str, default "channel_first"
+            Format of the ECG data, "channel_last" or "channel_first" (original)
+        units : str, default "mV"
+            Units of the output signal, can also be "μV" (with an alias "uV"),
+            case insensitive.
 
         Returns
         -------
-        data: ndarray,
-            the ECG data
+        data : numpy.ndarray
+            The loaded ECG data.
 
         """
         if isinstance(rec, int):
@@ -310,23 +327,22 @@ class CPSC2018(CPSCDataBase):
         return data
 
     def load_ann(self, rec: Union[str, int], ann_format: str = "n") -> List[str]:
-        """
-        Load labels (diagnoses or arrhythmias) of a record
+        """Load labels (diagnoses or arrhythmias) of a record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        ann_format: str, default "n",
-            the format of labels, one of the following (case insensitive):
-            - "a", abbreviations
-            - "f", full names
-            - "n", numeric codes
+        rec : str or int
+            Record name or index of the record in :attr:`self.all_records`.
+        ann_format : str, default "n"
+            Format of labels, one of the following (case insensitive):
+                - "a", abbreviations
+                - "f", full names
+                - "n", numeric codes
 
         Returns
         -------
-        labels: list,
-            the list of labels
+        labels : List[str]
+            The list of labels.
 
         """
         if isinstance(rec, int):
@@ -352,19 +368,19 @@ class CPSC2018(CPSCDataBase):
     def get_subject_info(
         self, rec: Union[int, str], items: Optional[List[str]] = None
     ) -> dict:
-        """
-        Get subject information (e.g sex, age, etc.)
+        """Get subject information (e.g sex, age, etc.).
 
         Parameters
         ----------
-        rec: int or str,
-            record name or index of the record in `self.all_records`
-        items: list of str, optional,
-            items of the subject information (e.g. sex, age, etc.)
+        rec : int or str
+            Record name or index of the record in :attr:`self.all_records`.
+        items : List[str], optional
+            Items of the subject information (e.g. sex, age, etc.).
 
         Returns
         -------
-        subject_info, dict,
+        subject_info : dict
+            The subject information.
 
         """
         if items is None or len(items) == 0:
@@ -390,17 +406,19 @@ class CPSC2018(CPSCDataBase):
         leads: Optional[Union[str, List[str]]] = None,
         **kwargs: Any,
     ) -> None:
-        """
+        """Plot the ECG data of a record.
+
         Parameters
         ----------
-        rec: int or str,
-            record name or index of the record in `self.all_records`
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+        rec : int or str
+            Record name or index of the record in :attr:`self.all_records`.
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        leads: str or list of str, optional,
-            the leads to plot
-        kwargs: auxilliary key word arguments
+        leads : str or List[str], optional
+            The leads to plot
+        kwargs : dict, optional
+            Auxilliary key word arguments to pass to :func:`matplotlib.pyplot.subplots`.
 
         """
         if isinstance(rec, int):
@@ -478,7 +496,7 @@ class CPSC2018(CPSCDataBase):
         http_get(label_url, self.db_dir, extract=False)
 
     def download(self) -> None:
-        """download the database from `self.url`"""
+        """Download the database from :attr:`self.url`."""
         for url in self.url:
             http_get(url, self.db_dir, extract=True)
         self._download_labels()

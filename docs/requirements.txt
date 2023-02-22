@@ -8,4 +8,5 @@ sphinx-markdown-tables
 sphinx-copybutton
 sphinx-multiversion
 sphinxcontrib-napoleon
+sphinxcontrib-tikz
 numpydoc
