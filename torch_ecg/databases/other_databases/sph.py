@@ -50,9 +50,22 @@ _SPH_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_SPH_INFO.format_database_docstring())
+@add_docstring(_SPH_INFO.format_database_docstring(), mode="prepend")
 class SPH(_DataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments
+
+    """
 
     __name__ = "SPH"
 
@@ -63,19 +76,6 @@ class SPH(_DataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database,
-            if not specified, `wfdb` will fetch data from the website of PhysioNet
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="SPH",
             db_dir=db_dir,
@@ -98,8 +98,8 @@ class SPH(_DataBase):
         self._ls_rec()
 
     def _ls_rec(self) -> None:
-        """
-        find all records in `self.db_dir`
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in a dataframe.
         """
         record_list_fp = self.db_dir / "RECORDS"
         self._df_records = pd.DataFrame()
@@ -129,7 +129,8 @@ class SPH(_DataBase):
         if len(self._df_records) == 0:
             write_file = True
             self.logger.info(
-                "Please wait patiently to let the reader find all records of the database from local storage..."
+                "Please wait patiently to let the reader find "
+                "all records of the database from local storage..."
             )
             start = time.time()
             record_pattern = "A[\\d]{5}\\.h5"
@@ -166,18 +167,17 @@ class SPH(_DataBase):
             self._df_metadata = pd.read_csv(self.db_dir / "metadata.csv")
 
     def get_subject_id(self, rec: Union[str, int]) -> str:
-        """
-        Attach a `subject_id` to the record, in order to facilitate further uses
+        """Attach a unique subject id for the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`
 
         Returns
         -------
-        sid: str,
-            a `subject_id` attached to the record `rec`
+        sid : str
+            Subject ID associated with the record.
 
         """
         if isinstance(rec, int):
@@ -194,26 +194,26 @@ class SPH(_DataBase):
         data_format: str = "channel_first",
         units: str = "mV",
     ) -> np.ndarray:
-        """
-        load ECG data from h5 file
+        """Load ECG data from h5 file of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or int or list of str or int, optional,
-            the leads to load
-        data_format: str, default "channel_first",
-            format of the ECG data,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        leads : str or int or List[str] or List[int], optional
+            The leads of the ECG data to be loaded.
+        data_format : str, default "channel_first"
+            Format of the ECG data,
             "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first")
-        units: str, default "mV",
-            units of the output signal, can also be "μV", with an alias of "uV"
+            "channel_first" (alias "lead_first").
+        units : str, default "mV"
+            Units of the output signal,
+            can also be "μV" (alias "uV", "muV").
 
         Returns
         -------
-        data: ndarray,
-            the ECG data
+        data : numpy.ndarray
+            The loaded ECG data.
 
         """
         assert data_format.lower() in [
@@ -241,26 +241,27 @@ class SPH(_DataBase):
     def load_ann(
         self, rec: Union[str, int], ann_format: str = "c", ignore_modifier: bool = True
     ) -> List[str]:
-        """
-        load annotation from the metadata file
+        """Load annotation from the metadata file.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        ann_format: str, default "a",
-            the format of labels, one of the following (case insensitive):
-            - "a", abbreviations
-            - "f", full names
-            - "c", AHACode
-        ignore_modifier: bool, default True,
-            whether to ignore the modifiers of the annotations,
-            for example, "60+310" will be converted to "60"
+        rec : int or str
+            Record name or index of the record in :attr:`all_records`.
+        ann_format : str, default "a"
+            Format of labels, one of the following (case insensitive):
+
+                - "a": abbreviations
+                - "f": full names
+                - "c": AHACode
+
+        ignore_modifier : bool, default True
+            Whether to ignore the modifiers of the annotations or not.
+            For example, "60+310" will be converted to "60"
 
         Returns
         -------
-        labels: list,
-            the list of labels
+        labels : List[str]
+            The list of labels.
 
         """
         if isinstance(rec, int):
@@ -300,22 +301,22 @@ class SPH(_DataBase):
     def get_subject_info(
         self, rec_or_sid: Union[str, int], items: Optional[List[str]] = None
     ) -> dict:
-        """
-        read auxiliary information of a subject (a record) stored in the header files
+        """Read auxiliary information of a subject (a record)
+        from the header files.
 
         Parameters
         ----------
-        rec_or_sid: str or int,
-            record name or index of the record in `self.all_records`,
-            or the subject ID
-        items: list of str, optional,
-            items of the subject"s information (e.g. sex, age, etc.)
+        rec : int or str
+            Record name, or index of the record in :attr:`all_records`,
+            or the subject ID.
+        items : List[str], optional
+            Items of information to be returned (e.g. age, sex, etc.).
 
         Returns
         -------
-        subject_info: dict,
-            information about the subject, including
-            "age", "sex",
+        subject_info : dict
+            Information about the subject, including
+            "age", "sex".
 
         """
         if isinstance(rec_or_sid, int):
@@ -342,18 +343,17 @@ class SPH(_DataBase):
         return subject_info
 
     def get_age(self, rec: Union[str, int]) -> int:
-        """
-        get the age of the subject of the record
+        """Get the age of the subject that the record belongs to.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : int or str
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        age: int,
-            the age of the subject
+        age : int
+            Age of the subject.
 
         """
         if isinstance(rec, int):
@@ -364,18 +364,17 @@ class SPH(_DataBase):
         return age
 
     def get_sex(self, rec: Union[str, int]) -> str:
-        """
-        get the sex of the subject of the record
+        """Get the sex of the subject that the record belongs to.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : int or str
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        sex: str,
-            the sex of the subject
+        sex : str
+            Sex of the subject.
 
         """
         if isinstance(rec, int):
@@ -384,18 +383,17 @@ class SPH(_DataBase):
         return sex
 
     def get_siglen(self, rec: Union[str, int]) -> int:
-        """
-        get the length of the ECG signal of the record
+        """Get the length of the ECG signal of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : int or str
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        siglen: int,
-            the signal length of the record
+        siglen : int
+            Length of the ECG signal of the record.
 
         """
         if isinstance(rec, int):
@@ -414,9 +412,7 @@ class SPH(_DataBase):
         }
 
     def download(self, files: Optional[Union[str, Sequence[str]]]) -> None:
-        """
-        download the database from the figshare website
-        """
+        """Download the database from the figshare website."""
         if files is None:
             files = self.url.keys()
         if isinstance(files, str):
@@ -442,45 +438,49 @@ class SPH(_DataBase):
         **kwargs: Any,
     ) -> None:
         """
-        plot the signals of a record or external signals (units in μV),
+        Plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
-        possibly also along with wave delineations
+        possibly also along with wave delineations.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data: ndarray, optional,
-            (12-lead) ECG signal to plot,
-            should be of the format "channel_first", and compatible with `leads`
-            if given, data of `rec` will not be used,
-            this is useful when plotting filtered data
-        ann: sequence of str, optional,
-            annotations for `data`,
-            ignored if `data` is None
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+        rec : int or str
+            Record name or index of the record in :attr:`all_records`.
+        data : numpy.ndarray, optional
+            (12-lead) ECG signal to plot.
+            Should be of the format "channel_first",
+            and compatible with `leads`.
+            If not None, data of `rec` will not be used.
+            Tthis is useful when plotting filtered data.
+        ann : Sequence[str], optional
+            Annotations for `data`.
+            Ignored if `data` is None.
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        leads: str or int or list of str or int, optional,
-            the leads to plot
-        same_range: bool, default False,
-            if True, forces all leads to have the same y range
-        waves: dict, optional,
+        leads : str or int or List[str] or List[int], optional
+            The leads of the ECG signal to plot.
+        same_range : bool, default False
+            If True, forces all leads to have the same y range.
+        waves : dict, optional
+            A dictionary containing the
             indices of the wave critical points, including
             "p_onsets", "p_peaks", "p_offsets",
             "q_onsets", "q_peaks", "r_peaks", "s_peaks", "s_offsets",
-            "t_onsets", "t_peaks", "t_offsets"
-        kwargs: dict,
+            "t_onsets", "t_peaks", "t_offsets".
+        kwargs : dict, optional
+            Additional keyword arguments to pass to :func:`matplotlib.pyplot.plot`.
 
         TODO
         ----
-        1. slice too long records, and plot separately for each segment
-        2. plot waves using `axvspan`
+        1. Slice too long records, and plot separately for each segment.
+        2. Plot waves using :func:`matplotlib.pyplot.axvspan`.
 
         NOTE
         ----
-        `Locator` of `plt` has default `MAXTICKS` equal to 1000,
-        if not modifying this number, at most 40 seconds of signal could be plotted once
+        `Locator` of ``plt`` has default `MAXTICKS` of 1000.
+        If not modifying this number,
+        at most 40 seconds of signal could be plotted once.
 
         Contributors: Jeethan, and WEN Hao
 

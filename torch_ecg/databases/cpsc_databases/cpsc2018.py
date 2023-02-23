@@ -241,7 +241,7 @@ class CPSC2018(CPSCDataBase):
             )
 
     def get_subject_id(self, rec: Union[int, str]) -> int:
-        """Attach a unique ``subject_id`` to each record.
+        """Attach a unique ``subject_id`` to the record.
 
         Parameters
         ----------

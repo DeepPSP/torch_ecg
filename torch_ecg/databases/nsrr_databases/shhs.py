@@ -542,7 +542,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self.sleep_stage_names = self.all_sleep_stage_names[:nb_stages]
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """Attach a unique subject id for a record.
+        """Attach a unique subject id for the record.
 
         Parameters
         ----------
@@ -553,7 +553,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         Returns
         -------
         pid : int
-            Subject ID derived from (attached to) `rec`.
+            Subject ID derived from (attached to) the record.
 
         """
         if isinstance(rec, int):

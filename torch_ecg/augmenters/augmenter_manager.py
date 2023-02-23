@@ -28,7 +28,7 @@ class AugmenterManager(torch.nn.Module):
 
     Parameters
     ----------
-    aug : tuple of :class:`Augmenter`, optional
+    aug : Tuple[Augmenter], optional
         The augmenters to be added to the manager.
     random : bool, default False
         Whether to apply the augmenters in random order.
@@ -234,7 +234,7 @@ class AugmenterManager(torch.nn.Module):
 
         Parameters
         ----------
-        new_ordering : list of str
+        new_ordering : List[str]
             The list of augmenter names in the new order.
 
         """

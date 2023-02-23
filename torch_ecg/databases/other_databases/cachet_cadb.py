@@ -51,9 +51,22 @@ _CACHET_CADB_INFO = DataBaseInfo(  # NOT finished yet
 )
 
 
-@add_docstring(_CACHET_CADB_INFO.format_database_docstring())
+@add_docstring(_CACHET_CADB_INFO.format_database_docstring(), mode="prepend")
 class CACHET_CADB(_DataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments
+
+    """
 
     __name__ = "CACHET_CADB"
 
@@ -64,19 +77,6 @@ class CACHET_CADB(_DataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database,
-            if not specified, `wfdb` will fetch data from the website of PhysioNet
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="CACHET-CADB",
             db_dir=db_dir,
@@ -165,10 +165,10 @@ class CACHET_CADB(_DataBase):
         self._ls_rec()
 
     def _ls_rec(self) -> None:
-        """
-        find all records in `self.db_dir`
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in a dataframe.
 
-        TODO: impelement subsampling for the long format data
+        TODO: impelement subsampling for the long format data.
         """
         # short format file
         self._short_format_file = list(self.db_dir.rglob("*.hdf5"))
@@ -243,23 +243,23 @@ class CACHET_CADB(_DataBase):
     def get_absolute_path(
         self, rec: Union[str, int], extension: str = "signal-ecg"
     ) -> Path:
-        """
-        get the absolute path of the signal folder of the record `rec`
+        """Get the absolute path of the signal folder of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        extension: str, default "signal-ecg",
-            "extension" of the file, can be one of
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        extension: str, default "signal-ecg"
+            Extension of the file, can be one of
             "header", "annotation", "signal",
             "annotation-context",
-            "signal-ecg", "signal-acc", "signal-angularrate", "signal-hr_live", "signal-hrvrmssd_live", etc.
+            "signal-ecg", "signal-acc", "signal-angularrate",
+            "signal-hr_live", "signal-hrvrmssd_live", etc.
 
         Returns
         -------
-        path: Path,
-            absolute path of the file
+        pathlib.Path
+            Absolute path of the file.
 
         """
         if isinstance(rec, int):
@@ -285,18 +285,17 @@ class CACHET_CADB(_DataBase):
             return self._df_records.loc[rec, f"context_{ext2}_path"]
 
     def get_subject_id(self, rec: Union[str, int]) -> str:
-        """
-        Attach a `subject_id` to the record, in order to facilitate further uses
+        """Attach a unique subject id for the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        sid: str,
-            a `subject_id` attached to the record `rec`
+        sid : str
+            Subject ID attached to the record.
 
         """
         if isinstance(rec, int):
@@ -307,24 +306,26 @@ class CACHET_CADB(_DataBase):
     def _rdheader(
         self, rec: Union[str, int], key: Optional[str] = None, raw: bool = False
     ) -> Union[str, Dict[str, Any]]:
-        """
-        read header file of a record
+        """Read header file of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        key: str, optional,
-            key of the header to be read, can be one of
-            "acc", "angularrate", "hr_live", "hrvrmssd_live", "movementacceleration_live", "press", "ecg", "customAttributes",
-            if not specified, read all keys
-        raw: bool, default False,
-            if True, return the raw header file, otherwise return a dict
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        key : str, optional
+            Key of the header to be read, can be one of
+            "acc", "angularrate", "hr_live", "hrvrmssd_live",
+            "movementacceleration_live", "press", "ecg", "customAttributes".
+            If is None, read all keys.
+        raw : bool, default False
+            If True, return the raw header file,
+            otherwise, return a dict.
 
         Returns
         -------
-        header: dict or str,
-            header information
+        header : dict or str
+            Header information, or raw header file,
+            depending on the value of `raw`.
 
         """
         if isinstance(rec, int):
@@ -371,35 +372,35 @@ class CACHET_CADB(_DataBase):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        load physical (converted from digital) ECG data,
-        which is more understandable for humans;
+        """Load physical (converted from digital) ECG data,
         or load digital signal directly.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`,
-            or "short_format" (-1) to load data from the short format file
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ECG data,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`,
+            or "short_format" (-1) to load data from the short format file.
+        sampfrom : int, optional
+            Start index of the data to be loaded.
+        sampto : int, optional
+            End index of the data to be loaded.
+        data_format : str, default "channel_first"
+            Format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first"), or
-            "flat" (alias "plain")
-        units: str or None, default "mV",
-            units of the output signal, can also be "μV", with aliases of "uV", "muV";
-            None for digital data, without digital-to-physical conversion
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
+            "flat" (alias "plain").
+        units : str or None, default "mV"
+            Units of the output signal, can also be "μV" (aliases "uV", "muV");
+            None for digital data, without digital-to-physical conversion.
+        fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            If not None, the loaded data will be resampled to this frequency,
+            otherwise, the original sampling frequency will be used.
 
         Returns
         -------
-        data: ndarray,
-            the ECG data loaded from `rec`, with given units and format
+        data : numpy.ndarray
+            The loaded ECG data.
 
         """
         if isinstance(rec, int):
@@ -448,36 +449,41 @@ class CACHET_CADB(_DataBase):
         units: Optional[str] = None,
         fs: Optional[Real] = None,
     ) -> Union[np.ndarray, pd.DataFrame]:
-        """
-        load context data
+        """Load context data (e.g. accelerometer, heart rate, etc.).
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        context_name: str,
-            context name, can be one of
-            "acc", "angularrate", "hr_live", "hrvrmssd_live", "movementacceleration_live", "press", "marker"
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        channels: str or int or list of str or list of int, optional,
-            channels to be loaded, if not specified, load all channels
-        units: str, optional,
-            units of the output signal, can be "default";
-            None for digital data, without digital-to-physical conversion
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        context_name : str
+            Context name, can be one of
+            "acc", "angularrate", "hr_live", "hrvrmssd_live",
+            "movementacceleration_live", "press", "marker".
+        sampfrom : int, optional
+            Start index of the data to be loaded.
+        sampto : int, optional
+            End index of the data to be loaded.
+        channels : str or int or List[str] or List[int], optional
+            Channels (names or indices) to be loaded.
+            If is None, all channels will be loaded.
+        units : str, optional
+            Units of the output signal,
+            currently can only be "default";
+            None for digital data, without digital-to-physical conversion.
+        fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            If not None, the loaded data will be resampled to this frequency,
+            otherwise, the original sampling frequency will be used.
 
         Returns
         -------
-        context_data: ndarray or DataFrame,
-            context data in the "channel_first" format
+        context_data : numpy.ndarray or pandas.DataFrame
+            Context data in the "channel_first" format.
 
         NOTE
         ----
-        If the record does not have the specified context data, empty array or DataFrame will be returned
+        If the record does not have the specified context data,
+        empty array or DataFrame will be returned.
 
         """
         if isinstance(rec, int):
@@ -569,21 +575,20 @@ class CACHET_CADB(_DataBase):
     def load_ann(
         self, rec: Union[str, int], ann_format: str = "pd"
     ) -> Union[pd.DataFrame, np.ndarray, Dict[Union[int, str], np.ndarray]]:
-        """
-        load annotation from the metadata file
+        """Load annotation from the metadata file.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        ann_format: str, default "pd",
-            format of the annotation,
-            currently only "pd" is supported
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        ann_format : str, default "pd"
+            Format of the annotation,
+            currently only "pd" is supported.
 
         Returns
         -------
-        ann: pd.DataFrame or ndarray or dict,
-            the annotations
+        ann : pandas.DataFrame or numpy.ndarray or dict
+            The annotation of the record.
 
         """
         if isinstance(rec, int):
@@ -610,22 +615,21 @@ class CACHET_CADB(_DataBase):
     def load_context_ann(
         self, rec: Union[str, int], sheet_name: Optional[str] = None
     ) -> Union[pd.DataFrame, Dict[str, pd.DataFrame]]:
-        """
-        load context annotation
+        """Load context annotation.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sheet_name: str or None,
-            sheet name of the context annotation file,
-            can be one of "movisens DataAnalyzer Parameter", "movisens DataAnalyzer Results",
-            if is None, return all sheets
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sheet_name : str, optional
+            Sheet name of the context annotation file, can be one of
+            "movisens DataAnalyzer Parameter", "movisens DataAnalyzer Results".
+            If is None, all sheets will be loaded.
 
         Returns
         -------
-        context_ann: pd.DataFrame or dict,
-            context annotations
+        context_ann : pandas.DataFrame or dict
+            Context annotations of the record.
 
         """
         if isinstance(rec, int):
@@ -639,19 +643,18 @@ class CACHET_CADB(_DataBase):
         return context_ann
 
     def get_record_metadata(self, rec: Union[str, int]) -> Dict[str, str]:
-        """
-        get metadata of a record
+        """Get metadata of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`,
-            or "short_format" (-1) to load data from the short format file
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`,
+            or "short_format" (-1) to load data from the short format file.
 
         Returns
         -------
-        metadata: dict,
-            metadata of the record
+        metadata : dict
+            Metadata of the record
 
         """
         metadata = self._rdheader(rec, key="customAttributes")
@@ -660,22 +663,22 @@ class CACHET_CADB(_DataBase):
     def get_subject_info(
         self, rec_or_sid: Union[str, int], items: Optional[List[str]] = None
     ) -> Dict[str, str]:
-        """
-        read auxiliary information of a subject (a record) stored in the header files
+        """Read auxiliary information of a subject (a record)
+        stored in the header files.
 
         Parameters
         ----------
-        rec_or_sid: str or int,
-            record name or index of the record in `self.all_records`,
-            or the subject ID
-        items: list of str, optional,
-            items of the subject"s information (e.g. sex, age, etc.)
+        rec : str or int
+            Record name, or index of the record in :attr:`all_records`,
+            or the subject ID.
+        items : List[str], optional
+            Items of the subject"s information (e.g. sex, age, etc.).
 
         Returns
         -------
-        subject_info: dict,
-            information about the subject, including
-            "age", "gender", "height", "weight"
+        subject_info : dict
+            Information about the subject, including
+            "age", "gender", "height", "weight".
 
         """
         subject_info_items = ["age", "gender", "height", "weight"]
@@ -696,17 +699,17 @@ class CACHET_CADB(_DataBase):
 
     @property
     def all_subjects(self) -> List[str]:
-        """list of all subject IDs"""
+        """List of all subject IDs."""
         return self._all_subjects
 
     @property
     def subject_records(self) -> Dict[str, List[str]]:
-        """dict of subject IDs and their corresponding records"""
+        """Dict of subject IDs and their corresponding records."""
         return self._subject_records
 
     @property
     def df_metadata(self) -> pd.DataFrame:
-        """the table of metadata of the records"""
+        """The table of metadata of the records."""
         return self._df_metadata
 
     @property
@@ -717,15 +720,14 @@ class CACHET_CADB(_DataBase):
         }
 
     def download(self, files: Optional[Union[str, Sequence[str]]]) -> None:
-        """
-        download the database from the DTU website
+        """Download the database from the DTU website.
 
         Parameters
         ----------
-        files: str or list of str, optional,
-            files to download, can be subset of
-            "CACHET-CADB.zip", "cachet-cadb_short_format_without_context.hdf5.zip";
-            if is None, download all files,
+        files : str or Sequence[str], optional
+            Files to download, can be subset of
+            "CACHET-CADB.zip", "cachet-cadb_short_format_without_context.hdf5.zip".
+            If is None, all files will be downloaded.
 
         """
         warnings.warn(
@@ -751,9 +753,7 @@ class CACHET_CADB(_DataBase):
         rec: Union[str, int],
         **kwargs: Any,
     ) -> None:
-        """
-        to write
-        """
+        """Not implemented."""
         raise NotImplementedError
 
     @property
