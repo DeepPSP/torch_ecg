@@ -246,7 +246,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec : int or str
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
@@ -277,7 +277,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec : int or str
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         leads : str or int or Sequence[str] or Sequence[int], optional
             The leads to load,
             None or "all" for all leads.
@@ -332,7 +332,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         ann_format : str, default "n"
             Format of labels, one of the following (case insensitive):
                 - "a", abbreviations
@@ -373,7 +373,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec : int or str
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         items : List[str], optional
             Items of the subject information (e.g. sex, age, etc.).
 
@@ -411,7 +411,7 @@ class CPSC2018(CPSCDataBase):
         Parameters
         ----------
         rec : int or str
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         ticks_granularity : int, default 0
             Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)

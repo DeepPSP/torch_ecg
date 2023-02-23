@@ -30,49 +30,78 @@ _SHHS_INFO = DataBaseInfo(
     Sleep Heart Health Study
     """,
     about=r"""
-    *ABOUT the dataset*:
+    **ABOUT the dataset**:
+
     1. shhs1 (Visit 1):
-        1.1. the baseline clinic visit and polysomnogram performed between November 1, 1995 and January 31, 1998
-        1.2. in all, 6,441 men and women aged 40 years and older were enrolled
-        1.3. 5,804 rows, down from the original 6,441 due to data sharing rules on certain cohorts and subjects
+
+        - the baseline clinic visit and polysomnogram performed between November 1, 1995 and January 31, 1998
+        - in all, 6,441 men and women aged 40 years and older were enrolled
+        - 5,804 rows, down from the original 6,441 due to data sharing rules on certain cohorts and subjects
+
     2. shhs-interim-followup (Interim Follow-up):
-        2.1. an interim clinic visit or phone call 2-3 years after baseline (shhs1)
-        2.2. 5,804 rows, despite some subjects not having complete data, all original subjects are present in the dataset
+
+        - an interim clinic visit or phone call 2-3 years after baseline (shhs1)
+        - 5,804 rows, despite some subjects not having complete data, all original subjects are present in the dataset
+
     3. shhs2 (Visit 2):
-        3.1. the follow-up clinic visit and polysomnogram performed between January 2001 and June 2003
-        3.2. during this exam cycle 3, a second polysomnogram was obtained in 3,295 of the participants
-        3.3. 4,080 rows, not all cohorts and subjects took part
+
+        - the follow-up clinic visit and polysomnogram performed between January 2001 and June 2003
+        - during this exam cycle 3, a second polysomnogram was obtained in 3,295 of the participants
+        - 4,080 rows, not all cohorts and subjects took part
+
     4. shhs-cvd (CVD Outcomes):
-        4.1. the tracking of adjudicated heart health outcomes (e.g. stroke, heart attack) between baseline (shhs1) and 2008-2011 (varies by parent cohort)
-        4.2. 5,802 rows, outcomes data were not provided on all subjects
+
+        - the tracking of adjudicated heart health outcomes (e.g. stroke, heart attack) between baseline (shhs1) and 2008-2011 (varies by parent cohort)
+        - 5,802 rows, outcomes data were not provided on all subjects
+
     5. shhs-cvd-events (CVD Outcome Events):
-        5.1. event-level details for the tracking of heart health outcomes (shhs-cvd)
-        5.2. 4,839 rows, representing individual events
+
+        - event-level details for the tracking of heart health outcomes (shhs-cvd)
+        - 4,839 rows, representing individual events
 
     6. ECG was sampled at 125 Hz in shhs1 and 250/256 Hz in shhs2
-    7. `annotations-events-nsrr` and `annotations-events-profusion`: annotation files both contain xml files, the former processed in the EDF Editor and Translator tool, the latter exported from Compumedics Profusion
+    7. `annotations-events-nsrr` and `annotations-events-profusion`:
+       annotation files both contain xml files, the former processed in the EDF Editor and Translator tool,
+       the latter exported from Compumedics Profusion
     8. about 10% of the records have HRV (including sleep stages and sleep events) annotations
 
-    *DATA Analysis Tips*:
-    1. Respiratory Disturbance Index (RDI):
-        1.1. A number of RDI variables exist in the data set. These variables are highly skewed.
-        1.2. log-transformation is recommended, among which the following transformation performed best, at least in some subsets:
-            NEWVA = log(OLDVAR + 0.1)
-    2. Obstructive Apnea Index (OAI):
-        2.1. There is one OAI index in the data set. It reflects obstructive events associated with a 4% desaturation or arousal. Nearly 30% of the cohort has a zero value for this variable
-        2.2. Dichotomization is suggested (e.g. >=3 or >=4 events per hour indicates positive)
-    3. Central Apnea Index (CAI):
-        3.1. Several variables describe central breathing events, with different thresholds for desaturation and requirement/non-requirement of arousals. ~58% of the cohort have zero values
-        3.2. Dichotomization is suggested (e.g. >=3 or >=4 events per hour indicates positive)
-    4. Sleep Stages:
-        4.1. Stage 1 and stage 3-4 are not normally distributed, but stage 2 and REM sleep are.
-        4.2. To use these data as continuous dependent variables, stages 1 and 3-4 must be transformed. The following formula is suggested:
-            –log(-log(val/100+0.001))
-    5. Sleep time below 90% O2:
-        5.1. Percent of total sleep time with oxygen levels below 75%, 80%, 85% and 90% were recorded
-        5.2. Dichotomization is suggested (e.g. >5% and >10% of sleep time with oxygen levels below a specific O2 level indicates positive)
+    **DATA Analysis Tips**:
 
-    *ABOUT signals*: ([ref 10](#ref10))
+    1. Respiratory Disturbance Index (RDI):
+
+        - A number of RDI variables exist in the data set. These variables are highly skewed.
+        - log-transformation is recommended, among which the following transformation performed best, at least in some subsets:
+
+          .. math::
+
+            NEWVA = log(OLDVAR + 0.1)
+
+    2. Obstructive Apnea Index (OAI):
+
+        - There is one OAI index in the data set. It reflects obstructive events associated with a 4% desaturation or arousal. Nearly 30% of the cohort has a zero value for this variable
+        - Dichotomization is suggested (e.g. >=3 or >=4 events per hour indicates positive)
+
+    3. Central Apnea Index (CAI):
+
+        - Several variables describe central breathing events, with different thresholds for desaturation and requirement/non-requirement of arousals. ~58% of the cohort have zero values
+        - Dichotomization is suggested (e.g. >=3 or >=4 events per hour indicates positive)
+
+    4. Sleep Stages:
+
+        - Stage 1 and stage 3-4 are not normally distributed, but stage 2 and REM sleep are.
+        - To use these data as continuous dependent variables, stages 1 and 3-4 must be transformed. The following formula is suggested:
+
+          .. math::
+
+            –log(-log(val/100+0.001))
+
+    5. Sleep time below 90% O2:
+
+        - Percent of total sleep time with oxygen levels below 75%, 80%, 85% and 90% were recorded
+        - Dichotomization is suggested (e.g. >5% and >10% of sleep time with oxygen levels below a specific O2 level indicates positive)
+
+    **ABOUT signals**: (ref. [10]_)
+
     1. C3/A2 and C4/A1 EEGs, sampled at 125 Hz
     2. right and left electrooculograms (EOGs), sampled at 50 Hz
     3. a bipolar submental electromyogram (EMG), sampled at 125 Hz
@@ -84,93 +113,159 @@ _SHHS_INFO = DataBaseInfo(
     9. body position (using a mercury gauge sensor)
     10. ambient light (on/off, by a light sensor secured to the recording garment)
 
-    *ABOUT annotations* (NOT including "nsrrid","visitnumber","pptid" etc.):
-    1. hrv annotations: (in csv files, ref. [2])
-        Start__sec_ --- 5 minute window start time
-        NN_RR	    --- Ratio of consecutive normal sinus beats (NN) over all cardiac inter-beat (RR) intervals
-        AVNN	    --- Mean of all normal sinus to normal sinus interbeat intervals (NN)
-        IHR	        --- Instantaneous heart rate
-        SDNN	    --- Standard deviation of all normal sinus to normal sinus interbeat (NN) intervals
-        SDANN	    --- Standard deviation of the averages of normal sinus to normal sinus interbeat (NN) intervals in all 5-minute segments
-        SDNNIDX	    --- Mean of the standard deviations of normal sinus to normal sinus interbeat (NN) intervals in all 5-minute segments
-        rMSSD	    --- Square root of the mean of the squares of difference between adjacent normal sinus to normal sinus interbeat (NN) intervals
-        pNN10	    --- Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >10 ms
-        pNN20	    --- Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >20 ms
-        pNN30	    --- Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >30 ms
-        pNN40	    --- Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >40 ms
-        pNN50	    --- Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >50 ms
-        tot_pwr	    --- Total normal sinus to normal sinus interbeat (NN) interval spectral power up to 0.4 Hz
-        ULF	        --- Ultra-low frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0 and 0.003 Hz
-        VLF	        --- Very low frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0.003 and 0.04 Hz
-        LF	        --- Low frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0.04 and 0.15 Hz
-        HF	        --- High frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0.15 and 0.4 Hz
-        LF_HF	    --- The ratio of low to high frequency power
-        LF_n	    --- Low frequency power (normalized)
-        HF_n	    --- High frequency power (normalized)
-    2. wave delineation annotations: (in csv files, NOTE: see "CAUTION" by the end of this part, ref. [2])
-        RPoint	    --- Sample Number indicating R Point (peak of QRS)
-        Start	    --- Sample Number indicating start of beat
-        End	        --- Sample Number indicating end of beat
-        STLevel1    --- Level of ECG 1 in Raw data ( 65536 peak to peak rawdata = 10mV peak to peak)
-        STSlope1    --- Slope of ECG 1 stored as int and to convert to a double divide raw value by 1000.0
-        STLevel2    --- Level of ECG 2 in Raw data ( 65536 peak to peak rawdata = 10mV peak to peak)
-        STSlope2    --- Slope of ECG 2 stored as int and to convert to a double divide raw value by 1000.0
-        Manual      --- (True / False) True if record was manually inserted
-        Type        --- Type of beat (0 = Artifact / 1 = Normal Sinus Beat / 2 = VE / 3 = SVE)
-        Class       --- no longer used
-        PPoint      --- Sample Number indicating peak of the P wave (-1 if no P wave detected)
-        PStart      --- Sample Number indicating start of the P wave
-        PEnd        --- Sample Number indicating end of the P wave
-        TPoint      --- Sample Number indicating peak of the T wave (-1 if no T wave detected)
-        TStart      --- Sample Number indicating start of the T wave
-        TEnd        --- Sample Number indicating end of the T wave
-        TemplateID  --- The ID of the template to which this beat has been assigned (-1 if not assigned to a template)
-        nsrrid      --- nsrrid of this record
-        samplingrate--- frequency of the ECG signal of this record
-        seconds     --- Number of seconds from beginning of recording to R-point (Rpoint / sampling rate)
-        epoch       --- Epoch (30 second) number
-        rpointadj   --- R Point adjusted sample number (RPoint * (samplingrate/256))
-    CAUTION: all the above sampling numbers except for rpointadj assume 256 Hz, while the rpointadj column has been added to provide an adjusted sample number based on the actual sampling rate.
-    3. event annotations: (in xml files)
-        TODO
-    4. event_profusion annotations: (in xml files)
-        TODO
+    **ABOUT annotations** (NOT including "nsrrid", "visitnumber", "pptid" etc.):
 
-    *DEFINITION of concepts in sleep study*:
-    1. Arousal: (ref. [3],[4])
-        1.1. interruptions of sleep lasting 3 to 15 seconds
-        1.2. can occur spontaneously or as a result of sleep-disordered breathing or other sleep disorders
-        1.3. sends you back to a lighter stage of sleep
-        1.4. if the arousal last more than 15 seconds, it becomes an awakening
-        1.5. the higher the arousal index (occurrences per hour), the more tired you are likely to feel, though people vary in their tolerance of sleep disruptions
-    2. Central Sleep Apnea (CSA): (ref. [3],[5],[6])
-        2.1. breathing repeatedly stops and starts during sleep
-        2.2. occurs because your brain (central nervous system) doesn't send proper signals to the muscles that control your breathing, which is point that differs from obstructive sleep apnea
-        2.3. may occur as a result of other conditions, such as heart failure, stroke, high altitude, etc.
-    3. Obstructive Sleep Apnea (OSA): (ref. [3],[7])
-        3.1. occurs when throat muscles intermittently relax and block upper airway during sleep
-        3.2. a noticeable sign of obstructive sleep apnea is snoring
-    4. Complex (Mixed) Sleep Apnea: (ref. [3])
-        4.1. combination of both CSA and OSA
-        4.2. exact mechanism of the loss of central respiratory drive during sleep in OSA is unknown but is most likely related to incorrect settings of the CPAP (Continuous Positive Airway Pressure) treatment and other medical conditions the person has
+    1. hrv annotations: (in csv files, ref. [2]_)
+
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | Start__sec_ | 5 minute window start time                                                                                                     |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | NN_RR       | Ratio of consecutive normal sinus beats (NN) over all cardiac inter-beat (RR) intervals (NN/RR)                                |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | AVNN        | Mean of all normal sinus to normal sinus interbeat intervals (NN)                                                              |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | IHR         | Instantaneous heart rate                                                                                                       |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | SDNN        | Standard deviation of all normal sinus to normal sinus interbeat (NN) intervals                                                |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | SDANN       | Standard deviation of the averages of normal sinus to normal sinus interbeat (NN) intervals in all 5-minute segments           |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | SDNNIDX    | Mean of the standard deviations of normal sinus to normal sinus interbeat (NN) intervals in all 5-minute segments              |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | rMSSD      | Square root of the mean of the squares of difference between adjacent normal sinus to normal sinus interbeat (NN) intervals    |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | pNN10      | Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >10 ms               |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | pNN20      | Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >20 ms               |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | pNN30      | Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >30 ms               |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | pNN40      | Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >40 ms               |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | pNN50      | Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >50 ms               |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | tot_pwr    | Total normal sinus to normal sinus interbeat (NN) interval spectral power up to 0.4 Hz                                         |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | ULF        | Ultra-low frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0 and 0.003 Hz      |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | VLF        | Very low frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0.003 and 0.04 Hz    |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | LF         | Low frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0.04 and 0.15 Hz          |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | HF         | High frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0.15 and 0.4 Hz          |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | LF_HF      | The ratio of low to high frequency power                                                                                       |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | LF_n       | Low frequency power (normalized)                                                                                               |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        | HF_n       | High frequency power (normalized)                                                                                              |
+        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+
+    2. wave delineation annotations: (in csv files, NOTE: see "CAUTION" by the end of this part, ref. [2]_)
+
+        +--------------+------------------------------------------------------------------------------------------------+
+        | RPoint       | Sample Number indicating R Point (peak of QRS)                                                 |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | Start        | Sample Number indicating start of beat                                                         |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | End          | Sample Number indicating end of beat                                                           |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | STLevel1     | Level of ECG 1 in Raw data ( 65536 peak to peak rawdata = 10mV peak to peak)                   |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | STSlope1     | Slope of ECG 1 stored as int and to convert to a double divide raw value by 1000.0             |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | STLevel2     | Level of ECG 2 in Raw data ( 65536 peak to peak rawdata = 10mV peak to peak)                   |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | STSlope2     | Slope of ECG 2 stored as int and to convert to a double divide raw value by 1000.0             |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | Manual       | (True / False) True if record was manually inserted                                            |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | Type         | Type of beat (0 = Artifact / 1 = Normal Sinus Beat / 2 = VE / 3 = SVE)                         |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | Class        | no longer used                                                                                 |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | PPoint       | Sample Number indicating peak of the P wave (-1 if no P wave detected)                         |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | PStart       | Sample Number indicating start of the P wave                                                   |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | PEnd         | Sample Number indicating end of the P wave                                                     |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | TPoint       | Sample Number indicating peak of the T wave (-1 if no T wave detected)                         |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | TStart       | Sample Number indicating start of the T wave                                                   |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | TEnd         | Sample Number indicating end of the T wave                                                     |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | TemplateID   | The ID of the template to which this beat has been assigned (-1 if not assigned to a template) |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | nsrrid       | nsrrid of this record                                                                          |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | samplingrate | frequency of the ECG signal of this record                                                     |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | seconds      | Number of seconds from beginning of recording to R-point (Rpoint / sampling rate)              |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | epoch        | Epoch (30 second) number                                                                       |
+        +--------------+------------------------------------------------------------------------------------------------+
+        | rpointadj    | R Point adjusted sample number (RPoint * (samplingrate/256))                                   |
+        +--------------+------------------------------------------------------------------------------------------------+
+
+        CAUTION: all the above sampling numbers except for rpointadj assume 256 Hz, while the rpointadj column has been added to provide an adjusted sample number based on the actual sampling rate.
+
+    3. event annotations: (in xml files)
+       TODO
+    4. event_profusion annotations: (in xml files)
+       TODO
+
+    **DEFINITION of concepts in sleep study**:
+
+    1. Arousal: (ref. [3]_, [4]_)
+
+        - interruptions of sleep lasting 3 to 15 seconds
+        - can occur spontaneously or as a result of sleep-disordered breathing or other sleep disorders
+        - sends you back to a lighter stage of sleep
+        - if the arousal last more than 15 seconds, it becomes an awakening
+        - the higher the arousal index (occurrences per hour), the more tired you are likely to feel, though people vary in their tolerance of sleep disruptions
+
+    2. Central Sleep Apnea (CSA): (ref. [3]_, [5]_, [6]_)
+
+        - breathing repeatedly stops and starts during sleep
+        - occurs because your brain (central nervous system) doesn't send proper signals to the muscles that control your breathing, which is point that differs from obstructive sleep apnea
+        - may occur as a result of other conditions, such as heart failure, stroke, high altitude, etc.
+
+    3. Obstructive Sleep Apnea (OSA): (ref. [3]_, [7]_)
+
+        - occurs when throat muscles intermittently relax and block upper airway during sleep
+        - a noticeable sign of obstructive sleep apnea is snoring
+
+    4. Complex (Mixed) Sleep Apnea: (ref. [3]_)
+
+        - combination of both CSA and OSA
+        - exact mechanism of the loss of central respiratory drive during sleep in OSA is unknown but is most likely related to incorrect settings of the CPAP (Continuous Positive Airway Pressure) treatment and other medical conditions the person has
+
     5. Hypopnea:
-        overly shallow breathing or an abnormally low respiratory rate. Hypopnea is defined by some to be less severe than apnea (the complete cessation of breathing)
+       overly shallow breathing or an abnormally low respiratory rate. Hypopnea is defined by some to be less severe than apnea (the complete cessation of breathing)
     6. Apnea Hypopnea Index (AHI): to write
-        6.1. used to indicate the severity of OSA
-        6.2. number of apneas or hypopneas recorded during the study per hour of sleep
-        6.3. based on the AHI, the severity of OSA is classified as follows
+
+        - used to indicate the severity of OSA
+        - number of apneas or hypopneas recorded during the study per hour of sleep
+        - based on the AHI, the severity of OSA is classified as follows
+
             - none/minimal: AHI < 5 per hour
             - mild: AHI ≥ 5, but < 15 per hour
             - moderate: AHI ≥ 15, but < 30 per hour
             - severe: AHI ≥ 30 per hour
+
     7. Oxygen Desaturation:
-        7.1. used to indicate the severity of OSA
-        7.2. reductions in blood oxygen levels (desaturation)
-        7.3. at sea level, a normal blood oxygen level (saturation) is usually 96 - 97%
-        7.4. (no generally accepted classifications for severity of oxygen desaturation)
+
+        - used to indicate the severity of OSA
+        - reductions in blood oxygen levels (desaturation)
+        - at sea level, a normal blood oxygen level (saturation) is usually 96 - 97%
+        - (no generally accepted classifications for severity of oxygen desaturation)
+
             - mild: >= 90%
             - moderate: 80% - 89%
             - severe: < 80%
+
     """,
     usage=[
         "Sleep stage",
@@ -198,9 +293,22 @@ _SHHS_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_SHHS_INFO.format_database_docstring())
+@add_docstring(_SHHS_INFO.format_database_docstring(), mode="prepend")
 class SHHS(NSRRDataBase, PSGDataBaseMixin):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments
+
+    """
 
     __name__ = "SHHS"
 
@@ -211,18 +319,6 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="SHHS",
             db_dir=db_dir,
@@ -262,7 +358,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self.file_opened = None
 
     def form_paths(self) -> None:
-        """ """
+        """Form paths to the database files."""
         self.psg_data_path = self.db_dir / "polysomnography" / "edfs"
         self.ann_path = self.db_dir / "datasets"
         self.hrv_ann_path = self.ann_path / "hrv-analysis"
@@ -276,7 +372,9 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         )
 
     def _ls_rec(self) -> None:
-        """ """
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in a dataframe.
+        """
         self.logger.info("Finding `edf` records....")
         self._df_records = pd.DataFrame()
         self._df_records["path"] = sorted(self.db_dir.rglob("*.edf"))
@@ -408,28 +506,30 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         # END OF `_ls_rec`
 
     def list_table_names(self) -> List[str]:
-        """list available table names"""
+        """List available table names."""
         return list(self._tables.keys())
 
     def get_table(self, table_name: str) -> pd.DataFrame:
-        """
-        get table by name
+        """Get table by name.
 
         Parameters
         ----------
-        table_name: str,
-            table name,
-            for available table names, call method `list_table_names`
+        table_name : str
+            Table name.
+            For available table names, call method :meth:`list_table_names`.
 
         Returns
         -------
-        table: pd.DataFrame
+        table : pandas.DataFrame
+            The loaded table.
 
         """
         return self._tables[table_name]
 
     def update_sleep_stage_names(self) -> None:
-        """ """
+        """Update :attr:`self.sleep_stage_names`
+        according to :attr:`self.sleep_stage_protocol`.
+        """
         if self.sleep_stage_protocol == "aasm":
             nb_stages = 5
         elif self.sleep_stage_protocol == "simplified":
@@ -442,18 +542,18 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self.sleep_stage_names = self.all_sleep_stage_names[:nb_stages]
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """
-        get a unique subject id for a record
+        """Attach a unique subject id for a record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        pid, int, `subject_id` derived from `rec`
+        pid : int
+            Subject ID derived from (attached to) `rec`.
 
         """
         if isinstance(rec, int):
@@ -473,21 +573,22 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
     def get_available_signals(
         self, rec: Union[str, int, None]
     ) -> Union[List[str], None]:
-        """
-        get available signals for a record;
-        if input `rec` is None, will find available signals for all records,
-        and assign to `self._df_records['available_signals']`
+        """Get available signals for a record.
+
+        If input `rec` is None,
+        this function finds available signals for all records,
+        and assign to :attr:`self._df_records['available_signals']`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        available_signals: list of str,
-            names of available signals for `rec`
+        available_signals : List[str]
+            Names of available signals for `rec`.
 
         """
         if rec is None:
@@ -532,18 +633,18 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         return available_signals
 
     def split_rec_name(self, rec: Union[str, int]) -> Dict[str, Union[str, int]]:
-        """
-        split `rec` into `tranche`, `visitnumber`, `nsrrid`
+        """Split `rec` into `tranche`, `visitnumber`, `nsrrid`
 
         Parameters
         ----------
-        rec: str,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in attr:`self.all_records`.
 
         Returns
         -------
-        dict, keys: "tranche", "visitnumber", "nsrrid"
+        dict
+            Keys: "tranche", "visitnumber", "nsrrid".
 
         """
         if isinstance(rec, int):
@@ -560,52 +661,52 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         }
 
     def get_visitnumber(self, rec: Union[str, int]) -> int:
-        """
-        get `visitnumber` from `rec`
+        """Get ``visitnumber`` from `rec`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        int, visit number extracted from `rec`
+        int
+            Visit number extracted from `rec`.
 
         """
         return self.split_rec_name(rec)["visitnumber"]
 
     def get_tranche(self, rec: Union[str, int]) -> str:
-        """
-        get `tranche` ("shhs1" or "shhs2") from `rec`
+        """Get ``tranche`` ("shhs1" or "shhs2") from `rec`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        str, tranche extracted from `rec`
+        str
+            Tranche extracted from `rec`.
 
         """
         return self.split_rec_name(rec)["tranche"]
 
     def get_nsrrid(self, rec: Union[str, int]) -> int:
-        """
-        get `nsrrid` from `rec`
+        """Get ``nsrrid`` from `rec`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        int, nsrrid extracted from `rec`
+        int
+            ``nsrrid`` extracted from `rec`.
 
         """
         return self.split_rec_name(rec)["nsrrid"]
@@ -616,28 +717,27 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         sig: str = "ECG",
         rec_path: Optional[Union[str, Path]] = None,
     ) -> Real:
-        """
-        get the sampling frequency of a signal of a record
+        """Get the sampling frequency of a signal of a record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        sig: str, default "ECG",
-            signal name or annotation name (e.g. "rpeak"),
-            some annotation files (*-rpeak.csv) have sampling frequency column
-        rec_path: str or Path, optional,
-            path of the file which contains the PSG data,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        sig : str, default "ECG"
+            Signal name or annotation name (e.g. "rpeak").
+            Some annotation files (*-rpeak.csv) have sampling frequency column.
+        rec_path : str or path.Path, optional
+            Path of the file which contains the PSG data.
+            If is None, default path will be used.
 
         Returns
         -------
-        fs, real number,
-            the sampling frequency of the signal `sig` of the record `rec`.
-            If corresponding signal (.edf) file is not available,
-            or the signal file does not contain the signal `sig`,
-            return -1
+        fs : numbers.Real
+            Sampling frequency of the signal `sig` of the record `rec`.
+            Returns -1
+            if corresponding signal (.edf) file is not available,
+            or the signal file does not contain the signal `sig`.
 
         """
         if isinstance(rec, int):
@@ -678,27 +778,26 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         sig: str = "ECG",
         rec_path: Optional[Union[str, Path]] = None,
     ) -> int:
-        """
-        get the index of the channel of the signal `sig` of the record `rec`
+        """Get the index of the channel of the signal in the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        sig: str, default "ECG",
-            signal name
-        rec_path: str or Path, optional,
-            path of the file which contains the PSG data,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        sig : str, default "ECG"
+            Signal name.
+        rec_path : str or pathlib.Path, optional
+            Path of the file which contains the PSG data.
+            If is None, default path will be used.
 
         Returns
         -------
-        chn_num, int,
-            the index of channel of the signal `sig` of the record `rec`.
-            If corresponding signal (.edf) file is not available,
-            or the signal file does not contain the signal `sig`,
-            return -1
+        chn_num : int
+            Index of channel of the signal `sig` of the record `rec`.
+            Returns -1
+            if corresponding signal (.edf) file is not available,
+            or the signal file does not contain the signal `sig`.
 
         """
         sig = self.match_channel(sig)
@@ -715,23 +814,22 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         return chn_num
 
     def match_channel(self, channel: str, raise_error: bool = True) -> str:
-        """
-        match the channel name to the standard channel name in SHHS
+        """Match the channel name to the standard channel name.
 
         Parameters
         ----------
-        channel: str,
-            channel name
-        raise_error: bool, default True,
-            whether to raise error if no match is found.
-            If False, return the input `channel` directly
+        channel : str
+            Channel name.
+        raise_error : bool, default True
+            Whether to raise error if no match is found.
+            If False, returns the input `channel` directly.
 
         Returns
         -------
-        sig: str,
-            the standard channel name in SHHS.
+        sig : str
+            Standard channel name in SHHS.
             If no match is found, and `raise_error` is False,
-            return the input `channel` directly
+            returns the input `channel` directly.
 
         """
         if channel.lower() in self.all_signals:
@@ -746,24 +844,23 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         rec_path: Optional[Union[str, Path]] = None,
         rec_type: str = "psg",
     ) -> Path:
-        """
-        get the absolute path of the record `rec` with type `rec_type`
+        """Get the absolute path of specific type of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        rec_path: str or Path, optional,
-            path of the file which contains the desired data,
-            if not given, default path will be used
-        rec_type: str, default "psg",
-            record type, data or annotations
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        rec_path : str or pathlib.Path, optional
+            Path of the file which contains the desired data.
+            If is None, default path will be used.
+        rec_type : str, default "psg"
+            Record type, either data (psg, etc.) or annotations.
 
         Returns
         -------
-        rp: Path,
-            absolute path of the record `rec` with type `rec_type`
+        rp : pathlib.Path
+            Absolute path of the record `rec` with type `rec_type`.
 
         """
         if rec_path is not None:
@@ -786,23 +883,21 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         return rp
 
     def database_stats(self) -> None:
-        """ """
         raise NotImplementedError
 
     def show_rec_stats(
         self, rec: Union[str, int], rec_path: Optional[Union[str, Path]] = None
     ) -> None:
-        """
-        print the statistics of the record `rec`
+        """Print the statistics of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        rec_path: str or Path, optional,
-            path of the file which contains the PSG data,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        rec_path : str or pathlib.Path, optional
+            Path of the file which contains the PSG data.
+            If is None, default path will be used.
 
         """
         frp = self.get_absolute_path(rec, rec_path, rec_type="psg")
@@ -826,41 +921,45 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         fs: Optional[int] = None,
         physical: bool = True,
     ) -> Union[Dict[str, Tuple[np.ndarray, Real]], Tuple[np.ndarray, Real]]:
-        """
-        load PSG data of the record `rec`
+        """Load PSG data of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        channel: str, default "all",
-            name of the channel of PSG,
-            if is "all", then all channels will be returned
-        rec_path: str or Path, optional,
-            path of the file which contains the PSG data,
-            if not given, default path will be used
-        sampfrom: real number, optional,
-            start time (units in seconds) of the data to be loaded,
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        channel : str, default "all"
+            Name of the channel of PSG.
+            If is "all", then all channels will be returned.
+        rec_path : str or pathlib.Path, optional
+            Path of the file which contains the PSG data.
+            If is None, default path will be used.
+        sampfrom : numbers.Real, optional
+            Start time (units in seconds) of the data to be loaded,
+            valid only when `channel` is some specific channel.
+        sampto : numbers.Real, optional
+            End time (units in seconds) of the data to be loaded,
             valid only when `channel` is some specific channel
-        sampto: real number, optional,
-            end time (units in seconds) of the data to be loaded,
-            valid only when `channel` is some specific channel
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
-            valid only when `channel` is some specific channel
-        physical: bool, default True,
-            if True, then the data will be converted to physical units
-            otherwise, the data will be in digital units
+        fs : numbers.Real, optional
+            Sampling frequency of the loaded data.
+            If not None, the loaded data will be resampled to this frequency,
+            otherwise, the original sampling frequency will be used.
+            Valid only when `channel` is some specific channel.
+        physical : bool, default True
+            If True, then the data will be converted to physical units,
+            otherwise, the data will be in digital units.
 
         Returns
         -------
-        dict,
-            keys: PSG channel names;
-            values: PSG data and sampling frequency
+        dict or tuple
+            If `channel` is "all", then a dictionary will be returned:
 
-        (np.ndarray, real number):
-            PSG data of the channel `channel` and its sampling frequency
+                - keys: PSG channel names;
+                - values: PSG data and sampling frequency
+
+            Otherwise, a 2-tuple will be returned:
+            (:class:`numpy.ndarray`, :class:`numbers.Real`), which is the
+            PSG data of the channel `channel` and its sampling frequency.
 
         """
         chn = self.match_channel(channel) if channel.lower() != "all" else "all"
@@ -914,38 +1013,39 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         units: Union[str, type(None)] = "mV",
         fs: Optional[int] = None,
     ) -> Tuple[np.ndarray, Real]:
-        """
-        load ECG data of the record `rec`
+        """Load ECG data of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        rec_path: str or Path, optional,
-            path of the file which contains the ECG data,
-            if not given, default path will be used
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ecg data,
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        rec_path : str or pathlib.Path, optional
+            Path of the file which contains the ECG data.
+            If is None, default path will be used.
+        sampfrom : int, optional
+            Start index of the data to be loaded.
+        sampto : int, optional
+            End index of the data to be loaded.
+        data_format : str, default "channel_first"
+            Format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first"), or
-            "flat" (alias "plain") which is valid only when `leads` is a single lead
-        units: str or None, default "mV",
-            units of the output signal, can also be "μV", with aliases of "uV", "muV";
-            None for digital data, without digital-to-physical conversion
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
+            "flat" (alias "plain") which is valid only when `leads` is a single lead.
+        units : str or None, default "mV"
+            Units of the output signal, can also be "μV" (aliases "uV", "muV").
+            None for digital data, without digital-to-physical conversion.
+        fs : numbers.Real, optional
+            Sampling frequency of the loaded data.
+            If not None, the loaded data will be resampled to this frequency,
+            otherwise, the original sampling frequency will be used.
 
         Returns
         -------
-        data: ndarray,
-            ECG data
-        data_fs: real number,
-            sampling frequency
+        data : numpy.ndarray
+            The loaded ECG data.
+        data_fs : numbers.Real
+            Sampling frequency of the loaded ECG data.
 
         """
         allowed_data_format = [
@@ -1016,28 +1116,28 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         ann_path: Optional[Union[str, Path]] = None,
         **kwargs: Any,
     ) -> Union[np.ndarray, pd.DataFrame, dict]:
-        """
-        load annotations of specific type of the record `rec`
+        """Load annotations of specific type of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        ann_type: str,
-            type of the annotation, can be
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        ann_type : str,
+            Type of the annotation, can be
             "event", "event_profusion", "hrv_summary", "hrv_detailed",
             "sleep", "sleep_stage", "sleep_event", "apnea" (alias "sleep_apnea"),
-            "wave_delineation", "rpeak", "rr", "nn"
-        ann_path: str or Path, optional,
-            path of the file which contains the annotations,
-            if not given, default path will be used
-        kwargs: dict,
-            other arguments for specific annotation type
+            "wave_delineation", "rpeak", "rr", "nn".
+        ann_path : str or pathlib.Path, optional
+            Path of the file which contains the annotations.
+            If is None, default path will be used.
+        kwargs : dict, optional
+            Other arguments for specific annotation type.
 
         Returns
         -------
-        annotations: ndarray or DataFrame or dict,
+        annotations : numpy.ndarray or pandas.DataFrame or dict
+            The loaded annotations.
 
         """
         if ann_type.lower() == "event":
@@ -1080,22 +1180,21 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         simplify: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        load event annotations of the record `rec`
+        """Load event annotations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        event_ann_path: str or Path, optional,
-            path of the file which contains the events-nsrr annotations,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        event_ann_path : str or pathlib.Path, optional
+            Path of the file which contains the events-nsrr annotations.
+            If is None, default path will be used.
 
         Returns
         -------
-        df_events: DataFrame,
-            event annotations
+        df_events : pandas.DataFrame
+            Event annotations of the record.
 
         """
         file_path = self.get_absolute_path(rec, event_ann_path, rec_type="event")
@@ -1124,25 +1223,26 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         event_profusion_ann_path: Optional[Union[str, Path]] = None,
         **kwargs: Any,
     ) -> dict:
-        """
-        load `event_profusion` annotations of the record `rec`
+        """Load events-profusion annotations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        event_profusion_ann_path: str or Path, optional,
-            path of the file which contains the events-profusion annotations,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        event_profusion_ann_path : str or pathlib.Path, optional
+            Path of the file which contains the events-profusion annotations.
+            If is None, default path will be used.
 
         Returns
         -------
-        dict, with items "sleep_stage_list", "df_events"
+        dict
+            Event-profusions annotations of the record,
+            with items "sleep_stage_list", "df_events".
 
         TODO
         ----
-        merge "sleep_stage_list" and "df_events" into one DataFrame
+        Merge "sleep_stage_list" and "df_events" into one :class:`~pandas.DataFrame`.
 
         """
         file_path = self.get_absolute_path(
@@ -1168,24 +1268,23 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         hrv_ann_path: Optional[Union[str, Path]] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        load summary HRV annotations of the record `rec`
+        """Load summary HRV annotations of the record.
 
         Parameters
         ----------
-        rec: str or int, optional,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        hrv_ann_path: str or Path, optional,
-            path of the summary HRV annotation file,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        hrv_ann_path : str or pathlib.Path, optional
+            Path of the summary HRV annotation file.
+            If is None, default path will be used.
 
         Returns
         -------
-        df_hrv_ann, DataFrame,
-            if `rec` is not None, df_hrv_ann is the summary HRV annotations of `rec`;
-            if `rec` is None, df_hrv_ann is the summary HRV annotations of all records
-            that had HRV annotations (about 10% of all the records in SHHS)
+        df_hrv_ann : pandas.DataFrame
+            If `rec` is not None, `df_hrv_ann` is the summary HRV annotations of `rec`;
+            if `rec` is None, `df_hrv_ann` is the summary HRV annotations of all records
+            that had HRV annotations (about 10% of all the records in SHHS).
 
         """
         if rec is None:
@@ -1218,22 +1317,21 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         hrv_ann_path: Optional[Union[str, Path]] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        load detailed HRV annotations of the record `rec`
+        """Load detailed HRV annotations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        hrv_ann_path: str or Path, optional,
-            path of the detailed HRV annotation file,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        hrv_ann_path : str or pathlib.Path, optional
+            Path of the detailed HRV annotation file.
+            If is None, default path will be used.
 
         Returns
         -------
-        df_hrv_ann, DataFrame,
-            detailed HRV annotations of `rec`
+        df_hrv_ann : pandas.DataFrame.
+            Detailed HRV annotations of the record.
 
         """
         if isinstance(rec, int):
@@ -1256,25 +1354,24 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         sleep_ann_path: Optional[Union[str, Path]] = None,
         **kwargs: Any,
     ) -> Union[pd.DataFrame, dict]:
-        """
-        load sleep annotations of the record `rec`
+        """Load sleep annotations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        source: str, default "event",
-            source of the annotations, case insensitive,
-            can be "hrv", "event", "event_profusion"
-        sleep_ann_path: str or Path, optional,
-            path of the file which contains the sleep annotations,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        source : {"hrv", "event", "event_profusion"}, optional
+            Source of the annotations, case insensitive,
+            by default "event"
+        sleep_ann_path : str or pathlib.Path, optional
+            Path of the file which contains the sleep annotations.
+            If is None, default path will be used.
 
         Returns
         -------
-        df_sleep_ann, DataFrame or dict,
-            all annotations on sleep of `rec`
+        df_sleep_ann : pandas.DataFrame or dict
+            All sleep annotations of the record.
 
         """
         if isinstance(rec, int):
@@ -1332,30 +1429,31 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         with_stage_names: bool = True,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        load sleep stage annotations of the record `rec`
+        """Load sleep stage annotations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        source: str, default "event",
-            source of the annotations, case insensitive,
-            can be "hrv", "event", "event_profusion"
-        sleep_stage_ann_path: str or Path, optional,
-            path of the file which contains the sleep stage annotations,
-            if not given, default path will be used
-        sleep_stage_protocol: str, default "aasm",
-            the protocol to classify sleep stages. currently can be "aasm", "simplified", "shhs"
-            the only difference lies in the number of different stages of the NREM periods
-        with_stage_names: bool, default True,
-            as the argument name implies
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        source : {"hrv", "event", "event_profusion"}, optional
+            Source of the annotations, case insensitive,
+            by default "event".
+        sleep_stage_ann_path : str or pathlib.Path, optional
+            Path of the file which contains the sleep stage annotations.
+            If is None, default path will be used.
+        sleep_stage_protocol : str, default "aasm"
+            The protocol to classify sleep stages.
+            Currently can be "aasm", "simplified", "shhs".
+            The only difference lies in the number of different stages of the NREM periods.
+        with_stage_names : bool, default True
+            If True, an additional column "sleep_stage_name"
+            will be added to the returned :class:`~pandas.DataFrame`.
 
         Returns
         -------
-        df_sleep_stage_ann, DataFrame,
-            all annotations on sleep stage of `rec`
+        df_sleep_stage_ann : pandas.DataFrame
+            Sleep stage annotations of the record.
 
         """
         if isinstance(rec, int):
@@ -1468,30 +1566,31 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         event_types: Optional[List[str]] = None,
         sleep_event_ann_path: Optional[Union[str, Path]] = None,
     ) -> pd.DataFrame:
-        """
-        load sleep event annotations of `rec`
+        """Load sleep event annotations of a record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        source: str, default "event",
-            source of the annotations, case insensitive,
-            can be "hrv", "event", "event_profusion"
-        event_types: list of str (cases ignored), optional,
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        source : {"hrv", "event", "event_profusion"}, optional
+            Source of the annotations, case insensitive,
+            by default "event".
+        event_types : List[str], optional
+            List of event types to be loaded, by default None.
+            The event types are:
             "Respiratory" (including "Apnea", "SpO2"), "Arousal",
             "Apnea" (including "CSA", "OSA", "MSA", "Hypopnea"), "SpO2",
-            "CSA", "OSA", "MSA", "Hypopnea",
-            used only when `source` is "event" or "event_profusion"
-        sleep_event_ann_path: str or Path, optional,
-            path of the file which contains the sleep event annotations,
-            if not given, default path will be used
+            "CSA", "OSA", "MSA", "Hypopnea".
+            Used only when `source` is "event" or "event_profusion".
+        sleep_event_ann_path : str or pathlib.Path, optional
+            Path of the file which contains the sleep event annotations.
+            If is None, default path will be used.
 
         Returns
         -------
-        df_sleep_event_ann, DataFrame,
-            all annotations on sleep events of `rec`
+        df_sleep_event_ann : pandas.DataFrame
+            Sleep event annotations of the record.
 
         """
         if isinstance(rec, int):
@@ -1679,28 +1778,28 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         apnea_ann_path: Optional[Union[str, Path]] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        load annotations on apnea events of `rec`
+        """Load annotations on apnea events of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        source: str, default "event",
-            source of the annotations, case insensitive,
-            can be one of "event", "event_profusion"
-        apnea_types: list of str (cases ignored), optional,
-            "CSA", "OSA", "MSA", "Hypopnea",
-            if is None, then all types of apnea will be loaded
-        apnea_ann_path: str or Path, optional,
-            path of the file which contains the apnea event annotations,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        source : {"event", "event_profusion"}, optional
+            Source of the annotations, case insensitive,
+            by default "event".
+        apnea_types : List[str], optional
+            Types of apnea events to load, should be a subset of
+            "CSA", "OSA", "MSA", "Hypopnea".
+            If is None, then all types of apnea will be loaded.
+        apnea_ann_path : str or pathlib.Path, optional
+            Path of the file which contains the apnea event annotations.
+            If is None, default path will be used.
 
         Returns
         -------
-        df_apnea_ann, DataFrame,
-            all annotations on apnea events of `rec`
+        df_apnea_ann : pandas.DataFrame
+            Apnea event annotations of the record.
 
         """
         event_types = ["apnea"] if apnea_types is None else apnea_types
@@ -1723,27 +1822,26 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         wave_deli_path: Optional[Union[str, Path]] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        load annotations on wave delineations of `rec`
+        """Load annotations on wave delineations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        wave_deli_path: str or Path, optional,
-            path of the file which contains wave delineation annotations,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        wave_deli_path : str or pathlib.Path, optional
+            Path of the file which contains wave delineation annotations.
+            If is None, default path will be used.
 
         Returns
         -------
-        df_wave_delineation, DataFrame,
-            all annotations on wave delineations of `rec`
+        df_wave_delineation : pandas.DataFrame
+            Wave delineation annotations of the record.
 
         NOTE
         ----
-        see the part describing wave delineation annotations of the docstring of the class,
-        or call `self.database_info(detailed=True)`
+        See the part describing wave delineation annotations of the docstring of the class,
+        or call ``self.database_info(detailed=True)``.
 
         """
         if isinstance(rec, int):
@@ -1776,30 +1874,30 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         units: Optional[str] = None,
         **kwargs: Any,
     ) -> np.ndarray:
-        """
-        load annotations on R peaks of `rec`
+        """Load annotations on R peaks of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        rpeak_ann_path: str or Path, optional,
-            annotation file path,
-            if not given, default path will be used
-        exclude_artifacts: bool, default True,
-            exlcude those beats (R peaks) that are labelled artifact or not
-        exclude_abnormal_beats: bool, default True,
-            exlcude those beats (R peaks) that are labelled abnormal ("VE" and "SVE") or not
-        units: str, optional,
-            units of the returned R peak locations,
-            can be one of "s", "ms", case insensitive,
-            None for no conversion, using indices of samples
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        rpeak_ann_path : str or pathlib.Path, optional
+            Path of the file which contains R peak annotations.
+            If is None, default path will be used.
+        exclude_artifacts : bool, default True
+            Whether exlcude those beats (R peaks) that are labelled artifact or not.
+        exclude_abnormal_beats : bool, default True
+            Whether exlcude those beats (R peaks) that are
+            labelled abnormal ("VE" and "SVE") or not.
+        units : {None, "s", "ms"}, optional
+            Units of the returned R peak locations, case insensitive.
+            None for no conversion, using indices of samples.
 
         Returns
         -------
-        ndarray, shape (n_rpeaks, ),
-            locations of R peaks of `rec`
+        numpy.ndarray
+            Locations of R peaks of the record,
+            of shape ``(n_rpeaks, )``.
 
         """
         info_items = ["Type", "rpointadj", "samplingrate"]
@@ -1843,27 +1941,27 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         units: Union[str, None] = "s",
         **kwargs: Any,
     ) -> np.ndarray:
-        """
-        load annotations on RR intervals of `rec`
+        """Load annotations on RR intervals of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        rpeak_ann_path: str or Path, optional,
-            annotation file path,
-            if not given, default path will be used
-        units: str, default "s",
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        rpeak_ann_path : str or pathlib.Path, optional
+            Path of the file which contains R peak annotations.
+            If is None, default path will be used.
+        units : {None, "s", "ms"}, optional
             units of the returned R peak locations,
-            can be one of "s", "ms", case insensitive,
-            None for no conversion, using indices of samples
+            by default "s", case insensitive.
+            None for no conversion, using indices of samples.
 
         Returns
         -------
-        rr: ndarray,
-            array of rr intervals, shape (n_rpeaks - 1, 2),
-            each row is a rr interval, the first column is the location of the R peak
+        rr : numpy.ndarray.
+            Array of RR intervals, of shape ``(n_rpeaks - 1, 2)``.
+            Each row is a RR interval, and
+            the first column is the location of the R peak.
 
         """
         rpeaks_ts = self.load_rpeak_ann(
@@ -1884,27 +1982,27 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         units: Union[str, None] = "s",
         **kwargs: Any,
     ) -> np.ndarray:
-        """
-        load annotations on NN intervals of `rec`
+        """Load annotations on NN intervals of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        rpeak_ann_path: str or Path, optional,
-            annotation file path,
-            if not given, default path will be used
-        units: str, default "s",
-            units of the returned R peak locations,
-            can be one of "s", "ms", case insensitive,
-            None for no conversion, using indices of samples
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        rpeak_ann_path: str or pathlib.Path, optional
+            Path of the file which contains R peak annotations.
+            If is None, default path will be used.
+        units: {None, "s", "ms"}, optional
+            Units of the returned R peak locations,
+            by default "s", case insensitive.
+            None for no conversion, using indices of samples.
 
         Returns
         -------
-        nn: ndarray,
-            array of nn intervals, shape (n, 2),
-            each row is a nn interval, the first column is the location of the R peak
+        nn : numpy.ndarray
+            Array of nn intervals, of shape (n, 2).
+            Each row is a nn interval, and
+            the first column is the location of the R peak.
 
         """
         info_items = ["Type", "rpointadj", "samplingrate"]
@@ -1948,27 +2046,26 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         wave_deli_path: Optional[Union[str, Path]] = None,
         units: Optional[str] = None,
     ) -> np.ndarray:
-        """
-        locate "artifacts" in `rec`
+        """Locate "artifacts" in the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        wave_deli_path: str or Path, optional,
-            annotation file path,
-            if not given, default path will be used
-        units: str, optional,
-            units of the returned artifact locations,
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        wave_deli_path : str or pathlib.Path, optional
+            Path of the file which contains wave delineation annotations.
+            If is None, default path will be used.
+        units : {None, "s", "ms"}, optional
+            Units of the returned artifact locations,
             can be one of "s", "ms", case insensitive,
-            None for no conversion, using indices of samples
+            None for no conversion, using indices of samples.
 
         Returns
         -------
-        artifacts: ndarray,
-            indices (or time) of artifacts locations,
-            shape (n_artifacts,)
+        artifacts : numpy.ndarray
+            Array of indices (or time) of artifacts locations,
+            of shape ``(n_artifacts,)``.
 
         """
         df_rpeaks_with_type_info = self.load_wave_delineation_ann(rec, wave_deli_path)
@@ -2008,31 +2105,35 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         abnormal_type: Optional[str] = None,
         units: Optional[str] = None,
     ) -> Union[Dict[str, np.ndarray], np.ndarray]:
-        """
-        locate "abnormal beats" in `rec`
+        """Locate "abnormal beats" in the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        wave_deli_path: str or Path, optional,
-            annotation file path,
-            if not given, default path will be used
-        abnormal_type: str, optional,
-            type of abnormal beat type to locate, can be "VE", "SVE",
-            if not given, both "VE" and "SVE" will be located
-        units: str, optional,
-            units of the returned R peak locations,
-            can be one of "s", "ms", case insensitive,
-            None for no conversion, using indices of samples
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        wave_deli_path : str or pathlib.Path, optional
+            Path of the file which contains wave delineation annotations.
+            If is None, default path will be used.
+        abnormal_type : {"VE", "SVE"}, optional
+            Type of abnormal beat type to locate.
+            If is None, both "VE" and "SVE" will be located.
+        units : {None, "s", "ms"}, optional
+            Units of the returned R peak locations,
+            by default None, case insensitive.
+            None for no conversion, using indices of samples.
 
         Returns
         -------
-        abnormal_rpeaks: dict,
-            dictionary of abnormal beat locations,
-            keys are "VE" and/or "SVE",
-            values are indices (or time) of abnormal beats, shape (n,)
+        abnormal_rpeaks : dict or numpy.ndarray
+            If `abnormal_type` is None,
+            return a dictionary of abnormal beat locations,
+            which contains two keys "VE" and/or "SVE", and
+            values are indices (or time) of abnormal beats,
+            of shape ``(n,)``.
+            If `abnormal_type` is not None,
+            return a :class:`~numpy.ndarray` of abnormal beat locations,
+            of shape ``(n,)``.
 
         """
         if abnormal_type is not None and abnormal_type not in ["VE", "SVE"]:
@@ -2104,21 +2205,21 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         eeg_band_ann_path: Optional[Union[str, Path]] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        load annotations on EEG bands of `rec`
+        """Load annotations on EEG bands of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        eeg_band_ann_path: str or Path, optional,
-            annotation file path,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        eeg_band_ann_path : str or pathlib.Path, optional
+            Path of the file which contains EEG band annotations.
+            if is None, default path will be used.
 
         Returns
         -------
-        to write,
+        pandas.DataFrame
+            A :class:`~pandas.DataFrame` of EEG band annotations.
 
         """
         if self.current_version >= "0.15.0":
@@ -2134,21 +2235,21 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         eeg_spectral_ann_path: Optional[Union[str, Path]] = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        load annotations on EEG spectral summary of `rec`
+        """Load annotations on EEG spectral summary of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name, typically in the form "shhs1-200001",
-            or index of the record in `self.all_records`
-        eeg_spectral_ann_path: str or Path, optional,
-            annotation file path,
-            if not given, default path will be used
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        eeg_spectral_ann_path : str or pathlib.Path, optional
+            Path of the file which contains EEG spectral summary annotations.
+            If is None, default path will be used.
 
         Returns
         -------
-        to write,
+        pandas.DataFrame
+            A :class:`~pandas.DataFrame` of EEG spectral summary annotations.
 
         """
         if self.current_version >= "0.15.0":
@@ -2170,26 +2271,33 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         event_kw: dict = {},
         plot_format: str = "span",
     ) -> None:
-        """
+        """Plot annotations of the record.
+
+        Plot the sleep stage annotations
+        and sleep event annotations of the record.
+
         Parameters
         ----------
-        rec, str,
-            record name, typically in the form "shhs1-200001"
-        stage_source: str, optional,
-            source of the sleep stage annotations,
-            can be one of "hrv", "event", "event_profusion",
-            if is None, then annotations of sleep stages of `rec` won"t be plotted
-        stage_kw: dict, default {},
-            arguments to the function `self.load_sleep_stage_ann`
-        event_source: str, optional,
-            source of the sleep event annotations,
-            can be one of "hrv", "event", "event_profusion",
-            if is None, then annotations of sleep events of `rec` won"t be plotted
-        event_kw: dict, default {},
-            arguments to the function `self.load_sleep_event_ann`
-        plot_format: str, default "span",
-            format of the plot,
-            can be one of "span", "hypnogram", case insensitive
+        rec : str or int
+            Record name, typically in the form "shhs1-200001",
+            or index of the record in :attr:`all_records`.
+        stage_source : {"hrv", "event", "event_profusion"}, optional
+            Source of the sleep stage annotations, case in-sensitive.
+            If is None, then annotations of sleep stages of `rec` won't be plotted.
+        stage_kw : dict, optional
+            Key word arguments to the function :meth:`load_sleep_stage_ann`.
+        event_source : {"hrv", "event", "event_profusion"}, optional
+            Source of the sleep event annotations, case in-sensitive.
+            If is None, then annotations of sleep events of `rec` won't be plotted.
+        event_kw : dict, optional
+            Key word arguments to the function :meth:`load_sleep_event_ann`.
+        plot_format : {"span", "hypnogram"}, optional
+            Format of the plot, case insensitive, by default "span".
+
+        TODO
+        ----
+        1. ~~Implement the "hypnogram" format.~~
+        2. Implement plotting of sleep events.
 
         """
         if all([stage_source is None, event_source is None]):
@@ -2234,21 +2342,17 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         df_sleep_event: Optional[pd.DataFrame] = None,
         plot_format: str = "span",
     ) -> None:
-        """
+        """Internal function to plot annotations.
+
         Parameters
         ----------
-        df_sleep_stage: DataFrame, optional,
-            sleep stage annotations
-        df_sleep_event: DataFrame, optional,
-            sleep event annotations
-        plot_format: str, default "span",
-            format of the plot,
-            can be one of "span", "hypnogram", case insensitive
+        df_sleep_stage : pandas.DataFrame, optional
+            Sleep stage annotations.
+        df_sleep_event : pandas.DataFrame, optional
+            Sleep event annotations.
+        plot_format : {"span", "hypnogram"}, optional
+            Format of the plot, case insensitive, by default "span".
 
-        TODO
-        ----
-        1. ~~implement the `hypnogram` format~~
-        2. implement plotting of sleep events
         """
         import matplotlib.patches as mpatches
         import matplotlib.pyplot as plt
@@ -2361,17 +2465,20 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             ax_events.tick_params(axis="y", which="both", length=0)
 
     def str_to_real_number(self, s: Union[str, Real]) -> Real:
-        """
-        some columns in the annotations might incorrectly
-        been converted from real number to string, using `xmltodict`.
+        """Convert a string to a real number.
+
+        Some columns in the annotations might incorrectly
+        been converted from numbers.Real to string, using ``xmltodict``.
 
         Parameters
         ----------
-        s: str or real number (NaN)
+        s : str or numbers.Real
+            The string to be converted.
 
         Returns
         -------
-        real number
+        numbers.Real
+            The converted number.
 
         """
         if isinstance(s, str):
@@ -2383,7 +2490,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             return s
 
     def __create_constants(self, **kwargs) -> None:
-        """ """
+        """Create constants for the class."""
         self.lazy = kwargs.get("lazy", False)
         self.extension = {
             "psg": ".edf",
@@ -2582,13 +2689,13 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self.sleep_epoch_len_sec = 30
         self.ann_sleep_stages = [0, 1, 2, 3, 4, 5, 9]
         """
-        0	--- Wake
-        1	--- sleep stage 1
-        2	--- sleep stage 2
-        3	--- sleep stage 3/4
-        4	--- sleep stage 3/4
-        5	--- REM stage
-        9	--- Movement/Wake or Unscored?
+        0 --- Wake
+        1 --- sleep stage 1
+        2 --- sleep stage 2
+        3 --- sleep stage 3/4
+        4 --- sleep stage 3/4
+        5 --- REM stage
+        9 --- Movement/Wake or Unscored?
         """
         self.sleep_stage_protocol = kwargs.get("sleep_stage_protocol", "aasm")
         self.all_sleep_stage_names = ["W", "R", "N1", "N2", "N3", "N4"]
@@ -2603,19 +2710,19 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self.sleep_stage_names = []
         self.update_sleep_stage_names()
         self._to_simplified_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 2, 3: 3, 4: 3}
-        """ 9 to nan?
-        0   --- awake
-        1   --- REM
-        2   --- N1 (NREM1/2), shallow sleep
-        3   --- N2 (NREM3/4), deep sleep
+        """9 to nan?
+        0 --- awake
+        1 --- REM
+        2 --- N1 (NREM1/2), shallow sleep
+        3 --- N2 (NREM3/4), deep sleep
         """
         self._to_aasm_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 3, 3: 4, 4: 4}
-        """ 9 to nan?
-        0   --- awake
-        1   --- REM
-        2   --- N1 (NREM1)
-        3   --- N2 (NREM2)
-        4   --- N3 (NREM3/4)
+        """9 to nan?
+        0 --- awake
+        1 --- REM
+        2 --- N1 (NREM1)
+        3 --- N2 (NREM2)
+        4 --- N3 (NREM3/4)
         """
         self._to_shhs_states = {9: 0, 0: 0, 5: 1, 1: 2, 2: 3, 3: 4, 4: 5}
 

@@ -66,7 +66,7 @@ _CPSC2019_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_CPSC2019_INFO.format_database_docstring())
+@add_docstring(_CPSC2019_INFO.format_database_docstring(), mode="prepend")
 class CPSC2019(CPSCDataBase):
     """
     Parameters
@@ -181,7 +181,7 @@ class CPSC2019(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
@@ -204,7 +204,7 @@ class CPSC2019(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         extension : str, optional
             Extension of the file.
             If not provided, no extension will be added.
@@ -238,7 +238,7 @@ class CPSC2019(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         data_format : str, default "channel_first"
             Format of the ECG data,
             "channel_last" (alias "lead_last"), or
@@ -278,7 +278,7 @@ class CPSC2019(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
@@ -317,7 +317,7 @@ class CPSC2019(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         data : numpy.ndarray, optional
             ECG signal to plot.
             If provided, data of `rec` will not be used,

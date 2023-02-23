@@ -117,7 +117,7 @@ _CPSC2021_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_CPSC2021_INFO.format_database_docstring())
+@add_docstring(_CPSC2021_INFO.format_database_docstring(), mode="prepend")
 class CPSC2021(PhysioNetDataBase):
     """
     Parameters
@@ -380,7 +380,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
@@ -401,7 +401,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         extension : str, optional
             Extension of the file.
 
@@ -431,7 +431,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         sampfrom : int, optional
             Start index of the data to be loaded.
         sampto : int, optional
@@ -475,7 +475,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         field : {"rpeaks", "af_episodes", "label", "raw", "wfdb"}, optional
             Field of the annotation.
             If is None, all fields of the annotation will be returned in the form of a dict.
@@ -549,7 +549,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         ann : wfdb.Annotation, optional
             The wfdb Annotation of the record.
             If is None, corresponding annotation file will be read.
@@ -636,7 +636,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         ann : wfdb.Annotation, optional
             The wfdb Annotation of the record.
             If is None, corresponding annotation file will be read.
@@ -747,7 +747,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         ann : wfdb.Annotation, optional
             Not used, to keep in accordance with other methods.
         sampfrom : int, optional
@@ -789,7 +789,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         bias : dict, default {1: 1, 2: 0.5}
             Bias for the scoring of the onsets and offsets of af episodes.
             Keys are bias (with ±) in terms of number of rpeaks, and
@@ -843,7 +843,7 @@ class CPSC2021(PhysioNetDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         data : numpy.ndarray, optional
             (2-lead) ECG signal to plot.
             Should be of the format "channel_first", and compatible with `leads`.

@@ -223,7 +223,7 @@ _CPSC2020_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_CPSC2020_INFO.format_database_docstring())
+@add_docstring(_CPSC2020_INFO.format_database_docstring(), mode="prepend")
 class CPSC2020(CPSCDataBase):
     """
     Parameters
@@ -340,7 +340,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
@@ -363,7 +363,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         extension : str, optional
             Extension of the file.
         ann : bool, default False
@@ -397,7 +397,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         sampfrom : int, optional
             Start index of the data to be loaded.
         sampto : int, optional
@@ -450,7 +450,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         sampfrom : int, optional
             Start index of the data to be loaded.
         sampto : int, optional
@@ -544,7 +544,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         premature_type : str, optional
             Premature beat type, can be one of "SPB", "PVC".
             If not specified, both SPBs and PVCs will be located.
@@ -601,7 +601,7 @@ class CPSC2020(CPSCDataBase):
         Parameters
         ----------
         rec : str or int
-            Record name or index of the record in :attr:`self.all_records`.
+            Record name or index of the record in :attr:`all_records`.
         data : numpy.ndarray, optional
             ECG signal to plot.
             If given, data of `rec` will not be used.
