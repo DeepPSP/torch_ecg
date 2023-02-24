@@ -166,7 +166,7 @@ class CACHET_CADB(_DataBase):
 
     def _ls_rec(self) -> None:
         """Find all records in the database directory
-        and store them (path, metadata, etc.) in a dataframe.
+        and store them (path, metadata, etc.) in some private attributes.
 
         TODO: impelement subsampling for the long format data.
         """
@@ -285,7 +285,7 @@ class CACHET_CADB(_DataBase):
             return self._df_records.loc[rec, f"context_{ext2}_path"]
 
     def get_subject_id(self, rec: Union[str, int]) -> str:
-        """Attach a unique subject id for the record.
+        """Attach a unique subject ID for the record.
 
         Parameters
         ----------

@@ -68,7 +68,7 @@ _CINC2018_INFO = DataBaseInfo(
         "sleep apnea",
     ],
     references=[
-        "https://physionet.org/content/challenge-2018/1.0.0/",
+        "https://physionet.org/content/challenge-2018/",
     ],
     doi=[
         "10.22489/CinC.2018.049",
@@ -77,9 +77,22 @@ _CINC2018_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_CINC2018_INFO.format_database_docstring())
+@add_docstring(_CINC2018_INFO.format_database_docstring(), mode="prepend")
 class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     __name__ = "CINC2018"
 
@@ -90,18 +103,6 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-        working_dir: str, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="challenge-2018",
             db_dir=db_dir,
@@ -132,7 +133,9 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         self._ls_rec()
 
     def _ls_rec(self) -> None:
-        """ """
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in some private attributes.
+        """
         self._df_records = pd.DataFrame()
         records = get_record_list_recursive3(
             self.db_dir,
@@ -222,16 +225,17 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         ].index.tolist()
 
     def get_subject_id(self, rec: str) -> int:
-        """
+        """Attach a unique subject ID for the record.
+
         Parameters
         ----------
-        rec: str,
-            name of the record
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        pid: int,
-            the `subject_id` corr. to `rec`
+        int
+            Subject ID associated with the record.
 
         """
         head = "2018"
@@ -241,28 +245,27 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         return pid
 
     def set_subset(self, subset: Union[str, None]) -> None:
-        """ """
+        """Set the subset of the database to use."""
         assert subset in [
             "training",
             "test",
             None,
-        ], "`subset` must be in [training, test, None]"
+        ], """`subset` must be in ``["training", "test", None]``."""
         self._subset = subset
         self._ls_rec()
 
     def get_available_signals(self, rec: Union[str, int]) -> List[str]:
-        """
-        get the available signals of a record
+        """Get the available signals of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            name or index of the record
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        signals: list of str,
-            the available signal names of the record
+        signals : List[str]
+            Names of available signal of the record.
 
         """
         if isinstance(rec, int):
@@ -270,18 +273,17 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         return self._df_records.at[rec, "available_signals"]
 
     def get_fs(self, rec: Union[str, int]) -> int:
-        """
-        get the sampling frequency of a record
+        """Get the sampling frequency of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            name or index of the record
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        fs: int,
-            the sampling frequency of the record
+        fs : int
+            Sampling frequency of the record.
 
         """
         if isinstance(rec, int):
@@ -289,18 +291,17 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         return self._df_records.at[rec, "fs"]
 
     def get_siglen(self, rec: Union[str, int]) -> int:
-        """
-        get the length of a record
+        """Get the length of the signal of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            name or index of the record
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        siglen: int,
-            the length of the record
+        siglen : int
+            Length of the signal of the record.
 
         """
         if isinstance(rec, int):
@@ -317,35 +318,37 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         physical: bool = True,
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        load PSG data of the record `rec`
+        """Load PSG data of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            name or index of the record
-        channel: str, optional,
-            name of the channel of PSG,
-            if None, then all channels will be returned
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ecg data,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        channel : str, optional
+            Nname of the channel of PSG data.
+            If is None, all channels will be returned.
+        sampfrom : int, optional
+            Start index of the data to be loaded.
+        sampto : int, optional
+            End index of the data to be loaded.
+        data_format: str, default "channel_first".
+            Format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first"), or
-            "flat" (alias "plain") which is valid only when only one `channel` is passed
-        physical: bool, default True,
-            if True, then the data will be converted to physical units
-            otherwise, the data will be in digital units
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
+            "flat" (alias "plain") which is valid
+            only when only one `channel` is passed.
+        physical : bool, default True
+            If True, the data will be converted to physical units,
+            otherwise, the data will be in digital units.
+        fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            If not None, the loaded data will be resampled to this frequency,
+            otherwise, the original sampling frequency will be used.
 
         Returns
         -------
-        np.ndarray:
-            PSG data of the channel `channel`
+        numpy.ndarray
+            PSG data corr. to the given `channel` of the record.
 
         """
         available_signals = self.get_available_signals(rec)
@@ -408,32 +411,37 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        load ECG data of the record `rec`
+        """Load ECG data of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            name or index of the record
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ecg data,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        leads : str or int or Sequence[str] or Sequence[int], optional
+            The leads of the ECG data to load.
+            None or "all" for all leads.
+        sampfrom : int, optional
+            Start index of the data to be loaded.
+        sampto : int, optional
+            End index of the data to be loaded.
+        data_format : str, default "channel_first"
+            Format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first"), or
-            "flat" (alias "plain")
-        units: str or None, default "mV",
-            units of the output signal, can also be "μV", with aliases of "uV", "muV";
-            None for digital data, without digital-to-physical conversion
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
+            "flat" (alias "plain") which is valid only when `leads` is a single lead
+        units : str or None, default "mV"
+            Units of the output signal, can also be "μV" (aliases "uV", "muV").
+            None for digital data, without digital-to-physical conversion.
+        fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            If not None, the loaded data will be resampled to this frequency,
+            otherwise, the original sampling frequency will be used.
 
         Returns
         -------
-        np.ndarray:
-            the ECG data loaded from `rec`, with given units and format
+        numpy.ndarray
+            The ECG data loaded from the record,
+            with given `units` and `data_format`.
 
         """
         available_signals = self.get_available_signals(rec)
@@ -484,27 +492,27 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         sampto: Optional[int] = None,
         keep_original: bool = False,
     ) -> Dict[str, Dict[str, List[List[int]]]]:
-        """
-        load sleep stage and arousal annotations of the record `rec`
+        """Load sleep stage and arousal annotations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            name or index of the record
-        sampfrom: int, optional,
-            start index of the corresponding PSG data
-        sampto: int, optional,
-            end index of the corresponding PSG data
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the corresponding PSG data.
+        sampto : int, optional
+            End index of the corresponding PSG data.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        dict:
-            a dictionary with keys "sleep_stages" and "arousals",
+        dict
+            A dictionary with keys "sleep_stages" and "arousals",
             each of which is a dictionary with keys of sleep stages and arousals,
-            and values of lists of lists of start and end indices of the sleep stages and arousals
+            and values of lists of lists of start and
+            end indices of the sleep stages and arousals.
 
         """
         frp = str(self.get_absolute_path(rec))
@@ -571,26 +579,26 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         sampto: Optional[int] = None,
         keep_original: bool = False,
     ) -> Dict[str, List[List[int]]]:
-        """
-        load sleep stage annotations of the record `rec`
+        """Load sleep stage annotations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            name or index of the record
-        sampfrom: int, optional,
-            start index of the corresponding PSG data
-        sampto: int, optional,
-            end index of the corresponding PSG data
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the corresponding PSG data.
+        sampto : int, optional
+            End index of the corresponding PSG data.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        dict:
-            a dictionary with keys of sleep stages and
-            values of lists of lists of start and end indices of the sleep stages
+        dict
+            A dictionary with keys of sleep stages and
+            values of lists of lists of start and
+            end indices of the sleep stages.
 
         """
         return self.load_ann(
@@ -607,26 +615,26 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         sampto: Optional[int] = None,
         keep_original: bool = False,
     ) -> Dict[str, List[List[int]]]:
-        """
-        load arousal annotations of the record `rec`
+        """Load arousal annotations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            name or index of the record
-        sampfrom: int, optional,
-            start index of the corresponding PSG data
-        sampto: int, optional,
-            end index of the corresponding PSG data
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the corresponding PSG data.
+        sampto : int, optional
+            End index of the corresponding PSG data.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        dict:
-            a dictionary with keys of arousals and
-            values of lists of lists of start and end indices of the arousals
+        dict
+            A dictionary with keys of arousals and
+            values of lists of lists of start and
+            end indices of the arousals.
 
         """
         return self.load_ann(
@@ -637,26 +645,27 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         )["arousals"]
 
     def plot(self) -> None:
-        """ """
+        """NOT implemented yet."""
         raise NotImplementedError
 
     def plot_ann(self, rec: Union[str, int]) -> tuple:
-        """
-        plot the sleep stage and arousal annotations of the record `rec`
+        """Plot the sleep stage and arousal annotations of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            name or index of the record
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        tuple:
-            a tuple of matplotlib figure and axis
+        fig : matplotlib.figure.Figure
+            The figure object.
+        ax : matplotlib.axes.Axes
+            The axes object.
 
         TODO
         ----
-        plot arousals events
+        Plot arousals events.
 
         """
         ann = self.load_ann(rec)

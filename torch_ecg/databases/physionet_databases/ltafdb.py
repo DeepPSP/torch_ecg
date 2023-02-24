@@ -55,9 +55,22 @@ _LTAFDB_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_LTAFDB_INFO.format_database_docstring())
+@add_docstring(_LTAFDB_INFO.format_database_docstring(), mode="prepend")
 class LTAFDB(PhysioNetDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     __name__ = "LTAFDB"
 
@@ -68,19 +81,6 @@ class LTAFDB(PhysioNetDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-            if not specified, data will be fetched from Physionet
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         from matplotlib.pyplot import cm
 
         super().__init__(
@@ -134,17 +134,17 @@ class LTAFDB(PhysioNetDataBase):
         self.palette["qrs"] = "green"
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """NOT finished,
+        """Attach a unique subject ID for the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        sid: int,
-            the `subject_id` corr. to `rec`
+        int
+            Subject ID associated with the record.
 
         """
         raise NotImplementedError
@@ -165,7 +165,6 @@ class LTAFDB(PhysioNetDataBase):
         units: str = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """ """
         return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs)
 
     def load_ann(
@@ -177,35 +176,41 @@ class LTAFDB(PhysioNetDataBase):
         beat_format: str = "beat",
         keep_original: bool = False,
     ) -> dict:
-        """
-        load rhythm and beat annotations,
-        which are stored in the `aux_note`, `symbol` attributes of corresponding annotation files.
-        NOTE that qrs annotations (.qrs files) do NOT contain any rhythm annotations
+        """Load rhythm and beat annotations of the record.
+
+        Rhythm and beat annotations are stored in the
+        `aux_note`, `symbol` attributes of corresponding annotation files.
+        NOTE that qrs annotations (.qrs files) do NOT contain any rhythm annotations.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        rhythm_format: str, default "interval", case insensitive,
-            format of returned annotation, can also be "mask"
-        beat_format: str, default "beat", case insensitive,
-            format of returned annotation, can also be "dict"
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        rhythm_format : {"interval", "mask"}, optional
+            Format of returned annotation, by default "interval",
+            case insensitive.
+        beat_format : {"beat", "dict"}, optional
+            Format of returned annotation, by default "beat",
+            case insensitive.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        ann, dict,
-            the annotations of `rhythm` and `beat`, with
-            `rhythm` annotatoins in the format of `intervals`, or `mask`;
-            `beat` annotations in the format of `dict` or `BeatAnn`
+        ann : dict
+            The annotations of ``rhythm`` and ``beat``, with
+            ``rhythm`` annotatoins in the format of intervals, or mask;
+            ``beat`` annotations in the format of dict or
+            :class:`~torch_ecg.databases.BeatAnn`.
 
-        NOTE that at head and tail of the record, segments named "NOISE" are added
+        NOTE
+        ----
+        At head and tail of the record, segments named "NOISE" were added.
 
         """
         if isinstance(rec, int):
@@ -236,31 +241,35 @@ class LTAFDB(PhysioNetDataBase):
         rhythm_format: str = "interval",
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
-        """
-        load rhythm annotations,
-        which are stored in the `aux_note` attribute of corresponding annotation files.
-        NOTE that qrs annotations (.qrs files) do NOT contain any rhythm annotations
+        """Load rhythm annotations of the record.
+
+        Rhythm annotations are stored in the `aux_note` attribute
+        of corresponding annotation files.
+        NOTE that qrs annotations (.qrs files) do NOT contain any rhythm annotations.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        rhythm_format: str, default "interval", case insensitive,
-            format of returned annotation, can also be "mask"
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        rhythm_format : {"interval", "mask"}, optional
+            Format of returned annotation, by default "interval",
+            case insensitive.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        ann, dict or ndarray,
-            the annotations in the format of intervals, or in the format of mask
+        ann : dict or numpy.ndarray
+            Annotations in the format of intervals or mask.
 
-        NOTE that at head and tail of the record, segments named "NOISE" are added
+        NOTE
+        ----
+        At head and tail of the record, segments named "NOISE" were added.
 
         """
         if isinstance(rec, int):
@@ -329,28 +338,31 @@ class LTAFDB(PhysioNetDataBase):
         beat_format: str = "beat",
         keep_original: bool = False,
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
-        """
-        load beat annotations,
-        which are stored in the `symbol` attribute of corresponding annotation files
+        """Load beat annotations of the record.
+
+        Beat annotations are stored in the `symbol` attribute
+        of corresponding annotation files.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        beat_format: str, default "beat", case insensitive,
-            format of returned annotation, can also be "dict"
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        beat_format : {"beat", "dict"}, optional
+            Format of returned annotation, by default "beat",
+            case insensitive.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        ann, dict or list,
-            locations (indices) of the all the beat types ("A", "N", "Q", "V",)
+        ann : dict or list
+            Locations (indices) of the all the
+            beat types ("A", "N", "Q", "V").
 
         """
         if isinstance(rec, int):
@@ -394,30 +406,31 @@ class LTAFDB(PhysioNetDataBase):
         use_manual: bool = True,
         keep_original: bool = False,
     ) -> np.ndarray:
-        """
-        load rpeak indices, or equivalently qrs complex locations,
-        which are stored in the `symbol` attribute of corresponding annotation files,
-        regardless of their beat types,
+        """Load rpeak indices of the record.
+
+        Rpeak indices, or equivalently qrs complex locations,
+        are stored in the `symbol` attribute of corresponding annotation files,
+        regardless of their beat types.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        use_manual: bool, default True,
-            use manually annotated beat annotations (qrs),
-            instead of those generated by algorithms
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        use_manual : bool, default True
+            If True, manually annotated beat annotations (qrs) will be used,
+            instead of those generated by algorithms.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        rpeak_inds, ndarray,
-            locations (indices) of the all the rpeaks (qrs complexes)
+        rpeak_inds : numpy.ndarray
+            Locations (indices) of the all the rpeaks (qrs complexes).
 
         """
         fp = str(self.get_absolute_path(rec))
@@ -451,46 +464,49 @@ class LTAFDB(PhysioNetDataBase):
         **kwargs: Any,
     ) -> None:
         """
-        plot the signals of a record or external signals (units in μV),
+        Plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
-        possibly also along with wave delineations
+        possibly also along with wave delineations.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data: ndarray, optional,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        data : numpy.ndarray, optional
             (2-lead) ECG signal to plot,
-            should be of the format "channel_first", and compatible with `leads`
-            if given, data of `rec` will not be used,
-            this is useful when plotting filtered data
-        ann: dict, optional,
-            rhythm annotations for `data`, covering those from annotation files,
-            in the form of {k: l_itv, ...},
-            where `k` in `self.rhythm_types_map.keys()`,
-            and `l_itv` in the form of [[a,b], ...],
-            ignored if `data` is None
-        beat_ann: dict, optional,
-            beat annotations for `data`, covering those from annotation files,
-            in the form of {k: l_inds, ...},
-            where `k` in `self.beat_types`, and `l_inds` array of indices,
-            ignored if `data` is None
-        rpeak_inds: array_like, optional,
-            indices of R peaks, covering those from annotation files,
-            if `data` is None, then indices should be the absolute indices in the record,
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+            should be of the format "channel_first",
+            and compatible with `leads`.
+            If is not None, data of `rec` will not be used.
+            This is useful when plotting filtered data.
+        ann : dict, optional
+            Rhythm annotations for `data`, covering those from annotation files,
+            in the form of ``{k: l_itv, ...}``,
+            where ``k`` are listed in `self.rhythm_types_map`,
+            and ``l_itv`` are of the form of ``[[a, b], ...]``.
+            Ignored if `data` is None
+        beat_ann : dict, optional
+            Beat annotations for `data`, covering those from annotation files,
+            in the form of ``{k: l_inds, ...}``,
+            where ``k`` are listed in `self.beat_types`,
+            and `l_inds` are array of indices.
+            Ignored if `data` is None.
+        rpeak_inds : array_like, optional
+            Indices of R peaks, covering those from annotation files.
+            If `data` is None, then indices should be
+            absolute indices in the record
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        leads: int or list of int, optional,
-            the lead number(s) to plot
-        sampfrom: int, optional,
-            start index of the data to plot
-        sampto: int, optional,
-            end index of the data to plot
-        same_range: bool, default False,
-            if True, forces all leads to have the same y range
-        kwargs: dict,
-            additional arguments to be passed to `matplotlib.pyplot.plot`, etc.
+        leads : int or List[int], optional,
+            The lead number(s) of the data to plot.
+        sampfrom : int, optional
+            Start index of the data to plot.
+        sampto : int, optional
+            End index of the data to plot.
+        same_range : bool, default False
+            If True, all leads are forced to have the same y range.
+        kwargs : dict, optional
+            Additional arguments to be passed to `matplotlib.pyplot.plot`, etc.
 
         """
         if isinstance(rec, int):

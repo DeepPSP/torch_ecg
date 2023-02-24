@@ -28,19 +28,29 @@ _CINC2017_INFO = DataBaseInfo(
     1. training set contains 8,528 single lead ECG recordings lasting from 9 s to just over 60 s, and the test set contains 3,658 ECG recordings of similar lengths
     2. records are of frequency 300 Hz and have been band pass filtered
     3. data distribution:
-        Type            # recording             Time length (s)
-                                        Mean    SD      Max     Median  Min
-        Normal          5154            31.9    10.0    61.0    30      9.0
-        AF              771             31.6    12.5    60      30      10.0
-        Other rhythm    2557            34.1    11.8    60.9    30      9.1
-        Noisy           46              27.1    9.0     60      30      10.2
-        Total           8528            32.5    10.9    61.0    30      9.0
+
+        +------------------+--------------+-------------------------------------+
+        |                  |              |           Time length (s)           |
+        |  Type            | # recording  +------+------+------+--------+-------+
+        |                  |              | Mean | SD   | Max  | Median | Min   |
+        +==================+==============+======+======+======+========+=======+
+        | Normal           | 5154         | 31.9 | 10.0 | 61.0 | 30     | 9.0   |
+        +------------------+--------------+------+------+------+--------+-------+
+        | AF               | 771          | 31.6 | 12.5 | 60   | 30     | 10.0  |
+        +------------------+--------------+------+------+------+--------+-------+
+        | Other rhythm     | 2557         | 34.1 | 11.8 | 60.9 | 30     | 9.1   |
+        +------------------+--------------+------+------+------+--------+-------+
+        | Noisy            | 46           | 27.1 | 9.0  | 60   | 30     | 10.2  |
+        +------------------+--------------+------+------+------+--------+-------+
+        | Total            | 8528         | 32.5 | 10.9 | 61.0 | 30     | 9.0   |
+        +------------------+--------------+------+------+------+--------+-------+
+
     """,
     usage=[
         "Atrial fibrillation (AF) detection",
     ],
     references=[
-        "https://physionet.org/content/challenge-2017/1.0.0/",
+        "https://physionet.org/content/challenge-2017/",
     ],
     doi=[
         "10.22489/CinC.2017.065-469",
@@ -48,9 +58,22 @@ _CINC2017_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_CINC2017_INFO.format_database_docstring())
+@add_docstring(_CINC2017_INFO.format_database_docstring(), mode="prepend")
 class CINC2017(PhysioNetDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     __name__ = "CINC2017"
 
@@ -61,18 +84,6 @@ class CINC2017(PhysioNetDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-        working_dir: str, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="challenge-2017",
             db_dir=db_dir,
@@ -113,7 +124,9 @@ class CINC2017(PhysioNetDataBase):
         self._url_compressed = self.get_file_download_url("training2017.zip")
 
     def _ls_rec(self) -> None:
-        """ """
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in some private attributes.
+        """
         record_list_fp = self.db_dir / "RECORDS"
         self._df_records = pd.DataFrame()
         if record_list_fp.is_file():
@@ -199,25 +212,26 @@ class CINC2017(PhysioNetDataBase):
     def load_ann(
         self, rec: Union[str, int], original: bool = False, ann_format: str = "a"
     ) -> str:
-        """
-        load the annotation of the record `rec`
+        """Load the annotation of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        original: bool, default False,
-            if True, load annotations from the file `REFERENCE-original.csv`,
-            otherwise from `REFERENCE.csv`
-        ann_format: str, default "a",
-            format of returned annotation, can be one of "a", "f",
-            "a" - abbreviation
-            "f" - full name
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        original : bool, default False
+            If True, load annotations from
+            the annotation file ``REFERENCE-original.csv``,
+            otherwise from ``REFERENCE.csv``.
+        ann_format : {"a", "f"}, optional
+            Format of returned annotation, by default "a".
+
+                - "a" - abbreviation
+                - "f" - full name
 
         Returns
         -------
-        ann: str,
-            annotation (label) of the record
+        ann : str
+            Annotation (label) of the record.
 
         """
         if isinstance(rec, int):
@@ -241,24 +255,30 @@ class CINC2017(PhysioNetDataBase):
         ticks_granularity: int = 0,
         rpeak_inds: Optional[Union[Sequence[int], np.ndarray]] = None,
     ) -> None:
-        """
+        """Plot the ECG signal of the record.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data: ndarray, optional,
-            ecg signal to plot,
-            if given, data of `rec` will not be used,
-            this is useful when plotting filtered data
-        ann: dict, optional,
-            annotations for `data`,
-            "SPB_indices", "PVC_indices", each of ndarray values,
-            ignored if `data` is None
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        data : numpy.ndarray, optional
+            The ECG signal to plot.
+            If not None, data of `rec` will not be used.
+            This is useful when plotting filtered data.
+        ann : dict, optional,
+            Annotations for `data`, which is a dict with keys
+            "SPB_indices", "PVC_indices",
+            and with :class:`~numpy.ndarray` values.
+            Ignored if `data` is None.
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        rpeak_inds: array_like, optional,
-            indices of R peaks,
+        rpeak_inds : array_like, optional
+            Array of indices of R peaks.
+
+        Returns
+        -------
+        None
 
         """
         if isinstance(rec, int):
@@ -322,8 +342,8 @@ class CINC2017(PhysioNetDataBase):
 
     @property
     def _validation_set(self) -> List[str]:
-        """
-        the validation set specified at https://physionet.org/content/challenge-2017/1.0.0/
+        """The validation set specified at
+        https://physionet.org/content/challenge-2017/1.0.0/
         """
         return (
             "A00001,A00002,A00003,A00004,A00005,A00006,A00007,A00008,A00009,A00010,"

@@ -53,23 +53,25 @@ _CINC2021_INFO = DataBaseInfo(
     """,
     about="""
     0. goal: build an algorithm that can classify cardiac abnormalities from either
+
         - twelve-lead (I, II, III, aVR, aVL, aVF, V1, V2, V3, V4, V5, V6)
         - six-lead (I, II, III, aVL, aVR, aVF),
         - four-lead (I, II, III, V2)
         - three-lead (I, II, V2)
         - two-lead (I, II)
-    ECG recordings.
+
     1. tranches of data:
-        - CPSC2018 (tranches A and B of CinC2020):
+
+        - CPSC2018 (tranches A and B of CinC2020, ref. [3]_):
             contains 13,256 ECGs (6,877 from tranche A, 3,453 from tranche B),
             10,330 ECGs shared as training data, 1,463 retained as validation data,
             and 1,463 retained as test data.
             Each recording is between 6 and 144 seconds long with a sampling frequency of 500 Hz
-        - INCARTDB (tranche C of CinC2020):
+        - INCARTDB (tranche C of CinC2020, ref. [4]_):
             contains 75 annotated ECGs,
             all shared as training data, extracted from 32 Holter monitor recordings.
             Each recording is 30 minutes long with a sampling frequency of 257 Hz
-        - PTB (PTB and PTB-XL, tranches D and E of CinC2020):
+        - PTB (PTB and PTB-XL, tranches D and E of CinC2020, ref. [5]_ and [6]_):
             contains 22,353 ECGs,
             516 + 21,837, all shared as training data.
             Each recording is between 10 and 120 seconds long,
@@ -89,23 +91,33 @@ _CINC2021_INFO = DataBaseInfo(
             all shared as training data.
             Each recording is 10 seconds long with a sampling frequency of 500 Hz
             this tranche contains two subsets:
-            - Chapman_Shaoxing: "JS00001" - "JS10646"
-            - Ningbo: "JS10647" - "JS45551"
+
+                - Chapman_Shaoxing: "JS00001" - "JS10646"
+                - Ningbo: "JS10647" - "JS45551"
+
     2. only a part of diagnosis_abbr (diseases that appear in the labels of the 6 tranches of training data) are used in the scoring function, while others are ignored. The scored diagnoses were chosen based on prevalence of the diagnoses in the training data, the severity of the diagnoses, and the ability to determine the diagnoses from ECG recordings. The ignored diagnosis_abbr can be put in a a "non-class" group.
     3. the (updated) scoring function has a scoring matrix with nonzero off-diagonal elements. This scoring function reflects the clinical reality that some misdiagnoses are more harmful than others and should be scored accordingly. Moreover, it reflects the fact that confusing some classes is much less harmful than confusing other classes.
     4. all data are recorded in the leads ordering of
-        ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]
-    using for example the following code:
-    >>> db_dir = "/media/cfs/wenhao71/data/CinC2021/"
-    >>> working_dir = "./working_dir"
-    >>> dr = CINC2021(db_dir=db_dir,working_dir=working_dir)
-    >>> set_leads = []
-    >>> for tranche, l_rec in dr.all_records.items():
-    ...     for rec in l_rec:
-    ...         ann = dr.load_ann(rec)
-    ...         leads = ann["df_leads"]["lead_name"].values.tolist()
-    ...     if leads not in set_leads:
-    ...         set_leads.append(leads)
+
+       .. code-block:: python
+
+            ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]
+
+       using for example the following code:
+
+       .. code-block:: python
+
+            >>> db_dir = "/media/cfs/wenhao71/data/CinC2021/"
+            >>> working_dir = "./working_dir"
+            >>> dr = CINC2021(db_dir=db_dir,working_dir=working_dir)
+            >>> set_leads = []
+            >>> for tranche, l_rec in dr.all_records.items():
+            ...     for rec in l_rec:
+            ...         ann = dr.load_ann(rec)
+            ...         leads = ann["df_leads"]["lead_name"].values.tolist()
+            ...     if leads not in set_leads:
+            ...         set_leads.append(leads)
+
     """,
     note="""
     1. The datasets have been roughly processed to have a uniform format, hence differ from their original resource (e.g. differe in sampling frequency, sample duration, etc.)
@@ -114,31 +126,35 @@ _CINC2021_INFO = DataBaseInfo(
     4. There are few "absolute" diagnoses in 12 lead ECGs, where large discrepancies in the interpretation of the ECG can be found even inspected by experts. There is inevitably something lost in translation, especially when you do not have the context. This doesn"t mean making an algorithm isn't important
     5. The labels are noisy, which one has to deal with in all real world data
     6. each line of the following classes are considered the same (in the scoring matrix):
+
         - RBBB, CRBBB (NOT including IRBBB)
         - PAC, SVPB
         - PVC, VPB
+
     7. unfortunately, the newly added tranches (C - F) have baseline drift and are much noisier. In contrast, CPSC data have had baseline removed and have higher SNR
     8. on Aug. 1, 2020, adc gain (including "resolution", "ADC"? in .hea files) of datasets INCART, PTB, and PTB-xl (tranches C, D, E) are corrected. After correction, (the .tar files of) the 3 datasets are all put in a "WFDB" subfolder. In order to keep the structures consistant, they are moved into "Training_StPetersburg", "Training_PTB", "WFDB" as previously. Using the following code, one can check the adc_gain and baselines of each tranche:
-    >>> db_dir = "/media/cfs/wenhao71/data/CinC2021/"
-    >>> working_dir = "./working_dir"
-    >>> dr = CINC2021(db_dir=db_dir,working_dir=working_dir)
-    >>> resolution = {tranche: set() for tranche in "ABCDEF"}
-    >>> baseline = {tranche: set() for tranche in "ABCDEF"}
-    >>> for tranche, l_rec in dr.all_records.items():
-    ...     for rec in l_rec:
-    ...         ann = dr.load_ann(rec)
-    ...         resolution[tranche] = resolution[tranche].union(set(ann["df_leads"]["adc_gain"]))
-    ...         baseline[tranche] = baseline[tranche].union(set(ann["df_leads"]["baseline"]))
-    >>> print(resolution, baseline)
-    {"A": {1000.0}, "B": {1000.0}, "C": {1000.0}, "D": {1000.0}, "E": {1000.0}, "F": {1000.0}} {"A": {0}, "B": {0}, "C": {0}, "D": {0}, "E": {0}, "F": {0}}
-    9. the .mat files all contain digital signals, which has to be converted to physical values using adc gain, basesline, etc. in corresponding .hea files. `wfdb.rdrecord` has already done this conversion, hence greatly simplifies the data loading process.
-    NOTE that there"s a difference when using `wfdb.rdrecord`: data from `loadmat` are in "channel_first" format, while `wfdb.rdrecord.p_signal` produces data in the "channel_last" format
-    10. there"re 3 equivalent (2 classes are equivalent if the corr. value in the scoring matrix is 1):
-        (RBBB, CRBBB), (PAC, SVPB), (PVC, VPB)
+
+       .. code-block:: python
+
+            >>> db_dir = "/media/cfs/wenhao71/data/CinC2021/"
+            >>> working_dir = "./working_dir"
+            >>> dr = CINC2021(db_dir=db_dir,working_dir=working_dir)
+            >>> resolution = {tranche: set() for tranche in "ABCDEF"}
+            >>> baseline = {tranche: set() for tranche in "ABCDEF"}
+            >>> for tranche, l_rec in dr.all_records.items():
+            ...     for rec in l_rec:
+            ...         ann = dr.load_ann(rec)
+            ...         resolution[tranche] = resolution[tranche].union(set(ann["df_leads"]["adc_gain"]))
+            ...         baseline[tranche] = baseline[tranche].union(set(ann["df_leads"]["baseline"]))
+            >>> print(resolution, baseline)
+            {"A": {1000.0}, "B": {1000.0}, "C": {1000.0}, "D": {1000.0}, "E": {1000.0}, "F": {1000.0}} {"A": {0}, "B": {0}, "C": {0}, "D": {0}, "E": {0}, "F": {0}}
+
+    9. the .mat files all contain digital signals, which has to be converted to physical values using adc gain, basesline, etc. in corresponding .hea files. :func:`wfdb.rdrecord` has already done this conversion, hence greatly simplifies the data loading process. NOTE that there"s a difference when using :func:`wfdb.rdrecord`: data from `loadmat` are in "channel_first" format, while `wfdb.rdrecord.p_signal` produces data in the "channel_last" format
+    10. there are 3 equivalent (2 classes are equivalent if the corr. value in the scoring matrix is 1): (RBBB, CRBBB), (PAC, SVPB), (PVC, VPB)
     11. in the newly (Feb., 2021) created dataset (ref. [7]), header files of each subset were gathered into one separate compressed file. This is due to the fact that updates on the dataset are almost always done in the header files. The correct usage of ref. [7], after uncompressing, is replacing the header files in the folder `All_training_WFDB` by header files from the 6 folders containing all header files from the 6 subsets. This procedure has to be done, since `All_training_WFDB` contains the very original headers with baselines: {"A": {1000.0}, "B": {1000.0}, "C": {1000.0}, "D": {2000000.0}, "E": {200.0}, "F": {4880.0}} (the last 3 are NOT correct)
     12. IMPORTANT: organization of the total dataset:
-    either one moves all training records into ONE folder,
-    or at least one moves the subsets Chapman_Shaoxing (WFDB_ChapmanShaoxing) and Ningbo (WFDB_Ningbo) into ONE folder, or use the data WFDB_ShaoxingUniv which is the union of WFDB_ChapmanShaoxing and WFDB_Ningbo
+        either one moves all training records into ONE folder,
+        or at least one moves the subsets Chapman_Shaoxing (WFDB_ChapmanShaoxing) and Ningbo (WFDB_Ningbo) into ONE folder, or use the data WFDB_ShaoxingUniv which is the union of WFDB_ChapmanShaoxing and WFDB_Ningbo
     """,
     usage=[
         "ECG arrhythmia detection",
@@ -148,22 +164,26 @@ _CINC2021_INFO = DataBaseInfo(
     2. about half of the LAD records satisfy the "2-lead" criteria, but fail for the "3-lead" criteria, which means that their axis is (-30°, 0°) which is not truely LAD
     3. (Aug. 15, 2020; resolved, and changed to 1000) tranche F, the Georgia subset, has ADC gain 4880 which might be too high. Thus obtained voltages are too low. 1000 might be a suitable (correct) value of ADC gain for this tranche just as the other tranches.
     4. "E04603" (all leads), "E06072" (chest leads, epecially V1-V3), "E06909" (lead V2), "E07675" (lead V3), "E07941" (lead V6), "E08321" (lead V6) has exceptionally large values at rpeaks, reading (`load_data`) these two records using `wfdb` would bring in `nan` values. One can check using the following code
-    >>> rec = "E04603"
-    >>> dr.plot(rec, dr.load_data(rec, backend="scipy", units="uv"))  # currently raising error
+
+       .. code-block:: python
+
+            >>> rec = "E04603"
+            >>> dr.plot(rec, dr.load_data(rec, backend="scipy", units="uv"))  # currently raising error
+
     5. many records (headers) have duplicate labels. For example, many records in the Georgia subset has duplicate "PAC" ("284470004") label
     6. some records in tranche G has #Dx ending with "," (at least "JS00344"), or consecutive "," (at least "JS03287") in corresponding .hea file
     7. tranche G has 2 Dx ("251238007", "6180003") which are listed in neither of dx_mapping_scored.csv nor dx_mapping_unscored.csv
-    8. about 68 records from tranche G has `nan` values loaded via `wfdb.rdrecord`, which might be caused by motion artefact in some leads
+    8. about 68 records from tranche G has `nan` values loaded via :func:`wfdb.rdrecord`, which might be caused by motion artefact in some leads
     9. "Q0400", "Q2961" are completely flat (constant), while many other records have flat leads, especially V1-V6 leads
     """,
     references=[
         "https://physionetchallenges.github.io/2021/",
-        "https://physionet.org/content/challenge-2021/1.0.2/",
+        "https://physionet.org/content/challenge-2021/",
         "https://physionetchallenges.github.io/2020/",
         "http://2018.icbeb.org/#",
-        "https://physionet.org/content/incartdb/1.0.0/",
-        "https://physionet.org/content/ptbdb/1.0.0/",
-        "https://physionet.org/content/ptb-xl/1.0.1/",
+        "https://physionet.org/content/incartdb/",
+        "https://physionet.org/content/ptbdb/",
+        "https://physionet.org/content/ptb-xl/",
         "(deprecated) https://storage.cloud.google.com/physionet-challenge-2020-12-lead-ECG-public/",
         "(recommended) https://storage.cloud.google.com/physionetchallenge2021-public-datasets/",
     ],
@@ -174,9 +194,22 @@ _CINC2021_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_CINC2021_INFO.format_database_docstring())
+@add_docstring(_CINC2021_INFO.format_database_docstring(), mode="prepend")
 class CINC2021(PhysioNetDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     def __init__(
         self,
@@ -185,18 +218,6 @@ class CINC2021(PhysioNetDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="challenge-2021",
             db_dir=db_dir,
@@ -323,18 +344,17 @@ class CINC2021(PhysioNetDataBase):
         # self._ls_diagnoses_records()
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """
-        Attach a unique `subject_id` to each record
+        """Attach a unique subject ID for the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        sid: int,
-            the `subject_id` corr. to `rec`
+        int
+            Subject ID associated with the record.
 
         """
         if isinstance(rec, int):
@@ -355,9 +375,8 @@ class CINC2021(PhysioNetDataBase):
         return sid
 
     def _ls_rec(self) -> None:
-        """
-        list all the records and load into `self._all_records`,
-        facilitating further uses
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in some private attributes.
         """
         filename = f"{self.db_name}-record_list.json"
         record_list_fp = self.db_dir_base / filename
@@ -470,17 +489,20 @@ class CINC2021(PhysioNetDataBase):
         # TODO: perhaps we can load labels and metadata of all records into `self._df_records` here
 
     def _aggregate_stats(self, fast: bool = False, force_reload: bool = False) -> None:
-        """
-        aggregate stats on the whole dataset
+        """Aggregate stats on the whole dataset.
 
         Parameters
         ----------
-        fast: bool, default False,
-            if True, only load the cached stats,
-            otherwise aggregate from scratch,
-            ignored if `force_reload` is True
-        force_reload: bool, default False,
-            if True, force to reload the stats from scratch
+        fast : bool, default False
+            If True, only the cached stats will be loaded,
+            otherwise the stats will be aggregated from scratch.
+            Ignored if `force_reload` is True.
+        force_reload : bool, default False
+            If True, the stats will be aggregated from scratch.
+
+        Returns
+        -------
+        None
 
         """
         stats_file = f"{self.db_name}-stats.csv"
@@ -564,14 +586,14 @@ class CINC2021(PhysioNetDataBase):
 
     @property
     def all_records(self) -> Dict[str, List[str]]:
-        """list of all records in the dataset"""
+        """List of all records in the database."""
         if self._all_records is None:
             self._ls_rec()
         return self._all_records
 
     @property
     def df_stats(self) -> pd.DataFrame:
-        """ """
+        """Dataframe of stats on the whole dataset."""
         if self._stats.empty:
             warnings.warn(
                 "the dataframe of stats is empty, try using _aggregate_stats",
@@ -580,7 +602,7 @@ class CINC2021(PhysioNetDataBase):
         return self._stats
 
     def _ls_diagnoses_records(self) -> None:
-        """list all the records for all diagnoses"""
+        """List all the records for all diagnoses."""
         filename = f"{self.db_name}-diagnoses_records_list.json"
         dr_fp = self.db_dir_base / filename
         if dr_fp.is_file():
@@ -605,24 +627,23 @@ class CINC2021(PhysioNetDataBase):
 
     @property
     def diagnoses_records_list(self) -> Dict[str, List[str]]:
-        """list of all records for each diagnosis"""
+        """List of all records for each diagnosis."""
         if self._diagnoses_records_list is None:
             self._ls_diagnoses_records()
         return self._diagnoses_records_list
 
     def _get_tranche(self, rec: Union[str, int]) -> str:
-        """
-        get the tranche's symbol (one of "A","B","C","D","E","F") of a record via its name
+        """Get the symbol of the tranche of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        tranche, str,
-            symbol of the tranche, ref. `self.rec_prefix`
+        tranche : str
+            Symbol of the tranche, ref. `self.rec_prefix`.
 
         """
         if isinstance(rec, int):
@@ -633,20 +654,19 @@ class CINC2021(PhysioNetDataBase):
     def get_absolute_path(
         self, rec: Union[str, int], extension: Optional[str] = None
     ) -> Path:
-        """
-        get the absolute path of the record `rec`
+        """Get the absolute path of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        extension: str, optional,
-            extension of the file
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        extension : str, optional
+            Extension of the file.
 
         Returns
         -------
-        abs_fp: Path,
-            absolute path of the file
+        abs_fp : pathlib.Path
+            Absolute path of the file.
 
         """
         if isinstance(rec, int):
@@ -659,45 +679,27 @@ class CINC2021(PhysioNetDataBase):
         return abs_fp
 
     def get_data_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
-        """
-        get the absolute file path of the data file of `rec`
+        """Get the absolute file path of the data file of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        with_ext: bool, default True,
-            if True, the returned file path comes with file extension,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        with_ext : bool, default True
+            If True, the returned file path comes with file extension,
             otherwise without file extension,
-            which is useful for `wfdb` functions
+            which is useful for `wfdb` functions.
 
         Returns
         -------
-        Path,
-            absolute file path of the data file of the record
+        pathlib.Path
+            Absolute file path of the data file of the record.
 
         """
         return self.get_absolute_path(rec, self.rec_ext if with_ext else None)
 
+    @add_docstring(get_data_filepath.__doc__.replace("data file", "header file"))
     def get_header_filepath(self, rec: Union[str, int], with_ext: bool = True) -> Path:
-        """
-        get the absolute file path of the header file of `rec`
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        with_ext: bool, default True,
-            if True, the returned file path comes with file extension,
-            otherwise without file extension,
-            which is useful for `wfdb` functions
-
-        Returns
-        -------
-        Path,
-            absolute file path of the header file of the record
-
-        """
         return self.get_absolute_path(rec, self.ann_ext if with_ext else None)
 
     @add_docstring(get_header_filepath.__doc__)
@@ -715,32 +717,32 @@ class CINC2021(PhysioNetDataBase):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        load physical (converted from digital) ECG data,
-        which is more understandable for humans
+        """Load physical (converted from digital) ECG data.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or int or list of str or int, optional,
-            the leads to load
-        data_format: str, default "channel_first",
-            format of the ECG data,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        leads : str or int or Sequence[str] or Sequence[int], optional
+            The leads to load, can be a single lead or a list of leads.
+        data_format : str, default "channel_first"
+            Format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first")
-        backend: str, default "wfdb",
-            the backend data reader, can also be "scipy"
-        units: str or None, default "mV",
-            units of the output signal, can also be "μV", with aliases of "uV", "muV";
-            None for digital data, without digital-to-physical conversion
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
+        backend : {"wfdb", "scipy"}, optional
+            The backend data reader, by default "wfdb".
+        units : str or None, default "mV"
+            Units of the output signal, can also be "μV" (aliases "uV", "muV").
+            None for digital data, without digital-to-physical conversion.
+        fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            If not None, the loaded data will be resampled to this frequency,
+            otherwise, the original sampling frequency will be used.
 
         Returns
         -------
-        data: ndarray,
-            the ECG data
+        numpy.ndarray
+            The loaded ECG data.
 
         """
         if isinstance(rec, int):
@@ -813,23 +815,28 @@ class CINC2021(PhysioNetDataBase):
     def load_ann(
         self, rec: Union[str, int], raw: bool = False, backend: str = "wfdb"
     ) -> Union[dict, str]:
-        """
-        load annotations (header) stored in the .hea files
+        """Load the annotations of the record.
+
+        The annotations (header) are stored in the .hea files.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        raw: bool, default False,
-            if True, the raw annotations without parsing will be returned
-        backend: str, default "wfdb", case insensitive,
-            if is "wfdb", `wfdb.rdheader` will be used to load the annotations;
-            if is "naive", annotations will be parsed from the lines read from the header files
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        raw : bool, default False
+            If True, the raw annotations without
+            being parsed will be returned.
+        backend : {"wfdb", "naive"}, optional
+            The backend data reader, by default "wfdb".
+            If is "wfdb", :func:`wfdb.rdheader` will be used
+            to load the annotations;
+            if is "naive", annotations will be parsed from
+            the lines read from the header files.
 
         Returns
         -------
-        ann_dict, dict or str,
-            the annotations with items: ref. `self.ann_items`
+        ann_dict : dict or str
+            The annotations with items listed in `self.ann_items`.
 
         """
         if isinstance(rec, int):
@@ -853,22 +860,21 @@ class CINC2021(PhysioNetDataBase):
         return ann_dict
 
     def _load_ann_wfdb(self, rec: Union[str, int], header_data: List[str]) -> dict:
-        """
-        load annotations (header) using `wfdb.rdheader`
+        """Load annotations (header) using :func:`wfdb.rdheader`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        header_data: list of str,
-            list of lines read directly from a header file,
-            complementary to data read using `wfdb.rdheader` if applicable,
-            this data will be used, since `datetime` is not well parsed by `wfdb.rdheader`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        header_data : List[str]
+            List of lines read directly from a header file.
+            This data will be used, since `datetime` is
+            not well parsed by :func:`wfdb.rdheader`.
 
         Returns
         -------
-        ann_dict, dict,
-            the annotations with items: ref. `self.ann_items`
+        ann_dict : dict
+            The annotations with items listed in `self.ann_items`.
 
         """
         if isinstance(rec, int):
@@ -980,18 +986,18 @@ class CINC2021(PhysioNetDataBase):
         return ann_dict
 
     def _load_ann_naive(self, header_data: List[str]) -> dict:
-        """
-        load annotations (header) using raw data read directly from a header file
+        """Load annotations (header) using raw data
+        read directly from a header file.
 
         Parameters
         ----------
-        header_data: list of str,
-            list of lines read directly from a header file
+        header_data : List[str]
+            The list of lines read directly from a header file.
 
         Returns
         -------
-        ann_dict, dict,
-            the annotations with items: ref. `self.ann_items`
+        ann_dict : dict
+            The annotations with items in `self.ann_items`.
 
         """
         ann_dict = {}
@@ -1072,20 +1078,20 @@ class CINC2021(PhysioNetDataBase):
         return ann_dict
 
     def _parse_diagnosis(self, l_Dx: List[str]) -> Tuple[dict, dict]:
-        """
-        parse diagnosis from a list of strings
+        """Parse diagnosis from a list of strings.
 
         Parameters
         ----------
-        l_Dx: list of str,
-            raw information of diagnosis, read from a header file
+        l_Dx : List[str]
+            Raw information of diagnosis, read from a header file.
 
         Returns
         -------
-        diag_dict:, dict,
-            diagnosis, including SNOMED CT Codes, fullnames and abbreviations of each diagnosis
-        diag_scored_dict: dict,
-            the scored items in `diag_dict`
+        diag_dict : dict
+            Diagnosis, including SNOMED CT Codes,
+            fullnames and abbreviations of each diagnosis.
+        diag_scored_dict : dict
+            The scored items in `diag_dict`.
 
         """
         diag_dict, diag_scored_dict = {}, {}
@@ -1140,18 +1146,18 @@ class CINC2021(PhysioNetDataBase):
         return diag_dict, diag_scored_dict
 
     def _parse_leads(self, l_leads_data: List[str]) -> pd.DataFrame:
-        """
-        parse leads data from a list of strings
+        """Parse leads information from a list of strings.
 
         Parameters
         ----------
-        l_leads_data: list of str,
-            raw information of each lead, read from a header file
+        l_leads_data : List[str]
+            Raw information of each lead, read from a header file.
 
         Returns
         -------
-        df_leads: DataFrame,
-            infomation of each leads in the format of DataFrame
+        df_leads : pandas.DataFrame
+            Infomation of each leads in the format
+            of a :class:`~pandas.DataFrame`.
 
         """
         df_leads = pd.read_csv(
@@ -1222,29 +1228,30 @@ class CINC2021(PhysioNetDataBase):
         fmt: str = "s",
         normalize: bool = True,
     ) -> List[str]:
-        """
-        read labels (diagnoses or arrhythmias) of a record
+        """Get labels (diagnoses or arrhythmias) of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        scored_only: bool, default True,
-            only get the labels that are scored in the CinC2021 official phase
-        fmt: str, default "s",
-            the format of labels, one of the following (case insensitive):
-            - "a", abbreviations
-            - "f", full names
-            - "s", SNOMEDCTCode
-        normalize: bool, default True,
-            if True, the labels will be transformed into their equavalents,
-            which are defined in `aux_data.cinc2021_aux_data.py`,
-            and duplicates would be removed if exist after normalization
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        scored_only : bool, default True
+            If True, only get the labels that are scored
+            in the CINC2021 official phase.
+        fmt : str, default "s"
+            Format of labels, one of the following (case insensitive):
+
+                - "a", abbreviations
+                - "f", full names
+                - "s", SNOMED CT Code
+
+        normalize : bool, default True
+            If True, the labels will be transformed into their equavalents,
+            which are defined in `utils.utils_misc.cinc2021_aux_data.py`.
 
         Returns
         -------
-        labels: list,
-            the list of labels
+        labels : List[str]
+            The list of labels of the record.
 
         """
         if isinstance(rec, int):
@@ -1275,21 +1282,21 @@ class CINC2021(PhysioNetDataBase):
         return labels
 
     def get_fs(self, rec: Union[str, int], from_hea: bool = True) -> Real:
-        """
-        get the sampling frequency of a record
+        """Get the sampling frequency of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        from_hea: bool, default True,
-            if True, get sampling frequency from corresponding header file of the record;
-            otherwise from `self.fs`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        from_hea : bool, default True
+            If True, sampling frequency is read from
+            corresponding header file of the record;
+            otherwise, `self.fs` is used.
 
         Returns
         -------
-        fs: real number,
-            sampling frequency of the record `rec`
+        fs : numbers.Real
+            Sampling frequency of the record.
 
         """
         if from_hea:
@@ -1302,21 +1309,22 @@ class CINC2021(PhysioNetDataBase):
     def get_subject_info(
         self, rec: Union[str, int], items: Optional[List[str]] = None
     ) -> dict:
-        """
-        read auxiliary information of a subject (a record) stored in the header files
+        """Get auxiliary information of a subject
+        (a record) stored in the header files.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        items: list of str, optional,
-            items of the subject"s information (e.g. sex, age, etc.)
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        items : List[str], optional
+            Items of the subject's information (e.g. sex, age, etc.).
 
         Returns
         -------
-        subject_info: dict,
-            information about the subject, including
-            "age", "sex", "medical_prescription", "history", "symptom_or_surgery",
+        subject_info : dict
+            Information about the subject, including
+            "age", "sex", "medical_prescription",
+            "history", "symptom_or_surgery".
 
         """
         if items is None or len(items) == 0:
@@ -1346,45 +1354,47 @@ class CINC2021(PhysioNetDataBase):
         **kwargs: Any,
     ) -> None:
         """
-        plot the signals of a record or external signals (units in μV),
+        Plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
-        possibly also along with wave delineations
+        possibly also along with wave delineations.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data: ndarray, optional,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        data : numpy.ndarray, optional
             (12-lead) ECG signal to plot,
-            should be of the format "channel_first", and compatible with `leads`
-            if given, data of `rec` will not be used,
-            this is useful when plotting filtered data
-        ann: dict, optional,
-            annotations for `data`, with 2 items: "scored", "all",
-            ignored if `data` is None
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+            should be of the format "channel_first",
+            and compatible with `leads`.
+            If is not None, data of `rec` will not be used.
+            This is useful when plotting filtered data.
+        ann : dict, optional
+            Annotations for `data`, with 2 items: "scored", "all".
+            Ignored if `data` is None.
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        leads: str or list of str, optional,
-            the leads to plot
-        same_range: bool, default False,
-            if True, forces all leads to have the same y range
-        waves: dict, optional,
-            indices of the wave critical points, including
+        leads : str or List[str], optional
+            The leads of the ECG signal to plot.
+        same_range : bool, default False
+            If True, all leads are forced to have the same y range.
+        waves : dict, optional
+            Indices of the wave critical points, including
             "p_onsets", "p_peaks", "p_offsets",
             "q_onsets", "q_peaks", "r_peaks", "s_peaks", "s_offsets",
-            "t_onsets", "t_peaks", "t_offsets"
-        kwargs: dict,
+            "t_onsets", "t_peaks", "t_offsets".
+        kwargs : dict, optional
+            Additional keyword arguments to pass to :func:`matplotlib.pyplot.plot`.
 
         TODO
         ----
-        1. slice too long records, and plot separately for each segment
-        2. plot waves using `axvspan`
+        1. Slice too long records, and plot separately for each segment.
+        2. Plot waves using :func:`matplotlib.pyplot.axvspan`.
 
         NOTE
         ----
-        `Locator` of `plt` has default `MAXTICKS` equal to 1000,
-        if not modifying this number, at most 40 seconds of signal could be plotted once
+        `Locator` of ``plt`` has default `MAXTICKS` of 1000.
+        If not modifying this number, at most 40 seconds of signal could be plotted once.
 
         Contributors: Jeethan, and WEN Hao
 
@@ -1579,20 +1589,21 @@ class CINC2021(PhysioNetDataBase):
     def get_tranche_class_distribution(
         self, tranches: Sequence[str], scored_only: bool = True
     ) -> Dict[str, int]:
-        """
-        Get the distribution of classes in the specified tranches.
+        """Compute class distribution in the tranches.
 
         Parameters
         ----------
-        tranches: sequence of str,
-            tranche symbols (A-F)
-        scored_only: bool, default True,
-            only get class distributions that are scored in the CinC2021 official phase
+        tranches : Sequence[str]
+            Tranche symbols (A-G).
+        scored_only : bool, default True
+            If True, only classes that are scored in the CINC2021 official phase
+            are considered for computing the distribution.
 
         Returns
         -------
-        distribution: dict,
-            keys are abbrevations of the classes;
+        distribution : dict
+            Distribution of classes in the tranches.
+            Keys are abbrevations of the classes, and
             values are appearance of corr. classes in the tranche.
 
         """
@@ -1613,28 +1624,29 @@ class CINC2021(PhysioNetDataBase):
         siglen: Optional[int] = None,
     ) -> np.ndarray:
         """
-        resample the data of `rec` to 500Hz,
+        Resample the data of `rec` to 500Hz,
         or load the resampled data in 500Hz, if the corr. data file already exists
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or list of str, optional,
-            the leads to load
-        data_format: str, default "channel_first",
-            format of the ECG data,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        leads : str or List[str], optional
+            The leads of the ECG data to be loaded.
+        data_format : str, default "channel_first"
+            Format of the ECG data,
             "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first")
-        siglen: int, optional,
-            signal length, units in number of samples,
-            if set, signal with length longer will be sliced to the length of `siglen`
-            used for example when preparing/doing model training
+            "channel_first" (alias "lead_first").
+        siglen : int, optional
+            Signal length, with units in number of samples.
+            If is not None, signal with length longer will be
+            sliced to the length of `siglen`.
+            Used for preparing/doing model training for example.
 
         Returns
         -------
-        data: ndarray,
-            the 2D resampled (and perhaps sliced 3D) signal data
+        numpy.ndarray
+            2D resampled (and perhaps sliced 3D) signal data.
 
         """
         if isinstance(rec, int):
@@ -1696,23 +1708,23 @@ class CINC2021(PhysioNetDataBase):
 
     def load_raw_data(self, rec: Union[str, int], backend: str = "scipy") -> np.ndarray:
         """
-        load raw data from corresponding files with no further processing,
+        Load raw data from corresponding files with no further processing,
         in order to facilitate feeding data into the `run_12ECG_classifier` function
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        backend: str, default "scipy",
-            the backend data reader, can also be "wfdb",
-            note that "scipy" provides data in the format of "lead_first",
-            while "wfdb" provides data in the format of "lead_last",
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        backend : {"scipy", "wfdb"}, optional
+            The backend data reader, by default "scipy".
+            Note that "scipy" provides data in the format of "lead_first",
+            while "wfdb" provides data in the format of "lead_last".
 
         Returns
         -------
-        raw_data: ndarray,
-            raw data (d_signal) loaded from corresponding data file,
-            without subtracting baseline nor dividing adc gain
+        raw_data: numpy.ndarray
+            Raw data (d_signal) loaded from corresponding data file,
+            without digital-to-analog conversion (DAC) and resampling.
 
         """
         if isinstance(rec, int):
@@ -1732,25 +1744,27 @@ class CINC2021(PhysioNetDataBase):
         tranches: Optional[Union[str, Sequence[str]]] = None,
         flat_granularity: str = "record",
     ) -> List[str]:
-        """
-        check if records from `tranches` has nan values, or contains flat values in any lead
+        """Check if records from `tranches` has nan values,
+        or contains constant values in any lead.
 
-        accessing data using `p_signal` of `wfdb` would produce nan values,
-        if exceptionally large values are encountered,
-        this could help detect abnormal records as well
+        Accessing data using `p_signal` of `wfdb` would produce nan values,
+        if exceptionally large values are encountered.
+        Tthis could help detect abnormal records as well.
 
         Parameters
         ----------
-        tranches: str or sequence of str, optional,
-            tranches to check, defaults to all tranches, i.e. `self.db_tranches`
-        flat_granularity: str, default "record",
-            if is "record", flat checking will only be carried out at record level,
-            if is "lead", flat checking will be carried out at lead level
+        tranches : str or Sequence[str], optional
+            Tranches to check, defaults to all tranches,
+            i.e. `self.db_tranches`.
+        flat_granularity : str, default "record"
+            Granularity of flat (constant value) checking.
+            If is "record", flat checking will only be carried out at record level;
+            if is "lead", flat checking will be carried out at lead level.
 
         Returns
         -------
-        exceptional_records: list of str,
-            list of exceptional records
+        exceptional_records : List[str]
+            List of exceptional records.
 
         """
         six_leads = ("I", "II", "III", "aVR", "aVL", "aVF")
@@ -1796,19 +1810,20 @@ class CINC2021(PhysioNetDataBase):
         return exceptional_records
 
     def _compute_cooccurrence(self, tranches: Optional[str] = None) -> pd.DataFrame:
-        """
-        compute the coocurrence matrix (DataFrame) of all classes in the whole of the CinC2021 database
+        """Compute the coocurrence matrix (:class:`~pandas.DataFrame`)
+        of all classes in the whole of the CinC2021 database.
 
         Parameters
         ----------
-        tranches: str, optional,
-            if specified, computation will be limited to these tranches, case insensitive,
-            e.g. "AB", "ABEF", "G", etc.
+        tranches : str, optional
+            Tranches to compute coocurrence matrix, defaults to all tranches.
+            If specified, computation will be limited to these tranches,
+            e.g. "AB", "ABEF", "G", etc., case insensitive.
 
         Returns
         -------
-        dx_cooccurrence_all: DataFrame,
-            the coocurrence matrix (DataFrame) desired
+        dx_cooccurrence_all : pandas.DataFrame
+            The coocurrence matrix of the classes in given tranches.
 
         """
         if dx_cooccurrence_all_fp.is_file() and tranches is None:
@@ -1886,17 +1901,14 @@ class CINC2021(PhysioNetDataBase):
     ]
 
     def download(self) -> None:
-        """ """
         for url in self.url:
             http_get(url, self.db_dir_base, extract=True)
         self._ls_rec()
 
     def __len__(self) -> int:
-        """number of records in the database"""
         return len(self.__all_records)
 
     def __getitem__(self, index: int) -> str:
-        """get the record name by index"""
         return self.__all_records[index]
 
     @property
@@ -1933,32 +1945,40 @@ _exceptional_records = [  # with nan values (p_signal) read by wfdb
 def compute_all_metrics_detailed(
     classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence
 ) -> Tuple[Union[float, np.ndarray]]:
-    """
-    compute detailed metrics for each class
+    """Compute detailed metrics for each class.
 
     Parameters
     ----------
-    classes: list of str,
-        list of all the classes, in the format of abbrevations
-    truth: sequence,
-        ground truth array, of shape (n_records, n_classes), with values 0 or 1
-    binary_pred: sequence,
-        binary predictions, of shape (n_records, n_classes), with values 0 or 1
-    scalar_pred: sequence,
-        probability predictions, of shape (n_records, n_classes), with values within [0,1]
+    classes : List[str]
+        List of all the classes, in the format of abbrevations.
+    truth : array_like
+        Ground truth array, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    binary_pred : array_like
+        Binary predictions, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    scalar_pred : array_like
+        Probability predictions, of shape ``(n_records, n_classes)``,
+        with values within the interval [0, 1].
 
     Returns
     -------
-    auroc: float,
-    auprc: float,
-    auroc_classes: ndarray,
-    auprc_classes: ndarray,
-    accuracy: float,
-    f_measure: float,
-    f_measure_classes: ndarray,
-    f_beta_measure: float,
-    g_beta_measure: float,
-    challenge_metric: float,
+    auroc : float
+        Area under the receiver operating characteristic (ROC) curve.
+    auprc : float
+        Area under the precision-recall curve.
+    accuracy : float
+        Macro-averaged accuracy.
+    f_measure : float
+        Macro-averaged F1 score.
+    f_measure_classes : numpy.ndarray
+        F1 score for each class.
+    f_beta_measure : float
+        Macro-averaged F-beta score.
+    g_beta_measure : float
+        Macro-averaged G-beta score.
+    challenge_metric : float
+        Challenge metric, defined by a weight matrix.
 
     """
     # sinus_rhythm = "426783006"
@@ -1970,17 +1990,19 @@ def compute_all_metrics_detailed(
     _scalar_pred = np.array(scalar_pred)
 
     print("- AUROC and AUPRC...")
-    auroc, auprc, auroc_classes, auprc_classes = compute_auc(_truth, _scalar_pred)
+    auroc, auprc, auroc_classes, auprc_classes = _compute_auc(_truth, _scalar_pred)
 
     print("- Accuracy...")
-    accuracy = compute_accuracy(_truth, _binary_pred)
+    accuracy = _compute_accuracy(_truth, _binary_pred)
 
     print("- F-measure...")
-    f_measure, f_measure_classes = compute_f_measure(_truth, _binary_pred)
+    f_measure, f_measure_classes = _compute_f_measure(_truth, _binary_pred)
 
     print("- F-beta and G-beta measures...")
     # NOTE that F-beta and G-beta are not among metrics of CinC2021, in contrast to CinC2020
-    f_beta_measure, g_beta_measure = compute_beta_measures(_truth, _binary_pred, beta=2)
+    f_beta_measure, g_beta_measure = _compute_beta_measures(
+        _truth, _binary_pred, beta=2
+    )
 
     print("- Challenge metric...")
     challenge_metric = compute_challenge_metric(
@@ -2008,36 +2030,39 @@ def compute_all_metrics_detailed(
 def compute_all_metrics(
     classes: List[str], truth: Sequence, binary_pred: Sequence, scalar_pred: Sequence
 ) -> Tuple[Union[float, np.ndarray]]:
-    """
-    simplified version of `compute_all_metrics_detailed`,
-    this function doesnot produce per class scores
+    """Simplified version of :func:`compute_all_metrics_detailed`.
+
+    This function doesnot produce per-class scores.
 
     Parameters
     ----------
-    classes: list of str,
-        list of all the classes, in the format of abbrevations
-    truth: sequence,
-        ground truth array, of shape (n_records, n_classes), with values 0 or 1
-    binary_pred: sequence,
-        binary predictions, of shape (n_records, n_classes), with values 0 or 1
-    scalar_pred: sequence,
-        probability predictions, of shape (n_records, n_classes), with values within [0,1]
+    classes : List[str]
+        List of all the classes, in the format of abbrevations.
+    truth : array_like
+        Ground truth array, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    binary_pred : array_like
+        Binary predictions, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    scalar_pred : array_like
+        Probability predictions, of shape ``(n_records, n_classes)``,
+        with values within the interval [0, 1].
 
     Returns
     -------
-    auroc: float,
-        area under the receiver operating characteristic (ROC) curve
-    auprc: float,
-        area under the precision-recall curve
-    accuracy: float,
-        accuracy
-    f_measure: float,
-        f1 score
-    f_beta_measure: float,
-        f-beta score
-    g_beta_measure: float,
-        g-beta score
-    challenge_metric: float,
+    auroc : float
+        Area under the receiver operating characteristic (ROC) curve
+    auprc : float
+        Area under the precision-recall curve.
+    accuracy : float
+        Macro-averaged accuracy.
+    f_measure : float
+        Macro-averaged F1 score.
+    f_beta_measure : float
+        Macro-averaged F-beta score.
+    g_beta_measure : float
+        Macro-averaged G-beta score.
+    challenge_metric : float
         challenge metric, defined by a weight matrix
 
     """
@@ -2064,8 +2089,24 @@ def compute_all_metrics(
     )
 
 
-def compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> float:
-    """Compute recording-wise accuracy."""
+def _compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> float:
+    """Compute recording-wise accuracy.
+
+    Parameters
+    ----------
+    labels : numpy.ndarray
+        Ground truth array, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    outputs : numpy.ndarray
+        Binary predictions, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+
+    Returns
+    -------
+    accuracy : float
+        Macro-averaged accuracy.
+
+    """
     num_recordings, num_classes = np.shape(labels)
 
     num_correct_recordings = 0
@@ -2076,18 +2117,35 @@ def compute_accuracy(labels: np.ndarray, outputs: np.ndarray) -> float:
     return float(num_correct_recordings) / float(num_recordings)
 
 
-# Compute confusion matrices.
-def compute_confusion_matrices(
+def _compute_confusion_matrices(
     labels: np.ndarray, outputs: np.ndarray, normalize: bool = False
 ) -> np.ndarray:
-    """
+    """Compute confusion matrices.
+
     Compute a binary confusion matrix for each class k:
 
-        [TN_k FN_k]
-        [FP_k TP_k]
+          [TN_k FN_k]
+          [FP_k TP_k]
 
     If the normalize variable is set to true, then normalize the contributions
     to the confusion matrix by the number of labels per recording.
+
+    Parameters
+    ----------
+    labels : numpy.ndarray
+        Ground truth array, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    outputs : numpy.ndarray
+        Binary predictions, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    normalize : bool, optional
+        If true, normalize the confusion matrices by the number of labels per
+        recording. Default is false.
+
+    Returns
+    -------
+    A : numpy.ndarray
+        Confusion matrices, of shape ``(n_classes, 2, 2)``.
 
     """
     num_recordings, num_classes = np.shape(labels)
@@ -2125,14 +2183,31 @@ def compute_confusion_matrices(
     return A
 
 
-# Compute macro F-measure.
-def compute_f_measure(
+def _compute_f_measure(
     labels: np.ndarray, outputs: np.ndarray
 ) -> Tuple[float, np.ndarray]:
-    """ """
+    """Compute macro-averaged F1 score, and F1 score per class.
+
+    Parameters
+    ----------
+    labels : numpy.ndarray
+        Ground truth array, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    outputs : numpy.ndarray
+        Binary predictions, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+
+    Returns
+    -------
+    macro_f_measure : float
+        Macro-averaged F1 score.
+    f_measure : numpy.ndarray
+        F1 score per class, of shape ``(n_classes,)``.
+
+    """
     num_recordings, num_classes = np.shape(labels)
 
-    A = compute_confusion_matrices(labels, outputs)
+    A = _compute_confusion_matrices(labels, outputs)
 
     f_measure = np.zeros(num_classes)
     for k in range(num_classes):
@@ -2150,14 +2225,33 @@ def compute_f_measure(
     return macro_f_measure, f_measure
 
 
-# Compute F-beta and G-beta measures from the unofficial phase of the Challenge.
-def compute_beta_measures(
+def _compute_beta_measures(
     labels: np.ndarray, outputs: np.ndarray, beta: Real
 ) -> Tuple[float, float]:
-    """ """
+    """Compute F-beta and G-beta measures.
+
+    Parameters
+    ----------
+    labels : numpy.ndarray
+        Ground truth array, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    outputs : numpy.ndarray
+        Binary predictions, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    beta : float
+        Beta parameter.
+
+    Returns
+    -------
+    f_beta_measure : float
+        Macro-averaged F-beta measure.
+    g_beta_measure : float
+        Macro-averaged G-beta measure.
+
+    """
     num_recordings, num_classes = np.shape(labels)
 
-    A = compute_confusion_matrices(labels, outputs, normalize=True)
+    A = _compute_confusion_matrices(labels, outputs, normalize=True)
 
     f_beta_measure = np.zeros(num_classes)
     g_beta_measure = np.zeros(num_classes)
@@ -2180,11 +2274,32 @@ def compute_beta_measures(
     return macro_f_beta_measure, macro_g_beta_measure
 
 
-# Compute macro AUROC and macro AUPRC.
-def compute_auc(
+def _compute_auc(
     labels: np.ndarray, outputs: np.ndarray
 ) -> Tuple[float, float, np.ndarray, np.ndarray]:
-    """ """
+    """Compute macro-averaged AUROC and macro-averaged AUPRC.
+
+    Parameters
+    ----------
+    labels : numpy.ndarray
+        Ground truth array, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    outputs : numpy.ndarray
+        Binary predictions, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+
+    Returns
+    -------
+    macro_auroc : float
+        Macro-averaged AUROC.
+    macro_auprc : float
+        Macro-averaged AUPRC.
+    auroc : numpy.ndarray
+        AUROC per class, of shape ``(n_classes,)``.
+    auprc : numpy.ndarray
+        AUPRC per class, of shape ``(n_classes,)``.
+
+    """
     num_recordings, num_classes = np.shape(labels)
 
     # Compute and summarize the confusion matrices for each class across at distinct output values.
@@ -2268,12 +2383,26 @@ def compute_auc(
 
 
 # Compute modified confusion matrix for multi-class, multi-label tasks.
-def compute_modified_confusion_matrix(
+def _compute_modified_confusion_matrix(
     labels: np.ndarray, outputs: np.ndarray
 ) -> np.ndarray:
     """
     Compute a binary multi-class, multi-label confusion matrix,
     where the rows are the labels and the columns are the outputs.
+
+    Parameters
+    ----------
+    labels : numpy.ndarray
+        Ground truth array, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    outputs : numpy.ndarray
+        Binary predictions, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+
+    Returns
+    -------
+    A : numpy.ndarray
+        Modified confusion matrix, of shape ``(n_classes, n_classes)``.
 
     """
     num_recordings, num_classes = np.shape(labels)
@@ -2304,7 +2433,29 @@ def compute_challenge_metric(
     classes: List[str],
     sinus_rhythm: str,
 ) -> float:
-    """ """
+    """Compute the evaluation metrics for the Challenge.
+
+    Parameters
+    ----------
+    weights : numpy.ndarray
+        Array of weights, of shape ``(n_classes, n_classes)``.
+    labels : numpy.ndarray
+        Ground truth array, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    outputs : numpy.ndarray
+        Binary predictions, of shape ``(n_records, n_classes)``,
+        with values 0 or 1.
+    classes : List[str]
+        List of class names.
+    sinus_rhythm : str
+        Name of the sinus rhythm class.
+
+    Returns
+    -------
+    score : float
+        Challenge metric score.
+
+    """
     num_recordings, num_classes = np.shape(labels)
     if sinus_rhythm in classes:
         sinus_rhythm_index = classes.index(sinus_rhythm)
@@ -2312,18 +2463,18 @@ def compute_challenge_metric(
         raise ValueError("The sinus rhythm class is not available.")
 
     # Compute the observed score.
-    A = compute_modified_confusion_matrix(labels, outputs)
+    A = _compute_modified_confusion_matrix(labels, outputs)
     observed_score = np.nansum(weights * A)
 
     # Compute the score for the model that always chooses the correct label(s).
     correct_outputs = labels
-    A = compute_modified_confusion_matrix(labels, correct_outputs)
+    A = _compute_modified_confusion_matrix(labels, correct_outputs)
     correct_score = np.nansum(weights * A)
 
     # Compute the score for the model that always chooses the sinus rhythm class.
     inactive_outputs = np.zeros((num_recordings, num_classes), dtype=bool)
     inactive_outputs[:, sinus_rhythm_index] = 1
-    A = compute_modified_confusion_matrix(labels, inactive_outputs)
+    A = _compute_modified_confusion_matrix(labels, inactive_outputs)
     inactive_score = np.nansum(weights * A)
 
     if correct_score != inactive_score:

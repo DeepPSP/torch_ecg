@@ -30,24 +30,36 @@ _QTDB_INFO = DataBaseInfo(
     about="""
     1. The QT Database includes ECGs which were chosen to represent a wide variety of QRS and ST-T morphologies
     2. Recordings were chosen chosen from the MIT-BIH Arrhythmia Database (MITDB), the European Society of Cardiology ST-T Database (EDB), and several other ECG databases collected at Boston's Beth Israel Deaconess Medical Center (MIT-BIH ST Change Database, MIT-BIH Supraventricular Arrhythmia Database, MIT-BIH Normal Sinus Rhythm Database, MIT-BIH Long-Term ECG Database, ``sudden death'' patients from BIH)
-    2. Contains 105 fifteen-minute two-lead ECG recordings
-    3. Contains onset, peak, and end markers for P, QRS, T, and (where present) U waves of from 30 to 50 selected beats in each recording
-    4. Annotation file table:
+    3. Contains 105 fifteen-minute two-lead ECG recordings
+    4. Contains onset, peak, and end markers for P, QRS, T, and (where present) U waves of from 30 to 50 selected beats in each recording
+    5. Annotation file table:
+
+        +--------+---------+
         | Suffix | Meaning |
-        | ------ | ------- |
+        +========+=========+
         | .atr   | reference beat annotations from original database (not available for the 24 sudden death records) |
+        +--------+---------+
         | .man:  | reference beat annotations for selected beats only |
+        +--------+---------+
         | .q1c:  | manually determined waveform boundary measurements for selected beats (annotator 1 only -- second pass) |
+        +--------+---------+
         | .q2c:  | manually determined waveform boundary measurements for selected beats (annotator 2 only -- second pass; available for only 11 records) |
+        +--------+---------+
         | .qt1:  | manually determined waveform boundary measurements for selected beats (annotator 1 only -- first pass) |
+        +--------+---------+
         | .qt2:  | manually determined waveform boundary measurements for selected beats (annotator 2 only -- first pass; available for only 11 records) |
+        +--------+---------+
         | .pu:   | automatically determined waveform boundary measurements for all beats (based on both signals) |
+        +--------+---------+
         | .pu0:  | automatically determined waveform boundary measurements for all beats (based on signal 0 only) |
+        +--------+---------+
         | .pu1:  | automatically determined waveform boundary measurements for all beats (based on signal 1 only) |
-    5. A part of the recordings have rhythm annotations, ST change (elevation or depression) annotations, all of which have .atr annotation files. These annotations are provided in the `aux_note` attribute of the annotation object.
-    6. In the first pass manual wave delineation annotation files (.qt1, .qt2 files), fiducial points were marked by a "|" symbol, along with beat annotations (one of "A", "B", "N", "Q", "V") inherited from corresponding .man files.
-    7. In the second pass manual wave delineation annotation files (.q1c, .q2c files), the final manual annotations are recorded, with the regular annotation symbols "(" ,")", "t", "p", and "u", and with annotations inherited from the .qt1, .qt2 files.
-    8. The .pu0, .pu1 files contain the automatic waveform onsets and ends in signals 0 and 1 respectively, as detected using the differentiated threshold method by ecgpuwave. In the num fields of the pu* annotations, ecgpuwave classifies the T waves as normal (0), inverted (1), only upwards (2), only downwards (3), biphasic negative-positive (4), or biphasic positive-negative (5). Waveform onset ``('' and offset ``)'' annotations specify the waveform type in their num fields (0 for a P-wave, 1 for a QRS complex, 2 for a T wave, or 3 for a U-wave).
+        +--------+---------+
+
+    6. A part of the recordings have rhythm annotations, ST change (elevation or depression) annotations, all of which have .atr annotation files. These annotations are provided in the `aux_note` attribute of the annotation object.
+    7. In the first pass manual wave delineation annotation files (.qt1, .qt2 files), fiducial points were marked by a "|" symbol, along with beat annotations (one of "A", "B", "N", "Q", "V") inherited from corresponding .man files.
+    8. In the second pass manual wave delineation annotation files (.q1c, .q2c files), the final manual annotations are recorded, with the regular annotation symbols "(" ,")", "t", "p", and "u", and with annotations inherited from the .qt1, .qt2 files.
+    9. The .pu0, .pu1 files contain the automatic waveform onsets and ends in signals 0 and 1 respectively, as detected using the differentiated threshold method by ecgpuwave. In the num fields of the pu* annotations, ecgpuwave classifies the T waves as normal (0), inverted (1), only upwards (2), only downwards (3), biphasic negative-positive (4), or biphasic positive-negative (5). Waveform onset ``('' and offset ``)'' annotations specify the waveform type in their num fields (0 for a P-wave, 1 for a QRS complex, 2 for a T wave, or 3 for a U-wave).
     """,
     usage=[
         "ECG wave delineation",
@@ -68,9 +80,22 @@ _QTDB_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_QTDB_INFO.format_database_docstring())
+@add_docstring(_QTDB_INFO.format_database_docstring(), mode="prepend")
 class QTDB(PhysioNetDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     __name__ = "QTDB"
 
@@ -81,18 +106,6 @@ class QTDB(PhysioNetDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="qtdb",
             db_dir=db_dir,
@@ -147,33 +160,33 @@ class QTDB(PhysioNetDataBase):
         self._ls_rec()
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """
+        """Attach a unique subject ID for the record.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        sid: int,
-            the `subject_id` corr. to `rec`
+        int
+            Subject ID associated with the record.
 
         """
         raise NotImplementedError
 
     def get_lead_names(self, rec: Union[str, int]) -> List[str]:
-        """
-        get the lead names of the record `rec`
+        """Get the lead names of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        list of str,
-            list of the lead names
+        List[str]
+            List of the lead names of the record.
 
         """
         return wfdb.rdheader(str(self.get_absolute_path(rec))).sig_name
@@ -187,29 +200,31 @@ class QTDB(PhysioNetDataBase):
         ignore_beat_types: bool = True,
         extension: str = "q1c",
     ) -> List[ECGWaveForm]:
-        """
-        load the wave delineation in the form of list of `ECGWaveForm`
+        """Load the wave delineation annotations of the record.
+
+        The wave delineation annotations are returned
+        in the form of list of :class:`ECGWaveForm`.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
-        ignore_beat_types: bool, default True,
-            if True, ignore the beat types (all converted to "N") in the annotation file
-        extension: str, default "q1c",
-            the extension of the wave delineation file
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
+        ignore_beat_types : bool, default True
+            If True, the beat types will be ignored (all converted to "N").
+        extension : str, default "q1c"
+            Extension of the wave delineation file to use.
 
         Returns
         -------
-        wave_list: list of `ECGWaveForm`,
-            the list of wave delineation in the form of `ECGWaveForm`
+        wave_list : List[ECGWaveForm]
+            The list of wave delineation in the form of :class:`ECGWaveForm`.
 
         """
         assert extension in [
@@ -291,31 +306,31 @@ class QTDB(PhysioNetDataBase):
         class_map: Optional[Dict[str, int]] = None,
         extension: str = "q1c",
     ) -> np.ndarray:
-        """
-        load the wave delineation in the form of list of `ECGWaveForm`
+        """Load the wave delineation in the form of masks.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        mask_format: str, default "channel_first",
-            format of the mask,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        mask_format : str, default "channel_first"
+            Format of the mask,
             "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first")
-        class_map: dict, optional,
-            custom class map,
-            if not set, `self.class_map` will be used
-        extension: str, default "q1c",
-            the extension of the wave delineation file
+            "channel_first" (alias "lead_first").
+        class_map : dict, optional
+            A custom class map.
+            If is None, `self.class_map` will be used.
+        extension : str, default "q1c"
+            Extension of the wave delineation file to use.
 
         Returns
         -------
-        masks: ndarray,
-            the masks corresponding to the wave delineation annotations of `rec`
+        masks : numpy.ndarray
+            The masks corresponding to the wave delineation annotations
+            of the record.
 
         """
         raise NotImplementedError(
@@ -333,29 +348,32 @@ class QTDB(PhysioNetDataBase):
         keep_original: bool = False,
         extension: str = "atr",
     ) -> Union[Dict[str, list], np.ndarray]:
-        """
-        load rhythm annotations,
-        which are stored in the `aux_note` attribute of corresponding annotation files.
+        """Load rhythm annotations of a record.
+
+        Rhythm annotations are stored in the `aux_note` attribute
+        of corresponding annotation files.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        rhythm_format: str, default "intervals", case insensitive,
-            format of returned annotation, can also be "mask"
-        rhythm_types: list of str, optional,
-            defaults to `self.rhythm_types`
-            if not None, only the rhythm annotations with the specified types will be returned
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
-        extension: str, default "atr",
-            the extension of the annotation file,
-            has to be "atr", since "man" files has no rhythm annotation
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        rhythm_format : {"intervals", "mask"}, optional
+            Format of returned annotation, by default "intervals",
+            case insensitive.
+        rhythm_types : List[str], optional
+            The rhythm types to be loaded, defaults to `self.rhythm_types`.
+            If is not None, only the rhythm annotations
+            with the specified types will be returned.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
+        extension : str, default "atr"
+            Extension of the annotation file to use.
+            Has to be "atr", since "man" files has no rhythm annotation.
 
         Returns
         -------
@@ -378,33 +396,37 @@ class QTDB(PhysioNetDataBase):
         keep_original: bool = False,
         extension: str = "atr",
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
-        """
-        load beat annotations,
-        which are stored in the `symbol` attribute of corresponding annotation files
+        """Load beat annotations of the record.
+
+        Beat annotations are stored in the `symbol` attribute
+        of corresponding annotation files.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        beat_format: str, default "beat", case insensitive,
-            format of returned annotation, can also be "dict"
-        beat_types: list of str, optional,
-            defaults to `self.beat_types`
-            if not None, only the beat annotations with the specified types will be returned
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
-        extension: str, default "atr",
-            the extension of the annotation file, can also be "man"
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        beat_format : {"beat", "dict"}, optional
+            Format of returned annotation, by default "beat",
+            case insensitive.
+        beat_types : List[str], optional
+            The beat types to be loaded, defaults to `self.beat_types`.
+            If is not None, only the beat annotations
+            with the specified types will be returned.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
+        extension : {"atr", "man"}, optional
+            Extension of the annotation file, by default "atr",
+            case insensitive.
 
         Returns
         -------
-        beat_ann: dict or list,
-            locations (indices) of the all the beat types
+        beat_ann : dict or list
+            Locations (indices) of the the given beat types.
 
         """
         assert beat_format.lower() in [
@@ -449,29 +471,31 @@ class QTDB(PhysioNetDataBase):
         keep_original: bool = False,
         extension: str = "atr",
     ) -> np.ndarray:
-        """
-        load rpeak indices, or equivalently qrs complex locations,
+        """Load rpeak indices of the record.
+
+        Rpeak indices, or equivalently qrs complex locations,
         which are stored in the `symbol` attribute of corresponding annotation files,
-        regardless of their beat types,
+        regardless of their beat types.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
-        extension: str, default "atr",
-            the extension of the annotation file, can also be "man"
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
+        extension : {"atr", "man"}, optional
+            Extension of the annotation file, by default "atr",
+            case insensitive.
 
         Returns
         -------
-        rpeak_inds: ndarray,
-            locations (indices) of the all the rpeaks (qrs complexes)
+        rpeak_inds : numpy.ndarray
+            Locations (indices) of the all the rpeaks (qrs complexes).
 
         """
         assert extension in [
@@ -520,45 +544,47 @@ class QTDB(PhysioNetDataBase):
         **kwargs: Any,
     ) -> None:
         """
-        plot the signals of a record or external signals (units in μV),
+        Plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
-        possibly also along with wave delineations
+        possibly also along with wave delineations.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data: ndarray, optional,
-            if given, data of `rec` will not be used,
-            this is useful when plotting filtered data
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        data : numpy.ndarray, optional
+            The signals to plot.
+            If is not None, data of `rec` will not be used.
+            This is useful when plotting filtered data
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        leads: str or int or list of str or list of int, optional,
-            the leads to plot
-        sampfrom: int, optional,
-            start index of the record to plot
-        sampto: int, optional,
-            end index of the record to plot
-        same_range: bool, default False,
-            if True, forces all leads to have the same y range
-        waves: ECGWaveForm, optional,
-            the waves (p waves, t waves, qrs complexes, etc.)
-        beat_ann: dict, optional,
-            the beat annotations
-        rpeak_inds: ndarray or list of int, optional,
-            the rpeak indices
-        kwargs: dict,
+        leads : str or int or List[str] or List[int], optional
+            The leads of the record to plot.
+        sampfrom : int, optional
+            Start index of the record to plot.
+        sampto : int, optional
+            End index of the record to plot.
+        same_range : bool, default False
+            If True, all leads are forced to have the same y range.
+        waves : ECGWaveForm, optional
+            The waves (p waves, t waves, qrs complexes, etc.).
+        beat_ann : dict, optional
+            The beat annotations.
+        rpeak_inds : numpy.ndarray or List[int], optional
+            The rpeak indices.
+        kwargs : dict, optional
+            Additional keyword arguments to pass to :func:`matplotlib.pyplot.plot`.
 
         TODO
         ----
-        1. slice too long records, and plot separately for each segment
-        2. plot waves using `axvspan`
+        1. Slice too long records, and plot separately for each segment.
+        2. Plot waves using :func:`matplotlib.pyplot.axvspan`.
 
         NOTE
         ----
-        `Locator` of `plt` has default `MAXTICKS` equal to 1000,
-        if not modifying this number, at most 40 seconds of signal could be plotted once
+        `Locator` of ``plt`` has default `MAXTICKS` of 1000.
+        If not modifying this number, at most 40 seconds of signal could be plotted once.
 
         Contributors: Jeethan, and WEN Hao
 

@@ -35,8 +35,10 @@ _MITDB_INFO = DataBaseInfo(
     1. contains 48 half-hour excerpts of two-channel ambulatory ECG recordings, obtained from 47 subjects.
     2. recordings were digitized at 360 samples per second per channel with 11-bit resolution over a 10 mV range.
     3. annotations contains:
+
         - beat-wise or finer (e.g. annotations of flutter wave) annotations, accessed via the `symbol` attribute of an `Annotation`.
         - rhythm annotations, accessed via the `aux_note` attribute of an `Annotation`.
+
     """,
     usage=[
         "Beat classification",
@@ -53,9 +55,22 @@ _MITDB_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_MITDB_INFO.format_database_docstring())
+@add_docstring(_MITDB_INFO.format_database_docstring(), mode="prepend")
 class MITDB(PhysioNetDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     __name__ = "MITDB"
 
@@ -66,19 +81,6 @@ class MITDB(PhysioNetDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-            if not specified, data will be fetched from Physionet
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="mitdb",
             db_dir=db_dir,
@@ -143,7 +145,9 @@ class MITDB(PhysioNetDataBase):
         self._aggregate_stats()
 
     def _ls_rec(self) -> None:
-        """ """
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in some private attributes.
+        """
         subsample = self._subsample
         self._subsample = None  # so that no subsampling in super()._ls_rec()
         super()._ls_rec()
@@ -176,7 +180,7 @@ class MITDB(PhysioNetDataBase):
         self._subsample = subsample
 
     def _aggregate_stats(self) -> None:
-        """ """
+        """Aggregate statistics for all records in the database."""
         self._stats = pd.DataFrame(columns=self._stats_columns)
         if len(self) == 0:
             return
@@ -230,39 +234,45 @@ class MITDB(PhysioNetDataBase):
         beat_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
     ) -> dict:
-        """
-        load rhythm and beat annotations,
-        which are stored in the `aux_note`, `symbol` attributes of corresponding annotation files.
-        NOTE that qrs annotations (.qrs files) do NOT contain any rhythm annotations
+        """Load rhythm and beat annotations of the record.
+
+        Rhythm and beat annotations are stored in the `aux_note`, `symbol`
+        attributes of corresponding annotation files.
+        NOTE that qrs annotations (.qrs files) do NOT contain any rhythm annotations.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        rhythm_format: str, default "intervals", case insensitive,
-            format of returned annotation, can also be "mask"
-        rhythm_types: list of str, optional,
-            defaults to `self.rhythm_types`
-            if not None, only the rhythm annotations with the specified types will be returned
-        beat_format: str, default "beat", case insensitive,
-            format of returned annotation, can also be "dict"
-        beat_types: list of str, optional,
-            defaults to `self.beat_types`
-            if not None, only the beat annotations with the specified types will be returned
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        rhythm_format : {"interval", "mask"}, optional
+            Format of returned annotation, by default "interval",
+            case insensitive.
+        rhythm_types : list of str, optional
+            Defaults to `self.rhythm_types`.
+            If is not None, only the rhythm annotations
+            with the specified types will be returned.
+        beat_format : {"beat", "dict"}, optional
+            Format of returned annotation, by default "beat",
+            case insensitive.
+        beat_types : List[str], optional
+            Beat types to be loaded, by default `self.beat_types`.
+            If is not None, only the beat annotations
+            with the specified types will be returned.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        ann, dict,
-            the annotations of `rhythm` and `beat`, with
-            `rhythm` annotatoins in the format of `intervals`, or `mask`;
-            `beat` annotations in the format of `dict` or `BeatAnn`
+        ann : dict
+            The annotations of ``rhythm`` and ``beat``, with
+            ``rhythm`` annotatoins in the format of intervals, or mask;
+            ``beat`` annotations in the format of dict or
+            :class:`~torch_ecg.databases.BeatAnn`.
 
         """
         assert rhythm_format.lower() in [
@@ -353,31 +363,34 @@ class MITDB(PhysioNetDataBase):
         rhythm_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
-        """
-        load rhythm annotations,
-        which are stored in the `aux_note` attribute of corresponding annotation files.
+        """Load rhythm annotations of the record.
+
+        Rhythm annotations are stored in the `aux_note` attribute
+        of corresponding annotation files.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        rhythm_format: str, default "intervals", case insensitive,
-            format of returned annotation, can also be "mask"
-        rhythm_types: list of str, optional,
-            defaults to `self.rhythm_types`
-            if not None, only the rhythm annotations with the specified types will be returned
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        rhythm_format : {"interval", "mask"}, optional
+            Format of returned annotation, by default "interval",
+            case insensitive.
+        rhythm_types : list of str, optional
+            Defaults to `self.rhythm_types`.
+            If is not None, only the rhythm annotations
+            with the specified types will be returned.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        ann, dict or ndarray,
-            the annotations in the format of intervals, or in the format of mask
+        ann : dict or numpy.ndarray
+            Annotations in the format of intervals or mask.
 
         """
         return self.load_ann(
@@ -398,31 +411,35 @@ class MITDB(PhysioNetDataBase):
         beat_types: Optional[Sequence[str]] = None,
         keep_original: bool = False,
     ) -> Union[Dict[str, np.ndarray], List[BeatAnn]]:
-        """
-        load beat annotations,
-        which are stored in the `symbol` attribute of corresponding annotation files
+        """Load beat annotations of the record.
+
+        Beat annotations are stored in the `symbol` attribute
+        of corresponding annotation files.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        beat_format: str, default "beat", case insensitive,
-            format of returned annotation, can also be "dict"
-        beat_types: list of str, optional,
-            defaults to `self.beat_types`
-            if not None, only the beat annotations with the specified types will be returned
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        beat_format : {"beat", "dict"}, optional
+            Format of returned annotation, by default "beat",
+            case insensitive.
+        beat_types : List[str], optional
+            Beat types to be loaded, by default `self.beat_types`.
+            If is not None, only the beat annotations
+            with the specified types will be returned.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        ann, dict or list,
-            locations (indices) of the all the beat types ("A", "N", "Q", "V",)
+        ann : dict or list
+            Locations (indices) of the all the
+            beat types ("A", "N", "Q", "V",).
 
         """
         return self.load_ann(
@@ -441,27 +458,28 @@ class MITDB(PhysioNetDataBase):
         sampto: Optional[int] = None,
         keep_original: bool = False,
     ) -> np.ndarray:
-        """
-        load rpeak indices, or equivalently qrs complex locations,
-        which are stored in the `symbol` attribute of corresponding annotation files,
-        regardless of their beat types,
+        """Load rpeak indices of the record.
+
+        Rpeak indices, or equivalently qrs complex locations,
+        are stored in the `symbol` attribute of corresponding annotation files,
+        regardless of their beat types.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        rpeak_inds: ndarray,
-            locations (indices) of the all the rpeaks (qrs complexes)
+        rpeak_inds : numpy.ndarray
+            Locations (indices) of the all the rpeaks (qrs complexes).
 
         """
         fp = str(self.get_absolute_path(rec))
@@ -484,30 +502,31 @@ class MITDB(PhysioNetDataBase):
         return rpeak_inds
 
     def _get_lead_names(self, rec: Union[str, int]) -> List[str]:
-        """
+        """Get the names of the leads contained in the record.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        list of str:
-            a list of names of the leads contained in the record
+        List[str]
+            A list of names of the leads contained in the record.
 
         """
         return wfdb.rdheader(str(self.get_absolute_path(rec))).sig_name
 
     @property
     def df_stats(self) -> pd.DataFrame:
-        """ """
+        """DataFrame of the statistics of the dataset."""
         if self._stats.empty:
             self._aggregate_stats()
         return self._stats
 
     @property
     def df_stats_expanded(self) -> pd.DataFrame:
-        """ """
+        """Expanded DataFrame of the statistics of the dataset."""
         df = self.df_stats.copy(deep=True)
         for bt in self.beat_types:
             df[f"beat_{bt}"] = df["beat_type_num"].apply(lambda d: d.get(bt, 0))
@@ -517,7 +536,9 @@ class MITDB(PhysioNetDataBase):
 
     @property
     def df_stats_expanded_boolean(self) -> pd.DataFrame:
-        """ """
+        """Expanded DataFrame of the statistics of the dataset,
+        with boolean values.
+        """
         df = self.df_stats_expanded.copy(deep=True)
         for col in df.columns:
             if col == "record":
@@ -527,7 +548,7 @@ class MITDB(PhysioNetDataBase):
 
     @property
     def db_stats(self) -> Dict[str, Dict[str, int]]:
-        """ """
+        """Dictionary of the statistics of the dataset."""
         if self._stats.empty:
             self._aggregate_stats()
         rhythm_len = defaultdict(int)
@@ -541,19 +562,18 @@ class MITDB(PhysioNetDataBase):
         return CFG(rhythm_len=dict(rhythm_len), beat_type_num=dict(beat_type_num))
 
     def _categorize_records(self, by: str) -> Dict[str, List[str]]:
-        """
-        categorize records by specific attributes
+        """Categorize records by specific attributes.
 
         Parameters
         ----------
-        by: str,
-            the attribute to categorize the records,
-            can be one of "beat", "rhythm", case insensitive
+        by : {"beat", "rhythm"}
+            The attribute to categorize the records,
+            case insensitive.
 
         Returns
         -------
-        dict of list of str:
-            a dict of lists of record names,
+        dict
+            A dict of lists of record names.
 
         """
         assert by.lower() in [
@@ -574,12 +594,12 @@ class MITDB(PhysioNetDataBase):
 
     @property
     def beat_types_records(self) -> Dict[str, List[str]]:
-        """ """
+        """Dictionary of records with specific beat types."""
         return self._categorize_records("beat")
 
     @property
     def rhythm_types_records(self) -> Dict[str, List[str]]:
-        """ """
+        """Dictionary of records with specific rhythm types."""
         return self._categorize_records("rhythm")
 
     def plot(
@@ -596,7 +616,7 @@ class MITDB(PhysioNetDataBase):
         same_range: bool = False,
         **kwargs: Any,
     ) -> None:
-        """ """
+        """Not implemented."""
         raise NotImplementedError
 
     @property

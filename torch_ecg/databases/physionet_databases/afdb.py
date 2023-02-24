@@ -28,10 +28,12 @@ _AFDB_INFO = DataBaseInfo(
     2. 23 records out of 25 include the two ECG signals, the left 2 records 00735 and 03665 are represented only by the rhythm (.atr) and unaudited beat (.qrs) annotation files
     3. signals are sampled at 250 samples per second with 12-bit resolution over a range of ±10 millivolts, with a typical recording bandwidth of approximately 0.1 Hz to 40 Hz
     4. 4 classes of rhythms are annotated:
+
         - AFIB:  atrial fibrillation
         - AFL:   atrial flutter
         - J:     AV junctional rhythm
         - N:     all other rhythms
+
     5. rhythm annotations almost all start with "(N", except for 4 which start with '(AFIB', which are all within 1 second (250 samples)
     """,
     note="""
@@ -43,7 +45,7 @@ _AFDB_INFO = DataBaseInfo(
         "Atrial fibrillation (AF) detection",
     ],
     references=[
-        "https://physionet.org/content/afdb/1.0.0/",
+        "https://physionet.org/content/afdb/",
         "Moody GB, Mark RG. A new method for detecting atrial fibrillation using R-R intervals. Computers in Cardiology. 10:227-230 (1983).",
     ],
     doi=[
@@ -52,9 +54,22 @@ _AFDB_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_AFDB_INFO.format_database_docstring())
+@add_docstring(_AFDB_INFO.format_database_docstring(), mode="prepend")
 class AFDB(PhysioNetDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     __name__ = "AFDB"
 
@@ -65,19 +80,6 @@ class AFDB(PhysioNetDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-            if not specified, data will be fetched from Physionet
-        working_dir: str, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="afdb",
             db_dir=db_dir,
@@ -113,13 +115,14 @@ class AFDB(PhysioNetDataBase):
 
     def _ls_rec(self, local: bool = True) -> None:
         """
-        find all records (relative path without file extension),
-        and save into `self._all_records` for further use
+        Find all records (relative path without file extension),
+        and save into `self._all_records` for further use.
 
         Parameters
         ----------
-        local: bool, default True,
-            if True, read from local storage, prior to using `wfdb.get_record_list`
+        local : bool, default True
+            If True, read from local storage,
+            prior to using :func:`wfdb.get_record_list`.
 
         """
         super()._ls_rec(local=local)
@@ -139,28 +142,28 @@ class AFDB(PhysioNetDataBase):
         ann_format: str = "interval",
         keep_original: bool = False,
     ) -> Union[Dict[str, list], np.ndarray]:
-        """
-        load annotations (header) stored in the .hea files
+        """Load annotations (header) from the .hea files.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        ann_format: str, default "interval", case insensitive,
-            format of returned annotation, can also be "mask"
-        keep_original: bool, default False,
-            if True, in the "interval" `ann_format`,
-            intervals (in the form [a,b]) will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto: int, optional
+            End index of the annotations to be loaded.
+        ann_format : {"interval", "mask"}
+            Format of returned annotation,
+            by default "interval", case insensitive.
+        keep_original : bool, default False
+            If True, when `ann_format` is "interval",
+            intervals (in the form [a,b]) will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        ann, dict or ndarray,
-            the annotations in the format of intervals, or in the format of mask
+        ann : dict or numpy.ndarray
+            The annotations in the format of intervals, or in the format of masks.
 
         """
         fp = str(self.get_absolute_path(rec))
@@ -212,28 +215,27 @@ class AFDB(PhysioNetDataBase):
         use_manual: bool = True,
         keep_original: bool = False,
     ) -> np.ndarray:
-        """
-        load beat annotations stored in corresponding annotation files
+        """Load beat annotations from corresponding annotation files.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the annotations to be loaded
-        sampto: int, optional,
-            end index of the annotations to be loaded
-        use_manual: bool, default True,
-            use manually annotated beat annotations (qrs),
-            instead of those generated by algorithms
-        keep_original: bool, default False,
-            if True, indices will keep the same with the annotation file
-            otherwise subtract `sampfrom` if specified
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        sampfrom : int, optional
+            Start index of the annotations to be loaded.
+        sampto : int, optional
+            End index of the annotations to be loaded.
+        use_manual : bool, default True
+            If True, use manually annotated beat annotations (qrs),
+            instead of those generated by algorithms.
+        keep_original : bool, default False
+            If True, indices will keep the same with the annotation file,
+            otherwise subtract `sampfrom` if specified.
 
         Returns
         -------
-        ann, ndarray,
-            locations (indices) of the qrs complexes
+        ann : numpy.ndarray
+            Locations (indices) of the qrs complexes.
 
         """
         if isinstance(rec, int):
@@ -282,40 +284,40 @@ class AFDB(PhysioNetDataBase):
         **kwargs: Any,
     ) -> None:
         """
-        plot the signals of a record or external signals (units in μV),
+        Plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
-        possibly also along with wave delineations
+        possibly also along with wave delineations.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data: ndarray, optional,
-            (2-lead) ecg signal to plot,
-            should be of the format "channel_first", and compatible with `leads`
-            if given, data of `rec` will not be used,
-            this is useful when plotting filtered data
-        ann: dict, optional,
-            annotations for `data`, covering those from annotation files,
-            in the form of {"AFIB":l_itv, "AFL":l_itv, "J":l_itv, "N":l_itv},
-            where `l_itv` in the form of [[a,b], ...],
-            ignored if `data` is None
-        rpeak_inds: array_like, optional,
-            indices of R peaks, covering those from annotation files,
-            if `data` is None, then indices should be the absolute indices in the record,
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
-            0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        leads: str or int or list of str or list of int, optional,
-            the leads to plot
-        sampfrom: int, optional,
-            start index of the data to plot
-        sampto: int, optional,
-            end index of the data to plot
-        same_range: bool, default False,
-            if True, forces all leads to have the same y range
-        kwargs: dict,
-            keyword arguments for `matplotlib.pyplot.plot`, etc.
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        data : numpy.ndarray, optional
+            (2-lead) ECG signal to plot,
+            should be of the format "channel_first", and compatible with `leads`.
+            If given, data of `rec` will not be used,
+            which is useful when plotting filtered data.
+        ann : dict, optional
+            Annotations for `data`, covering those from annotation files,
+            in the form of ``{"AFIB":l_itv, "AFL":l_itv, "J":l_itv, "N":l_itv}``,
+            where ``l_itv`` in the form of ``[[a, b], ...]``.
+            Ignored if `data` is None.
+        rpeak_inds : array_like, optional
+            Indices of R peaks, covering those from annotation files.
+            If `data` is None, then indices should be the absolute indices in the record.
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
+            0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks).
+        leads : str or int or List[str] or List[int], optional
+            The leads to plot.
+        sampfrom : int, optional
+            Start index of the data to plot.
+        sampto : int, optional
+            End index of the data to plot.
+        same_range : bool, default False
+            If True, forces all leads to have the same y range.
+        kwargs : dict, optional
+            Keyword arguments for :func:`matplotlib.pyplot.plot`, etc.
 
         """
         if isinstance(rec, int):

@@ -261,21 +261,25 @@ equiv_class_dict = CFG(
 def load_weights(
     classes: Sequence[Union[int, str]] = None, return_fmt: str = "np"
 ) -> Union[np.ndarray, pd.DataFrame]:
-    """
-    load the weight matrix of the `classes`
+    """Load the weight matrix of the `classes`.
 
-    Parameters:
-    -----------
-    classes: sequence of str or int, optional,
-        the classes (abbr. or SNOMED CT Code) to load their weights,
-        if not given, weights of all classes in `dx_mapping_scored` will be loaded
-    return_fmt: str, default 'np',
-        'np' or 'pd', the values in the form of a 2d array or a DataFrame
+    Parameters
+    ----------
+    classes : Sequence[int] or Sequence[str], optional
+        The classes (abbr. or SNOMEDCTCode) to load their weights.
+        If not given, weights of all classes in `dx_mapping_scored` will be loaded.
+    equivalent_classes : dict or list, optional
+        :class:`list` or :class:`dict` of equivalent classes.
+        If not specified, defaults to `equiv_class_dict`.
+    return_fmt : {"np", "pd"}, optional
+        The values in the form of a 2d :class:`~numpy.ndarray`
+        or a :class:`~pandas.DataFrame`,
+        by default "np".
 
-    Returns:
-    --------
-    mat: 2d array or DataFrame,
-        the weight matrix of the `classes`
+    Returns
+    -------
+    mat : numpy.ndarray or pandas.DataFrame
+        The weight matrix of the `classes`.
 
     """
     if classes:
@@ -299,22 +303,22 @@ def load_weights(
 
 
 def normalize_class(c: Union[str, int], ensure_scored: bool = False) -> str:
-    """
-    normalize the class name to its abbr.,
-    facilitating the computation of the `load_weights` function
+    """Normalize the class name to its abbr.
 
-    Parameters:
-    -----------
-    c: str or int,
-        abbr. or SNOMED CT Code of the class
-    ensure_scored: bool, default False,
-        ensure that the class is a scored class,
-        if True, `ValueError` would be raised if `c` is not scored
+    This function facilitates the computation of the :func:`load_weights` function.
 
-    Returns:
-    --------
-    nc: str,
-        the abbr. of the class
+    Parameters
+    ----------
+    c : str or int
+        Abbr. or SNOMEDCTCode of the class.
+    ensure_scored : bool, default False
+        Ensure that the class is a scored class.
+        If True, ``ValueError`` would be raised if `c` is not scored.
+
+    Returns
+    -------
+    nc : str
+        The abbr. of the class.
 
     """
     nc = snomed_ct_code_to_abbr.get(str(c), str(c))
@@ -324,19 +328,19 @@ def normalize_class(c: Union[str, int], ensure_scored: bool = False) -> str:
 
 
 def get_class(snomed_ct_code: Union[str, int]) -> Dict[str, str]:
-    """
-    look up the abbreviation and the full name of an ECG arrhythmia,
-    given its SNOMED CT Code
+    """Look up the abbreviation and the full name of an ECG arrhythmia,
+    given its SNOMEDCTCode.
 
-    Parameters:
-    -----------
-    snomed_ct_code: str or int,
-        the SNOMED CT Code of the arrhythmia
+    Parameters
+    ----------
+    snomed_ct_code : str or int
+        The SNOMEDCTCode of the arrhythmia.
 
-    Returns:
-    --------
-    arrhythmia_class: dict,
-        containing `abbr` the abbreviation and `fullname` the full name of the arrhythmia
+    Returns
+    -------
+    arrhythmia_class : dict
+        The :class:`dict` ontaining ``abbr`` (the abbreviation)
+        and ``fullname`` (the full name of the arrhythmia).
 
     """
     arrhythmia_class = {
@@ -354,34 +358,34 @@ def get_class_count(
     threshold: Optional[Real] = 0,
     fmt: str = "a",
 ) -> Dict[str, int]:
-    """
-    get the number of classes in the `tranches`
+    """Get the number of classes in the `tranches`.
 
-    Parameters:
-    -----------
-    tranches: str or sequence of str,
-        tranches to count classes, can be combinations of "A", "B", "C", "D", "E", "F"
-    exclude_classes: sequence of str, optional,
-        abbrevations or SNOMED CT Codes of classes to be excluded from counting
-    scored_only: bool, default True,
-        if True, only scored classes are counted
-    normalize: bool, default True,
-        collapse equivalent classes into one,
-        used only when `scored_only` = True
-    threshold: real number,
-        minimum ratio (0-1) or absolute number (>1) of a class to be counted
-    fmt: str, default 'a',
-        the format of the names of the classes in the returned dict,
+    Parameters
+    ----------
+    tranches : str or Sequence[str]
+        Tranches to count classes,
+        can be combinations of "A", "B", "C", "D", "E", "F".
+    exclude_classes : Sequence[str], optional
+        Abbrevations or SNOMED CT Codes of classes to be excluded from counting.
+    scored_only : bool, default True
+        If True, only scored classes are counted.
+    normalize : bool, default True
+        whether collapse equivalent classes into one or not,
+        used only when `scored_only` is True.
+    threshold : numbers.Real, default 0
+        Minimum ratio (0-1) or absolute number (>1) of a class to be counted.
+    fmt : str, default "a"
+        Format of the names of the classes in the returned dict,
         can be one of the following (case insensitive):
-        - 'a', abbreviations
-        - 'f', full names
-        - 's', SNOMED CT Code
+            - "a", abbreviations
+            - "f", full names
+            - "s", SNOMED CT Code
 
-    Returns:
-    --------
-    class_count: dict,
-        key: class in the format of `fmt`
-        value: count of a class in `tranches`
+    Returns
+    -------
+    class_count : dict
+        key: class in the format of `fmt`.
+        value: count of a class in `tranches`.
 
     """
     assert threshold >= 0
@@ -446,37 +450,37 @@ def get_class_weight(
     fmt: str = "a",
     min_weight: Real = 0.5,
 ) -> Dict[str, int]:
-    """
-    get the weight of each class in each tranche
+    """Get the weight of each class in each tranche.
 
-    Parameters:
-    -----------
-    tranches: str or sequence of str,
-        tranches to count classes, can be combinations of "A", "B", "C", "D", "E", "F"
-    exclude_classes: sequence of str, optional,
-        abbrevations or SNOMED CT Codes of classes to be excluded from counting
-    scored_only: bool, default True,
-        if True, only scored classes are counted
-    normalize: bool, default True,
-        collapse equivalent classes into one,
-        used only when `scored_only` = True
-    threshold: real number,
-        minimum ratio (0-1) or absolute number (>1) of a class to be counted
-    fmt: str, default 'a',
-        the format of the names of the classes in the returned dict,
+    Parameters
+    ----------
+    tranches : str or Sequence[str]
+        Tranches to count classes,
+        can be combinations of "A", "B", "C", "D", "E", "F".
+    exclude_classes : Sequence[str], optional
+        Abbrevations or SNOMED CT Codes of classes to be excluded from counting.
+    scored_only: bool, default True
+        If True, only scored classes are counted.
+    normalize : bool, default True
+        Whether collapse equivalent classes into one or not,
+        used only when `scored_only` is True.
+    threshold : numbers.Real, default 0
+        Minimum ratio (0-1) or absolute number (>1) of a class to be counted.
+    fmt : str, default "a"
+        Format of the names of the classes in the returned dict,
         can be one of the following (case insensitive):
-        - 'a', abbreviations
-        - 'f', full names
-        - 's', SNOMED CT Code
-    min_weight: real number, default 0.5,
-        minimum value of the weight of all classes,
-        or equivalently the weight of the largest class
+            - "a", abbreviations
+            - "f", full names
+            - "s", SNOMED CT Code
+    min_weight : numbers.Real, default 0.5
+        Minimum value of the weight of all classes,
+        or equivalently the weight of the largest class.
 
     Returns:
     --------
-    class_weight: dict,
-        key: class in the format of `fmt`
-        value: weight of a class in `tranches`
+    class_weight : dict
+        - key: class in the format of `fmt`
+        - value: weight of a class in `tranches`
 
     """
     class_count = get_class_count(
@@ -625,22 +629,21 @@ dx_cooccurrence_scored = dx_cooccurrence_all.loc[
 def get_cooccurrence(
     c1: Union[str, int], c2: Union[str, int], ensure_scored: bool = False
 ) -> int:
-    """
-    Get the co-occurrence count between two diagnoses.
+    """Get the co-occurrence count between two diagnoses.
 
-    Parameters:
-    -----------
-    c1, c2: str or int,
-        the 2 classes
-    ensure_scored: bool, default False,
-        ensure that the class is a scored class,
-        if True, `ValueError` would be raised if `c` is not scored
+    Parameters
+    ----------
+    c1, c2 : str or int
+        The 2 classes.
+    ensure_scored : bool, default False
+        Whether ensure that the class is a scored class or not.
+        If True, ``ValueError`` would be raised if `c` is not scored.
 
-    Returns:
-    --------
-    cooccurrence: int,
-        cooccurrence of class `c1` and `c2`, if they are not the same class;
-        otherwise the occurrence of the class `c1` (also `c2`)
+    Returns
+    -------
+    cooccurrence : int
+        Cooccurrence of class `c1` and `c2`, if they are not the same class;
+        otherwise the occurrence of the class `c1` (also `c2`).
 
     """
     _c1 = normalize_class(c1, ensure_scored=ensure_scored)
@@ -660,7 +663,7 @@ dx_cooccurrence_all is obtained via the following code
 >>> for tranche, l_rec in dr.all_records.items():
 ...     for rec in l_rec:
 ...         ann = dr.load_ann(rec)
-...         d = ann['diagnosis']['diagnosis_abbr']
+...         d = ann["diagnosis"]["diagnosis_abbr"]
 ...         for item in d:
 ...             mat_cooccurance.loc[item,item] += 1
 ...         for i in range(len(d)-1):

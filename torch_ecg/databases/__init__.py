@@ -10,6 +10,7 @@ Base classes
 ------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     PhysioNetDataBase
     NSRRDataBase
@@ -20,6 +21,7 @@ PhysioNet database readers
 --------------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     AFDB
     ApneaECG
@@ -36,6 +38,7 @@ CPSC database readers
 ---------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     CPSC2018
     CPSC2019
@@ -46,6 +49,7 @@ NSRR database readers
 ---------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     SHHS
 
@@ -53,6 +57,7 @@ Other database readers
 ----------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     CACHET_CADB
     SPH
@@ -61,6 +66,7 @@ Miscellaneous
 -------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     BeatAnn
 

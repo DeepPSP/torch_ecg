@@ -373,7 +373,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
 
     def _ls_rec(self) -> None:
         """Find all records in the database directory
-        and store them (path, metadata, etc.) in a dataframe.
+        and store them (path, metadata, etc.) in some private attributes.
         """
         self.logger.info("Finding `edf` records....")
         self._df_records = pd.DataFrame()
@@ -542,7 +542,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         self.sleep_stage_names = self.all_sleep_stage_names[:nb_stages]
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """Attach a unique subject id for the record.
+        """Attach a unique subject ID for the record.
 
         Parameters
         ----------

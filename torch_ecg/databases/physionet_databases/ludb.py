@@ -31,110 +31,214 @@ _LUDB_INFO = DataBaseInfo(
     2. boundaries of P, T waves and QRS complexes were manually annotated by cardiologists, and with the corresponding diagnosis
     3. annotated are 16797 P waves, 21966 QRS complexes, 19666 T waves (in total, 58429 annotated waves)
     4. distributions of data:
-        4.1. rhythm distribution:
+
+        - rhythm distribution:
+
+            +-------------------------+----------------+
             | Rhythms                 | Number of ECGs |
-            | ----------------------- | -------------- |
+            +=========================+================+
             | Sinus rhythm            | 143            |
+            +-------------------------+----------------+
             | Sinus tachycardia       | 4              |
+            +-------------------------+----------------+
             | Sinus bradycardia       | 25             |
+            +-------------------------+----------------+
             | Sinus arrhythmia        | 8              |
+            +-------------------------+----------------+
             | Irregular sinus rhythm  | 2              |
+            +-------------------------+----------------+
             | Abnormal rhythm         | 19             |
-        4.2. electrical axis distribution:
+            +-------------------------+----------------+
+
+        - electrical axis distribution:
+
+            +----------------------------+----------------+
             | Heart electric axis        | Number of ECGs |
-            | -------------------------- | -------------- |
+            +============================+================+
             | Normal                     | 75             |
+            +----------------------------+----------------+
             | Left axis deviation (LAD)  | 66             |
+            +----------------------------+----------------+
             | Vertical                   | 26             |
+            +----------------------------+----------------+
             | Horizontal                 | 20             |
+            +----------------------------+----------------+
             | Right axis deviation (RAD) | 3              |
+            +----------------------------+----------------+
             | Undetermined               | 10             |
-        4.3. distribution of records with conduction abnomalities (totally 79):
+            +----------------------------+----------------+
+
+        - distribution of records with conduction abnomalities (totally 79):
+
+            +------------------------------------------------+----------------+
             | Conduction abnormalities                       | Number of ECGs |
-            | ---------------------------------------------- | -------------- |
+            +================================================+================+
             | Sinoatrial blockade, undetermined              | 1              |
+            +------------------------------------------------+----------------+
             | I degree AV block                              | 10             |
+            +------------------------------------------------+----------------+
             | III degree AV-block                            | 5              |
+            +------------------------------------------------+----------------+
             | Incomplete right bundle branch block           | 29             |
+            +------------------------------------------------+----------------+
             | Incomplete left bundle branch block            | 6              |
+            +------------------------------------------------+----------------+
             | Left anterior hemiblock                        | 16             |
+            +------------------------------------------------+----------------+
             | Complete right bundle branch block             | 4              |
+            +------------------------------------------------+----------------+
             | Complete left bundle branch block              | 4              |
+            +------------------------------------------------+----------------+
             | Non-specific intravintricular conduction delay | 4              |
-        4.4. distribution of records with extrasystoles (totally 35):
+            +------------------------------------------------+----------------+
+
+        - distribution of records with extrasystoles (totally 35):
+
+            +------------------------------------------------------------------+----------------+
             | Extrasystoles                                                    | Number of ECGs |
-            | ---------------------------------------------------------------- | -------------- |
+            +==================================================================+================+
             | Atrial extrasystole, undetermined                                | 2              |
+            +------------------------------------------------------------------+----------------+
             | Atrial extrasystole, low atrial                                  | 1              |
+            +------------------------------------------------------------------+----------------+
             | Atrial extrasystole, left atrial                                 | 2              |
+            +------------------------------------------------------------------+----------------+
             | Atrial extrasystole, SA-nodal extrasystole                       | 3              |
+            +------------------------------------------------------------------+----------------+
             | Atrial extrasystole, type: single PAC                            | 4              |
+            +------------------------------------------------------------------+----------------+
             | Atrial extrasystole, type: bigemini                              | 1              |
+            +------------------------------------------------------------------+----------------+
             | Atrial extrasystole, type: quadrigemini                          | 1              |
+            +------------------------------------------------------------------+----------------+
             | Atrial extrasystole, type: allorhythmic pattern                  | 1              |
+            +------------------------------------------------------------------+----------------+
             | Ventricular extrasystole, morphology: polymorphic                | 2              |
+            +------------------------------------------------------------------+----------------+
             | Ventricular extrasystole, localisation: RVOT, anterior wall      | 3              |
+            +------------------------------------------------------------------+----------------+
             | Ventricular extrasystole, localisation: RVOT, antero-septal part | 1              |
+            +------------------------------------------------------------------+----------------+
             | Ventricular extrasystole, localisation: IVS, middle part         | 1              |
+            +------------------------------------------------------------------+----------------+
             | Ventricular extrasystole, localisation: LVOT, LVS                | 2              |
+            +------------------------------------------------------------------+----------------+
             | Ventricular extrasystole, localisation: LV, undefined            | 1              |
+            +------------------------------------------------------------------+----------------+
             | Ventricular extrasystole, type: single PVC                       | 6              |
+            +------------------------------------------------------------------+----------------+
             | Ventricular extrasystole, type: intercalary PVC                  | 2              |
+            +------------------------------------------------------------------+----------------+
             | Ventricular extrasystole, type: couplet                          | 2              |
-        4.5. distribution of records with hypertrophies (totally 253):
+            +------------------------------------------------------------------+----------------+
+
+        - distribution of records with hypertrophies (totally 253):
+
+            +-------------------------------+----------------+
             | Hypertrophies                 | Number of ECGs |
-            | ----------------------------- | -------------- |
+            +===============================+================+
             | Right atrial hypertrophy      | 1              |
+            +-------------------------------+----------------+
             | Left atrial hypertrophy       | 102            |
+            +-------------------------------+----------------+
             | Right atrial overload         | 17             |
+            +-------------------------------+----------------+
             | Left atrial overload          | 11             |
+            +-------------------------------+----------------+
             | Left ventricular hypertrophy  | 108            |
+            +-------------------------------+----------------+
             | Right ventricular hypertrophy | 3              |
+            +-------------------------------+----------------+
             | Left ventricular overload     | 11             |
-        4.6. distribution of records of pacing rhythms (totally 12):
+            +-------------------------------+----------------+
+
+        - distribution of records of pacing rhythms (totally 12):
+
+            +------------------------------+----------------+
             | Cardiac pacing               | Number of ECGs |
-            | ---------------------------- | -------------- |
+            +==============================+================+
             | UNIpolar atrial pacing       | 1              |
+            +------------------------------+----------------+
             | UNIpolar ventricular pacing  | 6              |
+            +------------------------------+----------------+
             | BIpolar ventricular pacing   | 2              |
+            +------------------------------+----------------+
             | Biventricular pacing         | 1              |
+            +------------------------------+----------------+
             | P-synchrony                  | 2              |
-        4.7. distribution of records with ischemia (totally 141):
+            +------------------------------+----------------+
+
+        - distribution of records with ischemia (totally 141):
+
+            +-------------------------------------------------------+----------------+
             | Ischemia                                              | Number of ECGs |
-            | ----------------------------------------------------- | -------------- |
+            +=======================================================+================+
             | STEMI: anterior wall                                  | 8              |
+            +-------------------------------------------------------+----------------+
             | STEMI: lateral wall                                   | 7              |
+            +-------------------------------------------------------+----------------+
             | STEMI: septal                                         | 8              |
+            +-------------------------------------------------------+----------------+
             | STEMI: inferior wall                                  | 1              |
+            +-------------------------------------------------------+----------------+
             | STEMI: apical                                         | 5              |
+            +-------------------------------------------------------+----------------+
             | Ischemia: anterior wall                               | 5              |
+            +-------------------------------------------------------+----------------+
             | Ischemia: lateral wall                                | 8              |
+            +-------------------------------------------------------+----------------+
             | Ischemia: septal                                      | 4              |
+            +-------------------------------------------------------+----------------+
             | Ischemia: inferior wall                               | 10             |
+            +-------------------------------------------------------+----------------+
             | Ischemia: posterior wall                              | 2              |
+            +-------------------------------------------------------+----------------+
             | Ischemia: apical                                      | 6              |
+            +-------------------------------------------------------+----------------+
             | Scar formation: lateral wall                          | 3              |
+            +-------------------------------------------------------+----------------+
             | Scar formation: septal                                | 9              |
+            +-------------------------------------------------------+----------------+
             | Scar formation: inferior wall                         | 3              |
+            +-------------------------------------------------------+----------------+
             | Scar formation: posterior wall                        | 6              |
+            +-------------------------------------------------------+----------------+
             | Scar formation: apical                                | 5              |
+            +-------------------------------------------------------+----------------+
             | Undefined ischemia/scar/supp.NSTEMI: anterior wall    | 12             |
+            +-------------------------------------------------------+----------------+
             | Undefined ischemia/scar/supp.NSTEMI: lateral wall     | 16             |
+            +-------------------------------------------------------+----------------+
             | Undefined ischemia/scar/supp.NSTEMI: septal           | 5              |
+            +-------------------------------------------------------+----------------+
             | Undefined ischemia/scar/supp.NSTEMI: inferior wall    | 3              |
+            +-------------------------------------------------------+----------------+
             | Undefined ischemia/scar/supp.NSTEMI: posterior wall   | 4              |
+            +-------------------------------------------------------+----------------+
             | Undefined ischemia/scar/supp.NSTEMI: apical           | 11             |
-        4.8. distribution of records with non-specific repolarization abnormalities (totally 85):
+            +-------------------------------------------------------+----------------+
+
+        - distribution of records with non-specific repolarization abnormalities (totally 85):
+
+            +-------------------------------------------+----------------+
             | Non-specific repolarization abnormalities | Number of ECGs |
-            | ----------------------------------------- | -------------- |
+            +===========================================+================+
             | Anterior wall                             |      18        |
+            +-------------------------------------------+----------------+
             | Lateral wall                              |      13        |
+            +-------------------------------------------+----------------+
             | Septal                                    |      15        |
+            +-------------------------------------------+----------------+
             | Inferior wall                             |      19        |
+            +-------------------------------------------+----------------+
             | Posterior wall                            |      9         |
+            +-------------------------------------------+----------------+
             | Apical                                    |      11        |
-        4.9. there are also 9 records with early repolarization syndrome
-        there might well be records with multiple conditions.
+            +-------------------------------------------+----------------+
+
+        - there are also 9 records with early repolarization syndrome
+
+       there might well be records with multiple conditions.
     5. ludb.csv stores information about the subjects (gender, age, rhythm type, direction of the electrical axis of the heart, the presence of a cardiac pacemaker, etc.)
     """,
     usage=[
@@ -155,9 +259,22 @@ _LUDB_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_LUDB_INFO.format_database_docstring())
+@add_docstring(_LUDB_INFO.format_database_docstring(), mode="prepend")
 class LUDB(PhysioNetDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     __name__ = "LUDB"
 
@@ -168,18 +285,6 @@ class LUDB(PhysioNetDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="ludb",
             db_dir=db_dir,
@@ -480,7 +585,7 @@ class LUDB(PhysioNetDataBase):
         class_map: dict, optional,
             custom class map,
             if not set, `self.class_map` will be used
-        fs: real number, optional,
+        fs: numbers.Real, optional,
             sampling frequency of the signal corresponding to the `masks`,
             if is None, `self.fs` will be used, to compute `duration` of the ECG waveforms
 
@@ -823,7 +928,7 @@ def compute_metrics(
     class_map: dict,
         class map, mapping names to waves to numbers from 0 to n_classes-1,
         the keys should contain 'pwave', 'qrs', 'twave'
-    fs: real number,
+    fs: numbers.Real,
         sampling frequency of the signal corresponding to the masks,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors
@@ -884,7 +989,7 @@ def compute_metrics_waveform(
     pred_waveforms: sequence of sequence of `ECGWaveForm`s,
         the predictions corresponding to `truth_waveforms`,
         each element is a sequence of `ECGWaveForm`s from the same sample
-    fs: real number,
+    fs: numbers.Real,
         sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors
@@ -1002,7 +1107,7 @@ def _compute_metrics_waveform(
         the ground truth
     preds: sequence of `ECGWaveForm`s,
         the predictions corresponding to `truths`,
-    fs: real number,
+    fs: numbers.Real,
         sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors
@@ -1080,11 +1185,11 @@ def _compute_metrics_base(
     """
     Parameters
     ----------
-    truths: sequence of real numbers,
+    truths: sequence of numbers.Real,
         ground truth of indices of corresponding critical points
-    preds: sequence of real numbers,
+    preds: sequence of numbers.Real,
         predicted indices of corresponding critical points
-    fs: real number,
+    fs: numbers.Real,
         sampling frequency of the signal corresponding to the critical points,
         used to compute the duration of each waveform,
         hence the error and standard deviations of errors

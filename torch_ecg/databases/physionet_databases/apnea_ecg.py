@@ -34,15 +34,17 @@ _ApneaECG_INFO = DataBaseInfo(
     8. .qrs files are machine-generated (binary) annotation files, unaudited and containing errors, provided for the convenience of those who do not wish to use their own QRS detectors
     9. c05 and c06 come from the same original recording (c05 begins 80 seconds later than c06). c06 may have been a corrected version of c05
     10. eight records (a01 through a04, b01, and c01 through c03) that include respiration signals have several additional files each:
-        10.1. *r.dat files contains respiration signals correspondingly, with 4 channels: "Resp C", "Resp A", "Resp N", "SpO2"
-        10.2. *er.* files only contain annotations
-        10.3. annotations for the respiration signals are identical to the corresponding ECG signals
+
+        - *r.dat files contains respiration signals correspondingly, with 4 channels: "Resp C", "Resp A", "Resp N", "SpO2"
+        - *er.* files only contain annotations
+        - annotations for the respiration signals are identical to the corresponding ECG signals
+
     """,
     usage=[
         "Sleep apnea analysis",
     ],
     references=[
-        "https://physionet.org/content/apnea-ecg/1.0.0/",
+        "https://physionet.org/content/apnea-ecg/",
         "T Penzel, GB Moody, RG Mark, AL Goldberger, JH Peter. The Apnea-ECG Database. Computers in Cardiology 2000;27:255-258",
     ],
     doi=[
@@ -52,9 +54,22 @@ _ApneaECG_INFO = DataBaseInfo(
 )
 
 
-@add_docstring(_ApneaECG_INFO.format_database_docstring())
+@add_docstring(_ApneaECG_INFO.format_database_docstring(), mode="prepend")
 class ApneaECG(PhysioNetDataBase):
-    """ """
+    """
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     __name__ = "ApneaECG"
 
@@ -65,19 +80,6 @@ class ApneaECG(PhysioNetDataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_dir: str or Path, optional,
-            storage path of the database
-            if not specified, data will be fetched from Physionet
-        working_dir: str or Path, optional,
-            working directory, to store intermediate files and log file
-        verbose: int, default 1
-            log verbosity
-        kwargs: auxilliary key word arguments
-
-        """
         super().__init__(
             db_name="apnea-ecg",
             db_dir=db_dir,
@@ -112,7 +114,9 @@ class ApneaECG(PhysioNetDataBase):
         }
 
     def _ls_rec(self) -> None:
-        """ """
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in some private attributes.
+        """
         subsample = self._subsample
         self._subsample = None  # so that no subsampling in super()._ls_rec()
         super()._ls_rec()
@@ -154,42 +158,33 @@ class ApneaECG(PhysioNetDataBase):
         self.apnea_group = [r for r in self.learning_set if "a" in r]
 
     def __len__(self) -> int:
-        """
-        number of records in the database
-        """
         return len(self.ecg_records)
 
     def __getitem__(self, index: int) -> str:
-        """
-        get the record name by index
-        """
         return self.ecg_records[index]
 
     @property
     def ecg_records(self) -> List[str]:
-        """
-        ECG records
-        """
+        """The list of ECG records in the database."""
         return self._ecg_records
 
     @property
     def rsp_records(self) -> List[str]:
-        """
-        Respiration records
-        """
+        """The list of respiration records in the database."""
         return self._rsp_records
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """
+        """Attach a unique subject ID for the record.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        int,
-            subject id
+        int
+            Subject ID associated with the record.
 
         """
         if isinstance(rec, int):
@@ -213,9 +208,9 @@ class ApneaECG(PhysioNetDataBase):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """ """
         return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs)
 
+    @add_docstring(PhysioNetDataBase.load_data.__doc__)
     def load_ecg_data(
         self,
         rec: Union[str, int],
@@ -225,36 +220,6 @@ class ApneaECG(PhysioNetDataBase):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        load physical (converted from digital) ECG data,
-        which is more understandable for humans;
-        or load digital signal directly.
-
-        Parameters
-        ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ecg data,
-            "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first"), or
-            "flat" (alias "plain") which is valid only when `leads` is a single lead
-        units: str or None, default "mV",
-            units of the output signal, can also be "μV", with aliases of "uV", "muV";
-            None for digital data, without digital-to-physical conversion
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
-
-        Returns
-        -------
-        data: ndarray,
-            the ECG data loaded from `rec`, with given units and format
-
-        """
         if isinstance(rec, int):
             rec = self[rec]
         if rec not in self.ecg_records:
@@ -268,6 +233,12 @@ class ApneaECG(PhysioNetDataBase):
             fs=fs,
         )
 
+    @add_docstring(
+        PhysioNetDataBase.load_data.__doc__.replace(
+            "ECG data",
+            "respiration data",
+        )
+    )
     def load_rsp_data(
         self,
         rec: str,
@@ -278,39 +249,9 @@ class ApneaECG(PhysioNetDataBase):
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
     ) -> np.ndarray:
-        """
-        load respiration data
-
-        Parameters
-        ----------
-        rec: str,
-            record name the record
-        channels: str or list of str, default None
-            channels to be loaded, if None, all channels will be loaded
-        sampfrom: int, optional,
-            start index of the data to be loaded
-        sampto: int, optional,
-            end index of the data to be loaded
-        data_format: str, default "channel_first",
-            format of the ecg data,
-            "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first"), or
-            "flat" (alias "plain") which is valid only when `leads` is a single lead
-        units: str or None, default "mV",
-            units of the output signal, can also be "μV", with aliases of "uV", "muV";
-            None for digital data, without digital-to-physical conversion
-        fs: real number, optional,
-            if not None, the loaded data will be resampled to this frequency
-
-        Returns
-        -------
-        sig: np.ndarray,
-            the respiration signal
-
-        """
         if rec not in self.rsp_records:
             raise ValueError(f"`{rec}` is not a record of RSP signals")
-        sig = self.load_data(
+        data = self.load_data(
             rec,
             leads=channels,
             sampfrom=sampfrom,
@@ -319,7 +260,7 @@ class ApneaECG(PhysioNetDataBase):
             units=units,
             fs=fs,
         )
-        return sig
+        return data
 
     def load_ann(
         self,
@@ -327,19 +268,20 @@ class ApneaECG(PhysioNetDataBase):
         ann_path: Optional[Union[str, Path]] = None,
         **kwargs,
     ) -> list:
-        """
+        """Load annotations of the record.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        ann_path: str or Path, optional,
-            path of the file which contains the annotations,
-            if not given, default path will be used
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        ann_path : str or pathlib.Path, optional
+            Path of the file which contains the annotations.
+            If is None, default path will be used.
 
         Returns
         -------
-        detailed_ann: list,
-            annotations of the form [idx, ann]
+        detailed_ann : list
+            List of annotations of the form ``[idx, ann]``.
 
         """
         if isinstance(rec, int):
@@ -356,19 +298,22 @@ class ApneaECG(PhysioNetDataBase):
     def load_apnea_event(
         self, rec: Union[str, int], ann_path: Optional[str] = None
     ) -> pd.DataFrame:
-        """
+        """Load annotations of apnea events of the record.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        ann_path: str, optional,
-            path of the file which contains the annotations,
-            if not given, default path will be used
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        ann_path : str or pathlib.Path, optional
+            Path of the file which contains the annotations.
+            If is None, default path will be used.
 
         Returns
         -------
-        df_apnea_ann: DataFrame,
-            apnea annotations with columns "event_start","event_end", "event_name", "event_duration"
+        df_apnea_ann : pandas.DataFrame
+            Apnea annotations with columns
+            "event_start", "event_end", "event_name", "event_duration"
+            (ref. `self.sleep_event_keys`).
 
         """
         if isinstance(rec, int):
@@ -412,25 +357,37 @@ class ApneaECG(PhysioNetDataBase):
         return df_apnea_ann
 
     def plot_ann(self, rec: Union[str, int], ann_path: Optional[str] = None) -> None:
-        """
+        """Plot annotations of the record.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        ann_path: str, optional,
-            path of the file which contains the annotations,
-            if not given, default path will be used
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        ann_path : str or pathlib.Path, optional
+            Path of the file which contains the annotations.
+            If is None, default path will be used.
+
+        Returns
+        -------
+        None
 
         """
         df_apnea_ann = self.load_apnea_event(rec, ann_path)
         self._plot_ann(df_apnea_ann)
 
     def _plot_ann(self, df_apnea_ann: pd.DataFrame) -> None:
-        """
+        """Internal function to plot annotations of the record.
+
         Parameters
         ----------
-        df_apnea_ann: DataFrame,
-            apnea events with columns `self.sleep_event_keys`
+        df_apnea_ann : DataFrame,
+            Apnea events with columns
+            "event_start", "event_end", "event_name", "event_duration"
+            (ref. `self.sleep_event_keys` or :meth:`load_apnea_event`).
+
+        Returns
+        -------
+        None
 
         """
         import matplotlib.patches as mpatches
