@@ -1,7 +1,3 @@
-"""
-data generator for feeding data into pytorch models
-"""
-
 import json
 import textwrap
 import time
@@ -30,7 +26,32 @@ __all__ = [
 
 
 class CINC2021Dataset(ReprMixin, Dataset):
-    """ """
+    """Data generator for feeding data into pytorch models
+    using the :class:`~torch_ecg.databases.CINC2021` database.
+
+    Parameters
+    ----------
+    config : dict
+        configurations for the :class:`Dataset`,
+        ref. `CINC2021TrainCfg`.
+        A simple example is as follows:
+
+        .. code-block:: python
+
+            >>> config = deepcopy(CINC2021TrainCfg)
+            >>> config.db_dir = "some/path/to/db"
+            >>> dataset = CINC2021Dataset(config, training=True, lazy=False)
+
+    training : bool, default True
+        If True, the training set will be loaded,
+        otherwise the test (val) set will be loaded.
+    lazy : bool, default True
+        If True, the data will not be loaded immediately,
+        instead, it will be loaded on demand.
+    **reader_kwargs : dict, optional
+        Keyword arguments for the database reader class.
+
+    """
 
     __DEBUG__ = False
     __name__ = "CINC2021Dataset"
@@ -42,24 +63,6 @@ class CINC2021Dataset(ReprMixin, Dataset):
         lazy: bool = True,
         **reader_kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        config: dict,
-            configurations for the Dataset,
-            ref. `CINC2021TrainCfg`,
-            a simple example is:
-            >>> config = deepcopy(CINC2021TrainCfg)
-            >>> config.db_dir = "some/path/to/db"
-            >>> dataset = CINC2021Dataset(config, training=True, lazy=False)
-        training: bool, default True,
-            if True, the training set will be loaded, otherwise the test set
-        lazy: bool, default True,
-            if True, the data will not be loaded immediately
-        reader_kwargs: dict,
-            keyword arguments for the data reader class
-
-        """
         super().__init__()
         self.config = deepcopy(config)
         if reader_kwargs.pop("db_dir", None) is not None:
@@ -124,12 +127,12 @@ class CINC2021Dataset(ReprMixin, Dataset):
             self._load_all_data()
 
     def _load_all_data(self) -> None:
-        """ """
-        fdr = FastDataReader(self.reader, self.records, self.config, self.ppm)
+        """Load all data into memory."""
+        fdr = _FastDataReader(self.reader, self.records, self.config, self.ppm)
 
         # with tqdm(self.records, desc="Loading data", unit="record") as pbar:
         #     for rec in pbar:
-        # s, l = self._load_one_record(rec)  # self._load_one_record is much slower than FastDataReader
+        # s, l = self._load_one_record(rec)  # self._load_one_record is much slower than _FastDataReader
         self._signals, self._labels = [], []
         with tqdm(
             desc="Loading data",
@@ -150,25 +153,24 @@ class CINC2021Dataset(ReprMixin, Dataset):
         self._labels = np.concatenate(self._labels, axis=0)
 
     def _load_one_record(self, rec: str) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        load a record from the database using data reader
+        """Load one record from the database using data reader.
 
         NOTE
         ----
         DO NOT USE THIS FUNCTION DIRECTLY for preloading data,
-        use `FastDataReader` instead
+        use `_FastDataReader` instead.
 
         Parameters
         ----------
-        rec: str,
-            the record to load
+        rec : str
+            Name of the record.
 
         Returns
         -------
-        values: np.ndarray,
-            the values of the record
-        labels: np.ndarray,
-            the labels of the record
+        values : numpy.ndarray
+            The signal values of the record.
+        labels : numpy.ndarray
+            The labels of the record.
 
         """
         values = self.reader.load_resampled_data(
@@ -200,7 +202,18 @@ class CINC2021Dataset(ReprMixin, Dataset):
         return values, labels
 
     def to(self, leads: Sequence[str]) -> None:
-        """ """
+        """Reduce the leads to a subset of the current leads.
+
+        Parameters
+        ----------
+        leads : Sequence[str]
+            The subset of leads to be kept.
+
+        Returns
+        -------
+        None
+
+        """
         assert set(leads) <= set(
             self.config.leads
         ), "One is not able to change to a set of leads which is not a subset of the current leads"
@@ -210,7 +223,18 @@ class CINC2021Dataset(ReprMixin, Dataset):
         self._signals = self._signals[:, self._indices, :]
 
     def empty(self, leads: Optional[Sequence[str]] = None) -> None:
-        """ """
+        """Empty the loaded data, and keep the leads.
+
+        Parameters
+        ----------
+        leads : Sequence[str], optional
+            The leads to be kept, by default the current leads.
+
+        Returns
+        -------
+        None
+
+        """
         if leads is None:
             leads = self.config.leads
         else:
@@ -222,7 +246,24 @@ class CINC2021Dataset(ReprMixin, Dataset):
 
     @classmethod
     def from_extern(cls, ext_ds: "CINC2021Dataset", config: CFG) -> "CINC2021Dataset":
-        """ """
+        """Create a new dataset from an existing one.
+
+        The existing dataset must have all data loaded into memory,
+        and its leads must be a superset of the new dataset.
+
+        Parameters
+        ----------
+        ext_ds : CINC2021Dataset
+            The existing dataset.
+        config : CFG
+            The configuration of the new dataset.
+
+        Returns
+        -------
+        CINC2021Dataset
+            A new instance of the dataset.
+
+        """
         new_ds = cls(config, ext_ds.training, lazy=True)
         indices = [ext_ds.config.leads.index(ld) for ld in new_ds.config.leads]
         new_ds._signals = ext_ds._signals[:, indices, :]
@@ -230,7 +271,21 @@ class CINC2021Dataset(ReprMixin, Dataset):
         return new_ds
 
     def reload_from_extern(self, ext_ds: "CINC2021Dataset") -> None:
-        """ """
+        """Reload the data from an existing dataset.
+
+        The existing dataset must have all data loaded into memory,
+        and its leads must be a superset of the current dataset.
+
+        Parameters
+        ----------
+        ext_ds : CINC2021Dataset
+            The existing dataset.
+
+        Returns
+        -------
+        None
+
+        """
         assert set(self.config.leads) <= set(
             ext_ds.config.leads
         ), "One is not able to reload from a dataset whose `leads` is not a superset of the current one"
@@ -240,20 +295,22 @@ class CINC2021Dataset(ReprMixin, Dataset):
 
     @property
     def signals(self) -> np.ndarray:
-        """ """
+        """Cached signals, only available when `lazy=False`
+        or preloading is performed manually.
+        """
         return self._signals
 
     @property
     def labels(self) -> np.ndarray:
-        """ """
+        """Cached labels, only available when `lazy=False`
+        or preloading is performed manually.
+        """
         return self._labels
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """ """
         return self.signals[index], self.labels[index]
 
     def __len__(self) -> int:
-        """ """
         return len(self._signals)
 
     def _train_test_split(
@@ -262,25 +319,29 @@ class CINC2021Dataset(ReprMixin, Dataset):
         force_recompute: bool = False,
         force_valid: bool = False,
     ) -> List[str]:
-        """
-        do train test split,
-        it is ensured that both the train and the test set contain all classes
+        """Perform train-test split.
+
+        It is ensured that both the train and the test set
+        contain all classes if `force_valid` is True.
 
         Parameters
         ----------
-        train_ratio: float, default 0.8,
-            ratio of the train set in the whole dataset (or the whole tranche(s))
-        force_recompute: bool, default False,
-            if True, force redo the train-test split,
-            regardless of the existing ones stored in json files
-        force_valid: bool, default False,
-            if True, force redo the train-test split
-            if validity check fails
+        train_ratio : float, default 0.8
+            Ratio of the train set in the whole dataset
+            (or the whole tranche(s)).
+        force_recompute : bool, default False
+            If True, the train-test split will be recomputed,
+            regardless of the existing ones stored in json files.
+        force_valid : bool, default False
+            If True, the train-test split will be recomputed
+            if validity check fails.
 
         Returns
         -------
-        records: list of str,
-            list of the records split for training or validation
+        records : List[str]
+            List of the records split for training
+            or for testing (validation).
+
         """
         time.sleep(1)
         start = time.time()
@@ -384,23 +445,24 @@ class CINC2021Dataset(ReprMixin, Dataset):
     def _check_train_test_split_validity(
         self, train_set: List[str], test_set: List[str], all_classes: Set[str]
     ) -> bool:
-        """
-        the train-test split is valid iff
+        """Check if the train-test split is valid.
+
+        The train-test split is valid iff
         records in both `train_set` and `test` contain all classes in `all_classes`
 
         Parameters
         ----------
-        train_set: list of str,
-            list of the records in the train set
-        test_set: list of str,
-            list of the records in the test set
-        all_classes: set of str,
-            the set of all classes for training
+        train_set : List[str]
+            List of the records in the train set.
+        test_set : List[str]
+            List of the records in the test set.
+        all_classes : Set[str]
+            The set of all classes for training.
 
         Returns
         -------
-        is_valid: bool,
-            the split is valid or not
+        is_valid : bool
+            Whether the train-test split is valid or not.
 
         """
         train_classes = set(
@@ -425,9 +487,7 @@ class CINC2021Dataset(ReprMixin, Dataset):
         return is_valid
 
     def persistence(self) -> None:
-        """
-        make the dataset persistent w.r.t. the tranches and the ratios in `self.config`
-        """
+        """Save the processed dataset to disk."""
         _TRANCHES = "ABEFG"
         if self.training:
             ratio = int(self.config.train_ratio * 100)
@@ -461,11 +521,7 @@ class CINC2021Dataset(ReprMixin, Dataset):
         print(f"y saved to {filename}")
 
     def _check_nan(self) -> None:
-        """
-        during training, sometimes nan values are encountered,
-        which ruins the whole training process
-
-        """
+        """Check if there are nan values in the dataset."""
         for idx, (values, labels) in enumerate(self):
             if np.isnan(values).any():
                 print(f"values of {self.records[idx]} have nan values")
@@ -480,8 +536,21 @@ class CINC2021Dataset(ReprMixin, Dataset):
         ]
 
 
-class FastDataReader(ReprMixin, Dataset):
-    """ """
+class _FastDataReader(ReprMixin, Dataset):
+    """Fast data reader.
+
+    Parameters
+    ----------
+    reader : CR
+        The reader to read the data.
+    records : Sequence[str]
+        The list of records to read.
+    config : CFG
+        The configuration.
+    ppm : PreprocManager, optional
+        The preprocessor manager.
+
+    """
 
     def __init__(
         self,
@@ -490,7 +559,6 @@ class FastDataReader(ReprMixin, Dataset):
         config: CFG,
         ppm: Optional[PreprocManager] = None,
     ) -> None:
-        """ """
         self.reader = reader
         self.records = records
         self.config = config
@@ -498,11 +566,9 @@ class FastDataReader(ReprMixin, Dataset):
         self.dtype = self.config.np_dtype
 
     def __len__(self) -> int:
-        """ """
         return len(self.records)
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """ """
         rec = self.records[index]
         values = self.reader.load_resampled_data(
             rec,

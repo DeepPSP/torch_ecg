@@ -1,7 +1,3 @@
-"""
-data generator for feeding data into pytorch models
-"""
-
 import json
 import math
 import warnings
@@ -25,7 +21,31 @@ __all__ = [
 
 
 class CPSC2019Dataset(ReprMixin, Dataset):
-    """ """
+    """Data generator for feeding data into pytorch models
+    using the :class:`~torch_ecg.databases.CPSC2019` database.
+
+    Parameters
+    ----------
+    config : dict
+        Configurations for the dataset, ref. `CPSC2019TrainCfg`.
+        A simple example is as follows:
+
+        .. code-block:: python
+
+            >>> config = deepcopy(CPSC2019TrainCfg)
+            >>> config.db_dir = "some/path/to/db"
+            >>> dataset = CPSC2019Dataset(config, training=True, lazy=False)
+
+    training : bool, default True
+        If True, the training set will be loaded,
+        otherwise the test (val) set will be loaded.
+    lazy : bool, default True
+        If True, the data will not be loaded immediately,
+        instead, it will be loaded on demand.
+    **reader_kwargs : dict, optional
+        Keyword arguments for the database reader class.
+
+    """
 
     __name__ = "CPSC2019Dataset"
 
@@ -36,24 +56,6 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         lazy: bool = False,
         **reader_kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        config: dict,
-            configurations for the Dataset,
-            ref. `CPSC2019TrainCfg`
-            a simple example is:
-            >>> config = deepcopy(CPSC2019TrainCfg)
-            >>> config.db_dir = "some/path/to/db"
-            >>> dataset = CPSC2019Dataset(config, training=True, lazy=False)
-        training: bool, default True,
-            if True, the training set will be loaded, otherwise the test set
-        lazy: bool, default False,
-            if True, the data will not be loaded immediately
-        reader_kwargs: dict,
-            keyword arguments for the data reader class
-
-        """
         super().__init__()
         self.config = deepcopy(config)
         if reader_kwargs.pop("db_dir", None) is not None:
@@ -76,7 +78,7 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         )
         self.ppm = PreprocManager.from_config(self.config)
 
-        self.fdr = FastDataReader(self.reader, self.records, self.config, self.ppm)
+        self.fdr = _FastDataReader(self.reader, self.records, self.config, self.ppm)
 
         self._signals = None
         self._labels = None
@@ -84,7 +86,6 @@ class CPSC2019Dataset(ReprMixin, Dataset):
             self._load_all_data()
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """ """
         if self.lazy:
             signal, label = self.fdr[index]
         else:
@@ -92,11 +93,10 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         return signal, label
 
     def __len__(self) -> int:
-        """ """
         return len(self.fdr)
 
     def _load_all_data(self) -> None:
-        """ """
+        """Load all data into memory."""
         self._signals, self._labels = [], []
         with tqdm(
             self.fdr,
@@ -113,34 +113,36 @@ class CPSC2019Dataset(ReprMixin, Dataset):
 
     @property
     def signals(self) -> np.ndarray:
-        """ """
+        """Cached signals, only available when `lazy=False`
+        or preloading is performed manually.
+        """
         return self._signals
 
     @property
     def labels(self) -> np.ndarray:
-        """ """
+        """Cached labels, only available when `lazy=False`
+        or preloading is performed manually.
+        """
         return self._labels
 
     def _train_test_split(
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> List[str]:
-        """
-
-        do train test split,
-        it is ensured that both the train and the test set contain all classes
+        """Perform train-test split.
 
         Parameters
         ----------
-        train_ratio: float, default 0.8,
-            ratio of the train set in the whole dataset (or the whole tranche(s))
-        force_recompute: bool, default False,
-            if True, force redo the train-test split,
-            regardless of the existing ones stored in json files
+        train_ratio : float, default 0.8
+            Ratio of the train set in the whole dataset.
+        force_recompute : bool, default False
+            If True, the train-test split will be recomputed,
+            regardless of the existing ones stored in json files.
 
         Returns
         -------
-        records: list of str,
-            list of the records split for training or validation
+        records : List[str]
+            List of the records split for training
+            or for testing (validation).
 
         """
         assert 0 < train_ratio < 100
@@ -174,8 +176,21 @@ class CPSC2019Dataset(ReprMixin, Dataset):
         ]
 
 
-class FastDataReader(ReprMixin, Dataset):
-    """ """
+class _FastDataReader(ReprMixin, Dataset):
+    """Fast data reader.
+
+    Parameters
+    ----------
+    reader : CR
+        The reader to read the data.
+    records : Sequence[str]
+        The list of records to read.
+    config : CFG
+        The configuration.
+    ppm : PreprocManager, optional
+        The preprocessor manager.
+
+    """
 
     def __init__(
         self,
@@ -184,7 +199,6 @@ class FastDataReader(ReprMixin, Dataset):
         config: CFG,
         ppm: Optional[PreprocManager] = None,
     ) -> None:
-        """ """
         self.reader = reader
         self.records = records
         self.config = config
@@ -193,11 +207,9 @@ class FastDataReader(ReprMixin, Dataset):
         self.siglen = self.config.input_len  # alias, for simplicity
 
     def __len__(self) -> int:
-        """ """
         return len(self.records)
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """ """
         rec_name = self.records[index]
         values = self.reader.load_data(rec_name, units="mV", data_format="flat")
         rpeaks = self.reader.load_ann(rec_name)

@@ -23,7 +23,23 @@ __all__ = [
 
 
 class LUDBDataset(ReprMixin, Dataset):
-    """ """
+    """Data generator for feeding data into pytorch models
+    using the :class:`~torch_ecg.databases.LUDB` database.
+
+    Parameters
+    ----------
+    config : dict
+        Configurations for the dataset, ref. `LUDBTrainCfg`.
+    training : bool, default True
+        If True, the training set will be loaded,
+        otherwise the test (val) set will be loaded.
+    lazy : bool, default True
+        If True, the data will not be loaded immediately,
+        instead, it will be loaded on demand.
+    **reader_kwargs : dict, optional
+        Keyword arguments for the database reader class.
+
+    """
 
     __name__ = "LUDBDataset"
 
@@ -34,20 +50,6 @@ class LUDBDataset(ReprMixin, Dataset):
         lazy: bool = False,
         **reader_kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        config: dict,
-            configurations for the Dataset,
-            ref. `cfg.TrainCfg`
-        training: bool, default True,
-            if True, the training set will be loaded, otherwise the test set
-        lazy: bool, default False,
-            if True, the data will not be loaded immediately
-        reader_kwargs: dict,
-            keyword arguments for the data reader class
-
-        """
         super().__init__()
         self.config = deepcopy(config)
         if reader_kwargs.pop("db_dir", None) is not None:
@@ -71,13 +73,8 @@ class LUDBDataset(ReprMixin, Dataset):
 
         self.ppm = PreprocManager.from_config(self.config)
         self.records = self._train_test_split(self.config.train_ratio)
-        self.fdr = FastDataReader(self.reader, self.records, self.config)
-        self.waveform_priority = [
-            "N",
-            "t",
-            "p",
-            "i",
-        ]
+        self.fdr = _FastDataReader(self.reader, self.records, self.config)
+        self.waveform_priority = ["N", "t", "p", "i"]
 
         self._signals = None
         self._labels = None
@@ -85,13 +82,11 @@ class LUDBDataset(ReprMixin, Dataset):
             self._load_all_data()
 
     def __len__(self) -> int:
-        """ """
         if self.config.use_single_lead:
             return len(self.leads) * len(self.records)
         return len(self.records)
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """ """
         if self.config.use_single_lead:
             rec_idx, lead_idx = divmod(index, len(self.leads))
         else:
@@ -119,7 +114,7 @@ class LUDBDataset(ReprMixin, Dataset):
         return signals, labels
 
     def _load_all_data(self) -> None:
-        """ """
+        """Load all data into memory."""
         self._signals, self._labels = [], []
 
         with tqdm(
@@ -134,30 +129,35 @@ class LUDBDataset(ReprMixin, Dataset):
 
     @property
     def signals(self) -> np.ndarray:
-        """ """
+        """Cached signals, only available when `lazy=False`
+        or preloading is performed manually.
+        """
         return self._signals
 
     @property
     def labels(self) -> np.ndarray:
-        """ """
+        """Cached labels, only available when `lazy=False`
+        or preloading is performed manually.
+        """
         return self._labels
 
     def _train_test_split(
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> List[str]:
-        """
+        """Perform train-test split.
+
         Parameters
         ----------
-        train_ratio: float, default 0.8,
-            ratio of the train set in the whole dataset (or the whole tranche(s))
-        force_recompute: bool, default False,
-            if True, force redo the train-test split,
-            regardless of the existing ones stored in json files
+        train_ratio : float, default 0.8
+            ratio of the train set in the whole dataset.
+        force_recompute : bool, default False
+            If True, the train-test split will be recomputed,
+            regardless of the existing ones stored in json files.
 
         Returns
         -------
-        records: list of str,
-            list of the records split for training or validation
+        List[str]
+            The list of the records split for training or validation.
 
         """
         _train_ratio = int(train_ratio * 100)
@@ -197,8 +197,21 @@ class LUDBDataset(ReprMixin, Dataset):
         ]
 
 
-class FastDataReader(ReprMixin, Dataset):
-    """ """
+class _FastDataReader(ReprMixin, Dataset):
+    """Fast data reader.
+
+    Parameters
+    ----------
+    reader : CR
+        The reader to read the data.
+    records : Sequence[str]
+        The list of records to read.
+    config : CFG
+        The configuration.
+    ppm : PreprocManager, optional
+        The preprocessor manager.
+
+    """
 
     def __init__(
         self,
@@ -207,7 +220,6 @@ class FastDataReader(ReprMixin, Dataset):
         config: CFG,
         ppm: Optional[PreprocManager] = None,
     ) -> None:
-        """ """
         self.reader = reader
         self.records = records
         self.config = config
@@ -222,11 +234,9 @@ class FastDataReader(ReprMixin, Dataset):
             self.leads = list(self.config.leads)
 
     def __len__(self) -> int:
-        """ """
         return len(self.records)
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        """ """
         rec = self.records[index]
         signals = self.reader.load_data(
             rec,

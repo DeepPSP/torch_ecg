@@ -53,7 +53,13 @@ from tqdm.auto import tqdm
 
 from ...._preprocessors import PreprocManager
 from ....databases import CPSC2021 as CR
-from ....utils.misc import ReprMixin, get_record_list_recursive3, list_sum, nildent
+from ....utils.misc import (
+    ReprMixin,
+    get_record_list_recursive3,
+    list_sum,
+    nildent,
+    add_docstring,
+)
 from ....utils.utils_data import mask_to_intervals
 from ....utils.utils_signal import remove_spikes_naive
 from ....utils.utils_data import generate_weight_mask
@@ -67,28 +73,57 @@ __all__ = [
 
 
 class CPSC2021Dataset(ReprMixin, Dataset):
-    """
+    """Data generator for feeding data into pytorch models
+    using the :class:`~torch_ecg.databases.CPSC2021` database.
+
+    Strategies for generating data and labels:
     1. ECGs are preprocessed and stored in one folder
     2. preprocessed ECGs are sliced with overlap to generate data and label for different tasks:
-        the data files stores segments of fixed length of preprocessed ECGs,
-        the annotation files contain "qrs_mask", and "af_mask"
 
-    The returned values (tuple) of `__getitem__` depends on the task:
-    1. "qrs_detection": (`data`, `qrs_mask`, None)
-    2. "rr_lstm": (`rr_seq`, `rr_af_mask`, `rr_weight_mask`)
-    3. "main": (`data`, `af_mask`, `weight_mask`)
+       - the data files stores segments of fixed length of preprocessed ECGs,
+       - the annotation files contain "qrs_mask", and "af_mask"
 
-    - `data` shape: (`n_lead`, `n_sample`)
-    - `qrs_mask` shape: (`n_sample`, 1)
-    - `af_mask` shape: (`n_sample`, 1)
-    - `weight_mask` shape: (`n_sample`, 1)
-    - `rr_seq` shape: (`n_rr`, 1)
-    - `rr_af_mask` shape: (`n_rr`, 1)
-    - `rr_weight_mask` shape: (`n_rr`, 1)
+    The returned values (tuple) of :meth:`__getitem__` depends on the task:
 
-    typical values of `n_sample` and `n_rr` are 6000 and 30, respectively
+        1. "qrs_detection": (`data`, `qrs_mask`, None)
+        2. "rr_lstm": (`rr_seq`, `rr_af_mask`, `rr_weight_mask`)
+        3. "main": (`data`, `af_mask`, `weight_mask`)
 
-    `n_lead` is typically 2, which is the number of leads in the ECG signal of the CPSC2021 dataset
+    where
+
+        - `data` shape: ``(n_lead, n_sample)``
+        - `qrs_mask` shape: ``(n_sample, 1)``
+        - `af_mask` shape: ``(n_sample, 1)``
+        - `weight_mask` shape: ``(n_sample, 1)``
+        - `rr_seq` shape: ``(n_rr, 1)``
+        - `rr_af_mask` shape: ``(n_rr, 1)``
+        - `rr_weight_mask` shape: ``(n_rr, 1)``
+
+    Typical values of ``n_sample`` and ``n_rr`` are 6000 and 30, respectively.
+
+    ``n_lead`` is typically 2, which is the number of leads
+    in the ECG signal of the :class:`CPSC2021` database.
+
+    Parameters
+    ----------
+    config : dict
+        Configurations for the dataset, ref. `CPSC2021TrainCfg`.
+        A simple example is as follows:
+
+        .. code-block:: python
+
+            >>> config = deepcopy(CPSC2021TrainCfg)
+            >>> config.db_dir = "some/path/to/db"
+            >>> dataset = CPSC2021Dataset(config, task="main", training=True, lazy=False)
+
+    training : bool, default True
+        If True, the training set will be loaded,
+        otherwise the test (val) set will be loaded.
+    lazy : bool, default True
+        If True, the data will not be loaded immediately,
+        instead, it will be loaded on demand.
+    **reader_kwargs : dict, optional
+        Keyword arguments for the database reader class.
 
     """
 
@@ -103,24 +138,6 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         lazy: bool = True,
         **reader_kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        config: dict,
-            configurations for the Dataset,
-            ref. `CPSC2021TrainCfg`
-            a simple example is:
-            >>> config = deepcopy(CPSC2021TrainCfg)
-            >>> config.db_dir = "some/path/to/db"
-            >>> dataset = CPSC2021Dataset(config, task="main", training=True, lazy=False)
-        training: bool, default True,
-            if True, the training set will be loaded, otherwise the test set
-        lazy: bool, default False,
-            if True, the data will not be loaded immediately
-        reader_kwargs: dict,
-            keyword arguments for the data reader class
-
-        """
         super().__init__()
         self.config = deepcopy(config)
         if reader_kwargs.pop("db_dir", None) is not None:
@@ -174,17 +191,23 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         self.__set_task(task, lazy=self.lazy)
 
     def _load_all_data(self) -> None:
-        """ """
+        """Load all data into memory."""
         self.__set_task(self.task, lazy=False)
 
     def __set_task(self, task: str, lazy: bool = True) -> None:
-        """
+        """Set the task and load the data if needed.
+
         Parameters
         ----------
-        task: str,
-            name of the task, can be one of `CPSC2021TrainCfg.tasks`
-        lazy: bool, default True,
-            if True, the data will not be loaded immediately,
+        task : str
+            Name of the task, can be one of `CPSC2021TrainCfg.tasks`
+        lazy : bool, default True
+            If True, the data will not be loaded immediately,
+            instead, it will be loaded on demand.
+
+        Returns
+        -------
+        None
 
         """
         assert task.lower() in CPSC2021TrainCfg.tasks, f"illegal task \042{task}\042"
@@ -229,7 +252,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if self.training:
                 DEFAULTS.RNG.shuffle(self.segments)
             # preload data
-            self.fdr = FastDataReader(
+            self.fdr = _FastDataReader(
                 self.config,
                 self.task,
                 self.seg_ppm,
@@ -275,7 +298,7 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             if self.training:
                 DEFAULTS.RNG.shuffle(self.rr_seq)
             # preload data
-            self.fdr = FastDataReader(
+            self.fdr = _FastDataReader(
                 self.config,
                 self.task,
                 self.seg_ppm,
@@ -307,11 +330,27 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             )
 
     def reset_task(self, task: str, lazy: bool = True) -> None:
-        """ """
+        """Reset the task of the data generator.
+
+        Parameters
+        ----------
+        task : str
+            The task to be set.
+        lazy : bool, optional
+            If True, the data will not be loaded immediately,
+            instead, it will be loaded on demand.
+
+        Returns
+        -------
+        None
+
+        """
         self.__set_task(task, lazy)
 
     def _ls_segments(self) -> None:
-        """list all the segments"""
+        """Find all segments in the segments directory,
+        and store them in some private attributes.
+        """
         for item in ["data", "ann"]:
             self.segments_dirs[item] = CFG()
             for s in self.reader.all_subjects:
@@ -338,7 +377,9 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             )
 
     def _ls_rr_seq(self) -> None:
-        """list all the rr sequences"""
+        """Find all rr sequences in the rr sequences directory,
+        and store them in some private attributes.
+        """
         for s in self.reader.all_subjects:
             self.rr_seq_dirs[s] = self.rr_seq_base_dir / s
             self.rr_seq_dirs[s].mkdir(parents=True, exist_ok=True)
@@ -401,50 +442,41 @@ class CPSC2021Dataset(ReprMixin, Dataset):
                 )
 
     def _get_seg_data_path(self, seg: str) -> Path:
-        """
+        """Get the path of the data file of segment.
+
         Parameters
         ----------
-        seg: str,
-            name of the segment, of pattern like "S_1_1_0000193"
+        seg : str
+            Name of the segment, of pattern like "S_1_1_0000193".
 
         Returns
         -------
-        fp: Path,
-            path of the data file of the segment
+        pathlib.Path
+            Absolute path of the data file of the segment.
 
         """
         subject = seg.split("_")[1]
         fp = self.segments_dirs.data[subject] / f"{seg}.{self.segment_ext}"
         return fp
 
+    @add_docstring(_get_seg_data_path.__doc__.replace("data file", "annotation file"))
     def _get_seg_ann_path(self, seg: str) -> Path:
-        """
-        Parameters
-        ----------
-        seg: str,
-            name of the segment, of pattern like "S_1_1_0000193"
-
-        Returns
-        -------
-        fp: Path,
-            path of the annotation file of the segment
-
-        """
         subject = seg.split("_")[1]
         fp = self.segments_dirs.ann[subject] / f"{seg}.{self.segment_ext}"
         return fp
 
     def _load_seg_data(self, seg: str) -> np.ndarray:
-        """
+        """Load the data of the segment.
+
         Parameters
         ----------
-        seg: str,
-            name of the segment, of pattern like "S_1_1_0000193"
+        seg : str
+            Name of the segment, of pattern like "S_1_1_0000193".
 
         Returns
         -------
-        seg_data: ndarray,
-            data of the segment, of shape (2, `self.seglen`)
+        numpy.ndarray
+            Loaded data of the segment, of shape ``(2, self.seglen)``.
 
         """
         seg_data_fp = self._get_seg_data_path(seg)
@@ -452,20 +484,23 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return seg_data
 
     def _load_seg_ann(self, seg: str) -> dict:
-        """
+        """Load the annotations of the segment.
+
         Parameters
         ----------
-        seg: str,
-            name of the segment, of pattern like "S_1_1_0000193"
+        seg : str
+            Name of the segment, of pattern like "S_1_1_0000193".
 
         Returns
         -------
-        seg_ann: dict,
-            annotations of the segment, including
-            - rpeaks: indices of rpeaks of the segment
-            - qrs_mask: mask of qrs complexes of the segment
-            - af_mask: mask of af episodes of the segment
-            - interval: interval ([start_idx, end_idx]) in the original ECG record of the segment
+        seg_ann : dict
+            Annotations of the segment, containing:
+
+                - rpeaks: indices of rpeaks of the segment
+                - qrs_mask: mask of qrs complexes of the segment
+                - af_mask: mask of af episodes of the segment
+                - interval: interval ([start_idx, end_idx]) in
+                  the original ECG record of the segment
 
         """
         seg_ann_fp = self._get_seg_ann_path(seg)
@@ -479,20 +514,23 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def _load_seg_mask(
         self, seg: str, task: Optional[str] = None
     ) -> Union[np.ndarray, Dict[str, np.ndarray]]:
-        """
+        """Load the mask(s) of segment.
+
         Parameters
         ----------
-        seg: str,
-            name of the segment, of pattern like "S_1_1_0000193"
-        task: str, optional,
-            if specified, overrides self.task,
-            else if is "all", then all masks ("qrs_mask", "af_mask", etc.) will be returned
+        seg : str
+            Name of the segment, of pattern like "S_1_1_0000193".
+        task : str, optional
+            Task of the mask(s) to be loaded, by default the current task.
+            If is not None, the current task is overrided;
+            if is "all", then all masks ("qrs_mask", "af_mask", etc.)
+            will be returned.
 
         Returns
         -------
-        seg_mask: np.ndarray or dict,
-            mask(s) of the segment,
-            of shape (self.seglen, self.n_classes)
+        numpy.ndarray or dict
+            Mask(s) of the segment,
+            of shape ``(self.seglen, self.n_classes)``.
 
         """
         seg_mask = {
@@ -518,20 +556,21 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return seg_mask
 
     def _load_seg_seq_lab(self, seg: str, reduction: int) -> np.ndarray:
-        """
+        """Load sequence labeling annotations of the segment.
+
         Parameters
         ----------
-        seg: str,
-            name of the segment, of pattern like "S_1_1_0000193"
-        reduction: int,
-            reduction (granularity) of length of the model output,
-            compared to the original signal length
+        seg : str
+            Name of the segment, of pattern like "S_1_1_0000193".
+        reduction : int
+            Reduction ratio (granularity) of length of the model output,
+            compared to the original signal length.
 
         Returns
         -------
-        seq_lab: np.ndarray,
-            label of the sequence,
-            of shape (self.seglen//reduction, self.n_classes)
+        numpy.ndarray
+            Label of the sequence,
+            of shape ``(self.seglen//reduction, self.n_classes)``.
 
         """
         seg_mask = self._load_seg_mask(seg)
@@ -550,16 +589,17 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return seq_lab
 
     def _get_rr_seq_path(self, seq_name: str) -> Path:
-        """
+        """Get the path of the annotation file of the rr_seq.
+
         Parameters
         ----------
-        seq_name: str,
-            name of the rr_seq, of pattern like "R_1_1_0000193"
+        seq_name : str
+            Name of the rr_seq, of pattern like "R_1_1_0000193".
 
         Returns
         -------
-        fp: Path,
-            path of the annotation file of the rr_seq
+        pathlib.Path
+            absolute path of the annotation file of the rr_seq.
 
         """
         subject = seq_name.split("_")[1]
@@ -567,19 +607,24 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return fp
 
     def _load_rr_seq(self, seq_name: str) -> Dict[str, np.ndarray]:
-        """
+        """Load the metadata of the rr_seq.
+
         Parameters
         ----------
-        seq_name: str,
-            name of the rr_seq, of pattern like "R_1_1_0000193"
+        seq_name : str
+            Name of the rr_seq, of pattern like "R_1_1_0000193".
 
         Returns
         -------
-        rr_seq: dict,
+        dict
             metadata of sequence of rr intervals, including
-            - rr: the sequence of rr intervals, with units in seconds, of shape (self.seglen, 1)
-            - label: label of the rr intervals, 0 for normal, 1 for af, of shape (self.seglen, self.n_classes)
-            - interval: interval of the current rr sequence in the whole rr sequence in the original record
+
+                - rr: the sequence of rr intervals, with units in seconds,
+                  of shape ``(self.seglen, 1)``
+                - label: label of the rr intervals, 0 for normal, 1 for af,
+                  of shape ``(self.seglen, self.n_classes)``
+                - interval: interval of the current rr sequence in the whole
+                  rr sequence in the original record
 
         """
         rr_seq_path = self._get_rr_seq_path(seq_name)
@@ -592,15 +637,18 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return rr_seq
 
     def persistence(self, force_recompute: bool = False, verbose: int = 0) -> None:
-        """
-        make the dataset persistent w.r.t. the ratios in `self.config`
+        """Save the preprocessed data to disk.
 
         Parameters
         ----------
-        force_recompute: bool, default False,
-            if True, recompute regardless of possible existing files
-        verbose: int, default 0,
-            print verbosity
+        force_recompute : bool, default False
+            Whether to force recompute the preprocessed data.
+        verbose : int, default 0
+            Verbosity level for printing the progress.
+
+        Returns
+        -------
+        None
 
         """
         if verbose >= 1:
@@ -631,16 +679,18 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         self.__set_task(original_task, lazy=original_lazy)
 
     def _preprocess_data(self, force_recompute: bool = False, verbose: int = 0) -> None:
-        """
-        preprocesses the ecg data in advance for further use,
-        offline for `self.persistence`
+        """Preprocesses the ECG data in advance for further use.
 
         Parameters
         ----------
-        force_recompute: bool, default False,
-            if True, recompute regardless of possible existing files
-        verbose: int, default 0,
-            print verbosity
+        force_recompute : bool, default False
+            Whether to force recompute the preprocessed data.
+        verbose : int, default 0
+            Verbosity level for printing the progress.
+
+        Returns
+        -------
+        None
 
         """
         for idx, rec in enumerate(self.reader.all_records):
@@ -655,18 +705,20 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def _preprocess_one_record(
         self, rec: str, force_recompute: bool = False, verbose: int = 0
     ) -> None:
-        """
-        preprocesses the ecg data in advance for further use,
-        offline for `self.persistence`
+        """Preprocesses one ECG record in advance for further use.
 
         Parameters
         ----------
-        rec: str,
-            filename of the record
-        force_recompute: bool, default False,
-            if True, recompute regardless of possible existing files
-        verbose: int, default 0,
-            print verbosity
+        rec : str
+            Name of the record.
+        force_recompute : bool, default False
+            Whether to force recompute the preprocessed data.
+        verbose : int, default 0
+            Verbosity level for printing the progress.
+
+        Returns
+        -------
+        None
 
         """
         suffix = self._get_rec_suffix(self.allowed_preproc)
@@ -678,16 +730,17 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         savemat(save_fp, {"ecg": pps}, format="5")
 
     def load_preprocessed_data(self, rec: str) -> np.ndarray:
-        """
+        """Load the preprocessed data of the record.
+
         Parameters
         ----------
-        rec: str,
-            filename of the record
+        rec : str
+            Name of the record.
 
         Returns
         -------
-        p_sig: ndarray,
-            the pre-computed processed ECG
+        numpy.ndarray
+            The pre-computed preprocessed ECG data of the record.
 
         """
         preproc = self.allowed_preproc
@@ -703,33 +756,39 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return p_sig
 
     def _get_rec_suffix(self, operations: List[str]) -> str:
-        """
+        """Get the suffix of the filename of the preprocessed ECG signal.
+
         Parameters
         ----------
-        operations: list of str,
-            names of operations to perform (or has performed),
-            should be sublist of `self.allowed_preproc`
+        operations : List[str]
+            Names of operations to perform (or has performed).
+            Should be sublist of `self.allowed_preproc`.
 
         Returns
         -------
-        suffix: str,
-            suffix of the filename of the preprocessed ecg signal
+        str
+            Suffix of the filename of the preprocessed ECG signal.
 
         """
         suffix = "-".join(sorted([item.lower() for item in operations]))
         return suffix
 
     def _slice_data(self, force_recompute: bool = False, verbose: int = 0) -> None:
-        """
-        slice all records into segments of length `self.seglen`,
-        and perform data augmentations specified in `self.config`
+        """Slice the preprocessed data into segments.
+
+        Slice all records into segments of length `self.seglen`,
+        and perform data augmentations specified in `self.config`.
 
         Parameters
         ----------
-        force_recompute: bool, default False,
-            if True, recompute regardless of possible existing files
-        verbose: int, default 0,
-            print verbosity
+        force_recompute : bool, default False
+            Whether to force recompute the preprocessed data.
+        verbose : int, default 0
+            Verbosity level for printing the progress.
+
+        Returns
+        -------
+        None
 
         """
         self.__assert_task(
@@ -761,22 +820,27 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         update_segments_json: bool = False,
         verbose: int = 0,
     ) -> None:
-        """
+        """Slice one preprocessed record into segments.
+
         slice one record into segments of length `self.seglen`,
-        and perform data augmentations specified in `self.config`
+        and perform data augmentations specified in `self.config`.
 
         Parameters
         ----------
-        rec: str,
-            filename of the record
-        force_recompute: bool, default False,
-            if True, recompute regardless of possible existing files
-        update_segments_json: bool, default False,
-            if both `force_recompute` and `update_segments_json` are True,
-            the file `self.segments_json` will be updated,
-            useful when slicing not all records
-        verbose: int, default 0,
-            print verbosity
+        rec : str
+            Name of the record.
+        force_recompute : bool, default False
+            Whether to force recompute the preprocessed data.
+        update_segments_json : bool, default False
+            If both `force_recompute` and `update_segments_json` are True,
+            the file `self.segments_json` will be updated.
+            Useful when slicing not all records.
+        verbose : int, default 0
+            Verbosity level for printing the progress.
+
+        Returns
+        -------
+        None
 
         """
         self.__assert_task(
@@ -867,31 +931,33 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         start_idx: Optional[int] = None,
         end_idx: Optional[int] = None,
     ) -> CFG:
-        """
-        generate segment, with possible data augmentation
+        """Generate segment, with possible data augmentation.
 
         Parameter
         ---------
-        rec: str,
-            filename of the record
-        data: ndarray,
-            the whole of (preprocessed) ECG record
-        start_idx: int, optional,
-            start index of the signal of `rec` for generating the segment
-        end_idx: int, optional,
-            end index of the signal of `rec` for generating the segment,
-            if `start_idx` is set, `end_idx` is ignored,
-            at least one of `start_idx` and `end_idx` should be set
+        rec : str
+            Name of the record.
+        data : numpy.ndarray
+            The whole of (preprocessed) ECG record.
+        start_idx : int, optional
+            Start index of the signal for generating the segment.
+        end_idx : int, optional
+            End index of the signal for generating the segment.
+            If `start_idx` is set, then `end_idx` is ignored,
+            since the segment length is fixed to `self.seglen`.
+            At least one of `start_idx` and `end_idx` should be set.
 
         Returns
         -------
-        new_seg: dict,
-            segments (meta-)data, containing:
-            - data: values of the segment, with units in mV
-            - rpeaks: indices of rpeaks of the segment
-            - qrs_mask: mask of qrs complexes of the segment
-            - af_mask: mask of af episodes of the segment
-            - interval: interval ([start_idx, end_idx]) in the original ECG record of the segment
+        dict
+            Segments (meta-)data, containing:
+
+                - data: values of the segment, with units in mV
+                - rpeaks: indices of rpeaks of the segment
+                - qrs_mask: mask of qrs complexes of the segment
+                - af_mask: mask of af episodes of the segment
+                - interval: interval ([start_idx, end_idx]) in the
+                  original ECG record of the segment
 
         """
         assert not all(
@@ -994,15 +1060,20 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def __save_segments(
         self, rec: str, segments: List[CFG], update_segments_json: bool = False
     ) -> None:
-        """
+        """Save the segments to the disk.
+
         Parameters
         ----------
-        rec: str,
-            filename of the record
-        segments: list of dict,
-            list of the segments (meta-)data
-        update_segments_json: bool, default False,
-            if True, the file `self.segments_json` will be updated
+        rec : str
+            Name of the record.
+        segments : List[dict]
+            List of the segments (meta-)data to be saved.
+        update_segments_json : bool, default False
+            Whether to update the segments.json file.
+
+        Returns
+        -------
+        None
 
         """
         subject = self.reader.get_subject_id(rec)
@@ -1032,12 +1103,17 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             )
 
     def _clear_cached_segments(self, recs: Optional[Sequence[str]] = None) -> None:
-        """
+        """Clear the cached segments.
+
         Parameters
         ----------
-        recs: sequence of str, optional
-            sequence of the records whose segments are to be cleared,
-            defaults to all records
+        recs : Sequence[str], optional
+            Sequence of the records whose segments are to be cleared.
+            Defaults to all records.
+
+        Returns
+        -------
+        None
 
         """
         self.__assert_task(
@@ -1081,15 +1157,18 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         )
 
     def _slice_rr_seq(self, force_recompute: bool = False, verbose: int = 0) -> None:
-        """
-        slice sequences of rr intervals into fixed length (sub)sequences
+        """Slice sequences of rr intervals into fixed length (sub)sequences.
 
         Parameters
         ----------
-        force_recompute: bool, default False,
-            if True, recompute regardless of possible existing files
-        verbose: int, default 0,
-            print verbosity
+        force_recompute : bool, default False
+            Whether to force recompute the rr sequences.
+        verbose : int, default 0
+            Verbosity level for printing the progress.
+
+        Returns
+        -------
+        None
 
         """
         self.__assert_task(["rr_lstm"])
@@ -1116,7 +1195,25 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         update_rr_seq_json: bool = False,
         verbose: int = 0,
     ) -> None:
-        """ """
+        """Slice sequences of rr intervals from one record
+        into fixed length (sub)sequences.
+
+        Parameters
+        ----------
+        rec : str
+            Name of the record.
+        force_recompute : bool, default False
+            Whether to force recompute the rr sequences.
+        update_rr_seq_json : bool, default False
+            Whether to update the rr_seq.json file.
+        verbose : int, default 0
+            Verbosity level for printing the progress.
+
+        Returns
+        -------
+        None
+
+        """
         self.__assert_task(["rr_lstm"])
         subject = self.reader.get_subject_id(rec)
         rec_rr_seq = [
@@ -1198,15 +1295,20 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def __save_rr_seq(
         self, rec: str, rr_seq: List[CFG], update_rr_seq_json: bool = False
     ) -> None:
-        """
+        """Save the sliced rr sequences to disk.
+
         Parameters
         ----------
-        rec: str,
-            filename of the record
-        rr_seq: list of dict,
-            list of the rr_seq (meta-)data
-        update_rr_seq_json: bool, default False,
-            if True, the file `self.rr_seq_json` will be updated
+        rec : str,
+            Name of the record.
+        rr_seq : List[dict],
+            List of the rr_seq (meta-)data.
+        update_rr_seq_json : bool, default False
+            Whether to update the rr_seq.json file.
+
+        Returns
+        -------
+        None
 
         """
         subject = self.reader.get_subject_id(rec)
@@ -1224,12 +1326,17 @@ class CPSC2021Dataset(ReprMixin, Dataset):
             )
 
     def _clear_cached_rr_seq(self, recs: Optional[Sequence[str]] = None) -> None:
-        """
+        """Clear the cached rr sequences.
+
         Parameters
         ----------
-        recs: sequence of str, optional
-            sequence of the records whose segments are to be cleared,
-            defaults to all records
+        recs : Sequence[str], optional
+            Sequence of the records whose cached rr sequences are to be cleared.
+            Defaults to all records.
+
+        Returns
+        -------
+        None
 
         """
         self.__assert_task(["rr_lstm"])
@@ -1254,16 +1361,19 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         )
 
     def _get_rec_name(self, seg_or_rr: str) -> str:
-        """
+        """Get the name of the record that a segment
+        or rr_seq was generated from.
+
         Parameters
         ----------
-        seg_or_rr: str,
-            name of the segment or rr_seq
+        seg_or_rr : str
+            Name of the segment or rr_seq.
 
         Returns
         -------
-        rec: str,
-            name of the record that `seg` was generated from
+        rec : str
+            Name of the record
+            that the segment or rr_seq was generated from.
 
         """
         rec = re.sub("[RS]", "data", os.path.splitext(seg_or_rr)[0])[:-8]
@@ -1272,23 +1382,22 @@ class CPSC2021Dataset(ReprMixin, Dataset):
     def _train_test_split(
         self, train_ratio: float = 0.8, force_recompute: bool = False
     ) -> Dict[str, List[str]]:
-        """
-        do train test split,
-        it is ensured that both the train and the test set contain all classes
+        """Perform train-test split.
 
         Parameters
         ----------
-        train_ratio: float, default 0.8,
-            ratio of the train set in the whole dataset (or the whole tranche(s))
-        force_recompute: bool, default False,
-            if True, force redo the train-test split,
-            regardless of the existing ones stored in json files
+        train_ratio : float, default 0.8
+            Ratio of the train set in the whole dataset.
+        force_recompute : bool, default False
+            If True, the train-test split will be recomputed,
+            regardless of the existing ones stored in json files.
 
         Returns
         -------
-        split_res: dict,
-            keys are "train" and "test",
-            values are list of the subjects split for training or validation
+        dict
+            Dictionary of the train-test split.
+            Keys are "train" and "test", and
+            values are list of the subjects split for training or validation.
 
         """
         start = time.time()
@@ -1361,20 +1470,26 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         return split_res
 
     def __assert_task(self, tasks: List[str]) -> None:
-        """ """
-        assert (
-            self.task in tasks
-        ), f"DO NOT call this method when the current task is {self.task}. Switch task using `reset_task`"
+        """Check if the current task is in the given list of tasks."""
+        assert self.task in tasks, (
+            f"DO NOT call this method when the current task is {self.task}. "
+            "Switch task using `reset_task`"
+        )
 
     def plot_seg(self, seg: str, ticks_granularity: int = 0) -> None:
-        """
+        """Plot the segment.
+
         Parameters
         ----------
-        seg: str,
-            name of the segment, of pattern like "S_1_1_0000193"
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+        seg : str
+            Name of the segment, of pattern like "S_1_1_0000193".
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
+
+        Returns
+        -------
+        None
 
         """
         seg_data = self._load_seg_data(seg)
@@ -1398,8 +1513,21 @@ class CPSC2021Dataset(ReprMixin, Dataset):
         ]
 
 
-class FastDataReader(ReprMixin, Dataset):
-    """ """
+class _FastDataReader(ReprMixin, Dataset):
+    """Fast data reader.
+
+    Parameters
+    ----------
+    reader : CR
+        The reader to read the data.
+    records : Sequence[str]
+        The list of records to read.
+    config : CFG
+        The configuration.
+    ppm : PreprocManager, optional
+        The preprocessor manager.
+
+    """
 
     def __init__(
         self,
@@ -1410,7 +1538,6 @@ class FastDataReader(ReprMixin, Dataset):
         files: List[str],
         file_ext: str,
     ) -> None:
-        """ """
         self.config = config
         self.task = task
         self.seg_ppm = seg_ppm
@@ -1427,7 +1554,6 @@ class FastDataReader(ReprMixin, Dataset):
         }
 
     def __getitem__(self, index: int) -> Tuple[np.ndarray, ...]:
-        """ """
         if self.task in [
             "qrs_detection",
             "main",
@@ -1492,7 +1618,6 @@ class FastDataReader(ReprMixin, Dataset):
             )
 
     def __len__(self) -> int:
-        """ """
         return len(self.files)
 
     def extra_repr_keys(self) -> List[str]:
