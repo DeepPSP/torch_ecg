@@ -1,8 +1,13 @@
 """
-Models
-======
+torch_ecg.models
+================
 
 This module contains the model architectures for ECG various tasks.
+
+.. contents:: torch_ecg.models
+    :depth: 2
+    :local:
+    :backlinks: top
 
 .. currentmodule:: torch_ecg.models
 
@@ -10,6 +15,7 @@ Convolutional neural backbones
 ------------------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     ResNet
     RegNet
@@ -25,6 +31,7 @@ Downstream task models
 ----------------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     ECG_UNET
     ECG_SUBTRACT_UNET
@@ -36,6 +43,7 @@ Saliency analysis
 -----------------
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     GradCam
 

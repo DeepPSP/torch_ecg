@@ -1,8 +1,13 @@
 """
-ECG Database readers
-====================
+torch_ecg.databases
+===================
 
 This module contains ECG database readers.
+
+.. contents:: torch_ecg.databases
+    :depth: 2
+    :local:
+    :backlinks: top
 
 .. currentmodule:: torch_ecg.databases
 

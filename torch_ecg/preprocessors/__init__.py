@@ -1,13 +1,19 @@
 """
-Preprocessors for signals of torch Tensor format
-================================================
+torch_ecg.preprocessors
+=======================
 
 This module contains the preprocessors for signals of torch Tensor format.
+
+.. contents:: torch_ecg.preprocessors
+    :depth: 2
+    :local:
+    :backlinks: top
 
 .. currentmodule:: torch_ecg.preprocessors
 
 .. autosummary::
     :toctree: generated/
+    :recursive:
 
     PreprocManager
     BandPass

@@ -1,8 +1,13 @@
 """
-Augmenters for training ECG neural networks
-===========================================
+torch_ecg.augmenters
+====================
 
 Augmenters are used to augment the training data.
+
+.. contents:: torch_ecg.augmenters
+    :depth: 2
+    :local:
+    :backlinks: top
 
 .. currentmodule:: torch_ecg.augmenters
 

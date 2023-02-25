@@ -1,8 +1,13 @@
 """
-Components
-==========
+torch_ecg.components
+====================
 
 This module contains the components for training and evaluating models.
+
+.. contents:: torch_ecg.components
+    :depth: 2
+    :local:
+    :backlinks: top
 
 .. currentmodule:: torch_ecg.components
 
