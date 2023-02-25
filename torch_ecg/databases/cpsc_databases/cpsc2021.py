@@ -96,6 +96,7 @@ _CPSC2021_INFO = DataBaseInfo(
           :math:`Ma` is the number of annotated AF episodes,
           :math:`Mr` is the number of predicted AF episodes.
 
+    10. Challenge official website [1]_. Webpage of the database on PhysioNet [2]_.
     """,
     note="""
     1. if an ECG record is classified as AFf, the provided onset and offset locations should be the first and last record points. If an ECG record is classified as N, the answer should be an empty list
@@ -110,8 +111,7 @@ _CPSC2021_INFO = DataBaseInfo(
     ],
     references=[
         "http://www.icbeb.org/CPSC2021",
-        "https://www.physionet.org/content/cpsc2021/1.0.0/",
-        "https://archive.physionet.org/physiobank/annotations.shtml",
+        "https://www.physionet.org/content/cpsc2021/",
     ],
     doi="10.13026/ksya-qw89",
 )
@@ -214,7 +214,7 @@ class CPSC2021(PhysioNetDataBase):
 
     def _ls_rec(self) -> None:
         """Find all records in the database directory
-        and store them (path, metadata, etc.) in a dataframe.
+        and store them (path, metadata, etc.) in some private attributes.
         """
         self._df_records = pd.DataFrame()
         self._df_records["path"] = get_record_list_recursive3(
@@ -375,7 +375,7 @@ class CPSC2021(PhysioNetDataBase):
         return self._diagnoses_records_list
 
     def get_subject_id(self, rec: Union[str, int]) -> str:
-        """Attach a unique subject id to each record.
+        """Attach a unique subject ID to the record.
 
         Parameters
         ----------
@@ -385,7 +385,7 @@ class CPSC2021(PhysioNetDataBase):
         Returns
         -------
         sid : str
-            Subject id corresponding to the record.
+            Subject ID corresponding to the record.
 
         """
         if isinstance(rec, int):

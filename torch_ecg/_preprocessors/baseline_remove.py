@@ -81,5 +81,4 @@ class BaselineRemove(PreProcessor):
         return filtered_sig, fs
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return ["window1", "window2"] + super().extra_repr_keys()

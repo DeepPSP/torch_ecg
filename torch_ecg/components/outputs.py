@@ -32,6 +32,7 @@ _KNOWN_ISSUES = """
     NOTE
     ----
     Known issues:
+
         - fields of type `dict` are not well supported due to the limitations of the base class `CFG`, for example
 
         .. code-block:: python
@@ -146,6 +147,10 @@ class BaseOutput(CFG, ABC):
         ----------
         values : Output or Sequence[Output]
             The values to be appended.
+
+        Returns
+        -------
+        None
 
         """
         if not isinstance(values, Sequence):
@@ -417,13 +422,13 @@ class RPeaksDetectionOutput(BaseOutput):
     """
     Class that maintains the output of an R peaks detection task.
 
-    Required parameters for `__init__`
-    ----------------------------------
-    rpeak_indices : sequence of sequence of int,
-        r-peak indices for each batch sample
-    prob : np.ndarray,
-        probabilities at each time step (each sample point),
-        of shape (batch_size, signal_length)
+    Parameters
+    ----------
+    rpeak_indices : Sequence[Sequence[int]]
+        Rpeak indices for each batch sample.
+    prob : numpy.ndarray
+        Probabilities at each time step (each sample point),
+        of shape ``(batch_size, signal_length)``.
     """
 
     __name__ = "RPeaksDetectionOutput"
@@ -438,21 +443,20 @@ class RPeaksDetectionOutput(BaseOutput):
         )
 
     def compute_metrics(self, fs: int, thr: float = 0.075) -> ClassificationMetrics:
-        """
-        compute metrics from the output
+        """Compute metrics from the output.
 
         Parameters
         ----------
-        fs: int,
-            sampling frequency of the signal corresponding to the masks
-        thr: float, default 0.075,
-            threshold for a prediction to be truth positive,
-            with units in seconds
+        fs : int
+            Sampling frequency of the signal corresponding to the masks.
+        thr : float, default 0.075
+            Threshold for a prediction to be truth positive,
+            with units in seconds.
 
         Returns
         -------
-        metrics : `RPeaksDetectionMetrics`
-            metrics computed from the output
+        metrics : RPeaksDetectionMetrics
+            Metrics computed from the output.
 
         """
         assert hasattr(self, "labels") or hasattr(

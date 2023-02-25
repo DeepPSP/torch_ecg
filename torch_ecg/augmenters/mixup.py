@@ -21,6 +21,11 @@ __all__ = [
 class Mixup(Augmenter):
     """Mixup augmentor.
 
+    Mixup is a data augmentation technique originally proposed in [1]_.
+    The PDF file of the paper can be found on arXiv [2]_.
+    The official implementation is provided in [3]_. This technique was designed
+    for image classification tasks, but it is also widely used for ECG tasks.
+
     Parameters
     ----------
     fs : int, optional
@@ -130,7 +135,6 @@ class Mixup(Augmenter):
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "alpha",
             "beta",

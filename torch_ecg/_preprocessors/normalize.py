@@ -123,7 +123,6 @@ class Normalize(PreProcessor):
         return normalized_sig, fs
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "method",
             "mean",
@@ -166,7 +165,6 @@ class MinMaxNormalize(Normalize):
         super().__init__(method="min-max", per_channel=per_channel)
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "per_channel",
         ] + super().extra_repr_keys()
@@ -218,7 +216,6 @@ class NaiveNormalize(Normalize):
         )
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "mean",
             "std",
@@ -274,7 +271,6 @@ class ZScoreNormalize(Normalize):
         )
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "mean",
             "std",

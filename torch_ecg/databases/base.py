@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 Base classes for datasets from different sources:
-    PhysioNet
-    NSRR
-    CPSC
-    Other databases
 
-Remarks:
-1. for whole-dataset visualizing: http://zzz.bwh.harvard.edu/luna/vignettes/dataplots/
-2. visualizing using UMAP: http://zzz.bwh.harvard.edu/luna/vignettes/nsrr-umap/
+    - PhysioNet
+    - NSRR
+    - CPSC
+    - Other databases
+
+Remarks
+-------
+1. For whole-dataset visualizing: http://zzz.bwh.harvard.edu/luna/vignettes/dataplots/
+2. Visualizing using UMAP: http://zzz.bwh.harvard.edu/luna/vignettes/nsrr-umap/
 
 """
 
@@ -128,7 +130,21 @@ WFDB_Rhythm_Annotations = {
 
 
 class _DataBase(ReprMixin, ABC):
-    """Universal abstract base class for all databases"""
+    """Universal abstract base class for all databases.
+
+    Parameters
+    ----------
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If not specified, data will be fetched from Physionet.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Level of logging verbosity.
+    kwargs : dict, optional
+        Auxilliary key word arguments
+
+    """
 
     def __init__(
         self,
@@ -138,22 +154,6 @@ class _DataBase(ReprMixin, ABC):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_name : str
-            name of the database
-        db_dir : str or pathlib.Path, optional
-            storage path of the database,
-            if not specified, `wfdb` will fetch data from the website of PhysioNet
-        working_dir : str or pathlib.Path, optional
-            working directory, to store intermediate files and log file
-        verbose : int, default 1
-            log verbosity
-        kwargs : any
-            auxilliary key word arguments
-
-        """
         self.db_name = db_name
         if db_dir is None:
             db_dir = _DATA_CACHE / db_name
@@ -204,49 +204,47 @@ class _DataBase(ReprMixin, ABC):
 
     @abstractmethod
     def _ls_rec(self) -> None:
-        """Find all records in the database"""
+        """Find all records in the database."""
         raise NotImplementedError
 
     @abstractmethod
     def load_data(self, rec: Union[str, int], **kwargs) -> Any:
-        """Load data from the record `rec`"""
+        """Load data from the record."""
         raise NotImplementedError
 
     @abstractmethod
     def load_ann(self, rec: Union[str, int], **kwargs) -> Any:
-        """
-        Load annotations of the record `rec`
+        """Load annotations of the record.
 
-        NOTE that the records might have several annotation files
-
+        NOTE that the records might have several annotation files.
         """
         raise NotImplementedError
 
     @property
     @abstractmethod
     def database_info(self) -> "DataBaseInfo":
-        """the `DataBaseInfo` object of the database"""
+        """The :class:`DataBaseInfo` object of the database."""
         raise NotImplementedError
 
     def get_citation(
         self, format: Optional[str] = None, style: Optional[str] = None
     ) -> None:
-        """
-        Get the citations of the papers related to the database
+        """Get the citations of the papers related to the database.
 
         Parameters
         ----------
         lookup : bool, default True
-            whether to lookup the citation from the DOI
+            Whether to lookup the citation from the DOI or not.
         format : str, optional
-            format of the final output,
-            if specified, the default format ("bib") will be overrided
+            Format of the final output
+            If specified, the default format ("bib") will be overrided.
         style : str, optional
-            style of the final output,
-            if specified, the default style ("apa") will be overrided,
-            only valid when `format` is "text"
+            Style of the final output.
+            If specified, the default style ("apa") will be overrided.
+            Valid only when `format` is "text".
         print_result : bool, default False
-            whether to print the final output instead of returning it
+            Whether to print the final output
+            instead of returning it or not.
 
         Returns
         -------
@@ -258,21 +256,21 @@ class _DataBase(ReprMixin, ABC):
         )
 
     def _auto_infer_units(self, sig: np.ndarray, sig_type: str = "ECG") -> str:
-        """
-        Automatically infer the units of `sig`,
-        under the assumption that `sig` not being raw signal, with baseline removed
+        """Automatically infer the units of the signal.
+
+        It is assumed that `sig` is not raw signal, but with baseline removed.
 
         Parameters
         ----------
         sig : ndarray
-            the signal to infer its units
+            The signal to infer its units.
         sig_type : str, default "ECG"
-            type of the signal, case insensitive
+            Type of the signal, case insensitive.
 
         Returns
         -------
-        units : str,
-            units of `sig`, "μV" or "mV"
+        units : {"μV", "mV"}
+            Units of the signal.
 
         """
         if sig_type.lower() == "ecg":
@@ -295,20 +293,19 @@ class _DataBase(ReprMixin, ABC):
     def get_absolute_path(
         self, rec: Union[str, int], extension: Optional[str] = None
     ) -> Path:
-        """
-        Get the absolute path of the record `rec`
+        """Get the absolute path of the record.
 
         Parameters
         ----------
         rec : str or int
-            record name or index of the record in `self.all_records`
+            Record name or index of the record in :attr:`all_records`.
         extension : str, optional
-            extension of the file
+            Extension of the file.
 
         Returns
         -------
         path : pathlib.Path
-            absolute path of the file
+            Absolute path of the file.
 
         """
         if isinstance(rec, int):
@@ -326,24 +323,24 @@ class _DataBase(ReprMixin, ABC):
         all_leads: Optional[Sequence[str]] = None,
         numeric: bool = False,
     ) -> List[Union[str, int]]:
-        """
-        Normalize the leads to a list of standard lead names
+        """Normalize the leads to a list of standard lead names.
 
         Parameters
         ----------
-        leads : str or int or list of str or int, optional
+        leads : str or int or List[str] or List[int], optional
             the (names of) leads to normalize
         all_leads : list of str, optional
-            all leads of records in the database,
-            if not specified, the database class should have attribute `all_leads`,
-            and `self.all_leads` will be used
+            All leads of the records in the database,
+            If is None, the database class should have attribute `all_leads`,
+            and `self.all_leads` will be used.
         numeric : bool, default False
-            if True, return the lead indices instead of the lead names
+            If True, indices of the leads will be returned
+            instead of lead names.
 
         Returns
         -------
-        leads : list of str or int
-            the normalized leads
+        leads : List[str] or List[int]
+            The normalized leads
 
         """
         if all_leads is None:
@@ -373,16 +370,18 @@ class _DataBase(ReprMixin, ABC):
         return _leads
 
     @classmethod
-    def get_arrhythmia_knowledge(
-        cls, arrhythmias: Union[str, List[str]], **kwargs: Any
-    ) -> None:
-        """
-        Knowledge about ECG features of specific arrhythmias,
+    def get_arrhythmia_knowledge(cls, arrhythmias: Union[str, List[str]]) -> None:
+        """Knowledge about ECG features of specific arrhythmias.
 
         Parameters
         ----------
-        arrhythmias : str, or list of str
-            the arrhythmia(s) to check, in abbreviations or in SNOMEDCTCode
+        arrhythmias : str or List[str]
+            The arrhythmia(s) to check,
+            in abbreviations or in SNOMEDCTCode.
+
+        Returns
+        -------
+        None
 
         """
         if isinstance(arrhythmias, str):
@@ -403,9 +402,7 @@ class _DataBase(ReprMixin, ABC):
     @property
     @abstractmethod
     def url(self) -> Union[str, List[str]]:
-        """
-        URL(s) for downloading the database
-        """
+        """URL(s) for downloading the database."""
         raise NotImplementedError
 
     def __len__(self) -> int:
@@ -416,12 +413,29 @@ class _DataBase(ReprMixin, ABC):
 
 
 class PhysioNetDataBase(_DataBase):
-    """
-    Base class for readers for PhysioNet database
+    """Base class for readers for PhysioNet database.
+
+    PhysioNet is a large repository of freely available biomedical signals,
+    including ECG, EEG, EMG, and other signals.
+    The website is [#phy_website]_.
+
+    Parameters
+    ----------
+    db_name : str
+        Name of the database.
+    db_dir : str or pathlib.Path, optional
+        Storage path of the database.
+        If is None, `wfdb` will fetch data from PhysioNet.
+    working_dir : str or pathlib.Path, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Verbosity level for logging.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
 
     References
     ----------
-    https://www.physionet.org/
+    .. [#phy_website] https://www.physionet.org/
 
     """
 
@@ -433,22 +447,6 @@ class PhysioNetDataBase(_DataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_name : str
-            name of the database
-        db_dir : str or pathlib.Path, optional
-            storage path of the database,
-            if not specified, `wfdb` will fetch data from the website of PhysioNet
-        working_dir : str or pathlib.Path, optional
-            working directory, to store intermediate files and log file
-        verbose : int, default 1
-            log verbosity
-        kwargs : any
-            auxilliary key word arguments
-
-        """
         super().__init__(
             db_name=db_name,
             db_dir=db_dir,
@@ -482,15 +480,20 @@ class PhysioNetDataBase(_DataBase):
     def _ls_rec(self, db_name: Optional[str] = None, local: bool = True) -> None:
         """
         Find all records (relative path without file extension),
-        and save into `self._all_records` for further use
+        and save into some private attributes for further use.
 
         Parameters
         ----------
         db_name : str, optional
-            name of the database for using `wfdb.get_record_list`,
-            if not set, `self.db_name` will be used
+            Name of the database for using :meth:`wfdb.get_record_list`.
+            If is None, :attr:`self.db_name` will be used.
         local : bool, default True
-            if True, read from local storage, prior to using `wfdb.get_record_list`
+            If True, search records in local storage,
+            prior using :meth:`wfdb.get_record_list`.
+
+        Returns
+        -------
+        None
 
         """
         empty_warning_msg = (
@@ -544,7 +547,7 @@ class PhysioNetDataBase(_DataBase):
             warnings.warn(empty_warning_msg, RuntimeWarning)
 
     def _ls_rec_local(self) -> None:
-        """Find all records in `self.db_dir`"""
+        """Find all records in :attr:`self.db_dir`."""
         record_list_fp = self.db_dir / "RECORDS"
         self._df_records = pd.DataFrame()
         if record_list_fp.is_file():
@@ -604,18 +607,17 @@ class PhysioNetDataBase(_DataBase):
         self._all_records = self._df_records.index.values.tolist()
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """
-        Attach a `subject_id` to the record, in order to facilitate further uses
+        """Attach a unique subject ID for the record.
 
         Parameters
         ----------
         rec : str or int
-            record name or index of the record in `self.all_records`
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
         int
-            a `subject_id` attached to the record `rec`
+            Subject ID associated with the record.
 
         """
         raise NotImplementedError
@@ -638,29 +640,32 @@ class PhysioNetDataBase(_DataBase):
         Parameters
         ----------
         rec : str or int
-            record name or index of the record in `self.all_records`
-        leads : str or int or sequence of str or int, optional
-            the leads to load,
-            None or "all" for all leads,
+            Record name or index of the record in :attr:`all_records`.
+        leads : str or int or Sequence[str] or Sequence[int], optional
+            The leads of the ECG data to load.
+            None or "all" for all leads.
         sampfrom : int, optional
-            start index of the data to be loaded
+            Start index of the data to be loaded.
         sampto : int, optional
-            end index of the data to be loaded
+            End index of the data to be loaded.
         data_format : str, default "channel_first"
-            format of the ecg data,
+            Format of the ECG data,
             "channel_last" (alias "lead_last"), or
             "channel_first" (alias "lead_first"), or
             "flat" (alias "plain") which is valid only when `leads` is a single lead
         units : str or None, default "mV"
-            units of the output signal, can also be "μV", with aliases of "uV", "muV";
-            None for digital data, without digital-to-physical conversion
-        fs : real number, optional
-            if not None, the loaded data will be resampled to this frequency
+            Units of the output signal, can also be "μV" (aliases "uV", "muV").
+            None for digital data, without digital-to-physical conversion.
+        fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            If not None, the loaded data will be resampled to this frequency,
+            otherwise, the original sampling frequency will be used.
 
         Returns
         -------
-        data : ndarray
-            the ECG data loaded from `rec`, with given units and format
+        numpy.ndarray
+            The ECG data loaded from the record,
+            with given `units` and `data_format`.
 
         """
         fp = str(self.get_absolute_path(rec))
@@ -725,20 +730,26 @@ class PhysioNetDataBase(_DataBase):
 
         return data
 
-    def helper(self, items: Union[List[str], str, type(None)] = None, **kwargs) -> None:
-        """
-        Print corr. meanings of symbols belonging to `items`
+    def helper(self, items: Union[List[str], str, type(None)] = None) -> None:
+        """Print corr. meanings of symbols belonging to `items`.
+
+        More details can be found
+        in the PhysioNet WFDB annotation manual [#ann_man]_.
 
         Parameters
         ----------
-        items : str, or list of str, optional
-            the items to print,
-            if not specified, then a comprehensive printing
-            of meanings of all symbols will be performed
+        items : str or List[str], optional
+            Items to print.
+            If is None, then a comprehensive printing
+            of meanings of all symbols will be performed.
+
+        Returns
+        -------
+        None
 
         References
         ----------
-        1. https://archive.physionet.org/physiobank/annotations.shtml
+        .. [#ann_man] https://archive.physionet.org/physiobank/annotations.shtml
 
         """
         attrs = vars(self)
@@ -810,19 +821,18 @@ class PhysioNetDataBase(_DataBase):
                             print(f"`{k}` stands for `{a['('+k]}`")
 
     def get_file_download_url(self, file_name: Union[str, Path]) -> str:
-        """
-        Get the download url of the file
+        """Get the download url of the file.
 
         Parameters
         ----------
         file_name : str or pathlib.Path
-            the name of the file,
+            Name of the file,
             e.g. "data/001a.dat", "training/tr03-0005/tr03-0005.mat", etc.
 
         Returns
         -------
         url : str
-            the url of the file
+            URL of the file to be downloaded.
 
         """
         url = posixpath.join(
@@ -835,6 +845,7 @@ class PhysioNetDataBase(_DataBase):
 
     @property
     def version(self) -> str:
+        """Version of the database."""
         if self._version is not None:
             return self._version
         try:
@@ -849,19 +860,21 @@ class PhysioNetDataBase(_DataBase):
 
     @property
     def webpage(self) -> str:
+        """URL of the database webpage"""
         return posixpath.join(
             wfdb.io.download.PN_CONTENT_URL, f"{self.db_name}/{self.version}"
         )
 
     @property
     def url(self) -> str:
+        """URL of the database index page for downloading."""
         return posixpath.join(
             wfdb.io.download.PN_INDEX_URL, f"{self.db_name}/{self.version}"
         )
 
     @property
     def url_(self) -> Union[str, type(None)]:
-        """URL of the compressed database file"""
+        """URL of the compressed database file for downloading."""
         if self._url_compressed is not None:
             return self._url_compressed
         domain = "https://physionet.org/static/published-projects/"
@@ -888,7 +901,7 @@ class PhysioNetDataBase(_DataBase):
         return self._url_compressed
 
     def download(self, compressed: bool = True) -> None:
-        """download the database from PhysioNet"""
+        """Download the database from PhysioNet."""
         if compressed:
             if self.url_ is not None:
                 http_get(self.url_, self.db_dir, extract=True)
@@ -908,12 +921,27 @@ class PhysioNetDataBase(_DataBase):
 
 
 class NSRRDataBase(_DataBase):
-    """
-    Base class for readers for the NSRR database
+    """Base class for readers for the NSRR database.
+
+    For a full list of available databases, and their descriptions,
+    please visit the NSRR database webpage [1]_.
+
+    Parameters
+    ----------
+    db_name : str
+        Name of the database.
+    db_dir : str or pathlib.Path, optional
+        Local storage path of the database.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Verbosity level for logging.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
 
     References
     ----------
-    https://sleepdata.org/
+    .. [1] https://sleepdata.org/
 
     """
 
@@ -925,21 +953,6 @@ class NSRRDataBase(_DataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        db_name : str
-            name of the database
-        db_dir : str or pathlib.Path, optional
-            storage path of the database
-        working_dir : str, optional
-            working directory, to store intermediate files and log file
-        verbose : int, default 1
-            log verbosity
-        kwargs : any
-            auxilliary key word arguments
-
-        """
         super().__init__(
             db_name=db_name,
             db_dir=db_dir,
@@ -960,11 +973,13 @@ class NSRRDataBase(_DataBase):
             ["oya", ""],
             [
                 "chat",
-                "Multi-center randomized trial comparing early adenotonsillectomy to watchful waiting plus supportive care",
+                "Multi-center randomized trial comparing early adenotonsillectomy to "
+                "watchful waiting plus supportive care",
             ],
             [
                 "heartbeat",
-                "Multi-center Phase II randomized controlled trial that evaluates the effects of supplemental nocturnal oxygen or Positive Airway Pressure (PAP) therapy",
+                "Multi-center Phase II randomized controlled trial that evaluates the effects "
+                "of supplemental nocturnal oxygen or Positive Airway Pressure (PAP) therapy",
             ],
             # more to be added
         ]
@@ -981,14 +996,24 @@ class NSRRDataBase(_DataBase):
         operation: str = "close",
         full_file_path: Optional[Union[str, Path]] = None,
     ) -> None:
-        """
+        """Safe IO operation for edf file.
+
         Parameters
         ----------
-        operation : str, default "close"
-            operation name, can be "open" and "close"
+        operation : {"open", "close"}, optional
+            Operation name, by default "close".
         full_file_path : str or pathlib.Path, optional
-            path of the file which contains the psg data,
-            if not given, default path will be used
+            Path of the file which contains the data.
+            If is None, default path will be used.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        ValueError
+            If the operation is not supported.
 
         """
         if operation == "open":
@@ -1003,44 +1028,49 @@ class NSRRDataBase(_DataBase):
             raise ValueError("Illegal operation")
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """
-        Attach a `subject_id` to the record, in order to facilitate further uses
+        """Attach a unique subject ID for the record.
 
         Parameters
         ----------
         rec : str or int
-            record name or index of the record in `self.all_records`
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
         int
-            a `subject_id` attached to the record `rec`
+            Subject ID associated with the record.
 
         """
         raise NotImplementedError
 
     def show_rec_stats(self, rec: Union[str, int]) -> None:
-        """
-        Print the statistics about the record `rec`
+        """Print the statistics about the record.
 
         Parameters
         ----------
         rec : str or int
-            record name or index of the record in `self.all_records`
+            Record name or index of the record in :attr:`all_records`.
+
+        Returns
+        -------
+        None
 
         """
         raise NotImplementedError
 
-    def helper(self, items: Union[List[str], str, type(None)] = None, **kwargs) -> None:
-        """
-        Print corr. meanings of symbols belonging to `items`
+    def helper(self, items: Union[List[str], str, type(None)] = None) -> None:
+        """Print corr. meanings of symbols belonging to `items`.
 
         Parameters
         ----------
-        items : str, or list of str, optional
-            the items to print,
-            if not specified, then a comprehensive printing
-            of meanings of all symbols will be performed
+        items : str or List[str], optional
+            Items to print.
+            If is None, then a comprehensive printing
+            of meanings of all symbols will be performed.
+
+        Returns
+        -------
+        None
 
         """
         pp = pprint.PrettyPrinter(indent=4)
@@ -1074,7 +1104,22 @@ class NSRRDataBase(_DataBase):
 
 
 class CPSCDataBase(_DataBase):
-    """Base class for readers for the CPSC database"""
+    """Base class for readers for the CPSC database.
+
+    Parameters
+    ----------
+    db_name : str
+        Name of the database.
+    db_dir : str or pathlib.Path, optional
+        Local storage path of the database.
+    working_dir : str, optional
+        Working directory, to store intermediate files and log files.
+    verbose : int, default 1
+        Verbosity level for logging.
+    kwargs : dict, optional
+        Auxilliary key word arguments.
+
+    """
 
     def __init__(
         self,
@@ -1084,20 +1129,6 @@ class CPSCDataBase(_DataBase):
         verbose: int = 1,
         **kwargs: Any,
     ) -> None:
-        r"""
-        Parameters
-        ----------
-        db_name : str,
-            name of the database
-        db_dir : str or pathlib.Path, optional,
-            storage path of the database
-        working_dir : str, optional,
-            working directory, to store intermediate files and log file
-        verbose : int, default 1
-            log verbosity
-        kwargs : auxilliary key word arguments
-
-        """
         super().__init__(
             db_name=db_name,
             db_dir=db_dir,
@@ -1112,23 +1143,36 @@ class CPSCDataBase(_DataBase):
         self.kwargs = kwargs
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """
-        Attach a `subject_id` to the record, in order to facilitate further uses
+        """Attach a unique subject ID for the record.
 
         Parameters
         ----------
-        rec : str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        int, a `subject_id` attached to the record `rec`
+        int
+            Subject ID associated with the record.
 
         """
         raise NotImplementedError
 
-    def helper(self, items: Union[List[str], str, type(None)] = None, **kwargs) -> None:
-        """ """
+    def helper(self, items: Union[List[str], str, type(None)] = None) -> None:
+        """Print corr. meanings of symbols belonging to `items`.
+
+        Parameters
+        ----------
+        items : str or List[str], optional
+            Items to print.
+            If is None, then a comprehensive printing
+            of meanings of all symbols will be performed.
+
+        Returns
+        -------
+        None
+
+        """
         pp = pprint.PrettyPrinter(indent=4)
 
         attrs = vars(self)
@@ -1159,7 +1203,7 @@ class CPSCDataBase(_DataBase):
             pp.pprint(methods)
 
     def download(self) -> None:
-        """download the database from `self.url`"""
+        """Download the database from `self.url`."""
         if isinstance(self.url, str):
             http_get(self.url, self.db_dir, extract=True)
         else:
@@ -1170,27 +1214,26 @@ class CPSCDataBase(_DataBase):
 
 @dataclass
 class DataBaseInfo(CitationMixin):
-    """
-    A dataclass to store the information of a database
+    """A dataclass to store the information of a database.
 
     Attributes
     ----------
     title : str
-        title of the database
+        Title of the database.
     about : str or list of str
-        description of the database
+        Description of the database.
     usage : list of str
-        potential usages of the database
+        Potential usages of the database.
     references : list of str
-        references of the database
+        References of the database.
     note : str or list of str, optional
-        notes of the database
+        Notes of the database.
     issues : str or list of str, optional
-        known issues of the database
+        Known issues of the database.
     status : str, optional
-        status of the database
+        Status of the database.
     doi : str or list of str, optional
-        doi of the paper(s) describing the database
+        Doi of the paper(s) describing the database.
 
     """
 
@@ -1204,18 +1247,21 @@ class DataBaseInfo(CitationMixin):
     doi: Optional[Union[str, Sequence[str]]] = None
 
     def format_database_docstring(self, indent: Optional[str] = None) -> str:
-        """
-        Format the database docstring from the information stored in the dataclass
+        """Format the database docstring from
+        the information stored in the dataclass.
+
+        The docstring will use the reStructuredText format.
 
         Parameters
         ----------
         indent : str, optional
-            indent of the docstring, if not specified, then 4 spaces will be used
+            Indent of the docstring.
+            If not specified, then 4 spaces will be used.
 
         Returns
         -------
         str
-            the formatted docstring
+            The formatted docstring.
 
         """
         if indent is None:
@@ -1229,7 +1275,8 @@ class DataBaseInfo(CitationMixin):
             ]
             about = "\n".join(about)
         if self.note is None:
-            note = "NOTE\n----"
+            # note = "NOTE\n----"
+            note = ""
         elif isinstance(self.note, str):
             note = "NOTE\n----\n" + textwrap.dedent(self.note).strip("\n ")
         else:
@@ -1238,7 +1285,8 @@ class DataBaseInfo(CitationMixin):
             ]
             note = "\n".join(note)
         if self.issues is None:
-            issues = "ISSUES\n------"
+            # issues = "Issues\n------"
+            issues = ""
         elif isinstance(self.issues, str):
             issues = "Issues\n------\n" + textwrap.dedent(self.issues).strip("\n ")
         else:
@@ -1282,12 +1330,12 @@ class DataBaseInfo(CitationMixin):
 
 
 class PSGDataBaseMixin:
-    """
-    A mixin class for PSG databases
+    """A mixin class for PSG databases.
 
     Contains methods for
-    - convertions between sleep stage intervals and sleep stage masks
-    - hypnogram plotting
+
+        - convertions between sleep stage intervals and sleep stage masks
+        - hypnogram plotting
 
     """
 
@@ -1298,30 +1346,28 @@ class PSGDataBaseMixin:
         granularity: int = 30,
         class_map: Optional[Dict[str, int]] = None,
     ) -> np.ndarray:
-        """
-        Convert sleep stage intervals to sleep stage mask
+        """Convert sleep stage intervals to sleep stage mask.
 
         Parameters
         ----------
-        intervals : dict of list of lists of int
-            sleep stage intervals,
-            keys are sleep stages and
-            values are lists of lists of start and end indices of the sleep stages
+        intervals : dict
+            Sleep stage intervals, in the format of dict of list of lists of int.
+            Keys are sleep stages and
+            values are lists of lists of start and end indices of the sleep stages.
         fs : int, optional
-            sampling frequency corresponding to the sleep stage intervals,
-            defaults to the sampling frequency of the database
+            Sampling frequency corresponding to the sleep stage intervals,
+            defaults to the sampling frequency of the database.
         granularity : int, default 30
-            granularity of the sleep stage mask,
-            with unit of seconds
+            Granularity of the sleep stage mask, with units in seconds.
         class_map : dict, optional
-            a dictionary mapping sleep stages to integers,
-            if the database reader does not have a `sleep_stage_names` attribute,
-            this argument must be provided
+            A dictionary mapping sleep stages to integers.
+            If the database reader does not have a `sleep_stage_names` attribute,
+            this parameter must be provided.
 
         Returns
         -------
-        np.ndarray:
-            sleep stage mask
+        numpy.ndarray
+            Sleep stage mask.
 
         """
         fs = fs or self.fs
@@ -1357,29 +1403,28 @@ class PSGDataBaseMixin:
         class_map: Optional[Dict[str, int]] = None,
         **kwargs,
     ) -> tuple:
-        """
-        Hypnogram visualization
+        """Hypnogram visualization.
 
         Parameters
         ----------
-        mask : np.ndarray
-            sleep stage mask
-        granularity : int, default 30,
-            granularity of the sleep stage mask to be plotted,
-            with unit of seconds
+        mask : numpy.ndarray
+            Sleep stage mask.
+        granularity : int, default 30
+            Granularity of the sleep stage mask to be plotted,
+            with units in seconds.
         class_map : dict, optional
-            a dictionary mapping sleep stages to integers,
-            if the database reader does not have a `sleep_stage_names` attribute,
-            this argument must be provided
-        kwargs : any
-            keyword arguments passed to `matplotlib.pyplot.plot`
+            A dictionary mapping sleep stages to integers.
+            If the database reader does not have a `sleep_stage_names` attribute,
+            this parameter must be provided.
+        kwargs : dict, optional
+            Additional keyword arguments passed to :meth:`matplotlib.pyplot.plot`.
 
         Returns
         -------
         fig : matplotlib.figure.Figure
-            figure object
+            Figure object.
         ax : matplotlib.axes._subplots.AxesSubplot
-            axes object
+            Axes object.
 
         """
         if not hasattr(self, "sleep_stage_names"):
@@ -1426,20 +1471,19 @@ DEFAULT_FIG_SIZE_PER_SEC = 4.8
 
 @dataclass
 class BeatAnn:
-    """
-    Dataclass for beat annotation
+    """Dataclass for beat annotation.
 
     Attributes
     ----------
     index : int
-        index of the beat
+        Index of the beat.
     symbol : str
-        symbol of the beat
+        Symbol of the beat.
 
     Properties
     ----------
     name : str
-        name of the beat
+        Name of the beat.
 
     """
 

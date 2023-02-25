@@ -338,7 +338,6 @@ class ClassificationMetrics(Metrics):
         return self._em
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "multi_label",
             "macro",
@@ -439,7 +438,6 @@ class RPeaksDetectionMetrics(Metrics):
         return self._em
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return ["thr"]
 
 
@@ -646,5 +644,4 @@ class WaveDelineationMetrics(Metrics):
         return self._em
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return ["tol"]

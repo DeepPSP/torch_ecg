@@ -102,6 +102,7 @@ napoleon_custom_sections = [
     "Usage",
     "Citation",
     "TODO",
+    "Version history",
 ]
 # napoleon_custom_section_rename = False # True is default for backwards compatibility.
 
@@ -120,7 +121,7 @@ else:
 # htmlhelp_basename = "Recommonmarkdoc"
 
 html_theme_options = {
-    "collapse_navigation": True,
+    "collapse_navigation": False,
     "display_version": True,
 }
 

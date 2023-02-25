@@ -257,7 +257,6 @@ class BaseInput(ReprMixin, ABC):
         return input_shape
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return ["input_type", "n_channels", "n_samples", "dtype", "device"]
 
 
@@ -459,7 +458,6 @@ class FFTInput(BaseInput):
         return self.from_waveform(waveform)
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return super().extra_repr_keys() + ["nfft", "drop_dc", "norm"]
 
 
@@ -545,7 +543,6 @@ class _SpectralInput(BaseInput):
         return tuple(input_shape[dim] for dim in sample_dim)
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return super().extra_repr_keys() + [
             "n_bins",
             "win_length",

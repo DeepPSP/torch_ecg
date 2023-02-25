@@ -249,7 +249,6 @@ class StretchCompress(Augmenter):
         return (sig, *labels)
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "ratio",
             "prob",
@@ -614,7 +613,6 @@ class StretchCompressOffline(ReprMixin):
         return self.generate(seglen, sig, *labels, critical_points=critical_points)
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return super().extra_repr_keys() + [
             "ratio",
             "prob",

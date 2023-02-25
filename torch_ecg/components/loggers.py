@@ -134,7 +134,6 @@ class BaseLogger(ReprMixin, ABC):
         raise NotImplementedError
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return super().extra_repr_keys() + [
             "filename",
         ]
@@ -620,7 +619,6 @@ class LoggerManager(ReprMixin):
         return lm
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return super().extra_repr_keys() + [
             "loggers",
         ]

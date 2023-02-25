@@ -94,7 +94,6 @@ class BandPass(PreProcessor):
         return filtered_sig, fs
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "lowcut",
             "highcut",

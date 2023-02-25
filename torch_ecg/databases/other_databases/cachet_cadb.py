@@ -33,6 +33,7 @@ _CACHET_CADB_INFO = DataBaseInfo(  # NOT finished yet
     2. The length of the ECG records in the CACHET-CADB varies from 24 h to 3 weeks.
     3. The patient's ambulatory context information (activities, movement acceleration, body position, etc.) is extracted for every 10 s interval cumulatively.
     4. nearly 11% of the ECG data in the database is found to be noisy.
+    5. Webpages for downloading the database [1]_ and the short-format database [2]_, see also the GitHub repository [3]_.
     """,
     usage=[
         "ECG arrhythmia detection",

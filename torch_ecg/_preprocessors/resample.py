@@ -81,7 +81,6 @@ class Resample(PreProcessor):
         return rsmp_sig, new_fs
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "fs",
             "siglen",

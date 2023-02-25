@@ -57,6 +57,7 @@ class BaseTrainer(ReprMixin, ABC):
         including configurations for the data loader, for the optimization, etc.
         Will also be recorded in the checkpoints.
         `train_config` should at least contain the following keys:
+
             - "monitor": str
             - "loss": str
             - "n_epochs": int
@@ -69,6 +70,7 @@ class BaseTrainer(ReprMixin, ABC):
             - "optimizer": str
                 - "decay": float, optional, depending on the optimizer
                 - "momentum": float, optional, depending on the optimizer
+
     collate_fn : callable, optional
         The collate function for the data loader,
         defaults to :meth:`default_collate_fn`.
@@ -799,7 +801,6 @@ class BaseTrainer(ReprMixin, ABC):
         )
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "train_config",
         ]

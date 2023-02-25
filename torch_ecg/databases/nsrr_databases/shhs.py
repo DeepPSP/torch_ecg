@@ -117,49 +117,65 @@ _SHHS_INFO = DataBaseInfo(
 
     1. hrv annotations: (in csv files, ref. [2]_)
 
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | Start__sec_ | 5 minute window start time                                                                                                     |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | NN_RR       | Ratio of consecutive normal sinus beats (NN) over all cardiac inter-beat (RR) intervals (NN/RR)                                |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | AVNN        | Mean of all normal sinus to normal sinus interbeat intervals (NN)                                                              |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | IHR         | Instantaneous heart rate                                                                                                       |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | SDNN        | Standard deviation of all normal sinus to normal sinus interbeat (NN) intervals                                                |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | SDANN       | Standard deviation of the averages of normal sinus to normal sinus interbeat (NN) intervals in all 5-minute segments           |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | SDNNIDX    | Mean of the standard deviations of normal sinus to normal sinus interbeat (NN) intervals in all 5-minute segments              |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | rMSSD      | Square root of the mean of the squares of difference between adjacent normal sinus to normal sinus interbeat (NN) intervals    |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | pNN10      | Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >10 ms               |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | pNN20      | Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >20 ms               |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | pNN30      | Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >30 ms               |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | pNN40      | Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >40 ms               |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | pNN50      | Percentage of differences between adjacent normal sinus to normal sinus interbeat (NN) intervals that are >50 ms               |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | tot_pwr    | Total normal sinus to normal sinus interbeat (NN) interval spectral power up to 0.4 Hz                                         |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | ULF        | Ultra-low frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0 and 0.003 Hz      |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | VLF        | Very low frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0.003 and 0.04 Hz    |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | LF         | Low frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0.04 and 0.15 Hz          |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | HF         | High frequency power, the normal sinus to normal sinus interbeat (NN) interval spectral power between 0.15 and 0.4 Hz          |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | LF_HF      | The ratio of low to high frequency power                                                                                       |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | LF_n       | Low frequency power (normalized)                                                                                               |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
-        | HF_n       | High frequency power (normalized)                                                                                              |
-        +-------------+--------------------------------------------------------------------------------------------------------------------------------+
+        +-------------+------------------------------------------------------------------+
+        | Start__sec_ | 5 minute window start time                                       |
+        +-------------+------------------------------------------------------------------+
+        | NN_RR       | Ratio of consecutive normal sinus beats (NN)                     |
+        |             | over all cardiac inter-beat (RR) intervals (NN/RR)               |
+        +-------------+------------------------------------------------------------------+
+        | AVNN        | Mean of all normal sinus to normal sinus interbeat               |
+        |             | intervals (NN)                                                   |
+        +-------------+------------------------------------------------------------------+
+        | IHR         | Instantaneous heart rate                                         |
+        +-------------+------------------------------------------------------------------+
+        | SDNN        | Standard deviation of all normal sinus                           |
+        |             |to normal sinus interbeat (NN) intervals                          |
+        +-------------+------------------------------------------------------------------+
+        | SDANN       | Standard deviation of the averages of normal sinus to normal     |
+        |             | sinus interbeat (NN) intervals in all 5-minute segments          |
+        +-------------+------------------------------------------------------------------+
+        | SDNNIDX     | Mean of the standard deviations of normal sinus to normal        |
+        |             | sinus interbeat (NN) intervals in all 5-minute segments          |
+        +-------------+------------------------------------------------------------------+
+        | rMSSD       | Square root of the mean of the squares of difference between     |
+        |             | adjacent normal sinus to normal sinus interbeat (NN) intervals   |
+        +-------------+------------------------------------------------------------------+
+        | pNN10       | Percentage of differences between adjacent normal sinus to       |
+        |             | normal sinus interbeat (NN) intervals that are >10 ms            |
+        +-------------+------------------------------------------------------------------+
+        | pNN20       | Percentage of differences between adjacent normal sinus to       |
+        |             | normal sinus interbeat (NN) intervals that are >20 ms            |
+        +-------------+------------------------------------------------------------------+
+        | pNN30       | Percentage of differences between adjacent normal sinus to       |
+        |             | normal sinus interbeat (NN) intervals that are >30 ms            |
+        +-------------+------------------------------------------------------------------+
+        | pNN40       | Percentage of differences between adjacent normal sinus to       |
+        |             | normal sinus interbeat (NN) intervals that are >40 ms            |
+        +-------------+------------------------------------------------------------------+
+        | pNN50       | Percentage of differences between adjacent normal sinus to       |
+        |             | normal sinus interbeat (NN) intervals that are >50 ms            |
+        +-------------+------------------------------------------------------------------+
+        | tot_pwr     | Total normal sinus to normal sinus interbeat (NN) interval       |
+        |             | spectral power up to 0.4 Hz                                      |
+        +-------------+------------------------------------------------------------------+
+        | ULF         | Ultra-low frequency power, the normal sinus to normal sinus      |
+        |             | interbeat (NN) interval spectral power between 0 and 0.003 Hz    |
+        +-------------+------------------------------------------------------------------+
+        | VLF         | Very low frequency power, the normal sinus to normal sinus       |
+        |             | interbeat (NN) interval spectral power between 0.003 and 0.04 Hz |
+        +-------------+------------------------------------------------------------------+
+        | LF          | Low frequency power, the normal sinus to normal sinus interbeat  |
+        |             | (NN) interval spectral power between 0.04 and 0.15 Hz            |
+        +-------------+------------------------------------------------------------------+
+        | HF          | High frequency power, the normal sinus to normal sinus interbeat |
+        |             | (NN) interval spectral power between 0.15 and 0.4 Hz             |
+        +-------------+------------------------------------------------------------------+
+        | LF_HF       | The ratio of low to high frequency                               |
+        +-------------+------------------------------------------------------------------+
+        | LF_n        | Low frequency power (normalized)                                 |
+        +-------------+------------------------------------------------------------------+
+        | HF_n        | High frequency power (normalized)                                |
+        +-------------+------------------------------------------------------------------+
 
     2. wave delineation annotations: (in csv files, NOTE: see "CAUTION" by the end of this part, ref. [2]_)
 
@@ -1085,7 +1101,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         return data, data_fs
 
     @add_docstring(
-        "NOTE: one should call `load_psg_data` to load other channels.", mode="append"
+        " " * 8 + "NOTE: one should call `load_psg_data` to load other channels.",
+        mode="append",
     )
     @add_docstring(load_ecg_data.__doc__)
     def load_data(

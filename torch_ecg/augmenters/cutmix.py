@@ -24,6 +24,12 @@ __all__ = [
 class CutMix(Augmenter):
     """CutMix augmentation.
 
+    CutMix is a data augmentation technique originally proposed in [1]_,
+    with official implementation in [2]_, and an unofficial implementation in [3]_.
+    This technique was designed for image classification tasks, but it can also be used
+    for ECG tasks. This technique was very successful
+    in CPSC2021 challenge of paroxysmal AF events detection.
+
     Parameters
     ----------
     fs: int, optional
@@ -171,7 +177,6 @@ class CutMix(Augmenter):
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "alpha",
             "beta",
@@ -193,7 +198,7 @@ def _make_intervals(lam: Tensor, siglen: int) -> np.ndarray:
     Returns
     -------
     numpy.ndarray
-        Intervals for cutmix, of shape (n, 2).
+        Intervals for cutmix, of shape ``(n, 2)``.
 
     """
     _lam = (lam.numpy() * siglen).astype(int)

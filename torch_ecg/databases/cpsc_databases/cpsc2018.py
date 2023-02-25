@@ -29,9 +29,10 @@ _CPSC2018_INFO = DataBaseInfo(
     about="""
     1. training set contains 6,877 (female: 3178; male: 3699) 12 leads ECG recordings lasting from 6 s to just 60 s.
     2. ECG recordings were sampled as 500 Hz.
-    3. the training data can be downloaded using links in [1]_, but the link in [2]_ is recommended. File structure will be assumed to follow [2]_
+    3. the training data can be downloaded using links in [1]_, but the link in [2]_ is recommended. File structure will be assumed to follow [2]_.
     4. the training data are in the ``channel first`` format.
     5. types of abnormal rhythm/morphology + normal in the training set:
+
         +-----+-------------------------------------+-------+-------------------+
         | No. |   name                              | abbr. | number of records |
         +=====+=====================================+=======+===================+
@@ -53,6 +54,7 @@ _CPSC2018_INFO = DataBaseInfo(
         +-----+-------------------------------------+-------+-------------------+
         | 8   | ST-segment elevated                 | STE   | 202               |
         +-----+-------------------------------------+-------+-------------------+
+
     6. ordering of the leads in the data of all the records are
 
         .. code-block:: python
@@ -61,6 +63,7 @@ _CPSC2018_INFO = DataBaseInfo(
 
     7. meanings in the .hea files: **to write**
     8. knowledge about the abnormal rhythms: ref. :meth:`get_disease_knowledge`.
+    9. Challenge official website [1]_, see also [2]_.
     """,
     note="""
     1. Ages of records A0608, A1549, A1876, A2299, A5990 are "NaN".
@@ -71,7 +74,7 @@ _CPSC2018_INFO = DataBaseInfo(
         "ECG arrythmia detection",
     ],
     references=[
-        "http://2018.icbeb.org/#",
+        "http://2018.icbeb.org/",
         "https://physionetchallenges.github.io/2020/",
     ],
     doi="10.1166/jmihi.2018.2442",
@@ -184,7 +187,7 @@ class CPSC2018(CPSCDataBase):
 
     def _ls_rec(self) -> None:
         """Find all records in the database directory
-        and store them (path, metadata, etc.) in a dataframe.
+        and store them (path, metadata, etc.) in some private attributes.
         """
         self._df_records = pd.DataFrame()
         self._df_records["path"] = get_record_list_recursive(
@@ -241,17 +244,17 @@ class CPSC2018(CPSCDataBase):
             )
 
     def get_subject_id(self, rec: Union[int, str]) -> int:
-        """Attach a unique ``subject_id`` to the record.
+        """Attach a unique subject ID for the record.
 
         Parameters
         ----------
-        rec : int or str
+        rec : str or int
             Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        pid : int
-            The ``subject_id`` corr. to `rec`.
+        int
+            Subject ID associated with the record.
 
         """
         if isinstance(rec, int):
@@ -335,6 +338,7 @@ class CPSC2018(CPSCDataBase):
             Record name or index of the record in :attr:`all_records`.
         ann_format : str, default "n"
             Format of labels, one of the following (case insensitive):
+
                 - "a", abbreviations
                 - "f", full names
                 - "n", numeric codes

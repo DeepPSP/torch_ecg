@@ -62,6 +62,7 @@ The system design is depicted as follows
    tutorial
 
 .. toctree::
+   :glob:
    :caption: API Reference
    :maxdepth: 1
 

@@ -30,6 +30,7 @@ _CPSC2019_INFO = DataBaseInfo(
     1. Training data consists of 2,000 single-lead ECG recordings collected from patients with cardiovascular disease (CVD)
     2. Each of the recording last for 10 s
     3. Sampling rate = 500 Hz
+    4. Challenge official website [1]_.
     """,
     usage=[
         "ECG wave delineation",
@@ -121,7 +122,7 @@ class CPSC2019(CPSCDataBase):
 
     def _ls_rec(self) -> None:
         """Find all records in the database directory
-        and store them (path, metadata, etc.) in a dataframe.
+        and store them (path, metadata, etc.) in some private attributes.
         """
         records_fn = self.db_dir / "records.json"
         self._all_records = [f"data_{i:05d}" for i in range(1, 1 + self.n_records)]
@@ -176,7 +177,7 @@ class CPSC2019(CPSCDataBase):
         return self._all_annotations
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """Attach a unique subject id to each record.
+        """Attach a unique subject ID to the record.
 
         Parameters
         ----------

@@ -106,7 +106,6 @@ class LabelSmooth(Augmenter):
         return (sig, label, *extra_tensors)
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return [
             "smoothing",
             "prob",

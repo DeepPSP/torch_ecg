@@ -60,6 +60,7 @@ _CPSC2020_INFO = DataBaseInfo(
 
     6. challenging factors for accurate detection of SPB and PVC:
        amplitude variation; morphological variation; noise
+    7. Challenge official website [1]_.
     """,
     note="""
     1. the records can roughly be classified into 4 groups:
@@ -217,7 +218,6 @@ _CPSC2020_INFO = DataBaseInfo(
     """,
     references=[
         "http://www.icbeb.org/CPSC2020.html",
-        "https://github.com/PIA-Group/BioSPPy",
     ],
     doi="10.1166/jmihi.2020.3289",
 )
@@ -286,7 +286,7 @@ class CPSC2020(CPSCDataBase):
 
     def _ls_rec(self) -> None:
         """Find all records in the database directory
-        and store them (path, metadata, etc.) in a dataframe.
+        and store them (path, metadata, etc.) in some private attributes.
         """
         self._df_records = pd.DataFrame()
         n_records = 10
@@ -335,7 +335,7 @@ class CPSC2020(CPSCDataBase):
         return self._all_annotations
 
     def get_subject_id(self, rec: Union[int, str]) -> int:
-        """Attach a unique subject id to each record.
+        """Attach a unique subject ID to the record.
 
         Parameters
         ----------

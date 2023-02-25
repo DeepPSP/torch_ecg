@@ -33,6 +33,7 @@ _SPH_INFO = DataBaseInfo(
     5. 46.04% records in the dataset contain ECG abnormalities, and 14.45% records have multiple diagnostic statements
     6. (IMPORTANT) noises caused by the power line interference, baseline wander, and muscle contraction have been removed by the machine
     7. (Label production) The ECG analysis system automatically calculate nine ECG features for reference, which include heart rate, P wave duration, P-R interval, QRS duration, QT interval, corrected QT (QTc) interval, QRS axis, the amplitude of the R wave in lead V5 (RV5), and the amplitude of the S wave in lead V1 (SV1). A cardiologist made the final diagnosis in consideration of the patient health record.
+    8. The paper [1]_, [2]_. Data can be downloaded from [3]_. The annotation system is described in [4]_.
     """,
     usage=[
         "ECG arrhythmia detection",
@@ -40,8 +41,8 @@ _SPH_INFO = DataBaseInfo(
     references=[
         "https://www.nature.com/articles/s41597-022-01403-5",
         "Liu, H., Chen, D., Chen, D. et al. A large-scale multi-label 12-lead electrocardiogram database with standardized diagnostic statements. Sci Data 9, 272 (2022). https://doi.org/10.1038/s41597-022-01403-5",
-        "Mason, J. W., Hancock, E. W. & Gettes, L. S. Recommendations for the standardization and interpretation of the electrocardiogram. Circulation 115, 1325–1332, https://doi.org/10.1161/CIRCULATIONAHA.106.180201 (2007).",
         "https://springernature.figshare.com/collections/A_large-scale_multi-label_12-lead_electrocardiogram_database_with_standardized_diagnostic_statements/5779802/1",
+        "Mason, J. W., Hancock, E. W. & Gettes, L. S. Recommendations for the standardization and interpretation of the electrocardiogram. Circulation 115, 1325–1332, https://doi.org/10.1161/CIRCULATIONAHA.106.180201 (2007).",
     ],
     doi=[
         "10.1038/s41597-022-01403-5",

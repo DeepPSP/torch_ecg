@@ -254,7 +254,6 @@ class PreprocManager(ReprMixin):
         return len(self.preprocessors) == 0
 
     def extra_repr_keys(self) -> List[str]:
-        """Extra keys for :meth:`__repr__` and :meth:`__str__`."""
         return super().extra_repr_keys() + [
             "random",
             "preprocessors",
