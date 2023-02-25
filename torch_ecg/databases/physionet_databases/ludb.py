@@ -3,7 +3,7 @@
 from copy import deepcopy
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -240,6 +240,7 @@ _LUDB_INFO = DataBaseInfo(
 
        there might well be records with multiple conditions.
     5. ludb.csv stores information about the subjects (gender, age, rhythm type, direction of the electrical axis of the heart, the presence of a cardiac pacemaker, etc.)
+    6. Webpage of the database on PhysioNet [1]_. Paper describing the database [2]_.
     """,
     usage=[
         "ECG wave delineation",
@@ -324,9 +325,8 @@ class LUDB(PhysioNetDataBase):
         self._ls_rec()
 
     def _ls_rec(self) -> None:
-        """
-        find all records (relative path without file extension),
-        and save into `self._all_records` for further use
+        """Find all records in the database directory
+        and store them (path, metadata, etc.) in some private attributes.
         """
         super()._ls_rec()
         if (self.db_dir / "ludb.csv").is_file():
@@ -358,17 +358,17 @@ class LUDB(PhysioNetDataBase):
             )
 
     def get_subject_id(self, rec: Union[str, int]) -> int:
-        """
-        Attach a `subject_id` to the record, in order to facilitate further uses
+        """Attach a unique subject ID for the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        int, a `subject_id` attached to the record `rec`
+        int
+            Subject ID associated with the record.
 
         """
         if isinstance(rec, int):
@@ -378,20 +378,19 @@ class LUDB(PhysioNetDataBase):
     def get_absolute_path(
         self, rec: Union[str, int], extension: Optional[str] = None
     ) -> Path:
-        """
-        get the absolute path of the record `rec`
+        """Get the absolute path of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        extension: str, optional,
-            extension of the file
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        extension : str, optional
+            Extension of the file.
 
         Returns
         -------
-        Path,
-            absolute path of the file
+        pathlib.Path
+            Absolute path of the file.
 
         """
         if isinstance(rec, int):
@@ -406,22 +405,21 @@ class LUDB(PhysioNetDataBase):
         leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         metadata: bool = False,
     ) -> dict:
-        """
-        load the wave delineation, along with metadata if specified
+        """Load the wave delineation, along with metadata if specified.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or int or list of str or int, optional,
-            the leads to load
-        metadata: bool, default False,
-            if True, load metadata from corresponding head file
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        leads : str or int or List[str] or List[int], optional
+            The leads of the wave delineation to be loaded.
+        metadata : bool, default False
+            If True, metadata will be loaded from corresponding head file.
 
         Returns
         -------
-        ann_dict: dict,
-            the wave delineation
+        ann_dict : dict
+            The wave delineation annotations.
 
         """
         if isinstance(rec, int):
@@ -495,18 +493,17 @@ class LUDB(PhysioNetDataBase):
         return ann_dict
 
     def load_diagnoses(self, rec: Union[str, int]) -> List[str]:
-        """
-        load diagnoses of the `rec`
+        """Load diagnoses of the record.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        diagnoses: list of str,
-            diagnoses of the record
+        diagnoses : List[str]
+            List of diagnoses of the record.
 
         """
         diagnoses = self._load_header(rec)["diagnoses"]
@@ -519,27 +516,27 @@ class LUDB(PhysioNetDataBase):
         mask_format: str = "channel_first",
         class_map: Optional[Dict[str, int]] = None,
     ) -> np.ndarray:
-        """
-        load the wave delineation in the form of masks
+        """Load the wave delineation in the form of masks.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        leads: str or int or list of str or int, optional,
-            the leads to load
-        mask_format: str, default "channel_first",
-            format of the mask,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        leads : str or int or List[str] or List[int], optional
+            The leads of the wave delineation to be loaded.
+        mask_format : str, default "channel_first"
+            Format of the mask,
             "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first")
-        class_map: dict, optional,
-            custom class map,
-            if not set, `self.class_map` will be used
+            "channel_first" (alias "lead_first").
+        class_map : dict, optional
+            Custom class map.
+            If not set, `self.class_map` will be used.
 
         Returns
         -------
-        masks: ndarray,
-            the masks corresponding to the wave delineation annotations of `rec`
+        masks : numpy.ndarray
+            The masks corresponding to the wave delineation annotations
+            of the record.
 
         """
         if isinstance(rec, int):
@@ -568,31 +565,33 @@ class LUDB(PhysioNetDataBase):
         class_map: Optional[Dict[str, int]] = None,
         fs: Optional[Real] = None,
     ) -> Dict[str, List[ECGWaveForm]]:
-        """
-        convert masks into lists of waveforms
+        """Convert masks into lists of waveforms.
 
         Parameters
         ----------
-        masks: ndarray,
-            wave delineation in the form of masks,
-            of shape (n_leads, seq_len), or (seq_len,)
-        mask_format: str, default "channel_first",
-            format of the mask, used only when `masks.ndim = 2`
-            "channel_last" (alias "lead_last"), or
-            "channel_first" (alias "lead_first")
-        leads: str or int or list of str or int, optional,
-            the leads to load
-        class_map: dict, optional,
-            custom class map,
-            if not set, `self.class_map` will be used
-        fs: numbers.Real, optional,
-            sampling frequency of the signal corresponding to the `masks`,
-            if is None, `self.fs` will be used, to compute `duration` of the ECG waveforms
+        masks : numpy.ndarray
+            Wave delineation in the form of masks,
+            of shape ``(n_leads, seq_len)`` or ``(seq_len,)``.
+        mask_format : str, default "channel_first"
+            Format of the mask, used only when ``masks.ndim = 2``.
+            One of "channel_last" (alias "lead_last"), or
+            "channel_first" (alias "lead_first").
+        leads : str or int or List[str] or List[int], optional
+            The leads of the wave delineation to be loaded.
+        class_map : dict, optional
+            Custom class map.
+            If not set, `self.class_map` will be used.
+        fs : numbers.Real, optional
+            Sampling frequency of the signal corresponding to the `masks`,
+            If is None, `self.fs` will be used,
+            to compute `duration` of the ECG waveforms.
 
         Returns
         -------
-        waves: dict,
-            each item value is a list containing the `ECGWaveForm`s corr. to the lead (item key)
+        waves : dict
+            The wave delineation annotations of the record.
+            Each item value of the dict is a list
+            containing the :class:`ECGWaveForm` corr. to the lead (item key).
 
         """
         if masks.ndim == 1:
@@ -653,18 +652,17 @@ class LUDB(PhysioNetDataBase):
         return waves
 
     def _load_header(self, rec: Union[str, int]) -> dict:
-        """
-        load header data into a dict
+        """Load header data of a record into a dict.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
 
         Returns
         -------
-        header_dict: dict,
-            the header data
+        header_dict : dict
+            The header data of the record.
 
         """
         header_dict = CFG({})
@@ -699,19 +697,20 @@ class LUDB(PhysioNetDataBase):
     def load_subject_info(
         self, rec: Union[str, int], fields: Optional[Union[str, Sequence[str]]] = None
     ) -> Union[dict, str]:
-        """
+        """Load subject info of a record.
+
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        fields: str or sequence of str, optional,
-            field(s) of the subject info of record `rec`,
-            if not specified, all fields of the subject info will be returned
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        fields : str or Sequence[str], optional
+            Field(s) of the subject info of record.
+            If not specified, all fields of the subject info will be loaded.
 
         Returns
         -------
-        info: dict or str,
-            subject info of the given fields of the record
+        info : dict or str
+            Subject info of the given fields of the record.
 
         """
         if isinstance(rec, int):
@@ -742,40 +741,40 @@ class LUDB(PhysioNetDataBase):
         waves: Optional[ECGWaveForm] = None,
         **kwargs: Any,
     ) -> None:
-        """to improve,
-
-        plot the signals of a record or external signals (units in μV),
+        """
+        Plot the signals of a record or external signals (units in μV),
         with metadata (fs, labels, tranche, etc.),
-        possibly also along with wave delineations
+        possibly also along with wave delineations.
 
         Parameters
         ----------
-        rec: str or int,
-            record name or index of the record in `self.all_records`
-        data: ndarray, optional,
-            12-lead ECG signal to plot,
-            if given, data of `rec` will not be used,
-            this is useful when plotting filtered data
-        ticks_granularity: int, default 0,
-            the granularity to plot axis ticks, the higher the more,
+        rec : str or int
+            Record name or index of the record in :attr:`all_records`.
+        data : numpy.ndarray, optional
+            12-lead ECG signal to plot.
+            If is not None, data of `rec` will not be used.
+            This is useful when plotting filtered data
+        ticks_granularity : int, default 0
+            Granularity to plot axis ticks, the higher the more ticks.
             0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
-        leads: str or int or list of str or int, optional,
-            the leads to plot
-        same_range: bool, default False,
-            if True, forces all leads to have the same y range
-        waves: ECGWaveForm, optional,
-            the waves (p waves, t waves, qrs complexes)
-        kwargs: dict,
+        leads : str or int or List[str] or List[int], optional
+            The leads of the ECG signal to plot.
+        same_range : bool, default False
+            If True, all leads are forced to have the same y range.
+        waves : ECGWaveForm, optional
+            The waves (p waves, t waves, qrs complexes) to plot.
+        kwargs : dict, optional
+            Additional keyword arguments to pass to :func:`matplotlib.pyplot.plot`.
 
-        TODO:
-        -----
-        1. slice too long records, and plot separately for each segment
-        2. plot waves using `axvspan`
+        TODO
+        ----
+        1. Slice too long records, and plot separately for each segment.
+        2. Plot waves using :func:`matplotlib.pyplot.axvspan`.
 
         NOTE
         ----
-        `Locator` of `plt` has default `MAXTICKS` equal to 1000,
-        if not modifying this number, at most 40 seconds of signal could be plotted once
+        `Locator` of ``plt`` has default `MAXTICKS` of 1000.
+        If not modifying this number, at most 40 seconds of signal could be plotted once.
 
         Contributors: Jeethan, and WEN Hao
 
@@ -913,36 +912,40 @@ def compute_metrics(
     fs: Real,
     mask_format: str = "channel_first",
 ) -> Dict[str, Dict[str, float]]:
-    """
-    compute metrics
-    (sensitivity, precision, f1_score, mean error and standard deviation of the mean errors)
+    """Compute metrics for the wave delineation task.
+
+    Compute metrics
+    (sensitivity, precision, f1_score, mean error
+    and standard deviation of the mean errors)
     for multiple evaluations
 
     Parameters
     ----------
-    truth_masks: sequence of ndarray,
-        a sequence of ground truth masks,
-        each of which can also hold multiple masks from different samples (differ by record or by lead)
-    pred_masks: sequence of ndarray,
-        predictions corresponding to `truth_masks`
-    class_map: dict,
-        class map, mapping names to waves to numbers from 0 to n_classes-1,
-        the keys should contain 'pwave', 'qrs', 'twave'
-    fs: numbers.Real,
-        sampling frequency of the signal corresponding to the masks,
+    truth_masks : Sequence[numpy.ndarray]
+        A sequence of ground truth masks,
+        each of which can also hold multiple masks
+        from different samples (differ by record or by lead).
+    pred_masks : Sequence[numpy.ndarray]
+        Predictions corresponding to `truth_masks`
+    class_map : Dict[str, int]
+        Class map, mapping names to waves to numbers from 0 to n_classes-1,
+        the keys should contain "pwave", "qrs", "twave".
+    fs : numbers.Real
+        Sampling frequency of the signal corresponding to the masks,
         used to compute the duration of each waveform,
-        hence the error and standard deviations of errors
-    mask_format: str, default "channel_first",
-        format of the mask, one of the following:
-        'channel_last' (alias 'lead_last'), or
-        'channel_first' (alias 'lead_first')
+        hence the error and standard deviations of errors.
+    mask_format : str, default "channel_first"
+        Format of the mask, one of the following:
+        "channel_last" (alias "lead_last"), or
+        "channel_first" (alias "lead_first").
 
     Returns
     -------
-    scorings: dict,
-        with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
-        each scoring is a dict consisting of the following metrics:
-        sensitivity, precision, f1_score, mean_error, standard_deviation
+    scorings : dict
+        A dictionary containing the scorings of onsets and offsets
+        of pwaves, qrs complexes, twaves.
+        Each scoring is a dict consisting of the following metrics:
+        sensitivity, precision, f1_score, mean_error, standard_deviation.
 
     """
     assert len(truth_masks) == len(pred_masks)
@@ -978,28 +981,31 @@ def compute_metrics_waveform(
     fs: Real,
 ) -> Dict[str, Dict[str, float]]:
     """
-    compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
-    of evaluations on a multiple samples (differ by records, or leads)
+    Compute the sensitivity, precision, f1_score, mean error
+    and standard deviation of the mean errors,
+    of evaluations on a multiple samples (differ by records, or leads).
 
     Parameters
     ----------
-    truth_waveforms: sequence of sequence of `ECGWaveForm`s,
-        the ground truth,
-        each element is a sequence of `ECGWaveForm`s from the same sample
-    pred_waveforms: sequence of sequence of `ECGWaveForm`s,
-        the predictions corresponding to `truth_waveforms`,
-        each element is a sequence of `ECGWaveForm`s from the same sample
-    fs: numbers.Real,
-        sampling frequency of the signal corresponding to the waveforms,
+    truth_waveforms : Sequence[Sequence[ECGWaveForm]]
+        The ground truth. Each element is a sequence of
+        :class:`ECGWaveForm` from the same sample.
+    pred_waveforms : Sequence[Sequence[ECGWaveForm]]
+        The predictions corresponding to `truth_waveforms`.
+        Each element is a sequence of :class:`ECGWaveForm`
+        from the same sample.
+    fs : numbers.Real
+        Sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
-        hence the error and standard deviations of errors
+        hence the error and standard deviations of errors.
 
     Returns
     -------
-    scorings: dict,
-        with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
-        each scoring is a dict consisting of the following metrics:
-        sensitivity, precision, f1_score, mean_error, standard_deviation
+    scorings : dict
+        A dictionary containing the scorings of onsets and offsets
+        of pwaves, qrs complexes, twaves.
+        Each scoring is a dict consisting of the following metrics:
+        sensitivity, precision, f1_score, mean_error, standard_deviation.
 
     """
     truth_positive = CFG(
@@ -1098,27 +1104,29 @@ def _compute_metrics_waveform(
     truths: Sequence[ECGWaveForm], preds: Sequence[ECGWaveForm], fs: Real
 ) -> Dict[str, Dict[str, float]]:
     """
-    compute the sensitivity, precision, f1_score, mean error and standard deviation of the mean errors,
-    of evaluations on a single sample (the same record, the same lead)
+    compute the sensitivity, precision, f1_score, mean error
+    and standard deviation of the mean errors,
+    of evaluations on a single sample (the same record, the same lead).
 
     Parameters
     ----------
-    truths: sequence of `ECGWaveForm`s,
-        the ground truth
-    preds: sequence of `ECGWaveForm`s,
-        the predictions corresponding to `truths`,
-    fs: numbers.Real,
-        sampling frequency of the signal corresponding to the waveforms,
+    truths : Sequence[ECGWaveForm]
+        The ground truth.
+    preds : Sequence[ECGWaveForm]
+        The predictions corresponding to `truths`,
+    fs : numbers.Real
+        Sampling frequency of the signal corresponding to the waveforms,
         used to compute the duration of each waveform,
-        hence the error and standard deviations of errors
+        hence the error and standard deviations of errors.
 
     Returns
     -------
-    scorings: dict,
-        with scorings of onsets and offsets of pwaves, qrs complexes, twaves,
-        each scoring is a dict consisting of the following metrics:
+    scorings : dict
+        A dictionary containing the scorings of onsets and offsets
+        of pwaves, qrs complexes, twaves.
+        Each scoring is a dict consisting of the following metrics:
         truth_positive, false_negative, false_positive, errors,
-        sensitivity, precision, f1_score, mean_error, standard_deviation
+        sensitivity, precision, f1_score, mean_error, standard_deviation.
 
     """
     pwave_onset_truths, pwave_offset_truths, pwave_onset_preds, pwave_offset_preds = (
@@ -1181,25 +1189,26 @@ def _compute_metrics_waveform(
 
 def _compute_metrics_base(
     truths: Sequence[Real], preds: Sequence[Real], fs: Real
-) -> Dict[str, float]:
-    """
+) -> Tuple[int, int, int, List[float], float, float, float, float, float]:
+    """The base function for computing the metrics.
+
     Parameters
     ----------
-    truths: sequence of numbers.Real,
-        ground truth of indices of corresponding critical points
-    preds: sequence of numbers.Real,
-        predicted indices of corresponding critical points
-    fs: numbers.Real,
-        sampling frequency of the signal corresponding to the critical points,
+    truths : Sequence[Real]
+        Ground truth of indices of corresponding critical points.
+    preds : Sequence[Real]
+        Predicted indices of corresponding critical points.
+    fs : numbers.Real
+        Sampling frequency of the signal corresponding to the critical points,
         used to compute the duration of each waveform,
-        hence the error and standard deviations of errors
+        hence the error and standard deviations of errors.
 
     Returns
     -------
-    tuple of metrics:
+    tuple
+        tuple of the following metrics:
         truth_positive, false_negative, false_positive, errors,
-        sensitivity, precision, f1_score, mean_error, standard_deviation
-        see ref. [1]
+        sensitivity, precision, f1_score, mean_error, standard_deviation.
 
     """
     _tolerance = __TOLERANCE * fs / 1000

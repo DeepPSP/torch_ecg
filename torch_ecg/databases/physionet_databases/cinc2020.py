@@ -102,6 +102,7 @@ _CINC2020_INFO = DataBaseInfo(
             ...     if leads not in set_leads:
             ...         set_leads.append(leads)
 
+    8. Challenge official website [1]_. Webpage of the database on PhysioNet [2]_.
     """,
     note="""
     1. The datasets have been roughly processed to have a uniform format, hence differ from their original resource (e.g. differe in sampling frequency, sample duration, etc.)

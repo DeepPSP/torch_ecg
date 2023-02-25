@@ -62,7 +62,7 @@ _CINC2021_INFO = DataBaseInfo(
 
     1. tranches of data:
 
-        - CPSC2018 (tranches A and B of CinC2020, ref. [3]_):
+        - CPSC2018 (tranches A and B of CinC2020, ref. [4]_):
             contains 13,256 ECGs (6,877 from tranche A, 3,453 from tranche B),
             10,330 ECGs shared as training data, 1,463 retained as validation data,
             and 1,463 retained as test data.
@@ -76,7 +76,7 @@ _CINC2021_INFO = DataBaseInfo(
             516 + 21,837, all shared as training data.
             Each recording is between 10 and 120 seconds long,
             with a sampling frequency of either 500 (PTB-XL) or 1,000 (PTB) Hz
-        - Georgia (tranche F of CinC2020):
+        - Georgia (tranche F of CinC2020, ref. [3]_):
             contains 20,678 ECGs,
             10,334 ECGs shared as training data, 5,167 retained as validation data,
             and 5,167 retained as test data.
@@ -94,6 +94,8 @@ _CINC2021_INFO = DataBaseInfo(
 
                 - Chapman_Shaoxing: "JS00001" - "JS10646"
                 - Ningbo: "JS10647" - "JS45551"
+
+       All files can be downloaded from [8]_ or [9]_.
 
     2. only a part of diagnosis_abbr (diseases that appear in the labels of the 6 tranches of training data) are used in the scoring function, while others are ignored. The scored diagnoses were chosen based on prevalence of the diagnoses in the training data, the severity of the diagnoses, and the ability to determine the diagnoses from ECG recordings. The ignored diagnosis_abbr can be put in a a "non-class" group.
     3. the (updated) scoring function has a scoring matrix with nonzero off-diagonal elements. This scoring function reflects the clinical reality that some misdiagnoses are more harmful than others and should be scored accordingly. Moreover, it reflects the fact that confusing some classes is much less harmful than confusing other classes.
@@ -117,6 +119,7 @@ _CINC2021_INFO = DataBaseInfo(
             ...         leads = ann["df_leads"]["lead_name"].values.tolist()
             ...     if leads not in set_leads:
             ...         set_leads.append(leads)
+    5. Challenge official website [1]_. Webpage of the database on PhysioNet [2]_.
 
     """,
     note="""
@@ -151,7 +154,7 @@ _CINC2021_INFO = DataBaseInfo(
 
     9. the .mat files all contain digital signals, which has to be converted to physical values using adc gain, basesline, etc. in corresponding .hea files. :func:`wfdb.rdrecord` has already done this conversion, hence greatly simplifies the data loading process. NOTE that there"s a difference when using :func:`wfdb.rdrecord`: data from `loadmat` are in "channel_first" format, while `wfdb.rdrecord.p_signal` produces data in the "channel_last" format
     10. there are 3 equivalent (2 classes are equivalent if the corr. value in the scoring matrix is 1): (RBBB, CRBBB), (PAC, SVPB), (PVC, VPB)
-    11. in the newly (Feb., 2021) created dataset (ref. [7]), header files of each subset were gathered into one separate compressed file. This is due to the fact that updates on the dataset are almost always done in the header files. The correct usage of ref. [7], after uncompressing, is replacing the header files in the folder `All_training_WFDB` by header files from the 6 folders containing all header files from the 6 subsets. This procedure has to be done, since `All_training_WFDB` contains the very original headers with baselines: {"A": {1000.0}, "B": {1000.0}, "C": {1000.0}, "D": {2000000.0}, "E": {200.0}, "F": {4880.0}} (the last 3 are NOT correct)
+    11. in the newly (Feb., 2021) created dataset (ref. [7]_), header files of each subset were gathered into one separate compressed file. This is due to the fact that updates on the dataset are almost always done in the header files. The correct usage of ref. [7], after uncompressing, is replacing the header files in the folder `All_training_WFDB` by header files from the 6 folders containing all header files from the 6 subsets. This procedure has to be done, since `All_training_WFDB` contains the very original headers with baselines: {"A": {1000.0}, "B": {1000.0}, "C": {1000.0}, "D": {2000000.0}, "E": {200.0}, "F": {4880.0}} (the last 3 are NOT correct)
     12. IMPORTANT: organization of the total dataset:
         either one moves all training records into ONE folder,
         or at least one moves the subsets Chapman_Shaoxing (WFDB_ChapmanShaoxing) and Ningbo (WFDB_Ningbo) into ONE folder, or use the data WFDB_ShaoxingUniv which is the union of WFDB_ChapmanShaoxing and WFDB_Ningbo
@@ -180,7 +183,7 @@ _CINC2021_INFO = DataBaseInfo(
         "https://physionetchallenges.github.io/2021/",
         "https://physionet.org/content/challenge-2021/",
         "https://physionetchallenges.github.io/2020/",
-        "http://2018.icbeb.org/#",
+        "http://2018.icbeb.org/",
         "https://physionet.org/content/incartdb/",
         "https://physionet.org/content/ptbdb/",
         "https://physionet.org/content/ptb-xl/",

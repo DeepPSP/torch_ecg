@@ -35,6 +35,7 @@ _AFDB_INFO = DataBaseInfo(
         - N:     all other rhythms
 
     5. rhythm annotations almost all start with "(N", except for 4 which start with '(AFIB', which are all within 1 second (250 samples)
+    6. Webpage of the database on PhysioNet [1]_. Paper describing the database [2]_.
     """,
     note="""
     1. beat annotation files (.qrs files) were prepared using an automated detector and have NOT been corrected manually

@@ -35,10 +35,11 @@ _ApneaECG_INFO = DataBaseInfo(
     9. c05 and c06 come from the same original recording (c05 begins 80 seconds later than c06). c06 may have been a corrected version of c05
     10. eight records (a01 through a04, b01, and c01 through c03) that include respiration signals have several additional files each:
 
-        - *r.dat files contains respiration signals correspondingly, with 4 channels: "Resp C", "Resp A", "Resp N", "SpO2"
-        - *er.* files only contain annotations
+        - \\*r.dat files contains respiration signals correspondingly, with 4 channels: "Resp C", "Resp A", "Resp N", "SpO2"
+        - \\*er.\\* files only contain annotations
         - annotations for the respiration signals are identical to the corresponding ECG signals
 
+    11. Webpage of the database on PhysioNet [1]_. Paper describing the database [2]_.
     """,
     usage=[
         "Sleep apnea analysis",

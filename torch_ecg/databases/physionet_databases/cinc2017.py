@@ -45,6 +45,7 @@ _CINC2017_INFO = DataBaseInfo(
         | Total            | 8528         | 32.5 | 10.9 | 61.0 | 30     | 9.0   |
         +------------------+--------------+------+------+------+--------+-------+
 
+    4. Webpage of the database on PhysioNet [1]_.
     """,
     usage=[
         "Atrial fibrillation (AF) detection",

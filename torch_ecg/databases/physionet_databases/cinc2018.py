@@ -32,6 +32,7 @@ _CINC2018_INFO = DataBaseInfo(
     about="""
     1. includes 1,985 subjects, partitioned into balanced training (n = 994), and test sets (n = 989)
     2. signals include
+
         electrocardiogram (ECG),
         electroencephalography (EEG),
         electrooculography (EOG),
@@ -39,18 +40,24 @@ _CINC2018_INFO = DataBaseInfo(
         electrocardiology (EKG),
         oxygen saturation (SaO2),
         etc.
+
     3. frequency of all signal channels is 200 Hz
     4. units of signals:
+
         mV for ECG, EEG, EOG, EMG, EKG
         percentage for SaO2
+
     5. six sleep stages were annotated in 30 second contiguous intervals:
+
         wakefulness,
         stage 1,
         stage 2,
         stage 3,
         rapid eye movement (REM),
         undefined
+
     6. annotated arousals were classified as either of the following:
+
         spontaneous arousals,
         respiratory effort related arousals (RERA),
         bruxisms,
@@ -62,6 +69,8 @@ _CINC2018_INFO = DataBaseInfo(
         periodic leg movements,
         Cheyne-Stokes breathing,
         partial airway obstructions
+
+    7. Webpage of the database on PhysioNet [1]_.
     """,
     usage=[
         "sleep stage",

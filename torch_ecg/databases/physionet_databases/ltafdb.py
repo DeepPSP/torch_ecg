@@ -31,6 +31,7 @@ _LTAFDB_INFO = DataBaseInfo(
     3. records have duration 24 - 25 hours
     4. qrs annotations (.qrs files) were produced by an automated QRS detector, in which detected beats (including occasional ventricular ectopic beats) are labelled "N", detected artifacts are labelled "|", and AF terminations are labelled "T" (inserted manually)
     5. atr annotations (.atr files) were obtained by manual review of the output of an automated ECG analysis system; in these annotation files, all detected beats are labelled by type ('"', "+", "A", "N", "Q", "V"), and rhythm changes ("\x01 Aux", "(AB", "(AFIB", "(B", "(IVR", "(N", "(SBR", "(SVTA", "(T", "(VT", "M", "MB", "MISSB", "PSE") are also annotated
+    6. Webpage of the database on PhysioNet [1]_. Paper describing the database [2]_.
     """,
     note="""
     1. both channels of the signals have name "ECG"
@@ -46,7 +47,6 @@ _LTAFDB_INFO = DataBaseInfo(
     references=[
         "https://physionet.org/content/ltafdb/1.0.0/",
         "Petrutiu S, Sahakian AV, Swiryn S. Abrupt changes in fibrillatory wave characteristics at the termination of paroxysmal atrial fibrillation in humans. Europace 9:466-470 (2007).",
-        "https://physionet.org/files/ltafdb/1.0.0/tables.shtml",
     ],
     doi=[
         "10.1093/europace/eum096",

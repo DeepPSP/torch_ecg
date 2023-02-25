@@ -29,37 +29,48 @@ _QTDB_INFO = DataBaseInfo(
     """,
     about="""
     1. The QT Database includes ECGs which were chosen to represent a wide variety of QRS and ST-T morphologies
-    2. Recordings were chosen chosen from the MIT-BIH Arrhythmia Database (MITDB), the European Society of Cardiology ST-T Database (EDB), and several other ECG databases collected at Boston's Beth Israel Deaconess Medical Center (MIT-BIH ST Change Database, MIT-BIH Supraventricular Arrhythmia Database, MIT-BIH Normal Sinus Rhythm Database, MIT-BIH Long-Term ECG Database, ``sudden death'' patients from BIH)
+    2. Recordings were chosen chosen from the MIT-BIH Arrhythmia Database (MITDB), the European Society of Cardiology ST-T Database (EDB), and several other ECG databases collected at Boston's Beth Israel Deaconess Medical Center (MIT-BIH ST Change Database, MIT-BIH Supraventricular Arrhythmia Database, MIT-BIH Normal Sinus Rhythm Database, MIT-BIH Long-Term ECG Database, "sudden death" patients from BIH)
     3. Contains 105 fifteen-minute two-lead ECG recordings
     4. Contains onset, peak, and end markers for P, QRS, T, and (where present) U waves of from 30 to 50 selected beats in each recording
     5. Annotation file table:
 
-        +--------+---------+
-        | Suffix | Meaning |
-        +========+=========+
-        | .atr   | reference beat annotations from original database (not available for the 24 sudden death records) |
-        +--------+---------+
-        | .man:  | reference beat annotations for selected beats only |
-        +--------+---------+
-        | .q1c:  | manually determined waveform boundary measurements for selected beats (annotator 1 only -- second pass) |
-        +--------+---------+
-        | .q2c:  | manually determined waveform boundary measurements for selected beats (annotator 2 only -- second pass; available for only 11 records) |
-        +--------+---------+
-        | .qt1:  | manually determined waveform boundary measurements for selected beats (annotator 1 only -- first pass) |
-        +--------+---------+
-        | .qt2:  | manually determined waveform boundary measurements for selected beats (annotator 2 only -- first pass; available for only 11 records) |
-        +--------+---------+
-        | .pu:   | automatically determined waveform boundary measurements for all beats (based on both signals) |
-        +--------+---------+
-        | .pu0:  | automatically determined waveform boundary measurements for all beats (based on signal 0 only) |
-        +--------+---------+
-        | .pu1:  | automatically determined waveform boundary measurements for all beats (based on signal 1 only) |
-        +--------+---------+
+        +--------+------------------------------------------------------+
+        | Suffix | Meaning                                              |
+        +========+======================================================+
+        | .atr   | reference beat annotations from original database    |
+        |        | (not available for the 24 sudden death records)      |
+        +--------+------------------------------------------------------+
+        | .man:  | reference beat annotations for selected beats only   |
+        +--------+------------------------------------------------------+
+        | .q1c:  | manually determined waveform boundary measurements   |
+        |        | for selected beats (annotator 1 only -- second pass) |
+        +--------+------------------------------------------------------+
+        | .q2c:  | manually determined waveform boundary measurements   |
+        |        | for selected beats (annotator 2 only -- second pass; |
+        |        | available for only 11 records)                       |
+        +--------+------------------------------------------------------+
+        | .qt1:  | manually determined waveform boundary measurements   |
+        |        | for selected beats (annotator 1 only -- first pass)  |
+        +--------+------------------------------------------------------+
+        | .qt2:  | manually determined waveform boundary measurements   |
+        |        | for selected beats (annotator 2 only -- first pass;  |
+        |        | available for only 11 records)                       |
+        +--------+------------------------------------------------------+
+        | .pu:   | automatically determined waveform boundary           |
+        |        | measurements for all beats (based on both signals)   |
+        +--------+------------------------------------------------------+
+        | .pu0:  | automatically determined waveform boundary           |
+        |        | measurements for all beats (based on signal 0 only)  |
+        +--------+------------------------------------------------------+
+        | .pu1:  | automatically determined waveform boundary           |
+        |        | measurements for all beats (based on signal 1 only)  |
+        +--------+------------------------------------------------------+
 
     6. A part of the recordings have rhythm annotations, ST change (elevation or depression) annotations, all of which have .atr annotation files. These annotations are provided in the `aux_note` attribute of the annotation object.
     7. In the first pass manual wave delineation annotation files (.qt1, .qt2 files), fiducial points were marked by a "|" symbol, along with beat annotations (one of "A", "B", "N", "Q", "V") inherited from corresponding .man files.
     8. In the second pass manual wave delineation annotation files (.q1c, .q2c files), the final manual annotations are recorded, with the regular annotation symbols "(" ,")", "t", "p", and "u", and with annotations inherited from the .qt1, .qt2 files.
-    9. The .pu0, .pu1 files contain the automatic waveform onsets and ends in signals 0 and 1 respectively, as detected using the differentiated threshold method by ecgpuwave. In the num fields of the pu* annotations, ecgpuwave classifies the T waves as normal (0), inverted (1), only upwards (2), only downwards (3), biphasic negative-positive (4), or biphasic positive-negative (5). Waveform onset ``('' and offset ``)'' annotations specify the waveform type in their num fields (0 for a P-wave, 1 for a QRS complex, 2 for a T wave, or 3 for a U-wave).
+    9. The .pu0, .pu1 files contain the automatic waveform onsets and ends in signals 0 and 1 respectively, as detected using the differentiated threshold method by ecgpuwave. In the num fields of the pu* annotations, ecgpuwave classifies the T waves as normal (0), inverted (1), only upwards (2), only downwards (3), biphasic negative-positive (4), or biphasic positive-negative (5). Waveform onset (and offset) annotations specify the waveform type in their num fields (0 for a P-wave, 1 for a QRS complex, 2 for a T wave, or 3 for a U-wave).
+    10. Webpage of the database on PhysioNet [1]_. Paper describing the database [2]_.
     """,
     usage=[
         "ECG wave delineation",

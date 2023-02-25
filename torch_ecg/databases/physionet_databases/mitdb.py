@@ -38,7 +38,7 @@ _MITDB_INFO = DataBaseInfo(
 
         - beat-wise or finer (e.g. annotations of flutter wave) annotations, accessed via the `symbol` attribute of an `Annotation`.
         - rhythm annotations, accessed via the `aux_note` attribute of an `Annotation`.
-
+    4. Webpage of the database on PhysioNet [1]_.
     """,
     usage=[
         "Beat classification",
@@ -46,7 +46,7 @@ _MITDB_INFO = DataBaseInfo(
         "R peaks detection",
     ],
     references=[
-        "https://physionet.org/content/mitdb/1.0.0/",
+        "https://physionet.org/content/mitdb/",
     ],
     doi=[
         "10.1109/51.932724",
