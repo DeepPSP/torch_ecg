@@ -3,12 +3,13 @@ MobileNets, from V1 to V3
 
 References
 ----------
-.. [1] Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017). Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
-.. [2] Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
-.. [3] Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019). Searching for mobilenetv3. In Proceedings of the IEEE International Conference on Computer Vision (pp. 1314-1324).
+1. Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017). Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
+2. Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
+3. Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019). Searching for mobilenetv3. In Proceedings of the IEEE International Conference on Computer Vision (pp. 1314-1324).
 
 """
 
+import textwrap
 from copy import deepcopy
 from itertools import repeat
 from numbers import Real
@@ -53,14 +54,14 @@ _DEFAULT_CONV_CONFIGS_MobileNetV1 = CFG(
 class MobileNetSeparableConv(nn.Sequential, SizeMixin):
     """Separable convolution.
 
-    Similar to `_nets.SeparableConv`,
+    Similar to :class:`~torch_ecg._nets.SeparableConv`,
     the difference is that there are normalization and activation
     between depthwise conv and pointwise conv.
 
     Parameters
     ----------
     in_channels : int
-        Number of channels in the input signal.
+        Number of channels in the input tensor.
     out_channels : int
         Number of channels produced by the convolution.
     kernel_size : int
@@ -74,23 +75,28 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
     batch_norm : bool or str or torch.nn.Module, default True
-        (batch) normalization, or other normalizations, e.g. group normalization.
+        (batch) normalization, or other normalizations,
+        e.g. group normalization.
         (the name of) the Module itself or
         (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.
     activation : str or torch.nn.Module, default "relu6"
         Name or Module of the activation.
         If is str, can be one of
-        "mish", "swish", "relu", "leaky", "leaky_relu", "linear", "hardswish", "relu6".
+        "mish", "swish", "relu", "leaky", "leaky_relu",
+        "linear", "hardswish", "relu6".
         "linear" is equivalent to ``activation=None``.
     kernel_initializer : str or callable, optional
         A function to initialize kernel weights of the convolution,
-        or name or the initialzer, can be one of the keys of ``Initializers``.
+        or name or the initialzer,
+        can be one of the keys of ``Initializers``.
     bias : bool, default True
         If True, adds a learnable bias to the output.
     depth_multiplier : int, default 1
-        Multiplier of the number of output channels of the depthwise convolution.
+        Multiplier of the number of output channels
+        of the depthwise convolution.
     width_multiplier : float, default 1.0
-        Multiplier of the number of output channels of the pointwise convolution.
+        Multiplier of the number of output channels
+        of the pointwise convolution.
     kwargs : dict, optional,
         Extra parameters, including :attr:`ordering`, etc.
 
@@ -190,58 +196,65 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
             else:  # TODO: add more initializers
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the module."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
 class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
     """MobileNet V1.
 
-    Similar to ``Xception``, but without skip connections.
-    Separable convolutions are slightly different too
+    Similar to :class:`~torch_ecg.models.Xception`, but without skip connections.
+    Separable convolutions are slightly different too.
 
     normal conv
     --> entry flow (separable convs, down sample and double channels every other conv)
     --> middle flow (separable convs, no down sampling, stationary number of channels)
-    --> exit flow (separable convs, down sample and double channels at each conv)
+    --> exit flow (separable convs, down sample and double channels at each conv).
+
+    MobileNet V1 is a light-weight model intended for mobile devices,
+    originally proposed in [#v1]_. Tensorflow implementation can be found in [#v1_tf]_.
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    config: dict,
-        other hyper-parameters of the Module, ref. corresponding config file
+    in_channels : int
+        Number of channels in the input.
+    config : dict
+        Other hyper-parameters of the Module, ref. corresponding config file.
         key word arguments that have to be set in 3 sub-dict,
         namely in "entry_flow", "middle_flow", and "exit_flow", including
-        out_channels: int,
-            number of channels of the output
-        kernel_size: int,
-            kernel size of down sampling,
-            if not specified, defaults to `down_scale`,
-        groups: int,
-            connection pattern (of channels) of the inputs and outputs
-        padding: int,
-            zero-padding added to both sides of the input
-        batch_norm: bool or Module,
-            batch normalization,
-            the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
+
+            - out_channels: int,
+              number of channels of the output.
+            - kernel_size: int,
+              kernel size of down sampling.
+              If not specified, defaults to `down_scale`.
+            - groups: int,
+              connection pattern (of channels) of the inputs and outputs.
+            - padding: int,
+              zero-padding added to both sides of the input.
+            - batch_norm: bool or Module,
+              batch normalization, the Module itself
+              or (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.
 
     References
     ----------
-    .. [1] Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017).
-           Mobilenets: Efficient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861.
-    .. [2] https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/keras/applications/mobilenet.py
+    .. [#v1] Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017).
+           Mobilenets: Efficient convolutional neural networks for mobile vision applications.
+           arXiv preprint arXiv:1704.04861.
+    .. [#v1_tf] https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/keras/applications/mobilenet.py
 
     """
 
     __name__ = "MobileNetV1"
 
     def __init__(self, in_channels: int, **config) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
@@ -319,35 +332,38 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
         width_multiplier: float = 1.0,
         ordering: str = "cba",
     ) -> nn.Sequential:
-        """
+        """Generate a sequential flow of modules.
+
         Parameters
         ----------
-        in_channels: int,
-            number of channels in the input
-        out_channels: sequence of int,
-            number of channels produced by the convolutional layers
-        filter_lengths: int or sequence of int,
-            length(s) of the filters (kernel size)
-        subsample_lengths: int or sequence of int,
-            subsample length(s) (stride(s)) of the convolutions
-        dilations: int or sequence of int, default 1,
-            spacing between the kernel points of (each) convolutional layer
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        batch_norm: bool or str or Module, default True,
-            (batch) normalization, or other normalizations, e.g. group normalization
-            (the name of) the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
-        activation: str or Module, default "relu6",
-            name or Module of the activation,
-        depth_multiplier: int, default 1,
-            multiplier of the number of output channels of the depthwise convolution
-        width_multiplier: float, default 1.0,
-            multiplier of the number of output channels of the pointwise convolution
+        in_channels : int
+            Number of channels in the input.
+        out_channels : Sequence[int]
+            Number of channels produced by the convolutional layers.
+        filter_lengths : int or Sequence[int]
+            Length(s) of the filters (kernel size).
+        subsample_lengths  int or Sequence[int]
+            Subsample length(s) (stride(s)) of the convolutions.
+        dilations : int or Sequence[int], default 1,
+            Spacing between the kernel points of (each) convolutional layer.
+        groups : int, default 1
+            Connection pattern (of channels) of the inputs and outputs.
+        batch_norm : bool or str or torch.nn.Module, default True
+            (batch) normalization, or other normalizations, e.g. group normalization.
+            (the name of) the Module itself,
+            or (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.
+        activation : str or torch.nn.Module, default "relu6"
+            Name or Module of the activation.
+        depth_multiplier : int, default 1
+            Multiplier of the number of output channels of the depthwise convolution.
+        width_multiplier : float, default 1.0
+            Multiplier of the number of output channels of the pointwise convolution
 
         Returns
         -------
-        flow: nn.Sequential,
-            the sequential flow of consecutive separable convolutions, each followed by bn and relu6
+        flow : torch.nn.Sequential
+            The sequential flow of consecutive separable convolutions,
+            each followed by batch normalization and activation.
 
         """
         n_convs = len(out_channels)
@@ -400,18 +416,19 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the model.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional,
+            The batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the model.
 
         """
         _seq_len = seq_len
@@ -437,8 +454,7 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
 
 
 class InvertedResidual(nn.Module, SizeMixin):
-    """
-    inverted residual block
+    """Inverted residual block.
 
     expansion (via pointwise conv) --> depthwise conv --> pointwise conv (without activation) ---> output
         |                                                                                      |
@@ -446,34 +462,37 @@ class InvertedResidual(nn.Module, SizeMixin):
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input signal
-    out_channels: int,
-        number of channels produced by the convolution
-    expansion: float,
-        expansion of the first pointwise convolution
-    filter_length: int,
-        size (length) of the middle depthwise convolution kernel
-    stride: int,
-        stride (subsample length) of the middle depthwise convolution
-    groups: int, default 1,
-        connection pattern (of channels) of the inputs and outputs
-    dilation: int, default 1,
-        spacing between the kernel points of (each) convolutional layer
-    batch_norm: bool or str or Module, default True,
-        (batch) normalization, or other normalizations, e.g. group normalization
-        (the name of) the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
-    activation: str or Module, default "relu6",
-        name or Module of the activation, except for the last pointwise convolution
-    width_multiplier: float, default 1.0,
-        multiplier of the number of output channels of the pointwise convolution
-    attn: dict, optional,
-        attention mechanism for the neck conv layer,
-        if None, no attention mechanism is used,
-        keys:
-            "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
-            "pos": int, position of the attention mechanism,
-            other keys are specific to the attention mechanism
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : int
+        Number of channels produced by the convolution.
+    expansion : float
+        Expansion of the first pointwise convolution.
+    filter_length : int
+        Size (length) of the middle depthwise convolution kernel.
+    stride: int
+        Stride (subsample length) of the middle depthwise convolution.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    dilation : int, default 1
+        Spacing between the kernel points of (each) convolutional layer.
+    batch_norm : bool or str or torch.nn.Module, default True
+        (batch) normalization, or other normalizations, e.g. group normalization.
+        (the name of) the Module itself,
+        or (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.
+    activation : str or torch.nn.Module, default "relu6"
+        Name or Module of the activation, which is applied after convolutions,
+        except for the last pointwise convolution.
+    width_multiplier : float, default 1.0
+        Multiplier of the number of output channels of the pointwise convolution.
+    attn : dict, optional
+        Attention mechanism for the neck conv layers.
+        If is None, no attention mechanism is used.
+        Keys:
+
+            - "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+            - "pos": int, position of the attention mechanism,
+              other keys are specific to the attention mechanism.
 
     """
 
@@ -494,7 +513,6 @@ class InvertedResidual(nn.Module, SizeMixin):
         width_multiplier: float = 1.0,
         attn: Optional[CFG] = None,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -577,16 +595,22 @@ class InvertedResidual(nn.Module, SizeMixin):
         current_pos = self._add_attn_layer_if_needed(conv_in_channels, current_pos)
         _, self.__out_channels, _ = pw_linear.compute_output_shape()
 
-    def _add_attn_layer_if_needed(self, in_channels: int, current_pos: int) -> None:
-        """
-        add attention layer at the position specified by `self.__attn.pos`
+    def _add_attn_layer_if_needed(self, in_channels: int, current_pos: int) -> int:
+        """Add attention layer.
+
+        Add attention layer at the position specified by `self.__attn.pos`.
 
         Parameters
         ----------
-        in_channels: int,
-            number of channels in the input signal
-        current_pos: int,
-            position of the current layer
+        in_channels : int
+            Number of channels in the input tensor.
+        current_pos : int
+            Position of the current layer.
+
+        Returns
+        -------
+        int
+            Position of the next layer.
 
         """
         if self.__attn and self.__attn["pos"] == current_pos:
@@ -598,16 +622,19 @@ class InvertedResidual(nn.Module, SizeMixin):
         return current_pos
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         Returns
         -------
-        out: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        out : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         out = self.main_stream(input)
@@ -622,18 +649,19 @@ class InvertedResidual(nn.Module, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the Module.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            The batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the Module.
 
         """
         _seq_len = seq_len
@@ -646,65 +674,78 @@ class InvertedResidual(nn.Module, SizeMixin):
 
 
 class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
-    """
+    """MobileNet V2.
+
+    MobileNet V2 is an upgraded version of MobileNet V1, originally proposed in
+    [#v2]_. It uses inverted residual blocks instead of the original residual
+    blocks. Torchvision's implementation [#v2_pt] and Keras' implementation [#v2_keras]_
+    are used as references.
+
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input signal
-    config: dict,
-        other hyper-parameters of the Module, ref. corresponding config file
-        keyword arguments that have to be set:
-        groups: int,
-            number of groups in the pointwise convolutional layer(s)
-        norm: bool or str or Module,
-            normalization layer
-        activation: str or Module,
-            activation layer
-        bias: bool,
-            whether to use bias in the convolutional layer(s)
-        width_multiplier: float,
-            multiplier of the number of output channels of the pointwise convolution
-        stem: CFG,
-            config of the stem block, with the following keys:
-            num_filters: int or sequence of int,
-                number of filters in the first convolutional layer(s)
-            filter_lengths: int or sequence of int,
-                filter lengths (kernel sizes) in the first convolutional layer(s)
-            subsample_lengths: int or sequence of int,
-                subsample lengths (strides) in the first convolutional layer(s)
-        inv_res: CFG,
-            config of the inverted residual blocks, with the following keys:
-            expansions: sequence of int,
-                expansion ratios of the inverted residual blocks
-            out_channels: sequence of int,
-                number of output channels in each block
-            n_blocks: sequence of int,
-                number of inverted residual blocks
-            strides: sequence of int,
-                strides of the inverted residual blocks
-            filter_lengths: sequence of int,
-                filter lengths (kernel sizes) in each block
-        exit_flow: CFG,
-            config of the exit flow blocks, with the following keys:
-            num_filters: int or sequence of int,
-                number of filters in the final convolutional layer(s)
-            filter_lengths: int or sequence of int,
-                filter lengths (kernel sizes) in the final convolutional layer(s)
-            subsample_lengths: int or sequence of int,
-                subsample lengths (strides) in the final convolutional layer(s)
+    in_channels : int
+        Number of channels in the input signal tensor.
+    config : dict
+        Other hyper-parameters of the Module, ref. corr. config file
+        keyword arguments that have to be set are as follows:
+
+        - groups: int,
+          number of groups in the pointwise convolutional layer(s).
+        - norm: bool or str or Module,
+          normalization layer.
+        - activation: str or Module,
+          activation layer.
+        - bias: bool,
+          whether to use bias in the convolutional layer(s).
+        - width_multiplier: float,
+          multiplier of the number of output channels of the pointwise convolution.
+        - stem: CFG,
+          config of the stem block, with the following keys:
+
+            - num_filters: int or Sequence[int],
+              number of filters in the first convolutional layer(s).
+            - filter_lengths: int or Sequence[int],
+              filter lengths (kernel sizes) in the first convolutional layer(s).
+            - subsample_lengths: int or Sequence[int],
+              subsample lengths (strides) in the first convolutional layer(s).
+
+        - inv_res: CFG,
+          Config of the inverted residual blocks, with the following keys:
+
+            - expansions: Sequence[int],
+              expansion ratios of the inverted residual blocks.
+            - out_channels: Sequence[int],
+              number of output channels in each block.
+            - n_blocks: Sequence[int],
+              number of inverted residual blocks.
+            - strides: Sequence[int],
+              strides of the inverted residual blocks.
+            - filter_lengths: Sequence[int],
+              filter lengths (kernel sizes) in each block.
+
+        - exit_flow: CFG,
+          Config of the exit flow blocks, with the following keys:
+
+            - num_filters: int or Sequence[int],
+              number of filters in the final convolutional layer(s).
+            - filter_lengths: int or Sequence[int],
+              filter lengths (kernel sizes) in the final convolutional layer(s).
+            - subsample_lengths: int or Sequence[int],
+              subsample lengths (strides) in the final convolutional layer(s).
 
     References
     ----------
-    1. Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018). Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
-    2. https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv2.py
-    3. https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet_v2.py
+    .. [#v2] Sandler, M., Howard, A., Zhu, M., Zhmoginov, A., & Chen, L. C. (2018).
+             Mobilenetv2: Inverted residuals and linear bottlenecks. In Proceedings of the
+             IEEE conference on computer vision and pattern recognition (pp. 4510-4520).
+    .. [#v2_pt] https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv2.py
+    .. [#v2_keras] https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet_v2.py
 
     """
 
     __name__ = "MobileNetV2"
 
     def __init__(self, in_channels: int, **config: CFG) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
@@ -805,11 +846,14 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
             exit_flow,
         )
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the model."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
     @property
@@ -822,35 +866,37 @@ class MobileNetV2(nn.Sequential, SizeMixin, CitationMixin):
 
 
 class InvertedResidualBlock(nn.Sequential, SizeMixin):
-    """
+    """Inverted residual block.
+
     Parameters
     ----------
-    in_channels: int,
-        number of input channels
-    n_blocks: int,
-        number of inverted residual blocks
-    expansion: float or sequence of floats,
-        expansion ratios of the inverted residual blocks
-    filter_length: int or sequence of ints,
-        filter length of the depthwise convolution in the inverted residual blocks
-    stride: int or sequence of ints, optional,
-        stride of the depthwise convolution in the inverted residual blocks,
-        defaults to `[2] + [1] * (n_blocks - 1)`
-    groups: int, default 1,
-        number of groups in the expansion and pointwise convolution in the inverted residual blocks,
-    dilation: int or sequence of ints, default 1,
-        dilation of the depthwise convolution in the inverted residual blocks
-    batch_norm: bool or str or nn.Module, default True,
-        normalization layer to use, defaults to batch normalization
-    activation: str or nn.Module or sequence of str or nn.Module, default "relu",
-        activation function to use
-    width_multiplier: float or sequence of floats, default 1.0,
-        width multiplier of the inverted residual blocks
-    out_channels: int or sequence of ints, optional,
-        number of output channels of the inverted residual blocks,
-        defaults to `2 * in_channels`
-    attn: CFG or sequence of CFG, optional,
-        config of attention layer to use, defaults to None
+    in_channels : int
+        Number of input channels.
+    n_blocks : int
+        Number of inverted residual blocks.
+    expansion : float or Sequence[float]
+        Expansion ratios of the inverted residual blocks.
+    filter_length : int or Sequence[int]
+        Filter length of the depthwise convolution in the inverted residual blocks.
+    stride : int or Sequence[int], optional
+        Stride of the depthwise convolution in the inverted residual blocks,
+        defaults to ``[2] + [1] * (n_blocks - 1)``.
+    groups : int, default 1
+        Number of groups in the expansion and pointwise convolution
+        in the inverted residual blocks.
+    dilation : int or Sequence[int], default 1
+        Dilation of the depthwise convolution in the inverted residual blocks.
+    batch_norm : bool or str or torch.nn.Module, default True
+        Normalization layer to use, defaults to batch normalization.
+    activation : str or torch.nn.Module or Sequence[str] or Sequence[torch.nn.Module], default "relu"
+        Activation function to use.
+    width_multiplier : float or Sequence[float], default 1.0
+        Width multiplier of the inverted residual blocks.
+    out_channels : int or Sequence[int], optional
+        Number of output channels of the inverted residual blocks,
+        defaults to ``2 * in_channels``.
+    attn : CFG or Sequence[CFG], optional
+        Config of attention layer to use, defaults to None.
 
     """
 
@@ -875,7 +921,6 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
         attn: Optional[Union[CFG, Sequence[CFG]]] = None,
         **kwargs: Any,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__n_blocks = n_blocks
@@ -967,38 +1012,43 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
     def n_blocks(self) -> int:
         return self.__n_blocks
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the block."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
 class MobileNetV3_STEM(nn.Sequential, SizeMixin):
-    """
+    """Stem block of MobileNet V3.
+
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input signal
-    groups: int, default 1,
-        number of groups in the expansion and pointwise convolution
-    bias: bool,
-        whether to use bias in the convolutional layer(s)
-    norm: bool or str or nn.Module, default True,
-        normalization layer to use, defaults to batch normalization
-    activation: str or nn.Module or sequence of str or nn.Module, default "relu",
-        activation function to use
-    width_multiplier: float or sequence of floats, default 1.0,
-        width multiplier of the inverted residual blocks
-    config: CFG,
-        config of the stem block, with the following keys:
-        num_filters: int or sequence of int,
-            number of filters in the first convolutional layer(s)
-        filter_lengths: int or sequence of int,
-            filter lengths (kernel sizes) in the first convolutional layer(s)
-        subsample_lengths: int or sequence of int,
-            subsample lengths (strides) in the first convolutional layer(s)
+    in_channels : int
+        Number of channels in the input tensor.
+    groups : int, default 1
+        Number of groups in the expansion and pointwise convolution.
+    bias : bool, default True
+        Whether to use bias in the convolutional layer(s).
+    norm : bool or str or torch.nn.Module, default True
+        Normalization layer to use, defaults to batch normalization.
+    activation : str or torch.nn.Module or Sequence[str] or Sequence[torch.nn.Module], default "relu"
+        Activation function to use.
+    width_multiplier : float or Sequence[float], default 1.0
+        Width multiplier of the inverted residual blocks.
+    config : CFG, optional
+        Config of the stem block, with the following items:
+
+            - num_filters: int or Sequence[int],
+              number of filters in the first convolutional layer(s).
+            - filter_lengths: int or Sequence[int],
+              filter lengths (kernel sizes) in the first convolutional layer(s).
+            - subsample_lengths: int or Sequence[int],
+              subsample lengths (strides) in the first convolutional layer(s).
 
     """
 
@@ -1017,7 +1067,6 @@ class MobileNetV3_STEM(nn.Sequential, SizeMixin):
         width_multiplier: Union[float, Sequence[float]] = 1.0,
         **config: CFG,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
@@ -1056,88 +1105,105 @@ class MobileNetV3_STEM(nn.Sequential, SizeMixin):
                 self.add_module(f"inv_res_{idx}", inv_res)
                 _, in_channels, _ = inv_res.compute_output_shape()
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the stem block."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
 class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
-    """
+    """MobileNet V3.
+
+    MobileNet V3 [#v3]_ is an incremental improvement of MobileNet series.
+    MobileNet V3 uses neural architecture search instead of hand-designed
+    architectures to find the optimal network structure.
+    MobileNet V3 has implementions in Torchvision [#v3_pt]_,
+    which serves as a reference for this implementation for ECG tasks.
+
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input signal
-    config: dict,
-        other hyper-parameters of the Module, ref. corresponding config file
-        keyword arguments that have to be set:
-        groups: int,
-            number of groups in the convolutional layer(s) other than depthwise convolutions
-        norm: bool or str or Module,
-            normalization layer
-        bias: bool,
-            whether to use bias in the convolutional layer(s)
-        width_multiplier: float,
-            multiplier of the number of output channels of the pointwise convolution
-        stem: CFG,
-            config of the stem block, with the following keys:
-            num_filters: int or sequence of int,
-                number of filters in the first convolutional layer(s)
-            filter_lengths: int or sequence of int,
-                filter lengths (kernel sizes) in the first convolutional layer(s)
-            subsample_lengths: int or sequence of int,
-                subsample lengths (strides) in the first convolutional layer(s)
-        inv_res: CFG,
-            config of the inverted residual blocks, with the following keys:
-            in_channels: sequence of int,
-                number of input channels
-            n_blocks: sequence of int,
-                number of inverted residual blocks
-            expansions: sequence of floats or sequence of sequence of floats,
-                expansion ratios of the inverted residual blocks
-            filter_lengths: sequence of ints or sequence of sequence of ints,
-                filter length of the depthwise convolution in the inverted residual blocks
-            stride: sequence of ints or sequence of sequence of ints, optional,
-                stride of the depthwise convolution in the inverted residual blocks,
-                defaults to `[2] + [1] * (n_blocks - 1)`
-            groups: int, default 1,
-                number of groups in the expansion and pointwise convolution in the inverted residual blocks,
-            dilation: sequence of ints or sequence of sequence of ints, optional,
-                dilation of the depthwise convolution in the inverted residual blocks
-            batch_norm: bool or str or nn.Module, default True,
-                normalization layer to use, defaults to batch normalization
-            activation: str or nn.Module or sequence of str or nn.Module
-                activation function to use
-            width_multiplier: float or sequence of floats, default 1.0,
-                width multiplier of the inverted residual blocks
-            out_channels: sequence of ints or sequence of sequence of int, optional,
-                number of output channels of the inverted residual blocks,
-                defaults to `2 * in_channels`
-            attn: sequence of CFG or sequence of sequence of CFG, optional,
-                config of attention layer to use, defaults to None
-        exit_flow: CFG,
-            config of the exit flow blocks, with the following keys:
-            num_filters: int or sequence of int,
-                number of filters in the final convolutional layer(s)
-            filter_lengths: int or sequence of int,
-                filter lengths (kernel sizes) in the final convolutional layer(s)
-            subsample_lengths: int or sequence of int,
-                subsample lengths (strides) in the final convolutional layer(s)
+    in_channels : int
+        Number of channels in the input signal tensor.
+    config : dict
+        Other hyper-parameters of the Module, ref. corr. config file.
+        Keyword arguments that must be set:
+
+            - groups: int,
+              number of groups in the convolutional layer(s) other than depthwise convolutions.
+            - norm: bool or str or Module,
+              normalization layer.
+            - bias: bool,
+              whether to use bias in the convolutional layer(s).
+            - width_multiplier: float,
+              multiplier of the number of output channels of the pointwise convolution.
+            - stem: CFG,
+              config of the stem block, with the following keys:
+
+                - num_filters: int or Sequence[int],
+                  number of filters in the first convolutional layer(s).
+                - filter_lengths: int or Sequence[int],
+                  filter lengths (kernel sizes) in the first convolutional layer(s).
+                - subsample_lengths: int or Sequence[int],
+                  subsample lengths (strides) in the first convolutional layer(s).
+
+            - inv_res: CFG,
+              config of the inverted residual blocks, with the following keys:
+
+                - in_channels: Sequence[int],
+                  number of input channels.
+                - n_blocks: Sequence[int],
+                  number of inverted residual blocks.
+                - expansions: sequence of floats or sequence of sequence of floats,
+                  expansion ratios of the inverted residual blocks.
+                - filter_lengths: sequence of ints or sequence of sequence of ints,
+                  filter length of the depthwise convolution in the inverted residual blocks.
+                - stride: sequence of ints or sequence of sequence of ints, optional,
+                  stride of the depthwise convolution in the inverted residual blocks,
+                  defaults to ``[2] + [1] * (n_blocks - 1)``.
+                - groups: int, default 1,
+                  number of groups in the expansion and pointwise convolution
+                  in the inverted residual blocks.
+                - dilation: sequence of ints or sequence of sequence of ints, optional,
+                  dilation of the depthwise convolution in the inverted residual blocks.
+                - batch_norm: bool or str or nn.Module, default True,
+                  normalization layer to use, defaults to batch normalization.
+                - activation: str or nn.Module or sequence of str or torch.nn.Module,
+                  activation function to use.
+                - width_multiplier: float or sequence of floats, default 1.0,
+                  width multiplier of the inverted residual blocks.
+                - out_channels: sequence of ints or sequence of Sequence[int], optional,
+                  number of output channels of the inverted residual blocks,
+                  defaults to ``2 * in_channels``.
+                - attn: sequence of CFG or sequence of sequence of CFG, optional,
+                  config of attention layer to use, defaults to None.
+
+            - exit_flow: CFG,
+                config of the exit flow blocks, with the following keys:
+
+                - num_filters: int or Sequence[int],
+                  number of filters in the final convolutional layer(s).
+                - filter_lengths: int or Sequence[int],
+                  filter lengths (kernel sizes) in the final convolutional layer(s).
+                - subsample_lengths: int or Sequence[int],
+                  subsample lengths (strides) in the final convolutional layer(s).
 
     References
     ----------
-    1. Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019).
-       Searching for mobilenetv3. In Proceedings of the IEEE International Conference on Computer Vision (pp. 1314-1324).
-    2. https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv3.py
+    .. [#v3] Howard, A., Sandler, M., Chu, G., Chen, L. C., Chen, B., Tan, M., ... & Adam, H. (2019).
+             Searching for mobilenetv3. In Proceedings of the IEEE International Conference
+             on Computer Vision (pp. 1314-1324).
+    .. [#v3_pt] https://github.com/pytorch/vision/blob/master/torchvision/models/mobilenetv3.py
 
     """
 
     __name__ = "MobileNetV3"
 
     def __init__(self, in_channels: int, **config: CFG) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
@@ -1217,11 +1283,14 @@ class MobileNetV3(nn.Sequential, SizeMixin, CitationMixin):
             exit_flow,
         )
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the model."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
     @property

@@ -1,8 +1,9 @@
 """
 The core part of the SOTA model of CPSC2019,
-branched, and has different scope (in terms of dilation) in each branch
+branched, and has different scope (in terms of dilation) in each branch.
 """
 
+import textwrap
 from collections import OrderedDict
 from copy import deepcopy
 from itertools import repeat
@@ -30,24 +31,23 @@ __all__ = [
 
 
 class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
-    """
-    basic building block of the CNN part of the SOTA model
-    from CPSC2019 challenge (entry 0416)
+    """Basic building block of the CNN part of the SOTA model
+    from CPSC2019 challenge (entry 0416).
 
     (conv -> activation) * N --> bn --> down_sample
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    scopes: sequence of int,
-        scopes of the convolutional layers, via `dilation`
-    num_filters: int or sequence of int,
-        number of filters of the convolutional layer(s)
-    filter_lengths: int or sequence of int,
-        filter length(s) (kernel size(s)) of the convolutional layer(s)
-    subsample_length: int,
-        subsample length (ratio) at the last layer of the block
+    in_channels : int
+        Number of channels in the input tensor.
+    scopes : Sequence[int]
+        Scopes of the convolutional layers, via `dilation`.
+    num_filters : int or Sequence[int]
+        Number of filters of the convolutional layer(s).
+    filter_lengths : int or Sequence[int]
+        Filter length(s) (kernel size(s)) of the convolutional layer(s).
+    subsample_length : int
+        Subsample length (ratio) at the last layer of the block.
 
     """
 
@@ -63,7 +63,6 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
         groups: int = 1,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__scopes = scopes
@@ -125,16 +124,19 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
             self.add_module("dropout", nn.Dropout(self.config.dropout, inplace=False))
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        output : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         output = super().forward(input)
@@ -143,18 +145,19 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the block.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            The batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the block.
 
         """
         _seq_len = seq_len
@@ -170,7 +173,24 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
     def _assign_weights_lead_wise(
         self, other: "MultiScopicBasicBlock", indices: Sequence[int]
     ) -> None:
-        """ """
+        """Assign weights lead-wise.
+
+        This method is used to assign weights from a model with
+        a superset of the current model's leads to the current model.
+
+        Parameters
+        ----------
+        other : MultiScopicBasicBlock
+            The model with a superset of the current model's leads.
+        indices : Sequence[int]
+            The indices of the leads of the current model in the
+            superset model.
+
+        Returns
+        -------
+        None
+
+        """
         assert not any([isinstance(m, nn.LayerNorm) for m in self]) and not any(
             [isinstance(m, nn.LayerNorm) for m in other]
         ), "Lead-wise assignment of weights is not supported for the existence of `LayerNorm` layers"
@@ -200,33 +220,32 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
 
 
 class MultiScopicBranch(nn.Sequential, SizeMixin):
-    """
-    branch path of the CNN part of the SOTA model
-    from CPSC2019 challenge (entry 0416)
+    """Branch path of the CNN part of the SOTA model
+    from CPSC2019 challenge (entry 0416).
 
     Parameters
     ----------
-    in_channels: int,
-        number of features (channels) of the input
-    scopes: sequence of sequences of int,
-        scopes (in terms of `dilation`) for the convolutional layers,
-        each sequence of int is for one branch
-    num_filters: sequence of int, or sequence of sequences of int,
-        number of filters for the convolutional layers,
-        if is sequence of int,
-        then convolutionaly layers in one branch will have the same number of filters
-    filter_lengths: sequence of int, or sequence of sequences of int,
-        filter length (kernel size) of the convolutional layers,
-        if is sequence of int,
-        then convolutionaly layers in one branch will have the same filter length
-    subsample_lengths: int, or sequence of int,
-        subsample length (stride) of the convolutional layers,
-        if is sequence of int,
-        then convolutionaly layers in one branch will have the same subsample length
-    groups: int, default 1,
-        connection pattern (of channels) of the inputs and outputs
-    config: dict,
-        other hyper-parameters, including
+    in_channels : int
+        Number of features (channels) of the input tensor.
+    scopes : Sequence[Sequence[int]]
+        Scopes (in terms of `dilation`) for the convolutional layers,
+        each sequence of int is for one branch.
+    num_filters : Sequence[int] or Sequence[Sequence[int]]
+        Number of filters for the convolutional layers.
+        If is sequence of int, then convolutionaly layers
+        in one branch will have the same number of filters.
+    filter_lengths : Sequence[int] or Sequence[Sequence[int]]
+        Filter length (kernel size) of the convolutional layers.
+        If is sequence of int, then convolutionaly layers
+        in one branch will have the same filter length.
+    subsample_lengths : int or Sequence[int]
+        Subsample length (stride) of the convolutional layers.
+        If is sequence of int, then convolutionaly layers
+        in one branch will have the same subsample length.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    config : dict
+        Other hyper-parameters, including
         dropout, activation choices, weight initializer, etc.
 
     """
@@ -243,7 +262,6 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
         groups: int = 1,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__scopes = scopes
@@ -288,17 +306,37 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
             )
             block_in_channels = self.__num_filters[idx]
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the branch."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
     def _assign_weights_lead_wise(
         self, other: "MultiScopicBranch", indices: Sequence[int]
     ) -> None:
-        """ """
+        """Assign weights lead-wise.
+
+        This method is used to assign weights from a model with
+        a superset of the current model's leads to the current model.
+
+        Parameters
+        ----------
+        other : MultiScopicBranch
+            The model with a superset of the current model's leads.
+        indices : Sequence[int]
+            The indices of the leads of the current model in the
+            superset model.
+
+        Returns
+        -------
+        None
+
+        """
         for blk, o_blk in zip(self, other):
             blk._assign_weights_lead_wise(o_blk, indices)
 
@@ -308,46 +346,57 @@ class MultiScopicBranch(nn.Sequential, SizeMixin):
 
 
 class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
-    """
-    CNN part of the SOTA model from CPSC2019 challenge (entry 0416)
+    """CNN part of the SOTA model from CPSC2019 challenge (entry 0416).
+
+    This architecture is a multi-branch CNN with multi-scopic convolutions,
+    proposed by the winning team of the CPSC2019 challenge and described in
+    [1]_. The multi-scopic convolutions are implemented via different dilations.
+    Similar architectures can be found in the model DeepLabv3 [2]_.
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    config: dict,
-        other hyper-parameters of the Module, ref. corresponding config file
-        key word arguments that have to be set:
-        scopes: sequence of sequences of sequences of int,
-            scopes (in terms of dilation) of each convolution
-        num_filters: sequence of sequences (of int or of sequences of int),
-            number of filters of the convolutional layers,
-            with granularity to each block of each branch,
-            or to each convolution of each block of each branch
-        filter_lengths: sequence of sequences (of int or of sequences of int),
-            filter length(s) (kernel size(s)) of the convolutions,
-            with granularity to each block of each branch,
-            or to each convolution of each block of each branch
-        subsample_lengths: sequence of int or sequence of sequences of int,
-            subsampling length(s) (ratio(s)) of all blocks,
-            with granularity to each branch or to each block of each branch,
-            each subsamples after the last convolution of each block
-        dropouts: sequence of int or sequence of sequences of int,
-            dropout rates of all blocks,
-            with granularity to each branch or to each block of each branch,
-            each dropouts at the last of each block
-        groups: int,
-            connection pattern (of channels) of the inputs and outputs
-        block: dict,
-            other parameters that can be set for the building blocks
-        for a full list of configurable parameters, ref. corr. config file
+    in_channels : int
+        Number of channels (leads) in the input signal tensor.
+    config: dict
+        Other hyper-parameters of the Module, ref. corr. config file.
+        Key word arguments that must be set:
+
+            - scopes: sequence of sequences of sequences of int,
+              scopes (in terms of dilation) of each convolution.
+            - num_filters: sequence of sequences (of int or of sequences of int),
+              number of filters of the convolutional layers,
+              with granularity to each block of each branch,
+              or to each convolution of each block of each branch.
+            - filter_lengths: sequence of sequences (of int or of sequences of int),
+              filter length(s) (kernel size(s)) of the convolutions,
+              with granularity to each block of each branch,
+              or to each convolution of each block of each branch.
+            - subsample_lengths: sequence of int or sequence of sequences of int,
+              subsampling length(s) (ratio(s)) of all blocks,
+              with granularity to each branch or to each block of each branch,
+              each subsamples after the last convolution of each block.
+            - dropouts: sequence of int or sequence of sequences of int,
+              dropout rates of all blocks,
+              with granularity to each branch or to each block of each branch,
+              each dropouts at the last of each block.
+            - groups: int,
+              connection pattern (of channels) of the inputs and outputs.
+            - block: dict,
+              other parameters that can be set for the building blocks.
+
+        For a full list of configurable parameters, ref. corr. config file.
+
+    References
+    ----------
+    .. [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
+    .. [2] Chen, Liang-Chieh, et al. "Rethinking atrous convolution for semantic image segmentation."
+          Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.
 
     """
 
     __name__ = "MultiScopicCNN"
 
     def __init__(self, in_channels: int, **config) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
@@ -368,16 +417,19 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
             )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        output : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         branch_out = OrderedDict()
@@ -397,18 +449,19 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the Module.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            The batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
+        output_shape : sequence
+            The output shape of the Module.
 
         """
         out_channels = 0
@@ -424,15 +477,15 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
     def assign_weights_lead_wise(
         self, other: "MultiScopicCNN", indices: Sequence[int]
     ) -> None:
-        """
-        Assign weights to the `other` MultiScopicCNN module in the lead-wise manner
+        """Assign weights to the `other` :class:`MultiScopicCNN`
+        module in the lead-wise manner
 
         Parameters
         ----------
-        other: MultiScopicCNN,
-            the other MultiScopicCNN module
-        indices: sequence of int,
-            indices of the MultiScopicCNN modules to be assigned weights
+        other : MultiScopicCNN
+            The other :class:`MultiScopicCNN` module.
+        indices : Sequence[int]
+            Indices of the :class:`MultiScopicCNN` modules to assign weights.
 
         Examples
         --------

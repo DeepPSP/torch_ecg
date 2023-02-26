@@ -30,7 +30,7 @@ _SHHS_INFO = DataBaseInfo(
     Sleep Heart Health Study
     """,
     about=r"""
-    **ABOUT the dataset**:
+    **ABOUT the dataset** (Main webpage [1]_):
 
     1. shhs1 (Visit 1):
 
@@ -129,7 +129,7 @@ _SHHS_INFO = DataBaseInfo(
         | IHR         | Instantaneous heart rate                                         |
         +-------------+------------------------------------------------------------------+
         | SDNN        | Standard deviation of all normal sinus                           |
-        |             |to normal sinus interbeat (NN) intervals                          |
+        |             | to normal sinus interbeat (NN) intervals                         |
         +-------------+------------------------------------------------------------------+
         | SDANN       | Standard deviation of the averages of normal sinus to normal     |
         |             | sinus interbeat (NN) intervals in all 5-minute segments          |
@@ -225,14 +225,15 @@ _SHHS_INFO = DataBaseInfo(
         | rpointadj    | R Point adjusted sample number (RPoint * (samplingrate/256))                                   |
         +--------------+------------------------------------------------------------------------------------------------+
 
-        CAUTION: all the above sampling numbers except for rpointadj assume 256 Hz, while the rpointadj column has been added to provide an adjusted sample number based on the actual sampling rate.
+      CAUTION that all the above sampling numbers except for rpointadj assume 256 Hz,
+      while the rpointadj column has been added to provide an adjusted sample number based on the actual sampling rate.
 
     3. event annotations: (in xml files)
        TODO
     4. event_profusion annotations: (in xml files)
        TODO
 
-    **DEFINITION of concepts in sleep study**:
+    **DEFINITION of concepts in sleep study** (mainly apnea and arousal, ref. [8]_, [9]_ for corresponding knowledge):
 
     1. Arousal: (ref. [3]_, [4]_)
 
@@ -742,7 +743,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             or index of the record in :attr:`all_records`.
         sig : str, default "ECG"
             Signal name or annotation name (e.g. "rpeak").
-            Some annotation files (*-rpeak.csv) have sampling frequency column.
+            Some annotation files (\\*-rpeak.csv) have
+            a sampling frequency column.
         rec_path : str or path.Path, optional
             Path of the file which contains the PSG data.
             If is None, default path will be used.
@@ -751,9 +753,9 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         -------
         fs : numbers.Real
             Sampling frequency of the signal `sig` of the record `rec`.
-            Returns -1
-            if corresponding signal (.edf) file is not available,
-            or the signal file does not contain the signal `sig`.
+            If corresponding signal (.edf) file is not available,
+            or the signal file does not contain the signal `sig`,
+            -1 will be returned.
 
         """
         if isinstance(rec, int):

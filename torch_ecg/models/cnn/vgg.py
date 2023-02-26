@@ -1,7 +1,6 @@
-"""
-the most basic CNN
-"""
+"""VGG CNN feature extractor."""
 
+import textwrap
 from copy import deepcopy
 from typing import Optional, Sequence, Union, List
 
@@ -24,24 +23,24 @@ __all__ = [
 
 
 class VGGBlock(nn.Sequential, SizeMixin):
-    """
-    building blocks of the CNN feature extractor `VGG16`
+    """Building blocks of the CNN feature extractor :class:`VGG16`.
 
     Parameters
     ----------
-    num_convs: int,
-        number of convolutional layers
-    in_channels: int,
-        number of channels in the input
-    out_channels: int,
-        number of channels produced by the convolutional layers
-    groups: int, default 1,
-        connection pattern (of channels) of the inputs and outputs
-    config: dict,
-        other parameters, including
+    num_convs : int
+        Number of convolutional layers.
+    in_channels : int
+        Number of channels in the input.
+    out_channels : int
+        Number of channels produced by the convolutional layers.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    config : dict
+        Other parameters, including
         filter length (kernel size), activation choices,
-        weight initializer, batch normalization choices, etc. for the convolutional layers;
-        and pool size for the pooling layer
+        weight initializer, batch normalization choices, etc.
+        for the convolutional layers;
+        and pool size for the pooling layers.
 
     """
 
@@ -55,7 +54,6 @@ class VGGBlock(nn.Sequential, SizeMixin):
         groups: int = 1,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         self.__num_convs = num_convs
         self.__in_channels = in_channels
@@ -101,18 +99,19 @@ class VGGBlock(nn.Sequential, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the module.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            Batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
+        output_shape : sequence
+            The output shape of the module.
 
         """
         num_layers = 0
@@ -132,34 +131,34 @@ class VGGBlock(nn.Sequential, SizeMixin):
 
 
 class VGG16(nn.Sequential, SizeMixin, CitationMixin):
-    """
-    CNN feature extractor of the CRNN models proposed in refs of `ECG_CRNN`
+    """CNN feature extractor of VGG architecture.
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    config: dict,
-        other hyper-parameters of the Module, including
+    in_channels : int
+        Number of channels in the input.
+    config : dict
+        Other hyper-parameters of the Module, including
         number of convolutional layers, number of filters for each layer,
-        and more for `VGGBlock`.
-        key word arguments that have to be set:
-        num_convs: sequence of int,
-            number of convolutional layers for each `VGGBlock`
-        num_filters: sequence of int,
-            number of filters for each `VGGBlock`
-        groups: int,
-            connection pattern (of channels) of the inputs and outputs
-        block: dict,
-            other parameters that can be set for `VGGBlock`
-        for a full list of configurable parameters, ref. corr. config file
+        and more for :class:`VGGBlock`.
+        Key word arguments that have to be set:
+
+            - num_convs: sequence of int,
+              number of convolutional layers for each :class:`VGGBlock`.
+            - num_filters: sequence of int,
+              number of filters for each :class:`VGGBlock`.
+            - groups: int,
+              connection pattern (of channels) of the inputs and outputs.
+            - block: dict,
+              other parameters that can be set for :class:`VGGBlock`.
+
+        For a full list of configurable parameters, ref. corr. config file.
 
     """
 
     __name__ = "VGG16"
 
     def __init__(self, in_channels: int, **config) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         # self.config = deepcopy(ECG_CRNN_CONFIG.cnn.vgg16)
@@ -182,11 +181,14 @@ class VGG16(nn.Sequential, SizeMixin, CitationMixin):
             )
             module_in_channels = nf
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the module."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
     @property

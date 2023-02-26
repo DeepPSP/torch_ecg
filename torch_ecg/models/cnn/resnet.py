@@ -3,6 +3,7 @@ The most frequently used (can serve as baseline) CNN family of physiological sig
 whose performance however seems exceeded by newer networks
 """
 
+import textwrap
 from copy import deepcopy
 from itertools import repeat
 from numbers import Real
@@ -47,34 +48,37 @@ _DEFAULT_BLOCK_CONFIG = {
 
 
 class ResNetBasicBlock(nn.Module, SizeMixin):
-    """
-    building blocks for `ResNet`, as implemented in ref. [2] of `ResNet`
+    """Building blocks for :class:`ResNet`.
 
     Parameters
     ----------
-    in_channels: int,
-        number of features (channels) of the input
-    num_filters: int,
-        number of filters for the convolutional layers
-    filter_length: int,
-        length (size) of the filter kernels
-    subsample_lengths: int,
-        subsample length,
-        including pool size for short cut, and stride for the top convolutional layer
-    groups: int, default 1,
-        pattern of connections between inputs and outputs,
-        for more details, ref. `nn.Conv1d`
-    dilation: int, default 1,
-        not used
-    attn: dict, optional,
-        attention mechanism for the neck conv layer,
-        if None, no attention mechanism is used,
+    in_channels : int
+        Number of features (channels) of the input tensor.
+    num_filters : int
+        Number of filters for the convolutional layers.
+    filter_length : int
+        Length (size) of the filter kernels.
+    subsample_lengths : int
+        Subsample length, including pool size for short cut,
+        and stride for the top convolutional layer.
+    groups : int, default 1
+        Pattern of connections between inputs and outputs.
+        For more details, ref. :class:`torch.nn.Conv1d`.
+    dilation : int, default 1
+        Not used.
+    attn : dict, optional
+        Attention mechanism for the neck conv layer.
+        If is None, no attention mechanism is used.
         keys:
-            "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
-            "pos": int, position of the attention mechanism,
-            other keys are specific to the attention mechanism
-    config: dict,
-        other hyper-parameters, including
+
+            - name: str,
+              can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+            - pos: int,
+              position of the attention mechanism.
+
+        Other keys are specific to the attention mechanism.
+    config : dict
+        Other hyper-parameters, including
         increase channel method, subsample method, dropouts,
         activation choices, weight initializer, and short cut patterns, etc.
 
@@ -96,7 +100,6 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         attn: Optional[dict] = None,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         if dilation > 1:
             raise NotImplementedError(f"Dilation > 1 not supported in {self.__name__}")
@@ -177,7 +180,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
             self.out_dropout = None
 
     def _make_shortcut_layer(self) -> Union[nn.Module, None]:
-        """ """
+        """Make shortcut layer for residual connection."""
         if self.__down_scale > 1 or self.__increase_channels:
             if self.config.increase_channels_method.lower() == "conv":
                 shortcut = DownSample(
@@ -209,16 +212,19 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         return shortcut
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the block.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         Returns
         -------
-        out: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        out : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         identity = input
@@ -247,18 +253,19 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the block.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            Batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
+        output_shape : sequenc
+            Output shape of the block.
 
         """
         _seq_len = seq_len
@@ -271,44 +278,48 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
 
 
 class ResNetBottleNeck(nn.Module, SizeMixin):
-    """
-    bottle neck blocks for `ResNet`, as implemented in ref. [2] of `ResNet`,
-    as for 1D ECG, should be of the "baby-giant-baby" pattern?
+    """Bottleneck blocks for :class:`ResNet`.
+
+    As for 1D ECG, should be of the "baby-giant-baby" pattern?
 
     Parameters
     ----------
-    in_channels: int,
-        number of features (channels) of the input
-    num_filters: sequence of int,
-        number of filters for the neck conv layer
-    filter_length: int,
-        lengths (sizes) of the filter kernels for the neck conv layer
-    subsample_length: int,
-        subsample length,
-        including pool size for short cut,
-        and stride for the (top or neck) conv layer
-    groups: int, default 1,
-        pattern of connections between inputs and outputs of the neck conv layer,
-        for more details, ref. `nn.Conv1d`
-    dilation: int, default 1,
-        dilation of the conv layers
-    base_width: real number, default 12*4,
-        number of filters per group for the neck conv layer
-        usually number of filters of the initial conv layer of the whole ResNet
-    base_groups: int, default 1,
-        pattern of connections between inputs and outputs of conv layers at the two ends,
-        should divide `groups`
-    base_filter_length: int, default 1,
-        lengths (sizes) of the filter kernels for conv layers at the two ends
-    attn: dict, optional,
-        attention mechanism for the neck conv layer,
-        if None, no attention mechanism is used,
-        keys:
-            "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
-            "pos": int, position of the attention mechanism,
-            other keys are specific to the attention mechanism
-    config: dict,
-        other hyper-parameters, including
+    in_channels : int
+        Number of features (channels) of the input tensor.
+    num_filters : Sequence[int]
+        Number of filters for the neck conv layer.
+    filter_length : int
+        Lengths (sizes) of the filter kernels for the neck conv layer.
+    subsample_length : int
+        Subsample length, including pool size for short cut,
+        and stride for the (top or neck) conv layer.
+    groups : int, default 1
+        Pattern of connections between inputs and outputs of the neck conv layer.
+        For more details, ref. :class:`torch.nn.Conv1d`.
+    dilation : int, default 1
+        Dilation of the conv layers.
+    base_width : numbers.Real, default 12*4
+        Number of filters per group for the neck conv layer.
+        Usually number of filters of the initial conv layer
+        of the whole ResNet model.
+    base_groups : int, default 1
+        Pattern of connections between inputs and outputs of conv layers at the two ends,
+        which should divide `groups`.
+    base_filter_length : int, default 1
+        Lengths (sizes) of the filter kernels for conv layers at the two ends.
+    attn : dict, optional
+        Attention mechanism for the neck conv layer.
+        If is  None, no attention mechanism is used.
+        Keys:
+
+            - name: str,
+              can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+            - pos: int,
+              position of the attention mechanism.
+
+        Other keys are specific to the attention mechanism.
+    config : dict
+        Other hyper-parameters, including
         increase channel method, subsample method, dropout,
         activation choices, weight initializer, and short cut patterns, etc.
 
@@ -334,7 +345,6 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         attn: Optional[dict] = None,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         self.__num_convs = 3
         self.config = CFG(self.__DEFAULT_CONFIG__.copy())
@@ -446,7 +456,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
             self.out_dropout = None
 
     def _make_shortcut_layer(self) -> Union[nn.Module, None]:
-        """ """
+        """Make shortcut layer for residual connection."""
         if self.__down_scale > 1 or self.__increase_channels:
             if self.config.increase_channels_method.lower() == "conv":
                 shortcut = DownSample(
@@ -478,16 +488,19 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         return shortcut
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the block.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         Returns
         -------
-        out: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        out : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         identity = input
@@ -516,18 +529,19 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the block.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            Batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this block, given `seq_len` and `batch_size`
+        output_shape : sequenc
+            Output shape of the block.
 
         """
         _seq_len = seq_len
@@ -540,32 +554,31 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
 
 
 class ResNetStem(nn.Sequential, SizeMixin):
-    """
-    the input stem of ResNet
+    """The input stem of ResNet.
 
     Parameters
     ----------
-    in_channels: int,
-        the number of input channels
-    out_channels: int or sequence of int,
-        the number of output channels
-    filter_lengths: int or sequence of int,
-        the length of the filter, or equivalently,
-        the kernel size(s) of the convolutions
-    conv_stride: int,
-        the stride of the convolution
-    pool_size: int,
-        the size of the pooling window
-    pool_stride: int,
-        the stride of the pooling window
-    subsample_mode: str,
-        the mode of subsampling, can be one of
-        {DownSample.__MODES__},
-        or "s2d" (with aliases "space_to_depth", "SpaceToDepth")
-    groups: int,
-        the number of groups for the convolution
-    config: dict,
-        the other configs for convolution and pooling
+    in_channels : int
+        Number of input channels.
+    out_channels : int or Sequence[int]
+        Number of output channels.
+    filter_lengths : int or Sequence[int]
+        Length of the filter, or equivalently,
+        kernel size(s) of the convolutions.
+    conv_stride : int
+        Stride of the convolution.
+    pool_size : int
+        Size of the pooling window.
+    pool_stride : int
+        Stride of the pooling window.
+    subsample_mode : str
+        Mode of subsampling, can be one of
+        {:class:`DownSample`.__MODES__},
+        or "s2d" (with aliases "space_to_depth", "SpaceToDepth").
+    groups : int
+        Number of groups for the convolution
+    config : dict
+        Other configs for convolution and pooling.
 
     """
 
@@ -583,7 +596,6 @@ class ResNetStem(nn.Sequential, SizeMixin):
         groups: int = 1,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -630,54 +642,67 @@ class ResNetStem(nn.Sequential, SizeMixin):
                 ),
             )
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the stem."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
 class ResNet(nn.Sequential, SizeMixin, CitationMixin):
-    """
+    """ResNet model.
+
+    The ResNet model is used for ECG classification by a team from
+    the Stanford University [1]_, from which the application of
+    deep learning to ECG analysis becomes more widely known and accepted.
+
+    This implementation bases much on the torchvision implementation [2]_,
+    although which is for image tasks.
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    config: dict,
-        hyper-parameters of the Module, ref. corresponding config file
-        keyword arguments that have to be set:
-        bias: bool,
-            if True, each convolution will have a bias term
-        num_blocks: sequence of int,
-            number of building blocks in each macro block
-        filter_lengths: int or sequence of int or sequence of sequences of int,
-            filter length(s) (kernel size(s)) of the convolutions,
-            with granularity to the whole network, to each macro block,
-            or to each building block
-        subsample_lengths: int or sequence of int or sequence of sequences of int,
-            subsampling length(s) (ratio(s)) of all blocks,
-            with granularity to the whole network, to each macro block,
-            or to each building block,
-            the former 2 subsample at the first building block
-        groups: int,
-            connection pattern (of channels) of the inputs and outputs
-        stem: dict,
-            other parameters that can be set for the input stem
-        block: dict,
-            other parameters that can be set for the building blocks
-            for a full list of configurable parameters, ref. corr. config file
+    in_channels : int
+        Number of channels in the input signal tensor.
+    config : dict
+        Hyper-parameters of the Module, ref. corr. config file.
+        keyword arguments that must be set:
+
+            - bias: bool,
+              if True, each convolution will have a bias term.
+            - num_blocks: sequence of int,
+              number of building blocks in each macro block.
+            - filter_lengths: int or sequence of int or sequence of sequences of int,
+              filter length(s) (kernel size(s)) of the convolutions,
+              with granularity to the whole network, to each macro block,
+              or to each building block.
+            - subsample_lengths: int or sequence of int or sequence of sequences of int,
+              subsampling length(s) (ratio(s)) of all blocks,
+              with granularity to the whole network, to each macro block,
+              or to each building block,
+              the former 2 subsample at the first building block.
+            - groups: int,
+              connection pattern (of channels) of the inputs and outputs.
+            - stem: dict,
+              other parameters that can be set for the input stem.
+            - block: dict,
+              other parameters that can be set for the building blocks.
+
+        For a full list of configurable parameters, ref. corr. config file.
 
     References
     ----------
-    [1] https://github.com/awni/ecg
-    [2] https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
+    .. [1] https://github.com/awni/ecg
+    .. [2] https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
 
     TODO
     ----
-    1. check performances of activations other than "nn.ReLU", especially mish and swish
-    2. add functionality of "replace_stride_with_dilation"
+    1. Check performances of activations other than :class:`~torch.nn.ReLU`,
+       especially :class:`~torch.nn.Mish`, etc.
+    2. Add functionality of `replace_stride_with_dilation`.
 
     """
 
@@ -693,7 +718,6 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
     )
 
     def __init__(self, in_channels: int, **config) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
@@ -857,11 +881,14 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
                 block_in_channels = block_num_filters * bb.expansion
             macro_in_channels = macro_num_filters * bb.expansion
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the model."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
     @property

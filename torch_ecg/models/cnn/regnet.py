@@ -3,6 +3,7 @@ Designing Network Design Spaces
 """
 
 import math
+import textwrap
 import warnings
 from collections import Counter
 from itertools import repeat
@@ -28,69 +29,70 @@ from .resnet import ResNetBottleNeck, ResNetBasicBlock
 
 
 class AnyStage(nn.Sequential, SizeMixin):
-    """
-    AnyStage of RegNet
+    """AnyStage of :class:`RegNet`.
 
     Parameters
     ----------
-    in_channels: int,
-        number of features (channels) of the input
-    num_filters: sequence of int,
-        number of filters for the neck conv layer
-    filter_length: int,
-        lengths (sizes) of the filter kernels for the neck conv layer
-    subsample_length: int,
-        subsample length,
-        including pool size for short cut,
-        and stride for the (top or neck) conv layer
-    num_blocks: int,
-        number of blocks in the stage
-    group_width: int,
-        group width for the bottleneck block
-    stage_index: int,
-        the index of the stage
+    in_channels : int
+        Number of features (channels) of the input.
+    num_filters : Sequence[int]
+        Number of filters for the neck conv layer.
+    filter_length : int
+        Lengths (sizes) of the filter kernels for the neck conv layer.
+    subsample_length : int
+        Subsample length, including pool size for short cut,
+        and stride for the (top or neck) conv layer.
+    num_blocks : int
+        Number of blocks in the stage.
+    group_width : int
+        Group width for the bottleneck block.
+    stage_index : int
+        Index of the stage in the whole :class:`RegNet`.
     block_config: dict,
         (optional) configs for the blocks, including
-        "block": str or nn.Module,
-            the block class, can be one of
-            "bottleneck", "bottle_neck", ResNetBottleNeck, ...,
-        "expansion": int,
-            the expansion factor for the bottleneck block
-        "increase_channels_method": str,
-            the method to increase the number of channels,
-            can be one of {"conv", "zero_padding"}
-        "subsample_mode": str,
-            the mode of subsampling, can be one of
-            {DownSample.__MODES__},
-        "activation": str or nn.Module,
-            the activation function, can be one of
-            {list(Activations)},
-        "kw_activation": dict,
-            the keyword arguments for the activation function
-        "kernel_initializer": str,
-            the kernel initializer, can be one of
-            {list(Initializers)},
-        "kw_initializer": dict,
-            the keyword arguments for the kernel initializer
-        "bias": bool,
-            whether to use bias in the convolution
-        "dilation": int,
-            the dilation factor for the convolution
-        "base_width": int,
-            number of filters per group for the neck conv layer
-            usually number of filters of the initial conv layer of the whole ResNet
-        "base_groups": int,
-            pattern of connections between inputs and outputs of conv layers at the two ends,
-            should divide `groups`
-        "base_filter_length": int,
-            lengths (sizes) of the filter kernels for conv layers at the two ends
-        "attn": dict,
-            attention mechanism for the neck conv layer,
-            if None, no attention mechanism is used,
-            keys:
-                "name": str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
-                "pos": int, position of the attention mechanism,
-                other keys are specific to the attention mechanism
+            - block: str or torch.nn.Module,
+              the block class, can be one of
+              "bottleneck", "bottle_neck", :class:`ResNetBottleNeck`, etc.
+            - expansion: int,
+              the expansion factor for the bottleneck block.
+            - increase_channels_method: str,
+              the method to increase the number of channels,
+              can be one of {"conv", "zero_padding"}.
+            - subsample_mode: str,
+              the mode of subsampling, can be one of
+              {:class:`DownSample`.__MODES__},
+            - activation: str or torch.nn.Module,
+              the activation function, can be one of
+              {:class:`Activations`}.
+            - kw_activation: dict,
+              keyword arguments for the activation function.
+            - kernel_initializer: str,
+              the kernel initializer, can be one of
+              {:class:`Initializers`}.
+            - kw_initializer: dict,
+              keyword arguments for the kernel initializer.
+            - bias: bool,
+              whether to use bias in the convolution.
+            - dilation: int,
+              the dilation factor for the convolution.
+            - base_width: int,
+              number of filters per group for the neck conv layer
+              usually number of filters of the initial conv layer
+              of the whole :class:`RegNet`.
+            - base_groups: int,
+              pattern of connections between inputs and outputs of
+              conv layers at the two ends, which should divide `groups`.
+            - base_filter_length: int,
+              lengths (sizes) of the filter kernels for conv layers at the two ends.
+            - attn: dict,
+              attention mechanism for the neck conv layer.
+              If is None, no attention mechanism is used.
+              If is not None, it should be a dict with the following items:
+
+                - name: str, can be "se", "gc", "nl" (alias "nonlocal", "non-local"), etc.
+                - pos: int, position of the attention mechanism.
+
+              Other keys are specific to the attention mechanism.
 
     """
 
@@ -118,7 +120,6 @@ class AnyStage(nn.Sequential, SizeMixin):
         stage_index: int,
         **block_config,
     ) -> None:
-        """ """
         super().__init__()
 
         self.block_config = CFG(self.__DEFAULT_BLOCK_CONFIG__.copy())
@@ -151,7 +152,7 @@ class AnyStage(nn.Sequential, SizeMixin):
 
     @staticmethod
     def get_building_block_cls(config: CFG) -> nn.Module:
-        """ """
+        """Get the building block class."""
         block_cls = config.get("block")
         if isinstance(block_cls, str):
             if block_cls.lower() in ["bottleneck", "bottle_neck"]:
@@ -160,41 +161,43 @@ class AnyStage(nn.Sequential, SizeMixin):
                 block_cls = ResNetBasicBlock
         return block_cls
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the stage."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
 class RegNetStem(nn.Sequential, SizeMixin):
-    """
-    the input stem of RegNet
+    """The input stem of :class:`RegNet`.
 
     Parameters
     ----------
-    in_channels: int,
-        the number of input channels
-    out_channels: int or sequence of int,
-        the number of output channels
-    filter_lengths: int or sequence of int,
-        the length of the filter, or equivalently,
-        the kernel size(s) of the convolutions
-    conv_stride: int,
-        the stride of the convolution
-    pool_size: int,
-        the size of the pooling window
-    pool_stride: int,
-        the stride of the pooling window
-    subsample_mode: str,
-        the mode of subsampling, can be one of
-        {DownSample.__MODES__},
-        or "s2d" (with aliases "space_to_depth", "SpaceToDepth")
-    groups: int,
-        the number of groups for the convolution
-    config: dict,
-        the other configs for convolution and pooling
+    in_channels : int
+        Number of input channels.
+    out_channels: int or Sequence[int]
+        Number of output channels.
+    filter_lengths : int or Sequence[int]
+        Length of the filter, or equivalently,
+        the kernel size(s) of the convolutions.
+    conv_stride : int
+        Stride of the convolution.
+    pool_size : int
+        Size of the pooling window.
+    pool_stride : int
+        Stride of the pooling window.
+    subsample_mode : str
+        Mode of subsampling, can be one of
+        {:class:`DownSample`.__MODES__},
+        or "s2d" (with aliases "space_to_depth", "SpaceToDepth").
+    groups : int
+        Number of groups for the convolution.
+    config : dict
+        Other configs for convolution and pooling.
 
     """
 
@@ -212,7 +215,6 @@ class RegNetStem(nn.Sequential, SizeMixin):
         groups: int = 1,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -259,51 +261,63 @@ class RegNetStem(nn.Sequential, SizeMixin):
                 ),
             )
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the stem."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
 class RegNet(nn.Sequential, SizeMixin, CitationMixin):
-    """
+    """RegNet model.
+
+    RegNet is a family of convolutional neural networks that can be
+    constructed by efficiently scaling and pruning a single
+    convolutional "stem" network. This architecture is proposed in
+    [1]_, and the implementation is adapted from [2]_.
+
     References
     ----------
-    [1] https://arxiv.org/abs/2003.13678
-    [2] https://github.com/pytorch/vision/blob/master/torchvision/models/regnet.py
+    .. [1] https://arxiv.org/abs/2003.13678
+    .. [2] https://github.com/pytorch/vision/blob/master/torchvision/models/regnet.py
 
     Parameters
     ----------
-    in_channels: int,
-        the number of input channels
-    config: dict,
-        hyper-parameters of the Module, ref. corresponding config file
-        keyword arguments that have to be set:
-        filter_lengths: int or sequence of int,
-            filter length(s) (kernel size(s)) of the convolutions,
-            with granularity to the whole network, to each stage
-        subsample_lengths: int or sequence of int,
-            subsampling length(s) (ratio(s)) of all blocks,
-            with granularity to the whole network, to each stage
-        tot_blocks: int,
-            the total number of building blocks
-        w_a, w_0, w_m: float,
-            the parameters for the widths generating function
-        group_widths: int or sequence of int,
-            the number of channels in each group,
-            with granularity to the whole network, to each stage
-        num_blocks: sequence of int, optional,
-            the number of blocks in each stage,
-            if not given, will be computed from tot_blocks and w_a, w_0, w_m
-        num_filters: int or sequence of int, optional,
-            the number of filters in each stage,
-            if not given, will be computed from tot_blocks and w_a, w_0, w_m
-        stem: dict,
-            the config of the input stem
-        block: dict,
-            other parameters that can be set for the building blocks
+    in_channels : int
+        Number of channels of the input.
+    config : dict
+        Hyper-parameters of the Module, ref. corr. config file.
+        Keyword arguments that must be set:
+
+            - filter_lengths: int or sequence of int,
+              filter length(s) (kernel size(s)) of the convolutions,
+              with granularity to the whole network, to each stage.
+            - subsample_lengths: int or sequence of int,
+              subsampling length(s) (ratio(s)) of all blocks,
+              with granularity to the whole network, to each stage.
+            - tot_blocks: int,
+              the total number of building blocks.
+            - w_a, w_0, w_m: float,
+              the parameters for the widths generating function.
+            - group_widths: int or sequence of int,
+              the number of channels in each group,
+              with granularity to the whole network, to each stage.
+            - num_blocks: sequence of int, optional,
+              the number of blocks in each stage,
+              if not given, will be computed from tot_blocks
+              and `w_a`, `w_0`, `w_m`.
+            - num_filters: int or sequence of int, optional,
+              the number of filters in each stage.
+              If not given, will be computed from tot_blocks
+              and `w_a`, `w_0`, `w_m`.
+            - stem: dict,
+              the config of the input stem.
+            - block: dict,
+              other parameters that can be set for the building blocks.
 
     """
 
@@ -318,7 +332,6 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
     )
 
     def __init__(self, in_channels: int, **config) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(self.__DEFAULT_CONFIG__.copy())
@@ -345,7 +358,7 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
             in_channels = stage_block.compute_output_shape()[1]
 
     def _get_stage_configs(self) -> List[CFG]:
-        """ """
+        """Get the configs for each stage."""
         stage_configs = []
         if self.config.get("num_blocks", None) is not None:
             if isinstance(self.config.filter_lengths, int):
@@ -514,11 +527,14 @@ class RegNet(nn.Sequential, SizeMixin, CitationMixin):
             )
         return stage_configs
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the network."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
     @property

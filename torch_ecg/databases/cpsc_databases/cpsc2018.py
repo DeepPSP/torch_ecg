@@ -68,7 +68,7 @@ _CPSC2018_INFO = DataBaseInfo(
     note="""
     1. Ages of records A0608, A1549, A1876, A2299, A5990 are "NaN".
     2. CINC2020 (ref. [2]_) released totally 3453 unused training data of CPSC2018, whose filenames start with "Q".
-    These file names are not "continuous". The last record is "Q3581".
+       These file names are not "continuous". The last record is "Q3581".
     """,
     usage=[
         "ECG arrythmia detection",

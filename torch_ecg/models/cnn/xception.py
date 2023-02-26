@@ -4,6 +4,7 @@ usually the SOTA image classifier,
 however seems not have been used in physiological signal processing tasks
 """
 
+import textwrap
 from copy import deepcopy
 from itertools import repeat
 from numbers import Real
@@ -43,32 +44,33 @@ _DEFAULT_CONV_CONFIGS = CFG(
 
 
 class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
-    """
+    """Xception multi-convolutional block.
+
     -> n(2 or 3) x (activation -> norm -> sep_conv) (-> optional sub-sample) ->
     |-------------------------------- shortcut ------------------------------|
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    num_filters: sequence of int,
-        number of channels produced by the main stream convolutions,
-        the length of `num_filters` also indicates the number of convolutions
-    filter_lengths: int or sequence of int,
-        length(s) of the filters (kernel size)
-    subsample_length: int,
-        stride of the main stream subsample layer
-    subsample_kernel: int, optional,
-        kernel size of the main stream subsample layer,
-        if not set, defaults to `subsample_length`,
-    dilations: int or sequence of int, default 1,
-        dilation(s) of the convolutions
-    groups: int, default 1,
-        connection pattern (of channels) of the inputs and outputs
-    dropouts: float or sequence of float, default 0.0,
-        dropout ratio after each `Conv_Bn_Activation`
-    config: dict,
-        other parameters, including
+    in_channels : int
+        Number of channels in the input tensor.
+    num_filters : Sequence[int]
+        Number of channels produced by the main stream convolutions.
+        The length of `num_filters` indicates the number of convolutions.
+    filter_lengths : int or Sequence[int]
+        Length(s) of the filters (kernel size).
+    subsample_length : int, default 1
+        Stride of the main stream subsample layer.
+    subsample_kernel : int, optional
+        Kernel size of the main stream subsample layer.
+        If not set, defaults to `subsample_length`.
+    dilations : int or Sequence[int], default 1
+        Dilation(s) of the convolutions.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    dropouts : float or Sequence[float], default 0.0
+        Dropout ratio after each :class:`Conv_Bn_Activation` block.
+    config : dict, optional
+        Other parameters, including
         activation choices, weight initializer, batch normalization choices, etc.,
         for the convolutional layers,
         and subsampling modes for subsampling layers, etc.
@@ -89,7 +91,6 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
         dropouts: Union[Sequence[float], float] = 0.0,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__num_filters = list(num_filters)
@@ -98,9 +99,10 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
             self.__filter_lengths = list(repeat(filter_lengths, self.__num_convs))
         else:
             self.__filter_lengths = list(filter_lengths)
-        assert self.__num_convs == len(
-            self.__filter_lengths
-        ), f"the main stream has {self.__num_convs} convolutions, while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        assert self.__num_convs == len(self.__filter_lengths), (
+            f"the main stream has {self.__num_convs} convolutions, "
+            f"while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        )
         self.__subsample_length = subsample_length
         self.__subsample_kernel = subsample_kernel or subsample_length
         self.__groups = groups
@@ -108,16 +110,18 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
             self.__dilations = list(repeat(dilations, self.__num_convs))
         else:
             self.__dilations = list(dilations)
-        assert self.__num_convs == len(
-            self.__dilations
-        ), f"the main stream has {self.__num_convs} convolutions, while `dilations` indicates {len(self.__dilations)}"
+        assert self.__num_convs == len(self.__dilations), (
+            f"the main stream has {self.__num_convs} convolutions, "
+            f"while `dilations` indicates {len(self.__dilations)}"
+        )
         if isinstance(dropouts, Real):
             self.__dropouts = list(repeat(dropouts, self.__num_convs))
         else:
             self.__dropouts = list(dropouts)
-        assert self.__num_convs == len(
-            self.__dropouts
-        ), f"the main stream has {self.__num_convs} convolutions, while `dropouts` indicates {len(self.__dropouts)}"
+        assert self.__num_convs == len(self.__dropouts), (
+            f"the main stream has {self.__num_convs} convolutions, "
+            f"while `dropouts` indicates {len(self.__dropouts)}"
+        )
         self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
 
@@ -154,16 +158,19 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
             self.shortcut = None
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        output : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         main_out = self.main_stream_conv(input)
@@ -178,18 +185,19 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the module.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            Batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+        output_shape : sequence
+            The output shape of the module.
 
         """
         output_shape = self.main_stream_conv.compute_output_shape(seq_len, batch_size)
@@ -201,39 +209,42 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
 
 
 class XceptionEntryFlow(nn.Sequential, SizeMixin):
-    """
-    Entry flow of the Xception model,
-    consisting of 2 initial convolutions which subsamples at the first one,
-    followed by several Xception blocks of 2 convolutions and of sub-sampling size 2
+    """Entry flow of the Xception model.
+
+    The entry flow is consisting of
+    2 initial convolutions which subsamples at the first one,
+    followed by several Xception blocks of 2 convolutions
+    and of sub-sampling size 2.
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    init_num_filters: sequence of int,
-        number of filters (output channels) of the initial convolutions
-    init_filter_lengths: int or sequence of int,
-        filter length(s) (kernel size(s)) of the initial convolutions
-    init_subsample_lengths: int or sequence of int,
-        subsampling length(s) (stride(s)) of the initial convolutions
-    num_filters: sequence of int or sequence of sequences of int,
-        number of filters of the convolutions of Xception blocks
-    filter_lengths: int or sequence of int or sequence of sequences of int,
-        filter length(s) of the convolutions of Xception blocks
-    subsample_lengths: int or sequence of int,
-        subsampling length(s) of the Xception blocks
-    subsample_kernels: int or sequence of int, optional,
-        subsampling kernel size(s) of the Xception blocks
-    dilations: int or sequence of int or sequence of sequences of int, default 1,
-        dilation(s) of the convolutions of Xception blocks
-    groups: int, default 1,
-        connection pattern (of channels) of the inputs and outputs
-    dropouts: float or sequence of float or sequence of sequences of float, default 0.0,
-        dropout(s) after each `Conv_Bn_Activation` blocks in the Xception blocks
-    block_dropouts: float or sequence of float, default 0.0,
-        dropout(s) after the Xception blocks
-    config: dict,
-        other parameters, Xception blocks and initial convolutions, including
+    in_channels : int
+        Number of channels in the input signal.
+    init_num_filters : Sequence[int]
+        Number of filters (output channels) of the initial convolutions.
+    init_filter_lengths : int or Sequence[int]
+        Filter length(s) (kernel size(s)) of the initial convolutions.
+    init_subsample_lengths : int or Sequence[int]
+        Subsampling length(s) (stride(s)) of the initial convolutions.
+    num_filters : Sequence[int] or Sequence[Sequence[int]]
+        Number of filters of the convolutions of Xception blocks.
+    filter_lengths : int or Sequence[int] or Sequence[Sequence[int]]
+        Filter length(s) of the convolutions of Xception blocks.
+    subsample_lengths : int or Sequence[int]
+        Subsampling length(s) of the Xception blocks.
+    subsample_kernels : int or Sequence[int], optional,
+        Subsampling kernel size(s) of the Xception blocks.
+    dilations : int or Sequence[int] or Sequence[Sequence[int]], default 1,
+        Dilation(s) of the convolutions of Xception blocks.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    dropouts : float or Sequence[float] or Sequence[Sequence[float]], default 0.0
+        Dropout(s) after each :class:`Conv_Bn_Activation` blocks
+        in the Xception blocks.
+    block_dropouts : float or Sequence[float], default 0.0
+        Dropout(s) after the Xception blocks.
+    config : dict, optional
+        Other parameters, Xception blocks and initial convolutions, including
         activation choices, weight initializer, batch normalization choices, etc.
         for the convolutional layers,
         and subsampling modes for subsampling layers, etc.
@@ -258,7 +269,6 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__num_filters = list(num_filters)
@@ -267,18 +277,20 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
             self.__filter_lengths = list(repeat(filter_lengths, self.__num_blocks))
         else:
             self.__filter_lengths = list(filter_lengths)
-        assert self.__num_blocks == len(
-            self.__filter_lengths
-        ), f"the entry flow has {self.__num_blocks} blocks, while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        assert self.__num_blocks == len(self.__filter_lengths), (
+            f"the entry flow has {self.__num_blocks} blocks, "
+            f"while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        )
         if isinstance(subsample_lengths, int):
             self.__subsample_lengths = list(
                 repeat(subsample_lengths, self.__num_blocks)
             )
         else:
             self.__subsample_lengths = list(subsample_lengths)
-        assert self.__num_blocks == len(
-            self.__subsample_lengths
-        ), f"the entry flow has {self.__num_blocks} blocks, while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
+        assert self.__num_blocks == len(self.__subsample_lengths), (
+            f"the entry flow has {self.__num_blocks} blocks, "
+            f"while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
+        )
         if subsample_kernels is None:
             self.__subsample_kernels = deepcopy(self.__subsample_lengths)
         elif isinstance(subsample_kernels, int):
@@ -287,30 +299,34 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
             )
         else:
             self.__subsample_kernels = list(subsample_kernels)
-        assert self.__num_blocks == len(
-            self.__subsample_kernels
-        ), f"the entry flow has {self.__num_blocks} blocks, while `subsample_kernels` indicates {len(self.__subsample_kernels)}"
+        assert self.__num_blocks == len(self.__subsample_kernels), (
+            f"the entry flow has {self.__num_blocks} blocks, "
+            f"while `subsample_kernels` indicates {len(self.__subsample_kernels)}"
+        )
         if isinstance(dilations, int):
             self.__dilations = list(repeat(dilations, self.__num_blocks))
         else:
             self.__dilations = list(dilations)
-        assert self.__num_blocks == len(
-            self.__dilations
-        ), f"the entry flow has {self.__num_blocks} blocks, while `dilations` indicates {len(self.__dilations)}"
+        assert self.__num_blocks == len(self.__dilations), (
+            f"the entry flow has {self.__num_blocks} blocks, "
+            f"while `dilations` indicates {len(self.__dilations)}"
+        )
         if isinstance(dropouts, Real):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
-        assert self.__num_blocks == len(
-            self.__dropouts
-        ), f"the entry flow has {self.__num_blocks} blocks, while `dropouts` indicates {len(self.__dropouts)}"
+        assert self.__num_blocks == len(self.__dropouts), (
+            f"the entry flow has {self.__num_blocks} blocks, "
+            f"while `dropouts` indicates {len(self.__dropouts)}"
+        )
         if isinstance(block_dropouts, Real):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks))
         else:
             self.__block_dropouts = list(block_dropouts)
-        assert self.__num_blocks == len(
-            self.__block_dropouts
-        ), f"the entry flow has {self.__num_blocks} blocks, except the initial convolutions, while `block_dropouts` indicates {len(self.__block_dropouts)}"
+        assert self.__num_blocks == len(self.__block_dropouts), (
+            f"the entry flow has {self.__num_blocks} blocks, except the initial convolutions, "
+            f"while `block_dropouts` indicates {len(self.__block_dropouts)}"
+        )
         self.__groups = groups
         self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
@@ -362,16 +378,19 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
                 )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the entry flow.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        output : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         output = super().forward(input)
@@ -380,18 +399,19 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the entry flow.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensors.
+        batch_size : int, optional
+            Batch size of the input tensors.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+        output_shape : sequence
+            The output shape of the entry flow.
 
         """
         _seq_len = seq_len
@@ -404,28 +424,31 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
 
 
 class XceptionMiddleFlow(nn.Sequential, SizeMixin):
-    """
-    Middle flow of the Xception model,
-    consisting of several Xception blocks of 3 convolutions and without sub-sampling
+    """Middle flow of the Xception model.
+
+    Middle flow consists of several Xception blocks of 3 convolutions
+    and without sub-sampling.
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    num_filters: sequence of int or sequence of sequences of int,
-        number of filters (output channels) of the convolutions of Xception blocks
-    filter_lengths: int or sequence of int or sequence of sequences of int,
-        filter length(s) of the convolutions of Xception blocks
-    dilations: int or sequence of int or sequence of sequences of int, default 1,
-        dilation(s) of the convolutions of Xception blocks
-    groups: int, default 1,
-        connection pattern (of channels) of the inputs and outputs
-    dropouts: float or sequence of float or sequence of sequences of float, default 0.0,
-        dropout(s) after each `Conv_Bn_Activation` blocks in the Xception blocks
-    block_dropouts: float or sequence of float, default 0.0,
-        dropout(s) after the Xception blocks
-    config: dict,
-        other parameters for Xception blocks, including
+    in_channels : int
+        Number of channels in the input tensor.
+    num_filters: Sequence[int] or Sequence[Sequence[int]]
+        Number of filters (output channels) of the convolutions
+        of Xception blocks.
+    filter_lengths : int or Sequence[int] or Sequence[Sequence[int]]
+        Filter length(s) of the convolutions of Xception blocks.
+    dilations : int or Sequence[int] or Sequence[Sequence[int]], default 1
+        Dilation(s) of the convolutions of Xception blocks.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    dropouts : float or Sequence[float] or Sequence[Sequence[float]], default 0.0
+        Dropout(s) after each :class:`Conv_Bn_Activation` blocks
+        in the Xception blocks.
+    block_dropouts : float or Sequence[float], default 0.0
+        Dropout(s) after the Xception blocks
+    config : dict, optional
+        Other parameters for Xception blocks, including
         activation choices, weight initializer, batch normalization choices, etc.
         for the convolutional layers,
         and subsampling modes for subsampling layers, etc.
@@ -445,7 +468,6 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__num_filters = list(num_filters)
@@ -454,30 +476,34 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
             self.__filter_lengths = list(repeat(filter_lengths, self.__num_blocks))
         else:
             self.__filter_lengths = list(filter_lengths)
-        assert self.__num_blocks == len(
-            self.__filter_lengths
-        ), f"the middle flow has {self.__num_blocks} blocks, while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        assert self.__num_blocks == len(self.__filter_lengths), (
+            f"the middle flow has {self.__num_blocks} blocks, "
+            f"while `filter_lengths` indicates {len(self.__filter_lengths)}"
+        )
         if isinstance(dilations, int):
             self.__dilations = list(repeat(dilations, self.__num_blocks))
         else:
             self.__dilations = list(dilations)
-        assert self.__num_blocks == len(
-            self.__dilations
-        ), f"the middle flow has {self.__num_blocks} blocks, while `dilations` indicates {len(self.__dilations)}"
+        assert self.__num_blocks == len(self.__dilations), (
+            f"the middle flow has {self.__num_blocks} blocks, "
+            f"while `dilations` indicates {len(self.__dilations)}"
+        )
         if isinstance(dropouts, Real):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
-        assert self.__num_blocks == len(
-            self.__dropouts
-        ), f"the middle flow has {self.__num_blocks} blocks, while `dropouts` indicates {len(self.__dropouts)}"
+        assert self.__num_blocks == len(self.__dropouts), (
+            f"the middle flow has {self.__num_blocks} blocks, "
+            f"while `dropouts` indicates {len(self.__dropouts)}"
+        )
         if isinstance(block_dropouts, Real):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks))
         else:
             self.__block_dropouts = list(block_dropouts)
-        assert self.__num_blocks == len(
-            self.__block_dropouts
-        ), f"the middle flow has {self.__num_blocks} blocks, while `block_dropouts` indicates {len(self.__block_dropouts)}"
+        assert self.__num_blocks == len(self.__block_dropouts), (
+            f"the middle flow has {self.__num_blocks} blocks, "
+            f"while `block_dropouts` indicates {len(self.__block_dropouts)}"
+        )
         self.__groups = groups
         self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
@@ -508,16 +534,19 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
                 )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the middle flow.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        output : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         output = super().forward(input)
@@ -526,18 +555,19 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the middle flow.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensors.
+        batch_size : int, optional
+            Batch size of the input tensors.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+        output_shape : sequence
+            The output shape of the middle flow.
 
         """
         _seq_len = seq_len
@@ -550,39 +580,41 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
 
 
 class XceptionExitFlow(nn.Sequential, SizeMixin):
-    """
-    Exit flow of the Xception model,
-    consisting of several Xception blocks of 2 convolutions,
-    followed by several separable convolutions
+    """Exit flow of the Xception model.
+
+    Exit flow consists of several Xception blocks of 2 convolutions,
+    followed by several separable convolutions.
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    final_num_filters: sequence of int,
-        number of filters (output channels) of the final convolutions
-    final_filter_lengths: int or sequence of int,
-        filter length(s) of the convolutions of the final convolutions
-    final_subsample_lengths: int or sequence of int,
-        subsampling length(s) (stride(s)) of the final convolutions
-    num_filters: sequence of int or sequence of sequences of int,
-        number of filters of the convolutions of Xception blocks
-    filter_lengths: int or sequence of int or sequence of sequences of int,
-        filter length(s) of the convolutions of Xception blocks
-    subsample_lengths: int or sequence of int,
-        subsampling length(s) of the Xception blocks
-    subsample_kernels: int or sequence of int, optional,
-        subsampling kernel size(s) of the Xception blocks
-    dilations: int or sequence of int or sequence of sequences of int, default 1,
-        dilation(s) of the convolutions of Xception blocks
-    groups: int, default 1,
-        connection pattern (of channels) of the inputs and outputs
-    dropouts: float or sequence of float or sequence of sequences of float, default 0.0,
-        dropout(s) after each `Conv_Bn_Activation` blocks in the Xception blocks
-    block_dropouts: float or sequence of float, default 0.0,
-        dropout(s) after each of the Xception blocks and each of the final convolutions
-    config: dict,
-        other parameters for Xception blocks and final convolutions, including
+    in_channels : int
+        Number of channels in the input tensor.
+    final_num_filters : Sequence[int]
+        Number of filters (output channels) of the final convolutions.
+    final_filter_lengths : int or Sequence[int]
+        Filter length(s) of the convolutions of the final convolutions.
+    final_subsample_lengths : int or Sequence[int]
+        Subsampling length(s) (stride(s)) of the final convolutions.
+    num_filters : Sequence[int] or Sequence[Sequence[int]]
+        Number of filters of the convolutions of Xception blocks.
+    filter_lengths : int or Sequence[int] or Sequence[Sequence[int]]
+        Filter length(s) of the convolutions of Xception blocks.
+    subsample_lengths : int or Sequence[int]
+        Subsampling length(s) of the Xception blocks.
+    subsample_kernels : int or Sequence[int], optional
+        Subsampling kernel size(s) of the Xception blocks.
+    dilations: int or Sequence[int] or Sequence[Sequence[int]], default 1
+        Dilation(s) of the convolutions of Xception blocks.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    dropouts : float or Sequence[float] or Sequence[Sequence[float]], default 0.0
+        Dropout(s) after each :class:`Conv_Bn_Activation` blocks
+        in the Xception blocks.
+    block_dropouts : float or Sequence[float], default 0.0
+        Dropout(s) after each of the Xception blocks
+        and each of the final convolutions.
+    config : dict, optional
+        Other parameters for Xception blocks and final convolutions, including
         activation choices, weight initializer, batch normalization choices, etc.
         for the convolutional layers,
         and subsampling modes for subsampling layers, etc.
@@ -606,7 +638,6 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         block_dropouts: Union[float, Sequence[float]] = 0.0,
         **config,
     ) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.__num_filters = list(num_filters)
@@ -624,9 +655,10 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
             )
         else:
             self.__subsample_lengths = list(subsample_lengths)
-        assert self.__num_blocks == len(
-            self.__subsample_lengths
-        ), f"the exit flow has {self.__num_blocks} blocks, while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
+        assert self.__num_blocks == len(self.__subsample_lengths), (
+            f"the exit flow has {self.__num_blocks} blocks, "
+            f"while `subsample_lengths` indicates {len(self.__subsample_lengths)}"
+        )
         if subsample_kernels is None:
             self.__subsample_kernels = deepcopy(self.__subsample_lengths)
         elif isinstance(subsample_kernels, int):
@@ -635,23 +667,26 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
             )
         else:
             self.__subsample_kernels = list(subsample_kernels)
-        assert self.__num_blocks == len(
-            self.__subsample_kernels
-        ), f"the exit flow has {self.__num_blocks} blocks, while `subsample_kernels` indicates {len(self.__subsample_kernels)}"
+        assert self.__num_blocks == len(self.__subsample_kernels), (
+            f"the exit flow has {self.__num_blocks} blocks, "
+            f"while `subsample_kernels` indicates {len(self.__subsample_kernels)}"
+        )
         if isinstance(dilations, int):
             self.__dilations = list(repeat(dilations, self.__num_blocks))
         else:
             self.__dilations = list(dilations)
-        assert self.__num_blocks == len(
-            self.__dilations
-        ), f"the exit flow has {self.__num_blocks} blocks, while `dilations` indicates {len(self.__dilations)}"
+        assert self.__num_blocks == len(self.__dilations), (
+            f"the exit flow has {self.__num_blocks} blocks, "
+            f"while `dilations` indicates {len(self.__dilations)}"
+        )
         if isinstance(dropouts, Real):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
-        assert self.__num_blocks == len(
-            self.__dropouts
-        ), f"the exit flow has {self.__num_blocks} blocks, while `dropouts` indicates {len(self.__dropouts)}"
+        assert self.__num_blocks == len(self.__dropouts), (
+            f"the exit flow has {self.__num_blocks} blocks, "
+            f"while `dropouts` indicates {len(self.__dropouts)}"
+        )
         if isinstance(block_dropouts, Real):
             self.__block_dropouts = list(
                 repeat(block_dropouts, self.__num_blocks + len(final_num_filters))
@@ -660,7 +695,10 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
             self.__block_dropouts = list(block_dropouts)
         assert self.__num_blocks + len(final_num_filters) == len(
             self.__block_dropouts
-        ), f"the exit flow has {self.__num_blocks + len(final_num_filters)} blocks, including the final convolutions, while `block_dropouts` indicates {len(self.__block_dropouts)}"
+        ), (
+            f"the exit flow has {self.__num_blocks + len(final_num_filters)} blocks, "
+            f"including the final convolutions, while `block_dropouts` indicates {len(self.__block_dropouts)}"
+        )
         self.__groups = groups
         self.config = CFG(deepcopy(_DEFAULT_CONV_CONFIGS))
         self.config.update(deepcopy(config))
@@ -705,16 +743,19 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the exit flow.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        output : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         output = super().forward(input)
@@ -723,18 +764,19 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the exit flow.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensors.
+        batch_size : int, optional
+            Batch size of the input tensors.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this `MultiConv` layer, given `seq_len` and `batch_size`
+        output_shape : sequence
+            The output shape of the exit flow.
 
         """
         _seq_len = seq_len
@@ -747,29 +789,37 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
 
 
 class Xception(nn.Sequential, SizeMixin, CitationMixin):
-    """
+    """Xception model.
+
+    Xception is an architecture that uses depthwise separable convolutions
+    to build light-weight deep neural networks, as described in [1]_.
+    Its official implementation is available in [2]_, and a PyTorch
+    implementation is available in [3]_. Xception is currently not widely
+    used in the field of ECG analysis, but has the potential to be highly
+    effective for this task.
+
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    config: dict,
-        other hyper-parameters of the Module, ref. corresponding config file
-        key word arguments that have to be set in 3 sub-dict,
+    in_channels : int
+        Number of channels in the input.
+    config : dict
+        Other hyper-parameters of the Module, ref. corr. config file.
+        For keyword arguments that must be set in 3 sub-dict,
         namely in "entry_flow", "middle_flow", and "exit_flow",
-        ref. corresponding docstring of each class
+        refer to corr. docstring of each class.
 
     References
     ----------
-    [1] Chollet, François. "Xception: Deep learning with depthwise separable convolutions." Proceedings of the IEEE conference on computer vision and pattern recognition. 2017.
-    [2] https://github.com/keras-team/keras-applications/blob/master/keras_applications/xception.py
-    [3] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
+    .. [1] Chollet, François. "Xception: Deep learning with depthwise separable convolutions."
+           Proceedings of the IEEE conference on computer vision and pattern recognition. 2017.
+    .. [2] https://github.com/keras-team/keras-applications/blob/master/keras_applications/xception.py
+    .. [3] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
 
     """
 
     __name__ = "Xception"
 
     def __init__(self, in_channels: int, **config) -> None:
-        """ """
         super().__init__()
         self.__in_channels = in_channels
         self.config = CFG(deepcopy(config))
@@ -796,26 +846,32 @@ class Xception(nn.Sequential, SizeMixin, CitationMixin):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the model.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor.
+            Input signal tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        output : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         output = super().forward(input)
         return output
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape the model."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
     @property

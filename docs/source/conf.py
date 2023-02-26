@@ -103,6 +103,7 @@ napoleon_custom_sections = [
     "Citation",
     "TODO",
     "Version history",
+    "Pipeline",
 ]
 # napoleon_custom_section_rename = False # True is default for backwards compatibility.
 

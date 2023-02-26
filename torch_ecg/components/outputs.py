@@ -141,7 +141,7 @@ class BaseOutput(CFG, ABC):
         raise NotImplementedError("Subclass must implement method `required_fields`")
 
     def append(self, values: Union["BaseOutput", Sequence["BaseOutput"]]) -> None:
-        """Append other :class:`Output`s to `self`
+        """Append other :class:`Output` to `self`
 
         Parameters
         ----------
