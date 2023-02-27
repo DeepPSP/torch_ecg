@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg._preprocessors
+
+
+BaselineRemove
+==============
+
+.. autoclass:: BaselineRemove
+    :members:

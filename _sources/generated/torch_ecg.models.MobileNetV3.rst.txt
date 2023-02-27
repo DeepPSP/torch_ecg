@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.models
+
+
+MobileNetV3
+===========
+
+.. autoclass:: MobileNetV3
+    :members:

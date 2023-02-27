@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.models
+
+
+ECG_SEQ_LAB_NET
+===============
+
+.. autoclass:: ECG_SEQ_LAB_NET
+    :members:

@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.models
+
+
+VGG16
+=====
+
+.. autoclass:: VGG16
+    :members:

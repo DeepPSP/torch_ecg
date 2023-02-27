@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.augmenters
+
+
+Augmenter
+=========
+
+.. autoclass:: Augmenter
+    :members:

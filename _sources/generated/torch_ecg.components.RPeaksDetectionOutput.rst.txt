@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.components
+
+
+RPeaksDetectionOutput
+=====================
+
+.. autoclass:: RPeaksDetectionOutput
+    :members:

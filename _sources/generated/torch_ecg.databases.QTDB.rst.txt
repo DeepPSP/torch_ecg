@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.databases
+
+
+QTDB
+====
+
+.. autoclass:: QTDB
+    :members:

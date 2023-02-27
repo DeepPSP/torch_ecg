@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.preprocessors
+
+
+BandPass
+========
+
+.. autoclass:: BandPass
+    :members:

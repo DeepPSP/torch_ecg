@@ -1,0 +1,1707 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torch_ecg.databases.datasets.cinc2021.cinc2021_dataset &mdash; torch-ecg 0.0.26 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../../../_static/css/custom.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../../../search.html"/>
+    <link rel="top" title="torch-ecg 0.0.26 documentation" href="../../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../../index.html"/> 
+
+  
+  <script src="../../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> torch-ecg
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../install.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorial.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../databases.html">torch_ecg.databases</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../databases.html#base-classes">Base classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.PhysioNetDataBase.html">PhysioNetDataBase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.PhysioNetDataBase.html#torch_ecg.databases.PhysioNetDataBase"><code class="docutils literal notranslate"><span class="pre">PhysioNetDataBase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.NSRRDataBase.html">NSRRDataBase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.NSRRDataBase.html#torch_ecg.databases.NSRRDataBase"><code class="docutils literal notranslate"><span class="pre">NSRRDataBase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CPSCDataBase.html">CPSCDataBase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CPSCDataBase.html#torch_ecg.databases.CPSCDataBase"><code class="docutils literal notranslate"><span class="pre">CPSCDataBase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.PSGDataBaseMixin.html">PSGDataBaseMixin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.PSGDataBaseMixin.html#torch_ecg.databases.PSGDataBaseMixin"><code class="docutils literal notranslate"><span class="pre">PSGDataBaseMixin</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../databases.html#physionet-database-readers">PhysioNet database readers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.AFDB.html">AFDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.AFDB.html#torch_ecg.databases.AFDB"><code class="docutils literal notranslate"><span class="pre">AFDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.ApneaECG.html">ApneaECG</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.ApneaECG.html#torch_ecg.databases.ApneaECG"><code class="docutils literal notranslate"><span class="pre">ApneaECG</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CINC2017.html">CINC2017</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CINC2017.html#torch_ecg.databases.CINC2017"><code class="docutils literal notranslate"><span class="pre">CINC2017</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CINC2018.html">CINC2018</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CINC2018.html#torch_ecg.databases.CINC2018"><code class="docutils literal notranslate"><span class="pre">CINC2018</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CINC2020.html">CINC2020</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CINC2020.html#torch_ecg.databases.CINC2020"><code class="docutils literal notranslate"><span class="pre">CINC2020</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CINC2021.html">CINC2021</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CINC2021.html#torch_ecg.databases.CINC2021"><code class="docutils literal notranslate"><span class="pre">CINC2021</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.LTAFDB.html">LTAFDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.LTAFDB.html#torch_ecg.databases.LTAFDB"><code class="docutils literal notranslate"><span class="pre">LTAFDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.LUDB.html">LUDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.LUDB.html#torch_ecg.databases.LUDB"><code class="docutils literal notranslate"><span class="pre">LUDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.MITDB.html">MITDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.MITDB.html#torch_ecg.databases.MITDB"><code class="docutils literal notranslate"><span class="pre">MITDB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.QTDB.html">QTDB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.QTDB.html#torch_ecg.databases.QTDB"><code class="docutils literal notranslate"><span class="pre">QTDB</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../databases.html#cpsc-database-readers">CPSC database readers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CPSC2018.html">CPSC2018</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CPSC2018.html#torch_ecg.databases.CPSC2018"><code class="docutils literal notranslate"><span class="pre">CPSC2018</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CPSC2019.html">CPSC2019</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CPSC2019.html#torch_ecg.databases.CPSC2019"><code class="docutils literal notranslate"><span class="pre">CPSC2019</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CPSC2020.html">CPSC2020</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CPSC2020.html#torch_ecg.databases.CPSC2020"><code class="docutils literal notranslate"><span class="pre">CPSC2020</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CPSC2021.html">CPSC2021</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CPSC2021.html#torch_ecg.databases.CPSC2021"><code class="docutils literal notranslate"><span class="pre">CPSC2021</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../databases.html#nsrr-database-readers">NSRR database readers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.SHHS.html">SHHS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS"><code class="docutils literal notranslate"><span class="pre">SHHS</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../databases.html#other-database-readers">Other database readers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CACHET_CADB.html">CACHET_CADB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.CACHET_CADB.html#torch_ecg.databases.CACHET_CADB"><code class="docutils literal notranslate"><span class="pre">CACHET_CADB</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.SPH.html">SPH</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.SPH.html#torch_ecg.databases.SPH"><code class="docutils literal notranslate"><span class="pre">SPH</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../databases.html#miscellaneous">Miscellaneous</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.BeatAnn.html">BeatAnn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.BeatAnn.html#torch_ecg.databases.BeatAnn"><code class="docutils literal notranslate"><span class="pre">BeatAnn</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../databases.html#torch-ecg-databases-datasets">torch_ecg.databases.datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html">CINC2020Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html#torch_ecg.databases.datasets.CINC2020Dataset"><code class="docutils literal notranslate"><span class="pre">CINC2020Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html#torch_ecg.databases.datasets.CINC2020Dataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">CINC2020Dataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html#torch_ecg.databases.datasets.CINC2020Dataset.labels"><code class="docutils literal notranslate"><span class="pre">CINC2020Dataset.labels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html#torch_ecg.databases.datasets.CINC2020Dataset.persistence"><code class="docutils literal notranslate"><span class="pre">CINC2020Dataset.persistence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2020Dataset.html#torch_ecg.databases.datasets.CINC2020Dataset.signals"><code class="docutils literal notranslate"><span class="pre">CINC2020Dataset.signals</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html">CINC2021Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.empty"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.empty()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.from_extern"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.from_extern()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.labels"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.labels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.persistence"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.persistence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.reload_from_extern"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.reload_from_extern()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.signals"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.signals</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.to"><code class="docutils literal notranslate"><span class="pre">CINC2021Dataset.to()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2019Dataset.html">CPSC2019Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2019Dataset.html#torch_ecg.databases.datasets.CPSC2019Dataset"><code class="docutils literal notranslate"><span class="pre">CPSC2019Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2019Dataset.html#torch_ecg.databases.datasets.CPSC2019Dataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">CPSC2019Dataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2019Dataset.html#torch_ecg.databases.datasets.CPSC2019Dataset.labels"><code class="docutils literal notranslate"><span class="pre">CPSC2019Dataset.labels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2019Dataset.html#torch_ecg.databases.datasets.CPSC2019Dataset.signals"><code class="docutils literal notranslate"><span class="pre">CPSC2019Dataset.signals</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html">CPSC2021Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset.load_preprocessed_data"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset.load_preprocessed_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset.persistence"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset.persistence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset.plot_seg"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset.plot_seg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.CPSC2021Dataset.html#torch_ecg.databases.datasets.CPSC2021Dataset.reset_task"><code class="docutils literal notranslate"><span class="pre">CPSC2021Dataset.reset_task()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.LUDBDataset.html">LUDBDataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.LUDBDataset.html#torch_ecg.databases.datasets.LUDBDataset"><code class="docutils literal notranslate"><span class="pre">LUDBDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.LUDBDataset.html#torch_ecg.databases.datasets.LUDBDataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">LUDBDataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.LUDBDataset.html#torch_ecg.databases.datasets.LUDBDataset.labels"><code class="docutils literal notranslate"><span class="pre">LUDBDataset.labels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.LUDBDataset.html#torch_ecg.databases.datasets.LUDBDataset.signals"><code class="docutils literal notranslate"><span class="pre">LUDBDataset.signals</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html">MITDBDataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset"><code class="docutils literal notranslate"><span class="pre">MITDBDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">MITDBDataset.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset.persistence"><code class="docutils literal notranslate"><span class="pre">MITDBDataset.persistence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset.plot_seg"><code class="docutils literal notranslate"><span class="pre">MITDBDataset.plot_seg()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.databases.datasets.MITDBDataset.html#torch_ecg.databases.datasets.MITDBDataset.reset_task"><code class="docutils literal notranslate"><span class="pre">MITDBDataset.reset_task()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../models.html">torch_ecg.models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../models.html#convolutional-neural-backbones">Convolutional neural backbones</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.ResNet.html">ResNet</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.ResNet.html#torch_ecg.models.ResNet"><code class="docutils literal notranslate"><span class="pre">ResNet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.RegNet.html">RegNet</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.RegNet.html#torch_ecg.models.RegNet"><code class="docutils literal notranslate"><span class="pre">RegNet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.VGG16.html">VGG16</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.VGG16.html#torch_ecg.models.VGG16"><code class="docutils literal notranslate"><span class="pre">VGG16</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.Xception.html">Xception</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.Xception.html#torch_ecg.models.Xception"><code class="docutils literal notranslate"><span class="pre">Xception</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.DenseNet.html">DenseNet</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.DenseNet.html#torch_ecg.models.DenseNet"><code class="docutils literal notranslate"><span class="pre">DenseNet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.MobileNetV1.html">MobileNetV1</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.MobileNetV1.html#torch_ecg.models.MobileNetV1"><code class="docutils literal notranslate"><span class="pre">MobileNetV1</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.MobileNetV2.html">MobileNetV2</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.MobileNetV2.html#torch_ecg.models.MobileNetV2"><code class="docutils literal notranslate"><span class="pre">MobileNetV2</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.MobileNetV3.html">MobileNetV3</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.MobileNetV3.html#torch_ecg.models.MobileNetV3"><code class="docutils literal notranslate"><span class="pre">MobileNetV3</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.MultiScopicCNN.html">MultiScopicCNN</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.MultiScopicCNN.html#torch_ecg.models.MultiScopicCNN"><code class="docutils literal notranslate"><span class="pre">MultiScopicCNN</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../models.html#downstream-task-models">Downstream task models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.ECG_UNET.html">ECG_UNET</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.ECG_UNET.html#torch_ecg.models.ECG_UNET"><code class="docutils literal notranslate"><span class="pre">ECG_UNET</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.ECG_SUBTRACT_UNET.html">ECG_SUBTRACT_UNET</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.ECG_SUBTRACT_UNET.html#torch_ecg.models.ECG_SUBTRACT_UNET"><code class="docutils literal notranslate"><span class="pre">ECG_SUBTRACT_UNET</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.ECG_CRNN.html">ECG_CRNN</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.ECG_CRNN.html#torch_ecg.models.ECG_CRNN"><code class="docutils literal notranslate"><span class="pre">ECG_CRNN</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.ECG_SEQ_LAB_NET.html">ECG_SEQ_LAB_NET</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.ECG_SEQ_LAB_NET.html#torch_ecg.models.ECG_SEQ_LAB_NET"><code class="docutils literal notranslate"><span class="pre">ECG_SEQ_LAB_NET</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.RR_LSTM.html">RR_LSTM</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.RR_LSTM.html#torch_ecg.models.RR_LSTM"><code class="docutils literal notranslate"><span class="pre">RR_LSTM</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../models.html#saliency-analysis">Saliency analysis</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.models.GradCam.html">GradCam</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.models.GradCam.html#torch_ecg.models.GradCam"><code class="docutils literal notranslate"><span class="pre">GradCam</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../augmenters.html">torch_ecg.augmenters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.AugmenterManager.html">AugmenterManager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager"><code class="docutils literal notranslate"><span class="pre">AugmenterManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.augmenters"><code class="docutils literal notranslate"><span class="pre">AugmenterManager.augmenters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.extra_repr"><code class="docutils literal notranslate"><span class="pre">AugmenterManager.extra_repr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.forward"><code class="docutils literal notranslate"><span class="pre">AugmenterManager.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.from_config"><code class="docutils literal notranslate"><span class="pre">AugmenterManager.from_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager.rearrange"><code class="docutils literal notranslate"><span class="pre">AugmenterManager.rearrange()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.Augmenter.html">Augmenter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter"><code class="docutils literal notranslate"><span class="pre">Augmenter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter.forward"><code class="docutils literal notranslate"><span class="pre">Augmenter.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.Augmenter.html#torch_ecg.augmenters.Augmenter.get_indices"><code class="docutils literal notranslate"><span class="pre">Augmenter.get_indices()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html">BaselineWanderAugmenter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter"><code class="docutils literal notranslate"><span class="pre">BaselineWanderAugmenter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">BaselineWanderAugmenter.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.BaselineWanderAugmenter.html#torch_ecg.augmenters.BaselineWanderAugmenter.forward"><code class="docutils literal notranslate"><span class="pre">BaselineWanderAugmenter.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.CutMix.html">CutMix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.CutMix.html#torch_ecg.augmenters.CutMix"><code class="docutils literal notranslate"><span class="pre">CutMix</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.CutMix.html#torch_ecg.augmenters.CutMix.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">CutMix.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.CutMix.html#torch_ecg.augmenters.CutMix.forward"><code class="docutils literal notranslate"><span class="pre">CutMix.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.LabelSmooth.html">LabelSmooth</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.LabelSmooth.html#torch_ecg.augmenters.LabelSmooth"><code class="docutils literal notranslate"><span class="pre">LabelSmooth</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.LabelSmooth.html#torch_ecg.augmenters.LabelSmooth.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">LabelSmooth.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.LabelSmooth.html#torch_ecg.augmenters.LabelSmooth.forward"><code class="docutils literal notranslate"><span class="pre">LabelSmooth.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.Mixup.html">Mixup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.Mixup.html#torch_ecg.augmenters.Mixup"><code class="docutils literal notranslate"><span class="pre">Mixup</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.Mixup.html#torch_ecg.augmenters.Mixup.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">Mixup.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.Mixup.html#torch_ecg.augmenters.Mixup.forward"><code class="docutils literal notranslate"><span class="pre">Mixup.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomFlip.html">RandomFlip</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomFlip.html#torch_ecg.augmenters.RandomFlip"><code class="docutils literal notranslate"><span class="pre">RandomFlip</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomFlip.html#torch_ecg.augmenters.RandomFlip.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">RandomFlip.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomFlip.html#torch_ecg.augmenters.RandomFlip.forward"><code class="docutils literal notranslate"><span class="pre">RandomFlip.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomMasking.html">RandomMasking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomMasking.html#torch_ecg.augmenters.RandomMasking"><code class="docutils literal notranslate"><span class="pre">RandomMasking</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomMasking.html#torch_ecg.augmenters.RandomMasking.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">RandomMasking.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomMasking.html#torch_ecg.augmenters.RandomMasking.forward"><code class="docutils literal notranslate"><span class="pre">RandomMasking.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomRenormalize.html">RandomRenormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomRenormalize.html#torch_ecg.augmenters.RandomRenormalize"><code class="docutils literal notranslate"><span class="pre">RandomRenormalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomRenormalize.html#torch_ecg.augmenters.RandomRenormalize.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">RandomRenormalize.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.RandomRenormalize.html#torch_ecg.augmenters.RandomRenormalize.forward"><code class="docutils literal notranslate"><span class="pre">RandomRenormalize.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.StretchCompress.html">StretchCompress</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress"><code class="docutils literal notranslate"><span class="pre">StretchCompress</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">StretchCompress.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.StretchCompress.html#torch_ecg.augmenters.StretchCompress.forward"><code class="docutils literal notranslate"><span class="pre">StretchCompress.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.StretchCompressOffline.html">StretchCompressOffline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline"><code class="docutils literal notranslate"><span class="pre">StretchCompressOffline</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">StretchCompressOffline.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.augmenters.StretchCompressOffline.html#torch_ecg.augmenters.StretchCompressOffline.generate"><code class="docutils literal notranslate"><span class="pre">StretchCompressOffline.generate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../preprocessors.html">torch_ecg._preprocessors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.PreprocManager.html">PreprocManager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.PreprocManager.html#torch_ecg._preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.PreprocManager.html#torch_ecg._preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.PreprocManager.html#torch_ecg._preprocessors.PreprocManager.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">PreprocManager.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.PreprocManager.html#torch_ecg._preprocessors.PreprocManager.from_config"><code class="docutils literal notranslate"><span class="pre">PreprocManager.from_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.PreprocManager.html#torch_ecg._preprocessors.PreprocManager.rearrange"><code class="docutils literal notranslate"><span class="pre">PreprocManager.rearrange()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.PreProcessor.html">PreProcessor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.PreProcessor.html#torch_ecg._preprocessors.PreProcessor"><code class="docutils literal notranslate"><span class="pre">PreProcessor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.PreProcessor.html#torch_ecg._preprocessors.PreProcessor.apply"><code class="docutils literal notranslate"><span class="pre">PreProcessor.apply()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.BandPass.html">BandPass</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.BandPass.html#torch_ecg._preprocessors.BandPass"><code class="docutils literal notranslate"><span class="pre">BandPass</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.BandPass.html#torch_ecg._preprocessors.BandPass.apply"><code class="docutils literal notranslate"><span class="pre">BandPass.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.BandPass.html#torch_ecg._preprocessors.BandPass.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">BandPass.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.BaselineRemove.html">BaselineRemove</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.BaselineRemove.html#torch_ecg._preprocessors.BaselineRemove"><code class="docutils literal notranslate"><span class="pre">BaselineRemove</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.BaselineRemove.html#torch_ecg._preprocessors.BaselineRemove.apply"><code class="docutils literal notranslate"><span class="pre">BaselineRemove.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.BaselineRemove.html#torch_ecg._preprocessors.BaselineRemove.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">BaselineRemove.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.Normalize.html">Normalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.Normalize.html#torch_ecg._preprocessors.Normalize"><code class="docutils literal notranslate"><span class="pre">Normalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.Normalize.html#torch_ecg._preprocessors.Normalize.apply"><code class="docutils literal notranslate"><span class="pre">Normalize.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.Normalize.html#torch_ecg._preprocessors.Normalize.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">Normalize.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.MinMaxNormalize.html">MinMaxNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.MinMaxNormalize.html#torch_ecg._preprocessors.MinMaxNormalize"><code class="docutils literal notranslate"><span class="pre">MinMaxNormalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.MinMaxNormalize.html#torch_ecg._preprocessors.MinMaxNormalize.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">MinMaxNormalize.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.NaiveNormalize.html">NaiveNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.NaiveNormalize.html#torch_ecg._preprocessors.NaiveNormalize"><code class="docutils literal notranslate"><span class="pre">NaiveNormalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.NaiveNormalize.html#torch_ecg._preprocessors.NaiveNormalize.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">NaiveNormalize.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.ZScoreNormalize.html">ZScoreNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.ZScoreNormalize.html#torch_ecg._preprocessors.ZScoreNormalize"><code class="docutils literal notranslate"><span class="pre">ZScoreNormalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.ZScoreNormalize.html#torch_ecg._preprocessors.ZScoreNormalize.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">ZScoreNormalize.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.Resample.html">Resample</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.Resample.html#torch_ecg._preprocessors.Resample"><code class="docutils literal notranslate"><span class="pre">Resample</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.Resample.html#torch_ecg._preprocessors.Resample.apply"><code class="docutils literal notranslate"><span class="pre">Resample.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.Resample.html#torch_ecg._preprocessors.Resample.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">Resample.extra_repr_keys()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.preprocess_multi_lead_signal.html">torch_ecg._preprocessors.preprocess_multi_lead_signal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.preprocess_multi_lead_signal.html#torch_ecg._preprocessors.preprocess_multi_lead_signal"><code class="docutils literal notranslate"><span class="pre">preprocess_multi_lead_signal()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.preprocess_single_lead_signal.html">torch_ecg._preprocessors.preprocess_single_lead_signal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg._preprocessors.preprocess_single_lead_signal.html#torch_ecg._preprocessors.preprocess_single_lead_signal"><code class="docutils literal notranslate"><span class="pre">preprocess_single_lead_signal()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.extra_repr_keys"><code class="docutils literal notranslate"><span class="pre">PreprocManager.extra_repr_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.forward"><code class="docutils literal notranslate"><span class="pre">PreprocManager.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.from_config"><code class="docutils literal notranslate"><span class="pre">PreprocManager.from_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.rearrange"><code class="docutils literal notranslate"><span class="pre">PreprocManager.rearrange()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.BandPass.html">BandPass</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.BandPass.html#torch_ecg.preprocessors.BandPass"><code class="docutils literal notranslate"><span class="pre">BandPass</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.BandPass.html#torch_ecg.preprocessors.BandPass.forward"><code class="docutils literal notranslate"><span class="pre">BandPass.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.BaselineRemove.html">BaselineRemove</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.BaselineRemove.html#torch_ecg.preprocessors.BaselineRemove"><code class="docutils literal notranslate"><span class="pre">BaselineRemove</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.BaselineRemove.html#torch_ecg.preprocessors.BaselineRemove.forward"><code class="docutils literal notranslate"><span class="pre">BaselineRemove.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.Normalize.html">Normalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.Normalize.html#torch_ecg.preprocessors.Normalize"><code class="docutils literal notranslate"><span class="pre">Normalize</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.Normalize.html#torch_ecg.preprocessors.Normalize.forward"><code class="docutils literal notranslate"><span class="pre">Normalize.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.MinMaxNormalize.html">MinMaxNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.MinMaxNormalize.html#torch_ecg.preprocessors.MinMaxNormalize"><code class="docutils literal notranslate"><span class="pre">MinMaxNormalize</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.NaiveNormalize.html">NaiveNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.NaiveNormalize.html#torch_ecg.preprocessors.NaiveNormalize"><code class="docutils literal notranslate"><span class="pre">NaiveNormalize</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.ZScoreNormalize.html">ZScoreNormalize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.ZScoreNormalize.html#torch_ecg.preprocessors.ZScoreNormalize"><code class="docutils literal notranslate"><span class="pre">ZScoreNormalize</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.Resample.html">Resample</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample"><code class="docutils literal notranslate"><span class="pre">Resample</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample.forward"><code class="docutils literal notranslate"><span class="pre">Resample.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../components.html">torch_ecg.components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../components.html#input-classes">Input classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.InputConfig.html">InputConfig</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.InputConfig.html#torch_ecg.components.InputConfig"><code class="docutils literal notranslate"><span class="pre">InputConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.WaveformInput.html">WaveformInput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.WaveformInput.html#torch_ecg.components.WaveformInput"><code class="docutils literal notranslate"><span class="pre">WaveformInput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.FFTInput.html">FFTInput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.FFTInput.html#torch_ecg.components.FFTInput"><code class="docutils literal notranslate"><span class="pre">FFTInput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.SpectrogramInput.html">SpectrogramInput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.SpectrogramInput.html#torch_ecg.components.SpectrogramInput"><code class="docutils literal notranslate"><span class="pre">SpectrogramInput</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../components.html#output-classes">Output classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.ClassificationOutput.html">ClassificationOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.ClassificationOutput.html#torch_ecg.components.ClassificationOutput"><code class="docutils literal notranslate"><span class="pre">ClassificationOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.MultiLabelClassificationOutput.html">MultiLabelClassificationOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.MultiLabelClassificationOutput.html#torch_ecg.components.MultiLabelClassificationOutput"><code class="docutils literal notranslate"><span class="pre">MultiLabelClassificationOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.SequenceTaggingOutput.html">SequenceTaggingOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.SequenceTaggingOutput.html#torch_ecg.components.SequenceTaggingOutput"><code class="docutils literal notranslate"><span class="pre">SequenceTaggingOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.SequenceLabellingOutput.html">SequenceLabellingOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.SequenceLabellingOutput.html#torch_ecg.components.SequenceLabellingOutput"><code class="docutils literal notranslate"><span class="pre">SequenceLabellingOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.WaveDelineationOutput.html">WaveDelineationOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.WaveDelineationOutput.html#torch_ecg.components.WaveDelineationOutput"><code class="docutils literal notranslate"><span class="pre">WaveDelineationOutput</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.RPeaksDetectionOutput.html">RPeaksDetectionOutput</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.RPeaksDetectionOutput.html#torch_ecg.components.RPeaksDetectionOutput"><code class="docutils literal notranslate"><span class="pre">RPeaksDetectionOutput</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../components.html#loggers">Loggers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.LoggerManager.html">LoggerManager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.LoggerManager.html#torch_ecg.components.LoggerManager"><code class="docutils literal notranslate"><span class="pre">LoggerManager</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../components.html#metrics">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.ClassificationMetrics.html">ClassificationMetrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.ClassificationMetrics.html#torch_ecg.components.ClassificationMetrics"><code class="docutils literal notranslate"><span class="pre">ClassificationMetrics</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.RPeaksDetectionMetrics.html">RPeaksDetectionMetrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.RPeaksDetectionMetrics.html#torch_ecg.components.RPeaksDetectionMetrics"><code class="docutils literal notranslate"><span class="pre">RPeaksDetectionMetrics</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.WaveDelineationMetrics.html">WaveDelineationMetrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.WaveDelineationMetrics.html#torch_ecg.components.WaveDelineationMetrics"><code class="docutils literal notranslate"><span class="pre">WaveDelineationMetrics</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../components.html#trainer">Trainer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.components.BaseTrainer.html">BaseTrainer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer"><code class="docutils literal notranslate"><span class="pre">BaseTrainer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../utils.html">torch_ecg.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../utils.html#neural-network-auxiliary-functions-and-classes">Neural network auxiliary functions and classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.extend_predictions.html">torch_ecg.utils.extend_predictions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.extend_predictions.html#torch_ecg.utils.extend_predictions"><code class="docutils literal notranslate"><span class="pre">extend_predictions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_output_shape.html">torch_ecg.utils.compute_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_output_shape.html#torch_ecg.utils.compute_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_conv_output_shape.html">torch_ecg.utils.compute_conv_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_conv_output_shape.html#torch_ecg.utils.compute_conv_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_conv_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_deconv_output_shape.html">torch_ecg.utils.compute_deconv_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_deconv_output_shape.html#torch_ecg.utils.compute_deconv_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_deconv_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_maxpool_output_shape.html">torch_ecg.utils.compute_maxpool_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_maxpool_output_shape.html#torch_ecg.utils.compute_maxpool_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_maxpool_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_avgpool_output_shape.html">torch_ecg.utils.compute_avgpool_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_avgpool_output_shape.html#torch_ecg.utils.compute_avgpool_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_avgpool_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_sequential_output_shape.html">torch_ecg.utils.compute_sequential_output_shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_sequential_output_shape.html#torch_ecg.utils.compute_sequential_output_shape"><code class="docutils literal notranslate"><span class="pre">compute_sequential_output_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_module_size.html">torch_ecg.utils.compute_module_size</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_module_size.html#torch_ecg.utils.compute_module_size"><code class="docutils literal notranslate"><span class="pre">compute_module_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.default_collate_fn.html">torch_ecg.utils.default_collate_fn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.default_collate_fn.html#torch_ecg.utils.default_collate_fn"><code class="docutils literal notranslate"><span class="pre">default_collate_fn()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_receptive_field.html">torch_ecg.utils.compute_receptive_field</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_receptive_field.html#torch_ecg.utils.compute_receptive_field"><code class="docutils literal notranslate"><span class="pre">compute_receptive_field()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.adjust_cnn_filter_lengths.html">torch_ecg.utils.adjust_cnn_filter_lengths</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.adjust_cnn_filter_lengths.html#torch_ecg.utils.adjust_cnn_filter_lengths"><code class="docutils literal notranslate"><span class="pre">adjust_cnn_filter_lengths()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.SizeMixin.html">SizeMixin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.SizeMixin.html#torch_ecg.utils.SizeMixin"><code class="docutils literal notranslate"><span class="pre">SizeMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.CkptMixin.html">CkptMixin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.CkptMixin.html#torch_ecg.utils.CkptMixin"><code class="docutils literal notranslate"><span class="pre">CkptMixin</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../utils.html#signal-processing-functions">Signal processing functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.smooth.html">torch_ecg.utils.smooth</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.smooth.html#torch_ecg.utils.smooth"><code class="docutils literal notranslate"><span class="pre">smooth()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.resample_irregular_timeseries.html">torch_ecg.utils.resample_irregular_timeseries</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.resample_irregular_timeseries.html#torch_ecg.utils.resample_irregular_timeseries"><code class="docutils literal notranslate"><span class="pre">resample_irregular_timeseries()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.detect_peaks.html">torch_ecg.utils.detect_peaks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.detect_peaks.html#torch_ecg.utils.detect_peaks"><code class="docutils literal notranslate"><span class="pre">detect_peaks()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.remove_spikes_naive.html">torch_ecg.utils.remove_spikes_naive</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.remove_spikes_naive.html#torch_ecg.utils.remove_spikes_naive"><code class="docutils literal notranslate"><span class="pre">remove_spikes_naive()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.butter_bandpass_filter.html">torch_ecg.utils.butter_bandpass_filter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.butter_bandpass_filter.html#torch_ecg.utils.butter_bandpass_filter"><code class="docutils literal notranslate"><span class="pre">butter_bandpass_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_ampl.html">torch_ecg.utils.get_ampl</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_ampl.html#torch_ecg.utils.get_ampl"><code class="docutils literal notranslate"><span class="pre">get_ampl()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.normalize.html">torch_ecg.utils.normalize</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.normalize.html#torch_ecg.utils.normalize"><code class="docutils literal notranslate"><span class="pre">normalize()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.normalize_t.html">torch_ecg.utils.normalize_t</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.normalize_t.html#torch_ecg.utils.normalize_t"><code class="docutils literal notranslate"><span class="pre">normalize_t()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.resample_t.html">torch_ecg.utils.resample_t</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.resample_t.html#torch_ecg.utils.resample_t"><code class="docutils literal notranslate"><span class="pre">resample_t()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../utils.html#data-operations">Data operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_mask.html">torch_ecg.utils.get_mask</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_mask.html#torch_ecg.utils.get_mask"><code class="docutils literal notranslate"><span class="pre">get_mask()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.class_weight_to_sample_weight.html">torch_ecg.utils.class_weight_to_sample_weight</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.class_weight_to_sample_weight.html#torch_ecg.utils.class_weight_to_sample_weight"><code class="docutils literal notranslate"><span class="pre">class_weight_to_sample_weight()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.ensure_lead_fmt.html">torch_ecg.utils.ensure_lead_fmt</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.ensure_lead_fmt.html#torch_ecg.utils.ensure_lead_fmt"><code class="docutils literal notranslate"><span class="pre">ensure_lead_fmt()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.ensure_siglen.html">torch_ecg.utils.ensure_siglen</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.ensure_siglen.html#torch_ecg.utils.ensure_siglen"><code class="docutils literal notranslate"><span class="pre">ensure_siglen()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.masks_to_waveforms.html">torch_ecg.utils.masks_to_waveforms</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.masks_to_waveforms.html#torch_ecg.utils.masks_to_waveforms"><code class="docutils literal notranslate"><span class="pre">masks_to_waveforms()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.mask_to_intervals.html">torch_ecg.utils.mask_to_intervals</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.mask_to_intervals.html#torch_ecg.utils.mask_to_intervals"><code class="docutils literal notranslate"><span class="pre">mask_to_intervals()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.uniform.html">torch_ecg.utils.uniform</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.uniform.html#torch_ecg.utils.uniform"><code class="docutils literal notranslate"><span class="pre">uniform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.stratified_train_test_split.html">torch_ecg.utils.stratified_train_test_split</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.stratified_train_test_split.html#torch_ecg.utils.stratified_train_test_split"><code class="docutils literal notranslate"><span class="pre">stratified_train_test_split()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.cls_to_bin.html">torch_ecg.utils.cls_to_bin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.cls_to_bin.html#torch_ecg.utils.cls_to_bin"><code class="docutils literal notranslate"><span class="pre">cls_to_bin()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.generate_weight_mask.html">torch_ecg.utils.generate_weight_mask</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.generate_weight_mask.html#torch_ecg.utils.generate_weight_mask"><code class="docutils literal notranslate"><span class="pre">generate_weight_mask()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../utils.html#interval-operations">Interval operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.overlaps.html">torch_ecg.utils.overlaps</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.overlaps.html#torch_ecg.utils.overlaps"><code class="docutils literal notranslate"><span class="pre">overlaps()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.validate_interval.html">torch_ecg.utils.validate_interval</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.validate_interval.html#torch_ecg.utils.validate_interval"><code class="docutils literal notranslate"><span class="pre">validate_interval()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.in_interval.html">torch_ecg.utils.in_interval</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.in_interval.html#torch_ecg.utils.in_interval"><code class="docutils literal notranslate"><span class="pre">in_interval()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.in_generalized_interval.html">torch_ecg.utils.in_generalized_interval</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.in_generalized_interval.html#torch_ecg.utils.in_generalized_interval"><code class="docutils literal notranslate"><span class="pre">in_generalized_interval()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.intervals_union.html">torch_ecg.utils.intervals_union</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.intervals_union.html#torch_ecg.utils.intervals_union"><code class="docutils literal notranslate"><span class="pre">intervals_union()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.generalized_intervals_union.html">torch_ecg.utils.generalized_intervals_union</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.generalized_intervals_union.html#torch_ecg.utils.generalized_intervals_union"><code class="docutils literal notranslate"><span class="pre">generalized_intervals_union()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.intervals_intersection.html">torch_ecg.utils.intervals_intersection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.intervals_intersection.html#torch_ecg.utils.intervals_intersection"><code class="docutils literal notranslate"><span class="pre">intervals_intersection()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.generalized_intervals_intersection.html">torch_ecg.utils.generalized_intervals_intersection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.generalized_intervals_intersection.html#torch_ecg.utils.generalized_intervals_intersection"><code class="docutils literal notranslate"><span class="pre">generalized_intervals_intersection()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.generalized_interval_complement.html">torch_ecg.utils.generalized_interval_complement</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.generalized_interval_complement.html#torch_ecg.utils.generalized_interval_complement"><code class="docutils literal notranslate"><span class="pre">generalized_interval_complement()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_optimal_covering.html">torch_ecg.utils.get_optimal_covering</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_optimal_covering.html#torch_ecg.utils.get_optimal_covering"><code class="docutils literal notranslate"><span class="pre">get_optimal_covering()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.interval_len.html">torch_ecg.utils.interval_len</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.interval_len.html#torch_ecg.utils.interval_len"><code class="docutils literal notranslate"><span class="pre">interval_len()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.generalized_interval_len.html">torch_ecg.utils.generalized_interval_len</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.generalized_interval_len.html#torch_ecg.utils.generalized_interval_len"><code class="docutils literal notranslate"><span class="pre">generalized_interval_len()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.find_extrema.html">torch_ecg.utils.find_extrema</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.find_extrema.html#torch_ecg.utils.find_extrema"><code class="docutils literal notranslate"><span class="pre">find_extrema()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.is_intersect.html">torch_ecg.utils.is_intersect</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.is_intersect.html#torch_ecg.utils.is_intersect"><code class="docutils literal notranslate"><span class="pre">is_intersect()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.max_disjoint_covering.html">torch_ecg.utils.max_disjoint_covering</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.max_disjoint_covering.html#torch_ecg.utils.max_disjoint_covering"><code class="docutils literal notranslate"><span class="pre">max_disjoint_covering()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../utils.html#metrics-computations">Metrics computations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.top_n_accuracy.html">torch_ecg.utils.top_n_accuracy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.top_n_accuracy.html#torch_ecg.utils.top_n_accuracy"><code class="docutils literal notranslate"><span class="pre">top_n_accuracy()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.confusion_matrix.html">torch_ecg.utils.confusion_matrix</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.confusion_matrix.html#torch_ecg.utils.confusion_matrix"><code class="docutils literal notranslate"><span class="pre">confusion_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.ovr_confusion_matrix.html">torch_ecg.utils.ovr_confusion_matrix</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.ovr_confusion_matrix.html#torch_ecg.utils.ovr_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">ovr_confusion_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.metrics_from_confusion_matrix.html">torch_ecg.utils.metrics_from_confusion_matrix</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.metrics_from_confusion_matrix.html#torch_ecg.utils.metrics_from_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">metrics_from_confusion_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_wave_delineation_metrics.html">torch_ecg.utils.compute_wave_delineation_metrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.compute_wave_delineation_metrics.html#torch_ecg.utils.compute_wave_delineation_metrics"><code class="docutils literal notranslate"><span class="pre">compute_wave_delineation_metrics()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.QRS_score.html">torch_ecg.utils.QRS_score</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.QRS_score.html#torch_ecg.utils.QRS_score"><code class="docutils literal notranslate"><span class="pre">QRS_score()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../utils.html#decorators-and-mixins">Decorators and Mixins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.add_docstring.html">torch_ecg.utils.add_docstring</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.add_docstring.html#torch_ecg.utils.add_docstring"><code class="docutils literal notranslate"><span class="pre">add_docstring()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.remove_parameters_returns_from_docstring.html">torch_ecg.utils.remove_parameters_returns_from_docstring</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.remove_parameters_returns_from_docstring.html#torch_ecg.utils.remove_parameters_returns_from_docstring"><code class="docutils literal notranslate"><span class="pre">remove_parameters_returns_from_docstring()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.default_class_repr.html">torch_ecg.utils.default_class_repr</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.default_class_repr.html#torch_ecg.utils.default_class_repr"><code class="docutils literal notranslate"><span class="pre">default_class_repr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.ReprMixin.html">ReprMixin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.ReprMixin.html#torch_ecg.utils.ReprMixin"><code class="docutils literal notranslate"><span class="pre">ReprMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.CitationMixin.html">CitationMixin</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.CitationMixin.html#torch_ecg.utils.CitationMixin"><code class="docutils literal notranslate"><span class="pre">CitationMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_kwargs.html">torch_ecg.utils.get_kwargs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_kwargs.html#torch_ecg.utils.get_kwargs"><code class="docutils literal notranslate"><span class="pre">get_kwargs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_required_args.html">torch_ecg.utils.get_required_args</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_required_args.html#torch_ecg.utils.get_required_args"><code class="docutils literal notranslate"><span class="pre">get_required_args()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.add_kwargs.html">torch_ecg.utils.add_kwargs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.add_kwargs.html#torch_ecg.utils.add_kwargs"><code class="docutils literal notranslate"><span class="pre">add_kwargs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../utils.html#path-operations">Path operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_record_list_recursive3.html">torch_ecg.utils.get_record_list_recursive3</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_record_list_recursive3.html#torch_ecg.utils.get_record_list_recursive3"><code class="docutils literal notranslate"><span class="pre">get_record_list_recursive3()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../utils.html#string-operations">String operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.dict_to_str.html">torch_ecg.utils.dict_to_str</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.dict_to_str.html#torch_ecg.utils.dict_to_str"><code class="docutils literal notranslate"><span class="pre">dict_to_str()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.str2bool.html">torch_ecg.utils.str2bool</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.str2bool.html#torch_ecg.utils.str2bool"><code class="docutils literal notranslate"><span class="pre">str2bool()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.nildent.html">torch_ecg.utils.nildent</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.nildent.html#torch_ecg.utils.nildent"><code class="docutils literal notranslate"><span class="pre">nildent()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_date_str.html">torch_ecg.utils.get_date_str</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.get_date_str.html#torch_ecg.utils.get_date_str"><code class="docutils literal notranslate"><span class="pre">get_date_str()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../utils.html#miscellaneous">Miscellaneous</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.init_logger.html">torch_ecg.utils.init_logger</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.init_logger.html#torch_ecg.utils.init_logger"><code class="docutils literal notranslate"><span class="pre">init_logger()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.list_sum.html">torch_ecg.utils.list_sum</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.list_sum.html#torch_ecg.utils.list_sum"><code class="docutils literal notranslate"><span class="pre">list_sum()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.dicts_equal.html">torch_ecg.utils.dicts_equal</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.dicts_equal.html#torch_ecg.utils.dicts_equal"><code class="docutils literal notranslate"><span class="pre">dicts_equal()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.MovingAverage.html">MovingAverage</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.MovingAverage.html#torch_ecg.utils.MovingAverage"><code class="docutils literal notranslate"><span class="pre">MovingAverage</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.Timer.html">Timer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.Timer.html#torch_ecg.utils.Timer"><code class="docutils literal notranslate"><span class="pre">Timer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.timeout.html">torch_ecg.utils.timeout</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../generated/torch_ecg.utils.timeout.html#torch_ecg.utils.timeout"><code class="docutils literal notranslate"><span class="pre">timeout()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">torch-ecg</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torch_ecg.databases.datasets.cinc2021.cinc2021_dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/DeepPSP/torch_ecg/blob/master/docs/source/_modules/torch_ecg/databases/datasets/cinc2021/cinc2021_dataset" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torch_ecg.databases.datasets.cinc2021.cinc2021_dataset</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">sample</span><span class="p">,</span> <span class="n">shuffle</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="kn">from</span> <span class="nn">...._preprocessors</span> <span class="kn">import</span> <span class="n">PreprocManager</span>
+<span class="kn">from</span> <span class="nn">....cfg</span> <span class="kn">import</span> <span class="n">CFG</span>
+<span class="kn">from</span> <span class="nn">....databases</span> <span class="kn">import</span> <span class="n">CINC2021</span> <span class="k">as</span> <span class="n">CR</span>
+<span class="kn">from</span> <span class="nn">....utils.ecg_arrhythmia_knowledge</span> <span class="kn">import</span> <span class="n">Standard12Leads</span>
+<span class="kn">from</span> <span class="nn">....utils.misc</span> <span class="kn">import</span> <span class="n">ReprMixin</span><span class="p">,</span> <span class="n">list_sum</span>
+<span class="kn">from</span> <span class="nn">....utils.utils_data</span> <span class="kn">import</span> <span class="n">ensure_siglen</span>
+<span class="kn">from</span> <span class="nn">....utils.utils_signal</span> <span class="kn">import</span> <span class="n">remove_spikes_naive</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;CINC2021Dataset&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="CINC2021Dataset"><a class="viewcode-back" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset">[docs]</a><span class="k">class</span> <span class="nc">CINC2021Dataset</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data generator for feeding data into pytorch models</span>
+<span class="sd">    using the :class:`~torch_ecg.databases.CINC2021` database.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    config : dict</span>
+<span class="sd">        configurations for the :class:`Dataset`,</span>
+<span class="sd">        ref. `CINC2021TrainCfg`.</span>
+<span class="sd">        A simple example is as follows:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; config = deepcopy(CINC2021TrainCfg)</span>
+<span class="sd">            &gt;&gt;&gt; config.db_dir = &quot;some/path/to/db&quot;</span>
+<span class="sd">            &gt;&gt;&gt; dataset = CINC2021Dataset(config, training=True, lazy=False)</span>
+
+<span class="sd">    training : bool, default True</span>
+<span class="sd">        If True, the training set will be loaded,</span>
+<span class="sd">        otherwise the test (val) set will be loaded.</span>
+<span class="sd">    lazy : bool, default True</span>
+<span class="sd">        If True, the data will not be loaded immediately,</span>
+<span class="sd">        instead, it will be loaded on demand.</span>
+<span class="sd">    **reader_kwargs : dict, optional</span>
+<span class="sd">        Keyword arguments for the database reader class.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__DEBUG__</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;CINC2021Dataset&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CFG</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">training</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">lazy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">reader_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">reader_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;db_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;`db_dir` is specified in both config and reader_kwargs&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">CR</span><span class="p">(</span><span class="n">db_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">reader_kwargs</span><span class="p">)</span>
+        <span class="c1"># assert self.config.db_dir is not None, &quot;db_dir must be specified&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">db_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_TRANCHES</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">tranche_classes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">)</span>  <span class="c1"># [&quot;A&quot;, &quot;B&quot;, &quot;AB&quot;, &quot;E&quot;, &quot;F&quot;, &quot;G&quot;,]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tranches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">tranches_for_training</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="o">=</span> <span class="n">training</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">np_dtype</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tranches</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">tranches</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_TRANCHES</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tranches</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">tranche_classes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tranches</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">class_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">tranche_class_weights</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tranches</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">classes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">class_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">class_weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">all_classes</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">)</span>
+        <span class="c1"># print(f&quot;tranches = {self.tranches}, all_classes = {self.all_classes}&quot;)</span>
+        <span class="c1"># print(f&quot;class_weights = {dict_to_str(self.class_weights)}&quot;)</span>
+        <span class="n">cw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_weights</span><span class="p">),),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">):</span>
+            <span class="n">cw</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_weights</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">cw</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span><span class="o">.</span><span class="n">view</span><span class="p">(</span>
+            <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span>
+        <span class="p">)</span>
+        <span class="c1"># validation also goes in batches, hence length has to be fixed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">siglen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">input_len</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lazy</span> <span class="o">=</span> <span class="n">lazy</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">Standard12Leads</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ld</span><span class="p">)</span> <span class="k">for</span> <span class="n">ld</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_test_split</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">train_ratio</span><span class="p">,</span> <span class="n">force_recompute</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="c1"># TODO: consider using `remove_spikes_naive` to treat these exceptional records</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">r</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">exceptional_records</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">get_data_filepath</span><span class="p">(</span><span class="n">r</span><span class="p">))</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__DEBUG__</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">))</span>
+
+        <span class="n">ppm_config</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span><span class="n">random</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ppm_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ppm</span> <span class="o">=</span> <span class="n">PreprocManager</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">ppm_config</span><span class="p">)</span>
+        <span class="c1"># self.ppm.rearrange([&quot;bandpass&quot;, &quot;normalize&quot;])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">siglen</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lazy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_all_data</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_load_all_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load all data into memory.&quot;&quot;&quot;</span>
+        <span class="n">fdr</span> <span class="o">=</span> <span class="n">_FastDataReader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ppm</span><span class="p">)</span>
+
+        <span class="c1"># with tqdm(self.records, desc=&quot;Loading data&quot;, unit=&quot;record&quot;) as pbar:</span>
+        <span class="c1">#     for rec in pbar:</span>
+        <span class="c1"># s, l = self._load_one_record(rec)  # self._load_one_record is much slower than _FastDataReader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Loading data&quot;</span><span class="p">,</span>
+            <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">fdr</span><span class="p">),</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;record&quot;</span><span class="p">,</span>
+            <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">mininterval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fdr</span><span class="p">)):</span>
+                <span class="n">sig</span><span class="p">,</span> <span class="n">lb</span> <span class="o">=</span> <span class="n">fdr</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+                <span class="c1"># np.concatenate slows down the process severely</span>
+                <span class="c1"># self._signals = np.concatenate((self._signals, s), axis=0)</span>
+                <span class="c1"># self._labels = np.concatenate((self._labels, l), axis=0)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lb</span><span class="p">)</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_signals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_labels</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_load_one_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load one record from the database using data reader.</span>
+
+<span class="sd">        NOTE</span>
+<span class="sd">        ----</span>
+<span class="sd">        DO NOT USE THIS FUNCTION DIRECTLY for preloading data,</span>
+<span class="sd">        use `_FastDataReader` instead.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rec : str</span>
+<span class="sd">            Name of the record.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        values : numpy.ndarray</span>
+<span class="sd">            The signal values of the record.</span>
+<span class="sd">        labels : numpy.ndarray</span>
+<span class="sd">            The labels of the record.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">load_resampled_data</span><span class="p">(</span>
+            <span class="n">rec</span><span class="p">,</span>
+            <span class="n">leads</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span><span class="p">,</span>
+            <span class="c1"># leads=Standard12Leads,</span>
+            <span class="n">data_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_format</span><span class="p">,</span>
+            <span class="n">siglen</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">remove_spikes_naive</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="n">values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ppm</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">ensure_siglen</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">,</span>
+            <span class="n">siglen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">siglen</span><span class="p">,</span>
+            <span class="n">fmt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_format</span><span class="p">,</span>
+            <span class="n">tolerance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">sig_slice_tol</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">get_labels</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">scored_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">values</span><span class="p">,</span> <span class="n">labels</span>
+
+<div class="viewcode-block" id="CINC2021Dataset.to"><a class="viewcode-back" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.to">[docs]</a>    <span class="k">def</span> <span class="nf">to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leads</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reduce the leads to a subset of the current leads.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        leads : Sequence[str]</span>
+<span class="sd">            The subset of leads to be kept.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">leads</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span>
+        <span class="p">),</span> <span class="s2">&quot;One is not able to change to a set of leads which is not a subset of the current leads&quot;</span>
+        <span class="n">prev_leads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span> <span class="o">=</span> <span class="n">leads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">prev_leads</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ld</span><span class="p">)</span> <span class="k">for</span> <span class="n">ld</span> <span class="ow">in</span> <span class="n">leads</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_indices</span><span class="p">,</span> <span class="p">:]</span></div>
+
+<div class="viewcode-block" id="CINC2021Dataset.empty"><a class="viewcode-back" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.empty">[docs]</a>    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Empty the loaded data, and keep the leads.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        leads : Sequence[str], optional</span>
+<span class="sd">            The leads to be kept, by default the current leads.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">leads</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">leads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span> <span class="o">=</span> <span class="n">leads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">leads</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">siglen</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CINC2021Dataset.from_extern"><a class="viewcode-back" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.from_extern">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_extern</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ext_ds</span><span class="p">:</span> <span class="s2">&quot;CINC2021Dataset&quot;</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">CFG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CINC2021Dataset&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new dataset from an existing one.</span>
+
+<span class="sd">        The existing dataset must have all data loaded into memory,</span>
+<span class="sd">        and its leads must be a superset of the new dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ext_ds : CINC2021Dataset</span>
+<span class="sd">            The existing dataset.</span>
+<span class="sd">        config : CFG</span>
+<span class="sd">            The configuration of the new dataset.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        CINC2021Dataset</span>
+<span class="sd">            A new instance of the dataset.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_ds</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">ext_ds</span><span class="o">.</span><span class="n">training</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">ext_ds</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ld</span><span class="p">)</span> <span class="k">for</span> <span class="n">ld</span> <span class="ow">in</span> <span class="n">new_ds</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span><span class="p">]</span>
+        <span class="n">new_ds</span><span class="o">.</span><span class="n">_signals</span> <span class="o">=</span> <span class="n">ext_ds</span><span class="o">.</span><span class="n">_signals</span><span class="p">[:,</span> <span class="n">indices</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">new_ds</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">ext_ds</span><span class="o">.</span><span class="n">_labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">new_ds</span></div>
+
+<div class="viewcode-block" id="CINC2021Dataset.reload_from_extern"><a class="viewcode-back" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.reload_from_extern">[docs]</a>    <span class="k">def</span> <span class="nf">reload_from_extern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ext_ds</span><span class="p">:</span> <span class="s2">&quot;CINC2021Dataset&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reload the data from an existing dataset.</span>
+
+<span class="sd">        The existing dataset must have all data loaded into memory,</span>
+<span class="sd">        and its leads must be a superset of the current dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ext_ds : CINC2021Dataset</span>
+<span class="sd">            The existing dataset.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">ext_ds</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span>
+        <span class="p">),</span> <span class="s2">&quot;One is not able to reload from a dataset whose `leads` is not a superset of the current one&quot;</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">ext_ds</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ld</span><span class="p">)</span> <span class="k">for</span> <span class="n">ld</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span> <span class="o">=</span> <span class="n">ext_ds</span><span class="o">.</span><span class="n">_signals</span><span class="p">[:,</span> <span class="n">indices</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span> <span class="o">=</span> <span class="n">ext_ds</span><span class="o">.</span><span class="n">_labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">signals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cached signals, only available when `lazy=False`</span>
+<span class="sd">        or preloading is performed manually.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_signals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cached labels, only available when `lazy=False`</span>
+<span class="sd">        or preloading is performed manually.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_labels</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_signals</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_train_test_split</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">train_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">force_recompute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">force_valid</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform train-test split.</span>
+
+<span class="sd">        It is ensured that both the train and the test set</span>
+<span class="sd">        contain all classes if `force_valid` is True.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        train_ratio : float, default 0.8</span>
+<span class="sd">            Ratio of the train set in the whole dataset</span>
+<span class="sd">            (or the whole tranche(s)).</span>
+<span class="sd">        force_recompute : bool, default False</span>
+<span class="sd">            If True, the train-test split will be recomputed,</span>
+<span class="sd">            regardless of the existing ones stored in json files.</span>
+<span class="sd">        force_valid : bool, default False</span>
+<span class="sd">            If True, the train-test split will be recomputed</span>
+<span class="sd">            if validity check fails.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        records : List[str]</span>
+<span class="sd">            List of the records split for training</span>
+<span class="sd">            or for testing (validation).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">start performing train test split...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">_TRANCHES</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="s2">&quot;ABEFG&quot;</span><span class="p">)</span>
+        <span class="n">_train_ratio</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">train_ratio</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">_test_ratio</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">-</span> <span class="n">_train_ratio</span>
+        <span class="k">assert</span> <span class="n">_train_ratio</span> <span class="o">*</span> <span class="n">_test_ratio</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+        <span class="n">ns</span> <span class="o">=</span> <span class="s2">&quot;_ns&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">special_classes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">file_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_siglen_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">siglen</span><span class="si">}{</span><span class="n">ns</span><span class="si">}</span><span class="s2">.json&quot;</span>
+        <span class="n">train_file</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir_base</span>
+            <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_name</span><span class="si">}</span><span class="s2">_train_ratio_</span><span class="si">{</span><span class="n">_train_ratio</span><span class="si">}{</span><span class="n">file_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">test_file</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir_base</span>
+            <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_name</span><span class="si">}</span><span class="s2">_test_ratio_</span><span class="si">{</span><span class="n">_test_ratio</span><span class="si">}{</span><span class="n">file_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># TODO: use self.reader.df_stats (precomputed and stored in utils/stats.csv)</span>
+        <span class="c1"># to accelerate the validity examinations</span>
+        <span class="k">if</span> <span class="n">force_recompute</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">([</span><span class="n">train_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">(),</span> <span class="n">test_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()]):</span>
+            <span class="n">tranche_records</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_TRANCHES</span><span class="p">}</span>
+            <span class="n">train_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_TRANCHES</span><span class="p">}</span>
+            <span class="n">test_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_TRANCHES</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_TRANCHES</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">all_records</span><span class="p">[</span><span class="n">t</span><span class="p">],</span>
+                    <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">all_records</span><span class="p">[</span><span class="n">t</span><span class="p">]),</span>
+                    <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">mininterval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">bar</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">bar</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">rec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">exceptional_records</span><span class="p">:</span>
+                            <span class="c1"># skip exceptional records</span>
+                            <span class="k">continue</span>
+                        <span class="n">rec_labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">get_labels</span><span class="p">(</span>
+                            <span class="n">rec</span><span class="p">,</span> <span class="n">scored_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span>
+                        <span class="p">)</span>
+                        <span class="n">rec_labels</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">rec_labels</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">tranche_classes</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                        <span class="p">]</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rec_labels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="c1"># skip records with no scored class</span>
+                            <span class="k">continue</span>
+                        <span class="n">rec_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">load_resampled_data</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="c1"># NEW in CinC2021 compared to CinC2020</span>
+                        <span class="c1"># training input siglen raised from 4000 to 5000,</span>
+                        <span class="c1"># hence allow tolerance in siglen now</span>
+                        <span class="k">if</span> <span class="n">rec_samples</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">siglen</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">input_len_tol</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">tranche_records</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;tranche </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tranche_records</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="si">}</span><span class="s2"> valid records for training&quot;</span>
+                <span class="p">)</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">_TRANCHES</span><span class="p">:</span>
+                <span class="n">is_valid</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">while</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
+                    <span class="n">shuffle</span><span class="p">(</span><span class="n">tranche_records</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+                    <span class="n">split_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tranche_records</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">train_ratio</span><span class="p">)</span>
+                    <span class="n">train_set</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">tranche_records</span><span class="p">[</span><span class="n">t</span><span class="p">][:</span><span class="n">split_idx</span><span class="p">]</span>
+                    <span class="n">test_set</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">tranche_records</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">split_idx</span><span class="p">:]</span>
+                    <span class="k">if</span> <span class="n">force_valid</span><span class="p">:</span>
+                        <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_train_test_split_validity</span><span class="p">(</span>
+                            <span class="n">train_set</span><span class="p">[</span><span class="n">t</span><span class="p">],</span>
+                            <span class="n">test_set</span><span class="p">[</span><span class="n">t</span><span class="p">],</span>
+                            <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">tranche_classes</span><span class="p">[</span><span class="n">t</span><span class="p">]),</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">is_valid</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">train_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">train_set</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="n">test_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">test_set</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                train set saved to </span><span class="se">\n\042</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">train_file</span><span class="p">)</span><span class="si">}</span><span class="se">\042</span>
+<span class="s2">                test set saved to </span><span class="se">\n\042</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">test_file</span><span class="p">)</span><span class="si">}</span><span class="se">\042</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">train_set</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">train_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+            <span class="n">test_set</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">test_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;train test split finished in </span><span class="si">{</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start</span><span class="p">)</span><span class="o">/</span><span class="mi">60</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> minutes&quot;</span><span class="p">)</span>
+
+        <span class="n">_tranches</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tranches</span> <span class="ow">or</span> <span class="s2">&quot;ABEFG&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="n">records</span> <span class="o">=</span> <span class="n">list_sum</span><span class="p">([</span><span class="n">train_set</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_tranches</span><span class="p">])</span> <span class="o">+</span> <span class="n">list_sum</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">test_set</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_tranches</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">records</span> <span class="o">=</span> <span class="n">list_sum</span><span class="p">([</span><span class="n">train_set</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_tranches</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">records</span> <span class="o">=</span> <span class="n">list_sum</span><span class="p">([</span><span class="n">test_set</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_tranches</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">records</span>
+
+    <span class="k">def</span> <span class="nf">_check_train_test_split_validity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">train_set</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">test_set</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">all_classes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the train-test split is valid.</span>
+
+<span class="sd">        The train-test split is valid iff</span>
+<span class="sd">        records in both `train_set` and `test` contain all classes in `all_classes`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        train_set : List[str]</span>
+<span class="sd">            List of the records in the train set.</span>
+<span class="sd">        test_set : List[str]</span>
+<span class="sd">            List of the records in the test set.</span>
+<span class="sd">        all_classes : Set[str]</span>
+<span class="sd">            The set of all classes for training.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        is_valid : bool</span>
+<span class="sd">            Whether the train-test split is valid or not.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">train_classes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">list_sum</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">get_labels</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">train_set</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">train_classes</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">all_classes</span><span class="p">)</span>
+        <span class="n">test_classes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">list_sum</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">get_labels</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">rec</span> <span class="ow">in</span> <span class="n">test_set</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">test_classes</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">all_classes</span><span class="p">)</span>
+        <span class="n">is_valid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_classes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_classes</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_classes</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            all_classes:     </span><span class="si">{</span><span class="n">all_classes</span><span class="si">}</span>
+<span class="s2">            train_classes:   </span><span class="si">{</span><span class="n">train_classes</span><span class="si">}</span>
+<span class="s2">            test_classes:    </span><span class="si">{</span><span class="n">test_classes</span><span class="si">}</span>
+<span class="s2">            is_valid:        </span><span class="si">{</span><span class="n">is_valid</span><span class="si">}</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">is_valid</span>
+
+<div class="viewcode-block" id="CINC2021Dataset.persistence"><a class="viewcode-back" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.persistence">[docs]</a>    <span class="k">def</span> <span class="nf">persistence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the processed dataset to disk.&quot;&quot;&quot;</span>
+        <span class="n">_TRANCHES</span> <span class="o">=</span> <span class="s2">&quot;ABEFG&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+            <span class="n">ratio</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">train_ratio</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ratio</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">train_ratio</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">fn_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;tranches_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tranches</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">_TRANCHES</span><span class="si">}</span><span class="s2">_ratio_</span><span class="si">{</span><span class="n">ratio</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bandpass</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bp_low</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bandpass</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">bp_high</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">bandpass</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fs</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">fn_suffix</span> <span class="o">=</span> <span class="n">fn_suffix</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;_bp_</span><span class="si">{</span><span class="n">bp_low</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">bp_high</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">fn_suffix</span> <span class="o">=</span> <span class="n">fn_suffix</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;_siglen_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">siglen</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()),</span>
+            <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="fm">__len__</span><span class="p">(),</span>
+            <span class="n">dynamic_ncols</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">mininterval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">bar</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">bar</span><span class="p">:</span>
+                <span class="n">values</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+                <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;X.shape = </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, y.shape = </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;train&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;test&#39;</span><span class="si">}</span><span class="s2">_X_</span><span class="si">{</span><span class="n">fn_suffix</span><span class="si">}</span><span class="s2">.npy&quot;</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir_base</span> <span class="o">/</span> <span class="n">filename</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;X saved to </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;train&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;test&#39;</span><span class="si">}</span><span class="s2">_y_</span><span class="si">{</span><span class="n">fn_suffix</span><span class="si">}</span><span class="s2">.npy&quot;</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">db_dir_base</span> <span class="o">/</span> <span class="n">filename</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y saved to </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_check_nan</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if there are nan values in the dataset.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;values of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2"> have nan values&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;labels of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2"> have nan values&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CINC2021Dataset.extra_repr_keys"><a class="viewcode-back" href="../../../../../generated/torch_ecg.databases.datasets.CINC2021Dataset.html#torch_ecg.databases.datasets.CINC2021Dataset.extra_repr_keys">[docs]</a>    <span class="k">def</span> <span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="s2">&quot;training&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tranches&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;reader&quot;</span><span class="p">,</span>
+        <span class="p">]</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">_FastDataReader</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fast data reader.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    reader : CR</span>
+<span class="sd">        The reader to read the data.</span>
+<span class="sd">    records : Sequence[str]</span>
+<span class="sd">        The list of records to read.</span>
+<span class="sd">    config : CFG</span>
+<span class="sd">        The configuration.</span>
+<span class="sd">    ppm : PreprocManager, optional</span>
+<span class="sd">        The preprocessor manager.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">reader</span><span class="p">:</span> <span class="n">CR</span><span class="p">,</span>
+        <span class="n">records</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">CFG</span><span class="p">,</span>
+        <span class="n">ppm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PreprocManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="n">reader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">records</span> <span class="o">=</span> <span class="n">records</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ppm</span> <span class="o">=</span> <span class="n">ppm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">np_dtype</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">records</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">load_resampled_data</span><span class="p">(</span>
+            <span class="n">rec</span><span class="p">,</span>
+            <span class="n">leads</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">leads</span><span class="p">,</span>
+            <span class="c1"># leads=Standard12Leads,</span>
+            <span class="n">data_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_format</span><span class="p">,</span>
+            <span class="n">siglen</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">remove_spikes_naive</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ppm</span><span class="p">:</span>
+            <span class="n">values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ppm</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">ensure_siglen</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">,</span>
+            <span class="n">siglen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">input_len</span><span class="p">,</span>
+            <span class="n">fmt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_format</span><span class="p">,</span>
+            <span class="n">tolerance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">sig_slice_tol</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">get_labels</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">scored_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">all_classes</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+            <span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">values</span><span class="p">,</span> <span class="n">labels</span>
+
+    <span class="k">def</span> <span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="s2">&quot;reader&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ppm&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, WEN Hao, KANG Jingsu.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../../',
+            VERSION:'0.0.26',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
+      <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="../../../../../_static/sphinx_highlight.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

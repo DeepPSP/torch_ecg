@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.models
+
+
+ECG_SUBTRACT_UNET
+=================
+
+.. autoclass:: ECG_SUBTRACT_UNET
+    :members:

@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.preprocessors
+
+
+NaiveNormalize
+==============
+
+.. autoclass:: NaiveNormalize
+    :members:

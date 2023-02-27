@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.utils
+
+
+CitationMixin
+=============
+
+.. autoclass:: CitationMixin
+    :members:

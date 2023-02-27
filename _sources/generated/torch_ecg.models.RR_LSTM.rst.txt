@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.models
+
+
+RR_LSTM
+=======
+
+.. autoclass:: RR_LSTM
+    :members:

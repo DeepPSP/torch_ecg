@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.components
+
+
+BaseTrainer
+===========
+
+.. autoclass:: BaseTrainer
+    :members:

@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.databases
+
+
+CACHET_CADB
+===========
+
+.. autoclass:: CACHET_CADB
+    :members:

@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.models
+
+
+ResNet
+======
+
+.. autoclass:: ResNet
+    :members:

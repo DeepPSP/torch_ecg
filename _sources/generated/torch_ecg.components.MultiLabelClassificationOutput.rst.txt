@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.components
+
+
+MultiLabelClassificationOutput
+==============================
+
+.. autoclass:: MultiLabelClassificationOutput
+    :members:

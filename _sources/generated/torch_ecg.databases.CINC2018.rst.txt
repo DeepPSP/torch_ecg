@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.databases
+
+
+CINC2018
+========
+
+.. autoclass:: CINC2018
+    :members:

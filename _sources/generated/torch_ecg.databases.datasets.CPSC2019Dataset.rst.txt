@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.databases.datasets
+
+
+CPSC2019Dataset
+===============
+
+.. autoclass:: CPSC2019Dataset
+    :members:

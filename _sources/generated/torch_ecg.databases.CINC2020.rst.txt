@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.databases
+
+
+CINC2020
+========
+
+.. autoclass:: CINC2020
+    :members:

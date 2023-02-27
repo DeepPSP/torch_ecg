@@ -1,0 +1,8 @@
+﻿.. currentmodule:: torch_ecg.databases
+
+
+CPSC2021
+========
+
+.. autoclass:: CPSC2021
+    :members:
