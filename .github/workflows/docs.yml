@@ -33,15 +33,6 @@ jobs:
       run: |
         sudo apt update
         sudo apt install build-essential ffmpeg libsm6 libxext6 libsndfile1 -y
-    - name: Setup TeX Live
-      uses: teatimeguest/setup-texlive-action@v2
-      with:
-        packages: >-
-          scheme-basic
-          tikz
-    - name: Install latexmk and pandoc
-      run: |
-        sudo apt install latexmk pandoc -y
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
@@ -55,6 +46,16 @@ jobs:
         python setup.py install_egg_info
         pip install -e .[dev]
         pip install jupyter 'ipykernel<5.0.0' 'ipython<7.0.0'
+    - name: Setup TeX Live
+      # This is used to render the tikz plots in the docs.
+      uses: teatimeguest/setup-texlive-action@v2
+      with:
+        packages: >-
+          scheme-basic
+          pgf
+    - name: Install latexmk and pandoc
+      run: |
+        sudo apt install latexmk pandoc -y
     - name: Build docs with Sphinx and check for errors
       run: |
         cd docs
