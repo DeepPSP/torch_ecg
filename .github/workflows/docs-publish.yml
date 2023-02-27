@@ -65,9 +65,10 @@ jobs:
         packages: >-
           scheme-basic
           pgf
-    - name: Install latexmk and pandoc
+    - name: Install latexmk and pandoc and extra software
       run: |
         sudo apt install latexmk pandoc -y
+        sudo apt install texlive-pictures texlive-latex-extra pdf2svg -y
     - name: Build docs with Sphinx and check for errors
       run: |
         cd docs
