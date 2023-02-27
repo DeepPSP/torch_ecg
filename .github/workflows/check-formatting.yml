@@ -11,6 +11,8 @@ on:
 
 jobs:
   build:
+    # Don't run on forked repos.
+    if: github.repository_owner == "DeepPSP"
 
     runs-on: ubuntu-20.04
     strategy:
