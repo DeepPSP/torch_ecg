@@ -219,7 +219,7 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
     --> exit flow (separable convs, down sample and double channels at each conv).
 
     MobileNet V1 is a light-weight model intended for mobile devices,
-    originally proposed in [#v1]_. Tensorflow implementation can be found in [#v1_tf]_.
+    originally proposed in [#v1]_.
 
     Parameters
     ----------
@@ -248,7 +248,6 @@ class MobileNetV1(nn.Sequential, SizeMixin, CitationMixin):
     .. [#v1] Howard, A. G., Zhu, M., Chen, B., Kalenichenko, D., Wang, W., Weyand, T., ... & Adam, H. (2017).
            Mobilenets: Efficient convolutional neural networks for mobile vision applications.
            arXiv preprint arXiv:1704.04861.
-    .. [#v1_tf] https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/keras/applications/mobilenet.py
 
     """
 

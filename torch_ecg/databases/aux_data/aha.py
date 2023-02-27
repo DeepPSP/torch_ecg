@@ -4,7 +4,7 @@ Standardized ECG diagnostic statements by AHA/ACC/HRS (i.e. the American Heart A
 References
 ----------
 1. Mason, J. W., Hancock, E. W. & Gettes, L. S. Recommendations for the standardization and interpretation of the electrocardiogram.
-Circulation 115, 1325–1332, https://doi.org/10.1161/CIRCULATIONAHA.106.180201 (2007).
+Circulation 115, 1325–1332 (2007).
 """
 
 import io
