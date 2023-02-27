@@ -37,7 +37,8 @@ jobs:
       uses: teatimeguest/setup-texlive-action@v2
       with:
         packages: >-
-          scheme-full
+          scheme-basic
+          tikz
     - name: Install latexmk and pandoc
       run: |
         sudo apt install latexmk pandoc -y
@@ -48,6 +49,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel ipython
+        python -m pip install -r requirements.txt
+        python -m pip install -r docs/requirements.txt
         python -m pip uninstall torch-ecg --yes # Remove if already installed 
         python setup.py install_egg_info
         pip install -e .[dev]
@@ -58,3 +61,8 @@ jobs:
         make html
         make linkcheck
     # TODO: Publish to GitHub Pages and/or Read the Docs
+    - name: Publish to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/_build/html
