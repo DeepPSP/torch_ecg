@@ -770,23 +770,21 @@ def dicts_equal(d1: dict, d2: dict, allow_array_diff_types: bool = True) -> bool
 
 
 def add_docstring(doc: str, mode: str = "replace") -> Callable:
-    """
-    decorator to add docstring to a function or a class
+    """Decorator to add docstring to a function or a class.
 
     Parameters
     ----------
-    doc: str,
-        the docstring to be added
-    mode: str, default "replace",
-        the mode of the docstring,
-        can be "replace", "append" or "prepend",
-        case insensitive
+    doc : str
+        The docstring to be added.
+    mode : {"replace", "append", "prepend"}, optional
+        The mode of the adding to the original docstring,
+        by default "replace", case insensitive.
 
     """
 
     def decorator(func_or_cls: Callable) -> Callable:
-        """ """
-
+        if func_or_cls.__doc__ is None:
+            func_or_cls.__doc__ = ""
         pattern = "(\\s^\n){1,}"
         if mode.lower() == "replace":
             func_or_cls.__doc__ = doc
@@ -812,22 +810,21 @@ def add_docstring(doc: str, mode: str = "replace") -> Callable:
 
 
 def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
-    """
-    Default class representation
+    """Default class representation
 
     Parameters
     ----------
-    c : object,
-        the object to be represented
-    align : str, default "center",
-        the alignment of the class arguments
-    depth : int, default 1,
-        the depth of the class arguments to display
+    c : object
+        The object to be represented.
+    align : str, default "center"
+        Alignment of the class arguments.
+    depth : int, default 1
+        Depth of the class arguments to be displayed.
 
     Returns
     -------
     str
-        the representation of the class
+        The representation of the class.
 
     """
     indent = 4 * depth * " "
@@ -853,8 +850,7 @@ def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
 
 
 class ReprMixin(object):
-    """
-    Mixin class for enhanced
+    """Mixin class for enhanced
     :meth:`__repr__` and :meth:`__str__` methods.
     """
 
@@ -869,9 +865,7 @@ class ReprMixin(object):
 
 
 class CitationMixin(_CitationMixin):
-    """
-    Mixin class for getting citations from DOIs.
-    """
+    """Mixin class for getting citations from DOIs."""
 
     # backwar compatibility
     if (_DATA_CACHE / "database_citation.csv").exists():
@@ -924,25 +918,24 @@ class CitationMixin(_CitationMixin):
 
 
 class MovingAverage(object):
-    """to be improved,
+    """Class for computing moving average.
 
-    moving average
+    For more information, see [#ma_wiki]_.
+
+    Parameters
+    ----------
+    data : array_like, optional
+        The series data to compute its moving average.
+    kwargs : dict, optional
+        Auxilliary keyword arguments
 
     References
     ----------
-    [1] https://en.wikipedia.org/wiki/Moving_average
+    .. [#ma_wiki] https://en.wikipedia.org/wiki/Moving_average
 
     """
 
     def __init__(self, data: Optional[Sequence] = None, **kwargs: Any) -> None:
-        """
-        Parameters
-        ----------
-        data: array_like,
-            the series data to compute its moving average
-        kwargs: auxilliary key word arguments
-
-        """
         if data is None:
             self.data = np.array([])
         else:
@@ -952,15 +945,28 @@ class MovingAverage(object):
     def __call__(
         self, data: Optional[Sequence] = None, method: str = "ema", **kwargs: Any
     ) -> np.ndarray:
-        """
+        """Compute moving average.
+
         Parameters
         ----------
-        method: str,
+        data : array_like, optional
+            The series data to compute its moving average.
+        method : str
             method for computing moving average, can be one of
-            - "sma", "simple", "simple moving average"
-            - "ema", "ewma", "exponential", "exponential weighted", "exponential moving average", "exponential weighted moving average"
-            - "cma", "cumulative", "cumulative moving average"
-            - "wma", "weighted", "weighted moving average"
+
+                - "sma", "simple", "simple moving average";
+                - "ema", "ewma", "exponential", "exponential weighted",
+                  "exponential moving average", "exponential weighted moving average";
+                - "cma", "cumulative", "cumulative moving average";
+                - "wma", "weighted", "weighted moving average".
+
+        kwargs : dict, optional
+            Keyword arguments for the specific moving average method.
+
+        Returns
+        -------
+        ma : numpy.ndarray
+            The moving average of the input data.
 
         """
         m = method.lower().replace("_", " ")
@@ -986,8 +992,7 @@ class MovingAverage(object):
         return func(**kwargs)
 
     def _sma(self, window: int = 5, center: bool = False, **kwargs: Any) -> np.ndarray:
-        """
-        simple moving average
+        """Simple moving average.
 
         Parameters
         ----------

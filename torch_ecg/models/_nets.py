@@ -124,22 +124,24 @@ Activations.softmax = nn.Softmax
 def get_activation(
     act: Union[str, nn.Module, type(None)], kw_act: Optional[dict] = None
 ) -> Optional[nn.Module]:
-    """
+    """Get the class or instance of the activation.
+
     Parameters
     ----------
-    act: str or nn.Module or None,
-        name or the class or an instance of the activation, or None.
-        NOTE: if an instance of `torch.nn.Module` is passed, it is returned as is,
-        without checking if it is really an activation
-    kw_act: dict, optional,
-        keyword arguments for the activation
+    act : str or torch.nn.Module or None
+        Name or the class or an instance of the activation, or None.
+        NOTE: if an instance of :class:`~torch.nn.Module` is passed,
+        then it is returned as is,
+        without checking if it is really an activation.
+    kw_act : dict, optional
+        Keyword arguments for the activation.
 
     Returns
     -------
-    nn.Module or None,
-        the class of the activation if `kw_act` is None,
+    torch.nn.Module or None
+        The class of the activation if `kw_act` is None,
         or an instance of the activation if `kw_act` is not None,
-        or None if `act` is None
+        or None if `act` is None.
 
     """
     if act is None:
@@ -192,20 +194,21 @@ Normalizations.local_response_normalization = Normalizations.local_response_norm
 def get_normalization(
     norm: Union[str, nn.Module, type(None)], kw_norm: Optional[dict] = None
 ) -> Optional[nn.Module]:
-    """
+    """Get the class or instance of the normalization.
+
     Parameters
     ----------
-    norm: str or nn.Module or None,
-        name or the class or an instance of the normalization, or None
-    kw_norm: dict, optional,
-        keyword arguments for the normalization
+    norm : str or torch.nn.Module or None,
+        Name or the class or an instance of the normalization, or None.
+    kw_norm : dict, optional
+        Keyword arguments for the normalization.
 
     Returns
     -------
-    nn.Module or None,
-        the class of the normalization if `kw_norm` is None,
+    torch.nn.Module or None
+        The class of the normalization if `kw_norm` is None,
         or an instance of the normalization if `kw_norm` is not None,
-        or None if `norm` is None
+        or None if `norm` is None.
 
     """
     if norm is None:
@@ -250,8 +253,28 @@ _DEFAULT_CONV_CONFIGS = CFG(
 # ---------------------------------------------
 # basic building blocks of CNN
 class Bn_Activation(nn.Sequential, SizeMixin):
-    """
+    """Block of normalization and activation.
+
     normalization --> activation
+
+    Parameters
+    ----------
+    num_features : int
+        Number of features (channels) of the input (and output).
+    norm : str or torch.nn.Module, default "batch_norm"
+        (batch) normalization, or other normalizations,
+        e.g. group normalization,
+        or (the name of) the :class:`~torch.nn.Module` itself.
+    activation : str or torch.nn.Module, default "relu"
+        Name of the activation or an activation :class:`~torch.nn.Module`.
+    kw_norm : dict, optional
+        Keyword arguments for normalization layer if `norm` is a string.
+    kw_activation : dict, optional
+        Keyword arguments for activation layer if `activation` is a string.
+    dropout : float, default 0.0
+        If non-zero, :class`~torch.nn.Dropout` layer is added
+        at the end of the block.
+
     """
 
     __name__ = "Bn_Activation"
@@ -266,24 +289,6 @@ class Bn_Activation(nn.Sequential, SizeMixin):
         kw_activation: Optional[dict] = None,
         dropout: float = 0.0,
     ) -> None:
-        """
-        Parameters
-        ----------
-        num_features: int,
-            number of features (channels) of the input (and output)
-        batch_norm: str or Module, default "batch_norm",
-            (batch) normalization, or other normalizations, e.g. group normalization
-            (the name of) the Module itself
-        activation: str or Module, default "relu",
-            name of the activation or an activation `Module`
-        kw_norm: dict, optional,
-            key word arguments for `batch_norm`
-        kw_activation: dict, optional,
-            key word arguments for `activation`
-        dropout: float, default 0.0,
-            if non-zero, introduces a `Dropout` layer at the end of the block
-
-        """
         super().__init__()
         self.__num_features = num_features
         self.__kw_activation = kw_activation or {}
@@ -317,19 +322,6 @@ class Bn_Activation(nn.Sequential, SizeMixin):
         if self.__dropout > 0:
             self.add_module("dropout", nn.Dropout(self.__dropout))
 
-    def forward(self, input: Tensor) -> Tensor:
-        """
-        use the forward method of `nn.Sequential`
-
-        Parameters
-        ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-
-        """
-        output = super().forward(input)
-        return output
-
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
@@ -352,10 +344,57 @@ class Bn_Activation(nn.Sequential, SizeMixin):
 
 
 class Conv_Bn_Activation(nn.Sequential, SizeMixin):
-    """
+    """Basic convolutional block, with optional
+    batch normalization and activation.
+
     1d convolution --> batch normalization (optional) -- > activation (optional),
     orderings can be adjusted,
-    with "same" padding as default padding
+    with "same" padding as default padding.
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : int
+        Number of channels produced by the convolution.
+    kernel_size : int
+        Size (length) of the convolution kernel.
+    stride : int
+        Stride (subsample length) of the convolution.
+    padding : int, optional
+        Zero-padding added to both sides of the input.
+    dilation : int, default 1
+        Spacing between the kernel points.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    batch_norm : bool or str or torch.nn.Module, default True
+        (batch) normalization, or other normalizations, e.g. group normalization.
+        (the name of) the Module itself or
+        (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.
+    activation : str or torch.nn.Module, optional
+        Name or Module of the activation.
+        If is str, can be one of
+        "mish", "swish", "relu", "leaky", "leaky_relu",
+        "linear", "hardswish", "relu6".
+        "linear" is equivalent to ``activation=None``.
+    kernel_initializer : str or callable, optional
+        A function to initialize kernel weights of the convolution,
+        or name of the initialzer, refer to `Initializers`.
+    bias : bool, default True
+        Whether or not to add the learnable bias to the convolution.
+    ordering : str, default "cba"
+        Ordering of the layers, case insensitive
+    kwargs : dict, optional
+        Other key word arguments, including
+        `conv_type`, `kw_activation`, `kw_initializer`, `kw_bn`,
+        `alpha` (alias `width_multiplier`), etc.
+
+    NOTE
+    ----
+    If `padding` is not specified (default None),
+    then the actual padding used for the convolutional layer is automatically computed
+    to fit the "same" padding (not actually "same" for even kernel sizes).
+
     """
 
     __name__ = "Conv_Bn_Activation"
@@ -377,48 +416,6 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         ordering: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input signal
-        out_channels: int,
-            number of channels produced by the convolution
-        kernel_size: int,
-            size (length) of the convolution kernel
-        stride: int,
-            stride (subsample length) of the convolution
-        padding: int, optional,
-            zero-padding added to both sides of the input
-        dilation: int, default 1,
-            spacing between the kernel points
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        batch_norm: bool or str or Module, default True,
-            (batch) normalization, or other normalizations, e.g. group normalization
-            (the name of) the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
-        activation: str or Module, optional,
-            name or Module of the activation,
-            if is str, can be one of
-            "mish", "swish", "relu", "leaky", "leaky_relu", "linear", "hardswish", "relu6"
-            "linear" is equivalent to `activation=None`
-        kernel_initializer: str or callable (function), optional,
-            a function to initialize kernel weights of the convolution,
-            or name or the initialzer, can be one of the keys of `Initializers`
-        bias: bool, default True,
-            if True, adds a learnable bias to the output
-        ordering: str, default "cba",
-            ordering of the layers, case insensitive
-        kwargs: dict, optional,
-            other key word arguments, including
-            `conv_type`, `kw_activation`, `kw_initializer`, `kw_bn`,
-            `alpha` (alias `width_multiplier`), etc.
-
-        NOTE that if `padding` is not specified (default None),
-        then the actual padding used for the convolutional layer is automatically computed
-        to fit the "same" padding (not actually "same" for even kernel sizes)
-
-        """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -3819,9 +3816,7 @@ class CRF(nn.Module, SizeMixin):
         tags: Optional[torch.LongTensor] = None,
         mask: Optional[torch.ByteTensor] = None,
     ) -> None:
-        """
-        check validity of input `Tensor`s
-        """
+        """Check validity of input :class:`~torch.Tensor`."""
         if emissions.dim() != 3:
             raise ValueError(
                 f"`emissions` must have dimension of 3, but got `{emissions.dim()}`"

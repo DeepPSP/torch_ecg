@@ -1,4 +1,4 @@
-recommonmark
+sphinx
 nbsphinx
 sphinx-theme
 pydata-sphinx-theme
@@ -10,3 +10,4 @@ sphinx-multiversion
 sphinxcontrib-napoleon
 sphinxcontrib-tikz
 numpydoc
+recommonmark

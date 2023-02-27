@@ -30,11 +30,11 @@ class BandPass(torch.nn.Module):
         """
         Parameters
         ----------
-        fs: real number,
+        fs: numbers.Real,
             sampling frequency of the ECG signal to be filtered
-        lowcut: real number, optional,
+        lowcut: numbers.Real, optional,
             low cutoff frequency
-        highcut: real number, optional,
+        highcut: numbers.Real, optional,
             high cutoff frequency
         inplace: bool, default True,
             if True, the preprocessor will modify the input signal

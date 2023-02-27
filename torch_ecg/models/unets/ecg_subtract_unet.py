@@ -2,12 +2,14 @@
 2nd place (entry 0433) of CPSC2019
 
 the main differences to a normal Unet are that
+
 1. at the bottom, subtraction (and concatenation) is used
 2. uses triple convolutions at each block, instead of double convolutions
 3. dropout is used between certain convolutional layers ("cba" layers indeed)
 
 """
 
+import textwrap
 import warnings
 from copy import deepcopy
 from itertools import repeat
@@ -41,8 +43,32 @@ __all__ = [
 
 
 class TripleConv(MultiConv):
-    """
-    CBA --> (Dropout) --> CBA --> (Dropout) --> CBA --> (Dropout)
+    """Triple convolutional layer.
+
+    CBA --> (Dropout) --> CBA --> (Dropout) --> CBA --> (Dropout).
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : int or Sequence[int]
+        Number of channels produced by the (last) convolutional layer(s).
+    filter_lengths : int or Sequence[int]
+        Length(s) of the filters (kernel size).
+    subsample_lengths : int or Sequence[int], default 1
+        Subsample length(s) (stride(s)) of the convolutions
+    groups: int, default 1,
+        connection pattern (of channels) of the inputs and outputs.
+    dropouts : float or Sequence[float], default 0.0
+        Dropout ratio after each :class:`Conv_Bn_Activation` block.
+    out_activation : bool, default True
+        If True, the last mini-block of :class:`Conv_Bn_Activation`
+        will have activation as in `config`; otherwise, no activation.
+    config : dict
+        Other hyper-parameters, including
+        activation choices, weight initializer, batch normalization choices, etc.
+        for the convolutional layers.
+
     """
 
     __name__ = "TripleConv"
@@ -58,30 +84,6 @@ class TripleConv(MultiConv):
         out_activation: bool = True,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        out_channels: int, or sequence of int,
-            number of channels produced by the (last) convolutional layer(s)
-        filter_lengths: int or sequence of int,
-            length(s) of the filters (kernel size)
-        subsample_lengths: int or sequence of int,
-            subsample length(s) (stride(s)) of the convolutions
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        dropouts: float or sequence of float, default 0.0,
-            dropout ratio after each `Conv_Bn_Activation`
-        out_activation: bool, default True,
-            if True, the last mini-block of `Conv_Bn_Activation` will have activation as in `config`,
-            otherwise None
-        config: dict,
-            other parameters, including
-            activation choices, weight initializer, batch normalization choices, etc.
-            for the convolutional layers
-
-        """
         _num_convs = 3
         if isinstance(out_channels, int):
             _out_channels = list(repeat(out_channels, _num_convs))
@@ -102,7 +104,32 @@ class TripleConv(MultiConv):
 
 
 class DownTripleConv(nn.Sequential, SizeMixin):
-    """ """
+    """Down sampling block of the U-net architecture.
+
+    Composed of a down sampling layer and 3 convolutional layers.
+
+    Parameters
+    ----------
+    down_scale : int
+        Down sampling scale.
+    in_channels : int
+        Number of channels in the input.
+    out_channels : int or Sequence[int]
+        Number of channels produced by the (last) convolutional layer(s).
+    filter_lengths : int or Sequence[int]
+        Length(s) of the filters (kernel size).
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    dropouts : float or Sequence[float], default 0.0
+        Dropout ratio after each :class:`Conv_Bn_Activation` block.
+    mode : str, default "max"
+        Down sampling mode, one of {:class:`DownSample`.__MODES__}.
+    config : dict
+        Other parameters, including
+        activation choices, weight initializer, batch normalization choices, etc.
+        for the convolutional layers.
+
+    """
 
     __name__ = "DownTripleConv"
     __MODES__ = deepcopy(DownSample.__MODES__)
@@ -118,29 +145,6 @@ class DownTripleConv(nn.Sequential, SizeMixin):
         mode: str = "max",
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        down_scale: int,
-            down sampling scale
-        in_channels: int,
-            number of channels in the input
-        out_channels: int, or sequence of int,
-            number of channels produced by the (last) convolutional layer(s)
-        filter_lengths: int or sequence of int,
-            length(s) of the filters (kernel size)
-        subsample_lengths: int or sequence of int,
-            subsample length(s) (stride(s)) of the convolutions
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        dropouts: float or sequence of float, default 0.0,
-            dropout ratio after each `Conv_Bn_Activation`
-        config: dict,
-            other parameters, including
-            activation choices, weight initializer, batch normalization choices, etc.
-            for the convolutional layers
-
-        """
         super().__init__()
         self.__mode = mode.lower()
         assert self.__mode in self.__MODES__
@@ -172,32 +176,61 @@ class DownTripleConv(nn.Sequential, SizeMixin):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         Returns
         -------
-        out: Tensor,
-            of shape (batch_size, channels, seq_len)
+        out : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         """
         out = super().forward(input)
         return out
 
-    @add_docstring(compute_sequential_output_shape_docstring)
+    @add_docstring(
+        textwrap.indent(compute_sequential_output_shape_docstring, " " * 4),
+        mode="append",
+    )
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """ """
+        """Compute the output shape of the down sampling block."""
         return compute_sequential_output_shape(self, seq_len, batch_size)
 
 
 class DownBranchedDoubleConv(nn.Module, SizeMixin):
-    """
-    the bottom block of the `subtract_unet`
+    """The bottom block of the encoder in the U-Net architecture.
+
+    Parameters
+    ----------
+    down_scale : int
+        Down sampling scale.
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : Sequence[Sequence[int]]
+        Number of channels produced by the (last) convolutional layer(s).
+    filter_lengths : int or Sequence[int] or Sequence[Sequence[int]]
+        Length(s) of the filters (kernel size).
+    dilations : int or Sequence[int] or Sequence[Sequence[int]], default 1
+        Dilation(s) of the convolutions.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    dropouts : float or Sequence[float], default 0.0
+        Dropout ratio after each :class:`Conv_Bn_Activation` block.
+    mode : str, default "max"
+        Down sampling mode, one of {:class:`DownSample`.__MODES__}.
+    config: dict
+        Other hyper-parameters, including
+        activation choices, weight initializer, batch normalization choices, etc.
+        for the convolutional layers.
+
     """
 
     __name__ = "DownBranchedDoubleConv"
@@ -215,29 +248,6 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
         mode: str = "max",
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        down_scale: int,
-            down sampling scale
-        in_channels: int,
-            number of channels in the input
-        out_channels: sequence of sequence of int,
-            number of channels produced by the (last) convolutional layer(s)
-        filter_lengths: int or sequence of int,
-            length(s) of the filters (kernel size)
-        subsample_lengths: int or sequence of int,
-            subsample length(s) (stride(s)) of the convolutions
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        dropouts: float or sequence of float, default 0.0,
-            dropout ratio after each `Conv_Bn_Activation`
-        config: dict,
-            other parameters, including
-            activation choices, weight initializer, batch normalization choices, etc.
-            for the convolutional layers
-
-        """
         super().__init__()
         self.__mode = mode.lower()
         assert self.__mode in self.__MODES__
@@ -264,16 +274,19 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         Returns
         -------
-        out: Tensor,
-            of shape (batch_size, channels, seq_len)
+        out : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         """
         out = self.down_sample(input)
@@ -288,18 +301,19 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the block.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            Batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the block.
 
         """
         _seq_len = seq_len
@@ -317,14 +331,42 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
 
 
 class UpTripleConv(nn.Module, SizeMixin):
-    """
+    """Up sampling block in the U-Net architecture.
+
     Upscaling then double conv, with input of corr. down layer concatenated
     up sampling --> conv (conv --> (dropout -->) conv --> (dropout -->) conv)
         ^
         |
     extra input
 
-    channels are shrinked after up sampling
+    Channels are shrinked after up sampling.
+
+    Parameters
+    ----------
+    up_scale : int
+        Scale of up sampling.
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : int
+        Number of channels produced by the convolutional layers.
+    filter_lengths : int or Sequence[int]
+        Length(s) of the filters (kernel size) of the convolutional layers.
+    deconv_filter_length : int
+        Length(s) of the filters (kernel size) of the
+        deconvolutional upsampling layer,
+        used when `mode` is "deconv".
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+        Not used currently.
+    dropouts : float or Sequence[float], default 0.0
+        Dropout ratio after each :class:`Conv_Bn_Activation` block.
+    mode : str, default "deconv"
+        Mode of up sampling, case insensitive. Should be "deconv"
+        or methods supported by :class:`torch.nn.Upsample`.
+    config : dict
+        Other hyper-parameters, including
+        activation choices, weight initializer, batch normalization choices, etc.
+        for the deconvolutional layers.
 
     """
 
@@ -348,33 +390,6 @@ class UpTripleConv(nn.Module, SizeMixin):
         mode: str = "deconv",
         **config,
     ) -> None:
-        """finished, NOT checked,
-
-        Parameters
-        ----------
-        up_scale: int,
-            scale of up sampling
-        in_channels: int,
-            number of channels in the input
-        out_channels: int,
-            number of channels produced by the convolutional layers
-        filter_lengths: int or sequence of int,
-            length(s) of the filters (kernel size) of the convolutional layers
-        deconv_filter_length: int,
-            only used when `mode` == "deconv"
-            length(s) of the filters (kernel size) of the deconvolutional upsampling layer
-        groups: int, default 1, not used currently,
-            connection pattern (of channels) of the inputs and outputs
-        dropouts: float or sequence of float, default 0.0,
-            dropout ratio after each `Conv_Bn_Activation`
-        mode: str, default "deconv", case insensitive,
-            mode of up sampling
-        config: dict,
-            other parameters, including
-            activation choices, weight initializer, batch normalization choices, etc.
-            for the deconvolutional layers
-
-        """
         super().__init__()
         self.__up_scale = up_scale
         self.__in_channels = in_channels
@@ -414,13 +429,19 @@ class UpTripleConv(nn.Module, SizeMixin):
         )
 
     def forward(self, input: Tensor, down_output: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            input tensor from the previous layer
-        down_output:Tensor: Tensor,
-            input tensor of the last layer of corr. down block
+        input : torch.Tensor
+            Input tensor from the previous up sampling block.
+        down_output : torch.Tensor
+            Input tensor of the last layer of corr. down sampling block.
+
+        Returns
+        -------
+        output : torch.Tensor
+            Output tensor of this block.
 
         """
         output = self.up(input)
@@ -434,18 +455,19 @@ class UpTripleConv(nn.Module, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the block.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            Batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this `DownDoubleConv` layer, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the block.
 
         """
         _sep_len = seq_len
@@ -465,8 +487,21 @@ class UpTripleConv(nn.Module, SizeMixin):
 
 
 class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
-    """
-    entry 0433 of CPSC2019
+    """U-Net for ECG wave delineation.
+
+    Entry 0433 of CPSC2019, which is a modification of the U-Net
+    using subtraction instead of addition in branched bottom block.
+
+    Parameters
+    ----------
+    classes : Sequence[str]
+        List of names of the classes.
+    n_leads : int
+        Number of input leads (number of input channels).
+    config : CFG, optional
+        Other hyper-parameters, including kernel sizes, etc.
+        Refer to the corresponding config file.
+
     """
 
     __name__ = "ECG_SUBTRACT_UNET"
@@ -477,18 +512,6 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         n_leads: int,
         config: Optional[CFG] = None,
     ) -> None:
-        """
-        Parameters
-        ----------
-        classes: sequence of int,
-            name of the classes
-        n_leads: int,
-            number of input leads (number of input channels)
-        config: CFG, optional,
-            other hyper-parameters, including kernel sizes, etc.
-            ref. the corresponding config file
-
-        """
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)
@@ -586,16 +609,19 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the model.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input signal tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        output : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         if self.config.init_batch_norm:
@@ -631,24 +657,25 @@ class ECG_SUBTRACT_UNET(nn.Module, CkptMixin, SizeMixin):
     def inference(
         self, input: Union[np.ndarray, Tensor], bin_pred_thr: float = 0.5
     ) -> Tensor:
-        """ """
+        """Method for making inference on a single input."""
         raise NotImplementedError("implement a task specific inference method")
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the model.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input signal tensor.
+        batch_size : int, optional
+            Batch size of the input signal tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this model, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the model.
 
         """
         output_shape = (batch_size, seq_len, self.n_classes)

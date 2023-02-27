@@ -1,6 +1,6 @@
 """
-utilities for signal processing,
-including spatial, temporal, spatio-temporal domains
+Utilities for signal processing,
+including spatial, temporal, spatio-temporal domains.
 """
 
 import warnings
@@ -33,33 +33,36 @@ def smooth(
     mode: str = "valid",
     keep_dtype: bool = True,
 ) -> np.ndarray:
-    """
-    Smooth the 1d data using a window with requested size.
+    """Smooth the 1d data using a window with requested size.
 
-    This method is based on the convolution of a scaled window with the signal.
+    This method is originally from [#smooth]_,
+    based on the convolution of a scaled window with the signal.
     The signal is prepared by introducing reflected copies of the signal
     (with the window size) in both ends so that transient parts are minimized
     in the begining and end part of the output signal.
 
     Parameters
     ----------
-    x: ndarray,
-        the input signal
-    window_len: int, default 11,
-        the length of the smoothing window,
-        (previously should be an odd integer, currently can be any (positive) integer)
-    window: str, default "hanning",
-        the type of window from "flat", "hanning", "hamming", "bartlett", "blackman",
-        flat window will produce a moving average smoothing
-    mode: str, default "valid",
-        ref. np.convolve
-    keep_dtype: bool, default True,
-        dtype of the returned value keeps the same with that of `x` or not
+    x : numpy.ndarray
+        The input signal.
+    window_len : int, default 11
+        Length of the smoothing window,
+        (previously should be an odd integer,
+        currently can be any (positive) integer).
+    window : {"flat", "hanning", "hamming", "bartlett", "blackman"}, optional
+        Type of window from, by default "hanning".
+        See also :func:`numpy.hanning`, :func:`numpy.hamming`, etc.
+        Flat type window will produce a moving average smoothing.
+    mode : str, default "valid"
+        Mode of convolution, see :func:`numpy.convolve` for details.
+    keep_dtype : bool, default True
+        Whether `dtype` of the returned value keeps
+        the same with that of `x` or not.
 
     Returns
     -------
-    y: ndarray,
-        the smoothed signal
+    y : numpy.ndarray
+        The smoothed signal.
 
     Examples
     --------
@@ -71,17 +74,28 @@ def smooth(
 
     See also
     --------
-    np.hanning, np.hamming, np.bartlett, np.blackman, np.convolve
-    scipy.signal.lfilter
+    :func:`numpy.hanning`, :func:`numpy.hamming`,
+    :func:`numpy.bartlett`, :func:`numpy.blackman`, :func:`numpy.convolve`,
+    :func:`scipy.signal.lfilter`.
 
-    TODO: the window parameter could be the window itself if an array instead of a string
+    TODO
+    ----
+    The window parameter could be the window itself
+    if an array instead of a string.
 
-    NOTE: length(output) != length(input), to correct this:
-        return y[(window_len/2-1):-(window_len/2)] instead of just y.
+    NOTE
+    ----
+    length(output) != length(input), to correct this, using
+
+    .. code-block:: python
+
+        return y[(window_len/2-1):-(window_len/2)]
+
+    instead of just returning `y`.
 
     References
     ----------
-    .. [1] https://scipy-cookbook.readthedocs.io/items/SignalSmooth.html
+    .. [#smooth] https://scipy-cookbook.readthedocs.io/items/SignalSmooth.html
 
     """
     radius = min(len(x), window_len)
@@ -130,30 +144,31 @@ def resample_irregular_timeseries(
     """
     Resample the 2d irregular timeseries `sig` into a 1d or 2d
     regular time series with frequency `output_fs`,
-    elements of `sig` are in the form [time, value],
-    where the unit of `time` is ms
+    elements of `sig` are in the form ``[time, value]``,
+    where the unit of `time` is ms.
 
     Parameters
     ----------
-    sig: ndarray,
-        the 2d irregular timeseries,
-        each row is [time, value]
-    output_fs: Real, optional,
+    sig : numpy.ndarray
+        The 2d irregular timeseries.
+        Each row is ``[time, value]``.
+    output_fs : numbers.Real, optional
         the frequency of the output 1d regular timeseries,
         one and only one of `output_fs` and `tnew` should be specified
-    method: str, default "spline"
+    method : str, default "spline"
         interpolation method, can be "spline" or "interp1d"
-    return_with_time: bool, default False,
+    return_with_time : bool, default False
         return a 2d array, with the 0-th coordinate being time
-    tnew: array_like, optional,
+    tnew : array_like, optional
         the array of time of the output array,
         one and only one of `output_fs` and `tnew` should be specified
-    interp_kw: dict, default {},
+    interp_kw : dict, optional
         additional options for the corresponding methods in scipy.interpolate
 
     Returns
     -------
-    np.ndarray, a 1d or 2d regular time series with frequency `output_freq`
+    numpy.ndarray
+        A 1d or 2d regular time series with frequency `output_freq`.
 
     Examples
     --------
@@ -170,7 +185,7 @@ def resample_irregular_timeseries(
 
     NOTE
     ----
-    pandas also has the function to regularly resample irregular timeseries
+    ``pandas`` also has the function to regularly resample irregular timeseries.
 
     """
     assert sig.ndim == 2, "`sig` should be a 2D array"
@@ -245,60 +260,59 @@ def detect_peaks(
     ax=None,
     verbose: int = 0,
 ) -> np.ndarray:
-    """
-    Detect peaks in data based on their amplitude and other features.
+    """Detect peaks in data based on their amplitude and other features.
 
     Parameters
     ----------
-    x: 1D array_like,
-        data
-    mph: positive number, optional,
+    x : array_like
+        1D array of data.
+    mph : positive number, optional
         abbr. for maximum (minimum) peak height,
         detect peaks that are greater than minimum peak height (if parameter `valley` is False),
         or peaks that are smaller than maximum peak height (if parameter `valley` is True)
-    mpd: positive integer, default 1,
+    mpd : positive integer, default 1
         abbr. for minimum peak distance,
         detect peaks that are at least separated by minimum peak distance (in number of samples)
-    threshold: positive number, default 0,
+    threshold : positive number, default 0
         detect peaks (valleys) that are greater (smaller) than `threshold`,
         in relation to their neighbors within the range of `mpd`
-    left_threshold: positive number, default 0,
+    left_threshold : positive number, default 0
         `threshold` that is restricted to the left
-    right_threshold: positive number, default 0,
+    right_threshold : positive number, default 0
         `threshold` that is restricted to the left
-    prominence: positive number, optional,
+    prominence: positive number, optional
         threshold of prominence of the detected peaks (valleys)
-    prominence_wlen: positive int, optional,
+    prominence_wlen : positive int, optional
         the `wlen` parameter of the function `scipy.signal.peak_prominences`
-    edge: str or None, default "rising",
+    edge : str or None, default "rising"
         can also be "falling", "both",
         for a flat peak, keep only the rising edge ("rising"), only the falling edge ("falling"),
         both edges ("both"), or don't detect a flat peak (None)
-    kpsh: bool, default False,
+    kpsh : bool, default False
         keep peaks with same height even if they are closer than `mpd`
-    valley: bool, default False,
+    valley : bool, default False
         if True (1), detect valleys (local minima) instead of peaks
-    show: bool, default False,
+    show : bool, default False
         if True (1), plot data in matplotlib figure
-    ax: a matplotlib.axes.Axes instance, optional,
+    ax : a matplotlib.axes.Axes instance, optional
 
     Returns
     -------
-    ind : 1D array_like
-        indeces of the peaks in `x`.
+    ind : array_like
+        Indeces of the peaks in `x`.
 
     NOTE
     ----
     The detection of valleys instead of peaks is performed internally by simply
-    negating the data: `ind_valleys = detect_peaks(-x)`
+    negating the data: ``ind_valleys = detect_peaks(-x)``.
 
-    The function can handle NaN's
+    The function can handle NaN's.
 
-    See this IPython Notebook [1]_.
+    See this IPython Notebook [#peak]_.
 
     References
     ----------
-    [1] http://nbviewer.ipython.org/github/demotu/BMC/blob/master/notebooks/DetectPeaks.ipynb
+    .. [#peak] http://nbviewer.ipython.org/github/demotu/BMC/blob/master/notebooks/DetectPeaks.ipynb
 
     Examples
     --------
@@ -550,8 +564,8 @@ def butter_bandpass(
 
     References
     ----------
-    [1] scipy.signal.butter
-    [2] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
+    .. [1] scipy.signal.butter
+    .. [2] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
 
     """
     nyq = 0.5 * fs
@@ -594,35 +608,39 @@ def butter_bandpass_filter(
     btype: Optional[str] = None,
     verbose: int = 0,
 ) -> np.ndarray:
-    """
-    Butterworth Bandpass
+    """Butterworth bandpass filtering the signals.
+
+    Apply a Butterworth bandpass filter to the signal.
+    For references, see [1]_ and [2]_.
 
     Parameters
     ----------
-    data: ndarray,
-        data to be filtered
-    lowcut: real,
-        low cutoff frequency
-    highcut: real,
-        high cutoff frequency
-    fs: real,
-        frequency of `data`
-    order: int,
-        order of the filter
-    btype: str, optional,
-        (special) type of the filter, can be "lohi", "hilo",
-        ignored for lowpass and highpass filters (as given by `lowcut` and `highcut`)
-    verbose: int, default 0
+    data : numpy.ndarray
+        Signal to be filtered.
+    lowcut : numbers.real
+        Low cutoff frequency.
+    highcut : numbers.real
+        High cutoff frequency.
+    fs : numbers.real
+        Frequency of the signal.
+    order : int
+        Order of the filter.
+    btype : {"lohi", "hilo"}, optional
+        (special) type of the filter.
+        Ignored for lowpass and highpass filters
+        (as defined by `lowcut` and `highcut`).
+    verbose : int, default 0
+        Verbosity level for printing.
 
     Returns
     -------
-    y, ndarray,
-        the filtered signal
+    y : numpy.ndarray
+        The filtered signal.
 
     References
     ----------
-    [1] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
-    [2] https://dsp.stackexchange.com/questions/19084/applying-filter-in-scipy-signal-use-lfilter-or-filtfilt
+    .. [1] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
+    .. [2] https://dsp.stackexchange.com/questions/19084/applying-filter-in-scipy-signal-use-lfilter-or-filtfilt
 
     """
     dtype = data.dtype
@@ -652,30 +670,29 @@ def get_ampl(
     window: Real = 0.2,
     critical_points: Optional[Sequence] = None,
 ) -> Union[float, np.ndarray]:
-    """
-    Get amplitude of a signal (near critical points if given)
+    """Get amplitude of a signal (near critical points if given).
 
     Parameters
     ----------
-    sig: ndarray,
-        (ECG) signal
-    fs: numbers.Real,
-        sampling frequency of the signal
-    fmt: str, default "lead_first",
-        format of the signal,
+    sig : numpy.ndarray
+        (ECG) signal.
+    fs : numbers.Real
+        Sampling frequency of the signal
+    fmt : str, default "lead_first"
+        Format of the signal, can be
         "channel_last" (alias "lead_last"), or
-        "channel_first" (alias "lead_first"),
-        ignored if sig is 1d array (single-lead)
-    window: int, default 0.2s,
-        window length of a window for computing amplitude, with units in seconds
-    critical_points: ndarray, optional,
-        positions of critical points near which to compute amplitude,
+        "channel_first" (alias "lead_first").
+        Ignored if sig is 1d array (single-lead).
+    window : int, default 0.2
+        Window length of a window for computing amplitude, with units in seconds.
+    critical_points : numpy.ndarray, optional
+        Positions of critical points near which to compute amplitude,
         e.g. can be rpeaks, t peaks, etc.
 
     Returns
     -------
-    ampl: float, or ndarray,
-        amplitude of the signal
+    ampl : float or numpy.ndarray
+        Amplitude of the signal.
 
     """
     dtype = sig.dtype
@@ -731,7 +748,7 @@ def normalize(
     sig_fmt: str = "channel_first",
     per_channel: bool = False,
 ) -> np.ndarray:
-    r"""
+    """
     Perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
     or perform min-max normalization on `sig`,
@@ -740,11 +757,11 @@ def normalize(
 
     .. math::
 
-        \begin{align*}
-        \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
-        \text{Naive normalization:} & \frac{sig - m}{s} \\
-        \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
-        \end{align*}
+        \\begin{align*}
+        \\text{Min-Max normalization:} & \\frac{sig - \\min(sig)}{\\max(sig) - \\min(sig)} \\\\
+        \\text{Naive normalization:} & \\frac{sig - m}{s} \\\\
+        \\text{Z-score normalization:} & \\left(\\frac{sig - mean(sig)}{std(sig)}\\right) \\cdot s + m
+        \\end{align*}
 
     Parameters
     ----------
@@ -772,13 +789,13 @@ def normalize(
 
     Returns
     -------
-    nm_sig: ndarray,
-        the normalized signal
+    nm_sig : numpy.ndarray
+        The normalized signal.
 
     NOTE
     ----
-    in cases where normalization is infeasible (std = 0),
-    only the mean value will be shifted
+    In cases where normalization is infeasible (``std = 0``),
+    only the mean value will be shifted.
 
     """
     assert sig.ndim in [1, 2, 3], "signal `sig` should be 1d or 2d or 3d array"

@@ -31,7 +31,7 @@ class BaselineRemove(torch.nn.Module):
         """
         Parameters
         ----------
-        fs: real number,
+        fs: numbers.Real,
             sampling frequency of the ECG signal to be filtered
         window1: float, default 0.2,
             the smaller window size of the median filter, with units in seconds

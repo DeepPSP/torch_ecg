@@ -74,7 +74,7 @@ class MobileNetSeparableConv(nn.Sequential, SizeMixin):
         Spacing between the kernel points.
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
-    batch_norm : bool or str or torch.nn.Module, default True
+    norm : bool or str or torch.nn.Module, default True
         (batch) normalization, or other normalizations,
         e.g. group normalization.
         (the name of) the Module itself or
@@ -476,7 +476,7 @@ class InvertedResidual(nn.Module, SizeMixin):
         Connection pattern (of channels) of the inputs and outputs.
     dilation : int, default 1
         Spacing between the kernel points of (each) convolutional layer.
-    batch_norm : bool or str or torch.nn.Module, default True
+    norm : bool or str or torch.nn.Module, default True
         (batch) normalization, or other normalizations, e.g. group normalization.
         (the name of) the Module itself,
         or (if is bool) whether or not to use :class:`torch.nn.BatchNorm1d`.
@@ -886,7 +886,7 @@ class InvertedResidualBlock(nn.Sequential, SizeMixin):
         in the inverted residual blocks.
     dilation : int or Sequence[int], default 1
         Dilation of the depthwise convolution in the inverted residual blocks.
-    batch_norm : bool or str or torch.nn.Module, default True
+    norm : bool or str or torch.nn.Module, default True
         Normalization layer to use, defaults to batch normalization.
     activation : str or torch.nn.Module or Sequence[str] or Sequence[torch.nn.Module], default "relu"
         Activation function to use.

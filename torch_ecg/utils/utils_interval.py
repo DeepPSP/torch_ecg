@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-"""
-Remarks: commonly used functions related to intervals
+"""Remarks: commonly used functions related to intervals.
 
-.. note::
+NOTE
+----
+1. `Interval` refers to interval of the form ``[a,b]``
+2. `GeneralizedInterval` refers to some (finite) union of `Interval`
 
-    `Interval` refers to interval of the form [a,b]
-    `GeneralizedInterval` refers to some (finite) union of `Interval`s
-
-.. todo::
-
-    1. unify `Interval` and `GeneralizedInterval`, by letting `Interval` be of the form [[a,b]]
-    2. distinguish openness and closedness
+TODO
+----
+1. Unify `Interval` and `GeneralizedInterval`, by letting `Interval` be of the form ``[[a,b]]``.
+2. Distinguish openness and closedness.
 
 """
 
@@ -49,19 +48,24 @@ GeneralizedInterval = Union[Sequence[Interval], type(EMPTY_SET)]
 
 
 def overlaps(interval: Interval, another: Interval) -> int:
-    """
-    Return the amount of overlap, in bp between interval and anohter.
-    If > 0, the number of bp of overlap
-    If 0,  they are book-ended
-    If < 0, the distance in bp between them
+    """Find the overlap between two intervals.
+
+    The amount of overlap, in bp between interval and anohter, is returned.
+
+        - If > 0, the number of bp of overlap
+        - If 0,  they are book-ended
+        - If < 0, the distance in bp between them
 
     Parameters
     ----------
-    interval, another: two `Interval`s
+    interval, another : Interval
+        The two intervals to compute their overlap.
 
     Returns
     -------
-    int, overlap length of two intervals; if < 0, the distance of two intervals
+    int
+        Overlap length of two intervals;
+        if < 0, the distance of two intervals.
 
     Examples
     --------
@@ -82,23 +86,26 @@ def overlaps(interval: Interval, another: Interval) -> int:
 def validate_interval(
     interval: Union[Interval, GeneralizedInterval], join_book_endeds: bool = True
 ) -> Tuple[bool, Union[Interval, GeneralizedInterval]]:
-    """
-    check whether `interval` is an `Interval` or a `GeneralizedInterval`,
-    if true, return True, and validated (of the form [a, b] with a <= b) interval,
-    return `False, []` otherwise.
-    NOTE: if `interval` is empty, return `False, []`
+    """Check whether `interval` is an `Interval` or a `GeneralizedInterval`.
+
+    If true, return True, and validated (of the form [a, b] with a <= b) interval,
+    return ``False, []`` otherwise.
+
+    NOTE: if `interval` is empty, return ``False, []``.
 
     Parameters
     ----------
-    interval: Interval, or unions of `Interval`s
-    join_book_endeds: bool, default True,
-        if True, two book-ended intervals will be joined into one
+    interval : Interval or GeneralizedInterval
+        The interval to be validated.
+    join_book_endeds : bool, default True
+        If True, two book-ended intervals will be joined into one.
 
     Returns
     -------
-    tuple, consisting of
-        a bool, indicating whether `interval` is a valid interval
-        an interval (can be empty)
+    tuple
+        2-tuple consisting of
+            - bool: indicating whether `interval` is a valid interval
+            - an interval (can be empty)
 
     Examples
     --------
@@ -132,8 +139,7 @@ def validate_interval(
 def in_interval(
     val: Real, interval: Interval, left_closed: bool = True, right_closed: bool = False
 ) -> bool:
-    """
-    check whether val is inside interval or not
+    """Check whether val is inside interval or not.
 
     Parameters
     ----------
@@ -184,24 +190,24 @@ def in_generalized_interval(
     left_closed: bool = True,
     right_closed: bool = False,
 ) -> bool:
-    """
-    Check whether val is inside generalized_interval or not
+    """Check whether val is inside generalized_interval or not.
 
     Parameters
     ----------
-    val: numbers.Real,
-        the value to be checked
-    generalized_interval: union of `Interval`s,
-        the interval to be checked
-    left_closed: bool, default True,
-        whether the left end of `generalized_interval` is closed
-    right_closed: bool, default False,
-        whether the right end of `generalized_interval` is closed
+    val : numbers.Real
+        The value to be checked whether
+        it is inside `generalized_interval` or not.
+    generalized_interval : GeneralizedInterval
+        The interval to be checked.
+    left_closed : bool, default True
+        Whether the left end of `generalized_interval` is closed or not.
+    right_closed : bool, default False
+        Whether the right end of `generalized_interval` is closed or not.
 
     Returns
     -------
-    bool,
-        whether `val` is inside `generalized_interval` or not
+    bool
+        Whether `val` is inside `generalized_interval` or not.
 
     Examples
     --------
@@ -311,20 +317,20 @@ def generalized_intervals_union(
     interval_list: Union[List[GeneralizedInterval], Tuple[GeneralizedInterval]],
     join_book_endeds: bool = True,
 ) -> GeneralizedInterval:
-    """
-    calculate the union of a list (or tuple) of `GeneralizedInterval`s
+    """Calculate the union of a list (or tuple) of ``GeneralizedInterval``.
 
     Parameters
     ----------
-    interval_list: list or tuple,
-        a list (or tuple) of `GeneralizedInterval`s
-    join_book_endeds: bool, default True,
-        join the book-ended intervals into one (e.g. [[1,2],[2,3]] into [1,3]) or not
+    interval_list : list or tuple
+        A list (or tuple) of `GeneralizedInterval`.
+    join_book_endeds : bool, default True
+        Whether join the book-ended intervals into one
+        (e.g. [[1,2],[2,3]] into [1,3]) or not
 
     Returns
     -------
-    iu: GeneralizedInterval,
-        the union of `interval_list`
+    GeneralizedInterval
+        The union of `interval_list`.
 
     Examples
     --------
@@ -344,20 +350,20 @@ def generalized_intervals_union(
 def intervals_intersection(
     interval_list: GeneralizedInterval, drop_degenerate: bool = True
 ) -> Interval:
-    """
-    calculate the intersection of all intervals in interval_list
+    """Calculate the intersection of all intervals in `interval_list`.
 
     Parameters
     ----------
-    interval_list: GeneralizedInterval,
-        the list of intervals to yield intersection
-    drop_degenerate: bool, default True,
-        whether or not drop the degenerate intervals, i.e. intervals with length 0
+    interval_list : GeneralizedInterval
+        The list of intervals to yield intersection.
+    drop_degenerate : bool, default True
+        Whether or not drop the degenerate intervals,
+        i.e. intervals with length 0.
 
     Returns
     -------
-    its: Interval,
-        the intersection of all intervals in `interval_list`
+    Interval
+        The intersection of all intervals in `interval_list`.
 
     Examples
     --------
@@ -393,21 +399,20 @@ def generalized_intervals_intersection(
     another_generalized_interval: GeneralizedInterval,
     drop_degenerate: bool = True,
 ) -> GeneralizedInterval:
-    """
-    calculate the intersection of generalized_interval and another_generalized_interval,
-    which are both generalized intervals
+    """calculate the intersection of intervals.
 
     Parameters
     ----------
-    generalized_interval, another_generalized_interval: GeneralizedInterval,
-        the 2 `GeneralizedInterval`s to yield intersection
-    drop_degenerate: bool, default True,
-        whether or not drop the degenerate intervals, i.e. intervals with length 0
+    generalized_interval, another_generalized_interval : GeneralizedInterval
+        The 2 `GeneralizedInterval` to yield intersection.
+    drop_degenerate : bool, default True
+        Whether or not drop the degenerate intervals,
+        i.e. intervals with length 0.
 
     Returns
     -------
-    its: GeneralizedInterval,
-        the intersection of `generalized_interval` and `another_generalized_interval`
+    GeneralizedInterval
+        The intersection of `generalized_interval` and `another_generalized_interval`.
 
     Examples
     --------
@@ -449,15 +454,17 @@ def generalized_interval_complement(
 
     Parameters
     ----------
-    total_interval, Interval,
-    generalized_interval: union of `Interval`s
+    total_interval : Interval
+        The total interval.
+    generalized_interval : GeneralizedInterval
+        The interval to be complemented.
 
     Returns
     -------
-    cpl: union of `Interval`s,
-        the complement of `generalized_interval` in `total_interval`
+    cpl : GeneralizedInterval
+        The complement of `generalized_interval` in `total_interval`
 
-    TODO: the case `total_interval` is a `GeneralizedInterval`
+    TODO: the case `total_interval` is a `GeneralizedInterval`.
 
     Examples
     --------
@@ -988,30 +995,25 @@ def max_disjoint_covering(
     traceback: bool = True,
     verbose: int = 0,
 ) -> Tuple[GeneralizedInterval, List[int]]:
-    """
-    Find the largest (the largest interval length) covering of a sequence of intervals
-
-    NOTE
-    ----
-    1. the problem seems slightly different from the problem discussed in refs
-    2. intervals with non-positive length will be ignored
+    """Find the largest (the largest interval length) covering
+    of a sequence of intervals.
 
     Parameters
     ----------
-    intervals: GeneralizedInterval,
-        a sequence of intervals
-    allow_book_endeds: bool, default True,
-        if True, book-ended intervals will be considered valid (disjoint)
-    traceback: bool, default True,
-        if True, the indices of the intervals in the input `intervals` of the output covering
-        will also be returned
+    intervals : GeneralizedInterval
+        A sequence of intervals.
+    allow_book_endeds : bool, default True
+        If True, book-ended intervals will be considered valid (disjoint).
+    traceback : bool, default True
+        If True, the indices of the intervals in the input `intervals`
+        of the output covering will also be returned.
 
     Returns
     -------
-    covering : :class:`GeneralizedInterval`
-        The maximum non-overlapping (disjoint) subset of `intervals`
-    covering_inds : list of int
-        Indices in `intervals` of the intervals of `covering_inds`
+    covering : GeneralizedInterval
+        The maximum non-overlapping (disjoint) subset of `intervals`.
+    covering_inds : List[int]
+        Indices in `intervals` of the intervals of `covering_inds`.
 
     Examples
     --------
@@ -1023,6 +1025,11 @@ def max_disjoint_covering(
     ([[1, 4], [4, 6], [8, 9]], [0, 2, 3])
     >>> max_disjoint_covering([[1, 4], [2, 3], [4, 6], [8, 9]], allow_book_endeds=False, traceback=False)
     ([[2, 3], [4, 6], [8, 9]], [])
+
+    NOTE
+    ----
+    1. The problem seems slightly different from the problem discussed in reference [1]_ and [2]_.
+    2. Intervals with non-positive length will be ignored
 
     References
     ----------

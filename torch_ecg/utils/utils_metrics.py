@@ -256,10 +256,6 @@ def metrics_from_confusion_matrix(
     >>> # RuntimeWarning: `outputs` is probably binary, AUC may be incorrect
     >>> metrics = metrics_from_confusion_matrix(labels, outputs)
 
-    References
-    ----------
-    .. [1] https://en.wikipedia.org/wiki/Precision_and_recall
-
     """
     outputs_ndim = np.ndim(outputs)
     labels, outputs = cls_to_bin(labels, outputs, num_classes)
@@ -862,7 +858,7 @@ def compute_metrics_waveform(
     ----------
     truth_waveforms : Sequence[Sequence[ECGWaveForm]]
         The ground truth,
-        each element is a sequence of `ECGWaveForm`s from the same sample.
+        each element is a sequence of `ECGWaveForm` from the same sample.
     pred_waveforms : Sequence[Sequence[ECGWaveForm]]
         The predictions corresponding to `truth_waveforms`,
         each element is a sequence of :class:`ECGWaveForm` from the same sample.
@@ -1067,7 +1063,7 @@ def _compute_metrics_base(
         Tuple of metrics:
         truth_positive, false_negative, false_positive, errors,
         sensitivity, precision, f1_score, mean_error, standard_deviation.
-        See [#1]_ for more details.
+        See [1]_ for more details.
 
     References
     ----------

@@ -318,17 +318,17 @@ def ensure_siglen(
     fmt: str = "lead_first",
     tolerance: Optional[float] = None,
 ) -> np.ndarray:
-    """
-    Ensure the (ECG) signal to be of length `siglen`,
-    strategy:
-        1. If `values` has length greater than `siglen`,
-        the central `siglen` samples will be adopted;
-        otherwise, zero padding will be added to both sides.
-        2. If `tolerance` is given,
-        then if the length of `values` is longer than
-        `siglen` by more than `tolerance` in percentage,
-        the `values` will be sliced to have multiple of `siglen` samples,
-        each with `(1 - tolerance) * siglen` overlap.
+    """Ensure the (ECG) signal to be of length `siglen`.
+
+    Strategy:
+
+    1. If `values` has length greater than `siglen`,
+       the central `siglen` samples will be adopted;
+       otherwise, zero padding will be added to both sides.
+    2. If `tolerance` is given, then if the length of `values` is
+       longer than `siglen` by more than `tolerance` in percentage,
+       the `values` will be sliced to have multiple of `siglen` samples,
+       each with ``(1 - tolerance) * siglen`` overlap.
 
     Parameters
     ----------
@@ -406,30 +406,29 @@ def ensure_siglen(
 
 @dataclass
 class ECGWaveForm:
-    """
-    ECG waveform object
+    """Dataclass for ECG waveform information.
 
-    Parameters
+    Attributes
     ----------
-    name: str,
-        name of the wave, e.g. "N", "p", "t", etc.
-    onset: numbers.Real,
-        onset index of the wave,
-        np.nan for unknown/unannotated onset
-    offset: numbers.Real,
-        offset index of the wave,
-        np.nan for unknown/unannotated offset
-    peak: numbers.Real,
-        peak index of the wave,
-        np.nan for unknown/unannotated peak
-    duration: numbers.Real,
-        duration of the wave, with units in milliseconds,
-        np.nan for unknown/unannotated duration
+    name : str
+        Name of the wave, e.g. "N", "p", "t", etc.
+    onset : numbers.Real
+        Onset index of the wave,
+        :class:`~numpy.nan` for unknown/unannotated onset.
+    offset : numbers.Real
+        Offset index of the wave,
+        :class:`~numpy.nan` for unknown/unannotated offset.
+    peak : numbers.Real
+        Peak index of the wave,
+        :class:`~numpy.nan` for unknown/unannotated peak.
+    duration : numbers.Real
+        Suration of the wave, with units in milliseconds,
+        :class:`~numpy.nan` for unknown/unannotated duration.
 
-    TODO:
-    -----
-    add `fs` field to indicate the sampling rate of the waveform,
-    and make `duration` a property computed from `fs`, `onset`, and `offset`
+    TODO
+    ----
+    Add `fs` field to indicate the sampling rate of the waveform,
+    and make `duration` a property computed from `fs`, `onset`, and `offset`.
     """
 
     name: str
@@ -440,9 +439,7 @@ class ECGWaveForm:
 
     @property
     def duration_(self) -> Real:
-        """
-        duration of the wave, with units in number of samples
-        """
+        """Duration of the wave, with units in number of samples."""
         try:
             return self.offset - self.onset
         except TypeError:
@@ -492,7 +489,7 @@ def masks_to_waveforms(
     Returns
     -------
     waves: dict,
-        each item value is a list containing the `ECGWaveForm`s corr. to the lead;
+        each item value is a list containing the `ECGWaveForm` corr. to the lead;
         each item key is from `leads` if `leads` is set,
         otherwise would be "lead_1", "lead_2", ..., "lead_n"
 

@@ -4,7 +4,8 @@ Sequence labeling nets, for wave delineation,
 the labeling granularity is the frequency of the input signal,
 divided by the length (counted by the number of basic blocks) of each branch
 
-pipeline:
+Pipeline
+--------
 multi-scopic cnn --> (bidi-lstm -->) "attention" (se block) --> seq linear
 
 References
@@ -24,6 +25,7 @@ from torch import Tensor
 from .ecg_crnn import ECG_CRNN, ECG_CRNN_v1
 from ..model_configs.ecg_seq_lab_net import ECG_SEQ_LAB_NET_CONFIG
 from ..cfg import CFG
+from ..utils import add_docstring
 
 
 __all__ = [
@@ -32,16 +34,29 @@ __all__ = [
 
 
 class ECG_SEQ_LAB_NET(ECG_CRNN):
-    """
-    SOTA model from CPSC2019 challenge (entry 0416)
+    """SOTA model from CPSC2019 challenge.
+
+    Sequence labeling nets, for wave delineation, QRS complex detection, etc.
+    Proposed in [1]_.
 
     pipeline
     --------
     (multi-scopic, etc.) cnn --> head ((bidi-lstm -->) "attention" --> seq linear) -> output
 
+
+    Parameters
+    ----------
+    classes : List[str]
+        List of the classes for sequence labeling.
+    n_leads : int
+        Number of leads (number of input channels).
+    config : dict, optional
+        Other hyper-parameters, including kernel sizes, etc.
+        Refer to corresponding config file.
+
     References
     ----------
-    [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
+    .. [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
 
     """
 
@@ -52,18 +67,6 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
     def __init__(
         self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
     ) -> None:
-        """
-        Parameters
-        ----------
-        classes: list,
-            list of the classes for sequence labeling
-        n_leads: int,
-            number of leads (number of input channels)
-        config: dict, optional,
-            other hyper-parameters, including kernel sizes, etc.
-            ref. the corresponding config file
-
-        """
         _config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         if not config:
             warnings.warn(
@@ -74,16 +77,19 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         super().__init__(classes, n_leads, _config)
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         Returns
         -------
-        pred: Tensor,
-            of shape (batch_size, seq_len, n_classes)
+        pred : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, seq_len, n_classes)``
 
         """
         batch_size, channels, seq_len = input.shape
@@ -103,18 +109,19 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the model.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the 1d input signal tensor.
+        batch_size : int, optional
+            Batch size of the input signal tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this model, given `seq_len` and `batch_size`
+        output_shape : sequence
+            The output shape of the model.
 
         """
         output_shape = super().compute_output_shape(seq_len, batch_size)
@@ -126,16 +133,17 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
     def from_v1(
         cls, v1_ckpt: str, device: Optional[torch.device] = None
     ) -> "ECG_SEQ_LAB_NET":
-        """
+        """Convert the v1 model to the current version.
+
         Parameters
         ----------
-        v1_ckpt: str,
-            the path to the v1 checkpoint file
+        v1_ckpt : str
+            Path to the v1 checkpoint file.
 
         Returns
         -------
-        model: ECG_SEQ_LAB_NET,
-            the converted model
+        model : ECG_SEQ_LAB_NET
+            The converted model.
 
         """
         v1_model, _ = ECG_SEQ_LAB_NET_v1.from_checkpoint(v1_ckpt, device=device)
@@ -157,19 +165,8 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         return list(set(super().doi + ["10.1109/access.2020.2997473"]))
 
 
+@add_docstring(ECG_SEQ_LAB_NET.__doc__)
 class ECG_SEQ_LAB_NET_v1(ECG_CRNN_v1):
-    """
-    SOTA model from CPSC2019 challenge (entry 0416)
-
-    pipeline
-    --------
-    (multi-scopic, etc.) cnn --> head ((bidi-lstm -->) "attention" --> seq linear) -> output
-
-    References
-    ----------
-    [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
-
-    """
 
     __name__ = "ECG_SEQ_LAB_NET_v1"
     __DEFAULT_CONFIG__ = {"recover_length": False}
@@ -178,18 +175,6 @@ class ECG_SEQ_LAB_NET_v1(ECG_CRNN_v1):
     def __init__(
         self, classes: Sequence[str], n_leads: int, config: Optional[CFG] = None
     ) -> None:
-        """
-        Parameters
-        ----------
-        classes: list,
-            list of the classes for sequence labeling
-        n_leads: int,
-            number of leads (number of input channels)
-        config: dict, optional,
-            other hyper-parameters, including kernel sizes, etc.
-            ref. the corresponding config file
-
-        """
         _config = CFG(deepcopy(self.__DEFAULT_CONFIG__))
         if not config:
             warnings.warn(
@@ -200,18 +185,19 @@ class ECG_SEQ_LAB_NET_v1(ECG_CRNN_v1):
         super().__init__(classes, n_leads, _config)
 
     def extract_features(self, input: Tensor) -> Tensor:
-        """
-        extract feature map before the dense (linear) classifying layer(s)
+        """Extract feature map before the dense (linear) classifying layer(s).
 
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         Returns
         -------
-        features: Tensor,
-            of shape (batch_size, seq_len, channels)
+        features : torch.Tensor
+            Feature map tensor,
+            of shape ``(batch_size, seq_len, channels)``.
 
         """
         # cnn
@@ -233,19 +219,8 @@ class ECG_SEQ_LAB_NET_v1(ECG_CRNN_v1):
         # features = features.permute(0, 2, 1)  # (batch_size, seq_len, channels)
         return features
 
+    @add_docstring(ECG_SEQ_LAB_NET.forward.__doc__)
     def forward(self, input: Tensor) -> Tensor:
-        """
-        Parameters
-        ----------
-        input: Tensor,
-            of shape (batch_size, channels, seq_len)
-
-        Returns
-        -------
-        pred: Tensor,
-            of shape (batch_size, seq_len, n_classes)
-
-        """
         batch_size, channels, seq_len = input.shape
 
         pred = super().forward(input)  # (batch_size, len, n_classes)

@@ -43,24 +43,24 @@ def normalize(
     Parameters
     ----------
     sig : torch.Tensor
-        signal to be normalized, assumed to have shape (..., n_leads, siglen)
-    method : str, default "z-score"
-        Normalization method, one of "z-score", "min-max", "naive", case insensitive
+        Signal to be normalized, assumed to have shape ``(..., n_leads, siglen)``.
+    method : {"z-score", "min-max", "naive"}, optional
+        Normalization method, by default "z-score", case insensitive.
     mean : numbers.Real or array_like, default 0.0
         Mean value of the normalized signal,
         or mean values for each lead of the normalized signal, if `method` is "z-score";
-        mean values to be subtracted from the original signal, if `method` is "naive";
-        useless if `method` is "min-max"
+        mean values to be subtracted from the original signal, if `method` is "naive".
+        Useless if `method` is "min-max".
     std : numbers.Real or array_like, default 1.0
         Standard deviation of the normalized signal,
         or standard deviations for each lead of the normalized signal, if `method` is "z-score";
-        std to be divided from the original signal, if `method` is "naive";
-        useless if `method` is "min-max"
+        or std to be divided from the original signal, if `method` is "naive".
+        Useless if `method` is "min-max".
     per_channel : bool, default False
         If True, normalization will be done per channel, not strictly required per channel;
-        if False, normalization will be done per sample, strictly required per sample
+        if False, normalization will be done per sample, strictly required per sample.
     inplace : bool, default True
-        If True, normalization will be done inplace (on `sig`)
+        If True, normalization will be done inplace (on `sig`).
 
     Returns
     -------
@@ -69,17 +69,22 @@ def normalize(
 
     NOTE
     ----
-    in cases where normalization is infeasible (std = 0),
+    In cases where normalization is infeasible (``std = 0``),
     only the mean value will be shifted
 
     feasible shapes of :attr:`sig` and :attr:`std`, :attr:`mean` are as follows
 
-    | shape of :attr:`sig` | :attr:`per_channel` | shape of :attr:`std` or :attr:`mean |
-    |----------------|---------------|----------------------------------------------------------------------------|
-    |    (b,l,s)     |     False     | scalar, (b,), (b,1), (b,1,1)                                               |
-    |    (b,l,s)     |     True      | scalar, (b,), (l,), (b,1), (b,l), (l,1), (1,l), (b,1,1), (b,l,1), (1,l,1,) |
-    |    (l,s)       |     False     | scalar,                                                                    |
-    |    (l,s)       |     True      | scalar, (l,), (l,1), (1,l)                                                 |
+    +----------------------+---------------------+----------------------------------------------------------------------------+
+    | shape of :attr:`sig` | :attr:`per_channel` | shape of :attr:`std` or :attr:`mean`                                       |
+    +======================+=====================+============================================================================+
+    |    (b,l,s)           |     False           | scalar, (b,), (b,1), (b,1,1)                                               |
+    +----------------------+---------------------+----------------------------------------------------------------------------+
+    |    (b,l,s)           |     True            | scalar, (b,), (l,), (b,1), (b,l), (l,1), (1,l), (b,1,1), (b,l,1), (1,l,1,) |
+    +----------------------+---------------------+----------------------------------------------------------------------------+
+    |    (l,s)             |     False           | scalar                                                                     |
+    +----------------------+---------------------+----------------------------------------------------------------------------+
+    |    (l,s)             |     True            | scalar, (l,), (l,1), (1,l)                                                 |
+    +----------------------+---------------------+----------------------------------------------------------------------------+
 
     :attr:`scalar` includes native scalar or scalar tensor. One can check by
 

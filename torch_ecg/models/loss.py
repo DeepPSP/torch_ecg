@@ -7,6 +7,7 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
 
+
 __all__ = [
     "WeightedBCELoss",
     "BCEWithLogitsWithClassWeightLoss",
@@ -24,23 +25,38 @@ def weighted_binary_cross_entropy(
     size_average: bool = True,
     reduce: bool = True,
 ) -> Tensor:
-    """
+    """Weighted Binary Cross Entropy Loss function.
+
+    This implementation is based on [#wbce]_.
+
     Parameters
     ----------
-    sigmoid_x: Tensor,
-        predicted probability of size [N,C], N sample and C Class.
-        Eg. Must be in range of [0,1], i.e. Output from Sigmoid.
-    targets: Tensor,
-        true value, one-hot-like vector of size [N,C]
-    pos_weight: Tensor,
-        Weight for postive sample
-    weight: Tensor, optional,
-    size_average: bool, default True,
-    reduce: bool, default True,
+    sigmoid_x : torch.Tensor
+        Predicted probability of size ``[N, C]``, N sample and C Class.
+        Eg. Must be in range of ``[0, 1]``,
+        i.e. output from :class:`~torch.nn.Sigmoid`.
+    targets : torch.Tensor
+        True value, one-hot-like vector of size ``[N, C]``.
+    pos_weight : torch.Tensor
+        Weight for postive sample.
+    weight : torch.Tensor, optional
+        Weight for each class, of size ``[1, C]``.
+    size_average : bool, default True
+        If True, the losses are averaged
+        over each loss element in the batch.
+        Valid only if `reduce` is True.
+    reduce : bool, default True
+        If True, the losses are averaged or summed
+        over observations for each minibatch.
 
-    Reference (original source):
-    ----------------------------
-    https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
+    Returns
+    -------
+    loss : torch.Tensor
+        Weighted Binary Cross Entropy Loss.
+
+    References
+    ----------
+    .. [#wbce] https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
 
     """
     if not (targets.size() == sigmoid_x.size()):
@@ -65,9 +81,34 @@ def weighted_binary_cross_entropy(
 
 
 class WeightedBCELoss(nn.Module):
-    """
-    Reference (original source):
-    https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
+    """Weighted Binary Cross Entropy Loss class.
+
+    This implementation is based on [#wbce]_.
+
+    Parameters
+    ----------
+    pos_weight : torch.Tensor
+        Weight for postive sample.
+    weight : torch.Tensor, optional
+        Weight for each class, of size ``[1, C]``.
+    PosWeightIsDynamic : bool, default False
+        If True, the pos_weight is computed on each batch.
+        If `pos_weight` is None, then it remains None.
+    WeightIsDynamic : bool, default False
+        If True, the weight is computed on each batch.
+        If `weight` is None, then it remains None.
+    size_average : bool, default True
+        If True, the losses are averaged
+        over each loss element in the batch.
+        Valid only if `reduce` is True.
+    reduce : bool, default True
+        If True, the losses are averaged or summed
+        over observations for each minibatch.
+
+    References
+    ----------
+    .. [#wbce] https://github.com/pytorch/pytorch/issues/5660#issuecomment-403770305
+
     """
 
     __name__ = "WeightedBCELoss"
@@ -81,23 +122,6 @@ class WeightedBCELoss(nn.Module):
         size_average: bool = True,
         reduce: bool = True,
     ) -> None:
-        """
-        Parameters
-        ----------
-        pos_weight: Tensor,
-            Weight for postive samples. Size [1,C]
-        weight: Tensor, optional,
-            Weight for Each class. Size [1,C]
-        PosWeightIsDynamic: bool, default False,
-            If True, the pos_weight is computed on each batch.
-            If `pos_weight` is None, then it remains None.
-        WeightIsDynamic: bool, default False,
-            If True, the weight is computed on each batch.
-            If `weight` is None, then it remains None.
-        size_average: bool, default True,
-        reduce: bool, default True,
-
-        """
         super().__init__()
 
         self.register_buffer("pos_weight", pos_weight)
@@ -360,9 +384,9 @@ class AsymmetricLoss(nn.Module):
 
         Parameters
         ----------
-        gamma_neg: real number, default 4,
+        gamma_neg: numbers.Real, default 4,
             exponent of the multiplier to the negative loss
-        gamma_pos: real number, default 1,
+        gamma_pos: numbers.Real, default 1,
             exponent of the multiplier to the positive loss
         prob_margin: float, default 0.05,
             the probability margin

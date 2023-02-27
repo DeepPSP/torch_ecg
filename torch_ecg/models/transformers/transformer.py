@@ -18,7 +18,28 @@ __all__ = [
 
 
 class Transformer(nn.Module, SizeMixin):
-    """ """
+    """Transformer feature extractor.
+
+    Parameters
+    ----------
+    input_size : int
+        Number of input channels.
+    hidden_size : int
+        Number of hidden units in the encoding layer.
+    num_heads : int, default 8
+        Number of attention heads.
+    num_layers : int, default 1
+        Number of encoding layers.
+    dropout : float, default 0.1
+        Dropout probability
+    batch_first : bool, default True
+        If True, the input is of shape ``(batch_size, seq_len, input_size)``,
+        otherwise, the input is of shape ``(seq_len, batch_size, input_size)``.
+    kwargs : dict
+        Other hyper-parameters of the Module, including
+        activation, kernel_initializer, etc.
+
+    """
 
     __name__ = "Transformer"
 
@@ -32,24 +53,6 @@ class Transformer(nn.Module, SizeMixin):
         batch_first: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        input_size: int,
-            number of input channels
-        hidden_size: int,
-            number of hidden units in the encoding layer
-        num_heads: int, default 8,
-            number of attention heads
-        num_layers: int, default 1,
-            number of encoding layers
-        dropout: float, default 0.1,
-            dropout probability
-        batch_first: bool, default True,
-            whether the input is of shape (batch_size, seq_len, input_size)
-        kwargs: keyword arguments,
-
-        """
         super().__init__()
         self.__input_size = input_size
         self.__hidden_size = hidden_size
@@ -108,17 +111,21 @@ class Transformer(nn.Module, SizeMixin):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
+        """Forward pass of the transformer feature extractor.
+
         Parameters
         ----------
-        x: torch.Tensor,
-            the input tensor,
-            of shape (seq_len, batch_size, input_size) or (batch_size, seq_len, input_size)
+        x : torch.Tensor
+            Input tensor,
+            of shape ``(seq_len, batch_size, input_size)`` if `batch_first` is False,
+            else ``(batch_size, seq_len, input_size)``.
 
         Returns
         -------
-        torch.Tensor:
-            of shape (seq_len, batch_size, input_size) or (batch_size, seq_len, input_size)
+        torch.Tensor
+            Output tensor,
+            of shape ``(seq_len, batch_size, output_size)`` if `batch_first` is False,
+            else ``(batch_size, seq_len, output_size)``.
 
         """
         x = self.project(x)
@@ -127,18 +134,19 @@ class Transformer(nn.Module, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the transformer feature extractor.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            Batch size of the input tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this layer, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the transformer feature extractor.
 
         """
         if self.__batch_first:
@@ -148,5 +156,4 @@ class Transformer(nn.Module, SizeMixin):
 
     @property
     def batch_first(self) -> bool:
-        """ """
         return self.__batch_first

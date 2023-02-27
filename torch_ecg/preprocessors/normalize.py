@@ -51,12 +51,12 @@ class Normalize(torch.nn.Module):
         method: str, default "z-score",
             normalization method, case insensitive, can be one of
             "naive", "min-max", "z-score",
-        mean: real number or array_like, default 0.0,
+        mean: numbers.Real or array_like, default 0.0,
             mean value of the normalized signal,
             or mean values for each lead of the normalized signal, if `method` is "z-score";
             mean values to be subtracted from the original signal, if `method` is "naive";
             useless if `method` is "min-max"
-        std: real number or array_like, default 1.0,
+        std: numbers.Real or array_like, default 1.0,
             standard deviation of the normalized signal,
             or standard deviations for each lead of the normalized signal, if `method` is "z-score";
             std to be divided from the original signal, if `method` is "naive";
@@ -156,9 +156,9 @@ class NaiveNormalize(Normalize):
         """
         Parameters
         ----------
-        mean: real number or array_like, default 0.0,
+        mean: numbers.Real or array_like, default 0.0,
             value(s) to be subtracted
-        std: real number or array_like, default 1.0,
+        std: numbers.Real or array_like, default 1.0,
             value(s) to be divided
         per_channel: bool, default False,
             if True, normalization will be done per channel
@@ -199,10 +199,10 @@ class ZScoreNormalize(Normalize):
 
         Parameters
         ----------
-        mean: real number or array_like, default 0.0,
+        mean: numbers.Real or array_like, default 0.0,
             mean value of the normalized signal,
             or mean values for each lead of the normalized signal,
-        std: real number or array_like, default 1.0,
+        std: numbers.Real or array_like, default 1.0,
             standard deviation of the normalized signal,
             or standard deviations for each lead of the normalized signal,
         per_channel: bool, default False,

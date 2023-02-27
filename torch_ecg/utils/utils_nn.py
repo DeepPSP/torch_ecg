@@ -17,6 +17,7 @@ import torch
 from torch import Tensor, nn
 
 from ..cfg import CFG, DEFAULTS
+from .misc import add_docstring
 from .utils_data import cls_to_bin
 
 
@@ -613,44 +614,26 @@ compute_sequential_output_shape_docstring = """
 
     Parameters
     ----------
-    seq_len: int,
-        length of the 1d sequence
-    batch_size: int, optional,
-        the batch size, can be None
+    seq_len : int, optional
+        Length of the input tensors.
+    batch_size : int, optional
+        Batch size of the input tensors.
 
     Returns
     -------
-    output_shape: sequence,
-        the output shape, given `seq_len` and `batch_size`
+    output_shape : sequence
+        The output shape of the module.
 
     """
 
 
+@add_docstring(compute_sequential_output_shape_docstring, mode="append")
 def compute_sequential_output_shape(
     model: nn.Sequential,
     seq_len: Optional[int] = None,
     batch_size: Optional[int] = None,
 ) -> Sequence[Union[int, None]]:
-    """
-    Compute the output shape of a sequential model
-
-    Parameters
-    ----------
-    model: nn.Sequential,
-        the sequential model,
-        each `module` of the `model` should have
-        a `compute_output_shape` method
-    seq_len: int,
-        length of the 1d sequence
-    batch_size: int, optional,
-        the batch size, can be None
-
-    Returns
-    -------
-    output_shape: sequence,
-        the output shape, given `seq_len` and `batch_size`
-
-    """
+    """Compute the output shape of a sequential model."""
     assert issubclass(
         type(model), nn.Sequential
     ), f"model should be nn.Sequential, but got {type(model)}"
@@ -667,35 +650,36 @@ def compute_module_size(
     include_buffers: bool = False,
     human: bool = False,
 ) -> Union[int, str]:
-    """
-    compute the size (number of parameters) of a module
+    """compute the size (number of parameters)
+    of a :class:`~torch.nn.Module`.
 
     Parameters
     ----------
-    module: Module,
-        a torch Module
-    requires_grad: bool, default True,
-        whether to only count the parameters that require gradients
-    include_buffers: bool, default False,
-        whether to include the buffers,
-        if `requires_grad` is True, `include_buffers` will be ignored
-    human: bool, default False,
-        return size in a way that is easy to read by a human,
-        by appending a suffix corresponding to the unit (B, K, M, G, T, P)
+    module : torch.nn.Module
+        The :class:`~torch.nn.Module` to compute the size.
+    requires_grad : bool, default True
+        Whether to only count the parameters that require gradients.
+    include_buffers : bool, default False
+        Whether to include the buffers.
+        If `requires_grad` is True, then `include_buffers` is ignored.
+    human : bool, default False
+        Size is returned in a way that is easy to read by a human,
+        by appending a suffix corresponding to the unit (B, K, M, G, T, P).
 
     Returns
     -------
-    n_params: int,
-        size (number of parameters) of this torch module
+    n_params : int or str
+        Size (number of parameters) of this :class:`~torch.nn.Module`,
+        or a string representing the memory size.
 
     Examples
     --------
     >>> import torch
     >>> class Model(torch.nn.Sequential):
-            def __init__(self):
-                super().__init__()
-                self.add_module("linear", torch.nn.Linear(10, 20, dtype=torch.float16))
-                self.register_buffer("hehe", torch.ones(20, 2, dtype=torch.float64))
+    ...     def __init__(self):
+    ...         super().__init__()
+    ...         self.add_module("linear", torch.nn.Linear(10, 20, dtype=torch.float16))
+    ...         self.register_buffer("hehe", torch.ones(20, 2, dtype=torch.float64))
     >>> model = Model()
     >>> model.linear.weight.requires_grad_(False)
     >>> compute_module_size(model)
@@ -757,12 +741,15 @@ def compute_receptive_field(
     dilations: Union[Sequence[int], int] = 1,
     input_len: Optional[int] = None,
 ) -> Union[int, float]:
-    r"""
-    computes the (generic) receptive field of feature map of certain channel,
-    from certain flow (if not merged, different flows, e.g. shortcut, must be computed separately),
+    """Compute the receptive field of several types of
+    :class:`~torch.nn.Module`.
+
+    Computes the (generic) receptive field of feature map of certain channel,
+    from certain flow (if not merged, different flows, e.g.
+    shortcut, must be computed separately),
     for convolutions, (non-global) poolings.
     "generic" refers to a general position, rather than specific positions,
-    like on the edges, whose receptive field is definitely different
+    like on the edges, whose receptive field is definitely different.
 
     .. math::
 
@@ -770,32 +757,32 @@ def compute_receptive_field(
         Let each feature map has receptive field length $r_n$,
         and difference of receptive fields of adjacent positions be $f_n$.
         By convention, $(r_0, f_0) = (1, 1)$. Then one has
-        \begin{eqnarray}
-        r_{n+1} & = & r_n + d_n(k_n-1)f_n, \\
+        \\begin{eqnarray}
+        r_{n+1} & = & r_n + d_n(k_n-1)f_n, \\\\
         f_{n+1} & = & s_n f_n.
-        \end{eqnarray}
+        \\end{eqnarray}
         Hence
-        \begin{eqnarray}
-        f_{n} & = & \prod\limits_{i=0}^{n-1} s_i, \\
-        r_{n} & = & 1 + \sum\limits_{i=0}^{n-1} d_i(k_i-1) \prod\limits_{i=0}^{j-1} s_j,
-        \end{eqnarray}
+        \\begin{eqnarray}
+        f_{n} & = & \\prod\\limits_{i=0}^{n-1} s_i, \\\\
+        r_{n} & = & 1 + \\sum\\limits_{i=0}^{n-1} d_i(k_i-1) \\prod\\limits_{i=0}^{j-1} s_j,
+        \\end{eqnarray}
         with empty products equaling 1 by convention.
 
     Parameters
     ----------
-    kernel_sizes: int or sequence of int,
-        the sequence of kernel size for all the layers in the flow
-    strides: int or sequence of int, default 1,
-        the sequence of strides for all the layers in the flow
-    dilations: int or sequence of int, default 1,
-        the sequence of strides for all the layers in the flow
-    input_len: int, optional,
-        length of the first feature map in the flow
+    kernel_sizes : int or Sequence[int], default 1
+        The sequence of kernel size for all the layers in the flow.
+    strides : int or Sequence[int], default 1
+        The sequence of strides for all the layers in the flow
+    dilations : int or Sequence[int], default 1
+        The sequence of strides for all the layers in the flow
+    input_len : int, optional
+        Length of the first feature map in the flow.
 
     Returns
     -------
-    receptive_field: int,
-        (length) of the receptive field
+    receptive_field : int or float
+        (length) of the receptive field.
 
     Examples
     --------
@@ -806,9 +793,9 @@ def compute_receptive_field(
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[4,1,4,8,1,16,32,64,1])
     1984
 
-    this is the receptive fields of the output feature maps
+    The above example exhibits the receptive fields of the output feature maps
     of the 3 branches of the multi-scopic net, using its original hyper-parameters,
-    (note the 3 max pooling layers)
+    (note the 3 max pooling layers).
 
     """
     _kernel_sizes = (
@@ -836,11 +823,11 @@ def compute_receptive_field(
 def default_collate_fn(
     batch: Sequence[Union[Tuple[np.ndarray, ...], Dict[str, np.ndarray]]]
 ) -> Union[Tuple[Tensor, ...], Dict[str, Tensor]]:
-    """
-    collate functions for model training
+    """Default collate functions for model training.
 
-    the data generator (`Dataset`) should generate (`__getitem__`) n-tuples `signals, labels, ...`,
-    or dictionaries of tensors
+    the data generator (`Dataset`) should
+    generate (`__getitem__`) n-tuples `signals, labels, ...`,
+    or dictionaries of tensors.
 
     Parameters
     ----------
