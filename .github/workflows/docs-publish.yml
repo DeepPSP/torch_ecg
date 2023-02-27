@@ -4,9 +4,7 @@ name: Build Docs with Sphinx and Publish
 
 on:
   push:
-    branches: [ doc, dev ]
-  pull_request:
-    branches: [ master ]
+    branches: [ doc ]
   
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -80,7 +78,7 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/_build/html
+        publish_dir: ./docs/build/html
         publish_branch: gh-pages
         user_name: 'WEN Hao'
         user_email: 'wenh06@gmail.com'
