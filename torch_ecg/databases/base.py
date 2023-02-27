@@ -713,12 +713,12 @@ class PhysioNetDataBase(_DataBase):
         wfdb_rec = wfdb.rdrecord(fp, **rdrecord_kwargs)
 
         # p_signal or d_signal is in the format of "lead_last", and with units in "mV"
-        if units.lower() == "mv":
+        if units is None:
+            data = wfdb_rec.d_signal
+        elif units.lower() == "mv":
             data = wfdb_rec.p_signal
         elif units.lower() in ["μv", "uv", "muv"]:
             data = 1000 * wfdb_rec.p_signal
-        elif units is None:
-            data = wfdb_rec.d_signal
 
         if fs is not None and hasattr(self, "fs") and fs != self.fs:
             data = SS.resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
