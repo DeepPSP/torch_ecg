@@ -110,7 +110,7 @@ _CPSC2021_INFO = DataBaseInfo(
         "AF (event, fine) detection",
     ],
     references=[
-        "http://www.icbeb.org/CPSC2021",
+        "http://2021.icbeb.org/CPSC2021",
         "https://www.physionet.org/content/cpsc2021/",
     ],
     doi="10.13026/ksya-qw89",
@@ -1514,7 +1514,7 @@ def gen_endpoint_score_mask(
     while the offsets in `af_intervals` are 0.15s behind the corresponding R peaks.
     2. for records [data_39_4,data_48_4,data_68_23,data_98_5,data_101_5,data_101_7,data_101_8,data_104_25,data_104_27],
     the official `RefInfo._gen_endpoint_score_range` slightly expands the scoring intervals at heads or tails of the records,
-    which strictly is incorrect as defined in the `Scoring` section of the official webpage (http://www.icbeb.org/CPSC2021)
+    which strictly is incorrect as defined in the `Scoring` section of the official webpage (http://2021.icbeb.org/CPSC2021)
 
     """
     _critical_points = list(critical_points)
