@@ -60,7 +60,7 @@ _CPSC2021_INFO = DataBaseInfo(
 
           .. tikz:: The scoring matrix for the recording-level classification result.
             :align: center
-            :libs: shapes,arrows,decorations.pathmorphing,backgrounds,positioning,fit,petri,calc,hobby
+            :libs: positioning
 
             \tikzstyle{rect} = [rectangle, text width = 50, text centered, inner sep = 3pt, minimum height = 50]
             \tikzstyle{txt} = [rectangle, text centered, inner sep = 3pt, minimum height = 1.5]
