@@ -15,12 +15,13 @@ Remarks
 """
 
 import logging
+import os
 import posixpath
 import pprint
 import re
+import textwrap
 import time
 import warnings
-import textwrap
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
@@ -241,7 +242,7 @@ class _DataBase(ReprMixin, ABC):
         style : str, optional
             Style of the final output.
             If specified, the default style ("apa") will be overrided.
-            Valid only when `format` is "text".
+            Valid only when `format` is ``"text"``.
         print_result : bool, default False
             Whether to print the final output
             instead of returning it or not.
@@ -1233,7 +1234,7 @@ class DataBaseInfo(CitationMixin):
     status : str, optional
         Status of the database.
     doi : str or list of str, optional
-        Doi of the paper(s) describing the database.
+        DOI of the paper(s) describing the database.
 
     """
 
@@ -1262,6 +1263,11 @@ class DataBaseInfo(CitationMixin):
         -------
         str
             The formatted docstring.
+
+        NOTE
+        ----
+        An environment variable ``DB_BIB_LOOKUP`` can be set to
+        `True` to enable the lookup of the bib entries.
 
         """
         if indent is None:
@@ -1313,9 +1319,8 @@ class DataBaseInfo(CitationMixin):
         if self.status is not None and len(self.status) > 0:
             docstring = f"{self.status}\n\n{docstring}"
 
-        lookup = False
+        lookup = os.getenv("DB_BIB_LOOKUP", False)
         citation = self.get_citation(lookup=lookup, print_result=False)
-        # TODO: change format from markdown to rst
         if citation.startswith("@"):
             citation = textwrap.indent(citation, indent)
             citation = textwrap.indent(

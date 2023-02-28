@@ -11,6 +11,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  # Enable bib-lookup
+  DB_BIB_LOOKUP: true
+
 jobs:
   build:
     # Don't run on forked repos.
