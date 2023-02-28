@@ -12,7 +12,7 @@ The system design is depicted as follows
 
 .. tikz:: Main Modules and Work Flow.
    :align: center
-   :libs: shapes,arrows.meta,decorations.pathmorphing,backgrounds,positioning,fit,petri,calc,hobby
+   :libs: arrows.meta, positioning
 
    \tikzstyle{block} = [rectangle, draw, text width = 6em, text centered, rounded corners, inner sep = 3pt, minimum height = 1.0em]
    \tikzstyle{arr} = [semithick, -Stealth]

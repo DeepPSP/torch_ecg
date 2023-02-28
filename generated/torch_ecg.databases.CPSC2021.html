@@ -1068,72 +1068,7 @@ Paroxysmal Atrial Fibrillation Events Detection from Dynamic ECG Recordings</p>
 <blockquote>
 <div><ul>
 <li><p>metrics (Ur, scoring matrix) for classification:</p>
-<aside class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<span class="docutils literal">\tikzstyle{rect} = [rectangle, text width = 50, text centered, inner sep = 3pt, minimum height = 50]
-\tikzstyle{txt} = [rectangle, text centered, inner sep = 3pt, minimum height = 1.5]
-
-\node[rect, fill = green!25] at (0,0) (31) {$-0.5$};
-\node[rect, fill = green!10, right = 0 of 31] (32) {$0$};
-\node[rect, fill = red!30, right = 0 of 32] (33) {$+1$};
-\node[rect, fill = green!40, above = 0 of 31] (21) {$-1$};
-\node[rect, fill = red!30, above = 0 of 32] (22) {$+1$};
-\node[rect, fill = green!10, above = 0 of 33] (23) {$0$};
-\node[rect, fill = red!30, above = 0 of 21] (11) {$+1$};
-\node[rect, fill = green!60, above = 0 of 22] (12) {$-2$};
-\node[rect, fill = green!40, above = 0 of 23] (13) {$-1$};
-
-\node[txt, below = 0 of 31] {N};
-\node[txt, below = 0 of 32] (anchor_h) {AF$_{\text{f}}$};
-\node[txt, below = 0 of 33] {AF$_{\text{p}}$};
-\node[txt, left = 0 of 31] {AF$_{\text{p}}$};
-\node[txt, left = 0 of 21] (anchor_v) {AF$_{\text{f}}$};
-\node[txt, left = 0 of 11] {N};
-
-\node[txt, below = 0 of anchor_h] {\large\textbf{Annotation (Label)}};
-\node[txt, left = 0.6 of anchor_v, rotate = 90, anchor = north] {\large\textbf{Prediction}};</span>)</p>
-<p>! Package tikz Error: I did not find the tikz library 'hobby'. I looked for fil
-es named tikzlibraryhobby.code.tex and pgflibraryhobby.code.tex, but neither co
-uld be found in the current texmf trees..
-
-See the tikz package documentation for explanation.
-Type  H &lt;return&gt;  for immediate help.
- ...                                              
-                                                  
-l.6 ...ckgrounds,positioning,fit,petri,calc,hobby}
-                                                  
-
-(/home/runner/work/_temp/setup-texlive/2022/texmf-dist/tex/latex/l3backend/l3ba
-ckend-pdftex.def)
-No file tikz-01b69f4ba58067e4220dab717b3f6da8f6a12b49.aux.
-
-(/home/runner/work/_temp/setup-texlive/2022/texmf-dist/tex/context/base/mkii/su
-pp-pdf.mkii
-[Loading MPS to PDF converter (version 2006.09.02).]
-)
-(/home/runner/work/_temp/setup-texlive/2022/texmf-dist/tex/latex/epstopdf-pkg/e
-pstopdf-base.sty
-(/home/runner/work/_temp/setup-texlive/2022/texmf-dist/tex/latex/latexconfig/ep
-stopdf-sys.cfg))
-
-Package pgfplots Warning: running in backwards compatibility mode (unsuitable t
-ick labels; missing features). Consider writing \\pgfplotsset{compat=1.18} into 
-your preamble.
- on input line 9.
-
-[1{/home/runner/work/_temp/setup-texlive/2022/texmf-var/fonts/map/pdftex/updmap
-/pdftex.map}] (./tikz-01b69f4ba58067e4220dab717b3f6da8f6a12b49.aux) )
-(see the transcript file for additional information)&lt;/home/runner/work/_temp/se
-tup-texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb&gt;&lt;/home/ru
-nner/work/_temp/setup-texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-mi12.pfb&gt;&lt;/home/runner/work/_temp/setup-texlive/2022/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmr12.pfb&gt;&lt;/home/runner/work/_temp/setup-texlive/2022/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmr8.pfb&gt;&lt;/home/runner/work/_temp/setup-texliv
-e/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb&gt;
-Output written on tikz-01b69f4ba58067e4220dab717b3f6da8f6a12b49.pdf (1 page, 45
-791 bytes).
-Transcript written on tikz-01b69f4ba58067e4220dab717b3f6da8f6a12b49.log.
-&quot;</p>
-</aside>
+<div class="figure" id="id6" style="text-align: center"><p><img  src="../_images/tikz-01b69f4ba58067e4220dab717b3f6da8f6a12b49.svg" alt="Figure made with TikZ" /></p>
 <p><span class="caption-text">The scoring matrix for the recording-level classification result.</span></p>
 </div></li>
 <li><p>metric (Ue) for detecting onsets and offsets for AF events (episodes): +1 if the detected onset (or offset) is within ±1 beat of the annotated position, and +0.5 if within ±2 beats.</p></li>
