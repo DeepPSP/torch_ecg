@@ -64,7 +64,15 @@ jobs:
       with:
         packages: >-
           scheme-basic
+          algorithm2e
+          biber
+          biblatex
           pgf
+          pgfplots
+          relsize
+          standalone
+          xetex
+          xecjk
     - name: Install latexmk and pandoc and extra software
       run: |
         sudo apt install latexmk pandoc -y
