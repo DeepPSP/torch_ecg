@@ -1974,7 +1974,7 @@
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">print_result</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get citation from DOIs.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get bib citation from DOIs.</span>
 
 <span class="sd">        Overrides the default method to make the `print_result` argument</span>
 <span class="sd">        have default value ``True``.</span>
@@ -1998,7 +1998,8 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str or None</span>
-<span class="sd">            The citation.</span>
+<span class="sd">            bib citation(s) from the DOI(s),</span>
+<span class="sd">            or None if `print_result` is True.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_citation</span><span class="p">(</span>

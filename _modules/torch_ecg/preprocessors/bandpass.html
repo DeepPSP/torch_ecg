@@ -1092,7 +1092,22 @@
 
 
 <div class="viewcode-block" id="BandPass"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.BandPass.html#torch_ecg.preprocessors.BandPass">[docs]</a><span class="k">class</span> <span class="nc">BandPass</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bandpass filtering preprocessor.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fs : numbers.Real</span>
+<span class="sd">        Sampling frequency of the ECG signal to be filtered.</span>
+<span class="sd">    lowcut : numbers.Real, optional</span>
+<span class="sd">        Low cutoff frequency.</span>
+<span class="sd">    highcut : numbers.Real, optional</span>
+<span class="sd">        High cutoff frequency.</span>
+<span class="sd">    inplace : bool, default True</span>
+<span class="sd">        Whether to perform the filtering in-place.</span>
+<span class="sd">    kwargs : dict, optional</span>
+<span class="sd">        Other keyword arguments for :class:`torch.nn.Module`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;BandPass&quot;</span>
 
@@ -1104,20 +1119,6 @@
         <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        fs: numbers.Real,</span>
-<span class="sd">            sampling frequency of the ECG signal to be filtered</span>
-<span class="sd">        lowcut: numbers.Real, optional,</span>
-<span class="sd">            low cutoff frequency</span>
-<span class="sd">        highcut: numbers.Real, optional,</span>
-<span class="sd">            high cutoff frequency</span>
-<span class="sd">        inplace: bool, default True,</span>
-<span class="sd">            if True, the preprocessor will modify the input signal</span>
-<span class="sd">        kwargs: keyword arguments,</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lowcut</span> <span class="o">=</span> <span class="n">lowcut</span>
@@ -1132,18 +1133,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span> <span class="o">=</span> <span class="n">inplace</span>
 
 <div class="viewcode-block" id="BandPass.forward"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.BandPass.html#torch_ecg.preprocessors.BandPass.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        apply the preprocessor to `sig`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the preprocessor to the signal tensor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sig: Tensor,</span>
-<span class="sd">            the ECG signals, of shape (batch, lead, siglen)</span>
+<span class="sd">        sig : torch.Tensor</span>
+<span class="sd">            The ECG signal tensor,</span>
+<span class="sd">            of shape ``(batch, lead, siglen)``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        filtered_sig: Tensor,</span>
-<span class="sd">            the bandpass filtered ECG signals, of shape (batch, lead, siglen)</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            The bandpass filtered ECG signal tensor,</span>
+<span class="sd">            of shape ``(batch, lead, siglen)``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">:</span>

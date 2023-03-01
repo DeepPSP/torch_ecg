@@ -1091,14 +1091,23 @@
 <span class="kn">from</span> <span class="nn">.normalize</span> <span class="kn">import</span> <span class="n">Normalize</span>
 <span class="kn">from</span> <span class="nn">.resample</span> <span class="kn">import</span> <span class="n">Resample</span>
 
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;PreprocManager&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="PreprocManager"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager">[docs]</a><span class="k">class</span> <span class="nc">PreprocManager</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Manager class for preprocessors</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Manager class for preprocessors.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pps : Tuple[torch.nn.Module], optional</span>
+<span class="sd">        The sequence of preprocessors to be added to the manager.</span>
+<span class="sd">    random : bool, default False</span>
+<span class="sd">        Whether to apply the preprocessors in random order.</span>
+<span class="sd">    inplace : bool, default True</span>
+<span class="sd">        Whether to apply the preprocessors in-place.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1127,48 +1136,82 @@
         <span class="n">random</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        pps: tuple of `nn.Module`, optional,</span>
-<span class="sd">            the sequence of preprocessors to be added to the manager</span>
-<span class="sd">        random: bool, default False,</span>
-<span class="sd">            whether to apply the augmenters in random order</span>
-<span class="sd">        inplace: bool, default True,</span>
-<span class="sd">            whether to apply the preprocessors in-place</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">random</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pps</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_bandpass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BandPass</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a bandpass filter to the manager.</span>
 
-    <span class="k">def</span> <span class="nf">_add_baseline_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BaselineRemove</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_add_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Normalize</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_add_resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Resample</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
-
-<div class="viewcode-block" id="PreprocManager.forward"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sig: Tensor,</span>
-<span class="sd">            the signal tensor to be preprocessed</span>
+<span class="sd">        config : dict</span>
+<span class="sd">            The configuration of the bandpass filter.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        sig: Tensor,</span>
-<span class="sd">            the preprocessed signal tensor</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BandPass</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_add_baseline_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a median filter for baseline removal to the manager.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config : dict</span>
+<span class="sd">            The configuration of the median filter.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BaselineRemove</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_add_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a normalizer to the manager.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config : dict</span>
+<span class="sd">            The configuration of the normalizer.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Normalize</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_add_resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a resampler to the manager.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config : dict</span>
+<span class="sd">            The configuration of the resampler.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Resample</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">))</span>
+
+<div class="viewcode-block" id="PreprocManager.forward"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the preprocessors to the signal tensor.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sig : torch.Tensor</span>
+<span class="sd">            The signal tensor to be preprocessed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            The preprocessed signal tensor.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocessors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -1184,17 +1227,18 @@
 
 <div class="viewcode-block" id="PreprocManager.from_config"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PreprocManager&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a :class:`PreprocManager` instance from a configuration.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        config: dict,</span>
-<span class="sd">            the configuration of the preprocessors,</span>
-<span class="sd">            better to be an `OrderedDict`</span>
+<span class="sd">        config : dict</span>
+<span class="sd">            The configuration of the preprocessors,</span>
+<span class="sd">            better to be an :class:`~collections.OrderedDict`.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        ppm: PreprocManager,</span>
-<span class="sd">            a new instance of `PreprocManager`</span>
+<span class="sd">        ppm : PreprocManager</span>
+<span class="sd">            A new instance of :class:`PreprocManager`.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ppm</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
@@ -1226,11 +1270,16 @@
         <span class="k">return</span> <span class="n">ppm</span></div>
 
 <div class="viewcode-block" id="PreprocManager.rearrange"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.rearrange">[docs]</a>    <span class="k">def</span> <span class="nf">rearrange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_ordering</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rearrange the preprocessors.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        new_ordering: list of str,</span>
-<span class="sd">            the new ordering of the preprocessors</span>
+<span class="sd">        new_ordering : List[str]</span>
+<span class="sd">            The new ordering of the preprocessors.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="p">:</span>
@@ -1264,18 +1313,19 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="PreprocManager.add_"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_">[docs]</a>    <span class="k">def</span> <span class="nf">add_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pp</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        add a (custom) preprocessor to the manager,</span>
-<span class="sd">        this method is preferred against directly manipulating</span>
-<span class="sd">        the internal list of preprocessors via `PreprocManager.preprocessors.append(pp)`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a (custom) preprocessor to the manager.</span>
+
+<span class="sd">        This method is preferred against directly manipulating</span>
+<span class="sd">        the internal list of preprocessors via</span>
+<span class="sd">        ``PreprocManager.preprocessors.append(pp)``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        pp: Module,</span>
-<span class="sd">            the preprocessor to be added</span>
-<span class="sd">        pos: int, default -1,</span>
-<span class="sd">            the position to insert the preprocessor,</span>
-<span class="sd">            should be &gt;= -1, with -1 the indicator of the end</span>
+<span class="sd">        pp : torch.nn.Module</span>
+<span class="sd">            The preprocessor to be added.</span>
+<span class="sd">        pos : int, default -1</span>
+<span class="sd">            The position to insert the preprocessor.</span>
+<span class="sd">            Should be &gt;= -1, with -1 being the indicator of the end.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span>
@@ -1299,9 +1349,6 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocessors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 
 <div class="viewcode-block" id="PreprocManager.extra_repr_keys"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.extra_repr_keys">[docs]</a>    <span class="k">def</span> <span class="nf">extra_repr_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        return the extra keys for `__repr__`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">extra_repr_keys</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span>
             <span class="s2">&quot;random&quot;</span><span class="p">,</span>
             <span class="s2">&quot;preprocessors&quot;</span><span class="p">,</span>

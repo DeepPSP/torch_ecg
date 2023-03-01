@@ -1083,30 +1083,54 @@
 <dt class="sig sig-object py" id="torch_ecg.preprocessors.Normalize">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torch_ecg.preprocessors.</span></span><span class="sig-name descname"><span class="pre">Normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z-score'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Real" title="(in Python v3.11)"><span class="pre">Real</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.11)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Real" title="(in Python v3.11)"><span class="pre">Real</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Real" title="(in Python v3.11)"><span class="pre">Real</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.11)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Real" title="(in Python v3.11)"><span class="pre">Real</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">per_channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torch_ecg/preprocessors/normalize.html#Normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.preprocessors.Normalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
-<p>perform z-score normalization on <cite>sig</cite>,
+<p>Normalization preprocessor.</p>
+<p>This preprocessor
+performs z-score normalization on <cite>sig</cite>,
 to make it has fixed mean and standard deviation,
-or perform min-max normalization on <cite>sig</cite>,
-or normalize <cite>sig</cite> using <cite>mean</cite> and <cite>std</cite> via (sig - mean) / std.
-More precisely,</p>
+or performs min-max normalization on <cite>sig</cite>,
+or normalizes <cite>sig</cite> using <cite>mean</cite> and <cite>std</cite>
+<span class="math notranslate nohighlight">\(via (sig - mean) / std\)</span>. More precisely,</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{align*}
 \text{Min-Max normalization:} &amp; \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
 \text{Naive normalization:} &amp; \frac{sig - m}{s} \\
 \text{Z-score normalization:} &amp; \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
 \end{align*}\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>{&quot;naive&quot;</em><em>, </em><em>&quot;min-max&quot;</em><em>, </em><em>&quot;z-score&quot;}</em><em>, </em><em>default &quot;z-score&quot;</em><em>,</em>) – Normalization method, by default “z-score”, case-insensitive.</p></li>
+<li><p><strong>mean</strong> (<a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Real" title="(in Python v3.11)"><em>numbers.Real</em></a><em> or </em><em>array_like</em><em>, </em><em>default 0.0</em>) – If <cite>method</cite> is “z-score”, then <cite>mean is the mean value
+of the normalized signal,
+or mean values for each lead of the normalized signal.
+If `method</cite> is “naive”, then <cite>mean</cite> is the mean value
+to be subtracted from the original signal.
+Useless if <cite>method</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;min-max&quot;</span></code>.</p></li>
+<li><p><strong>std</strong> (<a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Real" title="(in Python v3.11)"><em>numbers.Real</em></a><em> or </em><em>array_like</em><em>, </em><em>default 1.0</em>) – If <cite>method</cite> is “z-score”, then <cite>std</cite> is the standard deviation
+of the normalized signal,
+or standard deviations for each lead of the normalized signal.
+If <cite>method</cite> is “naive”, then <cite>std</cite> is the standard deviation
+to be divided from the original signal.
+Useless if <cite>method</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;min-max&quot;</span></code>.</p></li>
+<li><p><strong>per_channel</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>default False</em>) – Whether to perform the normalization per channel.</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>default True</em>) – Whether to perform the normalization in-place.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_ecg.preprocessors.Normalize.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v1.13)"><span class="pre">Tensor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v1.13)"><span class="pre">Tensor</span></a></span></span><a class="reference internal" href="../_modules/torch_ecg/preprocessors/normalize.html#Normalize.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.preprocessors.Normalize.forward" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Apply the preprocessor to the signal tensor.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sig</strong> (<em>Tensor</em><em>,</em>) – the Tensor ECG signal to be normalized,
-of shape (…, n_leads, siglen)</p>
+<dd class="field-odd"><p><strong>sig</strong> (<a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v1.13)"><em>torch.Tensor</em></a>) – The input signal tensor,
+of shape <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">num_leads,</span> <span class="pre">num_samples)</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>sig</strong> – the normalized Tensor ECG signal</p>
+<dd class="field-even"><p>The normalized signal tensor.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tensor,</p>
+<dd class="field-odd"><p><a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v1.13)">torch.Tensor</a></p>
 </dd>
 </dl>
 </dd></dl>

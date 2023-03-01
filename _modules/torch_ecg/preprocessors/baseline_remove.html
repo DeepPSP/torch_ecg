@@ -1093,7 +1093,24 @@
 
 
 <div class="viewcode-block" id="BaselineRemove"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.BaselineRemove.html#torch_ecg.preprocessors.BaselineRemove">[docs]</a><span class="k">class</span> <span class="nc">BaselineRemove</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Baseline removal using median filtering.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fs : numbers.Real</span>
+<span class="sd">        Sampling frequency of the ECG signal to be filtered.</span>
+<span class="sd">    window1 : float, default 0.2</span>
+<span class="sd">        The smaller window size of the median filter,</span>
+<span class="sd">        with units in seconds.</span>
+<span class="sd">    window2 : float, default 0.6</span>
+<span class="sd">        The larger window size of the median filter,</span>
+<span class="sd">        with units in seconds.</span>
+<span class="sd">    inplace : bool, default True</span>
+<span class="sd">        Whether to perform the filtering in-place.</span>
+<span class="sd">    kwargs : dict, optional</span>
+<span class="sd">        Other keyword arguments for :class:`torch.nn.Module`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;BaselineRemove&quot;</span>
 
@@ -1105,20 +1122,6 @@
         <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        fs: numbers.Real,</span>
-<span class="sd">            sampling frequency of the ECG signal to be filtered</span>
-<span class="sd">        window1: float, default 0.2,</span>
-<span class="sd">            the smaller window size of the median filter, with units in seconds</span>
-<span class="sd">        highcut: float, default 0.6,</span>
-<span class="sd">            the larger window size of the median filter, with units in seconds</span>
-<span class="sd">        inplace: bool, default True,</span>
-<span class="sd">            if True, the preprocessor will modify the input signal</span>
-<span class="sd">        kwargs: keyword arguments,</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window1</span> <span class="o">=</span> <span class="n">window1</span>
@@ -1131,19 +1134,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span> <span class="o">=</span> <span class="n">inplace</span>
 
 <div class="viewcode-block" id="BaselineRemove.forward"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.BaselineRemove.html#torch_ecg.preprocessors.BaselineRemove.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        apply the preprocessor to `sig`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the preprocessor to the signal tensor.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sig: Tensor,</span>
-<span class="sd">            the ECG signals, of shape (batch, lead, siglen)</span>
+<span class="sd">        sig : torch.Tensor</span>
+<span class="sd">            The ECG signal tensor,</span>
+<span class="sd">            of shape ``(batch, lead, siglen)``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        sig: Tensor,</span>
-<span class="sd">            the median filtered (hence baseline removed) ECG signals,</span>
-<span class="sd">            of shape (batch, lead, siglen)</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            The median filtered (hence baseline removed) ECG signals,</span>
+<span class="sd">            of shape ``(batch, lead, siglen)``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inplace</span><span class="p">:</span>

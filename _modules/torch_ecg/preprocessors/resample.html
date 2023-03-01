@@ -1090,10 +1090,28 @@
 
 
 <div class="viewcode-block" id="Resample"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample">[docs]</a><span class="k">class</span> <span class="nc">Resample</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    resample the signal into fixed sampling frequency or length</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resample the signal into fixed sampling frequency or length.</span>
 
-<span class="sd">    TODO: consider vectorized `scipy.signal.resample`?</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fs : int, optional</span>
+<span class="sd">        Sampling frequency of the source signal to be resampled.</span>
+<span class="sd">    dst_fs : int, optional</span>
+<span class="sd">        Sampling frequency of the resampled ECG.</span>
+<span class="sd">    siglen : int, optional</span>
+<span class="sd">        Number of samples in the resampled ECG.</span>
+<span class="sd">    inplace : bool, default False</span>
+<span class="sd">        Whether to perform the resampling in-place.</span>
+
+<span class="sd">    NOTE</span>
+<span class="sd">    ----</span>
+<span class="sd">    One and only one of `fs` and `siglen` should be set.</span>
+<span class="sd">    If `fs` is set, `src_fs` should also be set.</span>
+
+
+<span class="sd">    TODO</span>
+<span class="sd">    ----</span>
+<span class="sd">    Consider vectorized :func:`scipy.signal.resample`?</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1107,22 +1125,6 @@
         <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        fs: int, optional,</span>
-<span class="sd">            sampling frequency of the source signal to be resampled</span>
-<span class="sd">        dst_fs: int, optional,</span>
-<span class="sd">            sampling frequency of the resampled ECG</span>
-<span class="sd">        siglen: int, optional,</span>
-<span class="sd">            number of samples in the resampled ECG</span>
-<span class="sd">        inplace: bool, default False,</span>
-<span class="sd">            if True, normalization will be done inplace (on the signal)</span>
-
-<span class="sd">        NOTE that one and only one of `fs` and `siglen` should be set,</span>
-<span class="sd">        if `fs` is set, `src_fs` should also be set</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dst_fs</span> <span class="o">=</span> <span class="n">dst_fs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fs</span> <span class="o">=</span> <span class="n">fs</span>
@@ -1136,17 +1138,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">scale_factor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_fs</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">fs</span>
 
 <div class="viewcode-block" id="Resample.forward"><a class="viewcode-back" href="../../../generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the resampling to the signal tensor.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sig: Tensor,</span>
-<span class="sd">            the Tensor ECG signal to be resampled,</span>
-<span class="sd">            of shape (..., n_leads, siglen)</span>
+<span class="sd">        sig : torch.Tensor</span>
+<span class="sd">            The signal tensor to be resampled,</span>
+<span class="sd">            of shape ``(..., n_leads, siglen)``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        sig: Tensor,</span>
-<span class="sd">            the resampled Tensor ECG signal</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            The resampled signal tensor,</span>
+<span class="sd">            of shape ``(..., n_leads, siglen)``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">sig</span> <span class="o">=</span> <span class="n">resample_t</span><span class="p">(</span>

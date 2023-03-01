@@ -1121,28 +1121,28 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager" title="torch_ecg.preprocessors.PreprocManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PreprocManager</span></code></a>(*pps[, random, inplace])</p></td>
-<td><p>Manager class for preprocessors</p></td>
+<td><p>Manager class for preprocessors.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.BandPass.html#torch_ecg.preprocessors.BandPass" title="torch_ecg.preprocessors.BandPass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BandPass</span></code></a>(fs[, lowcut, highcut, inplace])</p></td>
-<td><p></p></td>
+<td><p>Bandpass filtering preprocessor.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.BaselineRemove.html#torch_ecg.preprocessors.BaselineRemove" title="torch_ecg.preprocessors.BaselineRemove"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaselineRemove</span></code></a>(fs[, window1, window2, inplace])</p></td>
-<td><p></p></td>
+<td><p>Baseline removal using median filtering.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.Normalize.html#torch_ecg.preprocessors.Normalize" title="torch_ecg.preprocessors.Normalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Normalize</span></code></a>([method, mean, std, per_channel, ...])</p></td>
-<td><p>perform z-score normalization on <cite>sig</cite>, to make it has fixed mean and standard deviation, or perform min-max normalization on <cite>sig</cite>, or normalize <cite>sig</cite> using <cite>mean</cite> and <cite>std</cite> via (sig - mean) / std.</p></td>
+<td><p>Normalization preprocessor.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.MinMaxNormalize.html#torch_ecg.preprocessors.MinMaxNormalize" title="torch_ecg.preprocessors.MinMaxNormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MinMaxNormalize</span></code></a>([per_channel, inplace])</p></td>
-<td><p>Min-Max normalization, defined as</p></td>
+<td><p>Min-Max normalization.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.NaiveNormalize.html#torch_ecg.preprocessors.NaiveNormalize" title="torch_ecg.preprocessors.NaiveNormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NaiveNormalize</span></code></a>([mean, std, per_channel, inplace])</p></td>
-<td><p>Naive normalization via</p></td>
+<td><p>Naive normalization</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.ZScoreNormalize.html#torch_ecg.preprocessors.ZScoreNormalize" title="torch_ecg.preprocessors.ZScoreNormalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ZScoreNormalize</span></code></a>([mean, std, per_channel, ...])</p></td>
-<td><p>Z-score normalization via</p></td>
+<td><p>Z-score normalization.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.preprocessors.Resample.html#torch_ecg.preprocessors.Resample" title="torch_ecg.preprocessors.Resample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resample</span></code></a>([fs, dst_fs, siglen, inplace])</p></td>
-<td><p>resample the signal into fixed sampling frequency or length</p></td>
+<td><p>Resample the signal into fixed sampling frequency or length.</p></td>
 </tr>
 </tbody>
 </table>

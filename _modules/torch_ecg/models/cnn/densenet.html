@@ -1263,7 +1263,7 @@
 
 <span class="k">class</span> <span class="nc">DenseBottleNeck</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Bottleneck modification of :classL`DenseBasicBlock`,</span>
+<span class="sd">    Bottleneck modification of :class:`DenseBasicBlock`,</span>
 <span class="sd">    with an additional prefixed sequence of</span>
 <span class="sd">    (normalization -&gt; activation -&gt; convolution of kernel size 1)</span>
 
@@ -1689,13 +1689,16 @@
 
 <span class="sd">    NOTE</span>
 <span class="sd">    ----</span>
-<span class="sd">    The difference of forward output of [5]_ from others, however [5]_ doesnot support dropout.</span>
+<span class="sd">    The difference of forward output of [5]_ from others,</span>
+<span class="sd">    however [5]_ doesnot support dropout.</span>
 
 <span class="sd">    TODO</span>
 <span class="sd">    ----</span>
-<span class="sd">    1. For `groups` &gt; 1, the concatenated output should be re-organized in the channel dimension?</span>
+<span class="sd">    1. For `groups` &gt; 1, the concatenated output should be</span>
+<span class="sd">       re-organized in the channel dimension?</span>
 <span class="sd">    2. memory-efficient mode, i.e. storing the `new_features`</span>
-<span class="sd">       in a shared memory instead of stacking in newly created `Tensor` after each mini-block.</span>
+<span class="sd">       in a shared memory instead of stacking in newly created</span>
+<span class="sd">       :class:`~torch.Tensor` after each mini-block.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>

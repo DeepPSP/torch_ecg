@@ -1140,13 +1140,16 @@ other parameters that can be set for the building blocks</p></li>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The difference of forward output of <a class="footnote-reference brackets" href="#id13" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> from others, however <a class="footnote-reference brackets" href="#id13" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> doesnot support dropout.</p>
+<p>The difference of forward output of <a class="footnote-reference brackets" href="#id13" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> from others,
+however <a class="footnote-reference brackets" href="#id13" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> doesnot support dropout.</p>
 </div>
 <p class="rubric">TODO</p>
 <ol class="arabic simple">
-<li><p>For <cite>groups</cite> &gt; 1, the concatenated output should be re-organized in the channel dimension?</p></li>
+<li><p>For <cite>groups</cite> &gt; 1, the concatenated output should be
+re-organized in the channel dimension?</p></li>
 <li><p>memory-efficient mode, i.e. storing the <cite>new_features</cite>
-in a shared memory instead of stacking in newly created <cite>Tensor</cite> after each mini-block.</p></li>
+in a shared memory instead of stacking in newly created
+<a class="reference external" href="https://pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code></a> after each mini-block.</p></li>
 </ol>
 <p class="rubric">References</p>
 <aside class="footnote-list brackets">
