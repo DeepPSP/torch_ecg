@@ -68,6 +68,7 @@ The system design is depicted as follows
 
    databases
    models
+   losses
    augmenters
    preprocessors
    components

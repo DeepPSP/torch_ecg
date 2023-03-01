@@ -1,6 +1,5 @@
 """
-validated C(R)NN structure models, for classifying ECG arrhythmias
-
+C(R)NN structure models, for classifying ECG arrhythmias, and other tasks.
 """
 
 import warnings
@@ -42,18 +41,43 @@ __all__ = [
 
 
 class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
-    """
-    C(R)NN models modified from the following refs.
+    """Convolutional (Recurrent) Neural Network for ECG tasks.
+
+    This C(R)NN architecture is adapted from [1]_, [2]_ in the first place,
+    and then modified to be more general, and more flexible.
+    The most famous model is perhaps [3]_, which is a modified 1D-ResNet34 model.
+    The website of this model is [4]_, and the code is hosted on [5]_.
+    The C(R)NN models have long been competitive in various ECG tasks,
+    e.g. [6]_, [7]_. The models are also used in the PhysioNet/CinC Challenges.
+
+    Parameters
+    ----------
+    classes : List[str]
+        List of the names of the classes.
+    n_leads : int
+        Number of leads (number of input channels).
+    config : dict
+        Other hyper-parameters, including kernel sizes, etc.
+        Refer to corresponding config files.
 
     References
     ----------
-    [1] Yao, Qihang, et al. "Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram." 2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing, 16th Intl Conf on Pervasive Intelligence and Computing, 4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.
-    [2] Yao, Qihang, et al. "Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based Time-Incremental Convolutional Neural Network." Information Fusion 53 (2020): 174-182.
-    [3] Hannun, Awni Y., et al. "Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network." Nature medicine 25.1 (2019): 65.
-    [4] https://stanfordmlgroup.github.io/projects/ecg2/
-    [5] https://github.com/awni/ecg
-    [6] CPSC2018 entry 0236
-    [7] CPSC2019 entry 0416
+    .. [1] Yao, Qihang, et al.
+           "Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram."
+           2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing,
+           16th Intl Conf on Pervasive Intelligence and Computing,
+           4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress
+           (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.
+    .. [2] Yao, Qihang, et al.
+           "Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based
+           Time-Incremental Convolutional Neural Network." Information Fusion 53 (2020): 174-182.
+    .. [3] Hannun, Awni Y., et al.
+           "Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms
+           using a deep neural network." Nature medicine 25.1 (2019): 65.
+    .. [4] https://stanfordmlgroup.github.io/projects/ecg2/
+    .. [5] https://github.com/awni/ecg
+    .. [6] CPSC2018 entry 0236
+    .. [7] CPSC2019 entry 0416
 
     """
 
@@ -66,18 +90,6 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         config: Optional[CFG] = None,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        classes: list,
-            list of the classes for classification
-        n_leads: int,
-            number of leads (number of input channels)
-        config: dict, optional,
-            other hyper-parameters, including kernel sizes, etc.
-            ref. the corresponding config file
-
-        """
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)
@@ -325,18 +337,21 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.softmax = nn.Softmax(-1)
 
     def extract_features(self, input: Tensor) -> Tensor:
-        """
-        extract feature map before the dense (linear) classifying layer(s)
+        """Extract feature map before the
+        dense (linear) classifying layer(s).
 
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, channels, seq_len)
+        input : torch.Tensor
+            Input signal tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         Returns
         -------
-        features: Tensor,
-            of shape (batch_size, channels, seq_len) or (batch_size, channels)
+        features : torch.Tensor
+            Feature map tensor,
+            of shape ``(batch_size, channels, seq_len)``
+            or ``(batch_size, channels)``.
 
         """
         # CNN
@@ -355,16 +370,20 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         return features
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the model.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, channels, seq_len)
+        input : torch.Tensor
+            Input signal tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         Returns
         -------
-        pred: Tensor,
-            of shape (batch_size, n_classes)
+        pred : torch.Tensor
+            Predictions tensor,
+            of shape ``(batch_size, seq_len, channels)``
+            or ``(batch_size, channels)``.
 
         """
         features = self.extract_features(input)
@@ -373,7 +392,7 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         features = self.pool(features)
         features = self.pool_rearrange(features)
 
-        pred = self.clf(features)  # batch_size, n_classes
+        pred = self.clf(features)
 
         return pred
 
@@ -384,24 +403,28 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         class_names: bool = False,
         bin_pred_thr: float = 0.5,
     ) -> BaseOutput:
-        """
+        """Inference method for the model.
+
         Parameters
         ----------
-        input: ndarray or Tensor,
-            input tensor, of shape (batch_size, channels, seq_len)
-        class_names: bool, default False,
-            if True, the returned scalar predictions will be a `DataFrame`,
-            with class names for each scalar prediction
-        bin_pred_thr: float, default 0.5,
-            the threshold for making binary predictions from scalar predictions
+        input : numpy.ndarray or torch.Tensor
+            Input tensor, of shape ``(batch_size, channels, seq_len)``.
+        class_names : bool, default False
+            If True, the returned scalar predictions will be
+            a :class:`~pandas.DataFrame`,
+            with class names for each scalar prediction.
+        bin_pred_thr : float, default 0.5
+            Threshold for making binary predictions from scalar predictions.
 
         Returns
         -------
-        output: BaseOutput, including the following items:
-            prob: ndarray or DataFrame,
-                scalar predictions, (and binary predictions if `class_names` is True)
-            pred: ndarray,
-                the array (with values 0, 1 for each class) of binary prediction
+        output : BaseOutput
+            The output of the inference method, including the following items:
+
+                - prob: numpy.ndarray or torch.Tensor,
+                  scalar predictions, (and binary predictions if `class_names` is True).
+                - pred: numpy.ndarray or torch.Tensor,
+                  the array (with values 0, 1 for each class) of binary prediction.
 
         """
         raise NotImplementedError("implement a task specific inference method")
@@ -409,18 +432,19 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the model.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input signal tensor.
+        batch_size : int, optional
+            Batch size of the input signal tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this model, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the model.
 
         """
         output_shape = self.cnn.compute_output_shape(seq_len, batch_size)
@@ -460,16 +484,17 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
     @classmethod
     def from_v1(cls, v1_ckpt: str, device: Optional[torch.device] = None) -> "ECG_CRNN":
-        """
+        """Restore an instance of the model from a v1 checkpoint.
+
         Parameters
         ----------
-        v1_ckpt: str,
-            the path to the v1 checkpoint file
+        v1_ckpt : str
+            Path to the v1 checkpoint file.
 
         Returns
         -------
-        model: ECG_CRNN,
-            the converted model
+        model : ECG_CRNN
+            The model instance restored from the v1 checkpoint.
 
         """
         v1_model, _ = ECG_CRNN_v1.from_checkpoint(v1_ckpt, device=device)
@@ -488,18 +513,43 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
 
 class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
-    """
-    C(R)NN models modified from the following refs.
+    """Convolutional (Recurrent) Neural Network for ECG tasks.
+
+    This C(R)NN architecture is adapted from [1]_, [2]_ in the first place,
+    and then modified to be more general, and more flexible.
+    The most famous model is perhaps [3]_, which is a modified 1D-ResNet34 model.
+    The website of this model is [4]_, and the code is hosted on [5]_.
+    The C(R)NN models have long been competitive in various ECG tasks,
+    e.g. [6]_, [7]_. The models are also used in the PhysioNet/CinC Challenges.
+
+    Parameters
+    ----------
+    classes : List[str]
+        List of the names of the classes.
+    n_leads : int
+        Number of leads (number of input channels).
+    config : dict
+        Other hyper-parameters, including kernel sizes, etc.
+        Refer to corresponding config files.
 
     References
     ----------
-    [1] Yao, Qihang, et al. "Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram." 2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing, 16th Intl Conf on Pervasive Intelligence and Computing, 4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.
-    [2] Yao, Qihang, et al. "Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based Time-Incremental Convolutional Neural Network." Information Fusion 53 (2020): 174-182.
-    [3] Hannun, Awni Y., et al. "Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network." Nature medicine 25.1 (2019): 65.
-    [4] https://stanfordmlgroup.github.io/projects/ecg2/
-    [5] https://github.com/awni/ecg
-    [6] CPSC2018 entry 0236
-    [7] CPSC2019 entry 0416
+    .. [1] Yao, Qihang, et al.
+           "Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram."
+           2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing,
+           16th Intl Conf on Pervasive Intelligence and Computing,
+           4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress
+           (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.
+    .. [2] Yao, Qihang, et al.
+           "Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based
+           Time-Incremental Convolutional Neural Network." Information Fusion 53 (2020): 174-182.
+    .. [3] Hannun, Awni Y., et al.
+           "Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms
+           using a deep neural network." Nature medicine 25.1 (2019): 65.
+    .. [4] https://stanfordmlgroup.github.io/projects/ecg2/
+    .. [5] https://github.com/awni/ecg
+    .. [6] CPSC2018 entry 0236
+    .. [7] CPSC2019 entry 0416
 
     """
 
@@ -512,18 +562,6 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         config: Optional[CFG] = None,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        classes: list,
-            list of the classes for classification
-        n_leads: int,
-            number of leads (number of input channels)
-        config: dict, optional,
-            other hyper-parameters, including kernel sizes, etc.
-            ref. the corresponding config file
-
-        """
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)
@@ -697,18 +735,21 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.softmax = nn.Softmax(-1)
 
     def extract_features(self, input: Tensor) -> Tensor:
-        """
-        extract feature map before the dense (linear) classifying layer(s)
+        """Extract feature map before the
+        dense (linear) classifying layer(s).
 
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, channels, seq_len)
+        input : torch.Tensor
+            Input signal tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         Returns
         -------
-        features: Tensor,
-            of shape (batch_size, channels, seq_len) or (batch_size, channels)
+        features : torch.Tensor
+            Feature map tensor,
+            of shape ``(batch_size, channels, seq_len)``
+            or ``(batch_size, channels)``.
 
         """
         # CNN
@@ -750,16 +791,20 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         return features
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the model.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, channels, seq_len)
+        input : torch.Tensor
+            Input signal tensor,
+            of shape ``(batch_size, channels, seq_len)``.
 
         Returns
         -------
-        pred: Tensor,
-            of shape (batch_size, n_classes)
+        pred : torch.Tensor
+            Predictions tensor,
+            of shape ``(batch_size, seq_len, channels)``
+            or ``(batch_size, channels)``.
 
         """
         features = self.extract_features(input)
@@ -787,24 +832,28 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         class_names: bool = False,
         bin_pred_thr: float = 0.5,
     ) -> BaseOutput:
-        """
+        """Inference method for the model.
+
         Parameters
         ----------
-        input: ndarray or Tensor,
-            input tensor, of shape (batch_size, channels, seq_len)
-        class_names: bool, default False,
-            if True, the returned scalar predictions will be a `DataFrame`,
-            with class names for each scalar prediction
-        bin_pred_thr: float, default 0.5,
-            the threshold for making binary predictions from scalar predictions
+        input : numpy.ndarray or torch.Tensor
+            Input tensor, of shape ``(batch_size, channels, seq_len)``.
+        class_names : bool, default False
+            If True, the returned scalar predictions will be
+            a :class:`~pandas.DataFrame`,
+            with class names for each scalar prediction.
+        bin_pred_thr : float, default 0.5
+            Threshold for making binary predictions from scalar predictions.
 
         Returns
         -------
-        output: BaseOutput, including the following items:
-            prob: ndarray or DataFrame,
-                scalar predictions, (and binary predictions if `class_names` is True)
-            pred: ndarray,
-                the array (with values 0, 1 for each class) of binary prediction
+        output : BaseOutput
+            The output of the inference method, including the following items:
+
+                - prob: numpy.ndarray or torch.Tensor,
+                  scalar predictions, (and binary predictions if `class_names` is True).
+                - pred: numpy.ndarray or torch.Tensor,
+                  the array (with values 0, 1 for each class) of binary prediction.
 
         """
         raise NotImplementedError("implement a task specific inference method")
@@ -812,18 +861,19 @@ class ECG_CRNN_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the model.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input signal tensor.
+        batch_size : int, optional
+            Batch size of the input signal tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this model, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the model.
 
         """
         if self.pool:

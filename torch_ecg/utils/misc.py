@@ -889,12 +889,6 @@ class CitationMixin(_CitationMixin):
         # delete the old cache
         (_DATA_CACHE / "database_citation.csv").unlink()
 
-    @add_docstring(
-        _CitationMixin.get_citation.__doc__.replace(
-            "print_result: bool, default False", "print_result: bool, default True"
-        ),
-        mode="prepend",
-    )
     def get_citation(
         self,
         lookup: bool = True,
@@ -903,9 +897,31 @@ class CitationMixin(_CitationMixin):
         timeout: Optional[float] = None,
         print_result: bool = True,
     ) -> Union[str, type(None)]:
-        """
+        """Get citation from DOIs.
+
         Overrides the default method to make the `print_result` argument
         have default value ``True``.
+
+        Parameters
+        ----------
+        lookup : bool, default True
+            Whether to look up the citation from the cache.
+        format : str, optional
+            The format of the citation. If not specified, the citation
+            will be returned in the default format (bibtex).
+        style : str, optional
+            The style of the citation. If not specified, the citation
+            will be returned in the default style (apa).
+            Valid only when `format` is ``"text"``.
+        timeout : float, optional
+            The timeout for the request.
+        print_result : bool, default True
+            Whether to print the citation.
+
+        Returns
+        -------
+        str or None
+            The citation.
 
         """
         return super().get_citation(

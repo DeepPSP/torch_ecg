@@ -1,10 +1,10 @@
 """
 AF (and perhaps other arrhythmias like preamature beats) detection
-using rr time series as input and using lstm as model
+using rr time series as input and using lstm as model.
 
 References
 ----------
-[1] https://github.com/al3xsh/rnn-based-af-detection
+1. https://github.com/al3xsh/rnn-based-af-detection
 
 """
 
@@ -39,8 +39,28 @@ __all__ = [
 
 
 class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
-    """
-    classification or sequence labeling using LSTM and using RR intervals as input
+    """LSTM model for RR time series classification or sequence labeling.
+
+    LSTM model using RR time series as input is studied in [1]_ for
+    atrial fibrillation detection. It is further improved in [2]_ via
+    incorporating attention mechanism and conditional random fields.
+
+    Parameters
+    ----------
+    classes : List[str]
+        List of the names of the classes.
+    config : dict
+        Other hyper-parameters, including kernel sizes, etc.
+        Refer to corresponding config file for details.
+
+    References
+    ----------
+    .. [1] Faust, Oliver, et al. "Automated detection of atrial fibrillation
+           using long short-term memory network with RR interval signals."
+           Computers in biology and medicine 102 (2018): 327-335.
+    .. [2] Wen, Hao, et al. "A Scalable Hybrid Model for Atrial Fibrillation Detection."
+           Journal of Mechanics in Medicine and Biology 21.05 (2021): 2140021.
+
     """
 
     __name__ = "RR_LSTM"
@@ -48,16 +68,6 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     def __init__(
         self, classes: Sequence[str], config: Optional[CFG] = None, **kwargs: Any
     ) -> None:
-        """
-        Parameters
-        ----------
-        classes: list,
-            list of the classes for classification
-        config: dict, optional,
-            other hyper-parameters, including kernel sizes, etc.
-            ref. the corresponding config file
-
-        """
         super().__init__()
         self.classes = list(classes)
         self.n_classes = len(classes)
@@ -243,17 +253,22 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the model.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (seq_len, batch_size, n_channels),
-            or (batch_size, n_channels, seq_len) if `config.batch_first` is True
+        input : torch.Tensor
+            Input RR series tensor
+            of shape ``(seq_len, batch_size, n_channels)``,
+            or ``(batch_size, n_channels, seq_len)``
+            if `config.batch_first` is True.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, seq_len, n_classes) or (batch_size, n_classes)
+        torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, seq_len, n_classes)``
+            or ``(batch_size, n_classes)``.
 
         """
         x = self.in_rearrange(input)
@@ -272,25 +287,25 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
     @torch.no_grad()
     def inference(self, input: Tensor, bin_pred_thr: float = 0.5) -> BaseOutput:
-        """ """
+        """Inference method for the model."""
         raise NotImplementedError("implement a task specific inference method")
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the model.
+
         Parameters
         ----------
-        seq_len: int, optional,
-            length of the 1d sequence,
-            if is None, then the input is composed of single feature vectors for each batch
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input series tensor.
+        batch_size : int, optional
+            Batch size of the input series tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this model, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the model.
 
         """
         if (not self.config.lstm.retseq) or (self.config.global_pool.lower() != "none"):
@@ -314,16 +329,17 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
     @classmethod
     def from_v1(cls, v1_ckpt: str, device: Optional[torch.device] = None) -> "RR_LSTM":
-        """
+        """Restore an instance of the model from a v1 checkpoint.
+
         Parameters
         ----------
-        v1_ckpt: str,
-            the path to the v1 checkpoint file
+        v1_ckpt : str
+            Path to the v1 checkpoint file.
 
         Returns
         -------
-        model: RR_LSTM,
-            the converted model
+        model : RR_LSTM
+            The model instance restored from the v1 checkpoint.
 
         """
         v1_model, _ = RR_LSTM_v1.from_checkpoint(v1_ckpt, device=device)
@@ -338,8 +354,28 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
 
 class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
-    """
-    classification or sequence labeling using LSTM and using RR intervals as input
+    """LSTM model for RR time series classification or sequence labeling.
+
+    LSTM model using RR time series as input is studied in [1]_ for
+    atrial fibrillation detection. It is further improved in [2]_ via
+    incorporating attention mechanism and conditional random fields.
+
+    Parameters
+    ----------
+    classes : List[str]
+        List of the names of the classes.
+    config : dict
+        Other hyper-parameters, including kernel sizes, etc.
+        Refer to corresponding config file for details.
+
+    References
+    ----------
+    .. [1] Faust, Oliver, et al. "Automated detection of atrial fibrillation
+           using long short-term memory network with RR interval signals."
+           Computers in biology and medicine 102 (2018): 327-335.
+    .. [2] Wen, Hao, et al. "A Scalable Hybrid Model for Atrial Fibrillation Detection."
+           Journal of Mechanics in Medicine and Biology 21.05 (2021): 2140021.
+
     """
 
     __name__ = "RR_LSTM_v1"
@@ -499,16 +535,22 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the model.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (seq_len, batch_size, n_channels)
+        input : torch.Tensor
+            Input RR series tensor
+            of shape ``(seq_len, batch_size, n_channels)``,
+            or ``(batch_size, n_channels, seq_len)``
+            if `config.batch_first` is True.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, seq_len, n_classes) or (batch_size, n_classes)
+        torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, seq_len, n_classes)``
+            or ``(batch_size, n_classes)``.
 
         """
         # (batch_size, n_channels, seq_len) --> (seq_len, batch_size, n_channels)
@@ -550,25 +592,25 @@ class RR_LSTM_v1(nn.Module, CkptMixin, SizeMixin, CitationMixin):
 
     @torch.no_grad()
     def inference(self, input: Tensor, bin_pred_thr: float = 0.5) -> BaseOutput:
-        """ """
+        """Inference method for the model."""
         raise NotImplementedError("implement a task specific inference method")
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the model.
+
         Parameters
         ----------
-        seq_len: int, optional,
-            length of the 1d sequence,
-            if is None, then the input is composed of single feature vectors for each batch
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input series tensor.
+        batch_size : int, optional
+            Batch size of the input series tensor.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape of this model, given `seq_len` and `batch_size`
+        output_shape : sequence
+            Output shape of the model.
 
         """
         if (not self.config.lstm.retseq) or (self.config.global_pool.lower() != "none"):

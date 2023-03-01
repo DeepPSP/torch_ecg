@@ -1,4 +1,27 @@
-"""custom loss functions"""
+"""
+torch_ecg.models.loss
+=====================
+Custom loss functions for ECG analysis, as a complement to
+built-in loss functions in PyTorch.
+
+.. contents:: torch_ecg.models
+    :depth: 1
+    :local:
+    :backlinks: top
+
+.. currentmodule:: torch_ecg.models.loss
+
+.. autosummary::
+    :toctree: generated/
+    :recursive:
+
+    WeightedBCELoss
+    BCEWithLogitsWithClassWeightLoss
+    MaskedBCEWithLogitsLoss
+    FocalLoss
+    AsymmetricLoss
+
+"""
 
 from numbers import Real
 from typing import Any, Optional
@@ -133,18 +156,21 @@ class WeightedBCELoss(nn.Module):
         self.PosWeightIsDynamic = PosWeightIsDynamic
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            the prediction tensor, of shape (batch_size, ...)
-        target: Tensor,
-            the target tensor, of shape (batch_size, C)
+        input : torch.Tensor
+            The predicted probability tensor,
+            of shape ``(batch_size, ..., n_classes)``.
+        target : torch.Tensor
+            The target tensor,
+            of shape ``(batch_size, ..., n_classes)``.
 
         Returns
         -------
-        loss: Tensor,
-            the loss w.r.t. `input` and `target`
+        loss : torch.Tensor
+            The weighted binary cross entropy loss.
 
         """
         if self.PosWeightIsDynamic:
@@ -163,34 +189,37 @@ class WeightedBCELoss(nn.Module):
 
 
 class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
-    """ """
+    """Class-weighted Binary Cross Entropy Loss class.
+
+    Parameters
+    ----------
+    class_weight : torch.Tensor
+        Class weight, of shape ``(1, n_classes)``.
+
+    """
 
     __name__ = "BCEWithLogitsWithClassWeightLoss"
 
     def __init__(self, class_weight: Tensor) -> None:
-        """
-        Parameters
-        ----------
-        class_weight: Tensor,
-            class weight, of shape (1, n_classes)
-
-        """
         super().__init__(reduction="none")
         self.register_buffer("class_weight", class_weight)
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            the prediction tensor, of shape (batch_size, ...)
-        target: Tensor,
-            the target tensor, of shape (batch_size, ...)
+        input : torch.Tensor
+            The predicted value tensor (before sigmoid),
+            of shape ``(batch_size, ..., n_classes)``.
+        target : torch.Tensor
+            The target tensor,
+            of shape ``(batch_size, ..., n_classes)``.
 
         Returns
         -------
-        loss: Tensor,
-            the loss (scalar tensor) w.r.t. `input` and `target`
+        torch.Tensor
+            The class-weighted binary cross entropy loss.
 
         """
         loss = super().forward(input, target)
@@ -199,33 +228,58 @@ class BCEWithLogitsWithClassWeightLoss(nn.BCEWithLogitsLoss):
 
 
 class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
-    """ """
+    """Masked Binary Cross Entropy Loss class.
+
+    This loss is used mainly for the segmentation task, where
+    there are some regions that are of much higher importance,
+    for example, the onsets and offsets of some particular events
+    (e.g. paroxysmal atrial fibrillation (AF) episodes).
+
+    This loss is proposed in [#mbce]_, with a reference to the loss
+    function used in the U-Net paper [#unet]_.
+
+
+    References
+    ----------
+    .. [#mbce] Wen, Hao, and Jingsu Kang. "A comparative study on neural networks for
+               paroxysmal atrial fibrillation events detection from electrocardiography."
+               Journal of Electrocardiology 75 (2022): 19-27.
+    .. [#unet] Ronneberger, Olaf, Philipp Fischer, and Thomas Brox. "U-net: Convolutional
+               networks for biomedical image segmentation." International Conference on
+               Medical image computing and computer-assisted intervention. Springer, Cham,
+               2015.
+
+    """
 
     __name__ = "MaskedBCEWithLogitsLoss"
 
     def __init__(self) -> None:
-        """ """
         super().__init__(reduction="none")
 
     def forward(self, input: Tensor, target: Tensor, weight_mask: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            the prediction tensor, of shape (batch_size, ...)
-        target: Tensor,
-            the target tensor, of shape (batch_size, ...)
-        weight_mask: Tensor,
-            the weight mask tensor, of shape (batch_size, ...)
+        input : torch.Tensor
+            The predicted value tensor (before sigmoid),
+            of shape ``(batch_size, sig_len, n_classes)``.
+        target : torch.Tensor
+            The target tensor,
+            of shape ``(batch_size, sig_len, n_classes)``.
+        weight_mask: torch.Tensor
+            The weight mask tensor,
+            of shape ``(batch_size, sig_len, n_classes)``.
 
         Returns
         -------
-        loss: Tensor,
-            the loss (scalar tensor) w.r.t. `input` and `target`
+        torch.Tensor
+            The masked binary cross entropy loss.
 
         NOTE
         ----
-        `input`, `target`, and `weight_mask` should be 3-D tensors of the same shape
+        `input`, `target`, and `weight_mask` should be
+        3-D tensors of the same shape.
 
         """
         loss = super().forward(input, target)
@@ -234,24 +288,50 @@ class MaskedBCEWithLogitsLoss(nn.BCEWithLogitsLoss):
 
 
 class FocalLoss(nn.modules.loss._WeightedLoss):
-    r"""
-    the focal loss is computed as follows:
+    """Focal loss class.
+
+    The focal loss is proposed in [1]_, and this implementation is
+    based on [2]_, [3]_, and [4]_. The focal loss is computed as follows:
 
     .. math::
 
-        \operatorname{FL}(p_t) = -\alpha_t (1 - p_t)^{\gamma} \, \log(p_t)
+        \\operatorname{FL}(p_t) = -\\alpha_t (1 - p_t)^{\\gamma} \\, \\log(p_t)
 
     Where:
+
        - :math:`p_t` is the model's estimated probability for each class.
+
+    Parameters
+    ----------
+    gamma : float, default 2.0
+        The gamma parameter of focal loss.
+    weight : torch.Tensor, optional
+        If `multi_label` is True,
+        is a manual rescaling weight given to the loss of each batch element,
+        of size ``batch_size``;
+        if `multi_label` is False,
+        is a weight for each class, of size ``n_classes``.
+    class_weight : torch.Tensor, optional
+        The class weight, of shape ``(1, n_classes)``.
+    size_average : bool, optional
+        Not used, to keep in accordance with PyTorch native loss.
+    reduce : bool, optional
+        Not used, to keep in accordance with PyTorch native loss.
+    reduction: {"none", "mean", "sum"}, optional
+        Specifies the reduction to apply to the output, by default "mean".
+    multi_label : bool, default True
+        If True, the loss is computed for multi-label classification.
 
     References
     ----------
-    .. [1] Lin, Tsung-Yi, et al. "Focal loss for dense object detection." Proceedings of the IEEE international conference on computer vision. 2017.
+    .. [1] Lin, Tsung-Yi, et al. "Focal loss for dense object detection."
+           Proceedings of the IEEE international conference on computer vision. 2017.
     .. [2] https://github.com/kornia/kornia/blob/master/kornia/losses/focal.py
     .. [3] https://github.com/clcarwin/focal_loss_pytorch/blob/master/focalloss.py
     .. [4] https://discuss.pytorch.org/t/is-this-a-correct-implementation-for-focal-loss-in-pytorch/43327
 
     """
+
     __name__ = "FocalLoss"
 
     def __init__(
@@ -265,27 +345,6 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         multi_label: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        gamma: float, default 2.0,
-            the gamma parameter of focal loss
-        weight: Tensor, optional,
-            if `multi_label` is True,
-            is a manual rescaling weight given to the loss of each batch element, of size `batch_size`;
-            if `multi_label` is False,
-            is a weight for each class, of size `n_classes`
-        class_weight: Tensor, optional,
-            the class weight, of shape (1, n_classes)
-        size_average: bool, optional,
-            not used, to keep in accordance with PyTorch native loss
-        reduce: bool, optional,
-            not used, to keep in accordance with PyTorch native loss
-        reduction: str, default "mean",
-            the reduction to apply to the output, can be one of
-            "none", "mean", "sum"
-
-        """
         if multi_label or weight is not None:
             w = weight
         else:
@@ -315,19 +374,21 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
         return self.class_weight
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            input tensor, of shape (batch_size, n_classes)
-        target: Tensor,
-            multi-label binarized vector of shape (batch_size, n_classes),
-            or single label binarized vector of shape (batch_size,)
+        input : torch.Tensor
+            The predicted value tensor (before sigmoid),
+            of shape ``(batch_size, n_classes)``.
+        target : torch.Tensor
+            Multi-label binarized vector of shape ``(batch_size, n_classes)``,
+            or single label binarized vector of shape ``(batch_size,)``.
 
         Returns
         -------
-        fl: Tensor,
-            the focal loss w.r.t. `input` and `target`
+        torch.Tensor
+            The focal loss.
 
         """
         entropy = self.entropy_func(
@@ -348,24 +409,57 @@ class FocalLoss(nn.modules.loss._WeightedLoss):
 
 
 class AsymmetricLoss(nn.Module):
-    r"""
-    The asymmetric loss is defined as
+    """Asymmetric loss class.
+
+    The asymmetric loss is proposed in [#al]_, with official
+    implementation in [#al_code]_. The asymmetric loss is defined as
 
     .. math::
 
-        ASL = \begin{cases} L_+ := (1-p)^{\gamma_+} \log(p) \\ L_- := (p_m)^{\gamma_-} \log(1-p_m) \end{cases}
+        ASL = \\begin{cases}
+            L_+ := (1-p)^{\\gamma_+} \\log(p) \\
+            L_- := (p_m)^{\\gamma_-} \\log(1-p_m)
+        \\end{cases}
 
-    where :math:`p_m = \max(p-m, 0)` is the shifted probability, with probability margin :math:`m`.
+    where :math:`p_m = \\max(p-m, 0)` is the shifted probability,
+    with probability margin :math:`m`.
     The loss on one label of one sample is
 
     .. math::
 
         L = -yL_+ - (1-y)L_-
 
+    Parameters
+    ----------
+    gamma_neg : numbers.Real, default 4
+        Exponent of the multiplier to the negative loss.
+    gamma_pos : numbers.Real, default 1
+        Exponent of the multiplier to the positive loss.
+    prob_margin : float, default 0.05
+        The probability margin
+    disable_torch_grad_focal_loss : bool, default False
+        If True, disable :func:`torch.grad` for asymmetric focal loss computing.
+    reduction : {"none", "mean", "sum"}, optional
+        Specifies the reduction to apply to the output, by default "mean".
+    implementation : {"alibaba-miil", "deep-psp"}, optional
+        Implementation by Alibaba-MIIL, or by `DeepPSP`, case insensitive.
+
+    NOTE
+    ----
+    Since :class:`AsymmetricLoss` aims at emphasizing the contribution of positive samples,
+    `gamma_neg` is usually greater than `gamma_pos`.
+
+    TODO
+    ----
+    1. Evaluate the settings that `gamma_neg`, `gamma_pos` are tensors,
+       of shape ``(1, n_classes)``, in which case we would have one ratio
+       of positive to negative for each class.
+
     References
     ----------
-    .. [1] Ridnik, Tal, et al. "Asymmetric Loss for Multi-Label Classification." Proceedings of the IEEE/CVF International Conference on Computer Vision. 2021.
-    .. [2] https://github.com/Alibaba-MIIL/ASL/
+    .. [#al] Ridnik, Tal, et al. "Asymmetric Loss for Multi-Label Classification."
+             Proceedings of the IEEE/CVF International Conference on Computer Vision. 2021.
+    .. [#al_code] https://github.com/Alibaba-MIIL/ASL/
 
     """
 
@@ -380,36 +474,6 @@ class AsymmetricLoss(nn.Module):
         reduction: str = "mean",
         implementation: str = "alibaba-miil",
     ) -> None:
-        """Initialize the asymmetric loss
-
-        Parameters
-        ----------
-        gamma_neg: numbers.Real, default 4,
-            exponent of the multiplier to the negative loss
-        gamma_pos: numbers.Real, default 1,
-            exponent of the multiplier to the positive loss
-        prob_margin: float, default 0.05,
-            the probability margin
-        disable_torch_grad_focal_loss: bool, default False,
-            if True, disable torch.grad for asymmetric focal loss computing
-        reduction: str, default "mean",
-            the reduction to apply to the output, can be one of
-            "none", "mean", "sum"
-        implementation: str, default "alibaba-miil",
-            can also be "deep-psp", case insensitive,
-            implementation by Alibaba-MIIL, or by `DeepPSP`
-
-        NOTE
-        ----
-        Since `AsymmetricLoss` aims at emphasizing the contribution of positive samples,
-        `gamma_neg` usually > `gamma_pos`.
-
-        TODO
-        ----
-        1. evaluate `gamma_neg`, `gamma_pos` be set as tensors, of shape (1, n_classes),
-        one ratio of positive to negative for each class
-
-        """
         super().__init__()
         self.implementation = implementation.lower()
         assert self.implementation in [
@@ -441,18 +505,21 @@ class AsymmetricLoss(nn.Module):
             ) = self.xs_neg = self.loss = self.loss_pos = self.loss_neg = None
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
-        """
+        """Forward pass.
+
         Parameters
         ----------
-        input: Tensor,
-            input tensor, of shape (batch_size, n_classes)
-        target: Tensor,
-            multi-label binarized vector, of shape (batch_size, n_classes)
+        input : torch.Tensor
+            The predicted value tensor,
+            of shape ``(batch_size, n_classes)``.
+        target : torch.Tensor
+            The target tensor,
+            of shape ``(batch_size, n_classes)``.
 
         Returns
         -------
-        loss: Tensor,
-            the loss w.r.t. `input` and `target`
+        torch.Tensor
+            The asymmetric loss.
 
         """
         if self.implementation == "alibaba-miil":
@@ -461,18 +528,21 @@ class AsymmetricLoss(nn.Module):
             return self._forward_deep_psp(input, target)
 
     def _forward_deep_psp(self, input: Tensor, target: Tensor) -> Tensor:
-        """
+        """Forward pass of DeepPSP implementation.
+
         Parameters
         ----------
-        input: Tensor,
-            input tensor, of shape (batch_size, n_classes)
-        target: Tensor,
-            multi-label binarized vector, of shape (batch_size, n_classes)
+        input : torch.Tensor
+            The predicted value tensor,
+            of shape ``(batch_size, n_classes)``.
+        target : torch.Tensor
+            The target tensor,
+            of shape ``(batch_size, n_classes)``.
 
         Returns
         -------
-        loss: Tensor,
-            the loss w.r.t. `input` and `target`
+        torch.Tensor
+            The asymmetric loss.
 
         """
         self.targets = target
@@ -508,18 +578,21 @@ class AsymmetricLoss(nn.Module):
         return self.loss
 
     def _forward_alibaba_miil(self, input: Tensor, target: Tensor) -> Tensor:
-        """
+        """Forward pass of Alibaba MIIL implementation.
+
         Parameters
         ----------
-        input: Tensor,
-            input tensor, of shape (batch_size, n_classes)
-        target: Tensor,
-            multi-label binarized vector, of shape (batch_size, n_classes)
+        input : torch.Tensor
+            The predicted value tensor,
+            of shape ``(batch_size, n_classes)``.
+        target : torch.Tensor
+            The target tensor,
+            of shape ``(batch_size, n_classes)``.
 
         Returns
         -------
-        loss: Tensor,
-            the loss w.r.t. `input` and `target`
+        torch.Tensor
+            The asymmetric loss.
 
         """
         self.targets = target
