@@ -897,7 +897,7 @@ class CitationMixin(_CitationMixin):
         timeout: Optional[float] = None,
         print_result: bool = True,
     ) -> Union[str, type(None)]:
-        """Get citation from DOIs.
+        """Get bib citation from DOIs.
 
         Overrides the default method to make the `print_result` argument
         have default value ``True``.
@@ -921,7 +921,8 @@ class CitationMixin(_CitationMixin):
         Returns
         -------
         str or None
-            The citation.
+            bib citation(s) from the DOI(s),
+            or None if `print_result` is True.
 
         """
         return super().get_citation(

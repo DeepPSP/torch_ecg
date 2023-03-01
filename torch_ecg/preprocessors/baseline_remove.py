@@ -16,7 +16,24 @@ __all__ = [
 
 
 class BaselineRemove(torch.nn.Module):
-    """ """
+    """Baseline removal using median filtering.
+
+    Parameters
+    ----------
+    fs : numbers.Real
+        Sampling frequency of the ECG signal to be filtered.
+    window1 : float, default 0.2
+        The smaller window size of the median filter,
+        with units in seconds.
+    window2 : float, default 0.6
+        The larger window size of the median filter,
+        with units in seconds.
+    inplace : bool, default True
+        Whether to perform the filtering in-place.
+    kwargs : dict, optional
+        Other keyword arguments for :class:`torch.nn.Module`.
+
+    """
 
     __name__ = "BaselineRemove"
 
@@ -28,20 +45,6 @@ class BaselineRemove(torch.nn.Module):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """
-        Parameters
-        ----------
-        fs: numbers.Real,
-            sampling frequency of the ECG signal to be filtered
-        window1: float, default 0.2,
-            the smaller window size of the median filter, with units in seconds
-        highcut: float, default 0.6,
-            the larger window size of the median filter, with units in seconds
-        inplace: bool, default True,
-            if True, the preprocessor will modify the input signal
-        kwargs: keyword arguments,
-
-        """
         super().__init__()
         self.fs = fs
         self.window1 = window1
@@ -54,19 +57,19 @@ class BaselineRemove(torch.nn.Module):
         self.inplace = inplace
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """
-        apply the preprocessor to `sig`
+        """Apply the preprocessor to the signal tensor.
 
         Parameters
         ----------
-        sig: Tensor,
-            the ECG signals, of shape (batch, lead, siglen)
+        sig : torch.Tensor
+            The ECG signal tensor,
+            of shape ``(batch, lead, siglen)``.
 
         Returns
         -------
-        sig: Tensor,
-            the median filtered (hence baseline removed) ECG signals,
-            of shape (batch, lead, siglen)
+        torch.Tensor
+            The median filtered (hence baseline removed) ECG signals,
+            of shape ``(batch, lead, siglen)``.
 
         """
         if not self.inplace:

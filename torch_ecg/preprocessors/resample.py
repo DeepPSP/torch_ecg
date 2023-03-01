@@ -13,10 +13,28 @@ __all__ = [
 
 
 class Resample(torch.nn.Module):
-    """
-    resample the signal into fixed sampling frequency or length
+    """Resample the signal into fixed sampling frequency or length.
 
-    TODO: consider vectorized `scipy.signal.resample`?
+    Parameters
+    ----------
+    fs : int, optional
+        Sampling frequency of the source signal to be resampled.
+    dst_fs : int, optional
+        Sampling frequency of the resampled ECG.
+    siglen : int, optional
+        Number of samples in the resampled ECG.
+    inplace : bool, default False
+        Whether to perform the resampling in-place.
+
+    NOTE
+    ----
+    One and only one of `fs` and `siglen` should be set.
+    If `fs` is set, `src_fs` should also be set.
+
+
+    TODO
+    ----
+    Consider vectorized :func:`scipy.signal.resample`?
 
     """
 
@@ -30,22 +48,6 @@ class Resample(torch.nn.Module):
         inplace: bool = False,
         **kwargs: Any
     ) -> None:
-        """
-        Parameters
-        ----------
-        fs: int, optional,
-            sampling frequency of the source signal to be resampled
-        dst_fs: int, optional,
-            sampling frequency of the resampled ECG
-        siglen: int, optional,
-            number of samples in the resampled ECG
-        inplace: bool, default False,
-            if True, normalization will be done inplace (on the signal)
-
-        NOTE that one and only one of `fs` and `siglen` should be set,
-        if `fs` is set, `src_fs` should also be set
-
-        """
         super().__init__()
         self.dst_fs = dst_fs
         self.fs = fs
@@ -59,17 +61,19 @@ class Resample(torch.nn.Module):
             self.scale_factor = self.dst_fs / self.fs
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """
+        """Apply the resampling to the signal tensor.
+
         Parameters
         ----------
-        sig: Tensor,
-            the Tensor ECG signal to be resampled,
-            of shape (..., n_leads, siglen)
+        sig : torch.Tensor
+            The signal tensor to be resampled,
+            of shape ``(..., n_leads, siglen)``.
 
         Returns
         -------
-        sig: Tensor,
-            the resampled Tensor ECG signal
+        torch.Tensor
+            The resampled signal tensor,
+            of shape ``(..., n_leads, siglen)``.
 
         """
         sig = resample_t(

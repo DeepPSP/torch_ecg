@@ -15,7 +15,22 @@ __all__ = [
 
 
 class BandPass(torch.nn.Module):
-    """ """
+    """Bandpass filtering preprocessor.
+
+    Parameters
+    ----------
+    fs : numbers.Real
+        Sampling frequency of the ECG signal to be filtered.
+    lowcut : numbers.Real, optional
+        Low cutoff frequency.
+    highcut : numbers.Real, optional
+        High cutoff frequency.
+    inplace : bool, default True
+        Whether to perform the filtering in-place.
+    kwargs : dict, optional
+        Other keyword arguments for :class:`torch.nn.Module`.
+
+    """
 
     __name__ = "BandPass"
 
@@ -27,20 +42,6 @@ class BandPass(torch.nn.Module):
         inplace: bool = True,
         **kwargs: Any
     ) -> None:
-        """
-        Parameters
-        ----------
-        fs: numbers.Real,
-            sampling frequency of the ECG signal to be filtered
-        lowcut: numbers.Real, optional,
-            low cutoff frequency
-        highcut: numbers.Real, optional,
-            high cutoff frequency
-        inplace: bool, default True,
-            if True, the preprocessor will modify the input signal
-        kwargs: keyword arguments,
-
-        """
         super().__init__()
         self.fs = fs
         self.lowcut = lowcut
@@ -55,18 +56,19 @@ class BandPass(torch.nn.Module):
         self.inplace = inplace
 
     def forward(self, sig: torch.Tensor) -> torch.Tensor:
-        """
-        apply the preprocessor to `sig`
+        """Apply the preprocessor to the signal tensor.
 
         Parameters
         ----------
-        sig: Tensor,
-            the ECG signals, of shape (batch, lead, siglen)
+        sig : torch.Tensor
+            The ECG signal tensor,
+            of shape ``(batch, lead, siglen)``.
 
         Returns
         -------
-        filtered_sig: Tensor,
-            the bandpass filtered ECG signals, of shape (batch, lead, siglen)
+        torch.Tensor
+            The bandpass filtered ECG signal tensor,
+            of shape ``(batch, lead, siglen)``.
 
         """
         if not self.inplace:

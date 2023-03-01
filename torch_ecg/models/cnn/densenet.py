@@ -186,7 +186,7 @@ class DenseBasicBlock(nn.Module, SizeMixin):
 
 class DenseBottleNeck(nn.Module, SizeMixin):
     """
-    Bottleneck modification of :classL`DenseBasicBlock`,
+    Bottleneck modification of :class:`DenseBasicBlock`,
     with an additional prefixed sequence of
     (normalization -> activation -> convolution of kernel size 1)
 
@@ -612,13 +612,16 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
 
     NOTE
     ----
-    The difference of forward output of [5]_ from others, however [5]_ doesnot support dropout.
+    The difference of forward output of [5]_ from others,
+    however [5]_ doesnot support dropout.
 
     TODO
     ----
-    1. For `groups` > 1, the concatenated output should be re-organized in the channel dimension?
+    1. For `groups` > 1, the concatenated output should be
+       re-organized in the channel dimension?
     2. memory-efficient mode, i.e. storing the `new_features`
-       in a shared memory instead of stacking in newly created `Tensor` after each mini-block.
+       in a shared memory instead of stacking in newly created
+       :class:`~torch.Tensor` after each mini-block.
 
     References
     ----------
