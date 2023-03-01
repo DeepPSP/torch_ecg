@@ -5,12 +5,20 @@
 ![formatting](https://github.com/DeepPSP/torch_ecg/actions/workflows/check-formatting.yml/badge.svg)
 [![codecov](https://codecov.io/gh/DeepPSP/torch_ecg/branch/master/graph/badge.svg?token=9YOPZ8GREA)](https://codecov.io/gh/DeepPSP/torch_ecg)
 ![PyPI](https://img.shields.io/pypi/v/torch-ecg?style=flat-square)
+[![RTD status](https://readthedocs.org/projects/torch-ecg/badge/?version=latest)](https://torch-ecg.readthedocs.io/en/latest/?badge=latest)
+![gh-page status](https://github.com/DeepPSP/torch_ecg/actions/workflows/docs-publish.yml/badge.svg?branch=doc)
 [![DOI](https://img.shields.io/badge/DOI-10.1088%2F1361--6579%2Fac9451-informational?style=flat-square)](https://doi.org/10.1088/1361-6579/ac9451)
 [![zenodo](https://zenodo.org/badge/298482237.svg)](https://zenodo.org/badge/latestdoi/298482237)
 ![downloads](https://img.shields.io/pypi/dm/torch-ecg?style=flat-square)
 ![license](https://img.shields.io/github/license/DeepPSP/torch_ecg?style=flat-square)
 
-ECG Deep Learning Framework Implemented using PyTorch. [\[Documentation\]](https://deeppsp.github.io/torch_ecg/) (under development)
+ECG Deep Learning Framework Implemented using PyTorch.
+
+Documentation (under development)
+
+- [GitHub Pages](https://deeppsp.github.io/torch_ecg/)
+- [Read the Docs](http://torch-ecg.rtfd.io/)
+- [latest version](http://43.140.244.112/torch-ecg-docs-dev/)
 
 The system design is depicted as follows
 
