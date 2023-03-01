@@ -340,6 +340,44 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../losses.html">torch_ecg.models.loss</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.WeightedBCELoss.html">WeightedBCELoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss"><code class="docutils literal notranslate"><span class="pre">WeightedBCELoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss.forward"><code class="docutils literal notranslate"><span class="pre">WeightedBCELoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html">BCEWithLogitsWithClassWeightLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss"><code class="docutils literal notranslate"><span class="pre">BCEWithLogitsWithClassWeightLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.forward"><code class="docutils literal notranslate"><span class="pre">BCEWithLogitsWithClassWeightLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html">MaskedBCEWithLogitsLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss"><code class="docutils literal notranslate"><span class="pre">MaskedBCEWithLogitsLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss.forward"><code class="docutils literal notranslate"><span class="pre">MaskedBCEWithLogitsLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.FocalLoss.html">FocalLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss"><code class="docutils literal notranslate"><span class="pre">FocalLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss.forward"><code class="docutils literal notranslate"><span class="pre">FocalLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html">AsymmetricLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../augmenters.html">torch_ecg.augmenters</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.augmenters.AugmenterManager.html">AugmenterManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager"><code class="docutils literal notranslate"><span class="pre">AugmenterManager</span></code></a><ul>
@@ -1054,12 +1092,13 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">posixpath</span>
 <span class="kn">import</span> <span class="nn">pprint</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -1280,7 +1319,7 @@
 <span class="sd">        style : str, optional</span>
 <span class="sd">            Style of the final output.</span>
 <span class="sd">            If specified, the default style (&quot;apa&quot;) will be overrided.</span>
-<span class="sd">            Valid only when `format` is &quot;text&quot;.</span>
+<span class="sd">            Valid only when `format` is ``&quot;text&quot;``.</span>
 <span class="sd">        print_result : bool, default False</span>
 <span class="sd">            Whether to print the final output</span>
 <span class="sd">            instead of returning it or not.</span>
@@ -2272,7 +2311,7 @@
 <span class="sd">    status : str, optional</span>
 <span class="sd">        Status of the database.</span>
 <span class="sd">    doi : str or list of str, optional</span>
-<span class="sd">        Doi of the paper(s) describing the database.</span>
+<span class="sd">        DOI of the paper(s) describing the database.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -2301,6 +2340,11 @@
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The formatted docstring.</span>
+
+<span class="sd">        NOTE</span>
+<span class="sd">        ----</span>
+<span class="sd">        An environment variable ``DB_BIB_LOOKUP`` can be set to</span>
+<span class="sd">        `True` to enable the lookup of the bib entries.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">indent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2352,9 +2396,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">docstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="se">\n\n</span><span class="si">{</span><span class="n">docstring</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="n">lookup</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">lookup</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;DB_BIB_LOOKUP&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">citation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_citation</span><span class="p">(</span><span class="n">lookup</span><span class="o">=</span><span class="n">lookup</span><span class="p">,</span> <span class="n">print_result</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="c1"># TODO: change format from markdown to rst</span>
         <span class="k">if</span> <span class="n">citation</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
             <span class="n">citation</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">citation</span><span class="p">,</span> <span class="n">indent</span><span class="p">)</span>
             <span class="n">citation</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span>

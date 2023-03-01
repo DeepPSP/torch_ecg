@@ -340,6 +340,44 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../losses.html">torch_ecg.models.loss</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.WeightedBCELoss.html">WeightedBCELoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss"><code class="docutils literal notranslate"><span class="pre">WeightedBCELoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss.forward"><code class="docutils literal notranslate"><span class="pre">WeightedBCELoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html">BCEWithLogitsWithClassWeightLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss"><code class="docutils literal notranslate"><span class="pre">BCEWithLogitsWithClassWeightLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.forward"><code class="docutils literal notranslate"><span class="pre">BCEWithLogitsWithClassWeightLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html">MaskedBCEWithLogitsLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss"><code class="docutils literal notranslate"><span class="pre">MaskedBCEWithLogitsLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss.forward"><code class="docutils literal notranslate"><span class="pre">MaskedBCEWithLogitsLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.FocalLoss.html">FocalLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss"><code class="docutils literal notranslate"><span class="pre">FocalLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss.forward"><code class="docutils literal notranslate"><span class="pre">FocalLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html">AsymmetricLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../augmenters.html">torch_ecg.augmenters</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.augmenters.AugmenterManager.html">AugmenterManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager"><code class="docutils literal notranslate"><span class="pre">AugmenterManager</span></code></a><ul>
@@ -1038,8 +1076,7 @@
             
   <h1>Source code for torch_ecg.models.ecg_crnn</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">validated C(R)NN structure models, for classifying ECG arrhythmias</span>
-
+<span class="sd">C(R)NN structure models, for classifying ECG arrhythmias, and other tasks.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -1081,18 +1118,43 @@
 
 
 <div class="viewcode-block" id="ECG_CRNN"><a class="viewcode-back" href="../../../generated/torch_ecg.models.ECG_CRNN.html#torch_ecg.models.ECG_CRNN">[docs]</a><span class="k">class</span> <span class="nc">ECG_CRNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">CkptMixin</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    C(R)NN models modified from the following refs.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convolutional (Recurrent) Neural Network for ECG tasks.</span>
+
+<span class="sd">    This C(R)NN architecture is adapted from [1]_, [2]_ in the first place,</span>
+<span class="sd">    and then modified to be more general, and more flexible.</span>
+<span class="sd">    The most famous model is perhaps [3]_, which is a modified 1D-ResNet34 model.</span>
+<span class="sd">    The website of this model is [4]_, and the code is hosted on [5]_.</span>
+<span class="sd">    The C(R)NN models have long been competitive in various ECG tasks,</span>
+<span class="sd">    e.g. [6]_, [7]_. The models are also used in the PhysioNet/CinC Challenges.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    classes : List[str]</span>
+<span class="sd">        List of the names of the classes.</span>
+<span class="sd">    n_leads : int</span>
+<span class="sd">        Number of leads (number of input channels).</span>
+<span class="sd">    config : dict</span>
+<span class="sd">        Other hyper-parameters, including kernel sizes, etc.</span>
+<span class="sd">        Refer to corresponding config files.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [1] Yao, Qihang, et al. &quot;Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram.&quot; 2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing, 16th Intl Conf on Pervasive Intelligence and Computing, 4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.</span>
-<span class="sd">    [2] Yao, Qihang, et al. &quot;Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based Time-Incremental Convolutional Neural Network.&quot; Information Fusion 53 (2020): 174-182.</span>
-<span class="sd">    [3] Hannun, Awni Y., et al. &quot;Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network.&quot; Nature medicine 25.1 (2019): 65.</span>
-<span class="sd">    [4] https://stanfordmlgroup.github.io/projects/ecg2/</span>
-<span class="sd">    [5] https://github.com/awni/ecg</span>
-<span class="sd">    [6] CPSC2018 entry 0236</span>
-<span class="sd">    [7] CPSC2019 entry 0416</span>
+<span class="sd">    .. [1] Yao, Qihang, et al.</span>
+<span class="sd">           &quot;Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram.&quot;</span>
+<span class="sd">           2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing,</span>
+<span class="sd">           16th Intl Conf on Pervasive Intelligence and Computing,</span>
+<span class="sd">           4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress</span>
+<span class="sd">           (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.</span>
+<span class="sd">    .. [2] Yao, Qihang, et al.</span>
+<span class="sd">           &quot;Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based</span>
+<span class="sd">           Time-Incremental Convolutional Neural Network.&quot; Information Fusion 53 (2020): 174-182.</span>
+<span class="sd">    .. [3] Hannun, Awni Y., et al.</span>
+<span class="sd">           &quot;Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms</span>
+<span class="sd">           using a deep neural network.&quot; Nature medicine 25.1 (2019): 65.</span>
+<span class="sd">    .. [4] https://stanfordmlgroup.github.io/projects/ecg2/</span>
+<span class="sd">    .. [5] https://github.com/awni/ecg</span>
+<span class="sd">    .. [6] CPSC2018 entry 0236</span>
+<span class="sd">    .. [7] CPSC2019 entry 0416</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1105,18 +1167,6 @@
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CFG</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        classes: list,</span>
-<span class="sd">            list of the classes for classification</span>
-<span class="sd">        n_leads: int,</span>
-<span class="sd">            number of leads (number of input channels)</span>
-<span class="sd">        config: dict, optional,</span>
-<span class="sd">            other hyper-parameters, including kernel sizes, etc.</span>
-<span class="sd">            ref. the corresponding config file</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
@@ -1364,18 +1414,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ECG_CRNN.extract_features"><a class="viewcode-back" href="../../../generated/torch_ecg.models.ECG_CRNN.html#torch_ecg.models.ECG_CRNN.extract_features">[docs]</a>    <span class="k">def</span> <span class="nf">extract_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        extract feature map before the dense (linear) classifying layer(s)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract feature map before the</span>
+<span class="sd">        dense (linear) classifying layer(s).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        input: Tensor,</span>
-<span class="sd">            of shape (batch_size, channels, seq_len)</span>
+<span class="sd">        input : torch.Tensor</span>
+<span class="sd">            Input signal tensor,</span>
+<span class="sd">            of shape ``(batch_size, channels, seq_len)``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        features: Tensor,</span>
-<span class="sd">            of shape (batch_size, channels, seq_len) or (batch_size, channels)</span>
+<span class="sd">        features : torch.Tensor</span>
+<span class="sd">            Feature map tensor,</span>
+<span class="sd">            of shape ``(batch_size, channels, seq_len)``</span>
+<span class="sd">            or ``(batch_size, channels)``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># CNN</span>
@@ -1394,16 +1447,20 @@
         <span class="k">return</span> <span class="n">features</span></div>
 
 <div class="viewcode-block" id="ECG_CRNN.forward"><a class="viewcode-back" href="../../../generated/torch_ecg.models.ECG_CRNN.html#torch_ecg.models.ECG_CRNN.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the model.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        input: Tensor,</span>
-<span class="sd">            of shape (batch_size, channels, seq_len)</span>
+<span class="sd">        input : torch.Tensor</span>
+<span class="sd">            Input signal tensor,</span>
+<span class="sd">            of shape ``(batch_size, channels, seq_len)``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        pred: Tensor,</span>
-<span class="sd">            of shape (batch_size, n_classes)</span>
+<span class="sd">        pred : torch.Tensor</span>
+<span class="sd">            Predictions tensor,</span>
+<span class="sd">            of shape ``(batch_size, seq_len, channels)``</span>
+<span class="sd">            or ``(batch_size, channels)``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_features</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -1412,7 +1469,7 @@
         <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
         <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_rearrange</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
 
-        <span class="n">pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>  <span class="c1"># batch_size, n_classes</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clf</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">pred</span></div>
 
@@ -1423,24 +1480,28 @@
         <span class="n">class_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">bin_pred_thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseOutput</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inference method for the model.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        input: ndarray or Tensor,</span>
-<span class="sd">            input tensor, of shape (batch_size, channels, seq_len)</span>
-<span class="sd">        class_names: bool, default False,</span>
-<span class="sd">            if True, the returned scalar predictions will be a `DataFrame`,</span>
-<span class="sd">            with class names for each scalar prediction</span>
-<span class="sd">        bin_pred_thr: float, default 0.5,</span>
-<span class="sd">            the threshold for making binary predictions from scalar predictions</span>
+<span class="sd">        input : numpy.ndarray or torch.Tensor</span>
+<span class="sd">            Input tensor, of shape ``(batch_size, channels, seq_len)``.</span>
+<span class="sd">        class_names : bool, default False</span>
+<span class="sd">            If True, the returned scalar predictions will be</span>
+<span class="sd">            a :class:`~pandas.DataFrame`,</span>
+<span class="sd">            with class names for each scalar prediction.</span>
+<span class="sd">        bin_pred_thr : float, default 0.5</span>
+<span class="sd">            Threshold for making binary predictions from scalar predictions.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        output: BaseOutput, including the following items:</span>
-<span class="sd">            prob: ndarray or DataFrame,</span>
-<span class="sd">                scalar predictions, (and binary predictions if `class_names` is True)</span>
-<span class="sd">            pred: ndarray,</span>
-<span class="sd">                the array (with values 0, 1 for each class) of binary prediction</span>
+<span class="sd">        output : BaseOutput</span>
+<span class="sd">            The output of the inference method, including the following items:</span>
+
+<span class="sd">                - prob: numpy.ndarray or torch.Tensor,</span>
+<span class="sd">                  scalar predictions, (and binary predictions if `class_names` is True).</span>
+<span class="sd">                - pred: numpy.ndarray or torch.Tensor,</span>
+<span class="sd">                  the array (with values 0, 1 for each class) of binary prediction.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;implement a task specific inference method&quot;</span><span class="p">)</span></div>
@@ -1448,18 +1509,19 @@
 <div class="viewcode-block" id="ECG_CRNN.compute_output_shape"><a class="viewcode-back" href="../../../generated/torch_ecg.models.ECG_CRNN.html#torch_ecg.models.ECG_CRNN.compute_output_shape">[docs]</a>    <span class="k">def</span> <span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the model.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        seq_len: int,</span>
-<span class="sd">            length of the 1d sequence</span>
-<span class="sd">        batch_size: int, optional,</span>
-<span class="sd">            the batch size, can be None</span>
+<span class="sd">        seq_len : int, optional</span>
+<span class="sd">            Length of the input signal tensor.</span>
+<span class="sd">        batch_size : int, optional</span>
+<span class="sd">            Batch size of the input signal tensor.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        output_shape: sequence,</span>
-<span class="sd">            the output shape of this model, given `seq_len` and `batch_size`</span>
+<span class="sd">        output_shape : sequence</span>
+<span class="sd">            Output shape of the model.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cnn</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
@@ -1499,16 +1561,17 @@
 
 <div class="viewcode-block" id="ECG_CRNN.from_v1"><a class="viewcode-back" href="../../../generated/torch_ecg.models.ECG_CRNN.html#torch_ecg.models.ECG_CRNN.from_v1">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_v1</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v1_ckpt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ECG_CRNN&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore an instance of the model from a v1 checkpoint.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        v1_ckpt: str,</span>
-<span class="sd">            the path to the v1 checkpoint file</span>
+<span class="sd">        v1_ckpt : str</span>
+<span class="sd">            Path to the v1 checkpoint file.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        model: ECG_CRNN,</span>
-<span class="sd">            the converted model</span>
+<span class="sd">        model : ECG_CRNN</span>
+<span class="sd">            The model instance restored from the v1 checkpoint.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">v1_model</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ECG_CRNN_v1</span><span class="o">.</span><span class="n">from_checkpoint</span><span class="p">(</span><span class="n">v1_ckpt</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
@@ -1527,18 +1590,43 @@
 
 
 <span class="k">class</span> <span class="nc">ECG_CRNN_v1</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">CkptMixin</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    C(R)NN models modified from the following refs.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convolutional (Recurrent) Neural Network for ECG tasks.</span>
+
+<span class="sd">    This C(R)NN architecture is adapted from [1]_, [2]_ in the first place,</span>
+<span class="sd">    and then modified to be more general, and more flexible.</span>
+<span class="sd">    The most famous model is perhaps [3]_, which is a modified 1D-ResNet34 model.</span>
+<span class="sd">    The website of this model is [4]_, and the code is hosted on [5]_.</span>
+<span class="sd">    The C(R)NN models have long been competitive in various ECG tasks,</span>
+<span class="sd">    e.g. [6]_, [7]_. The models are also used in the PhysioNet/CinC Challenges.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    classes : List[str]</span>
+<span class="sd">        List of the names of the classes.</span>
+<span class="sd">    n_leads : int</span>
+<span class="sd">        Number of leads (number of input channels).</span>
+<span class="sd">    config : dict</span>
+<span class="sd">        Other hyper-parameters, including kernel sizes, etc.</span>
+<span class="sd">        Refer to corresponding config files.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [1] Yao, Qihang, et al. &quot;Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram.&quot; 2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing, 16th Intl Conf on Pervasive Intelligence and Computing, 4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.</span>
-<span class="sd">    [2] Yao, Qihang, et al. &quot;Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based Time-Incremental Convolutional Neural Network.&quot; Information Fusion 53 (2020): 174-182.</span>
-<span class="sd">    [3] Hannun, Awni Y., et al. &quot;Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms using a deep neural network.&quot; Nature medicine 25.1 (2019): 65.</span>
-<span class="sd">    [4] https://stanfordmlgroup.github.io/projects/ecg2/</span>
-<span class="sd">    [5] https://github.com/awni/ecg</span>
-<span class="sd">    [6] CPSC2018 entry 0236</span>
-<span class="sd">    [7] CPSC2019 entry 0416</span>
+<span class="sd">    .. [1] Yao, Qihang, et al.</span>
+<span class="sd">           &quot;Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram.&quot;</span>
+<span class="sd">           2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing,</span>
+<span class="sd">           16th Intl Conf on Pervasive Intelligence and Computing,</span>
+<span class="sd">           4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress</span>
+<span class="sd">           (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.</span>
+<span class="sd">    .. [2] Yao, Qihang, et al.</span>
+<span class="sd">           &quot;Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based</span>
+<span class="sd">           Time-Incremental Convolutional Neural Network.&quot; Information Fusion 53 (2020): 174-182.</span>
+<span class="sd">    .. [3] Hannun, Awni Y., et al.</span>
+<span class="sd">           &quot;Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms</span>
+<span class="sd">           using a deep neural network.&quot; Nature medicine 25.1 (2019): 65.</span>
+<span class="sd">    .. [4] https://stanfordmlgroup.github.io/projects/ecg2/</span>
+<span class="sd">    .. [5] https://github.com/awni/ecg</span>
+<span class="sd">    .. [6] CPSC2018 entry 0236</span>
+<span class="sd">    .. [7] CPSC2019 entry 0416</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1551,18 +1639,6 @@
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CFG</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        classes: list,</span>
-<span class="sd">            list of the classes for classification</span>
-<span class="sd">        n_leads: int,</span>
-<span class="sd">            number of leads (number of input channels)</span>
-<span class="sd">        config: dict, optional,</span>
-<span class="sd">            other hyper-parameters, including kernel sizes, etc.</span>
-<span class="sd">            ref. the corresponding config file</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
@@ -1736,18 +1812,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">extract_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        extract feature map before the dense (linear) classifying layer(s)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract feature map before the</span>
+<span class="sd">        dense (linear) classifying layer(s).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        input: Tensor,</span>
-<span class="sd">            of shape (batch_size, channels, seq_len)</span>
+<span class="sd">        input : torch.Tensor</span>
+<span class="sd">            Input signal tensor,</span>
+<span class="sd">            of shape ``(batch_size, channels, seq_len)``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        features: Tensor,</span>
-<span class="sd">            of shape (batch_size, channels, seq_len) or (batch_size, channels)</span>
+<span class="sd">        features : torch.Tensor</span>
+<span class="sd">            Feature map tensor,</span>
+<span class="sd">            of shape ``(batch_size, channels, seq_len)``</span>
+<span class="sd">            or ``(batch_size, channels)``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># CNN</span>
@@ -1789,16 +1868,20 @@
         <span class="k">return</span> <span class="n">features</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass of the model.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        input: Tensor,</span>
-<span class="sd">            of shape (batch_size, channels, seq_len)</span>
+<span class="sd">        input : torch.Tensor</span>
+<span class="sd">            Input signal tensor,</span>
+<span class="sd">            of shape ``(batch_size, channels, seq_len)``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        pred: Tensor,</span>
-<span class="sd">            of shape (batch_size, n_classes)</span>
+<span class="sd">        pred : torch.Tensor</span>
+<span class="sd">            Predictions tensor,</span>
+<span class="sd">            of shape ``(batch_size, seq_len, channels)``</span>
+<span class="sd">            or ``(batch_size, channels)``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_features</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -1826,24 +1909,28 @@
         <span class="n">class_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">bin_pred_thr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseOutput</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inference method for the model.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        input: ndarray or Tensor,</span>
-<span class="sd">            input tensor, of shape (batch_size, channels, seq_len)</span>
-<span class="sd">        class_names: bool, default False,</span>
-<span class="sd">            if True, the returned scalar predictions will be a `DataFrame`,</span>
-<span class="sd">            with class names for each scalar prediction</span>
-<span class="sd">        bin_pred_thr: float, default 0.5,</span>
-<span class="sd">            the threshold for making binary predictions from scalar predictions</span>
+<span class="sd">        input : numpy.ndarray or torch.Tensor</span>
+<span class="sd">            Input tensor, of shape ``(batch_size, channels, seq_len)``.</span>
+<span class="sd">        class_names : bool, default False</span>
+<span class="sd">            If True, the returned scalar predictions will be</span>
+<span class="sd">            a :class:`~pandas.DataFrame`,</span>
+<span class="sd">            with class names for each scalar prediction.</span>
+<span class="sd">        bin_pred_thr : float, default 0.5</span>
+<span class="sd">            Threshold for making binary predictions from scalar predictions.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        output: BaseOutput, including the following items:</span>
-<span class="sd">            prob: ndarray or DataFrame,</span>
-<span class="sd">                scalar predictions, (and binary predictions if `class_names` is True)</span>
-<span class="sd">            pred: ndarray,</span>
-<span class="sd">                the array (with values 0, 1 for each class) of binary prediction</span>
+<span class="sd">        output : BaseOutput</span>
+<span class="sd">            The output of the inference method, including the following items:</span>
+
+<span class="sd">                - prob: numpy.ndarray or torch.Tensor,</span>
+<span class="sd">                  scalar predictions, (and binary predictions if `class_names` is True).</span>
+<span class="sd">                - pred: numpy.ndarray or torch.Tensor,</span>
+<span class="sd">                  the array (with values 0, 1 for each class) of binary prediction.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;implement a task specific inference method&quot;</span><span class="p">)</span>
@@ -1851,18 +1938,19 @@
     <span class="k">def</span> <span class="nf">compute_output_shape</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the output shape of the model.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        seq_len: int,</span>
-<span class="sd">            length of the 1d sequence</span>
-<span class="sd">        batch_size: int, optional,</span>
-<span class="sd">            the batch size, can be None</span>
+<span class="sd">        seq_len : int, optional</span>
+<span class="sd">            Length of the input signal tensor.</span>
+<span class="sd">        batch_size : int, optional</span>
+<span class="sd">            Batch size of the input signal tensor.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        output_shape: sequence,</span>
-<span class="sd">            the output shape of this model, given `seq_len` and `batch_size`</span>
+<span class="sd">        output_shape : sequence</span>
+<span class="sd">            Output shape of the model.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">:</span>

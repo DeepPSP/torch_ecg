@@ -340,6 +340,44 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../losses.html">torch_ecg.models.loss</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.WeightedBCELoss.html">WeightedBCELoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss"><code class="docutils literal notranslate"><span class="pre">WeightedBCELoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.WeightedBCELoss.html#torch_ecg.models.loss.WeightedBCELoss.forward"><code class="docutils literal notranslate"><span class="pre">WeightedBCELoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html">BCEWithLogitsWithClassWeightLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss"><code class="docutils literal notranslate"><span class="pre">BCEWithLogitsWithClassWeightLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.html#torch_ecg.models.loss.BCEWithLogitsWithClassWeightLoss.forward"><code class="docutils literal notranslate"><span class="pre">BCEWithLogitsWithClassWeightLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html">MaskedBCEWithLogitsLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss"><code class="docutils literal notranslate"><span class="pre">MaskedBCEWithLogitsLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.MaskedBCEWithLogitsLoss.html#torch_ecg.models.loss.MaskedBCEWithLogitsLoss.forward"><code class="docutils literal notranslate"><span class="pre">MaskedBCEWithLogitsLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.FocalLoss.html">FocalLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss"><code class="docutils literal notranslate"><span class="pre">FocalLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.FocalLoss.html#torch_ecg.models.loss.FocalLoss.forward"><code class="docutils literal notranslate"><span class="pre">FocalLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html">AsymmetricLoss</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.models.loss.AsymmetricLoss.html#torch_ecg.models.loss.AsymmetricLoss.forward"><code class="docutils literal notranslate"><span class="pre">AsymmetricLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../../augmenters.html">torch_ecg.augmenters</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.augmenters.AugmenterManager.html">AugmenterManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.augmenters.AugmenterManager.html#torch_ecg.augmenters.AugmenterManager"><code class="docutils literal notranslate"><span class="pre">AugmenterManager</span></code></a><ul>
@@ -1928,13 +1966,7 @@
         <span class="c1"># delete the old cache</span>
         <span class="p">(</span><span class="n">_DATA_CACHE</span> <span class="o">/</span> <span class="s2">&quot;database_citation.csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CitationMixin.get_citation"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.CitationMixin.html#torch_ecg.utils.CitationMixin.get_citation">[docs]</a>    <span class="nd">@add_docstring</span><span class="p">(</span>
-        <span class="n">_CitationMixin</span><span class="o">.</span><span class="n">get_citation</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">&quot;print_result: bool, default False&quot;</span><span class="p">,</span> <span class="s2">&quot;print_result: bool, default True&quot;</span>
-        <span class="p">),</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;prepend&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">get_citation</span><span class="p">(</span>
+<div class="viewcode-block" id="CitationMixin.get_citation"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.CitationMixin.html#torch_ecg.utils.CitationMixin.get_citation">[docs]</a>    <span class="k">def</span> <span class="nf">get_citation</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">lookup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1942,9 +1974,31 @@
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">print_result</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get citation from DOIs.</span>
+
 <span class="sd">        Overrides the default method to make the `print_result` argument</span>
 <span class="sd">        have default value ``True``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lookup : bool, default True</span>
+<span class="sd">            Whether to look up the citation from the cache.</span>
+<span class="sd">        format : str, optional</span>
+<span class="sd">            The format of the citation. If not specified, the citation</span>
+<span class="sd">            will be returned in the default format (bibtex).</span>
+<span class="sd">        style : str, optional</span>
+<span class="sd">            The style of the citation. If not specified, the citation</span>
+<span class="sd">            will be returned in the default style (apa).</span>
+<span class="sd">            Valid only when `format` is ``&quot;text&quot;``.</span>
+<span class="sd">        timeout : float, optional</span>
+<span class="sd">            The timeout for the request.</span>
+<span class="sd">        print_result : bool, default True</span>
+<span class="sd">            Whether to print the citation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str or None</span>
+<span class="sd">            The citation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_citation</span><span class="p">(</span>
