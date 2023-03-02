@@ -18,7 +18,7 @@ Documentation (under development)
 
 - [GitHub Pages](https://deeppsp.github.io/torch_ecg/)
 - [Read the Docs](http://torch-ecg.rtfd.io/)
-- [latest version](http://43.140.244.112/torch-ecg-docs-dev/)
+- [latest version](https://deep-psp.tech/torch-ecg-docs-dev/)
 
 The system design is depicted as follows
 
