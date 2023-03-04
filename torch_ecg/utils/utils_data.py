@@ -1,6 +1,5 @@
 """
-utilities for convertions of data, labels, masks, etc.
-
+Utilities for convertions of data, labels, masks, etc.
 """
 
 import os
@@ -54,28 +53,31 @@ def get_mask(
     right_bias: int,
     return_fmt: str = "mask",
 ) -> Union[np.ndarray, list]:
-    """
-    get the mask around the `critical_points`
+    """Get the mask around the given critical points.
 
     Parameters
     ----------
-    shape: int, or sequence of int,
-        shape of the mask (and the original data)
-    critical_points: ndarray,
-        indices (of the last dimension) of the points around which to be masked (value 1)
-    left_bias: int, non-negative
-        bias to the left of the critical points for the mask
-    right_bias: int, non-negative
-        bias to the right of the critical points for the mask
-    return_fmt: str, default "mask",
-        format of the return values,
-        "mask" for the usual mask,
-        can also be "intervals", which consists of a list of intervals
+    shape : int or Sequence[int]
+        Shape of the mask (and the original data).
+    critical_points : numpy.ndarray
+        Indices (of the last dimension) of the points
+        around which to be masked (value 1).
+    left_bias : int
+        Bias to the left of the critical points for the mask,
+        non-negative.
+    right_bias : int
+        Bias to the right of the critical points for the mask,
+        non-negative.
+    return_fmt : {"mask", "intervals"}
+        Format of the return values, by default "mask".
+        "mask" stands for the usual mask, while
+        "intervals" means a list of intervals of the
+        form ``[start, end]``.
 
     Returns
     -------
-    mask: ndarray or list,
-        the mask array
+    numpy.ndarray or list
+        The mask array or the list of intervals.
 
     Examples
     --------
@@ -105,26 +107,26 @@ def get_mask(
 
 
 def class_weight_to_sample_weight(
-    y: np.ndarray, class_weight: Union[str, List[float], np.ndarray, dict] = "balanced"
+    y: np.ndarray, class_weight: Union[str, dict, List[float], np.ndarray] = "balanced"
 ) -> np.ndarray:
-    """
-    Transform class weight to sample weight
+    """Transform class weight to sample weight.
 
     Parameters
     ----------
-    y: ndarray,
-        the label (class) of each sample
-    class_weight: str, or list, or ndarray, or dict, default "balanced",
-        the weight for each sample class,
-        if is "balanced", the class weight will automatically be given by
-        if `y` is of string type, then `class_weight` should be a dict,
-        if `y` is of numeric type, and `class_weight` is array_like,
-        then the labels (`y`) should be continuous and start from 0
+    y : numpy.ndarray
+        The label (class) of each sample.
+    class_weight : str or dict or List[float] or numpy.ndarray, default "balanced"
+        The weight for each sample class.
+        If is "balanced", the class weight will automatically be given by
+        the inverse of the class frequency.
+        If `y` is of string `dtype`, then `class_weight` should be a :class:`dict`.
+        if `y` is of numeric `dtype`, and `class_weight` is array_like,
+        then the labels (`y`) should be continuous and start from 0.
 
     Returns
     -------
-    sample_weight: ndarray,
-        the array of sample weight
+    sample_weight : numpy.ndarray
+        The array of sample weight.
 
     Examples
     --------
@@ -167,18 +169,18 @@ def class_weight_to_sample_weight(
 def rdheader(
     header_data: Union[Path, str, Sequence[str]]
 ) -> Union[Record, MultiRecord]:
-    """
-    modified from `wfdb.rdheader`
+    """Modified from `wfdb.rdheader`.
 
     Parameters
     ----------
-    head_data: Path, str, or sequence of str,
-        path of the .hea header file, or lines of the .hea header file
+    head_data : pathlib.Path or str or Sequence[str]
+        Path of the .hea header file,
+        or lines of the .hea header file.
 
     Returns
     -------
-    record: Record, or MultiRecord,
-        the record object
+    wfdb.Record or wfdb.MultiRecord
+        The record object.
 
     """
     if isinstance(header_data, (str, Path)):
@@ -264,23 +266,23 @@ def rdheader(
 def ensure_lead_fmt(
     values: np.ndarray, n_leads: int = 12, fmt: str = "lead_first"
 ) -> np.ndarray:
-    """
-    Ensure the `n_leads`-lead (ECG) signal to be of the format of `fmt`
+    """Ensure the multi-lead (ECG) signal to be of specified format.
 
     Parameters
     ----------
-    values: ndarray,
-        values of the `n_leads`-lead (ECG) signal
-    n_leads: int, default 12,
-        number of leads
-    fmt: str, default "lead_first", case insensitive,
-        format of the output values, can be one of
-        "lead_first" (alias "channel_first"), "lead_last" (alias "channel_last")
+    values : numpy.ndarray
+        Values of the `n_leads`-lead (ECG) signal.
+    n_leads : int, default 12
+        Number of leads of the multi-lead (ECG) signal.
+    fmt : str, default "lead_first"
+        Format of the output values, can be one of
+        "lead_first" (alias "channel_first"),
+        "lead_last" (alias "channel_last"), case insensitive.
 
     Returns
     -------
-    out_values: ndarray,
-        ECG signal in the format of `fmt`
+    numpy.ndarray
+        ECG signal in the specified format.
 
     Examples
     --------
@@ -318,35 +320,37 @@ def ensure_siglen(
     fmt: str = "lead_first",
     tolerance: Optional[float] = None,
 ) -> np.ndarray:
-    """Ensure the (ECG) signal to be of length `siglen`.
+    """Ensure the (ECG) signal to be of specified length.
 
     Strategy:
 
-    1. If `values` has length greater than `siglen`,
-       the central `siglen` samples will be adopted;
-       otherwise, zero padding will be added to both sides.
-    2. If `tolerance` is given, then if the length of `values` is
-       longer than `siglen` by more than `tolerance` in percentage,
-       the `values` will be sliced to have multiple of `siglen` samples,
-       each with ``(1 - tolerance) * siglen`` overlap.
+        1. If `values` has length greater than `siglen`,
+           the central `siglen` samples will be adopted;
+           otherwise, zero padding will be added to both sides.
+        2. If `tolerance` is given, then if the length of `values` is
+           longer than `siglen` by more than `tolerance` in percentage,
+           the `values` will be sliced to have multiple of `siglen` samples,
+           each with ``(1 - tolerance) * siglen`` overlap.
 
     Parameters
     ----------
-    values: sequence,
-        values of the `n_leads`-lead (ECG) signal
-    siglen: int,
-        length of the signal supposed to have
-    fmt: str, default "lead_first", case insensitive,
-        format of the input and output values, can be one of
-        "lead_first" (alias "channel_first"), "lead_last" (alias "channel_last")
-    tolerance: float, optional,
-        tolerance of the length of `values` to be longer than `siglen` in percentage
+    values : numpy.ndarray
+        Values of the `n_leads`-lead (ECG) signal.
+    siglen : int
+        Length of the signal supposed to have.
+    fmt : str, default "lead_first"
+        Format of the input and output values, can be one of
+        "lead_first" (alias "channel_first"),
+        "lead_last" (alias "channel_last"), case insensitive.
+    tolerance : float, optional
+        Tolerance of the length of `values` to be
+        longer than `siglen` in percentage.
 
     Returns
     -------
-    out_values: ndarray,
+    numpy.ndarray
         ECG signal in the format of `fmt` and of fixed length `siglen`,
-        of ndim=3 if `tolerence` is given, otherwise ndim=2
+        of ``ndim=3`` if `tolerence` is given, otherwise ``ndim=2``.
 
     Examples
     --------
@@ -465,33 +469,33 @@ def masks_to_waveforms(
     mask_format: str = "channel_first",
     leads: Optional[Sequence[str]] = None,
 ) -> Dict[str, List[ECGWaveForm]]:
-    """
-    Convert masks into lists of waveforms
+    """Convert masks into lists of :class:`ECGWaveForm` for each lead.
 
     Parameters
     ----------
-    masks: ndarray,
-        wave delineation in the form of masks,
-        of shape (n_leads, seq_len), or (seq_len,)
-    class_map: dict,
-        class map, mapping names to waves to numbers from 0 to n_classes-1,
-        the keys should contain "pwave", "qrs", "twave"
-    fs: numbers.Real,
-        sampling frequency of the signal corresponding to the `masks`,
-        used to compute the duration of each waveform
-    mask_format: str, default "channel_first",
-        format of the mask, used only when `masks.ndim = 2`
+    masks : numpy.ndarray
+        Wave delineation in the form of masks,
+        of shape ``(n_leads, seq_len)``, or ``(seq_len,)``.
+    class_map : dict
+        Class map, mapping names to waves to numbers from 0 to n_classes-1,
+        the keys should contain "pwave", "qrs", "twave".
+    fs : numbers.Real
+        Sampling frequency of the signal corresponding to the `masks`,
+        used to compute the duration of each waveform.
+    mask_format : str, default "channel_first"
+        Format of the mask, used only when ``masks.ndim = 2``, can be
         "channel_last" (alias "lead_last"), or
-        "channel_first" (alias "lead_first")
-    leads: str or list of str, optional,
-        the names of leads corresponding to the channels of the `masks`
+        "channel_first" (alias "lead_first"), case insensitive.
+    leads : str or List[str], optional
+        Names of leads corresponding to the channels of the `masks`.
 
     Returns
     -------
-    waves: dict,
-        each item value is a list containing the `ECGWaveForm` corr. to the lead;
-        each item key is from `leads` if `leads` is set,
-        otherwise would be "lead_1", "lead_2", ..., "lead_n"
+    dict
+        Each item value is a list containing the :class:`ECGWaveForm`
+        corr. to the lead.
+        Each item key is from `leads` if `leads` is set,
+        otherwise would be ``"lead_1", "lead_2", ..., "lead_n"``.
 
     Examples
     --------
@@ -564,26 +568,26 @@ def mask_to_intervals(
     vals: Optional[Union[int, Sequence[int]]] = None,
     right_inclusive: bool = False,
 ) -> Union[list, dict]:
-    """
-    Convert a mask into a list of intervals,
-    or a dict of lists of intervals, if `vals` has multiple values
+    """Convert a mask into a list of intervals,
+    or a dict of lists of intervals.
 
     Parameters
     ----------
-    mask: ndarray,
-        1d mask
-    vals: int or sequence of int, optional,
-        values in `mask` to obtain intervals
-    right_inclusive: bool, default False,
-        if True, the intervals will be right inclusive
-        otherwise, right exclusive
+    mask : numpy.ndarray
+        The (1D) mask to convert.
+    vals : int or Sequence[int], optional
+        Values in `mask` to obtain the intervals.
+    right_inclusive : bool, default False
+        If True, the intervals will be right inclusive,
+        otherwise, right exclusive.
 
     Returns
     -------
-    intervals: dict or list,
-        the intervals corr. to each value in `vals` if `vals` is `None` or `Sequence`;
+    intervals : dict or list
+        The intervals corr. to each value in `vals`
+        if `vals` is `None` or of sequence type;
         or the intervals corr. to `vals` if `vals` is int.
-        each interval is of the form `[a,b]`
+        each interval is of the form ``[a, b]``.
 
     Examples
     --------
@@ -633,22 +637,21 @@ def mask_to_intervals(
 
 
 def uniform(low: Real, high: Real, num: int) -> List[float]:
-    """
-    Generate a list of `num` numbers uniformly distributed between `low` and `high`
+    """Generate a list of numbers uniformly distributed.
 
     Parameters
     ----------
-    low: numbers.Real,
-        lower bound of the interval of the uniform distribution
-    high: numbers.Real,
-        upper bound of the interval of the uniform distribution
-    num: int,
-        number of random numbers to generate
+    low : numbers.Real
+        Lower bound of the interval of the uniform distribution.
+    high : numbers.Real
+        Upper bound of the interval of the uniform distribution.
+    num : int
+        Number of random numbers to generate.
 
     Returns
     -------
-    arr: list of float,
-        array of randomly generated numbers with uniform distribution
+    List[float]
+        Array of randomly generated numbers with uniform distribution.
 
     Examples
     --------
@@ -667,28 +670,7 @@ def stratified_train_test_split(
     test_ratio: float = 0.2,
     reset_index: bool = True,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """
-    Do stratified train-test split on the dataframe,
-
-    Parameters
-    ----------
-    df: pd.DataFrame,
-        dataframe to be split
-    stratified_cols: sequence of str,
-        columns to be stratified, assuming each column is a categorical variable
-        each class in any of the columns will be
-        split into train and test sets with an approximate ratio of `test_ratio`
-    test_ratio: float, default 0.2,
-        ratio of test set to the whole dataframe
-    reset_index: bool, default True,
-        whether to reset the index of the dataframes
-
-    Returns
-    -------
-    df_train: pd.DataFrame,
-        the dataframe of the train set
-    df_test: pd.DataFrame,
-        the dataframe of the test set
+    """Perform stratified train-test split on the dataframe.
 
     For example,
     if one has a dataframe with columns `sex`, `nationality`, etc.,
@@ -698,6 +680,27 @@ def stratified_train_test_split(
     will be put into the test set,
     and **at the same time**, approximately 20% of the Chinese and 20% of the Americans
     lie in the test set as well.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The dataframe to be split.
+    stratified_cols : Sequence[str]
+        Columns to be stratified,
+        assuming each column is a categorical variable.
+        Each class in any of the columns will be split into
+        train and test sets with an approximate ratio of `test_ratio`.
+    test_ratio : float, default 0.2
+        Ratio of test set to the whole dataframe.
+    reset_index : bool, default True
+        Whether to reset the index of the dataframes.
+
+    Returns
+    -------
+    df_train: pandas.DataFrame
+        The dataframe of the train set.
+    df_test: pandas.DataFrame
+        The dataframe of the test set.
 
     """
     invalid_cols = [
@@ -749,25 +752,26 @@ def stratified_train_test_split(
 def cls_to_bin(
     cls_array: Union[np.ndarray, Tensor], num_classes: Optional[int] = None
 ) -> np.ndarray:
-    """
-    Converting a categorical (class indices) array of shape (n,)
-    to a one-hot (binary) array of shape (n, num_classes)
+    """Convert a categorical array to a one-hot array.
+
+    Convert a categorical (class indices) array of shape ``(n,)``
+    to a one-hot (binary) array of shape ``(n, num_classes)``.
 
     Parameters
     ----------
-    cls_array: ndarray,
-        class indices array (tensor) of shape (num_samples,);
-        or of shape (num_samples, num_samples) if `num_classes` is not None,
+    cls_array : numpy.ndarray or torch.Tensor
+        Class indices array (tensor) of shape ``(num_samples,)``;
+        or of shape ``(num_samples, num_samples)`` if `num_classes` is not None,
         in which case `cls_array` should be consistant with `num_classes`,
-        and the function will return `cls_array` directly
-    num_classes: int, optional,
-        number of classes,
-        if not specified, it will be inferred from the values of `cls_array`
+        and the function will return `cls_array` directly.
+    num_classes : int, optional
+        Number of classes. If not specified,
+        it will be inferred from the values of `cls_array`.
 
     Returns
     -------
-    bin_array: ndarray,
-        binary array of shape (num_samples, num_classes)
+    numpy.ndarray
+        Binary array of shape ``(num_samples, num_classes)``.
 
     Examples
     --------
@@ -808,31 +812,31 @@ def generate_weight_mask(
     boundary_weight: Real,
     plot: bool = False,
 ) -> np.ndarray:
-    """
-    Generate weight mask for a binary target mask,
-    accounting the foreground weight and boundary weight
+    """Generate weight mask for a binary target mask,
+    accounting the foreground weight and boundary weight.
 
     Parameters
     ----------
-    target_mask: ndarray,
-        the target mask, assumed to be 1d and binary
-    fg_weight: numbers.Real,
-        foreground (value 1) weight, usually > 1
-    fs: numbers.Real,
-        sampling frequency of the signal
-    reduction: numbers.Real,
-        reduction ratio of the mask w.r.t. the signal
-    radius: numbers.Real,
-        radius of the boundary, with units in seconds
-    boundary_weight: numbers.Real,
-        weight for the boundaries (positions where values change) of the target map
-    plot: bool, default False,
-        if True, target_mask and the result weight_mask will be plotted
+    target_mask : numpy.ndarray
+        The target mask, assumed to be 1D and binary.
+    fg_weight: numbers.Real
+        Foreground (value 1) weight, usually > 1.
+    fs : numbers.Real
+        Sampling frequency of the signal.
+    reduction : numbers.Real
+        Reduction ratio of the mask w.r.t. the signal.
+    radius : numbers.Real
+        Radius of the boundary, with units in seconds.
+    boundary_weight : numbers.Real
+        Weight for the boundaries (positions where values change)
+        of the target map.
+    plot : bool, default False
+        If True, `target_mask` and the result `weight_mask` will be plotted.
 
     Returns
     -------
-    weight_mask: ndarray,
-        the weight mask
+    weight_mask : numpy.ndarray
+        Weight mask generated from `target_mask`.
 
     Examples
     --------

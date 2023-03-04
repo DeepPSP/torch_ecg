@@ -485,24 +485,27 @@ def detect_peaks(
 def remove_spikes_naive(
     sig: np.ndarray, threshold: Real = 20, inplace: bool = True
 ) -> np.ndarray:
-    """
-    Remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019
+    """Remove signal spikes using a naive method.
 
-    `spikes` here refers to abrupt large bumps with (abs) value larger than the given threshold,
-    or nan values (read by `wfdb`),
-    do NOT confuse with `spikes` in paced rhythm
+    This is a method proposed in entry 0416 of CPSC2019.
+    `spikes` here refers to abrupt large bumps with (abs) value
+    larger than the given threshold,
+    or nan values (read by `wfdb`).
+    Do **NOT** confuse with `spikes` in paced rhythm.
 
     Parameters
     ----------
-    sig: ndarray,
-        1d signal with potential spikes
-    threshold: numbers.Real,
-        values of `sig` that are larger than `threshold` will be removed
+    sig : numpy.ndarray
+        1D signal with potential spikes.
+    threshold : numbers.Real, optional
+        Values of `sig` that are larger than `threshold` will be removed.
+    inplace : bool, optional
+        Whether to modify `sig` in place or not.
 
     Returns
     -------
-    sig: ndarray,
-        signal with `spikes` removed
+    numpy.ndarray
+        Signal with `spikes` removed.
 
     Examples
     --------
@@ -538,34 +541,35 @@ def remove_spikes_naive(
 def butter_bandpass(
     lowcut: Real, highcut: Real, fs: Real, order: int, verbose: int = 0
 ) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Butterworth Bandpass Filter Design
+    """Butterworth Bandpass Filter Design.
 
     Parameters
     ----------
-    lowcut: real,
-        low cutoff frequency
-    highcut: real,
-        high cutoff frequency
-    fs: real,
-        frequency of `data`
-    order: int,
-        order of the filter
-    verbose: int, default 0
+    lowcut : numbers.Real
+        Low cutoff frequency.
+    highcut : numbers.Real
+        High cutoff frequency.
+    fs : numbers.Real
+        Sampling frequency of `data`.
+    order : int,
+        Order of the filter.
+    verbose : int, default 0
+        Verbosity level for debugging.
 
     Returns
     -------
-    b, a: tuple of ndarray,
-        coefficients of numerator and denominator of the filter
+    b, a : numpy.ndarray
+        Coefficients of numerator and denominator of the filter.
 
     NOTE
     ----
-    according to `lowcut` and `highcut`, the filter type might fall to lowpass or highpass filter
+    According to `lowcut` and `highcut`,
+    the filter type might degenerate to lowpass or highpass filter.
 
     References
     ----------
-    .. [1] scipy.signal.butter
-    .. [2] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
+    1. :func:`scipy.signal.butter`
+    2. https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
 
     """
     nyq = 0.5 * fs
@@ -611,7 +615,7 @@ def butter_bandpass_filter(
     """Butterworth bandpass filtering the signals.
 
     Apply a Butterworth bandpass filter to the signal.
-    For references, see [1]_ and [2]_.
+    For references, see [#bp1]_ and [#bp2]_.
 
     Parameters
     ----------
@@ -639,8 +643,8 @@ def butter_bandpass_filter(
 
     References
     ----------
-    .. [1] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
-    .. [2] https://dsp.stackexchange.com/questions/19084/applying-filter-in-scipy-signal-use-lfilter-or-filtfilt
+    .. [#bp1] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html
+    .. [#bp2] https://dsp.stackexchange.com/questions/19084/applying-filter-in-scipy-signal-use-lfilter-or-filtfilt
 
     """
     dtype = data.dtype
@@ -748,7 +752,8 @@ def normalize(
     sig_fmt: str = "channel_first",
     per_channel: bool = False,
 ) -> np.ndarray:
-    """
+    """Normalize a signal.
+
     Perform z-score normalization on `sig`,
     to make it has fixed mean and standard deviation,
     or perform min-max normalization on `sig`,
@@ -765,27 +770,26 @@ def normalize(
 
     Parameters
     ----------
-    sig: ndarray,
-        signal to be normalized
-    method: str,
-        normalization method, case insensitive, can be one of
-        "naive", "min-max", "z-score",
-    mean: numbers.Real or array_like, default 0.0,
-        mean value of the normalized signal,
-        or mean values for each lead of the normalized signal,
-        useless if `method` is "min-max"
-    std: numbers.Real or array_like, default 1.0,
-        standard deviation of the normalized signal,
-        or standard deviations for each lead of the normalized signal,
-        useless if `method` is "min-max"
-    sig_fmt: str, default "channel_first",
-        format of the signal, can be of one of
+    sig : numpy.ndarray
+        The signal to be normalized.
+    method : {"naive", "min-max", "z-score"}
+        Normalization method, case insensitive.
+    mean : numbers.Real or array_like, default 0.0
+        Mean value of the normalized signal,
+        or mean values for each lead of the normalized signal.
+        Useless if `method` is "min-max".
+    std : numbers.Real or array_like, default 1.0
+        Standard deviation of the normalized signal,
+        or standard deviations for each lead of the normalized signal.
+        Useless if `method` is "min-max".
+    sig_fmt : str, default "channel_first"
+        Format of the signal, can be of one of
         "channel_last" (alias "lead_last"), or
         "channel_first" (alias "lead_first"),
-        ignored if sig is 1d array (single-lead)
-    per_channel: bool, default False,
-        if True, normalization will be done per channel,
-        ignored if `sig` is 1d array (single-lead)
+        ignored if sig is 1d array (single-lead).
+    per_channel : bool, default False
+        If True, normalization will be done per channel.
+        Ignored if `sig` is 1d array (single-lead).
 
     Returns
     -------

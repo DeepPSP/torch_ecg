@@ -104,6 +104,7 @@ def validate_interval(
     -------
     tuple
         2-tuple consisting of
+
             - bool: indicating whether `interval` is a valid interval
             - an interval (can be empty)
 
@@ -143,18 +144,19 @@ def in_interval(
 
     Parameters
     ----------
-    val: numbers.Real,
-        the value to be checked
-    interval: Interval,
-        the interval to be checked
-    left_closed: bool, default True,
-        whether the left end of `interval` is closed
-    right_closed: bool, default False,
-        whether the right end of `interval` is closed
+    val : numbers.Real
+        The value to be checked.
+    interval : Interval
+        The interval to be checked.
+    left_closed : bool, default True
+        Whether the left end of `interval` is closed.
+    right_closed : bool, default False
+        Whether the right end of `interval` is closed.
 
     Returns
     -------
-    bool, whether `val` is inside `generalized_interval` or not
+    bool
+        Whether `val` is inside `generalized_interval` or not.
 
     Examples
     --------
@@ -238,21 +240,24 @@ def in_generalized_interval(
 def intervals_union(
     interval_list: GeneralizedInterval, join_book_endeds: bool = True
 ) -> GeneralizedInterval:
-    """
-    find the union (ordered and non-intersecting) of all the intervals in `interval_list`,
-    which is a list of intervals in the form [a,b], where a,b need not be ordered
+    """Find the union of intervals.
+
+    This function is used to find the union (ordered and non-intersecting)
+    of all the intervals in `interval_list`, which is a list of intervals
+    in the form ``[a, b]``, where a, b need not be ordered.
 
     Parameters
     ----------
-    interval_list: GeneralizedInterval,
-        the list of intervals to calculate their union
-    join_book_endeds: bool, default True,
-        join the book-ended intervals into one (e.g. [[1,2],[2,3]] into [1,3]) or not
+    interval_list : GeneralizedInterval
+        The list of intervals to calculate their union
+    join_book_endeds : bool, default True
+        Whether join the book-ended intervals into one
+        (e.g. ``[[1, 2],[2, 3]]`` into ``[1, 3]``) or not.
 
     Returns
     -------
-    processed: GeneralizedInterval,
-        the union of the intervals in `interval_list`
+    GeneralizedInterval
+        The union of the intervals in `interval_list`
 
     Examples
     --------
@@ -449,8 +454,7 @@ def generalized_intervals_intersection(
 def generalized_interval_complement(
     total_interval: Interval, generalized_interval: GeneralizedInterval
 ) -> GeneralizedInterval:
-    """
-    calculate the complement of `generalized_interval` in `total_interval`
+    """Calculate the complement of an interval in another interval.
 
     Parameters
     ----------
@@ -462,7 +466,7 @@ def generalized_interval_complement(
     Returns
     -------
     cpl : GeneralizedInterval
-        The complement of `generalized_interval` in `total_interval`
+        The complement of `generalized_interval` in `total_interval`.
 
     TODO: the case `total_interval` is a `GeneralizedInterval`.
 
@@ -504,44 +508,49 @@ def get_optimal_covering(
     traceback: bool = False,
     **kwargs: Any,
 ) -> Union[GeneralizedInterval, Tuple[GeneralizedInterval, list]]:
-    """
-    compute an optimal covering (disjoint union of intervals) that covers `to_cover` such that
+    """Compute an optimal covering of `to_cover` by intervals.
+
+    This function tries to find an optimal covering
+    (disjoint union of intervals) that covers `to_cover` such that
     each interval in the covering is of length at least `min_len`,
-    and any two intervals in the covering have distance at least `split_threshold`
+    and any two intervals in the covering are at least `split_threshold`
+    distance apart.
 
     Parameters
     ----------
-    total_interval: Interval,
-        the total interval that the covering is picked from
-    to_cover: list,
-        a list of intervals to cover
-    min_len: numbers.Real,
-        minimun length (positive) of the intervals of the covering
-    split_threshold: numbers.Real,
-        minumun distance (positive) of intervals of the covering
-    isolated_point_dist_threshold: numbers.Real, default 0.0,
-        the minimum distance (non-negative) of isolated points in `to_cover`
-        to the interval boundaries of the interval containing the point in the covering.
-        If one wants the isolated points to be centered in the interval containing the point,
-        set `isolated_point_dist_threshold` to be `min_len / 2`
-    traceback: bool, default False,
-        if True, a list containing the list of indices of the intervals in the original `to_cover`,
-        that each interval in the covering covers
+    total_interval : Interval
+        The total interval that the covering is picked from.
+    to_cover : list
+        A list of intervals or points to cover.
+    min_len : numbers.Real
+        Minimun length (positive) of the intervals of the covering.
+    split_threshold : numbers.Real
+        Minumun distance (positive) of intervals of the covering.
+    isolated_point_dist_threshold : numbers.Real, default 0.0
+        The minimum distance (non-negative) of isolated points
+        in `to_cover` to the interval boundaries of the interval
+        containing the point in the covering.
+        If one wants the isolated points to be centered in the
+        interval containing the point,
+        set `isolated_point_dist_threshold` to be ``min_len / 2``.
+    traceback : bool, default False
+        if True, a list containing the list of indices of the
+        intervals in the original `to_cover`,
+        that each interval in the covering covers.
 
     Raises
     ------
-    if any of the intervals in `to_cover` exceeds the range of `total_interval`,
+    If any of the intervals in `to_cover` exceeds the range of `total_interval`,
     ValueError will be raised
 
     Returns
     -------
-    covering or (covering, ret_traceback),
-        covering: GeneralizedInterval,
-            the covering that satisfies the given conditions
-        ret_traceback: list, optional,
-            contains the list of indices of the intervals in the original `to_cover`,
-            that each interval in the covering covers.
-            If `traceback` is False, this will not be returned
+    covering : GeneralizedInterval
+        The covering that satisfies the given conditions
+    ret_traceback : list, optional
+        Contains the list of indices of the intervals in the original `to_cover`,
+        that each interval in the covering covers.
+        If `traceback` is False, this will not be returned.
 
     TODO
     ----
@@ -784,24 +793,28 @@ def get_optimal_covering(
 
 
 def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
-    """
-    find the maximum length of continuous (consecutive) sublists of `sublist`,
-    whose element are integers within the range from 0 to `tot_rng`,
-    along with the position of this sublist and the sublist itself.
+    """Compute the maximum length of continuous (consecutive) sublists.
+
+    This function computes the maximum length of continuous (consecutive)
+    sublists of `sublist`, whose element are integers within the range
+    from 0 to `tot_rng`, along with the position of this sublist and
+    the sublist itself.
 
     Parameters
     ----------
-    sublist: Interval,
-        a sublist
-    tot_rng: numbers.Real,
-        the total range
+    sublist : Interval
+        The sublist.
+    tot_rng : numbers.Real
+        The total range.
 
     Returns
     -------
-    ret: dict, with items
-        - "max_cont_len"
-        - "max_cont_sublist_start"
-        - "max_cont_sublist"
+    dict
+        A dictionary containing the following keys:
+
+            - "max_cont_len"
+            - "max_cont_sublist_start"
+            - "max_cont_sublist"
 
     Examples
     --------
@@ -829,17 +842,17 @@ def find_max_cont_len(sublist: Interval, tot_rng: Real) -> dict:
 
 
 def interval_len(interval: Interval) -> Real:
-    """
-    compute the length of an interval. 0 for the empty interval []
+    """Compute the length of an interval.
 
     Parameters
     ----------
-    interval: Interval
+    interval : Interval
+        The interval to compute the length of.
 
     Returns
     -------
-    itv_len: numbers.Real,
-        the `length` of `interval`
+    numbers.Real
+        The "length" of `interval`, 0 for the empty interval [].
 
     Examples
     --------
@@ -859,17 +872,18 @@ def interval_len(interval: Interval) -> Real:
 
 
 def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
-    """
-    compute the length of a generalized interval. 0 for the empty interval []
+    """Compute the length of an interval.
 
     Parameters
     ----------
-    generalized_interval: GeneralizedInterval
+    generalized_interval : GeneralizedInterval
+        The generalized interval to compute the length of.
 
     Returns
     -------
-    gi_len: numbers.Real,
-        the `length` of `generalized_interval`
+    numbers.Real
+        The "length" of `generalized_interval`,
+        0 for the empty interval [].
 
     Examples
     --------
@@ -890,21 +904,22 @@ def generalized_interval_len(generalized_interval: GeneralizedInterval) -> Real:
 
 
 def find_extrema(signal: Union[np.ndarray, Sequence], mode: str = "both") -> np.ndarray:
-    """
-    Locate local extrema points in a 1D signal. Based on Fermat's Theorem
+    """Locate local extrema points in a 1D signal.
+
+    This function is based on Fermat's Theorem.
 
     Parameters
     ----------
-    signal: ndarray,
+    signal : array_like
         1D input signal.
-    mode: str, default "both",
-        whether to find maxima ("max"), minima ("min"), or both ("both"),
-        case insensitive.
+    mode : {"max", "min", "both"}, optional
+        Whether to find maxima ("max"), minima ("min"), or both ("both"),
+        by default "both", case insensitive.
 
     Returns
     -------
-    extrema : ndarray
-        indices of the extrama points.
+    extrema : numpy.ndarray
+        Indices of the extrama points.
 
     Examples
     --------
@@ -943,17 +958,17 @@ def is_intersect(
     interval: Union[GeneralizedInterval, Interval],
     another_interval: Union[GeneralizedInterval, Interval],
 ) -> bool:
-    """
-    determines if two (generalized) intervals intersect or not
+    """Determines if two (generalized) intervals intersect or not.
 
     Parameters
     ----------
-    interval, another_interval: GeneralizedInterval or Interval
+    interval, another_interval : GeneralizedInterval or Interval
+        The two intervals to check if they intersect.
 
     Returns
     -------
-    bool,
-        True if `interval` intersects with another_interval, False otherwise
+    bool
+        True if `interval` intersects with another_interval, False otherwise.
 
     Examples
     --------
@@ -1028,13 +1043,14 @@ def max_disjoint_covering(
 
     NOTE
     ----
-    1. The problem seems slightly different from the problem discussed in reference [1]_ and [2]_.
+    1. The problem seems slightly different from the problem discussed
+       in reference [#mdc1]_ and [#mdc2]_.
     2. Intervals with non-positive length will be ignored
 
     References
     ----------
-    .. [1] https://en.wikipedia.org/wiki/Maximum_disjoint_set
-    .. [2] https://www.geeksforgeeks.org/maximal-disjoint-intervals/
+    .. [#mdc1] https://en.wikipedia.org/wiki/Maximum_disjoint_set
+    .. [#mdc2] https://www.geeksforgeeks.org/maximal-disjoint-intervals/
 
     """
     if len(intervals) <= 1:

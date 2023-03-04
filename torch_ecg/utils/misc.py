@@ -42,7 +42,6 @@ __all__ = [
     "get_record_list_recursive3",
     "dict_to_str",
     "str2bool",
-    "diff_with_step",
     "ms2samples",
     "samples2ms",
     "plot_single_lead",
@@ -70,26 +69,27 @@ __all__ = [
 def get_record_list_recursive(
     db_dir: Union[str, Path], rec_ext: str, relative: bool = True
 ) -> List[str]:
-    """
-    get the list of records in `db_dir` recursively,
-    for example, there are two folders "patient1", "patient2" in `db_dir`,
-    and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
+    """Get the list of records in a recursive manner.
+
+    For example, there are two folders "patient1", "patient2" in `db_dir`,
+    and there are records "A0001", "A0002", ... in "patient1";
+    "B0001", "B0002", ... in "patient2",
     then the output would be "patient1{sep}A0001", ..., "patient2{sep}B0001", ...,
-    sep is determined by the system
+    sep is determined by the system.
 
     Parameters
     ----------
-    db_dir: str or Path,
-        the parent (root) path of the whole database
-    rec_ext: str,
-        extension of the record files
-    relative: bool,
-        if True, the output is relative to `db_dir`, otherwise absolute paths
+    db_dir : str or pathlib.Path
+        The parent (root) path of to search for records.
+    rec_ext : str
+        Extension of the record files.
+    relative : bool, default True
+        Whether to return the relative path of the records.
 
     Returns
     -------
-    res: list of str,
-        list of records, in lexicographical order
+    List[str]
+        The list of records, in lexicographical order.
 
     """
     if not rec_ext.startswith("."):
@@ -108,24 +108,25 @@ def get_record_list_recursive(
 
 @deprecated(reason="use `get_record_list_recursive3` instead")
 def get_record_list_recursive2(db_dir: Union[str, Path], rec_pattern: str) -> List[str]:
-    """
-    get the list of records in `db_dir` recursively,
-    for example, there are two folders "patient1", "patient2" in `db_dir`,
-    and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
+    """Get the list of records in a recursive manner.
+
+    For example, there are two folders "patient1", "patient2" in `db_dir`,
+    and there are records "A0001", "A0002", ... in "patient1";
+    "B0001", "B0002", ... in "patient2",
     then the output would be "patient1{sep}A0001", ..., "patient2{sep}B0001", ...,
-    sep is determined by the system
+    sep is determined by the system.
 
     Parameters
     ----------
-    db_dir: str or Path,
-        the parent (root) path of the whole database
-    rec_pattern: str,
-        pattern of the record filenames, e.g. "A*.mat"
+    db_dir : str or pathlib.Path
+        The parent (root) path of to search for records.
+    rec_pattern : str
+        Pattern of the record filenames, e.g. ``"A*.mat"``.
 
     Returns
     -------
-    res: list of str,
-        list of records, in lexicographical order
+    List[str]
+        The list of records, in lexicographical order.
 
     """
     res = []
@@ -151,27 +152,28 @@ def get_record_list_recursive3(
     rec_patterns: Union[str, Dict[str, str]],
     relative: bool = True,
 ) -> Union[List[str], Dict[str, List[str]]]:
-    r"""
-    get the list of records in `db_dir` recursively,
-    for example, there are two folders "patient1", "patient2" in `db_dir`,
-    and there are records "A0001", "A0002", ... in "patient1"; "B0001", "B0002", ... in "patient2",
+    """Get the list of records in a recursive manner.
+
+    For example, there are two folders "patient1", "patient2" in `db_dir`,
+    and there are records "A0001", "A0002", ... in "patient1";
+    "B0001", "B0002", ... in "patient2",
     then the output would be "patient1{sep}A0001", ..., "patient2{sep}B0001", ...,
-    sep is determined by the system
+    sep is determined by the system.
 
     Parameters
     ----------
-    db_dir: str or Path,
-        the parent (root) path of the whole database
-    rec_patterns: str or dict,
-        pattern of the record filenames, e.g. "A(?:\d+).mat",
-        or patterns of several subsets, e.g. `{"A": "A(?:\d+).mat"}`
-    relative: bool,
-        if True, the output is relative to `db_dir`, otherwise absolute paths
+    db_dir : str or pathlib.Path
+        The parent (root) path of to search for records.
+    rec_patterns : str or dict
+        Pattern of the record filenames, e.g. ``"A(?:\\d+).mat"``,
+        or patterns of several subsets, e.g. ``{"A": "A(?:\\d+).mat"}``
+    relative : bool, default True
+        Whether to return the relative path of the records.
 
     Returns
     -------
-    res: list of str,
-        list of records, in lexicographical order
+    List[str] or dict
+        The list of records, in lexicographical order.
 
     """
     if isinstance(rec_patterns, str):
@@ -216,22 +218,22 @@ def dict_to_str(
     d: Union[dict, list, tuple], current_depth: int = 1, indent_spaces: int = 4
 ) -> str:
     """
-    convert a (possibly) nested dict into a `str` of json-like formatted form,
-    this nested dict might also contain lists or tuples of dict (and of str, int, etc.)
+    Convert a (possibly) nested dict into a `str` of json-like formatted form.
+    This nested dict might also contain lists or tuples of dict (and of str, int, etc.)
 
     Parameters
     ----------
-    d: dict, or list, or tuple,
-        a (possibly) nested `dict`, or a list of `dict`
-    current_depth: int, default 1,
-        depth of `d` in the (possible) parent `dict` or `list`
-    indent_spaces: int, default 4,
-        the indent spaces of each depth
+    d : dict or list or tuple
+        A (possibly) nested :class:`dict`, or a list of :class:`dict`.
+    current_depth : int, default 1
+        Depth of `d` in the (possible) parent :class:`dict` or :class:`list`.
+    indent_spaces : int, default 4
+        The indent spaces of each depth.
 
     Returns
     -------
-    s: str,
-        the formatted string
+    str
+        The formatted string.
 
     """
     assert isinstance(d, (dict, list, tuple))
@@ -295,18 +297,18 @@ def dict_to_str(
 
 
 def str2bool(v: Union[str, bool]) -> bool:
-    """
-    converts a "boolean" value possibly in the format of str to bool
+    """Converts a "boolean" value possibly
+    in the format of :class:`str` to :class:`bool`.
 
     Parameters
     ----------
-    v: str or bool,
-        the "boolean" value
+    v : str or bool
+        The "boolean" value.
 
     Returns
     -------
-    b: bool,
-        `v` in the format of bool
+    bool
+        `v` in the format of a bool.
 
     References
     ----------
@@ -324,22 +326,21 @@ def str2bool(v: Union[str, bool]) -> bool:
     return b
 
 
-def diff_with_step(a: np.ndarray, step: int = 1, **kwargs) -> np.ndarray:
-    """
-    compute a[n+step] - a[n] for all valid n
+@deprecated("Use `np.diff` instead.")
+def diff_with_step(a: np.ndarray, step: int = 1) -> np.ndarray:
+    """Compute ``a[n+step] - a[n]`` for all valid `n`.
 
     Parameters
     ----------
-    a: ndarray,
-        the input data
-    step: int, default 1,
-        the step to compute the difference
-    kwargs: dict,
+    a : numpy.ndarray
+        The input data.
+    step : int, default 1
+        The step size to compute the difference.
 
     Returns
     -------
-    d: ndarray:
-        the difference array
+    numpy.ndarray
+        The difference array.
 
     """
     if step >= len(a):
@@ -351,20 +352,20 @@ def diff_with_step(a: np.ndarray, step: int = 1, **kwargs) -> np.ndarray:
 
 
 def ms2samples(t: Real, fs: Real) -> int:
-    """
-    convert time `t` with units in ms to number of samples
+    """Convert time duration in ms to number of samples.
 
     Parameters
     ----------
-    t: numbers.Real,
-        time with units in ms
-    fs: numbers.Real,
-        sampling frequency of a signal
+    t : numbers.Real
+        Time duration in ms.
+    fs : numbers.Real
+        Sampling frequency.
 
     Returns
     -------
-    n_samples: int,
-        number of samples corresponding to time `t`
+    n_samples : int
+        Number of samples converted from `t`,
+        with sampling frequency `fs`.
 
     """
     n_samples = t * fs // 1000
@@ -372,20 +373,20 @@ def ms2samples(t: Real, fs: Real) -> int:
 
 
 def samples2ms(n_samples: int, fs: Real) -> Real:
-    """
-    inverse function of `ms2samples`
+    """Convert number of samples to time duration in ms.
 
     Parameters
     ----------
-    n_samples: int,
-        number of sample points
-    fs: numbers.Real,
-        sampling frequency of a signal
+    n_samples : int
+        Number of sample points.
+    fs : numbers.Real
+        Sampling frequency.
 
     Returns
     -------
-    t: numbers.Real,
-        time duration correponding to `n_samples`
+    t : numbers.Real
+        Time duration in ms converted from `n_samples`,
+        with sampling frequency `fs`.
 
     """
     t = n_samples * 1000 / fs
@@ -399,20 +400,23 @@ def plot_single_lead(
     ticks_granularity: int = 0,
     **kwargs,
 ) -> None:
-    """
-    Plot single lead ECG signal
+    """Plot single lead ECG signal.
 
     Parameters
     ----------
-    t: ndarray,
-        the array of time of the signal
-    sig: ndarray,
-        the signal itself
-    ax: Artist, optional,
-        the `Artist` to plot on
-    ticks_granularity: int, default 0,
-        the granularity to plot axis ticks, the higher the more,
+    t : numpy.ndarray
+        The array of time points.
+    sig : numpy.ndarray
+        The signal itself.
+    ax : matplotlib.axes.Axes, default None
+        The axes to plot on.
+    ticks_granularity : int, default 0
+        Granularity to plot axis ticks, the higher the more ticks.
         0 (no ticks) --> 1 (major ticks) --> 2 (major + minor ticks)
+
+    Returns
+    -------
+    None
 
     """
     if "plt" not in dir():
@@ -464,28 +468,31 @@ def init_logger(
     mode: str = "a",
     verbose: int = 0,
 ) -> logging.Logger:
-    """
+    """Initialize a logger.
+
     Parameters
     ----------
-    log_dir: str or Path, optional,
-        directory of the log file,
-        default to `DEFAULTS.log_dir`;
-        if is `False`, then no log file will be created
-    log_file: str, optional,
-        name of the log file
-    log_name: str, optional,
-        name of the logger
-    suffix: str, optional,
-        suffix of the log filename,
-        ignored if `log_file` is not `None`
-    mode: str, default "a",
-        mode of writing the log file, can be one of "a", "w"
-    verbose: int, default 0,
-        log verbosity
+    log_dir : str or pathlib.Path or bool, optional
+        Directory of the log file,
+        default to `DEFAULTS.log_dir`.
+        If is `False`, then no log file will be created.
+    log_file : str, optional
+        Name of the log file,
+        default to ``{DEFAULTS.prefix}-log-{get_date_str()}.txt``.
+    log_name : str, optional
+        Name of the logger.
+    suffix : str, optional
+        Suffix of the logger name.
+        Ignored if `log_name` is not `None`.
+    mode : {"a", "w"}, default "a"
+        Mode to open the log file.
+    verbose : int, default 0
+        Verbosity level for the logger.
 
     Returns
     -------
-    logger: Logger
+    logger : logging.Logger
+        The logger.
 
     """
     if log_dir is False:
@@ -549,16 +556,18 @@ def init_logger(
 
 
 def get_date_str(fmt: Optional[str] = None):
-    """
+    """Get the current time in the :class:`str` format.
+
     Parameters
     ----------
-    fmt: str, optional,
-        format of the string of date
+    fmt : str, optional
+        Format of the string of date,
+        default to ``"%m-%d_%H-%M"``.
 
     Returns
     -------
-    date_str: str,
-        current time in the `str` format
+    str
+        Current time in the :class:`str` format.
 
     """
     now = datetime.datetime.now()
@@ -567,17 +576,19 @@ def get_date_str(fmt: Optional[str] = None):
 
 
 def list_sum(lst: Sequence[list]) -> list:
-    """
+    """Sum a sequence of lists.
+
     Parameters
     ----------
-    lst: sequence of list,
-        the sequence of lists to obtain the summation
+    lst : Sequence[list]
+        The sequence of lists to obtain the summation.
 
     Returns
     -------
-    l_sum: list,
+    list
         sum of `lst`,
-        i.e. if lst = [list1, list2, ...], then l_sum = list1 + list2 + ...
+        i.e. if ``lst = [list1, list2, ...]``,
+        then ``l_sum = list1 + list2 + ...``.
 
     """
     l_sum = reduce(lambda a, b: a + b, lst, [])
@@ -585,31 +596,29 @@ def list_sum(lst: Sequence[list]) -> list:
 
 
 def read_log_txt(
-    fp: str,
+    fp: Union[str, Path],
     epoch_startswith: str = "Train epoch_",
     scalar_startswith: Union[str, Iterable[str]] = "train/|test/",
 ) -> pd.DataFrame:
-    """
-    read from log txt file, in case tensorboard not working
+    """Read from log txt file, in case tensorboard not working.
 
     Parameters
     ----------
-    fp: str,
-        path to the log txt file
-    epoch_startswith: str,
-        indicator of the start of the start of an epoch
-    scalar_startswith: str or iterable of str,
-        indicators of the scalar recordings,
-        if is str, should be indicators separated by "|"
+    fp : str or pathlib.Path
+        Path to the log txt file.
+    epoch_startswith : str, default "Train epoch_"
+        Indicator of the start of the start of an epoch
+    scalar_startswith : str or Iterable[str], default "train/|test/"
+        Indicators of the scalar recordings.
+        If is :class:`str`, should be indicators separated by ``"|"``.
 
     Returns
     -------
-    summary: DataFrame,
-        scalars summary, in the format of a pandas DataFrame
+    summary : pandas.DataFrame
+        Scalars summary, in the format of a :class:`~pandas.DataFrame`.
 
     """
-    with open(fp, "r") as f:
-        content = f.read().splitlines()
+    content = Path(fp).read_text().splitlines()
     if isinstance(scalar_startswith, str):
         field_pattern = f"({scalar_startswith})"
     else:
@@ -633,23 +642,22 @@ def read_log_txt(
 
 
 def read_event_scalars(
-    fp: str, keys: Optional[Union[str, Iterable[str]]] = None
+    fp: Union[str, Path], keys: Optional[Union[str, Iterable[str]]] = None
 ) -> Union[pd.DataFrame, Dict[str, pd.DataFrame]]:
-    """
-    read scalars from event file, in case tensorboard not working
+    """Read scalars from event file, in case tensorboard not working.
 
     Parameters
     ----------
-    fp: str,
-        path to the event file
-    keys: str or iterable of str, optional,
-        field names of the scalars to read,
-        if is None, scalars of all fields will be read
+    fp : str or pathlib.Path
+        Path to the event file.
+    keys : str or Iterable[str], optional
+        Field names of the scalars to read.
+        If is None, scalars of all fields will be read.
 
     Returns
     -------
-    summary: DataFrame or dict of DataFrame
-        the wall_time, step, value of the scalars
+    summary : pandas.DataFrame or dict of pandas.DataFrame
+        The wall_time, step, value of the scalars.
 
     """
     try:
@@ -688,30 +696,32 @@ def read_event_scalars(
 
 
 def dicts_equal(d1: dict, d2: dict, allow_array_diff_types: bool = True) -> bool:
-    """
-    Determine if two dicts are equal
+    """Determine if two dicts are equal.
 
     Parameters
     ----------
-    d1, d2: dict,
-        the two dicts to compare equality
-    allow_array_diff_types: bool, default True,
-        whether to allow the equality of two arrays with different types,
-        including list, tuple, np.ndarray, torch.Tensor,
-        NOT including pd.DataFrame, pd.Series
+    d1, d2 : dict
+        The two dicts to compare equality.
+    allow_array_diff_types : bool, default True
+        Whether allow the equality of two arrays with different types,
+        including `list`, `tuple`, `numpy.ndarray`, `torch.Tensor`,
+        **NOT** including `pandas.DataFrame`, `pandas.Series`.
 
     Returns
     -------
-    bool, True if `d1` equals `d2`
+    bool
+        True if `d1` equals `d2`, False otherwise.
 
     NOTE
     ----
-    the existence of numpy array, torch Tensor, pandas DataFrame and Series would probably
-    cause errors when directly use the default ``__eq__`` method of dict,
-    for example :code:`{"a": np.array([1,2])} == {"a": np.array([1,2])}` would raise the following
+    The existence of :class:`~numpy.ndarray`, :class:`~torch.Tensor`,
+    :class:`~pandas.DataFrame` and :class:`~pandas.Series` would probably
+    cause errors when directly use the default ``__eq__`` method of :class:`dict`
+    For example:
 
     .. code-block:: python
 
+        >>> {"a": np.array([1,2])} == {"a": np.array([1,2])}
         ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
 
     Example
@@ -810,7 +820,7 @@ def add_docstring(doc: str, mode: str = "replace") -> Callable:
 
 
 def default_class_repr(c: object, align: str = "center", depth: int = 1) -> str:
-    """Default class representation
+    """Default class representation.
 
     Parameters
     ----------
@@ -1013,11 +1023,17 @@ class MovingAverage(object):
 
         Parameters
         ----------
-        window: int, default 5,
-            window length of the moving average
-        center: bool, default False,
-            if True, when computing the output value at each point, the window will be centered at that point;
-            otherwise the previous `window` points of the current point will be used
+        window : int, default 5
+            Window length of the moving average
+        center : bool, default False
+            If True, when computing the output value at each point,
+            the window will be centered at that point;
+            otherwise the previous `window` points of the current point will be used.
+
+        Returns
+        -------
+        numpy.ndarray
+            The simple moving average of the input data.
 
         """
         if len(kwargs) > 0:
@@ -1045,15 +1061,20 @@ class MovingAverage(object):
         return smoothed
 
     def _ema(self, weight: float = 0.6, **kwargs: Any) -> np.ndarray:
-        """
-        exponential moving average,
-        which is also the function used in Tensorboard Scalar panel,
-        whose parameter `smoothing` is the `weight` here
+        """Exponential moving average
+
+        This is also the function used in Tensorboard Scalar panel,
+        whose parameter `smoothing` is the `weight` here.
 
         Parameters
         ----------
-        weight: float, default 0.6,
-            weight of the previous data point
+        weight : float, default 0.6
+            Weight of the previous data point.
+
+        Returns
+        -------
+        numpy.ndarray
+            The exponential moving average of the input data.
 
         """
         if len(kwargs) > 0:
@@ -1071,8 +1092,17 @@ class MovingAverage(object):
         return smoothed
 
     def _cma(self, **kwargs) -> np.ndarray:
-        """
-        cumulative moving average
+        """Cumulative moving average.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        numpy.ndarray
+            The cumulative moving average of the input data.
+
         """
         if len(kwargs) > 0:
             warnings.warn(
@@ -1089,13 +1119,17 @@ class MovingAverage(object):
         return smoothed
 
     def _wma(self, window: int = 5, **kwargs: Any) -> np.ndarray:
-        """
-        weighted moving average
+        """Weighted moving average.
 
         Parameters
         ----------
-        window: int, default 5,
-            window length of the moving average
+        window : int, default 5
+            Window length of the moving average.
+
+        Returns
+        -------
+        numpy.ndarray
+            The weighted moving average of the input data.
 
         """
         if len(kwargs) > 0:
@@ -1111,18 +1145,18 @@ class MovingAverage(object):
 
 def nildent(text: str) -> str:
     """
-    kill all leading white spaces in each line of `text`,
+    Kill all leading white spaces in each line of `text`,
     while keeping all lines (including empty)
 
     Parameters
     ----------
-    text: str,
-        text to be processed
+    text : str
+        Text to be processed.
 
     Returns
     -------
-    new_text: str,
-        processed text
+    str
+        Processed text.
 
     """
     new_text = "\n".join([line.lstrip() for line in text.splitlines()]) + (
@@ -1138,27 +1172,26 @@ def remove_parameters_returns_from_docstring(
     parameters_indicator: str = "Parameters",
     returns_indicator: str = "Returns",
 ) -> str:
-    """
-    remove parameters and/or returns from docstring,
-    which is of the format of numpydoc
+    """Remove parameters and/or returns from docstring,
+    which is of the format of `numpydoc`.
 
     Parameters
     ----------
-    doc: str,
-        docstring to be processed
-    parameters: str or list of str, default None,
-        parameters to be removed
-    returns: str or list of str, default None,
-        returned values to be removed
-    parameters_indicator: str, default "Parameters",
-        the indicator of the parameters section
-    returns_indicator: str, default "Returns",
-        the indicator of the returns section
+    doc : str
+        Docstring to be processed.
+    parameters : str or List[str], optional
+        Parameters to be removed.
+    returns : str or List[str], optional
+        Returned values to be removed.
+    parameters_indicator : str, default "Parameters"
+        Indicator of the parameters section.
+    returns_indicator : str, default "Returns"
+        Indicator of the returns section.
 
     Returns
     -------
-    new_doc: str,
-        the processed docstring
+    str
+        The processed docstring.
 
     """
     if parameters is None:
@@ -1217,15 +1250,14 @@ def remove_parameters_returns_from_docstring(
 
 @contextmanager
 def timeout(duration: float):
-    """
-    A context manager that raises a `TimeoutError` after a specified time.
+    """A context manager that raises a
+    `TimeoutError` after a specified time.
 
     Parameters
     ----------
-    duration: float,
-        the time duration in seconds,
-        should be non-negative,
-        0 for no timeout
+    duration : float
+        The time duration in seconds,
+        should be non-negative, 0 for no timeout.
 
     References
     ----------
@@ -1249,35 +1281,32 @@ def timeout(duration: float):
 
 
 class Timer(ReprMixin):
-    """
-    Context manager to time the execution of a block of code.
+    """Context manager to time the execution of a block of code.
 
-    Usage
-    -----
+    Parameters
+    ----------
+    name : str, optional
+        Name of the timer, defaults to "default timer".
+    verbose : int, default 0
+        Verbosity level of the timer.
+
+    Example
+    -------
     >>> with Timer("task name", verbose=2) as timer:
-    >>>     do_something()
-    >>>     timer.add_time("subtask 1", level=2)
-    >>>     do_subtask_1()
-    >>>     timer.stop_timer("subtask 1")
-    >>>     timer.add_time("subtask 2", level=2)
-    >>>     do_subtask_2()
-    >>>     timer.stop_timer("subtask 2")
-    >>>     do_something_else()
+    ...     do_something()
+    ...     timer.add_time("subtask 1", level=2)
+    ...     do_subtask_1()
+    ...     timer.stop_timer("subtask 1")
+    ...     timer.add_time("subtask 2", level=2)
+    ...     do_subtask_2()
+    ...     timer.stop_timer("subtask 2")
+    ...     do_something_else()
 
     """
 
     __name__ = "Timer"
 
     def __init__(self, name: Optional[str] = None, verbose: int = 0) -> None:
-        """
-        Parameters
-        ----------
-        name: str, optional
-            the name of the timer, defaults to "default timer"
-        verbose: int, default 0
-            the verbosity level of the timer,
-
-        """
         self.name = name or "default timer"
         self.verbose = verbose
         self.timers = {self.name: 0.0}
@@ -1296,15 +1325,18 @@ class Timer(ReprMixin):
             self.timers[k] = self.ends[k] - self.timers[k]
 
     def add_timer(self, name: str, level: int = 1) -> None:
-        """
-        add a new timer for some subtask
+        """Add a new timer for some sub-task.
 
         Parameters
         ----------
-        name: str,
-            the name of the timer to be added
-        level: int, default 1
-            the verbosity level of the timer,
+        name : str
+            Name of the timer to be added.
+        level : int, default 1
+            Verbosity level of the timer.
+
+        Returns
+        -------
+        None
 
         """
         self.timers[name] = time.perf_counter()
@@ -1312,13 +1344,16 @@ class Timer(ReprMixin):
         self.levels[name] = level
 
     def stop_timer(self, name: str) -> None:
-        """
-        stop a timer
+        """Stop a timer.
 
         Parameters
         ----------
-        name: str,
-            the name of the timer to be stopped
+        name : str
+            Name of the timer to be stopped.
+
+        Returns
+        -------
+        None
 
         """
         if self.ends[name] == 0:
@@ -1330,20 +1365,19 @@ class Timer(ReprMixin):
                 print(f"{name} took {time_cost:.4f} {unit}")
 
     def _simplify_time_expr(self, time_cost: float) -> Tuple[float, str]:
-        """
-        simplify the time expression
+        """Simplify the time expression.
 
         Parameters
         ----------
-        time_cost: float,
-            the time cost, with units in seconds
+        time_cost : float
+            The time cost, with units in seconds.
 
         Returns
         -------
-        time_cost: float,
-            the time cost,
-        unit: str,
-            the unit of the time cost
+        time_cost : float
+            The time cost.
+        unit : str
+            Unit of the time cost.
 
         """
         if time_cost <= 0.1:
@@ -1354,21 +1388,20 @@ class Timer(ReprMixin):
         return ["name", "verbose"]
 
 
-def get_kwargs(func_or_cls: Callable, kwonly: bool = False) -> Dict[str, Any]:
-    """
-    get the kwargs of a function or class
+def get_kwargs(func_or_cls: callable, kwonly: bool = False) -> Dict[str, Any]:
+    """Get the kwargs of a function or class.
 
     Parameters
     ----------
-    func_or_cls: Callable,
-        the function or class to get the kwargs of
-    kwonly: bool, default False,
-        whether to get the kwonly kwargs of the function or class
+    func_or_cls : callable
+        The function or class to get the kwargs of.
+    kwonly : bool, default False
+        Whether to get the kwonly kwargs of the function or class.
 
     Returns
     -------
-    kwargs: Dict[str, Any],
-        the kwargs of the function or class
+    kwargs : Dict[str, Any]
+        The kwargs of the function or class.
 
     """
     fas = inspect.getfullargspec(func_or_cls)
@@ -1395,19 +1428,18 @@ def get_kwargs(func_or_cls: Callable, kwonly: bool = False) -> Dict[str, Any]:
     return kwargs
 
 
-def get_required_args(func_or_cls: Callable) -> List[str]:
-    """
-    get the required positional arguments of a function or class
+def get_required_args(func_or_cls: callable) -> List[str]:
+    """Get the required positional arguments of a function or class.
 
     Parameters
     ----------
-    func_or_cls: Callable,
-        the function or class to get the required arguments of
+    func_or_cls : callable
+        The function or class to get the required arguments of.
 
     Returns
     -------
-    required_args: list of str,
-        the names of required arguments of the function or class
+    required_args : List[str]
+        Names of required arguments of the function or class.
 
     """
     signature = inspect.signature(func_or_cls)
@@ -1421,22 +1453,23 @@ def get_required_args(func_or_cls: Callable) -> List[str]:
     return required_args
 
 
-def add_kwargs(func: Callable, **kwargs: Any) -> Callable:
-    """
-    add keyword arguments to a function,
-    in order to make it compatible with other functions
+def add_kwargs(func: callable, **kwargs: Any) -> callable:
+    """Add keyword arguments to a function.
+
+    This function is used to add keyword arguments to a function
+    in order to make it compatible with other functions。
 
     Parameters
     ----------
-    func: Callable,
-        the function to be decorated
-    kwargs: Any,
-        the keyword arguments to be added
+    func : callable
+        The function to be decorated.
+    kwargs : dict
+        The keyword arguments to be added.
 
     Returns
     -------
-    Callable,
-        the decorated function
+    callable
+        The decorated function, with the keyword arguments added.
 
     """
     old_kwargs = get_kwargs(func)

@@ -42,25 +42,26 @@ __all__ = [
 def extend_predictions(
     preds: Sequence, classes: List[str], extended_classes: List[str]
 ) -> np.ndarray:
-    """
-    extend the prediction arrays to prediction arrays in larger range of classes
+    """Extend the prediction arrays to prediction arrays in larger range of classes
 
     Parameters
     ----------
-    preds: sequence,
-        sequence of predictions (scalar or binary) of shape (n_records, n_classes),
-        or categorical predictions of shape (n_classes,),
-        where n_classes = `len(classes)`
-    classes: list of str,
-        classes of the predictions of `preds`
-    extended_classes: list of str,
-        a superset of `classes`
+    preds : array_like
+        Array of predictions (scalar or binary) of shape
+        ``(n_records, n_classes)``,
+        or categorical predictions of shape ``(n_classes,)``,
+        where ``n_classes = len(classes)``.
+    classes : List[str]
+        Classes of the predictions of `preds`.
+    extended_classes : List[str]
+        A superset of `classes`.
+        The predictions will be extended to this range of classes.
 
     Returns
     -------
-    extended_preds: ndarray,
-        the extended array of predictions, with indices in `extended_classes`,
-        of shape (n_records, n_classes), or (n_classes,)
+    extended_preds : numpy.ndarray
+        The extended array of predictions, with indices in `extended_classes`,
+        of shape ``(n_records, n_classes)``, or ``(n_classes,)``.
 
     Examples
     --------
@@ -122,43 +123,49 @@ def compute_output_shape(
     channel_last: bool = False,
     asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
 ) -> Tuple[Union[int, None]]:
-    """
-    Compute the output shape of a (transpose) convolution/maxpool/avgpool layer
+    """Compute the output shape of a (transpose) convolution/maxpool/avgpool layer.
+
+    This function is based on the discussion [#disc]_.
 
     Parameters
     ----------
-    layer_type: str,
-        type (conv, maxpool, avgpool, etc.) of the layer
-    input_shape: sequence of int or None,
-        shape of an input Tensor,
-        the first dimension is the batch dimension, which is allowed to be `None`
-    num_filters: int, optional,
-        number of filters, also the channel dimension
-    kernel_size: int, or sequence of int, default 1,
-        kernel size (filter size) of the layer, should be compatible with `input_shape`
-    stride: int, or sequence of int, default 1,
-        stride (down-sampling length) of the layer, should be compatible with `input_shape`
-    padding: int, or sequence of int, default 0,
-        padding length(s) of the layer, should be compatible with `input_shape`
-    output_padding: int, or sequence of int, default 0,
-        additional size added to one side of the output shape,
-        used only for transpose convolution
-    dilation: int, or sequence of int, default 1,
-        dilation of the layer, should be compatible with `input_shape`
-    channel_last: bool, default False,
-        channel dimension is the last dimension,
-        or the second dimension (the first is the batch dimension by convention)
-    asymmetric_padding: (2-)sequence of int or sequence of (2-)sequence of int,
-        asymmetric paddings for all dimensions or for each dimension
+    layer_type : str
+        Type (conv, maxpool, avgpool, etc.) of the layer.
+    input_shape : Sequence[Union[int, None]]
+        Shape of an input :class:`~torch.Tensor`.
+        The first dimension is the batch dimension,
+        which is allowed to be `None`.
+    num_filters : int, optional
+        Number of filters, also the channel dimension.
+    kernel_size : int or Sequence[int], default 1
+        Kernel size (filter size) of the layer,
+        should be compatible with `input_shape`.
+    stride : int or Sequence[int], default 1
+        Stride (down-sampling length) of the layer,
+        should be compatible with `input_shape`.
+    padding : int or Sequence[int], default 0
+        Padding length(s) of the layer,
+        should be compatible with `input_shape`.
+    output_padding : int or Sequence[int], default 0
+        Additional size added to one side of the output shape,
+        used only for transpose convolution.
+    dilation : int or Sequence[int], default 1
+        Dilation of the layer, should be compatible with `input_shape`.
+    channel_last : bool, default False
+        Whether the channel dimension is the last dimension,
+        or the second dimension (the first is the batch dimension by convention).
+    asymmetric_padding : Sequence[int] or Sequence[Sequence[int]], optional
+        (2-)sequence of int or sequence of (2-)sequence of int
+        asymmetric paddings for all dimensions or for each dimension.
 
     Returns
     -------
-    output_shape: tuple,
-        shape of the output Tensor
+    output_shape : tuple
+        Shape of the output :class:`~torch.Tensor`.
 
     References
     ----------
-    [1] https://discuss.pytorch.org/t/utility-function-for-calculating-the-shape-of-a-conv-output/11173/5
+    .. [#disc] https://discuss.pytorch.org/t/utility-function-for-calculating-the-shape-of-a-conv-output/11173/5
 
     """
     # check validity of arguments
@@ -413,34 +420,38 @@ def compute_conv_output_shape(
     channel_last: bool = False,
     asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
 ) -> Tuple[Union[int, None]]:
-    """
-    Compute the output shape of a convolution/maxpool/avgpool layer
+    """Compute the output shape of a convolution layer.
 
     Parameters
     ----------
-    input_shape: sequence of int or None,
-        shape of an input Tensor,
-        the first dimension is the batch dimension, which is allowed to be `None`
-    num_filters: int, optional,
-        number of filters, also the channel dimension
-    kernel_size: int, or sequence of int, default 1,
-        kernel size (filter size) of the layer, should be compatible with `input_shape`
-    stride: int, or sequence of int, default 1,
-        stride (down-sampling length) of the layer, should be compatible with `input_shape`
-    padding: int, or sequence of int, default 0,
-        padding length(s) of the layer, should be compatible with `input_shape`
-    dilation: int, or sequence of int, default 1,
-        dilation of the layer, should be compatible with `input_shape`
-    channel_last: bool, default False,
-        channel dimension is the last dimension,
-        or the second dimension (the first is the batch dimension by convention)
-    asymmetric_padding: (2-)sequence of int or sequence of (2-)sequence of int,
-        asymmetric paddings for all dimensions or for each dimension
+    input_shape : Sequence[Union[int, None]]
+        Shape of an input :class:`~torch.Tensor`.
+        The first dimension is the batch dimension,
+        which is allowed to be `None`.
+    num_filters : int, optional
+        Number of filters, also the channel dimension.
+    kernel_size : int or Sequence[int], default 1
+        Kernel size (filter size) of the layer,
+        should be compatible with `input_shape`.
+    stride : int or Sequence[int], default 1
+        Stride (down-sampling length) of the layer,
+        should be compatible with `input_shape`.
+    padding : int or Sequence[int], default 0
+        Padding length(s) of the layer,
+        should be compatible with `input_shape`.
+    dilation : int or Sequence[int], default 1
+        Dilation of the layer, should be compatible with `input_shape`.
+    channel_last : bool, default False
+        Whether the channel dimension is the last dimension,
+        or the second dimension (the first is the batch dimension by convention).
+    asymmetric_padding : Sequence[int] or Sequence[Sequence[int]], optional
+        (2-)sequence of int or sequence of (2-)sequence of int
+        asymmetric paddings for all dimensions or for each dimension.
 
     Returns
     -------
-    output_shape: tuple,
-        shape of the output Tensor
+    output_shape : tuple
+        Shape of the output :class:`~torch.Tensor`.
 
     """
     output_shape = compute_output_shape(
@@ -466,30 +477,33 @@ def compute_maxpool_output_shape(
     dilation: Union[Sequence[int], int] = 1,
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
-    """
-    compute the output shape of a maxpool layer
+    """Compute the output shape of a maxpool layer.
 
     Parameters
     ----------
-    input_shape: sequence of int or None,
-        shape of an input Tensor,
-        the first dimension is the batch dimension, which is allowed to be `None`
-    kernel_size: int, or sequence of int, default 1,
-        kernel size (filter size) of the layer, should be compatible with `input_shape`
-    stride: int, or sequence of int, default 1,
-        stride (down-sampling length) of the layer, should be compatible with `input_shape`
-    padding: int, or sequence of int, default 0,
-        padding length(s) of the layer, should be compatible with `input_shape`
-    dilation: int, or sequence of int, default 1,
-        dilation of the layer, should be compatible with `input_shape`
-    channel_last: bool, default False,
-        channel dimension is the last dimension,
-        or the second dimension (the first is the batch dimension by convention)
+    input_shape : Sequence[Union[int, None]]
+        Shape of an input :class:`~torch.Tensor`.
+        The first dimension is the batch dimension,
+        which is allowed to be `None`.
+    kernel_size : int or Sequence[int], default 1
+        Kernel size (filter size) of the layer,
+        should be compatible with `input_shape`.
+    stride : int or Sequence[int], default 1
+        Stride (down-sampling length) of the layer,
+        should be compatible with `input_shape`.
+    padding : int or Sequence[int], default 0
+        Padding length(s) of the layer,
+        should be compatible with `input_shape`.
+    dilation : int or Sequence[int], default 1
+        Dilation of the layer, should be compatible with `input_shape`.
+    channel_last : bool, default False
+        Whether the channel dimension is the last dimension,
+        or the second dimension (the first is the batch dimension by convention).
 
     Returns
     -------
-    output_shape: tuple,
-        shape of the output Tensor
+    output_shape : tuple
+        Shape of the output :class:`~torch.Tensor`.
 
     """
     output_shape = compute_output_shape(
@@ -513,28 +527,31 @@ def compute_avgpool_output_shape(
     padding: Union[Sequence[int], int] = 0,
     channel_last: bool = False,
 ) -> Tuple[Union[int, None]]:
-    """
-    Compute the output shape of a avgpool layer
+    """Compute the output shape of a avgpool layer.
 
     Parameters
     ----------
-    input_shape: sequence of int or None,
-        shape of an input Tensor,
-        the first dimension is the batch dimension, which is allowed to be `None`
-    kernel_size: int, or sequence of int, default 1,
-        kernel size (filter size) of the layer, should be compatible with `input_shape`
-    stride: int, or sequence of int, default 1,
-        stride (down-sampling length) of the layer, should be compatible with `input_shape`
-    padding: int, or sequence of int, default 0,
-        padding length(s) of the layer, should be compatible with `input_shape`
-    channel_last: bool, default False,
-        channel dimension is the last dimension,
-        or the second dimension (the first is the batch dimension by convention)
+    input_shape : Sequence[Union[int, None]]
+        Shape of an input :class:`~torch.Tensor`.
+        The first dimension is the batch dimension,
+        which is allowed to be `None`.
+    kernel_size : int or Sequence[int], default 1
+        Kernel size (filter size) of the layer,
+        should be compatible with `input_shape`.
+    stride : int or Sequence[int], default 1
+        Stride (down-sampling length) of the layer,
+        should be compatible with `input_shape`.
+    padding : int or Sequence[int], default 0
+        Padding length(s) of the layer,
+        should be compatible with `input_shape`.
+    channel_last : bool, default False
+        Whether the channel dimension is the last dimension,
+        or the second dimension (the first is the batch dimension by convention).
 
     Returns
     -------
-    output_shape: tuple,
-        shape of the output Tensor
+    output_shape : tuple
+        Shape of the output :class:`~torch.Tensor`.
 
     """
     output_shape = compute_output_shape(
@@ -562,37 +579,40 @@ def compute_deconv_output_shape(
     channel_last: bool = False,
     asymmetric_padding: Union[Sequence[int], Sequence[Sequence[int]]] = None,
 ) -> Tuple[Union[int, None]]:
-    """
-    Compute the output shape of a transpose convolution layer
+    """Compute the output shape of a transpose convolution layer
 
     Parameters
     ----------
-    input_shape: sequence of int or None,
-        shape of an input Tensor,
-        the first dimension is the batch dimension, which is allowed to be `None`
-    num_filters: int, optional,
-        number of filters, also the channel dimension
-    kernel_size: int, or sequence of int, default 1,
-        kernel size (filter size) of the layer, should be compatible with `input_shape`
-    stride: int, or sequence of int, default 1,
-        stride (down-sampling length) of the layer, should be compatible with `input_shape`
-    padding: int, or sequence of int, default 0,
-        padding length(s) of the layer, should be compatible with `input_shape`
-    out_padding: int, or sequence of int, default 0,
-        additional size added to one side of the output shape,
-        used only for transpose convolution
-    dilation: int, or sequence of int, default 1,
-        dilation of the layer, should be compatible with `input_shape`
-    channel_last: bool, default False,
-        channel dimension is the last dimension,
-        or the second dimension (the first is the batch dimension by convention)
-    asymmetric_padding: (2-)sequence of int or sequence of (2-)sequence of int,
-        asymmetric paddings for all dimensions or for each dimension
+    input_shape : Sequence[Union[int, None]]
+        Shape of an input :class:`~torch.Tensor`.
+        The first dimension is the batch dimension,
+        which is allowed to be `None`.
+    num_filters : int, optional
+        Number of filters, also the channel dimension.
+    kernel_size : int or Sequence[int], default 1
+        Kernel size (filter size) of the layer,
+        should be compatible with `input_shape`.
+    stride : int or Sequence[int], default 1
+        Stride (down-sampling length) of the layer,
+        should be compatible with `input_shape`.
+    padding : int or Sequence[int], default 0
+        Padding length(s) of the layer,
+        should be compatible with `input_shape`.
+    output_padding : int or Sequence[int], default 0
+        Additional size added to one side of the output shape.
+    dilation : int or Sequence[int], default 1
+        Dilation of the layer, should be compatible with `input_shape`.
+    channel_last : bool, default False
+        Whether the channel dimension is the last dimension,
+        or the second dimension (the first is the batch dimension by convention).
+    asymmetric_padding : Sequence[int] or Sequence[Sequence[int]], optional
+        (2-)sequence of int or sequence of (2-)sequence of int
+        asymmetric paddings for all dimensions or for each dimension.
 
     Returns
     -------
-    output_shape: tuple,
-        shape of the output Tensor
+    output_shape : tuple
+        Shape of the output :class:`~torch.Tensor`.
 
     """
     output_shape = compute_output_shape(
@@ -782,7 +802,7 @@ def compute_receptive_field(
     Returns
     -------
     receptive_field : int or float
-        (length) of the receptive field.
+        (Length) of the receptive field.
 
     Examples
     --------
@@ -825,21 +845,22 @@ def default_collate_fn(
 ) -> Union[Tuple[Tensor, ...], Dict[str, Tensor]]:
     """Default collate functions for model training.
 
-    the data generator (`Dataset`) should
-    generate (`__getitem__`) n-tuples `signals, labels, ...`,
+    The data generator (:class:`~torch.utils.data.Dataset`) should
+    generate (`__getitem__`) n-tuples ``signals, labels, ...``,
     or dictionaries of tensors.
 
     Parameters
     ----------
-    batch: sequence,
-        sequence of n-tuples,
+    batch : sequence
+        Sequence of n-tuples,
         in which the first element is the signal, the second is the label, ...;
-        or sequence of dictionaries of tensors
+        or sequence of dictionaries of tensors.
 
     Returns
     -------
-    tuple or dict of Tensor,
-        the concatenated values to feed into neural networks
+    tuple or dict
+        Tuple or dict of :class:`~torch.Tensor`, which are
+        the concatenated values to feed into neural networks.
 
     """
     if isinstance(batch[0], dict):
@@ -851,21 +872,22 @@ def default_collate_fn(
 
 
 def _default_collate_fn(batch: Sequence[Tuple[np.ndarray, ...]]) -> Tuple[Tensor, ...]:
-    """
-    collate functions for model training
+    """Collate functions for tuples of tensors.
 
-    the data generator (`Dataset`) should generate (`__getitem__`) n-tuples `signals, labels, ...`
+    The data generator (:class:`~torch.utils.data.Dataset`) should
+    generate (`__getitem__`) n-tuples ``signals, labels, ...``,
+    or dictionaries of tensors.
 
     Parameters
     ----------
-    batch: sequence,
-        sequence of n-tuples,
+    batch : sequence
+        Sequence of n-tuples,
         in which the first element is the signal, the second is the label, ...
 
     Returns
     -------
-    tuple of Tensor,
-        the concatenated values to feed into neural networks
+    Tuple[torch.Tensor]
+        The concatenated values to feed into neural networks.
 
     """
     try:
@@ -890,25 +912,24 @@ def _adjust_cnn_filter_lengths(
     pattern: str = "filter_length|filter_size",
 ) -> dict:
     """
-    adjust the filter lengths (kernel sizes) in the config for convolutional neural networks,
-    according to the new sampling frequency
+    Adjust the filter lengths (kernel sizes) in the config for
+    convolutional neural networks, according to the new sampling frequency.
 
     Parameters
     ----------
-    config: dict,
-        the config dictionary,
-        this dict is NOT modified
-    fs: int,
-        the new sampling frequency
-    ensure_odd: bool, default True,
-        if True, the new filter lengths are ensured to be odd
-    pattern: str, default "filter_length|filter_size",
-        the pattern to search for in the config items related to filter lengths
+    config : dict
+        The config dictionary. This `dict` is **NOT** modified.
+    fs : int
+        The new sampling frequency.
+    ensure_odd : bool, default True
+        If True, the new filter lengths are ensured to be odd.
+    pattern : str, default "filter_length|filter_size"
+        The pattern to search for in the config items related to filter lengths.
 
     Returns
     -------
-    config: dict,
-        the adjusted config dictionary
+    config : dict
+        The adjusted config dictionary.
 
     """
     assert "fs" in config
@@ -955,25 +976,24 @@ def adjust_cnn_filter_lengths(
     pattern: str = "filter_length|filter_size",
 ) -> dict:
     """
-    adjust the filter lengths in the config for convolutional neural networks,
-    according to the new sampling frequency
+    Adjust the filter lengths in the config for
+    convolutional neural networks, according to the new sampling frequency.
 
     Parameters
     ----------
-    config: dict,
-        the config dictionary,
-        this dict is NOT modified
-    fs: int,
-        the new sampling frequency
-    ensure_odd: bool, default True,
-        if True, the new filter lengths are ensured to be odd
-    pattern: str, default "filter_length|filter_size",
-        the pattern to search for in the config items related to filter lengths
+    config : dict
+        The config dictionary. This `dict` is **NOT** modified.
+    fs : int
+        The new sampling frequency.
+    ensure_odd : bool, default True
+        If True, the new filter lengths are ensured to be odd.
+    pattern : str, default "filter_length|filter_size"
+        The pattern to search for in the config items related to filter lengths.
 
     Returns
     -------
-    config: dict,
-        the adjusted config dictionary
+    config : dict
+        The adjusted config dictionary.
 
     """
     config = _adjust_cnn_filter_lengths(config, fs, ensure_odd, pattern)
@@ -1038,23 +1058,22 @@ class CkptMixin(object):
     def from_checkpoint(
         cls, path: Union[str, Path], device: Optional[torch.device] = None
     ) -> Tuple[nn.Module, dict]:
-        """
-        load a model from a checkpoint
+        """Load a model from a checkpoint.
 
         Parameters
         ----------
-        path: str or Path,
-            path of the checkpoint
-        device: torch.device, optional,
-            map location of the model parameters,
-            defaults "cuda" if available, otherwise "cpu"
+        path : str or pathlib.Path
+            Path of the checkpoint.
+        device : torch.device, optional
+            Map location of the model parameters,
+            defaults to "cuda" if available, otherwise "cpu".
 
         Returns
         -------
-        model: Module,
-            the model loaded from a checkpoint
-        aux_config: dict,
-            auxiliary configs that are needed for data preprocessing, etc.
+        model : torch.nn.Module
+            The model loaded from a checkpoint.
+        aux_config : dict
+            Auxiliary configs that are needed for data preprocessing, etc.
 
         """
         _device = device or DEFAULTS.device
@@ -1075,16 +1094,19 @@ class CkptMixin(object):
         return model, aux_config
 
     def save(self, path: Union[str, Path], train_config: CFG) -> None:
-        """
-        Save the model to `path`
+        """Save the model to disk.
 
         Parameters
         ----------
-        path: str or Path,
-            path to save the model
-        train_config: CFG,
-            config for training the model,
-            used when one restores the model
+        path : str or pathlib.Path
+            Path to save the model.
+        train_config : CFG
+            Config for training the model,
+            used when one restores the model.
+
+        Returns
+        -------
+        None
 
         """
         path = Path(path)

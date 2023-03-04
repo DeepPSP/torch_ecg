@@ -45,13 +45,13 @@ def top_n_accuracy(
         Predicted probabilities, of shape ``(batch_size, num_classes)``
         or ``(batch_size, d_1, ..., d_m, num_classes)``
         or ``(batch_size, num_classes, d_1, ..., d_m)``.
-    n : int or list of int
+    n : int or List[int]
         Top n to be considered.
 
     Returns
     -------
     acc : float or dict of float
-        Top n accuracy
+        Top n accuracy.
 
     Examples
     --------
@@ -161,7 +161,7 @@ def one_vs_rest_confusion_matrix(
 
     Returns
     -------
-    ovr_cm : numpy.ndarray,
+    ovr_cm : numpy.ndarray
         One-vs-rest confusion matrix, of shape ``(n_classes, 2, 2)``.
 
     """
@@ -957,7 +957,7 @@ def _compute_metrics_waveform(
     tol: Real = 0.15,
 ) -> Dict[str, Dict[str, float]]:
     """
-    compute the sensitivity, precision, f1_score, mean error
+    Compute the sensitivity, precision, f1_score, mean error
     and standard deviation of the mean errors,
     of evaluations on a single sample (the same record, the same lead)
 
@@ -1063,13 +1063,13 @@ def _compute_metrics_base(
         Tuple of metrics:
         truth_positive, false_negative, false_positive, errors,
         sensitivity, precision, f1_score, mean_error, standard_deviation.
-        See [1]_ for more details.
+        See [#dl_seg]_ for more details.
 
     References
     ----------
-    .. [1] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov.
-           "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics.
-           Springer, Cham, 2019.
+    .. [#dl_seg] Moskalenko, Viktor, Nikolai Zolotykh, and Grigory Osipov.
+                 "Deep Learning for ECG Segmentation." International Conference on Neuroinformatics.
+                 Springer, Cham, 2019.
 
     """
     _tolerance = round(tol * fs)
