@@ -1562,24 +1562,27 @@
 <div class="viewcode-block" id="remove_spikes_naive"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.remove_spikes_naive.html#torch_ecg.utils.remove_spikes_naive">[docs]</a><span class="k">def</span> <span class="nf">remove_spikes_naive</span><span class="p">(</span>
     <span class="n">sig</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Remove `spikes` from `sig` using a naive method proposed in entry 0416 of CPSC2019</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove signal spikes using a naive method.</span>
 
-<span class="sd">    `spikes` here refers to abrupt large bumps with (abs) value larger than the given threshold,</span>
-<span class="sd">    or nan values (read by `wfdb`),</span>
-<span class="sd">    do NOT confuse with `spikes` in paced rhythm</span>
+<span class="sd">    This is a method proposed in entry 0416 of CPSC2019.</span>
+<span class="sd">    `spikes` here refers to abrupt large bumps with (abs) value</span>
+<span class="sd">    larger than the given threshold,</span>
+<span class="sd">    or nan values (read by `wfdb`).</span>
+<span class="sd">    Do **NOT** confuse with `spikes` in paced rhythm.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sig: ndarray,</span>
-<span class="sd">        1d signal with potential spikes</span>
-<span class="sd">    threshold: numbers.Real,</span>
-<span class="sd">        values of `sig` that are larger than `threshold` will be removed</span>
+<span class="sd">    sig : numpy.ndarray</span>
+<span class="sd">        1D signal with potential spikes.</span>
+<span class="sd">    threshold : numbers.Real, optional</span>
+<span class="sd">        Values of `sig` that are larger than `threshold` will be removed.</span>
+<span class="sd">    inplace : bool, optional</span>
+<span class="sd">        Whether to modify `sig` in place or not.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    sig: ndarray,</span>
-<span class="sd">        signal with `spikes` removed</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        Signal with `spikes` removed.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1615,34 +1618,35 @@
 <span class="k">def</span> <span class="nf">butter_bandpass</span><span class="p">(</span>
     <span class="n">lowcut</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">highcut</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Butterworth Bandpass Filter Design</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Butterworth Bandpass Filter Design.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    lowcut: real,</span>
-<span class="sd">        low cutoff frequency</span>
-<span class="sd">    highcut: real,</span>
-<span class="sd">        high cutoff frequency</span>
-<span class="sd">    fs: real,</span>
-<span class="sd">        frequency of `data`</span>
-<span class="sd">    order: int,</span>
-<span class="sd">        order of the filter</span>
-<span class="sd">    verbose: int, default 0</span>
+<span class="sd">    lowcut : numbers.Real</span>
+<span class="sd">        Low cutoff frequency.</span>
+<span class="sd">    highcut : numbers.Real</span>
+<span class="sd">        High cutoff frequency.</span>
+<span class="sd">    fs : numbers.Real</span>
+<span class="sd">        Sampling frequency of `data`.</span>
+<span class="sd">    order : int,</span>
+<span class="sd">        Order of the filter.</span>
+<span class="sd">    verbose : int, default 0</span>
+<span class="sd">        Verbosity level for debugging.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    b, a: tuple of ndarray,</span>
-<span class="sd">        coefficients of numerator and denominator of the filter</span>
+<span class="sd">    b, a : numpy.ndarray</span>
+<span class="sd">        Coefficients of numerator and denominator of the filter.</span>
 
 <span class="sd">    NOTE</span>
 <span class="sd">    ----</span>
-<span class="sd">    according to `lowcut` and `highcut`, the filter type might fall to lowpass or highpass filter</span>
+<span class="sd">    According to `lowcut` and `highcut`,</span>
+<span class="sd">    the filter type might degenerate to lowpass or highpass filter.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    .. [1] scipy.signal.butter</span>
-<span class="sd">    .. [2] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html</span>
+<span class="sd">    1. :func:`scipy.signal.butter`</span>
+<span class="sd">    2. https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nyq</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">fs</span>
@@ -1688,7 +1692,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Butterworth bandpass filtering the signals.</span>
 
 <span class="sd">    Apply a Butterworth bandpass filter to the signal.</span>
-<span class="sd">    For references, see [1]_ and [2]_.</span>
+<span class="sd">    For references, see [#bp1]_ and [#bp2]_.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1716,8 +1720,8 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    .. [1] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html</span>
-<span class="sd">    .. [2] https://dsp.stackexchange.com/questions/19084/applying-filter-in-scipy-signal-use-lfilter-or-filtfilt</span>
+<span class="sd">    .. [#bp1] https://scipy-cookbook.readthedocs.io/items/ButterworthBandpass.html</span>
+<span class="sd">    .. [#bp2] https://dsp.stackexchange.com/questions/19084/applying-filter-in-scipy-signal-use-lfilter-or-filtfilt</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dtype</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dtype</span>
@@ -1825,7 +1829,8 @@
     <span class="n">sig_fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
     <span class="n">per_channel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalize a signal.</span>
+
 <span class="sd">    Perform z-score normalization on `sig`,</span>
 <span class="sd">    to make it has fixed mean and standard deviation,</span>
 <span class="sd">    or perform min-max normalization on `sig`,</span>
@@ -1842,27 +1847,26 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sig: ndarray,</span>
-<span class="sd">        signal to be normalized</span>
-<span class="sd">    method: str,</span>
-<span class="sd">        normalization method, case insensitive, can be one of</span>
-<span class="sd">        &quot;naive&quot;, &quot;min-max&quot;, &quot;z-score&quot;,</span>
-<span class="sd">    mean: numbers.Real or array_like, default 0.0,</span>
-<span class="sd">        mean value of the normalized signal,</span>
-<span class="sd">        or mean values for each lead of the normalized signal,</span>
-<span class="sd">        useless if `method` is &quot;min-max&quot;</span>
-<span class="sd">    std: numbers.Real or array_like, default 1.0,</span>
-<span class="sd">        standard deviation of the normalized signal,</span>
-<span class="sd">        or standard deviations for each lead of the normalized signal,</span>
-<span class="sd">        useless if `method` is &quot;min-max&quot;</span>
-<span class="sd">    sig_fmt: str, default &quot;channel_first&quot;,</span>
-<span class="sd">        format of the signal, can be of one of</span>
+<span class="sd">    sig : numpy.ndarray</span>
+<span class="sd">        The signal to be normalized.</span>
+<span class="sd">    method : {&quot;naive&quot;, &quot;min-max&quot;, &quot;z-score&quot;}</span>
+<span class="sd">        Normalization method, case insensitive.</span>
+<span class="sd">    mean : numbers.Real or array_like, default 0.0</span>
+<span class="sd">        Mean value of the normalized signal,</span>
+<span class="sd">        or mean values for each lead of the normalized signal.</span>
+<span class="sd">        Useless if `method` is &quot;min-max&quot;.</span>
+<span class="sd">    std : numbers.Real or array_like, default 1.0</span>
+<span class="sd">        Standard deviation of the normalized signal,</span>
+<span class="sd">        or standard deviations for each lead of the normalized signal.</span>
+<span class="sd">        Useless if `method` is &quot;min-max&quot;.</span>
+<span class="sd">    sig_fmt : str, default &quot;channel_first&quot;</span>
+<span class="sd">        Format of the signal, can be of one of</span>
 <span class="sd">        &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
 <span class="sd">        &quot;channel_first&quot; (alias &quot;lead_first&quot;),</span>
-<span class="sd">        ignored if sig is 1d array (single-lead)</span>
-<span class="sd">    per_channel: bool, default False,</span>
-<span class="sd">        if True, normalization will be done per channel,</span>
-<span class="sd">        ignored if `sig` is 1d array (single-lead)</span>
+<span class="sd">        ignored if sig is 1d array (single-lead).</span>
+<span class="sd">    per_channel : bool, default False</span>
+<span class="sd">        If True, normalization will be done per channel.</span>
+<span class="sd">        Ignored if `sig` is 1d array (single-lead).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

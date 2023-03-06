@@ -1119,7 +1119,6 @@
     <span class="s2">&quot;get_record_list_recursive3&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dict_to_str&quot;</span><span class="p">,</span>
     <span class="s2">&quot;str2bool&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;diff_with_step&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ms2samples&quot;</span><span class="p">,</span>
     <span class="s2">&quot;samples2ms&quot;</span><span class="p">,</span>
     <span class="s2">&quot;plot_single_lead&quot;</span><span class="p">,</span>
@@ -1147,26 +1146,27 @@
 <span class="k">def</span> <span class="nf">get_record_list_recursive</span><span class="p">(</span>
     <span class="n">db_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">rec_ext</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    get the list of records in `db_dir` recursively,</span>
-<span class="sd">    for example, there are two folders &quot;patient1&quot;, &quot;patient2&quot; in `db_dir`,</span>
-<span class="sd">    and there are records &quot;A0001&quot;, &quot;A0002&quot;, ... in &quot;patient1&quot;; &quot;B0001&quot;, &quot;B0002&quot;, ... in &quot;patient2&quot;,</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the list of records in a recursive manner.</span>
+
+<span class="sd">    For example, there are two folders &quot;patient1&quot;, &quot;patient2&quot; in `db_dir`,</span>
+<span class="sd">    and there are records &quot;A0001&quot;, &quot;A0002&quot;, ... in &quot;patient1&quot;;</span>
+<span class="sd">    &quot;B0001&quot;, &quot;B0002&quot;, ... in &quot;patient2&quot;,</span>
 <span class="sd">    then the output would be &quot;patient1{sep}A0001&quot;, ..., &quot;patient2{sep}B0001&quot;, ...,</span>
-<span class="sd">    sep is determined by the system</span>
+<span class="sd">    sep is determined by the system.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    db_dir: str or Path,</span>
-<span class="sd">        the parent (root) path of the whole database</span>
-<span class="sd">    rec_ext: str,</span>
-<span class="sd">        extension of the record files</span>
-<span class="sd">    relative: bool,</span>
-<span class="sd">        if True, the output is relative to `db_dir`, otherwise absolute paths</span>
+<span class="sd">    db_dir : str or pathlib.Path</span>
+<span class="sd">        The parent (root) path of to search for records.</span>
+<span class="sd">    rec_ext : str</span>
+<span class="sd">        Extension of the record files.</span>
+<span class="sd">    relative : bool, default True</span>
+<span class="sd">        Whether to return the relative path of the records.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    res: list of str,</span>
-<span class="sd">        list of records, in lexicographical order</span>
+<span class="sd">    List[str]</span>
+<span class="sd">        The list of records, in lexicographical order.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">rec_ext</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
@@ -1185,24 +1185,25 @@
 
 <span class="nd">@deprecated</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;use `get_record_list_recursive3` instead&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_record_list_recursive2</span><span class="p">(</span><span class="n">db_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">rec_pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    get the list of records in `db_dir` recursively,</span>
-<span class="sd">    for example, there are two folders &quot;patient1&quot;, &quot;patient2&quot; in `db_dir`,</span>
-<span class="sd">    and there are records &quot;A0001&quot;, &quot;A0002&quot;, ... in &quot;patient1&quot;; &quot;B0001&quot;, &quot;B0002&quot;, ... in &quot;patient2&quot;,</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the list of records in a recursive manner.</span>
+
+<span class="sd">    For example, there are two folders &quot;patient1&quot;, &quot;patient2&quot; in `db_dir`,</span>
+<span class="sd">    and there are records &quot;A0001&quot;, &quot;A0002&quot;, ... in &quot;patient1&quot;;</span>
+<span class="sd">    &quot;B0001&quot;, &quot;B0002&quot;, ... in &quot;patient2&quot;,</span>
 <span class="sd">    then the output would be &quot;patient1{sep}A0001&quot;, ..., &quot;patient2{sep}B0001&quot;, ...,</span>
-<span class="sd">    sep is determined by the system</span>
+<span class="sd">    sep is determined by the system.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    db_dir: str or Path,</span>
-<span class="sd">        the parent (root) path of the whole database</span>
-<span class="sd">    rec_pattern: str,</span>
-<span class="sd">        pattern of the record filenames, e.g. &quot;A*.mat&quot;</span>
+<span class="sd">    db_dir : str or pathlib.Path</span>
+<span class="sd">        The parent (root) path of to search for records.</span>
+<span class="sd">    rec_pattern : str</span>
+<span class="sd">        Pattern of the record filenames, e.g. ``&quot;A*.mat&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    res: list of str,</span>
-<span class="sd">        list of records, in lexicographical order</span>
+<span class="sd">    List[str]</span>
+<span class="sd">        The list of records, in lexicographical order.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1228,27 +1229,28 @@
     <span class="n">rec_patterns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
     <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    get the list of records in `db_dir` recursively,</span>
-<span class="sd">    for example, there are two folders &quot;patient1&quot;, &quot;patient2&quot; in `db_dir`,</span>
-<span class="sd">    and there are records &quot;A0001&quot;, &quot;A0002&quot;, ... in &quot;patient1&quot;; &quot;B0001&quot;, &quot;B0002&quot;, ... in &quot;patient2&quot;,</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the list of records in a recursive manner.</span>
+
+<span class="sd">    For example, there are two folders &quot;patient1&quot;, &quot;patient2&quot; in `db_dir`,</span>
+<span class="sd">    and there are records &quot;A0001&quot;, &quot;A0002&quot;, ... in &quot;patient1&quot;;</span>
+<span class="sd">    &quot;B0001&quot;, &quot;B0002&quot;, ... in &quot;patient2&quot;,</span>
 <span class="sd">    then the output would be &quot;patient1{sep}A0001&quot;, ..., &quot;patient2{sep}B0001&quot;, ...,</span>
-<span class="sd">    sep is determined by the system</span>
+<span class="sd">    sep is determined by the system.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    db_dir: str or Path,</span>
-<span class="sd">        the parent (root) path of the whole database</span>
-<span class="sd">    rec_patterns: str or dict,</span>
-<span class="sd">        pattern of the record filenames, e.g. &quot;A(?:\d+).mat&quot;,</span>
-<span class="sd">        or patterns of several subsets, e.g. `{&quot;A&quot;: &quot;A(?:\d+).mat&quot;}`</span>
-<span class="sd">    relative: bool,</span>
-<span class="sd">        if True, the output is relative to `db_dir`, otherwise absolute paths</span>
+<span class="sd">    db_dir : str or pathlib.Path</span>
+<span class="sd">        The parent (root) path of to search for records.</span>
+<span class="sd">    rec_patterns : str or dict</span>
+<span class="sd">        Pattern of the record filenames, e.g. ``&quot;A(?:\\d+).mat&quot;``,</span>
+<span class="sd">        or patterns of several subsets, e.g. ``{&quot;A&quot;: &quot;A(?:\\d+).mat&quot;}``</span>
+<span class="sd">    relative : bool, default True</span>
+<span class="sd">        Whether to return the relative path of the records.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    res: list of str,</span>
-<span class="sd">        list of records, in lexicographical order</span>
+<span class="sd">    List[str] or dict</span>
+<span class="sd">        The list of records, in lexicographical order.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rec_patterns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -1293,22 +1295,22 @@
     <span class="n">d</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">],</span> <span class="n">current_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">indent_spaces</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    convert a (possibly) nested dict into a `str` of json-like formatted form,</span>
-<span class="sd">    this nested dict might also contain lists or tuples of dict (and of str, int, etc.)</span>
+<span class="sd">    Convert a (possibly) nested dict into a `str` of json-like formatted form.</span>
+<span class="sd">    This nested dict might also contain lists or tuples of dict (and of str, int, etc.)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    d: dict, or list, or tuple,</span>
-<span class="sd">        a (possibly) nested `dict`, or a list of `dict`</span>
-<span class="sd">    current_depth: int, default 1,</span>
-<span class="sd">        depth of `d` in the (possible) parent `dict` or `list`</span>
-<span class="sd">    indent_spaces: int, default 4,</span>
-<span class="sd">        the indent spaces of each depth</span>
+<span class="sd">    d : dict or list or tuple</span>
+<span class="sd">        A (possibly) nested :class:`dict`, or a list of :class:`dict`.</span>
+<span class="sd">    current_depth : int, default 1</span>
+<span class="sd">        Depth of `d` in the (possible) parent :class:`dict` or :class:`list`.</span>
+<span class="sd">    indent_spaces : int, default 4</span>
+<span class="sd">        The indent spaces of each depth.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    s: str,</span>
-<span class="sd">        the formatted string</span>
+<span class="sd">    str</span>
+<span class="sd">        The formatted string.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span>
@@ -1372,18 +1374,18 @@
 
 
 <div class="viewcode-block" id="str2bool"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.str2bool.html#torch_ecg.utils.str2bool">[docs]</a><span class="k">def</span> <span class="nf">str2bool</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    converts a &quot;boolean&quot; value possibly in the format of str to bool</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a &quot;boolean&quot; value possibly</span>
+<span class="sd">    in the format of :class:`str` to :class:`bool`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    v: str or bool,</span>
-<span class="sd">        the &quot;boolean&quot; value</span>
+<span class="sd">    v : str or bool</span>
+<span class="sd">        The &quot;boolean&quot; value.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    b: bool,</span>
-<span class="sd">        `v` in the format of bool</span>
+<span class="sd">    bool</span>
+<span class="sd">        `v` in the format of a bool.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -1401,22 +1403,21 @@
     <span class="k">return</span> <span class="n">b</span></div>
 
 
-<span class="k">def</span> <span class="nf">diff_with_step</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    compute a[n+step] - a[n] for all valid n</span>
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s2">&quot;Use `np.diff` instead.&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">diff_with_step</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute ``a[n+step] - a[n]`` for all valid `n`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a: ndarray,</span>
-<span class="sd">        the input data</span>
-<span class="sd">    step: int, default 1,</span>
-<span class="sd">        the step to compute the difference</span>
-<span class="sd">    kwargs: dict,</span>
+<span class="sd">    a : numpy.ndarray</span>
+<span class="sd">        The input data.</span>
+<span class="sd">    step : int, default 1</span>
+<span class="sd">        The step size to compute the difference.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    d: ndarray:</span>
-<span class="sd">        the difference array</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        The difference array.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">step</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
@@ -1428,20 +1429,20 @@
 
 
 <span class="k">def</span> <span class="nf">ms2samples</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    convert time `t` with units in ms to number of samples</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert time duration in ms to number of samples.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    t: numbers.Real,</span>
-<span class="sd">        time with units in ms</span>
-<span class="sd">    fs: numbers.Real,</span>
-<span class="sd">        sampling frequency of a signal</span>
+<span class="sd">    t : numbers.Real</span>
+<span class="sd">        Time duration in ms.</span>
+<span class="sd">    fs : numbers.Real</span>
+<span class="sd">        Sampling frequency.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    n_samples: int,</span>
-<span class="sd">        number of samples corresponding to time `t`</span>
+<span class="sd">    n_samples : int</span>
+<span class="sd">        Number of samples converted from `t`,</span>
+<span class="sd">        with sampling frequency `fs`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n_samples</span> <span class="o">=</span> <span class="n">t</span> <span class="o">*</span> <span class="n">fs</span> <span class="o">//</span> <span class="mi">1000</span>
@@ -1449,20 +1450,20 @@
 
 
 <span class="k">def</span> <span class="nf">samples2ms</span><span class="p">(</span><span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="n">Real</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Real</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    inverse function of `ms2samples`</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert number of samples to time duration in ms.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    n_samples: int,</span>
-<span class="sd">        number of sample points</span>
-<span class="sd">    fs: numbers.Real,</span>
-<span class="sd">        sampling frequency of a signal</span>
+<span class="sd">    n_samples : int</span>
+<span class="sd">        Number of sample points.</span>
+<span class="sd">    fs : numbers.Real</span>
+<span class="sd">        Sampling frequency.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    t: numbers.Real,</span>
-<span class="sd">        time duration correponding to `n_samples`</span>
+<span class="sd">    t : numbers.Real</span>
+<span class="sd">        Time duration in ms converted from `n_samples`,</span>
+<span class="sd">        with sampling frequency `fs`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">n_samples</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">fs</span>
@@ -1476,20 +1477,23 @@
     <span class="n">ticks_granularity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Plot single lead ECG signal</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot single lead ECG signal.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    t: ndarray,</span>
-<span class="sd">        the array of time of the signal</span>
-<span class="sd">    sig: ndarray,</span>
-<span class="sd">        the signal itself</span>
-<span class="sd">    ax: Artist, optional,</span>
-<span class="sd">        the `Artist` to plot on</span>
-<span class="sd">    ticks_granularity: int, default 0,</span>
-<span class="sd">        the granularity to plot axis ticks, the higher the more,</span>
+<span class="sd">    t : numpy.ndarray</span>
+<span class="sd">        The array of time points.</span>
+<span class="sd">    sig : numpy.ndarray</span>
+<span class="sd">        The signal itself.</span>
+<span class="sd">    ax : matplotlib.axes.Axes, default None</span>
+<span class="sd">        The axes to plot on.</span>
+<span class="sd">    ticks_granularity : int, default 0</span>
+<span class="sd">        Granularity to plot axis ticks, the higher the more ticks.</span>
 <span class="sd">        0 (no ticks) --&gt; 1 (major ticks) --&gt; 2 (major + minor ticks)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s2">&quot;plt&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
@@ -1541,28 +1545,31 @@
     <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span>
     <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize a logger.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    log_dir: str or Path, optional,</span>
-<span class="sd">        directory of the log file,</span>
-<span class="sd">        default to `DEFAULTS.log_dir`;</span>
-<span class="sd">        if is `False`, then no log file will be created</span>
-<span class="sd">    log_file: str, optional,</span>
-<span class="sd">        name of the log file</span>
-<span class="sd">    log_name: str, optional,</span>
-<span class="sd">        name of the logger</span>
-<span class="sd">    suffix: str, optional,</span>
-<span class="sd">        suffix of the log filename,</span>
-<span class="sd">        ignored if `log_file` is not `None`</span>
-<span class="sd">    mode: str, default &quot;a&quot;,</span>
-<span class="sd">        mode of writing the log file, can be one of &quot;a&quot;, &quot;w&quot;</span>
-<span class="sd">    verbose: int, default 0,</span>
-<span class="sd">        log verbosity</span>
+<span class="sd">    log_dir : str or pathlib.Path or bool, optional</span>
+<span class="sd">        Directory of the log file,</span>
+<span class="sd">        default to `DEFAULTS.log_dir`.</span>
+<span class="sd">        If is `False`, then no log file will be created.</span>
+<span class="sd">    log_file : str, optional</span>
+<span class="sd">        Name of the log file,</span>
+<span class="sd">        default to ``{DEFAULTS.prefix}-log-{get_date_str()}.txt``.</span>
+<span class="sd">    log_name : str, optional</span>
+<span class="sd">        Name of the logger.</span>
+<span class="sd">    suffix : str, optional</span>
+<span class="sd">        Suffix of the logger name.</span>
+<span class="sd">        Ignored if `log_name` is not `None`.</span>
+<span class="sd">    mode : {&quot;a&quot;, &quot;w&quot;}, default &quot;a&quot;</span>
+<span class="sd">        Mode to open the log file.</span>
+<span class="sd">    verbose : int, default 0</span>
+<span class="sd">        Verbosity level for the logger.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    logger: Logger</span>
+<span class="sd">    logger : logging.Logger</span>
+<span class="sd">        The logger.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">log_dir</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
@@ -1626,16 +1633,18 @@
 
 
 <div class="viewcode-block" id="get_date_str"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.get_date_str.html#torch_ecg.utils.get_date_str">[docs]</a><span class="k">def</span> <span class="nf">get_date_str</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the current time in the :class:`str` format.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fmt: str, optional,</span>
-<span class="sd">        format of the string of date</span>
+<span class="sd">    fmt : str, optional</span>
+<span class="sd">        Format of the string of date,</span>
+<span class="sd">        default to ``&quot;%m-%d_%H-%M&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    date_str: str,</span>
-<span class="sd">        current time in the `str` format</span>
+<span class="sd">    str</span>
+<span class="sd">        Current time in the :class:`str` format.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
@@ -1644,17 +1653,19 @@
 
 
 <div class="viewcode-block" id="list_sum"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.list_sum.html#torch_ecg.utils.list_sum">[docs]</a><span class="k">def</span> <span class="nf">list_sum</span><span class="p">(</span><span class="n">lst</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sum a sequence of lists.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    lst: sequence of list,</span>
-<span class="sd">        the sequence of lists to obtain the summation</span>
+<span class="sd">    lst : Sequence[list]</span>
+<span class="sd">        The sequence of lists to obtain the summation.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    l_sum: list,</span>
+<span class="sd">    list</span>
 <span class="sd">        sum of `lst`,</span>
-<span class="sd">        i.e. if lst = [list1, list2, ...], then l_sum = list1 + list2 + ...</span>
+<span class="sd">        i.e. if ``lst = [list1, list2, ...]``,</span>
+<span class="sd">        then ``l_sum = list1 + list2 + ...``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">l_sum</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="n">lst</span><span class="p">,</span> <span class="p">[])</span>
@@ -1662,31 +1673,29 @@
 
 
 <span class="k">def</span> <span class="nf">read_log_txt</span><span class="p">(</span>
-    <span class="n">fp</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">fp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
     <span class="n">epoch_startswith</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Train epoch_&quot;</span><span class="p">,</span>
     <span class="n">scalar_startswith</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;train/|test/&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    read from log txt file, in case tensorboard not working</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read from log txt file, in case tensorboard not working.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fp: str,</span>
-<span class="sd">        path to the log txt file</span>
-<span class="sd">    epoch_startswith: str,</span>
-<span class="sd">        indicator of the start of the start of an epoch</span>
-<span class="sd">    scalar_startswith: str or iterable of str,</span>
-<span class="sd">        indicators of the scalar recordings,</span>
-<span class="sd">        if is str, should be indicators separated by &quot;|&quot;</span>
+<span class="sd">    fp : str or pathlib.Path</span>
+<span class="sd">        Path to the log txt file.</span>
+<span class="sd">    epoch_startswith : str, default &quot;Train epoch_&quot;</span>
+<span class="sd">        Indicator of the start of the start of an epoch</span>
+<span class="sd">    scalar_startswith : str or Iterable[str], default &quot;train/|test/&quot;</span>
+<span class="sd">        Indicators of the scalar recordings.</span>
+<span class="sd">        If is :class:`str`, should be indicators separated by ``&quot;|&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    summary: DataFrame,</span>
-<span class="sd">        scalars summary, in the format of a pandas DataFrame</span>
+<span class="sd">    summary : pandas.DataFrame</span>
+<span class="sd">        Scalars summary, in the format of a :class:`~pandas.DataFrame`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scalar_startswith</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">field_pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">scalar_startswith</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1710,23 +1719,22 @@
 
 
 <span class="k">def</span> <span class="nf">read_event_scalars</span><span class="p">(</span>
-    <span class="n">fp</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    read scalars from event file, in case tensorboard not working</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read scalars from event file, in case tensorboard not working.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fp: str,</span>
-<span class="sd">        path to the event file</span>
-<span class="sd">    keys: str or iterable of str, optional,</span>
-<span class="sd">        field names of the scalars to read,</span>
-<span class="sd">        if is None, scalars of all fields will be read</span>
+<span class="sd">    fp : str or pathlib.Path</span>
+<span class="sd">        Path to the event file.</span>
+<span class="sd">    keys : str or Iterable[str], optional</span>
+<span class="sd">        Field names of the scalars to read.</span>
+<span class="sd">        If is None, scalars of all fields will be read.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    summary: DataFrame or dict of DataFrame</span>
-<span class="sd">        the wall_time, step, value of the scalars</span>
+<span class="sd">    summary : pandas.DataFrame or dict of pandas.DataFrame</span>
+<span class="sd">        The wall_time, step, value of the scalars.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
@@ -1765,30 +1773,32 @@
 
 
 <div class="viewcode-block" id="dicts_equal"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.dicts_equal.html#torch_ecg.utils.dicts_equal">[docs]</a><span class="k">def</span> <span class="nf">dicts_equal</span><span class="p">(</span><span class="n">d1</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">d2</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">allow_array_diff_types</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Determine if two dicts are equal</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine if two dicts are equal.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    d1, d2: dict,</span>
-<span class="sd">        the two dicts to compare equality</span>
-<span class="sd">    allow_array_diff_types: bool, default True,</span>
-<span class="sd">        whether to allow the equality of two arrays with different types,</span>
-<span class="sd">        including list, tuple, np.ndarray, torch.Tensor,</span>
-<span class="sd">        NOT including pd.DataFrame, pd.Series</span>
+<span class="sd">    d1, d2 : dict</span>
+<span class="sd">        The two dicts to compare equality.</span>
+<span class="sd">    allow_array_diff_types : bool, default True</span>
+<span class="sd">        Whether allow the equality of two arrays with different types,</span>
+<span class="sd">        including `list`, `tuple`, `numpy.ndarray`, `torch.Tensor`,</span>
+<span class="sd">        **NOT** including `pandas.DataFrame`, `pandas.Series`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    bool, True if `d1` equals `d2`</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if `d1` equals `d2`, False otherwise.</span>
 
 <span class="sd">    NOTE</span>
 <span class="sd">    ----</span>
-<span class="sd">    the existence of numpy array, torch Tensor, pandas DataFrame and Series would probably</span>
-<span class="sd">    cause errors when directly use the default ``__eq__`` method of dict,</span>
-<span class="sd">    for example :code:`{&quot;a&quot;: np.array([1,2])} == {&quot;a&quot;: np.array([1,2])}` would raise the following</span>
+<span class="sd">    The existence of :class:`~numpy.ndarray`, :class:`~torch.Tensor`,</span>
+<span class="sd">    :class:`~pandas.DataFrame` and :class:`~pandas.Series` would probably</span>
+<span class="sd">    cause errors when directly use the default ``__eq__`` method of :class:`dict`</span>
+<span class="sd">    For example:</span>
 
 <span class="sd">    .. code-block:: python</span>
 
+<span class="sd">        &gt;&gt;&gt; {&quot;a&quot;: np.array([1,2])} == {&quot;a&quot;: np.array([1,2])}</span>
 <span class="sd">        ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()</span>
 
 <span class="sd">    Example</span>
@@ -1887,7 +1897,7 @@
 
 
 <div class="viewcode-block" id="default_class_repr"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.default_class_repr.html#torch_ecg.utils.default_class_repr">[docs]</a><span class="k">def</span> <span class="nf">default_class_repr</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">align</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default class representation</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default class representation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -2090,11 +2100,17 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        window: int, default 5,</span>
-<span class="sd">            window length of the moving average</span>
-<span class="sd">        center: bool, default False,</span>
-<span class="sd">            if True, when computing the output value at each point, the window will be centered at that point;</span>
-<span class="sd">            otherwise the previous `window` points of the current point will be used</span>
+<span class="sd">        window : int, default 5</span>
+<span class="sd">            Window length of the moving average</span>
+<span class="sd">        center : bool, default False</span>
+<span class="sd">            If True, when computing the output value at each point,</span>
+<span class="sd">            the window will be centered at that point;</span>
+<span class="sd">            otherwise the previous `window` points of the current point will be used.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            The simple moving average of the input data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -2122,15 +2138,20 @@
         <span class="k">return</span> <span class="n">smoothed</span>
 
     <span class="k">def</span> <span class="nf">_ema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        exponential moving average,</span>
-<span class="sd">        which is also the function used in Tensorboard Scalar panel,</span>
-<span class="sd">        whose parameter `smoothing` is the `weight` here</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Exponential moving average</span>
+
+<span class="sd">        This is also the function used in Tensorboard Scalar panel,</span>
+<span class="sd">        whose parameter `smoothing` is the `weight` here.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        weight: float, default 0.6,</span>
-<span class="sd">            weight of the previous data point</span>
+<span class="sd">        weight : float, default 0.6</span>
+<span class="sd">            Weight of the previous data point.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            The exponential moving average of the input data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -2148,8 +2169,17 @@
         <span class="k">return</span> <span class="n">smoothed</span>
 
     <span class="k">def</span> <span class="nf">_cma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        cumulative moving average</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cumulative moving average.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            The cumulative moving average of the input data.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -2166,13 +2196,17 @@
         <span class="k">return</span> <span class="n">smoothed</span>
 
     <span class="k">def</span> <span class="nf">_wma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        weighted moving average</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Weighted moving average.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        window: int, default 5,</span>
-<span class="sd">            window length of the moving average</span>
+<span class="sd">        window : int, default 5</span>
+<span class="sd">            Window length of the moving average.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            The weighted moving average of the input data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -2188,18 +2222,18 @@
 
 <div class="viewcode-block" id="nildent"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.nildent.html#torch_ecg.utils.nildent">[docs]</a><span class="k">def</span> <span class="nf">nildent</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    kill all leading white spaces in each line of `text`,</span>
+<span class="sd">    Kill all leading white spaces in each line of `text`,</span>
 <span class="sd">    while keeping all lines (including empty)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    text: str,</span>
-<span class="sd">        text to be processed</span>
+<span class="sd">    text : str</span>
+<span class="sd">        Text to be processed.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    new_text: str,</span>
-<span class="sd">        processed text</span>
+<span class="sd">    str</span>
+<span class="sd">        Processed text.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">new_text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()])</span> <span class="o">+</span> <span class="p">(</span>
@@ -2215,27 +2249,26 @@
     <span class="n">parameters_indicator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Parameters&quot;</span><span class="p">,</span>
     <span class="n">returns_indicator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Returns&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    remove parameters and/or returns from docstring,</span>
-<span class="sd">    which is of the format of numpydoc</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove parameters and/or returns from docstring,</span>
+<span class="sd">    which is of the format of `numpydoc`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    doc: str,</span>
-<span class="sd">        docstring to be processed</span>
-<span class="sd">    parameters: str or list of str, default None,</span>
-<span class="sd">        parameters to be removed</span>
-<span class="sd">    returns: str or list of str, default None,</span>
-<span class="sd">        returned values to be removed</span>
-<span class="sd">    parameters_indicator: str, default &quot;Parameters&quot;,</span>
-<span class="sd">        the indicator of the parameters section</span>
-<span class="sd">    returns_indicator: str, default &quot;Returns&quot;,</span>
-<span class="sd">        the indicator of the returns section</span>
+<span class="sd">    doc : str</span>
+<span class="sd">        Docstring to be processed.</span>
+<span class="sd">    parameters : str or List[str], optional</span>
+<span class="sd">        Parameters to be removed.</span>
+<span class="sd">    returns : str or List[str], optional</span>
+<span class="sd">        Returned values to be removed.</span>
+<span class="sd">    parameters_indicator : str, default &quot;Parameters&quot;</span>
+<span class="sd">        Indicator of the parameters section.</span>
+<span class="sd">    returns_indicator : str, default &quot;Returns&quot;</span>
+<span class="sd">        Indicator of the returns section.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    new_doc: str,</span>
-<span class="sd">        the processed docstring</span>
+<span class="sd">    str</span>
+<span class="sd">        The processed docstring.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2294,15 +2327,14 @@
 
 <div class="viewcode-block" id="timeout"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.timeout.html#torch_ecg.utils.timeout">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">timeout</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A context manager that raises a `TimeoutError` after a specified time.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A context manager that raises a</span>
+<span class="sd">    `TimeoutError` after a specified time.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    duration: float,</span>
-<span class="sd">        the time duration in seconds,</span>
-<span class="sd">        should be non-negative,</span>
-<span class="sd">        0 for no timeout</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        The time duration in seconds,</span>
+<span class="sd">        should be non-negative, 0 for no timeout.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -2326,35 +2358,32 @@
 
 
 <div class="viewcode-block" id="Timer"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.Timer.html#torch_ecg.utils.Timer">[docs]</a><span class="k">class</span> <span class="nc">Timer</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Context manager to time the execution of a block of code.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Context manager to time the execution of a block of code.</span>
 
-<span class="sd">    Usage</span>
-<span class="sd">    -----</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name of the timer, defaults to &quot;default timer&quot;.</span>
+<span class="sd">    verbose : int, default 0</span>
+<span class="sd">        Verbosity level of the timer.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
 <span class="sd">    &gt;&gt;&gt; with Timer(&quot;task name&quot;, verbose=2) as timer:</span>
-<span class="sd">    &gt;&gt;&gt;     do_something()</span>
-<span class="sd">    &gt;&gt;&gt;     timer.add_time(&quot;subtask 1&quot;, level=2)</span>
-<span class="sd">    &gt;&gt;&gt;     do_subtask_1()</span>
-<span class="sd">    &gt;&gt;&gt;     timer.stop_timer(&quot;subtask 1&quot;)</span>
-<span class="sd">    &gt;&gt;&gt;     timer.add_time(&quot;subtask 2&quot;, level=2)</span>
-<span class="sd">    &gt;&gt;&gt;     do_subtask_2()</span>
-<span class="sd">    &gt;&gt;&gt;     timer.stop_timer(&quot;subtask 2&quot;)</span>
-<span class="sd">    &gt;&gt;&gt;     do_something_else()</span>
+<span class="sd">    ...     do_something()</span>
+<span class="sd">    ...     timer.add_time(&quot;subtask 1&quot;, level=2)</span>
+<span class="sd">    ...     do_subtask_1()</span>
+<span class="sd">    ...     timer.stop_timer(&quot;subtask 1&quot;)</span>
+<span class="sd">    ...     timer.add_time(&quot;subtask 2&quot;, level=2)</span>
+<span class="sd">    ...     do_subtask_2()</span>
+<span class="sd">    ...     timer.stop_timer(&quot;subtask 2&quot;)</span>
+<span class="sd">    ...     do_something_else()</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="vm">__name__</span> <span class="o">=</span> <span class="s2">&quot;Timer&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        name: str, optional</span>
-<span class="sd">            the name of the timer, defaults to &quot;default timer&quot;</span>
-<span class="sd">        verbose: int, default 0</span>
-<span class="sd">            the verbosity level of the timer,</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;default timer&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timers</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
@@ -2373,15 +2402,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">timers</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">timers</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Timer.add_timer"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.Timer.html#torch_ecg.utils.Timer.add_timer">[docs]</a>    <span class="k">def</span> <span class="nf">add_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        add a new timer for some subtask</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new timer for some sub-task.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        name: str,</span>
-<span class="sd">            the name of the timer to be added</span>
-<span class="sd">        level: int, default 1</span>
-<span class="sd">            the verbosity level of the timer,</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the timer to be added.</span>
+<span class="sd">        level : int, default 1</span>
+<span class="sd">            Verbosity level of the timer.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
@@ -2389,13 +2421,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">level</span></div>
 
 <div class="viewcode-block" id="Timer.stop_timer"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.Timer.html#torch_ecg.utils.Timer.stop_timer">[docs]</a>    <span class="k">def</span> <span class="nf">stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        stop a timer</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop a timer.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        name: str,</span>
-<span class="sd">            the name of the timer to be stopped</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the timer to be stopped.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -2407,20 +2442,19 @@
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="n">time_cost</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_simplify_time_expr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_cost</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        simplify the time expression</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simplify the time expression.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        time_cost: float,</span>
-<span class="sd">            the time cost, with units in seconds</span>
+<span class="sd">        time_cost : float</span>
+<span class="sd">            The time cost, with units in seconds.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        time_cost: float,</span>
-<span class="sd">            the time cost,</span>
-<span class="sd">        unit: str,</span>
-<span class="sd">            the unit of the time cost</span>
+<span class="sd">        time_cost : float</span>
+<span class="sd">            The time cost.</span>
+<span class="sd">        unit : str</span>
+<span class="sd">            Unit of the time cost.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">time_cost</span> <span class="o">&lt;=</span> <span class="mf">0.1</span><span class="p">:</span>
@@ -2431,21 +2465,20 @@
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;verbose&quot;</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="get_kwargs"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.get_kwargs.html#torch_ecg.utils.get_kwargs">[docs]</a><span class="k">def</span> <span class="nf">get_kwargs</span><span class="p">(</span><span class="n">func_or_cls</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">kwonly</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    get the kwargs of a function or class</span>
+<div class="viewcode-block" id="get_kwargs"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.get_kwargs.html#torch_ecg.utils.get_kwargs">[docs]</a><span class="k">def</span> <span class="nf">get_kwargs</span><span class="p">(</span><span class="n">func_or_cls</span><span class="p">:</span> <span class="n">callable</span><span class="p">,</span> <span class="n">kwonly</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the kwargs of a function or class.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    func_or_cls: Callable,</span>
-<span class="sd">        the function or class to get the kwargs of</span>
-<span class="sd">    kwonly: bool, default False,</span>
-<span class="sd">        whether to get the kwonly kwargs of the function or class</span>
+<span class="sd">    func_or_cls : callable</span>
+<span class="sd">        The function or class to get the kwargs of.</span>
+<span class="sd">    kwonly : bool, default False</span>
+<span class="sd">        Whether to get the kwonly kwargs of the function or class.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    kwargs: Dict[str, Any],</span>
-<span class="sd">        the kwargs of the function or class</span>
+<span class="sd">    kwargs : Dict[str, Any]</span>
+<span class="sd">        The kwargs of the function or class.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fas</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">func_or_cls</span><span class="p">)</span>
@@ -2472,19 +2505,18 @@
     <span class="k">return</span> <span class="n">kwargs</span></div>
 
 
-<div class="viewcode-block" id="get_required_args"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.get_required_args.html#torch_ecg.utils.get_required_args">[docs]</a><span class="k">def</span> <span class="nf">get_required_args</span><span class="p">(</span><span class="n">func_or_cls</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    get the required positional arguments of a function or class</span>
+<div class="viewcode-block" id="get_required_args"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.get_required_args.html#torch_ecg.utils.get_required_args">[docs]</a><span class="k">def</span> <span class="nf">get_required_args</span><span class="p">(</span><span class="n">func_or_cls</span><span class="p">:</span> <span class="n">callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the required positional arguments of a function or class.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    func_or_cls: Callable,</span>
-<span class="sd">        the function or class to get the required arguments of</span>
+<span class="sd">    func_or_cls : callable</span>
+<span class="sd">        The function or class to get the required arguments of.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    required_args: list of str,</span>
-<span class="sd">        the names of required arguments of the function or class</span>
+<span class="sd">    required_args : List[str]</span>
+<span class="sd">        Names of required arguments of the function or class.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">func_or_cls</span><span class="p">)</span>
@@ -2498,22 +2530,23 @@
     <span class="k">return</span> <span class="n">required_args</span></div>
 
 
-<div class="viewcode-block" id="add_kwargs"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.add_kwargs.html#torch_ecg.utils.add_kwargs">[docs]</a><span class="k">def</span> <span class="nf">add_kwargs</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    add keyword arguments to a function,</span>
-<span class="sd">    in order to make it compatible with other functions</span>
+<div class="viewcode-block" id="add_kwargs"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.add_kwargs.html#torch_ecg.utils.add_kwargs">[docs]</a><span class="k">def</span> <span class="nf">add_kwargs</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">callable</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">callable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add keyword arguments to a function.</span>
+
+<span class="sd">    This function is used to add keyword arguments to a function</span>
+<span class="sd">    in order to make it compatible with other functions。</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    func: Callable,</span>
-<span class="sd">        the function to be decorated</span>
-<span class="sd">    kwargs: Any,</span>
-<span class="sd">        the keyword arguments to be added</span>
+<span class="sd">    func : callable</span>
+<span class="sd">        The function to be decorated.</span>
+<span class="sd">    kwargs : dict</span>
+<span class="sd">        The keyword arguments to be added.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    Callable,</span>
-<span class="sd">        the decorated function</span>
+<span class="sd">    callable</span>
+<span class="sd">        The decorated function, with the keyword arguments added.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">old_kwargs</span> <span class="o">=</span> <span class="n">get_kwargs</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>

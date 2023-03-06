@@ -1097,22 +1097,22 @@ throughout the package.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.extend_predictions.html#torch_ecg.utils.extend_predictions" title="torch_ecg.utils.extend_predictions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extend_predictions</span></code></a>(preds, classes, ...)</p></td>
-<td><p>extend the prediction arrays to prediction arrays in larger range of classes</p></td>
+<td><p>Extend the prediction arrays to prediction arrays in larger range of classes</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.compute_output_shape.html#torch_ecg.utils.compute_output_shape" title="torch_ecg.utils.compute_output_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_output_shape</span></code></a>(layer_type, input_shape)</p></td>
-<td><p>Compute the output shape of a (transpose) convolution/maxpool/avgpool layer</p></td>
+<td><p>Compute the output shape of a (transpose) convolution/maxpool/avgpool layer.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.compute_conv_output_shape.html#torch_ecg.utils.compute_conv_output_shape" title="torch_ecg.utils.compute_conv_output_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_conv_output_shape</span></code></a>(input_shape[, ...])</p></td>
-<td><p>Compute the output shape of a convolution/maxpool/avgpool layer</p></td>
+<td><p>Compute the output shape of a convolution layer.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.compute_deconv_output_shape.html#torch_ecg.utils.compute_deconv_output_shape" title="torch_ecg.utils.compute_deconv_output_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_deconv_output_shape</span></code></a>(input_shape[, ...])</p></td>
 <td><p>Compute the output shape of a transpose convolution layer</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.compute_maxpool_output_shape.html#torch_ecg.utils.compute_maxpool_output_shape" title="torch_ecg.utils.compute_maxpool_output_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_maxpool_output_shape</span></code></a>(input_shape[, ...])</p></td>
-<td><p>compute the output shape of a maxpool layer</p></td>
+<td><p>Compute the output shape of a maxpool layer.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.compute_avgpool_output_shape.html#torch_ecg.utils.compute_avgpool_output_shape" title="torch_ecg.utils.compute_avgpool_output_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_avgpool_output_shape</span></code></a>(input_shape[, ...])</p></td>
-<td><p>Compute the output shape of a avgpool layer</p></td>
+<td><p>Compute the output shape of a avgpool layer.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.compute_sequential_output_shape.html#torch_ecg.utils.compute_sequential_output_shape" title="torch_ecg.utils.compute_sequential_output_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_sequential_output_shape</span></code></a>(model[, ...])</p></td>
 <td><p>Compute the output shape of a sequential model.</p></td>
@@ -1127,7 +1127,7 @@ throughout the package.</p>
 <td><p>Compute the receptive field of several types of <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.adjust_cnn_filter_lengths.html#torch_ecg.utils.adjust_cnn_filter_lengths" title="torch_ecg.utils.adjust_cnn_filter_lengths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adjust_cnn_filter_lengths</span></code></a>(config, fs[, ...])</p></td>
-<td><p>adjust the filter lengths in the config for convolutional neural networks, according to the new sampling frequency</p></td>
+<td><p>Adjust the filter lengths in the config for convolutional neural networks, according to the new sampling frequency.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.SizeMixin.html#torch_ecg.utils.SizeMixin" title="torch_ecg.utils.SizeMixin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SizeMixin</span></code></a>()</p></td>
 <td><p>Mixin class for size related methods</p></td>
@@ -1152,7 +1152,7 @@ throughout the package.</p>
 <td><p>Detect peaks in data based on their amplitude and other features.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.remove_spikes_naive.html#torch_ecg.utils.remove_spikes_naive" title="torch_ecg.utils.remove_spikes_naive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_spikes_naive</span></code></a>(sig[, threshold, inplace])</p></td>
-<td><p>Remove <cite>spikes</cite> from <cite>sig</cite> using a naive method proposed in entry 0416 of CPSC2019</p></td>
+<td><p>Remove signal spikes using a naive method.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.butter_bandpass_filter.html#torch_ecg.utils.butter_bandpass_filter" title="torch_ecg.utils.butter_bandpass_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">butter_bandpass_filter</span></code></a>(data, lowcut, ...[, ...])</p></td>
 <td><p>Butterworth bandpass filtering the signals.</p></td>
@@ -1161,13 +1161,13 @@ throughout the package.</p>
 <td><p>Get amplitude of a signal (near critical points if given).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.normalize.html#torch_ecg.utils.normalize" title="torch_ecg.utils.normalize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize</span></code></a>(sig, method[, mean, std, sig_fmt, ...])</p></td>
-<td><p>Perform z-score normalization on <cite>sig</cite>, to make it has fixed mean and standard deviation, or perform min-max normalization on <cite>sig</cite>, or normalize <cite>sig</cite> using <cite>mean</cite> and <cite>std</cite> via (sig - mean) / std.</p></td>
+<td><p>Normalize a signal.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.normalize_t.html#torch_ecg.utils.normalize_t" title="torch_ecg.utils.normalize_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_t</span></code></a>(sig[, method, mean, std, ...])</p></td>
 <td><p>Perform z-score normalization on <code class="xref py py-attr docutils literal notranslate"><span class="pre">sig</span></code>, to make it has fixed mean and standard deviation, or perform min-max normalization on <code class="xref py py-attr docutils literal notranslate"><span class="pre">sig</span></code>, or normalize <code class="xref py py-attr docutils literal notranslate"><span class="pre">sig</span></code> using <code class="xref py py-attr docutils literal notranslate"><span class="pre">mean</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">std</span></code> via <span class="math notranslate nohighlight">\((sig - mean) / std\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.resample_t.html#torch_ecg.utils.resample_t" title="torch_ecg.utils.resample_t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample_t</span></code></a>(sig[, fs, dst_fs, siglen, inplace])</p></td>
-<td><p>Resample signal tensors to a new sampling frequency or a new signal length,</p></td>
+<td><p>Resample signal tensors to a new sampling frequency or a new signal length.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1177,34 +1177,34 @@ throughout the package.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.get_mask.html#torch_ecg.utils.get_mask" title="torch_ecg.utils.get_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_mask</span></code></a>(shape, critical_points, left_bias, ...)</p></td>
-<td><p>get the mask around the <cite>critical_points</cite></p></td>
+<td><p>Get the mask around the given critical points.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.class_weight_to_sample_weight.html#torch_ecg.utils.class_weight_to_sample_weight" title="torch_ecg.utils.class_weight_to_sample_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_weight_to_sample_weight</span></code></a>(y[, class_weight])</p></td>
-<td><p>Transform class weight to sample weight</p></td>
+<td><p>Transform class weight to sample weight.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.ensure_lead_fmt.html#torch_ecg.utils.ensure_lead_fmt" title="torch_ecg.utils.ensure_lead_fmt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_lead_fmt</span></code></a>(values[, n_leads, fmt])</p></td>
-<td><p>Ensure the <cite>n_leads</cite>-lead (ECG) signal to be of the format of <cite>fmt</cite></p></td>
+<td><p>Ensure the multi-lead (ECG) signal to be of specified format.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.ensure_siglen.html#torch_ecg.utils.ensure_siglen" title="torch_ecg.utils.ensure_siglen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_siglen</span></code></a>(values, siglen[, fmt, tolerance])</p></td>
-<td><p>Ensure the (ECG) signal to be of length <cite>siglen</cite>.</p></td>
+<td><p>Ensure the (ECG) signal to be of specified length.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.masks_to_waveforms.html#torch_ecg.utils.masks_to_waveforms" title="torch_ecg.utils.masks_to_waveforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">masks_to_waveforms</span></code></a>(masks, class_map, fs[, ...])</p></td>
-<td><p>Convert masks into lists of waveforms</p></td>
+<td><p>Convert masks into lists of <code class="xref py py-class docutils literal notranslate"><span class="pre">ECGWaveForm</span></code> for each lead.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.mask_to_intervals.html#torch_ecg.utils.mask_to_intervals" title="torch_ecg.utils.mask_to_intervals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mask_to_intervals</span></code></a>(mask[, vals, right_inclusive])</p></td>
-<td><p>Convert a mask into a list of intervals, or a dict of lists of intervals, if <cite>vals</cite> has multiple values</p></td>
+<td><p>Convert a mask into a list of intervals, or a dict of lists of intervals.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.uniform.html#torch_ecg.utils.uniform" title="torch_ecg.utils.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">uniform</span></code></a>(low, high, num)</p></td>
-<td><p>Generate a list of <cite>num</cite> numbers uniformly distributed between <cite>low</cite> and <cite>high</cite></p></td>
+<td><p>Generate a list of numbers uniformly distributed.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.stratified_train_test_split.html#torch_ecg.utils.stratified_train_test_split" title="torch_ecg.utils.stratified_train_test_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stratified_train_test_split</span></code></a>(df, stratified_cols)</p></td>
-<td><p>Do stratified train-test split on the dataframe,</p></td>
+<td><p>Perform stratified train-test split on the dataframe.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.cls_to_bin.html#torch_ecg.utils.cls_to_bin" title="torch_ecg.utils.cls_to_bin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cls_to_bin</span></code></a>(cls_array[, num_classes])</p></td>
-<td><p>Converting a categorical (class indices) array of shape (n,) to a one-hot (binary) array of shape (n, num_classes)</p></td>
+<td><p>Convert a categorical array to a one-hot array.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.generate_weight_mask.html#torch_ecg.utils.generate_weight_mask" title="torch_ecg.utils.generate_weight_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_weight_mask</span></code></a>(target_mask, fg_weight, ...)</p></td>
-<td><p>Generate weight mask for a binary target mask, accounting the foreground weight and boundary weight</p></td>
+<td><p>Generate weight mask for a binary target mask, accounting the foreground weight and boundary weight.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1226,7 +1226,7 @@ throughout the package.</p>
 <td><p>Check whether val is inside generalized_interval or not.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.intervals_union.html#torch_ecg.utils.intervals_union" title="torch_ecg.utils.intervals_union"><code class="xref py py-obj docutils literal notranslate"><span class="pre">intervals_union</span></code></a>(interval_list[, ...])</p></td>
-<td><p>find the union (ordered and non-intersecting) of all the intervals in <cite>interval_list</cite>, which is a list of intervals in the form [a,b], where a,b need not be ordered</p></td>
+<td><p>Find the union of intervals.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.generalized_intervals_union.html#torch_ecg.utils.generalized_intervals_union" title="torch_ecg.utils.generalized_intervals_union"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generalized_intervals_union</span></code></a>(interval_list[, ...])</p></td>
 <td><p>Calculate the union of a list (or tuple) of <code class="docutils literal notranslate"><span class="pre">GeneralizedInterval</span></code>.</p></td>
@@ -1238,22 +1238,22 @@ throughout the package.</p>
 <td><p>calculate the intersection of intervals.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.generalized_interval_complement.html#torch_ecg.utils.generalized_interval_complement" title="torch_ecg.utils.generalized_interval_complement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generalized_interval_complement</span></code></a>(...)</p></td>
-<td><p>calculate the complement of <cite>generalized_interval</cite> in <cite>total_interval</cite></p></td>
+<td><p>Calculate the complement of an interval in another interval.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.get_optimal_covering.html#torch_ecg.utils.get_optimal_covering" title="torch_ecg.utils.get_optimal_covering"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_optimal_covering</span></code></a>(total_interval, ...[, ...])</p></td>
-<td><p>compute an optimal covering (disjoint union of intervals) that covers <cite>to_cover</cite> such that each interval in the covering is of length at least <cite>min_len</cite>, and any two intervals in the covering have distance at least <cite>split_threshold</cite></p></td>
+<td><p>Compute an optimal covering of <cite>to_cover</cite> by intervals.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.interval_len.html#torch_ecg.utils.interval_len" title="torch_ecg.utils.interval_len"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval_len</span></code></a>(interval)</p></td>
-<td><p>compute the length of an interval.</p></td>
+<td><p>Compute the length of an interval.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.generalized_interval_len.html#torch_ecg.utils.generalized_interval_len" title="torch_ecg.utils.generalized_interval_len"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generalized_interval_len</span></code></a>(generalized_interval)</p></td>
-<td><p>compute the length of a generalized interval.</p></td>
+<td><p>Compute the length of an interval.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.find_extrema.html#torch_ecg.utils.find_extrema" title="torch_ecg.utils.find_extrema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_extrema</span></code></a>(signal[, mode])</p></td>
 <td><p>Locate local extrema points in a 1D signal.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.is_intersect.html#torch_ecg.utils.is_intersect" title="torch_ecg.utils.is_intersect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_intersect</span></code></a>(interval, another_interval)</p></td>
-<td><p>determines if two (generalized) intervals intersect or not</p></td>
+<td><p>Determines if two (generalized) intervals intersect or not.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.max_disjoint_covering.html#torch_ecg.utils.max_disjoint_covering" title="torch_ecg.utils.max_disjoint_covering"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_disjoint_covering</span></code></a>(intervals[, ...])</p></td>
 <td><p>Find the largest (the largest interval length) covering of a sequence of intervals.</p></td>
@@ -1294,10 +1294,10 @@ throughout the package.</p>
 <td><p>Decorator to add docstring to a function or a class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.remove_parameters_returns_from_docstring.html#torch_ecg.utils.remove_parameters_returns_from_docstring" title="torch_ecg.utils.remove_parameters_returns_from_docstring"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_parameters_returns_from_docstring</span></code></a>(doc)</p></td>
-<td><p>remove parameters and/or returns from docstring, which is of the format of numpydoc</p></td>
+<td><p>Remove parameters and/or returns from docstring, which is of the format of <cite>numpydoc</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.default_class_repr.html#torch_ecg.utils.default_class_repr" title="torch_ecg.utils.default_class_repr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_class_repr</span></code></a>(c[, align, depth])</p></td>
-<td><p>Default class representation</p></td>
+<td><p>Default class representation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.ReprMixin.html#torch_ecg.utils.ReprMixin" title="torch_ecg.utils.ReprMixin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReprMixin</span></code></a>()</p></td>
 <td><p>Mixin class for enhanced <code class="xref py py-meth docutils literal notranslate"><span class="pre">__repr__()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">__str__()</span></code> methods.</p></td>
@@ -1306,13 +1306,13 @@ throughout the package.</p>
 <td><p>Mixin class for getting citations from DOIs.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.get_kwargs.html#torch_ecg.utils.get_kwargs" title="torch_ecg.utils.get_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_kwargs</span></code></a>(func_or_cls[, kwonly])</p></td>
-<td><p>get the kwargs of a function or class</p></td>
+<td><p>Get the kwargs of a function or class.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.get_required_args.html#torch_ecg.utils.get_required_args" title="torch_ecg.utils.get_required_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_required_args</span></code></a>(func_or_cls)</p></td>
-<td><p>get the required positional arguments of a function or class</p></td>
+<td><p>Get the required positional arguments of a function or class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.add_kwargs.html#torch_ecg.utils.add_kwargs" title="torch_ecg.utils.add_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_kwargs</span></code></a>(func, **kwargs)</p></td>
-<td><p>add keyword arguments to a function, in order to make it compatible with other functions</p></td>
+<td><p>Add keyword arguments to a function.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1322,7 +1322,7 @@ throughout the package.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.get_record_list_recursive3.html#torch_ecg.utils.get_record_list_recursive3" title="torch_ecg.utils.get_record_list_recursive3"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_record_list_recursive3</span></code></a>(db_dir, rec_patterns)</p></td>
-<td><p>get the list of records in <cite>db_dir</cite> recursively, for example, there are two folders &quot;patient1&quot;, &quot;patient2&quot; in <cite>db_dir</cite>, and there are records &quot;A0001&quot;, &quot;A0002&quot;, .</p></td>
+<td><p>Get the list of records in a recursive manner.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1332,21 +1332,16 @@ throughout the package.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.dict_to_str.html#torch_ecg.utils.dict_to_str" title="torch_ecg.utils.dict_to_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict_to_str</span></code></a>(d[, current_depth, indent_spaces])</p></td>
-<td><p>convert a (possibly) nested dict into a <cite>str</cite> of json-like formatted form, this nested dict might also contain lists or tuples of dict (and of str, int, etc.)</p></td>
+<td><p>Convert a (possibly) nested dict into a <cite>str</cite> of json-like formatted form.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.str2bool.html#torch_ecg.utils.str2bool" title="torch_ecg.utils.str2bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str2bool</span></code></a>(v)</p></td>
-<td><p>converts a &quot;boolean&quot; value possibly in the format of str to bool</p></td>
+<td><p>Converts a &quot;boolean&quot; value possibly in the format of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> to <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.nildent.html#torch_ecg.utils.nildent" title="torch_ecg.utils.nildent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nildent</span></code></a>(text)</p></td>
-<td><p>kill all leading white spaces in each line of <cite>text</cite>, while keeping all lines (including empty)</p></td>
+<td><p>Kill all leading white spaces in each line of <cite>text</cite>, while keeping all lines (including empty)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.get_date_str.html#torch_ecg.utils.get_date_str" title="torch_ecg.utils.get_date_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_date_str</span></code></a>([fmt])</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">param fmt<span class="colon">:</span></dt>
-<dd class="field-odd"><p>format of the string of date</p>
-</dd>
-</dl>
-</p></td>
+<td><p>Get the current time in the <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> format.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1356,23 +1351,13 @@ throughout the package.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.init_logger.html#torch_ecg.utils.init_logger" title="torch_ecg.utils.init_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init_logger</span></code></a>([log_dir, log_file, log_name, ...])</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">param log_dir<span class="colon">:</span></dt>
-<dd class="field-odd"><p>directory of the log file,</p>
-</dd>
-</dl>
-</p></td>
+<td><p>Initialize a logger.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.list_sum.html#torch_ecg.utils.list_sum" title="torch_ecg.utils.list_sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_sum</span></code></a>(lst)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">param lst<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the sequence of lists to obtain the summation</p>
-</dd>
-</dl>
-</p></td>
+<td><p>Sum a sequence of lists.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.utils.dicts_equal.html#torch_ecg.utils.dicts_equal" title="torch_ecg.utils.dicts_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dicts_equal</span></code></a>(d1, d2[, allow_array_diff_types])</p></td>
-<td><p>Determine if two dicts are equal</p></td>
+<td><p>Determine if two dicts are equal.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/torch_ecg.utils.MovingAverage.html#torch_ecg.utils.MovingAverage" title="torch_ecg.utils.MovingAverage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MovingAverage</span></code></a>([data])</p></td>
 <td><p>Class for computing moving average.</p></td>

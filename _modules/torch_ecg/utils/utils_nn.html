@@ -1119,25 +1119,26 @@
 <div class="viewcode-block" id="extend_predictions"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.extend_predictions.html#torch_ecg.utils.extend_predictions">[docs]</a><span class="k">def</span> <span class="nf">extend_predictions</span><span class="p">(</span>
     <span class="n">preds</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">extended_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    extend the prediction arrays to prediction arrays in larger range of classes</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extend the prediction arrays to prediction arrays in larger range of classes</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    preds: sequence,</span>
-<span class="sd">        sequence of predictions (scalar or binary) of shape (n_records, n_classes),</span>
-<span class="sd">        or categorical predictions of shape (n_classes,),</span>
-<span class="sd">        where n_classes = `len(classes)`</span>
-<span class="sd">    classes: list of str,</span>
-<span class="sd">        classes of the predictions of `preds`</span>
-<span class="sd">    extended_classes: list of str,</span>
-<span class="sd">        a superset of `classes`</span>
+<span class="sd">    preds : array_like</span>
+<span class="sd">        Array of predictions (scalar or binary) of shape</span>
+<span class="sd">        ``(n_records, n_classes)``,</span>
+<span class="sd">        or categorical predictions of shape ``(n_classes,)``,</span>
+<span class="sd">        where ``n_classes = len(classes)``.</span>
+<span class="sd">    classes : List[str]</span>
+<span class="sd">        Classes of the predictions of `preds`.</span>
+<span class="sd">    extended_classes : List[str]</span>
+<span class="sd">        A superset of `classes`.</span>
+<span class="sd">        The predictions will be extended to this range of classes.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    extended_preds: ndarray,</span>
-<span class="sd">        the extended array of predictions, with indices in `extended_classes`,</span>
-<span class="sd">        of shape (n_records, n_classes), or (n_classes,)</span>
+<span class="sd">    extended_preds : numpy.ndarray</span>
+<span class="sd">        The extended array of predictions, with indices in `extended_classes`,</span>
+<span class="sd">        of shape ``(n_records, n_classes)``, or ``(n_classes,)``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1199,43 +1200,49 @@
     <span class="n">channel_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">asymmetric_padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the output shape of a (transpose) convolution/maxpool/avgpool layer</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a (transpose) convolution/maxpool/avgpool layer.</span>
+
+<span class="sd">    This function is based on the discussion [#disc]_.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    layer_type: str,</span>
-<span class="sd">        type (conv, maxpool, avgpool, etc.) of the layer</span>
-<span class="sd">    input_shape: sequence of int or None,</span>
-<span class="sd">        shape of an input Tensor,</span>
-<span class="sd">        the first dimension is the batch dimension, which is allowed to be `None`</span>
-<span class="sd">    num_filters: int, optional,</span>
-<span class="sd">        number of filters, also the channel dimension</span>
-<span class="sd">    kernel_size: int, or sequence of int, default 1,</span>
-<span class="sd">        kernel size (filter size) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    stride: int, or sequence of int, default 1,</span>
-<span class="sd">        stride (down-sampling length) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    padding: int, or sequence of int, default 0,</span>
-<span class="sd">        padding length(s) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    output_padding: int, or sequence of int, default 0,</span>
-<span class="sd">        additional size added to one side of the output shape,</span>
-<span class="sd">        used only for transpose convolution</span>
-<span class="sd">    dilation: int, or sequence of int, default 1,</span>
-<span class="sd">        dilation of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    channel_last: bool, default False,</span>
-<span class="sd">        channel dimension is the last dimension,</span>
-<span class="sd">        or the second dimension (the first is the batch dimension by convention)</span>
-<span class="sd">    asymmetric_padding: (2-)sequence of int or sequence of (2-)sequence of int,</span>
-<span class="sd">        asymmetric paddings for all dimensions or for each dimension</span>
+<span class="sd">    layer_type : str</span>
+<span class="sd">        Type (conv, maxpool, avgpool, etc.) of the layer.</span>
+<span class="sd">    input_shape : Sequence[Union[int, None]]</span>
+<span class="sd">        Shape of an input :class:`~torch.Tensor`.</span>
+<span class="sd">        The first dimension is the batch dimension,</span>
+<span class="sd">        which is allowed to be `None`.</span>
+<span class="sd">    num_filters : int, optional</span>
+<span class="sd">        Number of filters, also the channel dimension.</span>
+<span class="sd">    kernel_size : int or Sequence[int], default 1</span>
+<span class="sd">        Kernel size (filter size) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    stride : int or Sequence[int], default 1</span>
+<span class="sd">        Stride (down-sampling length) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    padding : int or Sequence[int], default 0</span>
+<span class="sd">        Padding length(s) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    output_padding : int or Sequence[int], default 0</span>
+<span class="sd">        Additional size added to one side of the output shape,</span>
+<span class="sd">        used only for transpose convolution.</span>
+<span class="sd">    dilation : int or Sequence[int], default 1</span>
+<span class="sd">        Dilation of the layer, should be compatible with `input_shape`.</span>
+<span class="sd">    channel_last : bool, default False</span>
+<span class="sd">        Whether the channel dimension is the last dimension,</span>
+<span class="sd">        or the second dimension (the first is the batch dimension by convention).</span>
+<span class="sd">    asymmetric_padding : Sequence[int] or Sequence[Sequence[int]], optional</span>
+<span class="sd">        (2-)sequence of int or sequence of (2-)sequence of int</span>
+<span class="sd">        asymmetric paddings for all dimensions or for each dimension.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    output_shape: tuple,</span>
-<span class="sd">        shape of the output Tensor</span>
+<span class="sd">    output_shape : tuple</span>
+<span class="sd">        Shape of the output :class:`~torch.Tensor`.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    [1] https://discuss.pytorch.org/t/utility-function-for-calculating-the-shape-of-a-conv-output/11173/5</span>
+<span class="sd">    .. [#disc] https://discuss.pytorch.org/t/utility-function-for-calculating-the-shape-of-a-conv-output/11173/5</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># check validity of arguments</span>
@@ -1490,34 +1497,38 @@
     <span class="n">channel_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">asymmetric_padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the output shape of a convolution/maxpool/avgpool layer</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a convolution layer.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    input_shape: sequence of int or None,</span>
-<span class="sd">        shape of an input Tensor,</span>
-<span class="sd">        the first dimension is the batch dimension, which is allowed to be `None`</span>
-<span class="sd">    num_filters: int, optional,</span>
-<span class="sd">        number of filters, also the channel dimension</span>
-<span class="sd">    kernel_size: int, or sequence of int, default 1,</span>
-<span class="sd">        kernel size (filter size) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    stride: int, or sequence of int, default 1,</span>
-<span class="sd">        stride (down-sampling length) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    padding: int, or sequence of int, default 0,</span>
-<span class="sd">        padding length(s) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    dilation: int, or sequence of int, default 1,</span>
-<span class="sd">        dilation of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    channel_last: bool, default False,</span>
-<span class="sd">        channel dimension is the last dimension,</span>
-<span class="sd">        or the second dimension (the first is the batch dimension by convention)</span>
-<span class="sd">    asymmetric_padding: (2-)sequence of int or sequence of (2-)sequence of int,</span>
-<span class="sd">        asymmetric paddings for all dimensions or for each dimension</span>
+<span class="sd">    input_shape : Sequence[Union[int, None]]</span>
+<span class="sd">        Shape of an input :class:`~torch.Tensor`.</span>
+<span class="sd">        The first dimension is the batch dimension,</span>
+<span class="sd">        which is allowed to be `None`.</span>
+<span class="sd">    num_filters : int, optional</span>
+<span class="sd">        Number of filters, also the channel dimension.</span>
+<span class="sd">    kernel_size : int or Sequence[int], default 1</span>
+<span class="sd">        Kernel size (filter size) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    stride : int or Sequence[int], default 1</span>
+<span class="sd">        Stride (down-sampling length) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    padding : int or Sequence[int], default 0</span>
+<span class="sd">        Padding length(s) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    dilation : int or Sequence[int], default 1</span>
+<span class="sd">        Dilation of the layer, should be compatible with `input_shape`.</span>
+<span class="sd">    channel_last : bool, default False</span>
+<span class="sd">        Whether the channel dimension is the last dimension,</span>
+<span class="sd">        or the second dimension (the first is the batch dimension by convention).</span>
+<span class="sd">    asymmetric_padding : Sequence[int] or Sequence[Sequence[int]], optional</span>
+<span class="sd">        (2-)sequence of int or sequence of (2-)sequence of int</span>
+<span class="sd">        asymmetric paddings for all dimensions or for each dimension.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    output_shape: tuple,</span>
-<span class="sd">        shape of the output Tensor</span>
+<span class="sd">    output_shape : tuple</span>
+<span class="sd">        Shape of the output :class:`~torch.Tensor`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">output_shape</span> <span class="o">=</span> <span class="n">compute_output_shape</span><span class="p">(</span>
@@ -1543,30 +1554,33 @@
     <span class="n">dilation</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">channel_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    compute the output shape of a maxpool layer</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a maxpool layer.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    input_shape: sequence of int or None,</span>
-<span class="sd">        shape of an input Tensor,</span>
-<span class="sd">        the first dimension is the batch dimension, which is allowed to be `None`</span>
-<span class="sd">    kernel_size: int, or sequence of int, default 1,</span>
-<span class="sd">        kernel size (filter size) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    stride: int, or sequence of int, default 1,</span>
-<span class="sd">        stride (down-sampling length) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    padding: int, or sequence of int, default 0,</span>
-<span class="sd">        padding length(s) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    dilation: int, or sequence of int, default 1,</span>
-<span class="sd">        dilation of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    channel_last: bool, default False,</span>
-<span class="sd">        channel dimension is the last dimension,</span>
-<span class="sd">        or the second dimension (the first is the batch dimension by convention)</span>
+<span class="sd">    input_shape : Sequence[Union[int, None]]</span>
+<span class="sd">        Shape of an input :class:`~torch.Tensor`.</span>
+<span class="sd">        The first dimension is the batch dimension,</span>
+<span class="sd">        which is allowed to be `None`.</span>
+<span class="sd">    kernel_size : int or Sequence[int], default 1</span>
+<span class="sd">        Kernel size (filter size) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    stride : int or Sequence[int], default 1</span>
+<span class="sd">        Stride (down-sampling length) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    padding : int or Sequence[int], default 0</span>
+<span class="sd">        Padding length(s) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    dilation : int or Sequence[int], default 1</span>
+<span class="sd">        Dilation of the layer, should be compatible with `input_shape`.</span>
+<span class="sd">    channel_last : bool, default False</span>
+<span class="sd">        Whether the channel dimension is the last dimension,</span>
+<span class="sd">        or the second dimension (the first is the batch dimension by convention).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    output_shape: tuple,</span>
-<span class="sd">        shape of the output Tensor</span>
+<span class="sd">    output_shape : tuple</span>
+<span class="sd">        Shape of the output :class:`~torch.Tensor`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">output_shape</span> <span class="o">=</span> <span class="n">compute_output_shape</span><span class="p">(</span>
@@ -1590,28 +1604,31 @@
     <span class="n">padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">channel_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the output shape of a avgpool layer</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a avgpool layer.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    input_shape: sequence of int or None,</span>
-<span class="sd">        shape of an input Tensor,</span>
-<span class="sd">        the first dimension is the batch dimension, which is allowed to be `None`</span>
-<span class="sd">    kernel_size: int, or sequence of int, default 1,</span>
-<span class="sd">        kernel size (filter size) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    stride: int, or sequence of int, default 1,</span>
-<span class="sd">        stride (down-sampling length) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    padding: int, or sequence of int, default 0,</span>
-<span class="sd">        padding length(s) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    channel_last: bool, default False,</span>
-<span class="sd">        channel dimension is the last dimension,</span>
-<span class="sd">        or the second dimension (the first is the batch dimension by convention)</span>
+<span class="sd">    input_shape : Sequence[Union[int, None]]</span>
+<span class="sd">        Shape of an input :class:`~torch.Tensor`.</span>
+<span class="sd">        The first dimension is the batch dimension,</span>
+<span class="sd">        which is allowed to be `None`.</span>
+<span class="sd">    kernel_size : int or Sequence[int], default 1</span>
+<span class="sd">        Kernel size (filter size) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    stride : int or Sequence[int], default 1</span>
+<span class="sd">        Stride (down-sampling length) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    padding : int or Sequence[int], default 0</span>
+<span class="sd">        Padding length(s) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    channel_last : bool, default False</span>
+<span class="sd">        Whether the channel dimension is the last dimension,</span>
+<span class="sd">        or the second dimension (the first is the batch dimension by convention).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    output_shape: tuple,</span>
-<span class="sd">        shape of the output Tensor</span>
+<span class="sd">    output_shape : tuple</span>
+<span class="sd">        Shape of the output :class:`~torch.Tensor`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">output_shape</span> <span class="o">=</span> <span class="n">compute_output_shape</span><span class="p">(</span>
@@ -1639,37 +1656,40 @@
     <span class="n">channel_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">asymmetric_padding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the output shape of a transpose convolution layer</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the output shape of a transpose convolution layer</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    input_shape: sequence of int or None,</span>
-<span class="sd">        shape of an input Tensor,</span>
-<span class="sd">        the first dimension is the batch dimension, which is allowed to be `None`</span>
-<span class="sd">    num_filters: int, optional,</span>
-<span class="sd">        number of filters, also the channel dimension</span>
-<span class="sd">    kernel_size: int, or sequence of int, default 1,</span>
-<span class="sd">        kernel size (filter size) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    stride: int, or sequence of int, default 1,</span>
-<span class="sd">        stride (down-sampling length) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    padding: int, or sequence of int, default 0,</span>
-<span class="sd">        padding length(s) of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    out_padding: int, or sequence of int, default 0,</span>
-<span class="sd">        additional size added to one side of the output shape,</span>
-<span class="sd">        used only for transpose convolution</span>
-<span class="sd">    dilation: int, or sequence of int, default 1,</span>
-<span class="sd">        dilation of the layer, should be compatible with `input_shape`</span>
-<span class="sd">    channel_last: bool, default False,</span>
-<span class="sd">        channel dimension is the last dimension,</span>
-<span class="sd">        or the second dimension (the first is the batch dimension by convention)</span>
-<span class="sd">    asymmetric_padding: (2-)sequence of int or sequence of (2-)sequence of int,</span>
-<span class="sd">        asymmetric paddings for all dimensions or for each dimension</span>
+<span class="sd">    input_shape : Sequence[Union[int, None]]</span>
+<span class="sd">        Shape of an input :class:`~torch.Tensor`.</span>
+<span class="sd">        The first dimension is the batch dimension,</span>
+<span class="sd">        which is allowed to be `None`.</span>
+<span class="sd">    num_filters : int, optional</span>
+<span class="sd">        Number of filters, also the channel dimension.</span>
+<span class="sd">    kernel_size : int or Sequence[int], default 1</span>
+<span class="sd">        Kernel size (filter size) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    stride : int or Sequence[int], default 1</span>
+<span class="sd">        Stride (down-sampling length) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    padding : int or Sequence[int], default 0</span>
+<span class="sd">        Padding length(s) of the layer,</span>
+<span class="sd">        should be compatible with `input_shape`.</span>
+<span class="sd">    output_padding : int or Sequence[int], default 0</span>
+<span class="sd">        Additional size added to one side of the output shape.</span>
+<span class="sd">    dilation : int or Sequence[int], default 1</span>
+<span class="sd">        Dilation of the layer, should be compatible with `input_shape`.</span>
+<span class="sd">    channel_last : bool, default False</span>
+<span class="sd">        Whether the channel dimension is the last dimension,</span>
+<span class="sd">        or the second dimension (the first is the batch dimension by convention).</span>
+<span class="sd">    asymmetric_padding : Sequence[int] or Sequence[Sequence[int]], optional</span>
+<span class="sd">        (2-)sequence of int or sequence of (2-)sequence of int</span>
+<span class="sd">        asymmetric paddings for all dimensions or for each dimension.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    output_shape: tuple,</span>
-<span class="sd">        shape of the output Tensor</span>
+<span class="sd">    output_shape : tuple</span>
+<span class="sd">        Shape of the output :class:`~torch.Tensor`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">output_shape</span> <span class="o">=</span> <span class="n">compute_output_shape</span><span class="p">(</span>
@@ -1859,7 +1879,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    receptive_field : int or float</span>
-<span class="sd">        (length) of the receptive field.</span>
+<span class="sd">        (Length) of the receptive field.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1902,21 +1922,22 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Default collate functions for model training.</span>
 
-<span class="sd">    the data generator (`Dataset`) should</span>
-<span class="sd">    generate (`__getitem__`) n-tuples `signals, labels, ...`,</span>
+<span class="sd">    The data generator (:class:`~torch.utils.data.Dataset`) should</span>
+<span class="sd">    generate (`__getitem__`) n-tuples ``signals, labels, ...``,</span>
 <span class="sd">    or dictionaries of tensors.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    batch: sequence,</span>
-<span class="sd">        sequence of n-tuples,</span>
+<span class="sd">    batch : sequence</span>
+<span class="sd">        Sequence of n-tuples,</span>
 <span class="sd">        in which the first element is the signal, the second is the label, ...;</span>
-<span class="sd">        or sequence of dictionaries of tensors</span>
+<span class="sd">        or sequence of dictionaries of tensors.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tuple or dict of Tensor,</span>
-<span class="sd">        the concatenated values to feed into neural networks</span>
+<span class="sd">    tuple or dict</span>
+<span class="sd">        Tuple or dict of :class:`~torch.Tensor`, which are</span>
+<span class="sd">        the concatenated values to feed into neural networks.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
@@ -1928,21 +1949,22 @@
 
 
 <span class="k">def</span> <span class="nf">_default_collate_fn</span><span class="p">(</span><span class="n">batch</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    collate functions for model training</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collate functions for tuples of tensors.</span>
 
-<span class="sd">    the data generator (`Dataset`) should generate (`__getitem__`) n-tuples `signals, labels, ...`</span>
+<span class="sd">    The data generator (:class:`~torch.utils.data.Dataset`) should</span>
+<span class="sd">    generate (`__getitem__`) n-tuples ``signals, labels, ...``,</span>
+<span class="sd">    or dictionaries of tensors.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    batch: sequence,</span>
-<span class="sd">        sequence of n-tuples,</span>
+<span class="sd">    batch : sequence</span>
+<span class="sd">        Sequence of n-tuples,</span>
 <span class="sd">        in which the first element is the signal, the second is the label, ...</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    tuple of Tensor,</span>
-<span class="sd">        the concatenated values to feed into neural networks</span>
+<span class="sd">    Tuple[torch.Tensor]</span>
+<span class="sd">        The concatenated values to feed into neural networks.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
@@ -1967,25 +1989,24 @@
     <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;filter_length|filter_size&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    adjust the filter lengths (kernel sizes) in the config for convolutional neural networks,</span>
-<span class="sd">    according to the new sampling frequency</span>
+<span class="sd">    Adjust the filter lengths (kernel sizes) in the config for</span>
+<span class="sd">    convolutional neural networks, according to the new sampling frequency.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    config: dict,</span>
-<span class="sd">        the config dictionary,</span>
-<span class="sd">        this dict is NOT modified</span>
-<span class="sd">    fs: int,</span>
-<span class="sd">        the new sampling frequency</span>
-<span class="sd">    ensure_odd: bool, default True,</span>
-<span class="sd">        if True, the new filter lengths are ensured to be odd</span>
-<span class="sd">    pattern: str, default &quot;filter_length|filter_size&quot;,</span>
-<span class="sd">        the pattern to search for in the config items related to filter lengths</span>
+<span class="sd">    config : dict</span>
+<span class="sd">        The config dictionary. This `dict` is **NOT** modified.</span>
+<span class="sd">    fs : int</span>
+<span class="sd">        The new sampling frequency.</span>
+<span class="sd">    ensure_odd : bool, default True</span>
+<span class="sd">        If True, the new filter lengths are ensured to be odd.</span>
+<span class="sd">    pattern : str, default &quot;filter_length|filter_size&quot;</span>
+<span class="sd">        The pattern to search for in the config items related to filter lengths.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    config: dict,</span>
-<span class="sd">        the adjusted config dictionary</span>
+<span class="sd">    config : dict</span>
+<span class="sd">        The adjusted config dictionary.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="s2">&quot;fs&quot;</span> <span class="ow">in</span> <span class="n">config</span>
@@ -2032,25 +2053,24 @@
     <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;filter_length|filter_size&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    adjust the filter lengths in the config for convolutional neural networks,</span>
-<span class="sd">    according to the new sampling frequency</span>
+<span class="sd">    Adjust the filter lengths in the config for</span>
+<span class="sd">    convolutional neural networks, according to the new sampling frequency.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    config: dict,</span>
-<span class="sd">        the config dictionary,</span>
-<span class="sd">        this dict is NOT modified</span>
-<span class="sd">    fs: int,</span>
-<span class="sd">        the new sampling frequency</span>
-<span class="sd">    ensure_odd: bool, default True,</span>
-<span class="sd">        if True, the new filter lengths are ensured to be odd</span>
-<span class="sd">    pattern: str, default &quot;filter_length|filter_size&quot;,</span>
-<span class="sd">        the pattern to search for in the config items related to filter lengths</span>
+<span class="sd">    config : dict</span>
+<span class="sd">        The config dictionary. This `dict` is **NOT** modified.</span>
+<span class="sd">    fs : int</span>
+<span class="sd">        The new sampling frequency.</span>
+<span class="sd">    ensure_odd : bool, default True</span>
+<span class="sd">        If True, the new filter lengths are ensured to be odd.</span>
+<span class="sd">    pattern : str, default &quot;filter_length|filter_size&quot;</span>
+<span class="sd">        The pattern to search for in the config items related to filter lengths.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    config: dict,</span>
-<span class="sd">        the adjusted config dictionary</span>
+<span class="sd">    config : dict</span>
+<span class="sd">        The adjusted config dictionary.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">_adjust_cnn_filter_lengths</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">ensure_odd</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
@@ -2115,23 +2135,22 @@
     <span class="k">def</span> <span class="nf">from_checkpoint</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        load a model from a checkpoint</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a model from a checkpoint.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        path: str or Path,</span>
-<span class="sd">            path of the checkpoint</span>
-<span class="sd">        device: torch.device, optional,</span>
-<span class="sd">            map location of the model parameters,</span>
-<span class="sd">            defaults &quot;cuda&quot; if available, otherwise &quot;cpu&quot;</span>
+<span class="sd">        path : str or pathlib.Path</span>
+<span class="sd">            Path of the checkpoint.</span>
+<span class="sd">        device : torch.device, optional</span>
+<span class="sd">            Map location of the model parameters,</span>
+<span class="sd">            defaults to &quot;cuda&quot; if available, otherwise &quot;cpu&quot;.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        model: Module,</span>
-<span class="sd">            the model loaded from a checkpoint</span>
-<span class="sd">        aux_config: dict,</span>
-<span class="sd">            auxiliary configs that are needed for data preprocessing, etc.</span>
+<span class="sd">        model : torch.nn.Module</span>
+<span class="sd">            The model loaded from a checkpoint.</span>
+<span class="sd">        aux_config : dict</span>
+<span class="sd">            Auxiliary configs that are needed for data preprocessing, etc.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_device</span> <span class="o">=</span> <span class="n">device</span> <span class="ow">or</span> <span class="n">DEFAULTS</span><span class="o">.</span><span class="n">device</span>
@@ -2152,16 +2171,19 @@
         <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">aux_config</span></div>
 
 <div class="viewcode-block" id="CkptMixin.save"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.CkptMixin.html#torch_ecg.utils.CkptMixin.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">train_config</span><span class="p">:</span> <span class="n">CFG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Save the model to `path`</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the model to disk.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        path: str or Path,</span>
-<span class="sd">            path to save the model</span>
-<span class="sd">        train_config: CFG,</span>
-<span class="sd">            config for training the model,</span>
-<span class="sd">            used when one restores the model</span>
+<span class="sd">        path : str or pathlib.Path</span>
+<span class="sd">            Path to save the model.</span>
+<span class="sd">        train_config : CFG</span>
+<span class="sd">            Config for training the model,</span>
+<span class="sd">            used when one restores the model.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>

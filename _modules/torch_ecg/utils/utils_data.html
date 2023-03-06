@@ -1076,8 +1076,7 @@
             
   <h1>Source code for torch_ecg.utils.utils_data</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">utilities for convertions of data, labels, masks, etc.</span>
-
+<span class="sd">Utilities for convertions of data, labels, masks, etc.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
@@ -1131,28 +1130,31 @@
     <span class="n">right_bias</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">return_fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mask&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    get the mask around the `critical_points`</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the mask around the given critical points.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    shape: int, or sequence of int,</span>
-<span class="sd">        shape of the mask (and the original data)</span>
-<span class="sd">    critical_points: ndarray,</span>
-<span class="sd">        indices (of the last dimension) of the points around which to be masked (value 1)</span>
-<span class="sd">    left_bias: int, non-negative</span>
-<span class="sd">        bias to the left of the critical points for the mask</span>
-<span class="sd">    right_bias: int, non-negative</span>
-<span class="sd">        bias to the right of the critical points for the mask</span>
-<span class="sd">    return_fmt: str, default &quot;mask&quot;,</span>
-<span class="sd">        format of the return values,</span>
-<span class="sd">        &quot;mask&quot; for the usual mask,</span>
-<span class="sd">        can also be &quot;intervals&quot;, which consists of a list of intervals</span>
+<span class="sd">    shape : int or Sequence[int]</span>
+<span class="sd">        Shape of the mask (and the original data).</span>
+<span class="sd">    critical_points : numpy.ndarray</span>
+<span class="sd">        Indices (of the last dimension) of the points</span>
+<span class="sd">        around which to be masked (value 1).</span>
+<span class="sd">    left_bias : int</span>
+<span class="sd">        Bias to the left of the critical points for the mask,</span>
+<span class="sd">        non-negative.</span>
+<span class="sd">    right_bias : int</span>
+<span class="sd">        Bias to the right of the critical points for the mask,</span>
+<span class="sd">        non-negative.</span>
+<span class="sd">    return_fmt : {&quot;mask&quot;, &quot;intervals&quot;}</span>
+<span class="sd">        Format of the return values, by default &quot;mask&quot;.</span>
+<span class="sd">        &quot;mask&quot; stands for the usual mask, while</span>
+<span class="sd">        &quot;intervals&quot; means a list of intervals of the</span>
+<span class="sd">        form ``[start, end]``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    mask: ndarray or list,</span>
-<span class="sd">        the mask array</span>
+<span class="sd">    numpy.ndarray or list</span>
+<span class="sd">        The mask array or the list of intervals.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1182,26 +1184,26 @@
 
 
 <div class="viewcode-block" id="class_weight_to_sample_weight"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.class_weight_to_sample_weight.html#torch_ecg.utils.class_weight_to_sample_weight">[docs]</a><span class="k">def</span> <span class="nf">class_weight_to_sample_weight</span><span class="p">(</span>
-    <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">class_weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;balanced&quot;</span>
+    <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">class_weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;balanced&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Transform class weight to sample weight</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform class weight to sample weight.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    y: ndarray,</span>
-<span class="sd">        the label (class) of each sample</span>
-<span class="sd">    class_weight: str, or list, or ndarray, or dict, default &quot;balanced&quot;,</span>
-<span class="sd">        the weight for each sample class,</span>
-<span class="sd">        if is &quot;balanced&quot;, the class weight will automatically be given by</span>
-<span class="sd">        if `y` is of string type, then `class_weight` should be a dict,</span>
-<span class="sd">        if `y` is of numeric type, and `class_weight` is array_like,</span>
-<span class="sd">        then the labels (`y`) should be continuous and start from 0</span>
+<span class="sd">    y : numpy.ndarray</span>
+<span class="sd">        The label (class) of each sample.</span>
+<span class="sd">    class_weight : str or dict or List[float] or numpy.ndarray, default &quot;balanced&quot;</span>
+<span class="sd">        The weight for each sample class.</span>
+<span class="sd">        If is &quot;balanced&quot;, the class weight will automatically be given by</span>
+<span class="sd">        the inverse of the class frequency.</span>
+<span class="sd">        If `y` is of string `dtype`, then `class_weight` should be a :class:`dict`.</span>
+<span class="sd">        if `y` is of numeric `dtype`, and `class_weight` is array_like,</span>
+<span class="sd">        then the labels (`y`) should be continuous and start from 0.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    sample_weight: ndarray,</span>
-<span class="sd">        the array of sample weight</span>
+<span class="sd">    sample_weight : numpy.ndarray</span>
+<span class="sd">        The array of sample weight.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1244,18 +1246,18 @@
 <span class="k">def</span> <span class="nf">rdheader</span><span class="p">(</span>
     <span class="n">header_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Record</span><span class="p">,</span> <span class="n">MultiRecord</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    modified from `wfdb.rdheader`</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modified from `wfdb.rdheader`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    head_data: Path, str, or sequence of str,</span>
-<span class="sd">        path of the .hea header file, or lines of the .hea header file</span>
+<span class="sd">    head_data : pathlib.Path or str or Sequence[str]</span>
+<span class="sd">        Path of the .hea header file,</span>
+<span class="sd">        or lines of the .hea header file.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    record: Record, or MultiRecord,</span>
-<span class="sd">        the record object</span>
+<span class="sd">    wfdb.Record or wfdb.MultiRecord</span>
+<span class="sd">        The record object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">header_data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
@@ -1341,23 +1343,23 @@
 <div class="viewcode-block" id="ensure_lead_fmt"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.ensure_lead_fmt.html#torch_ecg.utils.ensure_lead_fmt">[docs]</a><span class="k">def</span> <span class="nf">ensure_lead_fmt</span><span class="p">(</span>
     <span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">n_leads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lead_first&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Ensure the `n_leads`-lead (ECG) signal to be of the format of `fmt`</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure the multi-lead (ECG) signal to be of specified format.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    values: ndarray,</span>
-<span class="sd">        values of the `n_leads`-lead (ECG) signal</span>
-<span class="sd">    n_leads: int, default 12,</span>
-<span class="sd">        number of leads</span>
-<span class="sd">    fmt: str, default &quot;lead_first&quot;, case insensitive,</span>
-<span class="sd">        format of the output values, can be one of</span>
-<span class="sd">        &quot;lead_first&quot; (alias &quot;channel_first&quot;), &quot;lead_last&quot; (alias &quot;channel_last&quot;)</span>
+<span class="sd">    values : numpy.ndarray</span>
+<span class="sd">        Values of the `n_leads`-lead (ECG) signal.</span>
+<span class="sd">    n_leads : int, default 12</span>
+<span class="sd">        Number of leads of the multi-lead (ECG) signal.</span>
+<span class="sd">    fmt : str, default &quot;lead_first&quot;</span>
+<span class="sd">        Format of the output values, can be one of</span>
+<span class="sd">        &quot;lead_first&quot; (alias &quot;channel_first&quot;),</span>
+<span class="sd">        &quot;lead_last&quot; (alias &quot;channel_last&quot;), case insensitive.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out_values: ndarray,</span>
-<span class="sd">        ECG signal in the format of `fmt`</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        ECG signal in the specified format.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1395,35 +1397,37 @@
     <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lead_first&quot;</span><span class="p">,</span>
     <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure the (ECG) signal to be of length `siglen`.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure the (ECG) signal to be of specified length.</span>
 
 <span class="sd">    Strategy:</span>
 
-<span class="sd">    1. If `values` has length greater than `siglen`,</span>
-<span class="sd">       the central `siglen` samples will be adopted;</span>
-<span class="sd">       otherwise, zero padding will be added to both sides.</span>
-<span class="sd">    2. If `tolerance` is given, then if the length of `values` is</span>
-<span class="sd">       longer than `siglen` by more than `tolerance` in percentage,</span>
-<span class="sd">       the `values` will be sliced to have multiple of `siglen` samples,</span>
-<span class="sd">       each with ``(1 - tolerance) * siglen`` overlap.</span>
+<span class="sd">        1. If `values` has length greater than `siglen`,</span>
+<span class="sd">           the central `siglen` samples will be adopted;</span>
+<span class="sd">           otherwise, zero padding will be added to both sides.</span>
+<span class="sd">        2. If `tolerance` is given, then if the length of `values` is</span>
+<span class="sd">           longer than `siglen` by more than `tolerance` in percentage,</span>
+<span class="sd">           the `values` will be sliced to have multiple of `siglen` samples,</span>
+<span class="sd">           each with ``(1 - tolerance) * siglen`` overlap.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    values: sequence,</span>
-<span class="sd">        values of the `n_leads`-lead (ECG) signal</span>
-<span class="sd">    siglen: int,</span>
-<span class="sd">        length of the signal supposed to have</span>
-<span class="sd">    fmt: str, default &quot;lead_first&quot;, case insensitive,</span>
-<span class="sd">        format of the input and output values, can be one of</span>
-<span class="sd">        &quot;lead_first&quot; (alias &quot;channel_first&quot;), &quot;lead_last&quot; (alias &quot;channel_last&quot;)</span>
-<span class="sd">    tolerance: float, optional,</span>
-<span class="sd">        tolerance of the length of `values` to be longer than `siglen` in percentage</span>
+<span class="sd">    values : numpy.ndarray</span>
+<span class="sd">        Values of the `n_leads`-lead (ECG) signal.</span>
+<span class="sd">    siglen : int</span>
+<span class="sd">        Length of the signal supposed to have.</span>
+<span class="sd">    fmt : str, default &quot;lead_first&quot;</span>
+<span class="sd">        Format of the input and output values, can be one of</span>
+<span class="sd">        &quot;lead_first&quot; (alias &quot;channel_first&quot;),</span>
+<span class="sd">        &quot;lead_last&quot; (alias &quot;channel_last&quot;), case insensitive.</span>
+<span class="sd">    tolerance : float, optional</span>
+<span class="sd">        Tolerance of the length of `values` to be</span>
+<span class="sd">        longer than `siglen` in percentage.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out_values: ndarray,</span>
+<span class="sd">    numpy.ndarray</span>
 <span class="sd">        ECG signal in the format of `fmt` and of fixed length `siglen`,</span>
-<span class="sd">        of ndim=3 if `tolerence` is given, otherwise ndim=2</span>
+<span class="sd">        of ``ndim=3`` if `tolerence` is given, otherwise ``ndim=2``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1542,33 +1546,33 @@
     <span class="n">mask_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;channel_first&quot;</span><span class="p">,</span>
     <span class="n">leads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ECGWaveForm</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert masks into lists of waveforms</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert masks into lists of :class:`ECGWaveForm` for each lead.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    masks: ndarray,</span>
-<span class="sd">        wave delineation in the form of masks,</span>
-<span class="sd">        of shape (n_leads, seq_len), or (seq_len,)</span>
-<span class="sd">    class_map: dict,</span>
-<span class="sd">        class map, mapping names to waves to numbers from 0 to n_classes-1,</span>
-<span class="sd">        the keys should contain &quot;pwave&quot;, &quot;qrs&quot;, &quot;twave&quot;</span>
-<span class="sd">    fs: numbers.Real,</span>
-<span class="sd">        sampling frequency of the signal corresponding to the `masks`,</span>
-<span class="sd">        used to compute the duration of each waveform</span>
-<span class="sd">    mask_format: str, default &quot;channel_first&quot;,</span>
-<span class="sd">        format of the mask, used only when `masks.ndim = 2`</span>
+<span class="sd">    masks : numpy.ndarray</span>
+<span class="sd">        Wave delineation in the form of masks,</span>
+<span class="sd">        of shape ``(n_leads, seq_len)``, or ``(seq_len,)``.</span>
+<span class="sd">    class_map : dict</span>
+<span class="sd">        Class map, mapping names to waves to numbers from 0 to n_classes-1,</span>
+<span class="sd">        the keys should contain &quot;pwave&quot;, &quot;qrs&quot;, &quot;twave&quot;.</span>
+<span class="sd">    fs : numbers.Real</span>
+<span class="sd">        Sampling frequency of the signal corresponding to the `masks`,</span>
+<span class="sd">        used to compute the duration of each waveform.</span>
+<span class="sd">    mask_format : str, default &quot;channel_first&quot;</span>
+<span class="sd">        Format of the mask, used only when ``masks.ndim = 2``, can be</span>
 <span class="sd">        &quot;channel_last&quot; (alias &quot;lead_last&quot;), or</span>
-<span class="sd">        &quot;channel_first&quot; (alias &quot;lead_first&quot;)</span>
-<span class="sd">    leads: str or list of str, optional,</span>
-<span class="sd">        the names of leads corresponding to the channels of the `masks`</span>
+<span class="sd">        &quot;channel_first&quot; (alias &quot;lead_first&quot;), case insensitive.</span>
+<span class="sd">    leads : str or List[str], optional</span>
+<span class="sd">        Names of leads corresponding to the channels of the `masks`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    waves: dict,</span>
-<span class="sd">        each item value is a list containing the `ECGWaveForm` corr. to the lead;</span>
-<span class="sd">        each item key is from `leads` if `leads` is set,</span>
-<span class="sd">        otherwise would be &quot;lead_1&quot;, &quot;lead_2&quot;, ..., &quot;lead_n&quot;</span>
+<span class="sd">    dict</span>
+<span class="sd">        Each item value is a list containing the :class:`ECGWaveForm`</span>
+<span class="sd">        corr. to the lead.</span>
+<span class="sd">        Each item key is from `leads` if `leads` is set,</span>
+<span class="sd">        otherwise would be ``&quot;lead_1&quot;, &quot;lead_2&quot;, ..., &quot;lead_n&quot;``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1641,26 +1645,26 @@
     <span class="n">vals</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">right_inclusive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert a mask into a list of intervals,</span>
-<span class="sd">    or a dict of lists of intervals, if `vals` has multiple values</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a mask into a list of intervals,</span>
+<span class="sd">    or a dict of lists of intervals.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mask: ndarray,</span>
-<span class="sd">        1d mask</span>
-<span class="sd">    vals: int or sequence of int, optional,</span>
-<span class="sd">        values in `mask` to obtain intervals</span>
-<span class="sd">    right_inclusive: bool, default False,</span>
-<span class="sd">        if True, the intervals will be right inclusive</span>
-<span class="sd">        otherwise, right exclusive</span>
+<span class="sd">    mask : numpy.ndarray</span>
+<span class="sd">        The (1D) mask to convert.</span>
+<span class="sd">    vals : int or Sequence[int], optional</span>
+<span class="sd">        Values in `mask` to obtain the intervals.</span>
+<span class="sd">    right_inclusive : bool, default False</span>
+<span class="sd">        If True, the intervals will be right inclusive,</span>
+<span class="sd">        otherwise, right exclusive.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    intervals: dict or list,</span>
-<span class="sd">        the intervals corr. to each value in `vals` if `vals` is `None` or `Sequence`;</span>
+<span class="sd">    intervals : dict or list</span>
+<span class="sd">        The intervals corr. to each value in `vals`</span>
+<span class="sd">        if `vals` is `None` or of sequence type;</span>
 <span class="sd">        or the intervals corr. to `vals` if `vals` is int.</span>
-<span class="sd">        each interval is of the form `[a,b]`</span>
+<span class="sd">        each interval is of the form ``[a, b]``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1710,22 +1714,21 @@
 
 
 <div class="viewcode-block" id="uniform"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.uniform.html#torch_ecg.utils.uniform">[docs]</a><span class="k">def</span> <span class="nf">uniform</span><span class="p">(</span><span class="n">low</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">high</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate a list of `num` numbers uniformly distributed between `low` and `high`</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a list of numbers uniformly distributed.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    low: numbers.Real,</span>
-<span class="sd">        lower bound of the interval of the uniform distribution</span>
-<span class="sd">    high: numbers.Real,</span>
-<span class="sd">        upper bound of the interval of the uniform distribution</span>
-<span class="sd">    num: int,</span>
-<span class="sd">        number of random numbers to generate</span>
+<span class="sd">    low : numbers.Real</span>
+<span class="sd">        Lower bound of the interval of the uniform distribution.</span>
+<span class="sd">    high : numbers.Real</span>
+<span class="sd">        Upper bound of the interval of the uniform distribution.</span>
+<span class="sd">    num : int</span>
+<span class="sd">        Number of random numbers to generate.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    arr: list of float,</span>
-<span class="sd">        array of randomly generated numbers with uniform distribution</span>
+<span class="sd">    List[float]</span>
+<span class="sd">        Array of randomly generated numbers with uniform distribution.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1744,28 +1747,7 @@
     <span class="n">test_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
     <span class="n">reset_index</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Do stratified train-test split on the dataframe,</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    df: pd.DataFrame,</span>
-<span class="sd">        dataframe to be split</span>
-<span class="sd">    stratified_cols: sequence of str,</span>
-<span class="sd">        columns to be stratified, assuming each column is a categorical variable</span>
-<span class="sd">        each class in any of the columns will be</span>
-<span class="sd">        split into train and test sets with an approximate ratio of `test_ratio`</span>
-<span class="sd">    test_ratio: float, default 0.2,</span>
-<span class="sd">        ratio of test set to the whole dataframe</span>
-<span class="sd">    reset_index: bool, default True,</span>
-<span class="sd">        whether to reset the index of the dataframes</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    df_train: pd.DataFrame,</span>
-<span class="sd">        the dataframe of the train set</span>
-<span class="sd">    df_test: pd.DataFrame,</span>
-<span class="sd">        the dataframe of the test set</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform stratified train-test split on the dataframe.</span>
 
 <span class="sd">    For example,</span>
 <span class="sd">    if one has a dataframe with columns `sex`, `nationality`, etc.,</span>
@@ -1775,6 +1757,27 @@
 <span class="sd">    will be put into the test set,</span>
 <span class="sd">    and **at the same time**, approximately 20% of the Chinese and 20% of the Americans</span>
 <span class="sd">    lie in the test set as well.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : pandas.DataFrame</span>
+<span class="sd">        The dataframe to be split.</span>
+<span class="sd">    stratified_cols : Sequence[str]</span>
+<span class="sd">        Columns to be stratified,</span>
+<span class="sd">        assuming each column is a categorical variable.</span>
+<span class="sd">        Each class in any of the columns will be split into</span>
+<span class="sd">        train and test sets with an approximate ratio of `test_ratio`.</span>
+<span class="sd">    test_ratio : float, default 0.2</span>
+<span class="sd">        Ratio of test set to the whole dataframe.</span>
+<span class="sd">    reset_index : bool, default True</span>
+<span class="sd">        Whether to reset the index of the dataframes.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df_train: pandas.DataFrame</span>
+<span class="sd">        The dataframe of the train set.</span>
+<span class="sd">    df_test: pandas.DataFrame</span>
+<span class="sd">        The dataframe of the test set.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">invalid_cols</span> <span class="o">=</span> <span class="p">[</span>
@@ -1826,25 +1829,26 @@
 <div class="viewcode-block" id="cls_to_bin"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.cls_to_bin.html#torch_ecg.utils.cls_to_bin">[docs]</a><span class="k">def</span> <span class="nf">cls_to_bin</span><span class="p">(</span>
     <span class="n">cls_array</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">],</span> <span class="n">num_classes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Converting a categorical (class indices) array of shape (n,)</span>
-<span class="sd">    to a one-hot (binary) array of shape (n, num_classes)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a categorical array to a one-hot array.</span>
+
+<span class="sd">    Convert a categorical (class indices) array of shape ``(n,)``</span>
+<span class="sd">    to a one-hot (binary) array of shape ``(n, num_classes)``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    cls_array: ndarray,</span>
-<span class="sd">        class indices array (tensor) of shape (num_samples,);</span>
-<span class="sd">        or of shape (num_samples, num_samples) if `num_classes` is not None,</span>
+<span class="sd">    cls_array : numpy.ndarray or torch.Tensor</span>
+<span class="sd">        Class indices array (tensor) of shape ``(num_samples,)``;</span>
+<span class="sd">        or of shape ``(num_samples, num_samples)`` if `num_classes` is not None,</span>
 <span class="sd">        in which case `cls_array` should be consistant with `num_classes`,</span>
-<span class="sd">        and the function will return `cls_array` directly</span>
-<span class="sd">    num_classes: int, optional,</span>
-<span class="sd">        number of classes,</span>
-<span class="sd">        if not specified, it will be inferred from the values of `cls_array`</span>
+<span class="sd">        and the function will return `cls_array` directly.</span>
+<span class="sd">    num_classes : int, optional</span>
+<span class="sd">        Number of classes. If not specified,</span>
+<span class="sd">        it will be inferred from the values of `cls_array`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    bin_array: ndarray,</span>
-<span class="sd">        binary array of shape (num_samples, num_classes)</span>
+<span class="sd">    numpy.ndarray</span>
+<span class="sd">        Binary array of shape ``(num_samples, num_classes)``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1885,31 +1889,31 @@
     <span class="n">boundary_weight</span><span class="p">:</span> <span class="n">Real</span><span class="p">,</span>
     <span class="n">plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate weight mask for a binary target mask,</span>
-<span class="sd">    accounting the foreground weight and boundary weight</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate weight mask for a binary target mask,</span>
+<span class="sd">    accounting the foreground weight and boundary weight.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    target_mask: ndarray,</span>
-<span class="sd">        the target mask, assumed to be 1d and binary</span>
-<span class="sd">    fg_weight: numbers.Real,</span>
-<span class="sd">        foreground (value 1) weight, usually &gt; 1</span>
-<span class="sd">    fs: numbers.Real,</span>
-<span class="sd">        sampling frequency of the signal</span>
-<span class="sd">    reduction: numbers.Real,</span>
-<span class="sd">        reduction ratio of the mask w.r.t. the signal</span>
-<span class="sd">    radius: numbers.Real,</span>
-<span class="sd">        radius of the boundary, with units in seconds</span>
-<span class="sd">    boundary_weight: numbers.Real,</span>
-<span class="sd">        weight for the boundaries (positions where values change) of the target map</span>
-<span class="sd">    plot: bool, default False,</span>
-<span class="sd">        if True, target_mask and the result weight_mask will be plotted</span>
+<span class="sd">    target_mask : numpy.ndarray</span>
+<span class="sd">        The target mask, assumed to be 1D and binary.</span>
+<span class="sd">    fg_weight: numbers.Real</span>
+<span class="sd">        Foreground (value 1) weight, usually &gt; 1.</span>
+<span class="sd">    fs : numbers.Real</span>
+<span class="sd">        Sampling frequency of the signal.</span>
+<span class="sd">    reduction : numbers.Real</span>
+<span class="sd">        Reduction ratio of the mask w.r.t. the signal.</span>
+<span class="sd">    radius : numbers.Real</span>
+<span class="sd">        Radius of the boundary, with units in seconds.</span>
+<span class="sd">    boundary_weight : numbers.Real</span>
+<span class="sd">        Weight for the boundaries (positions where values change)</span>
+<span class="sd">        of the target map.</span>
+<span class="sd">    plot : bool, default False</span>
+<span class="sd">        If True, `target_mask` and the result `weight_mask` will be plotted.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    weight_mask: ndarray,</span>
-<span class="sd">        the weight mask</span>
+<span class="sd">    weight_mask : numpy.ndarray</span>
+<span class="sd">        Weight mask generated from `target_mask`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
