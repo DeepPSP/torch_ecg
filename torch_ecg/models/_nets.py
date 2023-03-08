@@ -75,6 +75,10 @@ __all__ = [
 ]
 
 
+if not hasattr(nn, "Dropout1d"):
+    nn.Dropout1d = nn.Dropout  # added in pytorch 1.12
+
+
 # ---------------------------------------------
 # initializers
 Initializers = CFG()
@@ -271,9 +275,14 @@ class Bn_Activation(nn.Sequential, SizeMixin):
         Keyword arguments for normalization layer if `norm` is a string.
     kw_activation : dict, optional
         Keyword arguments for activation layer if `activation` is a string.
-    dropout : float, default 0.0
+    dropout : float or dict, default 0.0
+        Dropout rate (and type (optional)).
         If non-zero, :class`~torch.nn.Dropout` layer is added
         at the end of the block.
+        If is a dict, it should contain the keys ``"p"`` and ``"type"``,
+        where ``"p"`` is the dropout rate and ``"type"`` is the type of dropout,
+        which can be either ``"1d"`` (:class:`torch.nn.Dropout1d`) or
+        ``None`` (:class:`torch.nn.Dropout`).
 
     """
 
@@ -287,7 +296,7 @@ class Bn_Activation(nn.Sequential, SizeMixin):
         activation: Union[str, nn.Module] = "relu",
         kw_norm: Optional[dict] = None,
         kw_activation: Optional[dict] = None,
-        dropout: float = 0.0,
+        dropout: Union[float, dict] = 0.0,
     ) -> None:
         super().__init__()
         self.__num_features = num_features
@@ -319,7 +328,12 @@ class Bn_Activation(nn.Sequential, SizeMixin):
 
         self.add_module("norm", bn_layer)
         self.add_module("act", act_layer)
-        if self.__dropout > 0:
+        if isinstance(self.__dropout, dict):
+            if self.__dropout["type"] == "1d" and self.__dropout["p"] > 0:
+                self.add_module("dropout", nn.Dropout1d(self.__dropout["p"]))
+            elif self.__dropout["type"] is None and self.__dropout["p"] > 0:
+                self.add_module("dropout", nn.Dropout(self.__dropout["p"]))
+        elif self.__dropout > 0:
             self.add_module("dropout", nn.Dropout(self.__dropout))
 
     def compute_output_shape(
@@ -636,22 +650,24 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
     def _assign_weights_lead_wise(
         self, other: "Conv_Bn_Activation", indices: Sequence[int]
     ) -> None:
-        """
-        assign weights of `self` to `other` according to `indices` in the `lead-wise` manner
+        """Assign weights lead-wise.
+
+        This method is used to assign weights from a model with
+        a superset of the current model's leads to the current model.
 
         Parameters
         ----------
-        other: `Conv_Bn_Activation`,
-            the target instance of `Conv_Bn_Activation`
-        indices: sequence of int,
-            the indices of weights (weight and bias (if not None))
-            to be assigned to `other`
+        other : Conv_Bn_Activation
+            The model with a superset of the current model's leads.
+        indices : Sequence[int]
+            The indices of the leads of the current model in the
+            superset model.
 
         Examples
         --------
-        import torch
-        from torch_ecg.models._nets import Conv_Bn_Activation
-        from torch_ecg.utils.misc import list_sum
+        >>> import torch
+        >>> from torch_ecg.models._nets import Conv_Bn_Activation
+        >>> from torch_ecg.utils.misc import list_sum
         >>> units = 4
         >>> indices = [0, 1, 2, 3, 4, 10]
         >>> out_indices = list_sum([[i * units + j for j in range(units)] for i in indices])
@@ -717,18 +733,19 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the block.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the 1d sequence input.
+        batch_size : int, optional
+            The batch size.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
+        output_shape : sequence
+            The output shape of the block.
 
         """
         if self.__conv_type is None:
@@ -802,9 +819,44 @@ CBA = Conv_Bn_Activation
 
 
 class MultiConv(nn.Sequential, SizeMixin):
-    """
-    a sequence (stack) of `Conv_Bn_Activation` blocks,
-    perhaps with `Dropout` between the blocks
+    """Stack of convolutional blocks.
+
+    A sequence (stack) of :class:`Conv_Bn_Activation` blocks,
+    perhaps with droput layers (:class:`~torch.nn.Dropout`,
+    :class:`~torch.nn.Dropout1d`) between the blocks.
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input.
+    out_channels : Sequence[int]
+        Number of channels produced by the convolutional layers.
+    filter_lengths : int or Sequence[int]
+        Length(s) of the filters (kernel size).
+    subsample_lengths : int or Sequence[int], default 1
+        Subsample length(s) (stride(s)) of the convolutions.
+    dilations : int or Sequence[int], default 1
+        Spacing between the kernel points of (each) convolutional layer.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    dropouts : float or Sequence[float] or dict or Sequence[dict], default 0.0
+        Dropout ratio after each :class:`Conv_Bn_Activation` block.
+        If is a dict, it should contain the keys ``"p"`` and ``"type"``,
+        where ``"p"`` is the dropout rate and ``"type"`` is the type of dropout,
+        which can be either ``"1d"`` (:class:`torch.nn.Dropout1d`) or
+        ``None`` (:class:`torch.nn.Dropout`).
+    out_activation : bool, default True
+        If True, the last mini-block of :class:`Conv_Bn_Activation`
+        will have activation as in `config`, otherwise None;
+        if activation is before convolution,
+        then `out_activation` refers to the first activation.
+    config : dict
+        Other parameters, including
+        type (separable or normal, etc.), width multipliers,
+        activation choices, weight initializer, batch normalization choices, etc.
+        for the convolutional layers
+        and ordering of convolutions and batch normalizations, activations if applicable.
+
     """
 
     __name__ = "MultiConv"
@@ -817,40 +869,10 @@ class MultiConv(nn.Sequential, SizeMixin):
         subsample_lengths: Union[Sequence[int], int] = 1,
         dilations: Union[Sequence[int], int] = 1,
         groups: int = 1,
-        dropouts: Union[Sequence[float], float] = 0.0,
+        dropouts: Union[Sequence[float], Sequence[dict], float, dict] = 0.0,
         out_activation: bool = True,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        out_channels: sequence of int,
-            number of channels produced by the convolutional layers
-        filter_lengths: int or sequence of int,
-            length(s) of the filters (kernel size)
-        subsample_lengths: int or sequence of int,
-            subsample length(s) (stride(s)) of the convolutions
-        dilations: int or sequence of int, default 1,
-            spacing between the kernel points of (each) convolutional layer
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        dropouts: float or sequence of float, default 0.0,
-            dropout ratio after each `Conv_Bn_Activation`
-        out_activation: bool, default True,
-            if True, the last mini-block of `Conv_Bn_Activation`
-            will have activation as in `config`, otherwise None;
-            if activation is before convolution,
-            then `out_activation` refers to the first activation
-        config: dict,
-            other parameters, including
-            type (separable or normal, etc.), width multipliers,
-            activation choices, weight initializer, batch normalization choices, etc.
-            for the convolutional layers
-            and ordering of convolutions and batch normalizations, activations if applicable
-
-        """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = list(out_channels)
@@ -874,13 +896,13 @@ class MultiConv(nn.Sequential, SizeMixin):
             len(strides) == self.__num_convs
         ), f"`subsample_lengths` must be of type int or sequence of int of length {self.__num_convs}"
 
-        if isinstance(dropouts, Real):
+        if isinstance(dropouts, (Real, dict)):
             _dropouts = list(repeat(dropouts, self.__num_convs))
         else:
             _dropouts = list(dropouts)
         assert (
             len(_dropouts) == self.__num_convs
-        ), f"`dropouts` must be a real number or sequence of real numbers of length {self.__num_convs}"
+        ), f"`dropouts` must be a real number or dict or sequence of real numbers of length {self.__num_convs}"
 
         if isinstance(dilations, int):
             _dilations = list(repeat(dilations, self.__num_convs))
@@ -926,7 +948,18 @@ class MultiConv(nn.Sequential, SizeMixin):
                 ),
             )
             conv_in_channels = int(oc * self.config.width_multiplier)
-            if dp > 0:
+            if isinstance(dp, dict):
+                if dp["type"] == "1d" and dp["p"] > 0:
+                    self.add_module(
+                        f"dropout_{idx}",
+                        nn.Dropout1d(dp["p"]),
+                    )
+                elif dp["type"] is None and dp["p"] > 0:
+                    self.add_module(
+                        f"dropout_{idx}",
+                        nn.Dropout(dp["p"]),
+                    )
+            elif dp > 0:
                 self.add_module(
                     f"dropout_{idx}",
                     nn.Dropout(dp),
@@ -935,18 +968,19 @@ class MultiConv(nn.Sequential, SizeMixin):
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the block.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the 1d sequence input.
+        batch_size : int, optional
+            The batch size.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
+        output_shape : sequence
+            The output shape of the block.
 
         """
         _seq_len = seq_len
@@ -965,7 +999,30 @@ class MultiConv(nn.Sequential, SizeMixin):
 
 
 class BranchedConv(nn.Module, SizeMixin):
-    """branched `MultiConv` blocks"""
+    """Branched :class:`MultiConv` blocks.
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : Sequence[Sequence[int]]
+        Number of channels produced by the convolutional layers.
+    filter_lengths : int or Sequence[int] or Sequence[Sequence[int]]
+        Length(s) of the filters (kernel size).
+    subsample_lengths : int or Sequence[int] or Sequence[Sequence[int]], default 1
+        Subsample length(s) (stride(s)) of the convolutions.
+    dilations : int or Sequence[int] or Sequence[Sequence[int]], default 1
+        Spacing between the kernel points of (each) convolutional layer.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    dropouts : float or dict or Sequence[Union[float, dict]] or Sequence[Sequence[Union[float, dict]]], default 0.0
+        Dropout ratio after each :class:`Conv_Bn_Activation`.
+    config : dict
+        Other parameters, including
+        activation choices, weight initializer, batch normalization choices, etc.
+        for the convolutional layers.
+
+    """
 
     __name__ = "BranchedConv"
 
@@ -977,32 +1034,14 @@ class BranchedConv(nn.Module, SizeMixin):
         subsample_lengths: Union[Sequence[Sequence[int]], Sequence[int], int] = 1,
         dilations: Union[Sequence[Sequence[int]], Sequence[int], int] = 1,
         groups: int = 1,
-        dropouts: Union[Sequence[Sequence[float]], Sequence[float], float] = 0.0,
+        dropouts: Union[
+            Sequence[Sequence[Union[float, dict]]],
+            Sequence[Union[float, dict]],
+            float,
+            dict,
+        ] = 0.0,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        out_channels: sequence of sequence of int,
-            number of channels produced by the convolutional layers
-        filter_lengths: int or sequence of int,
-            length(s) of the filters (kernel size)
-        subsample_lengths: int or sequence of int,
-            subsample length(s) (stride(s)) of the convolutions
-        dilations: int or sequence of int, default 1,
-            spacing between the kernel points of (each) convolutional layer
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        dropouts: float or sequence of float, default 0.0,
-            dropout ratio after each `Conv_Bn_Activation`
-        config: dict,
-            other parameters, including
-            activation choices, weight initializer, batch normalization choices, etc.
-            for the convolutional layers
-
-        """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = list(out_channels)
@@ -1029,13 +1068,13 @@ class BranchedConv(nn.Module, SizeMixin):
             len(strides) == self.__num_branches
         ), f"`subsample_lengths` must be of type int or sequence of int of length {self.__num_branches}"
 
-        if isinstance(dropouts, Real):
+        if isinstance(dropouts, (Real, dict)):
             _dropouts = list(repeat(dropouts, self.__num_branches))
         else:
             _dropouts = list(dropouts)
         assert (
             len(_dropouts) == self.__num_branches
-        ), f"`dropouts` must be a real number or sequence of real numbers of length {self.__num_branches}"
+        ), f"`dropouts` must be a real number or dict or sequence of real numbers of length {self.__num_branches}"
 
         if isinstance(dilations, int):
             _dilations = list(repeat(dilations, self.__num_branches))
@@ -1061,30 +1100,43 @@ class BranchedConv(nn.Module, SizeMixin):
             )
 
     def forward(self, input: Tensor) -> List[Tensor]:
+        """Forward pass of the branched convolutional layers.
+
+        Parameters
+        ----------
+        input : torch.Tensor
+            The input tensor,
+            of shape ``(batch_size, in_channels, seq_len)``.
+
+        Returns
+        -------
+        output : List[torch.Tensor]
+            The output tensors of each branch,
+            each of shape ``(batch_size, out_channels, seq_len)``.
+
         """
-        input: of shape (batch_size, n_channels, seq_len)
-        """
-        out = []
-        for idx in range(self.__num_branches):
-            out.append(self.branches[f"multi_conv_{idx}"](input))
+        out = [
+            self.branches[f"multi_conv_{idx}"](input)
+            for idx in range(self.__num_branches)
+        ]
         return out
 
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> List[Sequence[Union[int, None]]]:
-        """
+        """Compute the output shape of each branch.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the input tensor.
+        batch_size : int, optional
+            Batch size of the input tensor.
 
         Returns
         -------
-        output_shapes: list of sequence,
-            list of output shapes of each branch of this `BranchedConv` layer,
-            given `seq_len` and `batch_size`
+        output_shapes : list
+            List of output shapes of each branch.
 
         """
         output_shapes = []
@@ -1101,14 +1153,13 @@ class BranchedConv(nn.Module, SizeMixin):
 
 
 class SeparableConv(nn.Sequential, SizeMixin):
-    """
-    (Super-)Separable Convolution
+    """(Super-)Separable Convolution.
 
     References
     ----------
-    [1] Kaiser, Lukasz, Aidan N. Gomez, and Francois Chollet.
-        "Depthwise separable convolutions for neural machine translation." arXiv preprint arXiv:1706.03059 (2017).
-    [2] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
+    1. Kaiser, Lukasz, Aidan N. Gomez, and Francois Chollet.
+       "Depthwise separable convolutions for neural machine translation." arXiv preprint arXiv:1706.03059 (2017).
+    2. https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
 
     """
 
@@ -1958,8 +2009,30 @@ class AntiAliasConv(nn.Sequential, SizeMixin):
 
 
 class BidirectionalLSTM(nn.Module, SizeMixin):
-    """
-    from crnn_torch of references ati_cnn
+    """Bidirectional LSTM layer.
+
+    Parameters
+    ----------
+    input_size : int
+        Number of features in the input
+    hidden_size : int
+        the number of features in the hidden state
+    num_layers : int, default 1
+        Number of :class:`~torch.nn.LSTM` layers.
+    bias : bool, default True
+        Whether to use bias in the LSTM layer.
+    dropout : float, default 0.0
+        Dropout rate (and type (optional)).
+        If non-zero, introduces a :class:`~torch.nn.Dropout`
+        layer on the outputs of each :class:`~torch.nn.LSTM`
+        layer EXCEPT the last layer,
+        with dropout probability equal to this value.
+    return_sequences : bool, default True
+        If True, returns the the full output sequence,
+        otherwise the last output in the output sequence
+    kwargs : dict, optional
+        Extra hyper-parameters.
+
     """
 
     __name__ = "BidirectionalLSTM"
@@ -1974,27 +2047,6 @@ class BidirectionalLSTM(nn.Module, SizeMixin):
         return_sequences: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        input_size: int,
-            the number of features in the input
-        hidden_size: int,
-            the number of features in the hidden state
-        num_layers: int, default 1,
-            number of lstm layers
-        bias: bool, or sequence of bool, default True,
-            use bias weights or not
-        dropout: float, default 0.0,
-            if non-zero, introduces a `Dropout` layer on the outputs of each
-            LSTM layer EXCEPT the last layer, with dropout probability equal to this value
-        return_sequences: bool, default True,
-            if True, returns the the full output sequence,
-            otherwise the last output in the output sequence
-        kwargs: dict, optional,
-            extra parameters
-
-        """
         super().__init__()
         self.__output_size = 2 * hidden_size
         self.return_sequence = return_sequences
@@ -4439,7 +4491,15 @@ class MLDecoder(nn.Module, SizeMixin):
 
 
 class DropPath(nn.Module, SizeMixin):
-    """
+    """Drop paths module.
+
+    Parameters
+    ----------
+    p : float, default 0.2
+        Drop path probability.
+    inplace : bool, default False
+        Whether to do inplace operation.
+
     References
     ----------
     1. Huang, Gao, et al. "Deep networks with stochastic depth."
@@ -4451,22 +4511,11 @@ class DropPath(nn.Module, SizeMixin):
     __name__ = "DropPath"
 
     def __init__(self, p: float = 0.2, inplace: bool = False) -> None:
-        """
-
-        Parameters
-        ----------
-        p: float, default 0.2,
-            drop path probability
-        inplace: bool, default False,
-            whether to do inplace operation
-
-        """
         super().__init__()
         self.p = p
         self.inplace = inplace
 
     def forward(self, x: Tensor) -> Tensor:
-        """ """
         return drop_path(x, self.p, self.training, self.inplace)
 
     def extra_repr(self) -> str:
@@ -4475,16 +4524,17 @@ class DropPath(nn.Module, SizeMixin):
     def compute_output_shape(
         self, input_shape: Union[torch.Size, Sequence[Union[int, None]]]
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape given the input shape.
+
         Parameters
         ----------
-        input_shape: torch.Size or sequence of int,
-            the input shape
+        input_shape : torch.Size or Sequence[int]
+            The input shape.
 
         Returns
         -------
-        tuple,
-            the output shape, given `input_shape`
+        tuple
+            The output shape.
 
         """
         return tuple(input_shape)
@@ -4493,24 +4543,25 @@ class DropPath(nn.Module, SizeMixin):
 def drop_path(
     x: Tensor, p: float = 0.2, training: bool = False, inplace: bool = False
 ) -> Tensor:
-    """
-    modified from timm.models.layers.drop_path
+    """Function to drop paths.
+
+    Modified from :func:`timm.models.layers.drop_path`.
 
     Parameters
     ----------
-    x: Tensor,
-        of shape (batch, *)
-    p: float, default 0.2,
-        drop path probability
-    training: bool, default False,
-        whether in training mode
-    inplace: bool, default False,
-        whether to do inplace operation
+    x : torch.Tensor
+        Input tensor, of shape ``(batch, *)``.
+    p : float, default 0.2
+        Drop path probability.
+    training : bool, default False
+        Whether in training mode.
+    inplace : bool, default False
+        Whether to do inplace operation.
 
     Returns
     -------
-    Tensor,
-        of shape (batch, *)
+    tensor.Tensor
+        Output tensor, of shape ``(batch, *)``.
 
     """
     if p == 0.0 or not training:
@@ -4519,8 +4570,7 @@ def drop_path(
         x = x.clone()
     keep_prob = 1 - p
     shape = (x.shape[0],) + (1,) * (x.ndim - 1)
-    random_tensor = keep_prob + torch.rand(shape, dtype=x.dtype, device=x.device)
-    random_tensor.floor_()  # binarize
+    random_tensor = x.new_empty(shape).bernoulli_(keep_prob)
     x.div_(keep_prob).mul_(random_tensor)
     return x
 

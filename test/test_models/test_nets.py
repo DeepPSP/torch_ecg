@@ -169,7 +169,7 @@ def test_ba():
     grid = itertools.product(
         ["batch_norm", "group_norm"],  # norm
         ["mish", "leaky"],  # activation
-        [0.0, 0.1],  # dropout
+        [0.0, 0.1, {"p": 0.3, "type": None}, {"p": 0.3, "type": "1d"}],  # dropout
     )
     for norm, activation, dropout in grid:
         if norm == "group_norm":
@@ -183,6 +183,7 @@ def test_ba():
             kw_norm=kw_norm,
             dropout=dropout,
         )
+        ba.eval()
         assert ba(SAMPLE_INPUT).shape == ba.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -261,6 +262,7 @@ def test_cba():
             out_channels=IN_CHANNELS * 8,
             **config,
         )
+        cba.eval()
         assert cba(SAMPLE_INPUT).shape == cba.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -451,9 +453,10 @@ def test_multi_conv():
         subsample_lengths=[1, 2, 1],
         dilations=2,
         groups=IN_CHANNELS // 2,
-        dropouts=[0.1, 0.2, 0.0],
+        dropouts=[0.1, {"p": 0.3, "type": None}, {"p": 0.3, "type": "1d"}],
         activation="mish",
     )
+    mc.eval()
     assert mc(SAMPLE_INPUT).shape == mc.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
@@ -462,7 +465,7 @@ def test_multi_conv():
 
 @torch.no_grad()
 def test_branched_conv():
-    bc = BranchedConv(
+    bc_config = dict(
         in_channels=IN_CHANNELS,
         out_channels=[
             [IN_CHANNELS * 4, IN_CHANNELS * 8, IN_CHANNELS * 16, IN_CHANNELS * 32],
@@ -472,8 +475,20 @@ def test_branched_conv():
         subsample_lengths=2,
         dilations=[[1, 2, 1, 2], [4, 8]],
         groups=IN_CHANNELS // 2,
-        dropouts=0.1,
+        dropouts=[[0.0, 0.2, 0.2, {"p": 0.1, "type": "1d"}], {"p": 0.3, "type": "1d"}],
     )
+    bc = BranchedConv(**bc_config)
+    bc.eval()
+    out_tensors = bc(SAMPLE_INPUT)
+    assert isinstance(out_tensors, list) and len(out_tensors) == 2
+    assert all(isinstance(t, torch.Tensor) for t in out_tensors)
+    assert [t.shape for t in out_tensors] == bc.compute_output_shape(
+        seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+    )
+    assert bc.in_channels == IN_CHANNELS
+    bc_config["dropouts"] = {"p": 0.2, "type": "1d"}
+    bc = BranchedConv(**bc_config)
+    bc.eval()
     out_tensors = bc(SAMPLE_INPUT)
     assert isinstance(out_tensors, list) and len(out_tensors) == 2
     assert all(isinstance(t, torch.Tensor) for t in out_tensors)
@@ -494,6 +509,7 @@ def test_separable_conv():
         dilation=2,
         groups=IN_CHANNELS // 3,
     )
+    sc.eval()
     assert sc(SAMPLE_INPUT).shape == sc.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
@@ -521,6 +537,7 @@ def test_blur_pool():
             pad_type=pad_type,
             pad_off=pad_off,
         )
+        bp.eval()
         assert bp(SAMPLE_INPUT).shape == bp.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -548,6 +565,7 @@ def test_anti_alias_conv():
         dilation=2,
         groups=IN_CHANNELS // 4,
     )
+    aac.eval()
     assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
@@ -560,6 +578,7 @@ def test_anti_alias_conv():
         dilation=2,
         groups=IN_CHANNELS // 2,
     )
+    aac.eval()
     assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
@@ -588,6 +607,7 @@ def test_down_sample():
             out_channels=out_channels,
             padding=padding,
         )
+        ds.eval()
         assert ds(SAMPLE_INPUT).shape == ds.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -618,6 +638,7 @@ def test_bidirectional_lstm():
             dropout=dropout,
             return_sequences=return_sequences,
         )
+        bi_lstm.eval()
         assert bi_lstm(sample_input).shape == bi_lstm.compute_output_shape(
             seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
         )
@@ -646,6 +667,7 @@ def test_stacked_lstm():
             bidirectional=bidirectional,
             return_sequences=return_sequences,
         )
+        slstm.eval()
         assert slstm(sample_input).shape == slstm.compute_output_shape(
             seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
         )
@@ -683,6 +705,7 @@ def test_attention_with_context():
             bias=bias,
             initializer=initializer,
         )
+        awc.eval()
         assert awc(SAMPLE_INPUT).shape == awc.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -706,6 +729,7 @@ def test_multi_head_attention():
             num_heads=num_heads,
             bias=bias,
         )
+        mha.eval()
         assert mha(q, k, v)[0].shape == mha.compute_output_shape(
             seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
         )
@@ -727,6 +751,7 @@ def test_self_attention():
             bias=bias,
             dropout=dropout,
         )
+        sa.eval()
         assert sa(sample_input).shape == sa.compute_output_shape(
             seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
         )
@@ -756,6 +781,7 @@ def test_attentive_pooling():
             dropout=dropout,
             kw_activation=kw_activation,
         )
+        ap.eval()
         assert ap(SAMPLE_INPUT).shape == ap.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -774,6 +800,7 @@ def test_zero_padding():
             out_channels=out_channels,
             loc=loc,
         )
+        zp.eval()
         assert zp(SAMPLE_INPUT).shape == zp.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -791,6 +818,7 @@ def test_zero_padding():
 def test_zero_pad_1d():
     for padding in [2, [1, 1], [0, 3]]:
         zp = ZeroPad1d(padding=padding)
+        zp.eval()
         assert zp(SAMPLE_INPUT).shape == zp.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE, in_channels=IN_CHANNELS
         )
@@ -835,6 +863,7 @@ def test_mlp():
             bias=bias,
             dropout=dropout,
         )
+        mlp.eval()
         assert mlp(SAMPLE_INPUT.permute(0, 2, 1)).shape == mlp.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -868,10 +897,12 @@ def test_attention_blocks():
             subsample_length=subsample_length,
         )
         nl = NonLocalBlock(in_channels=IN_CHANNELS, **config)
+        nl.eval()
         assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
         nl = make_attention_layer(IN_CHANNELS, name="non_local", **config)
+        nl.eval()
         assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -899,10 +930,12 @@ def test_attention_blocks():
 
     for reduction in [2, 4, 8]:
         se = SEBlock(in_channels=IN_CHANNELS, reduction=reduction)
+        se.eval()
         assert se(SAMPLE_INPUT).shape == se.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
         se = make_attention_layer(IN_CHANNELS, name="se", reduction=reduction)
+        se.eval()
         assert se(SAMPLE_INPUT).shape == se.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -923,10 +956,12 @@ def test_attention_blocks():
             fusion_types=fusion_types,
         )
         gc = GlobalContextBlock(in_channels=IN_CHANNELS * 16, **config)
+        gc.eval()
         assert gc(sample_input).shape == gc.compute_output_shape(
             seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
         )
         gc = make_attention_layer(IN_CHANNELS * 16, name="gc", **config)
+        gc.eval()
         assert gc(sample_input).shape == gc.compute_output_shape(
             seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
         )
@@ -966,10 +1001,12 @@ def test_attention_blocks():
             no_spatial=no_spatial,
         )
         cbam = CBAMBlock(gate_channels=IN_CHANNELS * 16, **config)
+        cbam.eval()
         assert cbam(sample_input).shape == cbam.compute_output_shape(
             seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
         )
         cbam = make_attention_layer(IN_CHANNELS * 16, name="cbam", **config)
+        cbam.eval()
         assert cbam(sample_input).shape == cbam.compute_output_shape(
             seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
         )
@@ -995,6 +1032,7 @@ def test_crf():
     mask = mask.bool()
 
     crf = CRF(num_tags=num_tags, batch_first=False)
+    crf.eval()
     assert crf(sample_input).shape == crf.compute_output_shape(
         seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
     )
@@ -1021,6 +1059,7 @@ def test_crf():
     labels = labels.permute(1, 0)
     mask = mask.permute(1, 0)
     crf = CRF(num_tags=num_tags, batch_first=True)
+    crf.eval()
     assert crf(sample_input).shape == crf.compute_output_shape(
         seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
     )
@@ -1063,6 +1102,7 @@ def test_s2d():
             out_channels=IN_CHANNELS * 8,
             block_size=block_size,
         )
+        s2d.eval()
         assert s2d(SAMPLE_INPUT).shape == s2d.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -1083,6 +1123,7 @@ def test_mldecoder():
             num_groups=num_groups,
             zsl=zsl,
         )
+        mldecoder.eval()
         assert mldecoder(SAMPLE_INPUT).shape == mldecoder.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
@@ -1109,5 +1150,6 @@ def test_droppath():
 @torch.no_grad()
 def test_ScaledDotProductAttention():
     model = _ScaledDotProductAttention()
+    model.eval()
     query, key, value = [torch.randn(2, 12, 2000) for _ in range(3)]
     assert model(query, key, value).shape == torch.Size([2, 12, 2000])

@@ -59,7 +59,7 @@ class TripleConv(MultiConv):
         Subsample length(s) (stride(s)) of the convolutions
     groups: int, default 1,
         connection pattern (of channels) of the inputs and outputs.
-    dropouts : float or Sequence[float], default 0.0
+    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0
         Dropout ratio after each :class:`Conv_Bn_Activation` block.
     out_activation : bool, default True
         If True, the last mini-block of :class:`Conv_Bn_Activation`
@@ -80,7 +80,7 @@ class TripleConv(MultiConv):
         filter_lengths: Union[Sequence[int], int],
         subsample_lengths: Union[Sequence[int], int] = 1,
         groups: int = 1,
-        dropouts: Union[Sequence[float], float] = 0.0,
+        dropouts: Union[Sequence[Union[float, dict]], float, dict] = 0.0,
         out_activation: bool = True,
         **config,
     ) -> None:
@@ -120,7 +120,7 @@ class DownTripleConv(nn.Sequential, SizeMixin):
         Length(s) of the filters (kernel size).
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
-    dropouts : float or Sequence[float], default 0.0
+    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0
         Dropout ratio after each :class:`Conv_Bn_Activation` block.
     mode : str, default "max"
         Down sampling mode, one of {:class:`DownSample`.__MODES__}.
@@ -141,7 +141,7 @@ class DownTripleConv(nn.Sequential, SizeMixin):
         out_channels: Union[Sequence[int], int],
         filter_lengths: Union[Sequence[int], int],
         groups: int = 1,
-        dropouts: Union[Sequence[float], float] = 0.0,
+        dropouts: Union[Sequence[Union[float, dict]], float, dict] = 0.0,
         mode: str = "max",
         **config,
     ) -> None:
@@ -222,7 +222,7 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
         Dilation(s) of the convolutions.
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
-    dropouts : float or Sequence[float], default 0.0
+    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0
         Dropout ratio after each :class:`Conv_Bn_Activation` block.
     mode : str, default "max"
         Down sampling mode, one of {:class:`DownSample`.__MODES__}.
@@ -244,7 +244,7 @@ class DownBranchedDoubleConv(nn.Module, SizeMixin):
         filter_lengths: Union[Sequence[Sequence[int]], Sequence[int], int],
         dilations: Union[Sequence[Sequence[int]], Sequence[int], int] = 1,
         groups: int = 1,
-        dropouts: Union[Sequence[float], float] = 0.0,
+        dropouts: Union[Sequence[Union[float, dict]], float, dict] = 0.0,
         mode: str = "max",
         **config,
     ) -> None:
@@ -354,14 +354,14 @@ class UpTripleConv(nn.Module, SizeMixin):
     deconv_filter_length : int
         Length(s) of the filters (kernel size) of the
         deconvolutional upsampling layer,
-        used when `mode` is "deconv".
+        used when `mode` is ``"deconv"``.
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
         Not used currently.
-    dropouts : float or Sequence[float], default 0.0
+    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0
         Dropout ratio after each :class:`Conv_Bn_Activation` block.
     mode : str, default "deconv"
-        Mode of up sampling, case insensitive. Should be "deconv"
+        Mode of up sampling, case insensitive. Should be ``"deconv"``
         or methods supported by :class:`torch.nn.Upsample`.
     config : dict
         Other hyper-parameters, including
@@ -386,7 +386,7 @@ class UpTripleConv(nn.Module, SizeMixin):
         filter_lengths: Union[Sequence[int], int],
         deconv_filter_length: Optional[int] = None,
         groups: int = 1,
-        dropouts: Union[Sequence[float], float] = 0.0,
+        dropouts: Union[Sequence[Union[float, dict]], float, dict] = 0.0,
         mode: str = "deconv",
         **config,
     ) -> None:

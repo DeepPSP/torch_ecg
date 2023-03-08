@@ -21,6 +21,7 @@ def test_densenet():
 
     for item in [densenet_vanilla, densenet_leadwise]:
         config = deepcopy(item)
+        config.dropout = 0.1
         model = DenseNet(in_channels=IN_CHANNELS, **config)
         model = model.eval()
         out = model(inp)
@@ -32,6 +33,7 @@ def test_densenet():
 
     densenet_config = deepcopy(densenet_vanilla)
     densenet_config.block.building_block = "bottleneck"
+    densenet_config.dropout = {"type": "1d", "p": 0.1}
     model = DenseNet(in_channels=IN_CHANNELS, **densenet_config)
     model = model.eval()
     out = model(inp)
@@ -41,6 +43,7 @@ def test_densenet():
 
     densenet_config = deepcopy(densenet_leadwise)
     densenet_config.block.building_block = "bottleneck"
+    densenet_config.dropout = {"type": None, "p": 0.1}
     model = DenseNet(in_channels=IN_CHANNELS, **densenet_config)
     model = model.eval()
     out = model(inp)

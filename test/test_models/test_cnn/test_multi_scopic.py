@@ -22,6 +22,11 @@ def test_multi_scopic():
 
     for item in [multi_scopic, multi_scopic_leadwise]:
         config = deepcopy(item)
+        config.dropouts = [
+            [0, 0.2, 0],
+            [0, {"p": 0.2, "type": "1d"}, 0],
+            [0, {"p": 0.2, "type": None}, 0],
+        ]
         model = MultiScopicCNN(in_channels=IN_CHANNELS, **config)
         model = model.eval()
         out = model(inp)

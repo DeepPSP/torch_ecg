@@ -57,7 +57,7 @@ class DoubleConv(MultiConv):
         Subsample length(s) (stride(s)) of the convolutions.
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
-    dropouts : float or Sequence[float], default 0.0
+    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0
         Dropout ratio after each :class:`Conv_Bn_Activation` block.
     out_activation : bool, default True
         If True, the last mini-block of :class:`Conv_Bn_Activation`
@@ -81,7 +81,7 @@ class DoubleConv(MultiConv):
         filter_lengths: Union[Sequence[int], int],
         subsample_lengths: Union[Sequence[int], int] = 1,
         groups: int = 1,
-        dropouts: Union[Sequence[float], float] = 0.0,
+        dropouts: Union[Sequence[Union[float, dict]], float, dict] = 0.0,
         out_activation: bool = True,
         mid_channels: Optional[int] = None,
         **config,
@@ -121,7 +121,7 @@ class DownDoubleConv(nn.Sequential, SizeMixin):
         Length(s) of the filters (kernel size).
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
-    dropouts : float or Sequence[float], default 0.0
+    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0
         Dropout ratio after each :class:`Conv_Bn_Activation` block.
     mid_channels : int, optional
         Number of channels produced by the first convolutional layer,
@@ -146,7 +146,7 @@ class DownDoubleConv(nn.Sequential, SizeMixin):
         out_channels: int,
         filter_lengths: Union[Sequence[int], int],
         groups: int = 1,
-        dropouts: Union[Sequence[float], float] = 0.0,
+        dropouts: Union[Sequence[Union[float, dict]], float, dict] = 0.0,
         mid_channels: Optional[int] = None,
         mode: str = "max",
         **config,
@@ -243,7 +243,7 @@ class UpDoubleConv(nn.Module, SizeMixin):
     deconv_groups : int, default 1
         Connection pattern (of channels) of the deconvolutional upsampling layer,
         used only when `mode` is "deconv".
-    dropouts : float or Sequence[float], default 0.0
+    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0
         Dropout ratio after each :class:`Conv_Bn_Activation` block.
     mode : str, default "deconv"
         Mode for up sampling, can be one of {:class:`UpSample`.__MODES__}.
@@ -274,7 +274,7 @@ class UpDoubleConv(nn.Module, SizeMixin):
         deconv_filter_length: Optional[int] = None,
         groups: int = 1,
         deconv_groups: int = 1,
-        dropouts: Union[Sequence[float], float] = 0.0,
+        dropouts: Union[Sequence[Union[float, dict]], float, dict] = 0.0,
         mode: str = "deconv",
         mid_channels: Optional[int] = None,
         **config,

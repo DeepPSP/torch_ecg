@@ -31,6 +31,10 @@ __all__ = [
 ]
 
 
+if not hasattr(nn, "Dropout1d"):
+    nn.Dropout1d = nn.Dropout  # added in pytorch 1.12
+
+
 _DEFAULT_CONV_CONFIGS = CFG(
     ordering="acb",
     conv_type="separable",
@@ -67,8 +71,11 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
         Dilation(s) of the convolutions.
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
-    dropouts : float or Sequence[float], default 0.0
-        Dropout ratio after each :class:`Conv_Bn_Activation` block.
+    dropouts : float or dict or Sequence[float] or Sequence[dict], default 0.0
+        If is dictionary, it should contain the keys ``"p"`` and ``"type"``,
+        where ``"p"`` is the dropout rate and ``"type"`` is the type of dropout,
+        which can be either ``"1d"`` (:class:`torch.nn.Dropout1d`) or
+        ``None`` (:class:`torch.nn.Dropout`).
     config : dict, optional
         Other parameters, including
         activation choices, weight initializer, batch normalization choices, etc.,
@@ -114,7 +121,7 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
             f"the main stream has {self.__num_convs} convolutions, "
             f"while `dilations` indicates {len(self.__dilations)}"
         )
-        if isinstance(dropouts, Real):
+        if isinstance(dropouts, (Real, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_convs))
         else:
             self.__dropouts = list(dropouts)
@@ -154,8 +161,8 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
                 mode="conv",
             )
         else:
-            self.subsample = None
-            self.shortcut = None
+            self.subsample = nn.Identity()
+            self.shortcut = nn.Identity()
 
     def forward(self, input: Tensor) -> Tensor:
         """Forward pass.
@@ -174,11 +181,9 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
 
         """
         main_out = self.main_stream_conv(input)
-        if self.subsample:
-            main_out = self.subsample(main_out)
+        main_out = self.subsample(main_out)
         residue = input
-        if self.shortcut:
-            residue = self.shortcut(residue)
+        residue = self.shortcut(residue)
         output = residue + main_out
         return output
 
@@ -201,7 +206,7 @@ class XceptionMultiConv(nn.Module, SizeMixin, CitationMixin):
 
         """
         output_shape = self.main_stream_conv.compute_output_shape(seq_len, batch_size)
-        if self.subsample is not None:
+        if not isinstance(self.subsample, nn.Identity):
             output_shape = self.subsample.compute_output_shape(
                 output_shape[-1], output_shape[0]
             )
@@ -232,16 +237,16 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         Filter length(s) of the convolutions of Xception blocks.
     subsample_lengths : int or Sequence[int]
         Subsampling length(s) of the Xception blocks.
-    subsample_kernels : int or Sequence[int], optional,
+    subsample_kernels : int or Sequence[int], optional
         Subsampling kernel size(s) of the Xception blocks.
-    dilations : int or Sequence[int] or Sequence[Sequence[int]], default 1,
+    dilations : int or Sequence[int] or Sequence[Sequence[int]], default 1
         Dilation(s) of the convolutions of Xception blocks.
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
-    dropouts : float or Sequence[float] or Sequence[Sequence[float]], default 0.0
+    dropouts : float or dict or Sequence[Union[float, dict]] or Sequence[Sequence[Union[float, dict]]], default 0.0
         Dropout(s) after each :class:`Conv_Bn_Activation` blocks
         in the Xception blocks.
-    block_dropouts : float or Sequence[float], default 0.0
+    block_dropouts : float or dict or Sequence[Union[float, dict]], default 0.0
         Dropout(s) after the Xception blocks.
     config : dict, optional
         Other parameters, Xception blocks and initial convolutions, including
@@ -265,8 +270,13 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         subsample_kernels: Optional[Union[int, Sequence[int]]] = None,
         dilations: Union[int, Sequence[int], Sequence[Sequence[int]]] = 1,
         groups: int = 1,
-        dropouts: Union[float, Sequence[float], Sequence[Sequence[float]]] = 0.0,
-        block_dropouts: Union[float, Sequence[float]] = 0.0,
+        dropouts: Union[
+            float,
+            dict,
+            Sequence[Union[float, dict]],
+            Sequence[Sequence[Union[float, dict]]],
+        ] = 0.0,
+        block_dropouts: Union[float, dict, Sequence[Union[float, dict]]] = 0.0,
         **config,
     ) -> None:
         super().__init__()
@@ -311,7 +321,7 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
             f"the entry flow has {self.__num_blocks} blocks, "
             f"while `dilations` indicates {len(self.__dilations)}"
         )
-        if isinstance(dropouts, Real):
+        if isinstance(dropouts, (Real, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
@@ -319,7 +329,7 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
             f"the entry flow has {self.__num_blocks} blocks, "
             f"while `dropouts` indicates {len(self.__dropouts)}"
         )
-        if isinstance(block_dropouts, Real):
+        if isinstance(block_dropouts, (Real, dict)):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks))
         else:
             self.__block_dropouts = list(block_dropouts)
@@ -372,7 +382,24 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
                 ),
             )
             block_in_channels = block_out_channels[-1]
-            if self.__block_dropouts[idx] > 0:
+            if isinstance(self.__block_dropouts[idx], dict):
+                if (
+                    self.__block_dropouts[idx]["type"] == "1d"
+                    and self.__block_dropouts[idx]["p"] > 0
+                ):
+                    self.add_module(
+                        f"entry_flow_dropout_{idx}",
+                        nn.Dropout1d(self.__block_dropouts[idx]["p"]),
+                    )
+                elif (
+                    self.__block_dropouts[idx]["type"] is None
+                    and self.__block_dropouts[idx]["p"] > 0
+                ):
+                    self.add_module(
+                        f"entry_flow_dropout_{idx}",
+                        nn.Dropout(self.__block_dropouts[idx]["p"]),
+                    )
+            elif self.__block_dropouts[idx] > 0:
                 self.add_module(
                     f"entry_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx])
                 )
@@ -416,7 +443,7 @@ class XceptionEntryFlow(nn.Sequential, SizeMixin):
         """
         _seq_len = seq_len
         for module in self:
-            if type(module).__name__ == "Dropout":
+            if isinstance(module, (nn.Dropout, nn.Dropout1d)):
                 continue
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
@@ -442,10 +469,10 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         Dilation(s) of the convolutions of Xception blocks.
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
-    dropouts : float or Sequence[float] or Sequence[Sequence[float]], default 0.0
+    dropouts : float or dict or Sequence[Union[float, dict]] or Sequence[Sequence[Union[float, dict]]], default 0.0
         Dropout(s) after each :class:`Conv_Bn_Activation` blocks
         in the Xception blocks.
-    block_dropouts : float or Sequence[float], default 0.0
+    block_dropouts : float or dict or Sequence[Union[float, dict]], default 0.0
         Dropout(s) after the Xception blocks
     config : dict, optional
         Other parameters for Xception blocks, including
@@ -464,8 +491,13 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         filter_lengths: Union[int, Sequence[int], Sequence[Sequence[int]]],
         dilations: Union[int, Sequence[int], Sequence[Sequence[int]]] = 1,
         groups: int = 1,
-        dropouts: Union[float, Sequence[float], Sequence[Sequence[float]]] = 0.0,
-        block_dropouts: Union[float, Sequence[float]] = 0.0,
+        dropouts: Union[
+            float,
+            dict,
+            Sequence[Union[float, dict]],
+            Sequence[Sequence[Union[float, dict]]],
+        ] = 0.0,
+        block_dropouts: Union[float, dict, Sequence[Union[float, dict]]] = 0.0,
         **config,
     ) -> None:
         super().__init__()
@@ -488,7 +520,7 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
             f"the middle flow has {self.__num_blocks} blocks, "
             f"while `dilations` indicates {len(self.__dilations)}"
         )
-        if isinstance(dropouts, Real):
+        if isinstance(dropouts, (Real, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
@@ -496,7 +528,7 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
             f"the middle flow has {self.__num_blocks} blocks, "
             f"while `dropouts` indicates {len(self.__dropouts)}"
         )
-        if isinstance(block_dropouts, Real):
+        if isinstance(block_dropouts, (Real, dict)):
             self.__block_dropouts = list(repeat(block_dropouts, self.__num_blocks))
         else:
             self.__block_dropouts = list(block_dropouts)
@@ -528,7 +560,24 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
                 ),
             )
             block_in_channels = block_out_channels[-1]
-            if self.__block_dropouts[idx] > 0:
+            if isinstance(self.__block_dropouts[idx], dict):
+                if (
+                    self.__block_dropouts[idx]["type"] == "1d"
+                    and self.__block_dropouts[idx]["p"] > 0
+                ):
+                    self.add_module(
+                        f"middle_flow_dropout_{idx}",
+                        nn.Dropout1d(self.__block_dropouts[idx]["p"]),
+                    )
+                elif (
+                    self.__block_dropouts[idx]["type"] is None
+                    and self.__block_dropouts[idx]["p"] > 0
+                ):
+                    self.add_module(
+                        f"middle_flow_dropout_{idx}",
+                        nn.Dropout(self.__block_dropouts[idx]["p"]),
+                    )
+            elif self.__block_dropouts[idx] > 0:
                 self.add_module(
                     f"middle_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx])
                 )
@@ -572,7 +621,7 @@ class XceptionMiddleFlow(nn.Sequential, SizeMixin):
         """
         _seq_len = seq_len
         for module in self:
-            if type(module).__name__ == "Dropout":
+            if isinstance(module, (nn.Dropout, nn.Dropout1d)):
                 continue
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
@@ -607,10 +656,10 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         Dilation(s) of the convolutions of Xception blocks.
     groups : int, default 1
         Connection pattern (of channels) of the inputs and outputs.
-    dropouts : float or Sequence[float] or Sequence[Sequence[float]], default 0.0
+    dropouts : float or dict or Sequence[Union[float, dict]] or Sequence[Sequence[Union[float, dict]]], default 0.0
         Dropout(s) after each :class:`Conv_Bn_Activation` blocks
         in the Xception blocks.
-    block_dropouts : float or Sequence[float], default 0.0
+    block_dropouts : float or dict or Sequence[Union[float, dict]], default 0.0
         Dropout(s) after each of the Xception blocks
         and each of the final convolutions.
     config : dict, optional
@@ -634,8 +683,13 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         subsample_kernels: Optional[Union[int, Sequence[int]]] = None,
         dilations: Union[int, Sequence[int], Sequence[Sequence[int]]] = 1,
         groups: int = 1,
-        dropouts: Union[float, Sequence[float], Sequence[Sequence[float]]] = 0.0,
-        block_dropouts: Union[float, Sequence[float]] = 0.0,
+        dropouts: Union[
+            float,
+            dict,
+            Sequence[Union[float, dict]],
+            Sequence[Sequence[Union[float, dict]]],
+        ] = 0.0,
+        block_dropouts: Union[float, dict, Sequence[Union[float, dict]]] = 0.0,
         **config,
     ) -> None:
         super().__init__()
@@ -679,7 +733,7 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
             f"the exit flow has {self.__num_blocks} blocks, "
             f"while `dilations` indicates {len(self.__dilations)}"
         )
-        if isinstance(dropouts, Real):
+        if isinstance(dropouts, (Real, dict)):
             self.__dropouts = list(repeat(dropouts, self.__num_blocks))
         else:
             self.__dropouts = list(dropouts)
@@ -687,7 +741,7 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
             f"the exit flow has {self.__num_blocks} blocks, "
             f"while `dropouts` indicates {len(self.__dropouts)}"
         )
-        if isinstance(block_dropouts, Real):
+        if isinstance(block_dropouts, (Real, dict)):
             self.__block_dropouts = list(
                 repeat(block_dropouts, self.__num_blocks + len(final_num_filters))
             )
@@ -725,7 +779,24 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
                 ),
             )
             block_in_channels = block_out_channels[-1]
-            if self.__block_dropouts[idx] > 0:
+            if isinstance(self.__block_dropouts[idx], dict):
+                if (
+                    self.__block_dropouts[idx]["type"] == "1d"
+                    and self.__block_dropouts[idx]["p"] > 0
+                ):
+                    self.add_module(
+                        f"exit_flow_dropout_{idx}",
+                        nn.Dropout1d(self.__block_dropouts[idx]["p"]),
+                    )
+                elif (
+                    self.__block_dropouts[idx]["type"] is None
+                    and self.__block_dropouts[idx]["p"] > 0
+                ):
+                    self.add_module(
+                        f"exit_flow_dropout_{idx}",
+                        nn.Dropout(self.__block_dropouts[idx]["p"]),
+                    )
+            elif self.__block_dropouts[idx] > 0:
                 self.add_module(
                     f"exit_flow_dropout_{idx}", nn.Dropout(self.__block_dropouts[idx])
                 )
@@ -781,7 +852,7 @@ class XceptionExitFlow(nn.Sequential, SizeMixin):
         """
         _seq_len = seq_len
         for module in self:
-            if type(module).__name__ == "Dropout":
+            if isinstance(module, (nn.Dropout, nn.Dropout1d)):
                 continue
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape

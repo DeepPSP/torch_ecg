@@ -30,6 +30,7 @@ def test_ecg_unet():
         RuntimeWarning, match="No config is provided, using default config"
     ):
         model = ECG_UNET(classes=classes, n_leads=12)
+        model = model.eval()
 
     doi = model.doi
     assert isinstance(doi, list)
@@ -60,6 +61,7 @@ def test_ecg_subtract_unet():
         RuntimeWarning, match="No config is provided, using default config"
     ):
         model = ECG_SUBTRACT_UNET(classes=classes, n_leads=12)
+        model = model.eval()
 
     doi = model.doi
     assert isinstance(doi, list)

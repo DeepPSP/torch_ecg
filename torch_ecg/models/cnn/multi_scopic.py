@@ -30,6 +30,10 @@ __all__ = [
 ]
 
 
+if not hasattr(nn, "Dropout1d"):
+    nn.Dropout1d = nn.Dropout  # added in pytorch 1.12
+
+
 class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
     """Basic building block of the CNN part of the SOTA model
     from CPSC2019 challenge (entry 0416).
@@ -120,7 +124,24 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
                 mode=self.config.subsample_mode,
             ),
         )
-        if self.config.dropout > 0:
+        if isinstance(self.config.dropout, dict):
+            if self.config.dropout.type == "1d" and self.config.dropout.p > 0:
+                self.add_module(
+                    "dropout",
+                    nn.Dropout1d(
+                        p=self.config.dropout.p,
+                        inplace=self.config.dropout.get("inplace", False),
+                    ),
+                )
+            elif self.config.dropout.type is None and self.config.dropout.p > 0:
+                self.add_module(
+                    "dropout",
+                    nn.Dropout(
+                        p=self.config.dropout.p,
+                        inplace=self.config.dropout.get("inplace", False),
+                    ),
+                )
+        elif self.config.dropout > 0:
             self.add_module("dropout", nn.Dropout(self.config.dropout, inplace=False))
 
     def forward(self, input: Tensor) -> Tensor:
@@ -161,10 +182,8 @@ class MultiScopicBasicBlock(nn.Sequential, SizeMixin):
 
         """
         _seq_len = seq_len
-        for idx, module in enumerate(self):
-            if idx == self.__num_convs:  # bn layer
-                continue
-            elif self.config.dropout > 0 and idx == len(self) - 1:  # dropout layer
+        for _, module in enumerate(self):
+            if isinstance(module, (nn.Dropout, nn.Dropout1d, nn.BatchNorm1d)):
                 continue
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape

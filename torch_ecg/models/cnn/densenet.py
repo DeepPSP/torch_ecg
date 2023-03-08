@@ -40,6 +40,10 @@ __all__ = [
 ]
 
 
+if not hasattr(nn, "Dropout1d"):
+    nn.Dropout1d = nn.Dropout  # added in pytorch 1.12
+
+
 class DenseBasicBlock(nn.Module, SizeMixin):
     """The basic building block for DenseNet.
 
@@ -62,8 +66,12 @@ class DenseBasicBlock(nn.Module, SizeMixin):
         For more details, ref. :class:`torch.nn.Conv1d`.
     bias : bool, default False
         Whether to use bias in the convolution layers.
-    dropout : float, default 0.0
+    dropout : float or dict, default 0.0
         Dropout rate of the new features produced from the main stream.
+        If is a dict, it should contain the keys ``"p"`` and ``"type"``,
+        where ``"p"`` is the dropout rate and ``"type"`` is the type of dropout,
+        which can be either ``"1d"`` (:class:`torch.nn.Dropout1d`) or
+        ``None`` (:class:`torch.nn.Dropout`).
     config : dict, optional
         Additional hyper-parameters, including
         activation choices, memory_efficient choices, etc.
@@ -84,7 +92,7 @@ class DenseBasicBlock(nn.Module, SizeMixin):
         filter_length: int,
         groups: int = 1,
         bias: bool = False,
-        dropout: float = 0.0,
+        dropout: Union[float, dict] = 0.0,
         **config,
     ) -> None:
         super().__init__()
@@ -114,10 +122,17 @@ class DenseBasicBlock(nn.Module, SizeMixin):
             bias=bias,
             ordering="bac",
         )
-        if dropout > 0:
+        if isinstance(dropout, dict):
+            if dropout["type"] == "1d" and dropout["p"] > 0:
+                self.dropout = nn.Dropout1d(dropout["p"])
+            elif dropout["type"] is None and dropout["p"] > 0:
+                self.dropout = nn.Dropout(dropout["p"])
+            else:
+                self.dropout = nn.Identity()
+        elif dropout > 0:
             self.dropout = nn.Dropout(dropout)
         else:
-            self.dropout = None
+            self.dropout = nn.Identity()
 
     def forward(self, input: Tensor) -> Tensor:
         """Forward pass of the network.
@@ -136,8 +151,7 @@ class DenseBasicBlock(nn.Module, SizeMixin):
 
         """
         new_features = self.bac(input)
-        if self.dropout:
-            new_features = self.dropout(new_features)
+        new_features = self.dropout(new_features)
         if self.__groups == 1:
             output = torch.cat([input, new_features], dim=1)
         else:  # see TODO of `DenseNet`
@@ -207,8 +221,12 @@ class DenseBottleNeck(nn.Module, SizeMixin):
         For more details, ref. :class:`torch.nn.Conv1d`.
     bias : bool, default False
         Whether to use bias in the convolutional layers.
-    dropout : float, default 0.0
+    dropout : float or dict, default 0.0
         Dropout rate of the new features produced from the main stream.
+        If is a dict, it should contain the keys ``"p"`` and ``"type"``,
+        where ``"p"`` is the dropout rate and ``"type"`` is the type of dropout,
+        which can be either ``"1d"`` (:class:`torch.nn.Dropout1d`) or
+        ``None`` (:class:`torch.nn.Dropout`).
     config : dict, optional
         Other hyper-parameters, including
         activation choices, memory_efficient choices, etc.
@@ -230,7 +248,7 @@ class DenseBottleNeck(nn.Module, SizeMixin):
         filter_length: int,
         groups: int = 1,
         bias: bool = False,
-        dropout: float = 0.0,
+        dropout: Union[float, dict] = 0.0,
         **config,
     ) -> None:
         super().__init__()
@@ -269,10 +287,17 @@ class DenseBottleNeck(nn.Module, SizeMixin):
             bias=bias,
             ordering="bac",
         )
-        if dropout > 0:
+        if isinstance(dropout, dict):
+            if dropout["type"] == "1d" and dropout["p"] > 0.0:
+                self.dropout = nn.Dropout1d(dropout["p"])
+            elif dropout["type"] is None and dropout["p"] > 0.0:
+                self.dropout = nn.Dropout(dropout["p"])
+            else:
+                self.dropout = nn.Identity()
+        elif dropout > 0.0:
             self.dropout = nn.Dropout(dropout)
         else:
-            self.dropout = None
+            self.dropout = nn.Identity()
 
     def bn_function(self, input: Tensor) -> Tensor:
         """BottleNeck function.
@@ -315,8 +340,7 @@ class DenseBottleNeck(nn.Module, SizeMixin):
         else:
             new_features = self.bn_function(input)
         new_features = self.main_conv(new_features)
-        if self.dropout:
-            new_features = self.dropout(new_features)
+        new_features = self.dropout(new_features)
         if self.__groups == 1:
             output = torch.cat([input, new_features], dim=1)
         else:  # see TODO of `DenseNet`
@@ -601,7 +625,7 @@ class DenseNet(nn.Sequential, SizeMixin, CitationMixin):
               compression factor of the transition blocks
             - bn_size: int,
               bottleneck base width, used only when building block is :class:`DenseBottleNeck`
-            - dropouts: int,
+            - dropouts: float or dict,
               dropout ratio of each building block
             - groups: int,
               connection pattern (of channels) of the inputs and outputs

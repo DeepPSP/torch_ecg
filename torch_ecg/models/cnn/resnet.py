@@ -36,6 +36,10 @@ __all__ = [
 ]
 
 
+if not hasattr(nn, "Dropout1d"):
+    nn.Dropout1d = nn.Dropout  # added in pytorch 1.12
+
+
 _DEFAULT_BLOCK_CONFIG = {
     "increase_channels_method": "conv",
     "subsample_mode": "conv",
@@ -130,6 +134,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
 
         self.main_stream = nn.Sequential()
         conv_in_channels = self.__in_channels
+        dropout_config = self.config.get("dropout", 0)
         for i in range(self.__num_convs):
             conv_activation = (
                 self.config.activation if i < self.__num_convs - 1 else None
@@ -156,10 +161,20 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
                     conv_type=self.config.get("conv_type", None),
                 ),
             )
-            if self.config.get("dropout", 0) > 0 and i < self.__num_convs - 1:
-                self.main_stream.add_module(
-                    f"dropout_{i}", nn.Dropout(self.config.dropout)
-                )
+            if i < self.__num_convs - 1:
+                if isinstance(dropout_config, dict):
+                    if dropout_config["type"] == "1d" and dropout_config["p"] > 0:
+                        self.main_stream.add_module(
+                            f"dropout_{i}", nn.Dropout1d(dropout_config["p"])
+                        )
+                    elif dropout_config["type"] is None and dropout_config["p"] > 0:
+                        self.main_stream.add_module(
+                            f"dropout_{i}", nn.Dropout(dropout_config["p"])
+                        )
+                elif dropout_config > 0:  # float
+                    self.main_stream.add_module(
+                        f"dropout_{i}", nn.Dropout(dropout_config)
+                    )
             conv_in_channels = self.__out_channels
         if self.__attn and self.__attn["pos"] == -1:
             self.main_stream.add_module(
@@ -174,10 +189,15 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         else:
             self.out_activation = self.config.activation(**self.config.kw_activation)
 
-        if self.config.get("dropout", 0) > 0:
+        if isinstance(dropout_config, dict):
+            if dropout_config["type"] == "1d" and dropout_config["p"] > 0:
+                self.out_dropout = nn.Dropout1d(dropout_config["p"])
+            elif dropout_config["type"] is None and dropout_config["p"] > 0:
+                self.out_dropout = nn.Dropout(dropout_config["p"])
+        elif dropout_config > 0:  # float
             self.out_dropout = nn.Dropout(self.config.dropout)
         else:
-            self.out_dropout = None
+            self.out_dropout = nn.Identity()
 
     def _make_shortcut_layer(self) -> Union[nn.Module, None]:
         """Make shortcut layer for residual connection."""
@@ -208,7 +228,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
                     ZeroPadding(self.__in_channels, self.__out_channels),
                 )
         else:
-            shortcut = None
+            shortcut = nn.Identity()
         return shortcut
 
     def forward(self, input: Tensor) -> Tensor:
@@ -230,9 +250,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         identity = input
 
         out = self.main_stream(input)
-
-        if self.shortcut is not None:
-            identity = self.shortcut(input)
+        identity = self.shortcut(input)
 
         if identity.shape[-1] < out.shape[-1]:
             # downsampling using "avg" or "max" adopts no padding
@@ -244,9 +262,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
 
         out += identity
         out = self.out_activation(out)
-
-        if self.out_dropout is not None:
-            out = self.out_dropout(out)
+        out = self.out_dropout(out)
 
         return out
 
@@ -270,7 +286,7 @@ class ResNetBasicBlock(nn.Module, SizeMixin):
         """
         _seq_len = seq_len
         for module in self.main_stream:
-            if isinstance(module, nn.Dropout):
+            if isinstance(module, (nn.Dropout, nn.Dropout1d, nn.Identity)):
                 continue
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
@@ -402,6 +418,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
             2: "cba_tail",
         }
         conv_in_channels = self.__in_channels
+        dropout_config = self.config.get("dropout", 0)
         for i in range(self.__num_convs):
             if self.__attn and self.__attn["pos"] == i:
                 self.main_stream.add_module(
@@ -432,10 +449,20 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
                     conv_type=conv_type,
                 ),
             )
-            if self.config.get("dropout", 0) > 0 and i < self.__num_convs - 1:
-                self.main_stream.add_module(
-                    f"dropout_{i}", nn.Dropout(self.config.dropout)
-                )
+            if i < self.__num_convs - 1:
+                if isinstance(dropout_config, dict):
+                    if dropout_config["type"] == "1d" and dropout_config["p"] > 0:
+                        self.main_stream.add_module(
+                            f"dropout_{i}", nn.Dropout1d(dropout_config["p"])
+                        )
+                    elif dropout_config["type"] is None and dropout_config["p"] > 0:
+                        self.main_stream.add_module(
+                            f"dropout_{i}", nn.Dropout(dropout_config["p"])
+                        )
+                elif dropout_config > 0:  # float
+                    self.main_stream.add_module(
+                        f"dropout_{i}", nn.Dropout(dropout_config)
+                    )
             conv_in_channels = conv_out_channels
         if self.__attn and self.__attn["pos"] == -1:
             self.main_stream.add_module(
@@ -450,10 +477,15 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         else:
             self.out_activation = self.config.activation(**self.config.kw_activation)
 
-        if self.config.get("dropout", 0) > 0:
+        if isinstance(dropout_config, dict):
+            if dropout_config["type"] == "1d" and dropout_config["p"] > 0:
+                self.out_dropout = nn.Dropout1d(dropout_config["p"])
+            elif dropout_config["type"] is None and dropout_config["p"] > 0:
+                self.out_dropout = nn.Dropout(dropout_config["p"])
+        elif dropout_config > 0:  # float
             self.out_dropout = nn.Dropout(self.config.dropout)
         else:
-            self.out_dropout = None
+            self.out_dropout = nn.Identity()
 
     def _make_shortcut_layer(self) -> Union[nn.Module, None]:
         """Make shortcut layer for residual connection."""
@@ -484,7 +516,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
                     ZeroPadding(self.__in_channels, self.__out_channels[-1]),
                 )
         else:
-            shortcut = None
+            shortcut = nn.Identity()
         return shortcut
 
     def forward(self, input: Tensor) -> Tensor:
@@ -506,9 +538,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         identity = input
 
         out = self.main_stream(input)
-
-        if self.shortcut is not None:
-            identity = self.shortcut(input)
+        identity = self.shortcut(input)
 
         if identity.shape[-1] < out.shape[-1]:
             # downsampling using "avg" or "max" adopts no padding
@@ -520,9 +550,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
 
         out += identity
         out = self.out_activation(out)
-
-        if self.out_dropout is not None:
-            out = self.out_dropout(out)
+        out = self.out_dropout(out)
 
         return out
 
@@ -546,7 +574,7 @@ class ResNetBottleNeck(nn.Module, SizeMixin):
         """
         _seq_len = seq_len
         for module in self.main_stream:
-            if isinstance(module, nn.Dropout):
+            if isinstance(module, (nn.Identity, nn.Dropout, nn.Dropout1d)):
                 continue
             output_shape = module.compute_output_shape(_seq_len, batch_size)
             _, _, _seq_len = output_shape
@@ -816,7 +844,7 @@ class ResNet(nn.Sequential, SizeMixin, CitationMixin):
             f"`config.num_filters` indicates {len(self.__num_filters)} macro blocks, "
             f"while `config.num_blocks` indicates {len(self.config.num_blocks)}"
         )
-        if isinstance(self.config.dropouts, Real):
+        if isinstance(self.config.dropouts, (Real, dict)):
             self.__dropouts = list(
                 repeat(self.config.dropouts, len(self.config.num_blocks))
             )

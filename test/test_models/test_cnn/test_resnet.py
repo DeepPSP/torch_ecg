@@ -56,6 +56,7 @@ IN_CHANNELS = 12
 def test_resnet():
     inp = torch.randn(2, IN_CHANNELS, 2000)
 
+    idx = 0
     for item in tqdm(
         [
             # smaller resnets
@@ -101,6 +102,10 @@ def test_resnet():
         desc="Testing ResNet",
     ):
         config = deepcopy(item)
+        if idx == 0:
+            config["dropouts"] = {"p": 0.2, "type": None}
+        elif idx == 1:
+            config["dropouts"] = {"p": 0.2, "type": "1d"}
         model = ResNet(in_channels=IN_CHANNELS, **config)
         model = model.eval()
         out = model(inp)
@@ -109,3 +114,4 @@ def test_resnet():
         )
         assert model.in_channels == IN_CHANNELS
         assert isinstance(model.doi, list)
+        idx += 1
