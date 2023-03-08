@@ -1134,7 +1134,7 @@
 <span class="sd">        Subsample length(s) (stride(s)) of the convolutions.</span>
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">    dropouts : float or Sequence[float], default 0.0</span>
+<span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout ratio after each :class:`Conv_Bn_Activation` block.</span>
 <span class="sd">    out_activation : bool, default True</span>
 <span class="sd">        If True, the last mini-block of :class:`Conv_Bn_Activation`</span>
@@ -1158,7 +1158,7 @@
         <span class="n">filter_lengths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">subsample_lengths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">out_activation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">mid_channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
@@ -1198,7 +1198,7 @@
 <span class="sd">        Length(s) of the filters (kernel size).</span>
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">    dropouts : float or Sequence[float], default 0.0</span>
+<span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout ratio after each :class:`Conv_Bn_Activation` block.</span>
 <span class="sd">    mid_channels : int, optional</span>
 <span class="sd">        Number of channels produced by the first convolutional layer,</span>
@@ -1223,7 +1223,7 @@
         <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">filter_lengths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">mid_channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
@@ -1320,7 +1320,7 @@
 <span class="sd">    deconv_groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the deconvolutional upsampling layer,</span>
 <span class="sd">        used only when `mode` is &quot;deconv&quot;.</span>
-<span class="sd">    dropouts : float or Sequence[float], default 0.0</span>
+<span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout ratio after each :class:`Conv_Bn_Activation` block.</span>
 <span class="sd">    mode : str, default &quot;deconv&quot;</span>
 <span class="sd">        Mode for up sampling, can be one of {:class:`UpSample`.__MODES__}.</span>
@@ -1351,7 +1351,7 @@
         <span class="n">deconv_filter_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">deconv_groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;deconv&quot;</span><span class="p">,</span>
         <span class="n">mid_channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>

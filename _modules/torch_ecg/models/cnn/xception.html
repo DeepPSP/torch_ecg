@@ -1108,6 +1108,10 @@
 <span class="p">]</span>
 
 
+<span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">nn</span><span class="p">,</span> <span class="s2">&quot;Dropout1d&quot;</span><span class="p">):</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span>  <span class="c1"># added in pytorch 1.12</span>
+
+
 <span class="n">_DEFAULT_CONV_CONFIGS</span> <span class="o">=</span> <span class="n">CFG</span><span class="p">(</span>
     <span class="n">ordering</span><span class="o">=</span><span class="s2">&quot;acb&quot;</span><span class="p">,</span>
     <span class="n">conv_type</span><span class="o">=</span><span class="s2">&quot;separable&quot;</span><span class="p">,</span>
@@ -1144,8 +1148,11 @@
 <span class="sd">        Dilation(s) of the convolutions.</span>
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">    dropouts : float or Sequence[float], default 0.0</span>
-<span class="sd">        Dropout ratio after each :class:`Conv_Bn_Activation` block.</span>
+<span class="sd">    dropouts : float or dict or Sequence[float] or Sequence[dict], default 0.0</span>
+<span class="sd">        If is dictionary, it should contain the keys ``&quot;p&quot;`` and ``&quot;type&quot;``,</span>
+<span class="sd">        where ``&quot;p&quot;`` is the dropout rate and ``&quot;type&quot;`` is the type of dropout,</span>
+<span class="sd">        which can be either ``&quot;1d&quot;`` (:class:`torch.nn.Dropout1d`) or</span>
+<span class="sd">        ``None`` (:class:`torch.nn.Dropout`).</span>
 <span class="sd">    config : dict, optional</span>
 <span class="sd">        Other parameters, including</span>
 <span class="sd">        activation choices, weight initializer, batch normalization choices, etc.,</span>
@@ -1191,7 +1198,7 @@
             <span class="sa">f</span><span class="s2">&quot;the main stream has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="si">}</span><span class="s2"> convolutions, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_convs</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dropouts</span><span class="p">)</span>
@@ -1231,8 +1238,8 @@
                 <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;conv&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subsample</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass.</span>
@@ -1251,11 +1258,9 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">main_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_stream_conv</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsample</span><span class="p">:</span>
-            <span class="n">main_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsample</span><span class="p">(</span><span class="n">main_out</span><span class="p">)</span>
+        <span class="n">main_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsample</span><span class="p">(</span><span class="n">main_out</span><span class="p">)</span>
         <span class="n">residue</span> <span class="o">=</span> <span class="nb">input</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span><span class="p">:</span>
-            <span class="n">residue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span><span class="p">(</span><span class="n">residue</span><span class="p">)</span>
+        <span class="n">residue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span><span class="p">(</span><span class="n">residue</span><span class="p">)</span>
         <span class="n">output</span> <span class="o">=</span> <span class="n">residue</span> <span class="o">+</span> <span class="n">main_out</span>
         <span class="k">return</span> <span class="n">output</span>
 
@@ -1278,7 +1283,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">output_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_stream_conv</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsample</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subsample</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">):</span>
             <span class="n">output_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsample</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span>
                 <span class="n">output_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">output_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="p">)</span>
@@ -1309,16 +1314,16 @@
 <span class="sd">        Filter length(s) of the convolutions of Xception blocks.</span>
 <span class="sd">    subsample_lengths : int or Sequence[int]</span>
 <span class="sd">        Subsampling length(s) of the Xception blocks.</span>
-<span class="sd">    subsample_kernels : int or Sequence[int], optional,</span>
+<span class="sd">    subsample_kernels : int or Sequence[int], optional</span>
 <span class="sd">        Subsampling kernel size(s) of the Xception blocks.</span>
-<span class="sd">    dilations : int or Sequence[int] or Sequence[Sequence[int]], default 1,</span>
+<span class="sd">    dilations : int or Sequence[int] or Sequence[Sequence[int]], default 1</span>
 <span class="sd">        Dilation(s) of the convolutions of Xception blocks.</span>
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">    dropouts : float or Sequence[float] or Sequence[Sequence[float]], default 0.0</span>
+<span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]] or Sequence[Sequence[Union[float, dict]]], default 0.0</span>
 <span class="sd">        Dropout(s) after each :class:`Conv_Bn_Activation` blocks</span>
 <span class="sd">        in the Xception blocks.</span>
-<span class="sd">    block_dropouts : float or Sequence[float], default 0.0</span>
+<span class="sd">    block_dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout(s) after the Xception blocks.</span>
 <span class="sd">    config : dict, optional</span>
 <span class="sd">        Other parameters, Xception blocks and initial convolutions, including</span>
@@ -1342,8 +1347,13 @@
         <span class="n">subsample_kernels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dilations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">block_dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="nb">float</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span>
+            <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]],</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">block_dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -1388,7 +1398,7 @@
             <span class="sa">f</span><span class="s2">&quot;the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dropouts</span><span class="p">)</span>
@@ -1396,7 +1406,7 @@
             <span class="sa">f</span><span class="s2">&quot;the entry flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">)</span>
@@ -1449,7 +1459,24 @@
                 <span class="p">),</span>
             <span class="p">)</span>
             <span class="n">block_in_channels</span> <span class="o">=</span> <span class="n">block_out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;entry_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;entry_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;entry_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
                 <span class="p">)</span>
@@ -1493,7 +1520,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;Dropout&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">)):</span>
                 <span class="k">continue</span>
             <span class="n">output_shape</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">_seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">output_shape</span>
@@ -1519,10 +1546,10 @@
 <span class="sd">        Dilation(s) of the convolutions of Xception blocks.</span>
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">    dropouts : float or Sequence[float] or Sequence[Sequence[float]], default 0.0</span>
+<span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]] or Sequence[Sequence[Union[float, dict]]], default 0.0</span>
 <span class="sd">        Dropout(s) after each :class:`Conv_Bn_Activation` blocks</span>
 <span class="sd">        in the Xception blocks.</span>
-<span class="sd">    block_dropouts : float or Sequence[float], default 0.0</span>
+<span class="sd">    block_dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout(s) after the Xception blocks</span>
 <span class="sd">    config : dict, optional</span>
 <span class="sd">        Other parameters for Xception blocks, including</span>
@@ -1541,8 +1568,13 @@
         <span class="n">filter_lengths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]],</span>
         <span class="n">dilations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">block_dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="nb">float</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span>
+            <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]],</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">block_dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -1565,7 +1597,7 @@
             <span class="sa">f</span><span class="s2">&quot;the middle flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dropouts</span><span class="p">)</span>
@@ -1573,7 +1605,7 @@
             <span class="sa">f</span><span class="s2">&quot;the middle flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">)</span>
@@ -1605,7 +1637,24 @@
                 <span class="p">),</span>
             <span class="p">)</span>
             <span class="n">block_in_channels</span> <span class="o">=</span> <span class="n">block_out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;middle_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;middle_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;middle_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
                 <span class="p">)</span>
@@ -1649,7 +1698,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;Dropout&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">)):</span>
                 <span class="k">continue</span>
             <span class="n">output_shape</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">_seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">output_shape</span>
@@ -1684,10 +1733,10 @@
 <span class="sd">        Dilation(s) of the convolutions of Xception blocks.</span>
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">    dropouts : float or Sequence[float] or Sequence[Sequence[float]], default 0.0</span>
+<span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]] or Sequence[Sequence[Union[float, dict]]], default 0.0</span>
 <span class="sd">        Dropout(s) after each :class:`Conv_Bn_Activation` blocks</span>
 <span class="sd">        in the Xception blocks.</span>
-<span class="sd">    block_dropouts : float or Sequence[float], default 0.0</span>
+<span class="sd">    block_dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout(s) after each of the Xception blocks</span>
 <span class="sd">        and each of the final convolutions.</span>
 <span class="sd">    config : dict, optional</span>
@@ -1711,8 +1760,13 @@
         <span class="n">subsample_kernels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dilations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">block_dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="nb">float</span><span class="p">,</span>
+            <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span>
+            <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]],</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">block_dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -1756,7 +1810,7 @@
             <span class="sa">f</span><span class="s2">&quot;the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;while `dilations` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dilations</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="n">dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dropouts</span><span class="p">)</span>
@@ -1764,7 +1818,7 @@
             <span class="sa">f</span><span class="s2">&quot;the exit flow has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span><span class="si">}</span><span class="s2"> blocks, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;while `dropouts` indicates </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__dropouts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="n">Real</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="p">(</span><span class="n">Real</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
                 <span class="n">repeat</span><span class="p">(</span><span class="n">block_dropouts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_blocks</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">final_num_filters</span><span class="p">))</span>
             <span class="p">)</span>
@@ -1802,7 +1856,24 @@
                 <span class="p">),</span>
             <span class="p">)</span>
             <span class="n">block_in_channels</span> <span class="o">=</span> <span class="n">block_out_channels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1d&quot;</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;exit_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;exit_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;p&quot;</span><span class="p">]),</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_module</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;exit_flow_dropout_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__block_dropouts</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
                 <span class="p">)</span>
@@ -1858,7 +1929,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">seq_len</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;Dropout&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout1d</span><span class="p">)):</span>
                 <span class="k">continue</span>
             <span class="n">output_shape</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">compute_output_shape</span><span class="p">(</span><span class="n">_seq_len</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_seq_len</span> <span class="o">=</span> <span class="n">output_shape</span>

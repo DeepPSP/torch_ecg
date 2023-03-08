@@ -1136,7 +1136,7 @@
 <span class="sd">        Subsample length(s) (stride(s)) of the convolutions</span>
 <span class="sd">    groups: int, default 1,</span>
 <span class="sd">        connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">    dropouts : float or Sequence[float], default 0.0</span>
+<span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout ratio after each :class:`Conv_Bn_Activation` block.</span>
 <span class="sd">    out_activation : bool, default True</span>
 <span class="sd">        If True, the last mini-block of :class:`Conv_Bn_Activation`</span>
@@ -1157,7 +1157,7 @@
         <span class="n">filter_lengths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">subsample_lengths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">out_activation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1197,7 +1197,7 @@
 <span class="sd">        Length(s) of the filters (kernel size).</span>
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">    dropouts : float or Sequence[float], default 0.0</span>
+<span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout ratio after each :class:`Conv_Bn_Activation` block.</span>
 <span class="sd">    mode : str, default &quot;max&quot;</span>
 <span class="sd">        Down sampling mode, one of {:class:`DownSample`.__MODES__}.</span>
@@ -1218,7 +1218,7 @@
         <span class="n">out_channels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">filter_lengths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1299,7 +1299,7 @@
 <span class="sd">        Dilation(s) of the convolutions.</span>
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">    dropouts : float or Sequence[float], default 0.0</span>
+<span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout ratio after each :class:`Conv_Bn_Activation` block.</span>
 <span class="sd">    mode : str, default &quot;max&quot;</span>
 <span class="sd">        Down sampling mode, one of {:class:`DownSample`.__MODES__}.</span>
@@ -1321,7 +1321,7 @@
         <span class="n">filter_lengths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">dilations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;max&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1431,14 +1431,14 @@
 <span class="sd">    deconv_filter_length : int</span>
 <span class="sd">        Length(s) of the filters (kernel size) of the</span>
 <span class="sd">        deconvolutional upsampling layer,</span>
-<span class="sd">        used when `mode` is &quot;deconv&quot;.</span>
+<span class="sd">        used when `mode` is ``&quot;deconv&quot;``.</span>
 <span class="sd">    groups : int, default 1</span>
 <span class="sd">        Connection pattern (of channels) of the inputs and outputs.</span>
 <span class="sd">        Not used currently.</span>
-<span class="sd">    dropouts : float or Sequence[float], default 0.0</span>
+<span class="sd">    dropouts : float or dict or Sequence[Union[float, dict]], default 0.0</span>
 <span class="sd">        Dropout ratio after each :class:`Conv_Bn_Activation` block.</span>
 <span class="sd">    mode : str, default &quot;deconv&quot;</span>
-<span class="sd">        Mode of up sampling, case insensitive. Should be &quot;deconv&quot;</span>
+<span class="sd">        Mode of up sampling, case insensitive. Should be ``&quot;deconv&quot;``</span>
 <span class="sd">        or methods supported by :class:`torch.nn.Upsample`.</span>
 <span class="sd">    config : dict</span>
 <span class="sd">        Other hyper-parameters, including</span>
@@ -1463,7 +1463,7 @@
         <span class="n">filter_lengths</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">deconv_filter_length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">dropouts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;deconv&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">config</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
