@@ -1193,6 +1193,11 @@ def remove_parameters_returns_from_docstring(
     str
         The processed docstring.
 
+    TODO
+    ----
+    When one section is empty, remove the whole section,
+    or add a line of `None` to the section.
+
     """
     if parameters is None:
         parameters = []
@@ -1207,13 +1212,30 @@ def remove_parameters_returns_from_docstring(
     parameters_indent = None
     returns_indent = None
     start_idx = None
+    parameters_starts = False
+    returns_starts = False
     indices2remove = []
     for idx, line in enumerate(new_doc):
-        if line.strip().startswith(parameters_indicator):
+        if (
+            line.strip().startswith(parameters_indicator)
+            and idx < len(new_doc) - 1
+            and new_doc[idx + 1].strip() == "-" * len(parameters_indicator)
+        ):
             parameters_indent = " " * line.index(parameters_indicator)
-        if line.strip().startswith(returns_indicator):
+            parameters_starts = True
+            returns_starts = False
+        if (
+            line.strip().startswith(returns_indicator)
+            and idx < len(new_doc) - 1
+            and new_doc[idx + 1].strip() == "-" * len(returns_indicator)
+        ):
             returns_indent = " " * line.index(returns_indicator)
-        if parameters_indent is not None and len(line.lstrip()) == len(line) - len(
+            returns_starts = True
+            parameters_starts = False
+        if start_idx is not None and len(line.strip()) == 0:
+            indices2remove.extend(list(range(start_idx, idx)))
+            start_idx = None
+        if parameters_starts and len(line.lstrip()) == len(line) - len(
             parameters_indent
         ):
             if any([line.lstrip().startswith(p) for p in parameters]):
@@ -1229,9 +1251,7 @@ def remove_parameters_returns_from_docstring(
                 else:
                     indices2remove.extend(list(range(start_idx, idx)))
                 start_idx = None
-        if returns_indent is not None and len(line.lstrip()) == len(line) - len(
-            returns_indent
-        ):
+        if returns_starts and len(line.lstrip()) == len(line) - len(returns_indent):
             if any([line.lstrip().startswith(p) for p in returns]):
                 if start_idx is not None:
                     indices2remove.extend(list(range(start_idx, idx)))
@@ -1240,7 +1260,7 @@ def remove_parameters_returns_from_docstring(
                 indices2remove.extend(list(range(start_idx, idx)))
                 start_idx = None
     if start_idx is not None:
-        indices2remove(list(range(start_idx, len(new_doc))))
+        indices2remove.extend(list(range(start_idx, len(new_doc))))
         new_doc.extend(["\n", parameters_indicator or returns_indicator])
     new_doc = "\n".join(
         [line for idx, line in enumerate(new_doc) if idx not in indices2remove]
@@ -1251,7 +1271,7 @@ def remove_parameters_returns_from_docstring(
 @contextmanager
 def timeout(duration: float):
     """A context manager that raises a
-    `TimeoutError` after a specified time.
+    :class:`TimeoutError` after a specified time.
 
     Parameters
     ----------

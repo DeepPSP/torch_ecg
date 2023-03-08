@@ -443,25 +443,30 @@ def test_remove_parameters_returns_from_docstring():
     new_docstring = remove_parameters_returns_from_docstring(
         remove_parameters_returns_from_docstring.__doc__,
         parameters=["returns_indicator", "parameters_indicator"],
-        returns="new_doc",
+        returns="str",
     )
     assert (
         new_docstring
-        == """
-    remove parameters and/or returns from docstring,
-    which is of the format of numpydoc
+        == """Remove parameters and/or returns from docstring,
+    which is of the format of `numpydoc`.
 
     Parameters
     ----------
-    doc: str,
-        docstring to be processed
-    parameters: str or list of str, default None,
-        parameters to be removed
-    returns: str or list of str, default None,
-        returned values to be removed
+    doc : str
+        Docstring to be processed.
+    parameters : str or List[str], optional
+        Parameters to be removed.
+    returns : str or List[str], optional
+        Returned values to be removed.
 
     Returns
     -------
+
+    TODO
+    ----
+    When one section is empty, remove the whole section,
+    or add a line of `None` to the section.
+
     """
     )
 
