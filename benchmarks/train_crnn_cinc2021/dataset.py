@@ -301,9 +301,9 @@ class CINC2021(ReprMixin, Dataset):
             for t in _TRANCHES:
                 with tqdm(
                     self.reader.all_records[t],
-                    total=len(
-                        self.reader.all_records[t], dynamic_ncols=True, mininterval=1.0
-                    ),
+                    total=len(self.reader.all_records[t]),
+                    dynamic_ncols=True,
+                    mininterval=1.0,
                 ) as bar:
                     for rec in bar:
                         if rec in self.reader.exceptional_records:
