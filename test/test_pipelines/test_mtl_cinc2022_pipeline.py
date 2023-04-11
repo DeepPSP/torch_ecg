@@ -1123,8 +1123,8 @@ class CINC2022Reader(PCGDataBase):
                             "siglen_sec": header.sig_len / header.fs,
                             "Murmur": murmur,
                         }
-                        self._df_stats_records = self._df_stats_records.append(
-                            new_row,
+                        self._df_stats_records = pd.concat(
+                            [self._df_stats_records, pd.DataFrame(new_row, index=[0])],
                             ignore_index=True,
                         )
             self._df_stats_records.to_csv(stats_file, index=False)
@@ -1342,15 +1342,21 @@ class CINC2022Reader(PCGDataBase):
         if ensure_same_len:
             sig_len = wfdb.rdheader(str(self.get_absolute_path(rec))).sig_len
             if sig_len != df_seg["end"].max():
-                df_seg = df_seg.append(
-                    dict(
-                        start_t=df_seg["end"].max() / fs,
-                        end_t=sig_len / fs,
-                        start=df_seg["end"].max(),
-                        end=sig_len,
-                        wave="unannotated",
-                        label=BaseCfg.ignore_index,
-                    ),
+                df_seg = pd.concat(
+                    [
+                        df_seg,
+                        pd.DataFrame(
+                            dict(
+                                start_t=df_seg["end"].max() / fs,
+                                end_t=sig_len / fs,
+                                start=df_seg["end"].max(),
+                                end=sig_len,
+                                wave="unannotated",
+                                label=BaseCfg.ignore_index,
+                            ),
+                            index=[0],
+                        ),
+                    ],
                     ignore_index=True,
                 )
         if seg_format.lower() in [
