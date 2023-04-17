@@ -151,7 +151,7 @@ class CPSC2021(PhysioNetDataBase):
             **kwargs,
         )
 
-        self.db_dir_base = Path(db_dir)
+        self.db_dir_base = Path(self.db_dir)
         self.db_tranches = [
             "training_I",
             "training_II",

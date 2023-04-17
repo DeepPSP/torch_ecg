@@ -1401,6 +1401,19 @@ class CPSC2021Dataset(ReprMixin, Dataset):
 
         """
         start = time.time()
+        if len(self.reader) == 0:
+            warnings.warn(
+                "No data found. Please check the data directory. "
+                "The train-test split will be empty.",
+                RuntimeWarning,
+            )
+            split_res = CFG(
+                {
+                    "train": [],
+                    "test": [],
+                }
+            )
+            return split_res
         print("\nstart performing train test split...\n")
         _train_ratio = int(train_ratio * 100)
         _test_ratio = 100 - _train_ratio
