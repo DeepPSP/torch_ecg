@@ -668,7 +668,7 @@ def stratified_train_test_split(
     df: pd.DataFrame,
     stratified_cols: Sequence[str],
     test_ratio: float = 0.2,
-    reset_index: bool = True,
+    reset_index: bool = False,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Perform stratified train-test split on the dataframe.
 
@@ -692,14 +692,14 @@ def stratified_train_test_split(
         train and test sets with an approximate ratio of `test_ratio`.
     test_ratio : float, default 0.2
         Ratio of test set to the whole dataframe.
-    reset_index : bool, default True
+    reset_index : bool, default False
         Whether to reset the index of the dataframes.
 
     Returns
     -------
-    df_train: pandas.DataFrame
+    df_train : pandas.DataFrame
         The dataframe of the train set.
-    df_test: pandas.DataFrame
+    df_test : pandas.DataFrame
         The dataframe of the test set.
 
     """
