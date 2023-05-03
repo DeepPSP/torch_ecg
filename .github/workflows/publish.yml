@@ -14,14 +14,14 @@ on:
 env:
   ARTIFACT_NAME: torch_ecg_dist
   ARTIFACT_DIR: dist
-  OS_NAME_VERSION: ubuntu-latest
+  # OS_NAME_VERSION: ubuntu-latest
 
 jobs:
   build:
     # Don't run on forked repos.
     if: github.repository_owner == 'DeepPSP'
 
-    runs-on: ${{ env.OS_NAME_VERSION }}
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
