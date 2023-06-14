@@ -9,6 +9,7 @@ import re
 import sys
 import signal
 import time
+import types
 import warnings
 from contextlib import contextmanager
 from copy import deepcopy
@@ -1519,7 +1520,13 @@ def add_kwargs(func: callable, **kwargs: Any) -> callable:
             func_parameters.move_to_end(k)
             break
 
-    func.__signature__ = func_signature.replace(parameters=func_parameters.values())
+    if isinstance(func, types.MethodType):
+        # can not assign `__signature__` to a bound method directly
+        func.__func__.__signature__ = func_signature.replace(
+            parameters=func_parameters.values()
+        )
+    else:
+        func.__signature__ = func_signature.replace(parameters=func_parameters.values())
 
     # docstring is automatically copied by `functools.wraps`
 
