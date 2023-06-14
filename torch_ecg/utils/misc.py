@@ -1493,18 +1493,43 @@ def add_kwargs(func: callable, **kwargs: Any) -> callable:
 
     """
     old_kwargs = get_kwargs(func)
-    full_kwargs = {**old_kwargs, **kwargs}
+    func_signature = inspect.signature(func)
+    func_parameters = func_signature.parameters.copy()  # ordered dict
+
+    full_kwargs = deepcopy(old_kwargs)
+    kind = inspect.Parameter.POSITIONAL_OR_KEYWORD
+    for k, v in func_parameters.items():
+        if v.kind == inspect.Parameter.KEYWORD_ONLY:
+            kind = inspect.Parameter.KEYWORD_ONLY
+            break
+
+    for k, v in kwargs.items():
+        if k in old_kwargs:
+            raise ValueError(f"keyword argument `{k}` already exists!")
+        full_kwargs[k] = v
+        func_parameters[k] = inspect.Parameter(k, kind, default=v)
+
+    # move the VAR_POSITIONAL and VAR_KEYWORD in `func_parameters` to the end
+    for k, v in func_parameters.items():
+        if v.kind == inspect.Parameter.VAR_POSITIONAL:
+            func_parameters.move_to_end(k)
+            break
+    for k, v in func_parameters.items():
+        if v.kind == inspect.Parameter.VAR_KEYWORD:
+            func_parameters.move_to_end(k)
+            break
+
+    func.__signature__ = func_signature.replace(parameters=func_parameters.values())
+
+    # docstring is automatically copied by `functools.wraps`
 
     @wraps(func)
     def wrapper(*args: Any, **kwargs_: Any) -> Any:
-        """ """
         assert set(kwargs_).issubset(full_kwargs), (
             "got unexpected keyword arguments: "
             f"{list(set(kwargs_).difference(full_kwargs))}"
         )
         filtered_kwargs = {k: v for k, v in kwargs_.items() if k in old_kwargs}
         return func(*args, **filtered_kwargs)
-
-        # TODO: update the signature of the function
 
     return wrapper

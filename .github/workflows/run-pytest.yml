@@ -49,7 +49,7 @@ jobs:
         python -m pip install --upgrade pip setuptools wheel
         python -m pip install -r requirements.txt
         python -m pip install pytest pytest-xdist pytest-cov # Testing packages
-        python -m pip uninstall torch-ecg --yes # Remove if already installed 
+        python -m pip uninstall torch-ecg --yes # Remove if already installed
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
         python -m pip freeze
