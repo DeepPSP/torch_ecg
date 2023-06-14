@@ -25,7 +25,7 @@ from ..utils.misc import (
     get_kwargs,
     add_docstring,
 )
-from ..utils.utils_nn import SizeMixin  # compute_output_shape,
+from ..utils.utils_nn import SizeMixin
 from ..utils.utils_nn import (
     compute_avgpool_output_shape,
     compute_conv_output_shape,
@@ -254,6 +254,23 @@ _DEFAULT_CONV_CONFIGS = CFG(
 )
 
 
+_COMPUTE_OUTPUT_SHAPE_DOC = """Compute the output shape of the layer.
+
+        Parameters
+        ----------
+        seq_len : int, optional
+            Length of the 1d sequence input.
+        batch_size : int, optional
+            The batch size.
+
+        Returns
+        -------
+        output_shape : Sequence[Union[int, None]]
+            The output shape of the layer.
+
+        """
+
+
 # ---------------------------------------------
 # basic building blocks of CNN
 class Bn_Activation(nn.Sequential, SizeMixin):
@@ -336,23 +353,10 @@ class Bn_Activation(nn.Sequential, SizeMixin):
         elif self.__dropout > 0:
             self.add_module("dropout", nn.Dropout(self.__dropout))
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC.replace("layer", "block"))
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         output_shape = (batch_size, self.__num_features, seq_len)
         return output_shape
 
@@ -370,7 +374,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
     in_channels : int
         Number of channels in the input tensor.
     out_channels : int
-        Number of channels produced by the convolution.
+        Number of channels in the output tensor.
     kernel_size : int
         Size (length) of the convolution kernel.
     stride : int
@@ -398,7 +402,7 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
         Whether or not to add the learnable bias to the convolution.
     ordering : str, default "cba"
         Ordering of the layers, case insensitive
-    kwargs : dict, optional
+    **kwargs : dict, optional
         Other key word arguments, including
         `conv_type`, `kw_activation`, `kw_initializer`, `kw_bn`,
         `alpha` (alias `width_multiplier`), etc.
@@ -730,24 +734,10 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                 if m.bias is not None:
                     om.bias.data = m.bias.data[out_indices].clone()
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC.replace("layer", "block"))
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """Compute the output shape of the block.
-
-        Parameters
-        ----------
-        seq_len : int, optional
-            Length of the 1d sequence input.
-        batch_size : int, optional
-            The batch size.
-
-        Returns
-        -------
-        output_shape : sequence
-            The output shape of the block.
-
-        """
         if self.__conv_type is None:
             input_shape = [batch_size, self.__in_channels, seq_len]
             output_shape = compute_conv_output_shape(
@@ -965,24 +955,10 @@ class MultiConv(nn.Sequential, SizeMixin):
                     nn.Dropout(dp),
                 )
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC.replace("layer", "block"))
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """Compute the output shape of the block.
-
-        Parameters
-        ----------
-        seq_len : int, optional
-            Length of the 1d sequence input.
-        batch_size : int, optional
-            The batch size.
-
-        Returns
-        -------
-        output_shape : sequence
-            The output shape of the block.
-
-        """
         _seq_len = seq_len
         for module in self:
             if (
@@ -1129,7 +1105,7 @@ class BranchedConv(nn.Module, SizeMixin):
         Parameters
         ----------
         seq_len : int, optional
-            Length of the input tensor.
+            Length of the 1d sequence input.
         batch_size : int, optional
             Batch size of the input tensor.
 
@@ -1155,11 +1131,36 @@ class BranchedConv(nn.Module, SizeMixin):
 class SeparableConv(nn.Sequential, SizeMixin):
     """(Super-)Separable Convolution.
 
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input signal.
+    out_channels : int
+        Number of channels in the output tensor.
+    kernel_size : int,
+        Size (length) of the convolution kernel.
+    stride : int,
+        Stride (subsample length) of the convolution.
+    padding : int, optional,
+        Zero-padding added to both sides of the input.
+    dilation : int, default 1,
+        Spacing between the kernel points.
+    groups : int, default 1,
+        Connection pattern (of channels) of the inputs and outputs.
+    kernel_initializer : str or callable (function), optional,
+        A function to initialize kernel weights of the convolution,
+        or name or the initialzer, can be one of the keys of `Initializers`.
+    bias : bool, default True,
+        Whether add a learnable bias to the output or not.
+    **kwargs : dict, optional,
+        Extra parameters, including
+        `depth_multiplier`, `width_multiplier` (alias `alpha`), etc.
+
     References
     ----------
-    1. Kaiser, Lukasz, Aidan N. Gomez, and Francois Chollet.
-       "Depthwise separable convolutions for neural machine translation." arXiv preprint arXiv:1706.03059 (2017).
-    2. https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
+    .. [1] Kaiser, Lukasz, Aidan N. Gomez, and Francois Chollet.
+           "Depthwise separable convolutions for neural machine translation." arXiv preprint arXiv:1706.03059 (2017).
+    .. [2] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
 
     """
 
@@ -1178,32 +1179,6 @@ class SeparableConv(nn.Sequential, SizeMixin):
         bias: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input signal
-        out_channels: int,
-            number of channels produced by the convolution
-        kernel_size: int,
-            size (length) of the convolution kernel
-        stride: int,
-            stride (subsample length) of the convolution
-        padding: int, optional,
-            zero-padding added to both sides of the input
-        dilation: int, default 1,
-            spacing between the kernel points
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        kernel_initializer: str or callable (function), optional,
-            a function to initialize kernel weights of the convolution,
-            or name or the initialzer, can be one of the keys of `Initializers`
-        bias: bool, default True,
-            if True, adds a learnable bias to the output
-        kwargs: dict, optional,
-            extra parameters, including `depth_multiplier`, `width_multiplier` (alias `alpha`), etc.
-
-        """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -1275,38 +1250,28 @@ class SeparableConv(nn.Sequential, SizeMixin):
                 raise ValueError(f"initializer `{kernel_initializer}` not supported")
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the convolution.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channles, seq_len)
+        input : torch.Tensor
+            The input tensor,
+            of shape ``(batch_size, in_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channles, seq_len)
+        torch.Tensor
+            The output tensor,
+            of shape ``(batch_size, out_channels, seq_len)``.
 
         """
         output = super().forward(input)
         return output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         # depthwise_conv
         output_shape = compute_conv_output_shape(
             input_shape=(batch_size, self.__in_channels, seq_len),
@@ -1333,16 +1298,36 @@ class SeparableConv(nn.Sequential, SizeMixin):
 
 
 class DeformConv(nn.Module, SizeMixin):
-    """
-    Deformable Convolution
+    """Deformable Convolution.
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : int
+        Number of channels in the output tensor.
+    kernel_size : Union[int, Tuple[int, ...]]
+        Size of the convolving kernel.
+    stride : Union[int, Tuple[int, ...]]
+        Stride of the convolution.
+    padding : Optional[int], optional
+        Zero-padding added to both sides of the input.
+    dilation : Union[int, Tuple[int, ...]], optional
+        Spacing between kernel elements.
+    groups : int, optional
+        Number of blocked connections from input channels to output channels.
+    deform_groups : int, optional
+        Number of deformable group partitions.
+    bias : bool, optional
+        Whether to add a learnable bias to the output.
 
     References
     ----------
-    [1] Dai, J., Qi, H., Xiong, Y., Li, Y., Zhang, G., Hu, H., & Wei, Y. (2017). Deformable convolutional networks.
-        In Proceedings of the IEEE international conference on computer vision (pp. 764-773).
-    [2] Zhu, X., Hu, H., Lin, S., & Dai, J. (2019). Deformable convnets v2: More deformable, better results.
-        In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 9308-9316).
-    [3] https://github.com/open-mmlab/mmcv/blob/master/mmcv/ops/deform_conv.py
+    .. [1] Dai, J., Qi, H., Xiong, Y., Li, Y., Zhang, G., Hu, H., & Wei, Y. (2017). Deformable convolutional networks.
+           In Proceedings of the IEEE international conference on computer vision (pp. 764-773).
+    .. [2] Zhu, X., Hu, H., Lin, S., & Dai, J. (2019). Deformable convnets v2: More deformable, better results.
+           In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (pp. 9308-9316).
+    .. [3] https://github.com/open-mmlab/mmcv/blob/master/mmcv/ops/deform_conv.py
 
     """
 
@@ -1360,14 +1345,26 @@ class DeformConv(nn.Module, SizeMixin):
         deform_groups: int = 1,
         bias: bool = False,
     ) -> None:
-        """
-        docstring, to write
-        """
         raise NotImplementedError
 
     def forward(self, input: Tensor, offset: Tensor) -> Tensor:
-        """
-        docstring, to write
+        """Forward pass of the convolution.
+
+        Parameters
+        ----------
+        input : torch.Tensor
+            The input tensor,
+            of shape ``(batch_size, in_channels, seq_len)``.
+        offset : torch.Tensor
+            The offset tensor,
+            of shape ``(batch_size, deform_groups * kernel_size, seq_len)``.
+
+        Returns
+        -------
+        torch.Tensor
+            The output tensor,
+            of shape ``(batch_size, out_channels, seq_len)``.
+
         """
         raise NotImplementedError
 
@@ -1381,26 +1378,50 @@ class DeformConv(nn.Module, SizeMixin):
 
 
 class DownSample(nn.Sequential, SizeMixin):
-    """
-    NOTE: this down sampling module allows changement of number of channels,
+    """Down sampling module.
+
+    Parameters
+    ----------
+    down_scale : int
+        Scale (in terms of stride) of down sampling.
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : int, optional
+        Number of channels in the output tensor.
+        If not specified, defaults to `in_channels`.
+    kernel_size : int, optional
+        Kernel size of down sampling.
+        If not specified, defaults to `down_scale`.
+    groups : int, optional
+        Number of blocked connections from input channels to output channels.
+    padding : int, default 0
+        Zero-padding added to both sides of the input.
+    norm : bool or torch.nn.Module, default False
+        Whether to use normalization layer (:class:`torch.nn.BatchNorm1d`),
+        or the normalization layer itself.
+    mode : str, default "max"
+        Down sampling mode, one of :attr:`DownSample.__MODES__`.
+    **kwargs : dict, optional
+        Additional arguments for down sampling layer,
+        e.g. ``norm_type`` for ``"lp"`` mode.
+
+    NOTE
+    ----
+    This down sampling module allows changement of number of channels,
     via additional convolution, with some abuse of terminology.
 
-    the "conv" mode is not simply down "sampling" if `group` != `in_channels`
+    The ``"conv"`` mode is not simply down ``"sampling"``
+    if ``group`` != ``in_channels``.
 
     """
 
+    # fmt: off
     __name__ = "DownSample"
     __MODES__ = [
-        "max",
-        "avg",
-        "lp",
-        "lse",
-        "conv",
-        "nearest",
-        "area",
-        "linear",
-        "blur",
+        "max", "avg", "lp", "lse", "conv",
+        "nearest", "area", "linear", "blur",
     ]
+    # fmt: on
 
     @deprecate_kwargs([["norm", "batch_norm"]])
     def __init__(
@@ -1415,32 +1436,6 @@ class DownSample(nn.Sequential, SizeMixin):
         mode: str = "max",
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        down_scale: int,
-            scale (in terms of stride) of down sampling
-        in_channels: int,
-            number of channels of the input
-        out_channels: int, optional,
-            number of channels of the output
-        kernel_size: int, optional,
-            kernel size of down sampling,
-            if not specified, defaults to `down_scale`,
-        groups: int, optional,
-            connection pattern (of channels) of the inputs and outputs
-        padding: int, default 0,
-            zero-padding added to both sides of the input
-        batch_norm: bool or Module, default False,
-            (batch) normalization,
-            the Module itself or (if is bool) whether or not to use `nn.BatchNorm1d`
-        mode: str, default "max",
-            can be one of `self.__MODES__`
-        **kwargs: Any,
-            additional arguments for down sampling layer,
-            e.g. `norm_type` for "lp" mode
-
-        """
         super().__init__()
         self.__mode = mode.lower()
         assert (
@@ -1582,13 +1577,19 @@ class DownSample(nn.Sequential, SizeMixin):
             )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
-        use the forward method of `nn.Sequential`
+        """Forward pass of the module.
 
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, in_channels, seq_len)``.
+
+        Returns
+        -------
+        output : torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, out_channels, seq_len / down_scale)``.
 
         """
         if self.__mode in ["max", "avg", "lp", "conv", "blur"]:
@@ -1603,23 +1604,10 @@ class DownSample(nn.Sequential, SizeMixin):
             )
         return output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         if self.__mode == "conv":
             out_seq_len = compute_conv_output_shape(
                 input_shape=(batch_size, self.__in_channels, seq_len),
@@ -1658,21 +1646,23 @@ class DownSample(nn.Sequential, SizeMixin):
 
 
 class ZeroPad1d(nn.ConstantPad1d, SizeMixin):
-    """
-    Pads the input tensor boundaries with zero.
-    do NOT be confused with `ZeroPadding`, which pads along the channel dimension
+    """Pads the input tensor boundaries with zero.
+
+    Parameters
+    ----------
+    padding : int or Sequence[int]
+        2-sequence of int,
+        the padding to be applied to the input tensor
+
+    NOTE
+    ----
+    DO NOT confuse with :class:`ZeroPadding`,
+    which pads along the channel dimension.
     """
 
     __name__ = "ZeroPad1d"
 
     def __init__(self, padding: Union[int, Sequence[int]]) -> None:
-        """
-        Parameters
-        ----------
-        padding: 2-sequence of int,
-            the padding to be applied to the input tensor
-
-        """
         assert (isinstance(padding, int) and padding > 0) or (
             isinstance(padding, Sequence)
             and len(padding) == 2
@@ -1688,20 +1678,23 @@ class ZeroPad1d(nn.ConstantPad1d, SizeMixin):
         batch_size: Optional[int] = None,
         in_channels: Optional[int] = None,
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute the output shape of the module.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-        in_channels: int,
-            the number of input channels
+        seq_len : int, optional
+            Length of the 1d sequence input.
+        batch_size : int, optional
+            The batch size.
+        in_channels : int, optional
+            The number of channels of the input tensor.
+            At least one of `seq_len`, `batch_size` and `in_channels`
+            must be provided.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
+        output_shape : Sequence[Union[int, None]]
+            Output shape of the module.
 
         """
         assert any(
@@ -1717,16 +1710,31 @@ class ZeroPad1d(nn.ConstantPad1d, SizeMixin):
 
 
 class BlurPool(nn.Module, SizeMixin):
-    """
-    Blur Pooling, also named as AntiAliasDownsample
+    """Blur Pooling, also named as ``AntiAliasDownsample``.
+
+    Parameters
+    ----------
+    down_scale : int
+        Scale (in terms of stride) of down sampling.
+    in_channels : int
+        Number of channels of the input tensor.
+    filt_size : int, default 3
+        Size (length) of the filter.
+    pad_type : {"reflect", "replicate", "zero"}
+        Type of padding, by default "reflect".
+    pad_off : int, default 0
+        Padding offset
+    **kwargs : dict, optional
+        Optional keyword arguments.
+        Not used currently but kept for compatibility.
 
     References
     ----------
-    1. Zhang, Richard. "Making convolutional networks shift-invariant again."
-       International conference on machine learning. PMLR, 2019.
-    2. https://github.com/adobe/antialiased-cnns/blob/master/antialiased_cnns/blurpool.py
-    3. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py
-    4. https://github.com/kornia/kornia/blob/master/kornia/filters/blur_pool.py
+    .. [1] Zhang, Richard. "Making convolutional networks shift-invariant again."
+           International conference on machine learning. PMLR, 2019.
+    .. [2] https://github.com/adobe/antialiased-cnns/blob/master/antialiased_cnns/blurpool.py
+    .. [3] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py
+    .. [4] https://github.com/kornia/kornia/blob/master/kornia/filters/blur_pool.py
 
     """
 
@@ -1741,22 +1749,6 @@ class BlurPool(nn.Module, SizeMixin):
         pad_off: int = 0,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        down_scale: int,
-            scale (in terms of stride) of down sampling
-        in_channels: int,
-            number of input channels
-        filt_size: int, default 3,
-            size (length) of the filter
-        pad_type: str, default "reflect",
-            type of padding, can be "reflect" or "replicate" or "zero"
-        pad_off: int, default 0,
-            padding offset
-        kwargs: keyword arguments,
-
-        """
         super().__init__()
         self.__down_scale = down_scale
         self.__in_channels = in_channels
@@ -1798,17 +1790,19 @@ class BlurPool(nn.Module, SizeMixin):
         self.pad = self._get_pad_layer()
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the module.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         Returns
         -------
-        Tensor,
-            the blur-pooled output of the input tensor,
-            of shape (batch_size, n_channels, seq_len)
+        torch.Tensor
+            The blur-pooled output of the input tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         if self.__filt_size == 1:
@@ -1846,23 +1840,10 @@ class BlurPool(nn.Module, SizeMixin):
             )
         return PadLayer(self.__pad_sizes)
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         if self.__filt_size == 1:
             if seq_len is None:
                 output_shape = (batch_size, self.__in_channels, None)
@@ -1902,7 +1883,31 @@ class BlurPool(nn.Module, SizeMixin):
 
 
 class AntiAliasConv(nn.Sequential, SizeMixin):
-    """ """
+    """Anti-aliasing convolution layer.
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : int
+        Number of channels in the output tensor.
+    kernel_size : int
+        Size (length) of the convolution kernel.
+    stride : int
+        Stride (subsample length) of the convolution.
+    padding : int, optional
+        Zero-padding added to both sides of the input.
+    dilation : int, default 1
+        Spacing between the kernel points.
+    groups : int, default 1
+        Connection pattern (of channels) of the inputs and outputs.
+    bias : bool, default True
+        Whether add a learnable bias to the output or not.
+    **kwargs : dict, optional
+        Additional keyword arguments passed to :class:`BlurPool`.
+        Valid only when `stride` is greater than 1.
+
+    """
 
     __name__ = "AntiAliasConv"
 
@@ -1918,28 +1923,6 @@ class AntiAliasConv(nn.Sequential, SizeMixin):
         bias: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input signal
-        out_channels: int,
-            number of channels produced by the convolution
-        kernel_size: int,
-            size (length) of the convolution kernel
-        stride: int,
-            stride (subsample length) of the convolution
-        padding: int, optional,
-            zero-padding added to both sides of the input
-        dilation: int, default 1,
-            spacing between the kernel points
-        groups: int, default 1,
-            connection pattern (of channels) of the inputs and outputs
-        bias: bool, default True,
-            if True, adds a learnable bias to the output
-        kwargs: keyword arguments
-
-        """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -1973,23 +1956,10 @@ class AntiAliasConv(nn.Sequential, SizeMixin):
                 ),
             )
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         output_shape = compute_conv_output_shape(
             input_shape=(batch_size, self.__in_channels, seq_len),
             num_filters=self.__out_channels,
@@ -2062,17 +2032,21 @@ class BidirectionalLSTM(nn.Module, SizeMixin):
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of the layer.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (seq_len, batch_size, n_channels)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(seq_len, batch_size, n_channels)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (seq_len, batch_size, 2 * hidden_size) if `return_sequences` is True,
-            otherwise of shape (batch_size, 2 * hidden_size)
+        torch.Tensor
+            Output tensor,
+            of shape ``(seq_len, batch_size, 2 * hidden_size)``
+            if `return_sequences` is True,
+            otherwise of shape ``(batch_size, 2 * hidden_size)``.
 
         """
         output, _ = self.lstm(input)  # seq_len, batch_size, 2 * hidden_size
@@ -2080,23 +2054,10 @@ class BidirectionalLSTM(nn.Module, SizeMixin):
             output = output[-1, ...]
         return output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         if self.return_sequence:
             output_shape = (seq_len, batch_size, self.__output_size)
         else:
@@ -2105,14 +2066,36 @@ class BidirectionalLSTM(nn.Module, SizeMixin):
 
 
 class StackedLSTM(nn.Sequential, SizeMixin):
-    """
-    stacked LSTM, which allows different hidden sizes for each LSTM layer
+    """Stacked LSTM, which allows different hidden sizes
+    for each LSTM layer.
+
+    Parameters
+    ----------
+    input_size : int
+        Number of features (channels) in the input tensor.
+    hidden_sizes : Sequence[int]
+        Number of features in the hidden state of each LSTM layer.
+    bias : bool or Sequence[bool], default True
+        Whether to use bias in the LSTM layer.
+    dropouts : float or Sequence[float], default 0.0
+        If non-zero, introduces a `Dropout` layer following each
+        LSTM layer EXCEPT the last layer, with corresponding dropout probability.
+    bidirectional : bool, default True
+        If True, each LSTM layer becomes bidirectional,
+        otherwise unidirectional.
+    return_sequences : bool, default True
+        If True, returns the the full output sequence,
+        otherwise the last output in the output sequence.
+    **kwargs : dict, optional
+        Optional keyword arguments.
+        Not used currently but kept for future compatibility.
 
     NOTE
     ----
-    1. `batch_first` is fixed `False`
-    2. currently, how to correctly pass the argument `hx` between LSTM layers is not known to me,
-    hence should be careful (and not recommended, use `nn.LSTM` and set `num_layers` instead) to use
+    1. `batch_first` is fixed to be ``False``.
+    2. currently, how to correctly pass the argument `hx`
+       between LSTM layers is not known, hence should be careful
+       (and not recommended, use `nn.LSTM` and set `num_layers` instead) to use
 
     """
 
@@ -2128,28 +2111,6 @@ class StackedLSTM(nn.Sequential, SizeMixin):
         return_sequences: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        input_size: int,
-            the number of features in the input
-        hidden_sizes: sequence of int,
-            the number of features in the hidden state of each LSTM layer
-        bias: bool, or sequence of bool, default True,
-            use bias weights or not
-        dropouts: float or sequence of float, default 0.0,
-            if non-zero, introduces a `Dropout` layer on the outputs of each
-            LSTM layer EXCEPT the last layer, with dropout probability equal to this value
-            or corresponding value in the sequence (except for the last LSTM layer)
-        bidirectional: bool, default True,
-            if True, each LSTM layer becomes bidirectional
-        return_sequences: bool, default True,
-            if True, returns the the full output sequence,
-            otherwise the last output in the output sequence
-        kwargs: dict, optional,
-            extra parameters
-
-        """
         super().__init__()
         self.__hidden_sizes = hidden_sizes
         self.num_lstm_layers = len(hidden_sizes)
@@ -2200,20 +2161,24 @@ class StackedLSTM(nn.Sequential, SizeMixin):
         input: Union[Tensor, PackedSequence],
         hx: Optional[Tuple[Tensor, Tensor]] = None,
     ) -> Tensor:
-        """
-        keep up with `nn.LSTM.forward`, parameters ref. `nn.LSTM.forward`
+        """Forward pass of the layer.
 
         Parameters
         ----------
-        input: Tensor,
-            of shape (seq_len, batch_size, n_channels)
-        hx: 2-tuple of Tensor, optional,
+        input : torch.Tensor or torch.nn.utils.rnn.PackedSequence,
+            Input tensor,
+            of shape ``(seq_len, batch_size, n_channels)``.
+        hx: Tuple[torch.Tensor, torch.Tensor], optional
+            Tuple of tensors containing the initial hidden state
+            and the initial cell state.
 
         Returns
         -------
-        final_output: Tensor,
-            of shape (seq_len, batch_size, n_channels) if `return_sequences` is True,
-            otherwise of shape (batch_size, n_channels)
+        torch.Tensor
+            Output tensor,
+            of shape ``(seq_len, batch_size, n_channels)``
+            if `return_sequences` is ``True``,
+            otherwise of shape ``(batch_size, n_channels)``.
 
         """
         output, _hx = input, hx
@@ -2231,23 +2196,10 @@ class StackedLSTM(nn.Sequential, SizeMixin):
             final_output = output[-1, ...]  # batch_size, n_direction*hidden_size
         return final_output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         output_size = self.__hidden_sizes[-1]
         if self.bidirectional:
             output_size *= 2
@@ -2261,24 +2213,25 @@ class StackedLSTM(nn.Sequential, SizeMixin):
 # ---------------------------------------------
 # attention mechanisms, from various sources
 class AttentionWithContext(nn.Module, SizeMixin):
-    """from 0236 of CPSC2018 challenge"""
+    """Attention layer with context,
+    adapted from entry 0236 of CPSC2018 challenge.
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input tensor.
+    bias : bool, default True
+        Whether adds a learnable bias to the output or not.
+    initializer : str, default "glorot_uniform"
+        Weight initializer.
+
+    """
 
     __name__ = "AttentionWithContext"
 
     def __init__(
         self, in_channels: int, bias: bool = True, initializer: str = "glorot_uniform"
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input signal
-        bias: bool, default True,
-            if True, adds a learnable bias to the output
-        initializer: str, default "glorot_uniform",
-            weight initializer
-
-        """
         super().__init__()
         self.supports_masking = True
         self.init = Initializers[initializer.lower()]
@@ -2300,22 +2253,27 @@ class AttentionWithContext(nn.Module, SizeMixin):
             # self.register_parameter("u", None)
 
     def forward(self, input: Tensor, mask: Optional[Tensor] = None) -> Tensor:
-        """
+        """Forward pass of the layer.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
-        mask: Tensor, optional,
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
+        mask : torch.Tensor, optional
+            Mask tensor,
+            of shape ``(batch_size, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, seq_len)
+        torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, seq_len)``.
 
         """
-        # original implementation is tensorflow
+        # original implementation used tensorflow
         # so we change to channel last format
-        input = input.permute(0, 2, 1)
+        input = input.permute(0, 2, 1).contiguous()  # batch_size, seq_len, n_channels
         # linear + activation
         # (batch_size, seq_len, n_channels) x (n_channels, n_channels)
         # -> (batch_size, seq_len, n_channels)
@@ -2329,7 +2287,7 @@ class AttentionWithContext(nn.Module, SizeMixin):
         # -> (batch_size, seq_len)
         ait = torch.tensordot(uit, self.u, dims=1)  # the same as torch.matmul
 
-        # softmax along seq_len
+        # softmax along seq_len dimension
         # (batch_size, seq_len)
         a = torch.exp(ait)
         if mask is not None:
@@ -2348,23 +2306,10 @@ class AttentionWithContext(nn.Module, SizeMixin):
         output = torch.sum(weighted_input, dim=-1)
         return output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         assert seq_len is not None or batch_size is not None, (
             "at least one of `seq_len` and `batch_size` must be given, "
             "otherwise the output shape is the meaningless `(None, None)`"
@@ -2374,10 +2319,12 @@ class AttentionWithContext(nn.Module, SizeMixin):
 
 
 class _ScaledDotProductAttention(nn.Module, SizeMixin):
-    """
+    """Scaled dot-product attention layer
+
+
     References
     ----------
-    [1] https://github.com/CyberZHG/torch-multi-head-attention
+    .. [1] https://github.com/CyberZHG/torch-multi-head-attention
 
     """
 
@@ -2387,7 +2334,7 @@ class _ScaledDotProductAttention(nn.Module, SizeMixin):
         self, query: Tensor, key: Tensor, value: Tensor, mask: Optional[Tensor] = None
     ) -> Tensor:
         """
-        all tensors of shape (batch_size, seq_len, features)
+        all tensors of shape ``(batch_size, seq_len, features)``.
         """
         dk = query.shape[-1]
         scores = query.matmul(key.transpose(-2, -1)) / sqrt(
@@ -2402,14 +2349,28 @@ class _ScaledDotProductAttention(nn.Module, SizeMixin):
 
 @add_docstring(nn.MultiheadAttention.__doc__, "append")
 class MultiHeadAttention(nn.MultiheadAttention, SizeMixin):
-    """
-    Multi-head attention.
+    """Multi-head attention.
 
-    Now encapulates the `torch.nn.MultiheadAttention` module.
+    Now encapulates the :class:`~torch.nn.MultiheadAttention` module.
+
+    Parameters
+    ----------
+    embed_dim : int
+        Number of input features (a.k.a. channels).
+        Also the number of output features.
+    num_heads : int
+        Number of heads.
+    dropout : float, default 0.0
+        Dropout probability.
+    bias : bool, default True
+        Whether to use the bias term.
+    **kwargs : dict, optional
+        eExtra parameters,
+        refer to :class:`~torch.nn.MultiheadAttention`.
 
     References
     ----------
-    [1] https://github.com/CyberZHG/torch-multi-head-attention
+    .. [1] https://github.com/CyberZHG/torch-multi-head-attention
 
     """
 
@@ -2424,21 +2385,6 @@ class MultiHeadAttention(nn.MultiheadAttention, SizeMixin):
         bias: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_features: int,
-            Size of each input sample
-        head_num: int,
-            Number of heads.
-        dropout: float, default 0.0,
-            Dropout probability.
-        bias: bool, default True,
-            Whether to use the bias term.
-        kwargs: dict, optional,
-            extra parameters, refer to `torch.nn.MultiheadAttention`
-
-        """
         torch_mha_kwargs = get_kwargs(nn.MultiheadAttention)
         torch_mha_kwargs.update(kwargs)
         torch_mha_kwargs.update(
@@ -2454,24 +2400,48 @@ class MultiHeadAttention(nn.MultiheadAttention, SizeMixin):
         super().__init__(**torch_mha_kwargs)
 
     def compute_output_shape(
-        self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
-    ) -> Sequence[Union[int, None]]:
-        """
+        self,
+        seq_len: Optional[int] = None,
+        batch_size: Optional[Union[int, bool]] = None,
+        source_seq_len: Optional[int] = None,
+    ) -> Tuple[Sequence[Union[int, None]], Sequence[Union[int, None]]]:
+        """Compute the output shape of the layer.
+
         Parameters
         ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
+        seq_len : int, optional
+            Length of the 1d sequence input.
+        batch_size : int or bool, optional
+            The batch size.
+            If ``False``, the forward input is unbatched (single sample),
+            hence the batch dimension is not included in the output shape.
+        source_seq_len : int, optional
+            Length of the 1d source sequence input,
+            i.e., Length of the ``key`` and ``value`` inputs.
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
+        attn_output_shape : Sequence[Union[int, None]]
+            The first output (attn_output) shape of the attention layer.
+        attn_output_weights_shape : Sequence[Union[int, None]]
+            The second output (attn_output_weights) shape of the attention layer.
 
         """
-        output_shape = (seq_len, batch_size, self.__in_features)
-        return output_shape
+        if self.batch_first:
+            if batch_size is not False:
+                attn_output_shape = (batch_size, seq_len, self.__in_features)
+            else:
+                attn_output_shape = (seq_len, self.__in_features)
+        else:
+            if batch_size is not False:
+                attn_output_shape = (seq_len, batch_size, self.__in_features)
+            else:
+                attn_output_shape = (seq_len, self.__in_features)
+        if batch_size is not False:
+            attn_output_weights_shape = (batch_size, seq_len, source_seq_len)
+        else:
+            attn_output_weights_shape = (seq_len, source_seq_len)
+        return attn_output_shape, attn_output_weights_shape
 
     def extra_repr(self) -> str:
         return (
@@ -2486,7 +2456,23 @@ class MultiHeadAttention(nn.MultiheadAttention, SizeMixin):
 
 
 class SelfAttention(nn.Module, SizeMixin):
-    """ """
+    """Self attention layer.
+
+    Parameters
+    ----------
+    embed_dim : int
+        Number of input features (a.k.a. channels).
+        Also the number of output features.
+    num_heads : int
+        Number of heads.
+    dropout : float, default 0
+        Dropout factor for out projection weight of MHA
+    bias : bool, default True
+        Whether to use the bias term
+    **kwargs : dict, optional,
+        Extra parameters for :class:`~torch.nn.MultiheadAttention`.
+
+    """
 
     __name__ = "SelfAttention"
 
@@ -2499,21 +2485,6 @@ class SelfAttention(nn.Module, SizeMixin):
         bias: bool = True,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_features: int,
-            size of each input sample
-        head_num: int,
-            number of heads.
-        dropout: float, default 0,
-            dropout factor for out projection weight of MHA
-        bias: bool, default True,
-            whether to use the bias term
-        kwargs: dict, optional,
-            extra parameters
-
-        """
         super().__init__()
         # if in_features % head_num != 0:
         #     raise ValueError(
@@ -2533,53 +2504,79 @@ class SelfAttention(nn.Module, SizeMixin):
         self.num_heads = head_num
         self.dropout = dropout
         self.bias = bias
+        if kwargs.pop("kdim", self.embed_dim) != self.embed_dim:
+            warnings.warn(
+                f"`kdim`({kwargs['kdim']}) is not equal to `embed_dim`({self.embed_dim}), "
+                f"so `kdim` is changed to {self.embed_dim}.",
+                RuntimeWarning,
+            )
+        if kwargs.pop("vdim", self.embed_dim) != self.embed_dim:
+            warnings.warn(
+                f"`vdim`({kwargs['vdim']}) is not equal to `embed_dim`({self.embed_dim}), "
+                f"so `vdim` is changed to {self.embed_dim}.",
+                RuntimeWarning,
+            )
         self.mha = nn.MultiheadAttention(
             self.embed_dim,
             self.num_heads,
             dropout=self.dropout,
             bias=self.bias,
+            **kwargs,
         )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of self attention layer.
+
         Parameters
         ----------
-        input: Tensor,
-            the input tensor, shape = (seq_len, batch_size, in_features)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(seq_len, batch_size, in_features)``
+            if ``batch_first`` is ``False`` (default),
+            otherwise ``(batch_size, seq_len, in_features)``.
 
         Returns
         -------
-        output: Tensor,
-            the output tensor, shape = (seq_len, batch_size, in_features)
+        output : torch.Tensor
+            The output tensor,
+            of shape ``(seq_len, batch_size, embed_dim)``
+            if ``batch_first`` is ``False`` (default),
+            otherwise ``(batch_size, seq_len, embed_dim)``.
 
         """
         output = self.project(input)
         output, _ = self.mha(output, output, output)
         return output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
-        output_shape = (seq_len, batch_size, self.embed_dim)
+        if self.mha.batch_first:
+            output_shape = (batch_size, seq_len, self.embed_dim)
+        else:
+            output_shape = (seq_len, batch_size, self.embed_dim)
         return output_shape
 
 
 class AttentivePooling(nn.Module, SizeMixin):
-    """ """
+    """Attentive pooling layer.
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels of the input tensor.
+    mid_channels : int, optional
+        Output channels of a intermediate linear layer
+    activation : str or torch.nn.Module, default "tanh"
+        Name of the activation or an activation ``Module``.
+    dropout : float, default 0.2
+        Dropout ratio before computing attention scores.
+    **kwargs : dict, optional
+        Extra parameters, including
+        ``kw_activation``.
+
+    """
 
     __name__ = "AttentivePooling"
 
@@ -2591,21 +2588,6 @@ class AttentivePooling(nn.Module, SizeMixin):
         dropout: float = 0.2,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels of input Tensor
-        mid_channels: int, optional,
-            output channels of a intermediate linear layer
-        activation: str or Module,
-            name of the activation or an activation `Module`
-        dropout: float, default 0.2,
-            dropout ratio before computing attention scores
-        kwargs: dict, optional,
-            extra parameters
-
-        """
         super().__init__()
         self.__in_channels = in_channels
         self.__mid_channels = (mid_channels or self.__in_channels // 2) or 1
@@ -2618,16 +2600,19 @@ class AttentivePooling(nn.Module, SizeMixin):
         self.softmax = nn.Softmax(-1)
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of attentive pooling layer.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, in_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels)
+        torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, in_channels)``.
 
         """
         input = input.permute(0, 2, 1)  # -> (batch_size, seq_len, n_channels
@@ -2643,23 +2628,10 @@ class AttentivePooling(nn.Module, SizeMixin):
         output = weighted_input.sum(1)  # -> (batch_size, n_channels)
         return output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         output_shape = (batch_size, self.__in_channels)
         return output_shape
 
@@ -2669,26 +2641,27 @@ class AttentivePooling(nn.Module, SizeMixin):
 
 
 class ZeroPadding(nn.Module, SizeMixin):
-    """
-    zero padding for increasing channels,
-    degenerates to `identity` if in and out channels are equal
+    """Zero padding for increasing channels.
+
+    Degenerates to an `identity` layer
+    if in and out channels are equal.
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : int
+        Number of channels in the output tensor.
+    loc : {"head", "tail", "both"}
+        Padding to the head or the tail channel, or both.
+        By default "head", case insensitive.
+
     """
 
     __name__ = "ZeroPadding"
     __LOC__ = ["head", "tail", "both"]
 
     def __init__(self, in_channels: int, out_channels: int, loc: str = "head") -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        out_channels: int,
-            number of channels for the output
-        loc: str, default "head", case insensitive,
-            padding to the head or the tail channel, or both
-
-        """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -2712,16 +2685,19 @@ class ZeroPadding(nn.Module, SizeMixin):
             )
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of zero padding layer.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, in_channels, seq_len)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels, seq_len)
+        torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels, seq_len)``.
 
         """
         if self.__increase_channels > 0:
@@ -2730,31 +2706,46 @@ class ZeroPadding(nn.Module, SizeMixin):
             output = input
         return output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int,
-            length of the 1d sequence
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         output_shape = (batch_size, self.__out_channels, seq_len)
         return output_shape
 
 
 class SeqLin(nn.Sequential, SizeMixin):
-    """
-    Sequential linear,
-    might be useful in learning non-linear classifying hyper-surfaces
+    """Sequential linear layers (a.k.a. multi-layer perceptron).
+
+    Might be useful in learning non-linear classifying hyper-surfaces.
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of channels in the input tensor.
+    out_channels : Sequence[int]
+        Number of ouput channels for each linear layer.
+    activation : str or torch.nn.Module, default "relu",
+        Name of activation or activation instance
+        after each linear layer.
+    kernel_initializer : str, optional,
+        Name of kernel initializer for weight of each linear layer.
+    bias : bool, default True
+        Whether to use learnable bias in each linear layer.
+    dropouts : float or Sequence[float], default 0.0,
+        Dropout ratio(s) (if > 0)
+        after each (activation after each) linear layer.
+    **kwargs : dict, optional,
+        Extra parameters, including
+        ``kw_activation`` for activation layers,
+        ``kw_initializer`` for kernel initializers.
+        ``skip_last_activation`` for skipping activation
+        after the last linear layer.
+
+    TODO
+    ----
+    Can one have grouped linear layers?
+
     """
 
     __name__ = "SeqLin"
@@ -2769,29 +2760,6 @@ class SeqLin(nn.Sequential, SizeMixin):
         dropouts: Union[float, Sequence[float]] = 0.0,
         **kwargs: Any,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        out_channels: sequence of int,
-            number of ouput channels for each linear layer
-        activation: str or nn.Module, default "relu",
-            name of activation after each linear layer
-        kernel_initializer: str, optional,
-            name of kernel initializer for `weight` of each linear layer
-        bias: bool, default True,
-            if True, each linear layer will have a learnable bias vector
-        dropouts: float or sequence of float, default 0,
-            dropout ratio(s) (if > 0) after each (activation after each) linear layer
-        kwargs: dict, optional,
-            extra parameters
-
-        TODO
-        ----
-        Can one have grouped linear layers?
-
-        """
         super().__init__()
         self.__in_channels = in_channels
         self.__out_channels = out_channels
@@ -2849,17 +2817,22 @@ class SeqLin(nn.Sequential, SizeMixin):
             lin_in_channels = self.__out_channels[idx]
 
     def forward(self, input: Tensor) -> Tensor:
-        """
+        """Forward pass of sequential linear layers.
+
         Parameters
         ----------
-        input: Tensor,
-            of shape (batch_size, n_channels) or (batch_size, seq_len, n_channels)
+        input : torch.Tensor
+            Input tensor,
+            of shape ``(batch_size, n_channels)``
+            or ``(batch_size, seq_len, n_channels)``.
 
         Returns
         -------
-        output: Tensor,
-            of shape (batch_size, n_channels) or (batch_size, seq_len, n_channels),
-            ndim in accordance with `input`
+        torch.Tensor
+            Output tensor,
+            of shape ``(batch_size, n_channels)``
+            or ``(batch_size, seq_len, n_channels)``,
+            in accordance with `input`.
 
         """
         output = super().forward(input)
@@ -2871,21 +2844,23 @@ class SeqLin(nn.Sequential, SizeMixin):
         batch_size: Optional[int] = None,
         input_seq: bool = True,
     ) -> Sequence[Union[int, None]]:
-        """
+        """Compute output shape of sequential linear layers.
+
         Parameters
         ----------
-        seq_len: int, optional,
-            length of the 1d sequence,
-        batch_size: int, optional,
-            the batch size, can be None
-        input_seq: bool, default True,
-            if True, the input is a sequence (Tensor of dim 3) of vectors of features,
-            otherwise a vector of features (Tensor of dim 2)
+        seq_len : int, optional
+            Length of the 1d sequence input.
+        batch_size : int, optional
+            The batch size.
+        input_seq : bool, default True
+            If True, the input is a sequence (Tensor of dim 3)
+            of vectors of features,
+            otherwise a vector of features (Tensor of dim 2).
 
         Returns
         -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
+        output_shape : Sequence[Union[int, None]]
+            The output shape of the sequential linear layers.
 
         """
         if input_seq:
@@ -2948,14 +2923,13 @@ class MLP(SeqLin):
 
 
 class NonLocalBlock(nn.Module, SizeMixin):
-    """
-    Non-local Neural Networks
+    """Non-local Attention Block [1]_.
 
     References
     ----------
-    [1] Wang, Xiaolong, et al. "Non-local neural networks."
-        Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.
-    [2] https://github.com/AlexHex7/Non-local_pytorch
+    .. [1] Wang, Xiaolong, et al. "Non-local neural networks."
+           Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.
+    .. [2] https://github.com/AlexHex7/Non-local_pytorch
 
     """
 
@@ -3066,24 +3040,10 @@ class NonLocalBlock(nn.Module, SizeMixin):
         y += x
         return y
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int, optional,
-            length of the 1d sequence,
-            if is None, then the input is composed of single feature vectors for each batch
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         return (batch_size, self.__in_channels, seq_len)
 
     @property
@@ -3097,14 +3057,14 @@ class SEBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] J. Hu, L. Shen, S. Albanie, G. Sun and E. Wu, "Squeeze-and-Excitation Networks,"
-        in IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 42, no. 8,
-        pp. 2011-2023, 1 Aug. 2020, doi: 10.1109/TPAMI.2019.2913372.
-    [2] J. Hu, L. Shen and G. Sun, "Squeeze-and-Excitation Networks,"
-        2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition, Salt Lake City, UT,
-        2018, pp. 7132-7141, doi: 10.1109/CVPR.2018.00745.
-    [3] https://github.com/hujie-frank/SENet
-    [4] https://github.com/moskomule/senet.pytorch/blob/master/senet/se_module.py
+    .. [1] J. Hu, L. Shen, S. Albanie, G. Sun and E. Wu, "Squeeze-and-Excitation Networks,"
+           in IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 42, no. 8,
+           pp. 2011-2023, 1 Aug. 2020, doi: 10.1109/TPAMI.2019.2913372.
+    .. [2] J. Hu, L. Shen and G. Sun, "Squeeze-and-Excitation Networks,"
+           2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition, Salt Lake City, UT,
+           2018, pp. 7132-7141, doi: 10.1109/CVPR.2018.00745.
+    .. [3] https://github.com/hujie-frank/SENet
+    .. [4] https://github.com/moskomule/senet.pytorch/blob/master/senet/se_module.py
 
     """
 
@@ -3169,24 +3129,10 @@ class SEBlock(nn.Module, SizeMixin):
         output = input * y  # --> (batch_size, n_channels, seq_len)
         return output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int, optional,
-            length of the 1d sequence,
-            if is None, then the input is composed of single feature vectors for each batch
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         return (batch_size, self.__in_channels, seq_len)
 
     @property
@@ -3200,12 +3146,12 @@ class GEBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] Hu, J., Shen, L., Albanie, S., Sun, G., & Vedaldi, A. (2018).
-        Gather-excite: Exploiting feature context in convolutional neural networks.
-        Advances in neural information processing systems, 31, 9401-9411.
-    [2] https://github.com/hujie-frank/GENet
-    [3] https://github.com/BayesWatch/pytorch-GENet
-    [4] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/gather_excite.py
+    .. [1] Hu, J., Shen, L., Albanie, S., Sun, G., & Vedaldi, A. (2018).
+           Gather-excite: Exploiting feature context in convolutional neural networks.
+           Advances in neural information processing systems, 31, 9401-9411.
+    .. [2] https://github.com/hujie-frank/GENet
+    .. [3] https://github.com/BayesWatch/pytorch-GENet
+    .. [4] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/gather_excite.py
     """
 
     __name__ = "GEBlock"
@@ -3222,9 +3168,9 @@ class SKBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] Li, X., Wang, W., Hu, X., & Yang, J. (2019). Selective kernel networks.
-        In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 510-519).
-    [2] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/sknet.py
+    .. [1] Li, X., Wang, W., Hu, X., & Yang, J. (2019). Selective kernel networks.
+           In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 510-519).
+    .. [2] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/sknet.py
 
     """
 
@@ -3242,10 +3188,10 @@ class GlobalContextBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] Cao, Yue, et al. "Gcnet: Non-local networks meet squeeze-excitation networks and beyond."
-        Proceedings of the IEEE International Conference on Computer Vision Workshops. 2019.
-    [2] https://github.com/xvjiarui/GCNet/blob/master/mmdet/ops/gcb/context_block.py
-    [3] entry 0436 of CPSC2019
+    .. [1] Cao, Yue, et al. "Gcnet: Non-local networks meet squeeze-excitation networks and beyond."
+           Proceedings of the IEEE International Conference on Computer Vision Workshops. 2019.
+    .. [2] https://github.com/xvjiarui/GCNet/blob/master/mmdet/ops/gcb/context_block.py
+    .. [3] entry 0436 of CPSC2019
 
     """
 
@@ -3379,24 +3325,10 @@ class GlobalContextBlock(nn.Module, SizeMixin):
             output = output + channel_add_term  # --> (batch_size, n_channels, seq_len)
         return output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int, optional,
-            length of the 1d sequence,
-            if is None, then the input is composed of single feature vectors for each batch
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         return (batch_size, self.__in_channels, seq_len)
 
     @property
@@ -3410,8 +3342,8 @@ class BAMBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    1. Park, Jongchan, et al. "Bam: Bottleneck attention module." arXiv preprint arXiv:1807.06514 (2018).
-    2. https://github.com/Jongchan/attention-module/blob/master/MODELS/bam.py
+    .. [1] Park, Jongchan, et al. "Bam: Bottleneck attention module." arXiv preprint arXiv:1807.06514 (2018).
+    .. [2] https://github.com/Jongchan/attention-module/blob/master/MODELS/bam.py
 
     """
 
@@ -3428,9 +3360,9 @@ class CBAMBlock(nn.Module, SizeMixin):
 
     References
     ----------
-    1. Woo, Sanghyun, et al. "Cbam: Convolutional block attention module."
-       Proceedings of the European conference on computer vision (ECCV). 2018.
-    2. https://github.com/Jongchan/attention-module/blob/master/MODELS/cbam.py
+    .. [1] Woo, Sanghyun, et al. "Cbam: Convolutional block attention module."
+           Proceedings of the European conference on computer vision (ECCV). 2018.
+    .. [2] https://github.com/Jongchan/attention-module/blob/master/MODELS/cbam.py
 
     """
 
@@ -3631,24 +3563,10 @@ class CBAMBlock(nn.Module, SizeMixin):
         output = self._fwd_spatial_gate(self._fwd_channel_gate(input))
         return output
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int, optional,
-            length of the 1d sequence,
-            if is None, then the input is composed of single feature vectors for each batch
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        output_shape: sequence,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         return (batch_size, self.__gate_channels, seq_len)
 
     @property
@@ -3666,9 +3584,9 @@ class CoordAttention(nn.Module, SizeMixin):
 
     References
     ----------
-    1. Hou, Qibin, Daquan Zhou, and Jiashi Feng. "Coordinate attention for efficient mobile network design."
-       Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021.
-    2. https://github.com/Andrew-Qibin/CoordAttention
+    .. [1] Hou, Qibin, Daquan Zhou, and Jiashi Feng. "Coordinate attention for efficient mobile network design."
+           Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2021.
+    .. [2] https://github.com/Andrew-Qibin/CoordAttention
 
     """
 
@@ -3704,14 +3622,14 @@ class CRF(nn.Module, SizeMixin):
 
     References
     ----------
-    [1] https://github.com/kmkurn/pytorch-crf
-    [2] Lafferty, John, Andrew McCallum, and Fernando CN Pereira.
-        "Conditional random fields: Probabilistic models for segmenting and labeling sequence data." (2001).
-    [3] https://repository.upenn.edu/cis_papers/159/
-    [4] https://en.wikipedia.org/wiki/Viterbi_algorithm
-    [5] https://github.com/s14t284/TorchCRF
-    [6] https://github.com/allenai/allennlp/blob/master/allennlp/modules/conditional_random_field.py
-    [7] https://pytorch.org/tutorials/beginner/nlp/advanced_tutorial.html
+    .. [1] https://github.com/kmkurn/pytorch-crf
+    .. [2] Lafferty, John, Andrew McCallum, and Fernando CN Pereira.
+           "Conditional random fields: Probabilistic models for segmenting and labeling sequence data." (2001).
+    .. [3] https://repository.upenn.edu/cis_papers/159/
+    .. [4] https://en.wikipedia.org/wiki/Viterbi_algorithm
+    .. [5] https://github.com/s14t284/TorchCRF
+    .. [6] https://github.com/allenai/allennlp/blob/master/allennlp/modules/conditional_random_field.py
+    .. [7] https://pytorch.org/tutorials/beginner/nlp/advanced_tutorial.html
 
     """
 
@@ -4126,9 +4044,9 @@ class ExtendedCRF(nn.Sequential, SizeMixin):
 
     References
     ----------
-    [1] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/layers/crf.py
-    [2] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/text/crf.py
-    [3] https://github.com/keras-team/keras-contrib/blob/master/keras_contrib/layers/crf.py
+    .. [1] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/layers/crf.py
+    .. [2] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/text/crf.py
+    .. [3] https://github.com/keras-team/keras-contrib/blob/master/keras_contrib/layers/crf.py
 
     """
 
@@ -4218,7 +4136,7 @@ class SpaceToDepth(nn.Module, SizeMixin):
 
     References
     ----------
-    1. https://github.com/Alibaba-MIIL/TResNet/blob/master/src/models/tresnet_v2/layers/space_to_depth.py
+    .. [1] https://github.com/Alibaba-MIIL/TResNet/blob/master/src/models/tresnet_v2/layers/space_to_depth.py
 
     """
 
@@ -4275,24 +4193,10 @@ class SpaceToDepth(nn.Module, SizeMixin):
             x = self.out_conv(x)
         return x
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int, optional,
-            length of the 1d sequence,
-            if is None, then the input is composed of single feature vectors for each batch
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        tuple,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         if seq_len is not None:
             return (batch_size, self.__out_channels, seq_len // self.bs)
         else:
@@ -4324,7 +4228,7 @@ class MLDecoder(nn.Module, SizeMixin):
     """
     References
     ----------
-    1. https://github.com/Alibaba-MIIL/ML_Decoder/blob/main/src_files/ml_decoder/ml_decoder.py
+    .. [1] https://github.com/Alibaba-MIIL/ML_Decoder/blob/main/src_files/ml_decoder/ml_decoder.py
 
     """
 
@@ -4465,24 +4369,10 @@ class MLDecoder(nn.Module, SizeMixin):
         logits = h_out
         return logits
 
+    @add_docstring(_COMPUTE_OUTPUT_SHAPE_DOC)
     def compute_output_shape(
         self, seq_len: Optional[int] = None, batch_size: Optional[int] = None
     ) -> Sequence[Union[int, None]]:
-        """
-        Parameters
-        ----------
-        seq_len: int, optional,
-            length of the 1d sequence,
-            if is None, then the input is composed of single feature vectors for each batch
-        batch_size: int, optional,
-            the batch size, can be None
-
-        Returns
-        -------
-        tuple,
-            the output shape, given `seq_len` and `batch_size`
-
-        """
         return (batch_size, self.decoder.out_channels)
 
     @property
@@ -4502,9 +4392,9 @@ class DropPath(nn.Module, SizeMixin):
 
     References
     ----------
-    1. Huang, Gao, et al. "Deep networks with stochastic depth."
-       European conference on computer vision. Springer, Cham, 2016.
-    2. https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/drop.py
+    .. [1] Huang, Gao, et al. "Deep networks with stochastic depth."
+           European conference on computer vision. Springer, Cham, 2016.
+    .. [2] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/drop.py
 
     """
 
@@ -4576,20 +4466,19 @@ def drop_path(
 
 
 def make_attention_layer(in_channels: int, **config: dict) -> nn.Module:
-    """
-    make attention layer by config
+    """Make attention layer by config.
 
     Parameters
     ----------
-    in_channels: int,
-        number of channels in the input
-    config: dict,
-        config of the attention layer
+    in_channels : int
+        Number of channels in the input tensor.
+    config : dict
+        Config of the attention layer.
 
     Returns
     -------
-    nn.Module,
-        the attention layer
+    torchnn.Module
+        The attention layer instance.
 
     Examples
     --------
