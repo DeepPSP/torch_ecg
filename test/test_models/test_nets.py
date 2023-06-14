@@ -721,18 +721,31 @@ def test_multi_head_attention():
     grid = itertools.product(
         [True, False],  # bias
         [2, 6, 12],  # num_heads
+        [True, False],  # batch_first
     )
-    q, k, v = (torch.randn(SEQ_LEN // 10, BATCH_SIZE, IN_CHANNELS) for _ in range(3))
-    for bias, num_heads in grid:
+    target_seq_len = SEQ_LEN // 10
+    source_seq_len = SEQ_LEN // 5
+    q = torch.randn(target_seq_len, BATCH_SIZE, IN_CHANNELS)
+    k, v = (torch.randn(source_seq_len, BATCH_SIZE, IN_CHANNELS) for _ in range(2))
+    for bias, num_heads, batch_first in grid:
         mha = MultiHeadAttention(
             embed_dim=IN_CHANNELS,
             num_heads=num_heads,
             bias=bias,
+            batch_first=batch_first,
         )
         mha.eval()
-        assert mha(q, k, v)[0].shape == mha.compute_output_shape(
-            seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
+        if batch_first:
+            attn_output, attn_output_weights = mha(
+                q.transpose(0, 1), k.transpose(0, 1), v.transpose(0, 1)
+            )
+        else:
+            attn_output, attn_output_weights = mha(q, k, v)
+        attn_output_shape, attn_output_weights_shape = mha.compute_output_shape(
+            seq_len=target_seq_len, batch_size=BATCH_SIZE, source_seq_len=source_seq_len
         )
+        assert attn_output.shape == attn_output_shape
+        assert attn_output_weights.shape == attn_output_weights_shape
     repr(mha)
 
 
@@ -742,19 +755,26 @@ def test_self_attention():
         [True, False],  # bias
         [2, 6, 12],  # num_heads
         [0.0, 0.1],  # dropout
+        [True, False],  # batch_first
     )
     sample_input = torch.randn(SEQ_LEN // 10, BATCH_SIZE, IN_CHANNELS)
-    for bias, num_heads, dropout in grid:
+    for bias, num_heads, dropout, batch_first in grid:
         sa = SelfAttention(
             embed_dim=IN_CHANNELS,
             num_heads=num_heads,
             bias=bias,
             dropout=dropout,
+            batch_first=batch_first,
         )
         sa.eval()
-        assert sa(sample_input).shape == sa.compute_output_shape(
+        if batch_first:
+            sa_output = sa(sample_input.transpose(0, 1))
+        else:
+            sa_output = sa(sample_input)
+        sa_output_shape = sa.compute_output_shape(
             seq_len=SEQ_LEN // 10, batch_size=BATCH_SIZE
         )
+        assert sa_output.shape == sa_output_shape
     with pytest.warns(
         RuntimeWarning,
         match="`embed_dim`\\(.+\\) is not divisible by `num_heads`\\(.+\\)",
