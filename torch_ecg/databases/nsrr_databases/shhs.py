@@ -100,7 +100,7 @@ _SHHS_INFO = DataBaseInfo(
         - Percent of total sleep time with oxygen levels below 75%, 80%, 85% and 90% were recorded
         - Dichotomization is suggested (e.g. >5% and >10% of sleep time with oxygen levels below a specific O2 level indicates positive)
 
-    **ABOUT signals**: (ref. [10]_)
+    **ABOUT signals**: (ref. [9]_)
 
     1. C3/A2 and C4/A1 EEGs, sampled at 125 Hz
     2. right and left electrooculograms (EOGs), sampled at 50 Hz
@@ -233,7 +233,7 @@ _SHHS_INFO = DataBaseInfo(
     4. event_profusion annotations: (in xml files)
        TODO
 
-    **DEFINITION of concepts in sleep study** (mainly apnea and arousal, ref. [8]_, [9]_ for corresponding knowledge):
+    **DEFINITION of concepts in sleep study** (mainly apnea and arousal, ref. [8]_ for corresponding knowledge):
 
     1. Arousal: (ref. [3]_, [4]_)
 
@@ -301,7 +301,7 @@ _SHHS_INFO = DataBaseInfo(
         "Eckert DJ, Jordan AS, Merchia P, Malhotra A. Central sleep apnea: Pathophysiology and treatment. Chest. 2007 Feb;131(2):595-607. doi: 10.1378/chest.06.2287. PMID: 17296668; PMCID: PMC2287191.",
         "https://www.mayoclinic.org/diseases-conditions/obstructive-sleep-apnea/symptoms-causes/syc-20352090",
         "https://en.wikipedia.org/wiki/Hypopnea",
-        "http://healthysleep.med.harvard.edu/sleep-apnea/diagnosing-osa/understanding-results",
+        # "http://healthysleep.med.harvard.edu/sleep-apnea/diagnosing-osa/understanding-results",  # broken link
         "https://sleepdata.org/datasets/shhs/pages/full-description.md",
     ],
     doi=[
