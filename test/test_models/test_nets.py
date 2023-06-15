@@ -759,6 +759,12 @@ def test_self_attention():
     )
     sample_input = torch.randn(SEQ_LEN // 10, BATCH_SIZE, IN_CHANNELS)
     for bias, num_heads, dropout, batch_first in grid:
+        if batch_first and not bias:
+            # currently, pytorch has bugs in `torch.nn.MultiheadAttention` when
+            # `batch_first=True` and `bias=False`, refer to
+            # https://github.com/pytorch/pytorch/issues/97128
+            # TODO: remove this block when the bug is fixed
+            continue
         sa = SelfAttention(
             embed_dim=IN_CHANNELS,
             num_heads=num_heads,
