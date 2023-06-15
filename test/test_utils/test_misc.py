@@ -577,3 +577,14 @@ def test_add_kwargs():
     new_func = add_kwargs(func, xxx="yyy", zzz=None)
 
     assert new_func(2) == new_func(2, xxx="a", zzz=100) == 3
+    assert get_kwargs(new_func) == {"b": 1, "xxx": "yyy", "zzz": None}
+
+    class Dummy:
+        def func(self, a, b=1):
+            return a + b
+
+    dummy = Dummy()
+    new_func = add_kwargs(dummy.func, xxx="yyy", zzz=None)
+
+    assert new_func(2) == new_func(2, xxx="a", zzz=100) == 3
+    assert get_kwargs(new_func) == {"b": 1, "xxx": "yyy", "zzz": None}
