@@ -9,7 +9,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>CINC2020 &mdash; torch-ecg 0.0.26 documentation</title>
+  <title>CINC2020 &mdash; torch-ecg 0.0.27 documentation</title>
   
 
   
@@ -40,7 +40,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="torch-ecg 0.0.26 documentation" href="../index.html"/>
+    <link rel="top" title="torch-ecg 0.0.27 documentation" href="../index.html"/>
         <link rel="up" title="torch_ecg.databases" href="../databases.html"/>
         <link rel="next" title="CINC2021" href="torch_ecg.databases.CINC2021.html"/>
         <link rel="prev" title="CINC2018" href="torch_ecg.databases.CINC2018.html"/> 
@@ -1181,7 +1181,7 @@
 </pre></div>
 </div>
 </li>
-<li><p>the .mat files all contain digital signals, which has to be converted to physical values using adc gain, basesline, etc. in corresponding .hea files. <a class="reference external" href="https://wfdb.readthedocs.io/en/latest/wfdb.html#wfdb.rdrecord" title="(in wfdb v&quot;4.1.0&quot;)"><code class="xref py py-func docutils literal notranslate"><span class="pre">wfdb.rdrecord()</span></code></a> has already done this conversion, hence greatly simplifies the data loading process. NOTE that there”s a difference when using <cite>wfdb.rdrecord</cite>: data from <cite>loadmat</cite> are in “channel_first” format, while <cite>wfdb.rdrecord.p_signal</cite> produces data in the “channel_last” format</p></li>
+<li><p>the .mat files all contain digital signals, which has to be converted to physical values using adc gain, basesline, etc. in corresponding .hea files. <a class="reference external" href="https://wfdb.readthedocs.io/en/latest/wfdb.html#wfdb.rdrecord" title="(in wfdb v&quot;4.1.1&quot;)"><code class="xref py py-func docutils literal notranslate"><span class="pre">wfdb.rdrecord()</span></code></a> has already done this conversion, hence greatly simplifies the data loading process. NOTE that there”s a difference when using <cite>wfdb.rdrecord</cite>: data from <cite>loadmat</cite> are in “channel_first” format, while <cite>wfdb.rdrecord.p_signal</cite> produces data in the “channel_last” format</p></li>
 <li><p>there are 3 equivalent (2 classes are equivalent if the corr. value in the scoring matrix is 1): (RBBB, CRBBB), (PAC, SVPB), (PVC, VPB)</p></li>
 <li><p>in the newly (Feb., 2021) created dataset, header files of each subset were gathered into one separate compressed file. This is due to the fact that updates on the dataset are almost always done in the header files. The correct usage of ref. <a class="footnote-reference brackets" href="#id17" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>, after uncompressing, is replacing the header files in the folder <cite>All_training_WFDB</cite> by header files from the 6 folders containing all header files from the 6 subsets.</p></li>
 </ol>
@@ -1497,7 +1497,7 @@ values are appearance of corr. classes in the tranche.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rec</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – Record name or index of the record in <code class="xref py py-attr docutils literal notranslate"><span class="pre">all_records</span></code>.</p></li>
 <li><p><strong>raw</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, the raw annotations without parsing will be returned.</p></li>
-<li><p><strong>backend</strong> (<em>{&quot;wfdb&quot;</em><em>, </em><em>&quot;naive&quot;}</em><em>, </em><em>optional</em>) – If is “wfdb”, <a class="reference external" href="https://wfdb.readthedocs.io/en/latest/wfdb.html#wfdb.rdheader" title="(in wfdb v&quot;4.1.0&quot;)"><code class="xref py py-func docutils literal notranslate"><span class="pre">wfdb.rdheader()</span></code></a>
+<li><p><strong>backend</strong> (<em>{&quot;wfdb&quot;</em><em>, </em><em>&quot;naive&quot;}</em><em>, </em><em>optional</em>) – If is “wfdb”, <a class="reference external" href="https://wfdb.readthedocs.io/en/latest/wfdb.html#wfdb.rdheader" title="(in wfdb v&quot;4.1.1&quot;)"><code class="xref py py-func docutils literal notranslate"><span class="pre">wfdb.rdheader()</span></code></a>
 will be used to load the annotations.
 If is “naive”, annotations will be parsed
 from the lines read from the header files.</p></li>
@@ -1553,7 +1553,7 @@ otherwise, the original sampling frequency will be used.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rec</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – Record name or index of the record in <code class="xref py py-attr docutils literal notranslate"><span class="pre">all_records</span></code>.</p></li>
 <li><p><strong>raw</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>default False</em>) – If True, the raw annotations without parsing will be returned.</p></li>
-<li><p><strong>backend</strong> (<em>{&quot;wfdb&quot;</em><em>, </em><em>&quot;naive&quot;}</em><em>, </em><em>optional</em>) – If is “wfdb”, <a class="reference external" href="https://wfdb.readthedocs.io/en/latest/wfdb.html#wfdb.rdheader" title="(in wfdb v&quot;4.1.0&quot;)"><code class="xref py py-func docutils literal notranslate"><span class="pre">wfdb.rdheader()</span></code></a>
+<li><p><strong>backend</strong> (<em>{&quot;wfdb&quot;</em><em>, </em><em>&quot;naive&quot;}</em><em>, </em><em>optional</em>) – If is “wfdb”, <a class="reference external" href="https://wfdb.readthedocs.io/en/latest/wfdb.html#wfdb.rdheader" title="(in wfdb v&quot;4.1.1&quot;)"><code class="xref py py-func docutils literal notranslate"><span class="pre">wfdb.rdheader()</span></code></a>
 will be used to load the annotations.
 If is “naive”, annotations will be parsed
 from the lines read from the header files.</p></li>
@@ -1712,7 +1712,7 @@ If not modifying this number, at most 40 seconds of signal could be plotted once
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.26',
+            VERSION:'0.0.27',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

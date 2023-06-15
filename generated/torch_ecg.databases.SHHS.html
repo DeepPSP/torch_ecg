@@ -9,7 +9,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SHHS &mdash; torch-ecg 0.0.26 documentation</title>
+  <title>SHHS &mdash; torch-ecg 0.0.27 documentation</title>
   
 
   
@@ -40,7 +40,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="torch-ecg 0.0.26 documentation" href="../index.html"/>
+    <link rel="top" title="torch-ecg 0.0.27 documentation" href="../index.html"/>
         <link rel="up" title="torch_ecg.databases" href="../databases.html"/>
         <link rel="next" title="CACHET_CADB" href="torch_ecg.databases.CACHET_CADB.html"/>
         <link rel="prev" title="CPSC2021" href="torch_ecg.databases.CPSC2021.html"/> 
@@ -1085,7 +1085,7 @@
 <dd><p>Bases: <a class="reference internal" href="torch_ecg.databases.NSRRDataBase.html#torch_ecg.databases.NSRRDataBase" title="torch_ecg.databases.base.NSRRDataBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">NSRRDataBase</span></code></a>, <a class="reference internal" href="torch_ecg.databases.PSGDataBaseMixin.html#torch_ecg.databases.PSGDataBaseMixin" title="torch_ecg.databases.base.PSGDataBaseMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PSGDataBaseMixin</span></code></a></p>
 <p>Sleep Heart Health Study</p>
 <p class="rubric">ABOUT</p>
-<p><strong>ABOUT the dataset</strong> (Main webpage <a class="footnote-reference brackets" href="#id15" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
+<p><strong>ABOUT the dataset</strong> (Main webpage <a class="footnote-reference brackets" href="#id14" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>):</p>
 <ol class="arabic">
 <li><p>shhs1 (Visit 1):</p>
 <blockquote>
@@ -1184,7 +1184,7 @@ the latter exported from Compumedics Profusion</p></li>
 </div></blockquote>
 </li>
 </ol>
-<p><strong>ABOUT signals</strong>: (ref. <a class="footnote-reference brackets" href="#id24" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a>)</p>
+<p><strong>ABOUT signals</strong>: (ref. <a class="footnote-reference brackets" href="#id22" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a>)</p>
 <ol class="arabic simple">
 <li><p>C3/A2 and C4/A1 EEGs, sampled at 125 Hz</p></li>
 <li><p>right and left electrooculograms (EOGs), sampled at 50 Hz</p></li>
@@ -1199,7 +1199,7 @@ the latter exported from Compumedics Profusion</p></li>
 </ol>
 <p><strong>ABOUT annotations</strong> (NOT including “nsrrid”, “visitnumber”, “pptid” etc.):</p>
 <ol class="arabic">
-<li><p>hrv annotations: (in csv files, ref. <a class="footnote-reference brackets" href="#id16" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>)</p>
+<li><p>hrv annotations: (in csv files, ref. <a class="footnote-reference brackets" href="#id15" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>)</p>
 <blockquote>
 <div><table class="docutils align-default">
 <tbody>
@@ -1286,7 +1286,7 @@ interbeat (NN) interval spectral power between 0.003 and 0.04 Hz</p></td>
 </table>
 </div></blockquote>
 </li>
-<li><p>wave delineation annotations: (in csv files, NOTE: see “CAUTION” by the end of this part, ref. <a class="footnote-reference brackets" href="#id16" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>)</p>
+<li><p>wave delineation annotations: (in csv files, NOTE: see “CAUTION” by the end of this part, ref. <a class="footnote-reference brackets" href="#id15" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>)</p>
 <blockquote>
 <div><table class="docutils align-default">
 <tbody>
@@ -1371,9 +1371,9 @@ TODO</p></li>
 <li><p>event_profusion annotations: (in xml files)
 TODO</p></li>
 </ol>
-<p><strong>DEFINITION of concepts in sleep study</strong> (mainly apnea and arousal, ref. <a class="footnote-reference brackets" href="#id22" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id23" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a> for corresponding knowledge):</p>
+<p><strong>DEFINITION of concepts in sleep study</strong> (mainly apnea and arousal, ref. <a class="footnote-reference brackets" href="#id21" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a> for corresponding knowledge):</p>
 <ol class="arabic">
-<li><p>Arousal: (ref. <a class="footnote-reference brackets" href="#id17" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id18" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>)</p>
+<li><p>Arousal: (ref. <a class="footnote-reference brackets" href="#id16" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id17" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>)</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>interruptions of sleep lasting 3 to 15 seconds</p></li>
@@ -1384,7 +1384,7 @@ TODO</p></li>
 </ul>
 </div></blockquote>
 </li>
-<li><p>Central Sleep Apnea (CSA): (ref. <a class="footnote-reference brackets" href="#id17" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id19" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id20" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>)</p>
+<li><p>Central Sleep Apnea (CSA): (ref. <a class="footnote-reference brackets" href="#id16" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id18" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id19" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>)</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>breathing repeatedly stops and starts during sleep</p></li>
@@ -1393,7 +1393,7 @@ TODO</p></li>
 </ul>
 </div></blockquote>
 </li>
-<li><p>Obstructive Sleep Apnea (OSA): (ref. <a class="footnote-reference brackets" href="#id17" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id21" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>)</p>
+<li><p>Obstructive Sleep Apnea (OSA): (ref. <a class="footnote-reference brackets" href="#id16" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, <a class="footnote-reference brackets" href="#id20" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>)</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>occurs when throat muscles intermittently relax and block upper airway during sleep</p></li>
@@ -1401,7 +1401,7 @@ TODO</p></li>
 </ul>
 </div></blockquote>
 </li>
-<li><p>Complex (Mixed) Sleep Apnea: (ref. <a class="footnote-reference brackets" href="#id17" id="id14" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>)</p>
+<li><p>Complex (Mixed) Sleep Apnea: (ref. <a class="footnote-reference brackets" href="#id16" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>)</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>combination of both CSA and OSA</p></li>
@@ -1460,46 +1460,42 @@ overly shallow breathing or an abnormally low respiratory rate. Hypopnea is defi
 </ol>
 <p class="rubric">References</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id15" role="note">
+<aside class="footnote brackets" id="id14" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="https://sleepdata.org/datasets/shhs/pages/">https://sleepdata.org/datasets/shhs/pages/</a></p>
 </aside>
-<aside class="footnote brackets" id="id16" role="note">
+<aside class="footnote brackets" id="id15" role="note">
 <span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
 <p><a class="reference external" href="https://sleepdata.org/datasets/shhs/pages/13-hrv-analysis.md">https://sleepdata.org/datasets/shhs/pages/13-hrv-analysis.md</a></p>
 </aside>
-<aside class="footnote brackets" id="id17" role="note">
+<aside class="footnote brackets" id="id16" role="note">
 <span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id7">1</a>,<a role="doc-backlink" href="#id9">2</a>,<a role="doc-backlink" href="#id12">3</a>,<a role="doc-backlink" href="#id14">4</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id8">2</a>,<a role="doc-backlink" href="#id11">3</a>,<a role="doc-backlink" href="#id13">4</a>)</span>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Sleep_apnea">https://en.wikipedia.org/wiki/Sleep_apnea</a></p>
 </aside>
-<aside class="footnote brackets" id="id18" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">4</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id17" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">4</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="https://www.sleepapnea.org/treat/getting-sleep-apnea-diagnosis/sleep-study-details/">https://www.sleepapnea.org/treat/getting-sleep-apnea-diagnosis/sleep-study-details/</a></p>
 </aside>
-<aside class="footnote brackets" id="id19" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">5</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id18" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">5</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="https://www.mayoclinic.org/diseases-conditions/central-sleep-apnea/symptoms-causes/syc-20352109">https://www.mayoclinic.org/diseases-conditions/central-sleep-apnea/symptoms-causes/syc-20352109</a></p>
 </aside>
-<aside class="footnote brackets" id="id20" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">6</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id19" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">6</a><span class="fn-bracket">]</span></span>
 <p>Eckert DJ, Jordan AS, Merchia P, Malhotra A. Central sleep apnea: Pathophysiology and treatment. Chest. 2007 Feb;131(2):595-607. doi: 10.1378/chest.06.2287. PMID: 17296668; PMCID: PMC2287191.</p>
 </aside>
-<aside class="footnote brackets" id="id21" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">7</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id20" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">7</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="https://www.mayoclinic.org/diseases-conditions/obstructive-sleep-apnea/symptoms-causes/syc-20352090">https://www.mayoclinic.org/diseases-conditions/obstructive-sleep-apnea/symptoms-causes/syc-20352090</a></p>
 </aside>
-<aside class="footnote brackets" id="id22" role="note">
+<aside class="footnote brackets" id="id21" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">8</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Hypopnea">https://en.wikipedia.org/wiki/Hypopnea</a></p>
 </aside>
-<aside class="footnote brackets" id="id23" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">9</a><span class="fn-bracket">]</span></span>
-<p><a class="reference external" href="http://healthysleep.med.harvard.edu/sleep-apnea/diagnosing-osa/understanding-results">http://healthysleep.med.harvard.edu/sleep-apnea/diagnosing-osa/understanding-results</a></p>
-</aside>
-<aside class="footnote brackets" id="id24" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">10</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="id22" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">9</a><span class="fn-bracket">]</span></span>
 <p><a class="reference external" href="https://sleepdata.org/datasets/shhs/pages/full-description.md">https://sleepdata.org/datasets/shhs/pages/full-description.md</a></p>
 </aside>
 </aside>
@@ -2453,7 +2449,7 @@ according to <code class="xref py py-attr docutils literal notranslate"><span cl
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.0.26',
+            VERSION:'0.0.27',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
