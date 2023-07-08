@@ -50,4 +50,4 @@ jobs:
         python -m pip freeze
     - name: Run test with pytest
       run: |
-        pytest -v test/test_pipelines
+        pytest -v -s test/test_pipelines

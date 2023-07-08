@@ -68,32 +68,32 @@ jobs:
         du -sh ~/tmp/nsrr-data/*
     - name: Run test SHHS with pytest
       run: |
-        pytest -v test/test_databases/test_shhs.py
+        pytest -v -s test/test_databases/test_shhs.py
     - name: Remove downloaded NSRR data
       run: |
         rm -rf ~/tmp/nsrr-data/
     - name: Run test other databases with pytest
       run: |
-        pytest -v test/test_databases/test_cachet_cadb.py
-        pytest -v test/test_databases/test_sph.py
+        pytest -v -s test/test_databases/test_cachet_cadb.py
+        pytest -v -s test/test_databases/test_sph.py
     - name: Run test normal physionet databases with pytest
       run: |
-        pytest -v test/test_databases/test_base.py
-        pytest -v test/test_databases/test_afdb.py
-        pytest -v test/test_databases/test_apnea_ecg.py
-        pytest -v test/test_databases/test_cinc2017.py
-        pytest -v test/test_databases/test_cinc2018.py
-        pytest -v test/test_databases/test_ltafdb.py
-        pytest -v test/test_databases/test_ludb.py
-        pytest -v test/test_databases/test_mitdb.py
-        pytest -v test/test_databases/test_qtdb.py
+        pytest -v -s test/test_databases/test_base.py
+        pytest -v -s test/test_databases/test_afdb.py
+        pytest -v -s test/test_databases/test_apnea_ecg.py
+        pytest -v -s test/test_databases/test_cinc2017.py
+        pytest -v -s test/test_databases/test_cinc2018.py
+        pytest -v -s test/test_databases/test_ltafdb.py
+        pytest -v -s test/test_databases/test_ludb.py
+        pytest -v -s test/test_databases/test_mitdb.py
+        pytest -v -s test/test_databases/test_qtdb.py
     - name: Run test CPSC databases with pytest
       run: |
-        pytest -v test/test_databases/test_cpsc2018.py
-        pytest -v test/test_databases/test_cpsc2019.py
-        pytest -v test/test_databases/test_cpsc2020.py
-        pytest -v test/test_databases/test_cpsc2021.py
+        pytest -v -s test/test_databases/test_cpsc2018.py
+        pytest -v -s test/test_databases/test_cpsc2019.py
+        pytest -v -s test/test_databases/test_cpsc2020.py
+        pytest -v -s test/test_databases/test_cpsc2021.py
     - name: Run test CinC20/21 databases with pytest
       run: |
-        pytest -v test/test_databases/test_cinc2020.py
-        pytest -v test/test_databases/test_cinc2021.py
+        pytest -v -s test/test_databases/test_cinc2020.py
+        pytest -v -s test/test_databases/test_cinc2021.py

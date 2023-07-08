@@ -68,8 +68,12 @@ jobs:
         du -sh ~/tmp/nsrr-data/*
     - name: Run test with pytest and collect coverage
       run: |
-        pytest --cov=torch_ecg --ignore=test/test_pipelines -v test
+        pytest -v -s \
+        --cov=torch_ecg \
+        --ignore=test/test_pipelines \
+        test
     - name: Upload coverage to Codecov
+      if: matrix.python-version == '3.8'
       uses: codecov/codecov-action@v3
     - name: Remove downloaded NSRR data
       run: |
