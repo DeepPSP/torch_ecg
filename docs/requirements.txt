@@ -7,7 +7,9 @@ sphinx-rtd-theme
 sphinx-markdown-tables
 sphinx-copybutton
 sphinx-multiversion
+sphinx-toolbox
 sphinxcontrib-napoleon
 sphinxcontrib-tikz
+sphinxcontrib-bibtex
 numpydoc
 recommonmark

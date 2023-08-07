@@ -57,9 +57,15 @@ extensions = [
     "recommonmark",
     # 'sphinx.ext.autosectionlabel',
     "sphinx_multiversion",
+    "sphinx_toolbox.collapse",
     # "numpydoc",
     "sphinxcontrib.tikz",
+    "sphinxcontrib.bibtex",
 ]
+
+bibtex_bibfiles = ["references.bib"]
+bibtex_bibliography_header = ".. rubric:: References"
+bibtex_footbibliography_header = bibtex_bibliography_header
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
@@ -174,4 +180,10 @@ texinfo_documents = [
         "ECG Deep Learning Framework Implemented using PyTorch.",
         "Miscellaneous",
     ),
+]
+
+numfig = True
+
+linkcheck_ignore = [
+    r"https://doi.org/*",  # 418 Client Error
 ]
