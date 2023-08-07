@@ -81,6 +81,28 @@ The system design is depicted as follows
    examples
 
 
+Citation
+=========
+If you find this project useful, please cite our paper
+
+.. collapse:: Click to show citation\
+
+   .. code-block:: latex
+
+      @article{torch_ecg_paper,
+            title = {{A Novel Deep Learning Package for Electrocardiography Research}},
+           author = {Hao Wen and Jingsu Kang},
+          journal = {{Physiological Measurement}},
+              doi = {10.1088/1361-6579/ac9451},
+             year = {2022},
+            month = {11},
+        publisher = {{IOP Publishing}},
+           volume = {43},
+           number = {11},
+            pages = {115006}
+      }
+
+
 Indices and tables
 ==================
 

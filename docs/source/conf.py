@@ -168,6 +168,15 @@ latex_documents = [
     ),
 ]
 
+# https://sphinxcontrib-bibtex.readthedocs.io/en/latest/usage.html#latex-backend-fails-with-citations-in-figure-captions
+latex_elements = {
+    "preamble": r"""
+        % make phantomsection empty inside figures
+        \usepackage{etoolbox}
+        \AtBeginEnvironment{figure}{\renewcommand{\phantomsection}{}}
+    """
+}
+
 man_pages = [(master_doc, project, f"{project} Documentation", [author], 1)]
 
 texinfo_documents = [
