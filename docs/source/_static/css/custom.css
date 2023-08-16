@@ -1,3 +1,14 @@
 span.caption-text {
     color: #cc4878;
 }
+
+svg {
+    width: 80%;
+}
+
+.math {
+    text-align: left;
+}
+.eqno {
+    float: right;
+}

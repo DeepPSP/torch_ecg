@@ -457,8 +457,8 @@ class PhysioNetDataBase(_DataBase):
         )
         # `self.fs` for those with single signal source, e.g. ECG,
         # for those with multiple signal sources like PSG,
-        # self.fs is default to the frequency of ECG if ECG applicable
-        self.fs = None
+        # `self.fs` is default to the frequency of ECG if ECG applicable
+        self.fs = kwargs.get("fs", None)
         self._all_records = None
         self._version = None
         self._url_compressed = None
@@ -961,7 +961,7 @@ class NSRRDataBase(_DataBase):
             verbose=verbose,
             **kwargs,
         )
-        self.fs = None
+        self.fs = kwargs.get("fs", None)
         self._all_records = None
         self.file_opened = None
 
@@ -1137,8 +1137,7 @@ class CPSCDataBase(_DataBase):
             verbose=verbose,
             **kwargs,
         )
-
-        self.fs = None
+        self.fs = kwargs.get("fs", None)
         self._all_records = None
 
         self.kwargs = kwargs
@@ -1267,7 +1266,7 @@ class DataBaseInfo(CitationMixin):
         NOTE
         ----
         An environment variable ``DB_BIB_LOOKUP`` can be set to
-        `True` to enable the lookup of the bib entries.
+        ``True`` to enable the lookup of the bib entries.
 
         """
         if indent is None:
@@ -1428,7 +1427,7 @@ class PSGDataBaseMixin:
         -------
         fig : matplotlib.figure.Figure
             Figure object.
-        ax : matplotlib.axes._subplots.AxesSubplot
+        ax : matplotlib.axes.Axes
             Axes object.
 
         """
