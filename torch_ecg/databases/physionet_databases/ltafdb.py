@@ -5,7 +5,7 @@ import math
 from copy import deepcopy
 from numbers import Real
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union, Tuple
 
 import numpy as np
 import wfdb
@@ -164,8 +164,11 @@ class LTAFDB(PhysioNetDataBase):
         data_format: str = "channel_first",
         units: str = "mV",
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
-        return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs)
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+        return super().load_data(
+            rec, leads, sampfrom, sampto, data_format, units, fs, return_fs
+        )
 
     def load_ann(
         self,

@@ -544,9 +544,9 @@ class CINC2020(PhysioNetDataBase):
         backend: str = "wfdb",
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
-        """
-        Load physical (converted from digital) ECG data,
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+        """Load physical (converted from digital) ECG data,
         which is more understandable for humans;
         or load digital signal directly.
 
@@ -569,11 +569,15 @@ class CINC2020(PhysioNetDataBase):
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
+        return_fs : bool, default False
+            Whether to return the sampling frequency of the output signal.
 
         Returns
         -------
-        numpy.ndarray
+        data : numpy.ndarray
             The ECG data of the record.
+        data_fs : numbers.Real, optional
+            Sampling frequency of the output signal.
 
         """
         if isinstance(rec, int):
@@ -630,10 +634,15 @@ class CINC2020(PhysioNetDataBase):
             data = SS.resample_poly(data, fs, self.fs[tranche], axis=1).astype(
                 data.dtype
             )
+            data_fs = fs
+        else:
+            data_fs = self.fs[tranche]
 
         if data_format.lower() in ["channel_last", "lead_last"]:
             data = data.T
 
+        if return_fs:
+            return data, data_fs
         return data
 
     def load_ann(

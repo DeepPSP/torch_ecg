@@ -1030,7 +1030,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         data_format: str = "channel_first",
         units: Union[str, type(None)] = "mV",
         fs: Optional[int] = None,
-    ) -> Tuple[np.ndarray, Real]:
+        return_fs: bool = True,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
         """Load ECG data of the record.
 
         Parameters
@@ -1057,6 +1058,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             Sampling frequency of the loaded data.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
+        return_fs : bool, default True
+            Whether to return the sampling frequency of the output signal.
 
         Returns
         -------
@@ -1100,7 +1103,9 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         elif data_format.lower() in ["channel_last", "lead_last"]:
             data = data[:, np.newaxis]
 
-        return data, data_fs
+        if return_fs:
+            return data, data_fs
+        return data
 
     @add_docstring(
         " " * 8 + "NOTE: one should call `load_psg_data` to load other channels.",
@@ -1116,7 +1121,8 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
         data_format: str = "channel_first",
         units: Union[str, type(None)] = "mV",
         fs: Optional[int] = None,
-    ) -> Tuple[np.ndarray, Real]:
+        return_fs: bool = True,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
         """alias of `load_ecg_data`"""
         return self.load_ecg_data(
             rec=rec,
@@ -1126,6 +1132,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             data_format=data_format,
             units=units,
             fs=fs,
+            return_fs=return_fs,
         )
 
     def load_ann(
