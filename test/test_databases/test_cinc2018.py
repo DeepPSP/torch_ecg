@@ -152,6 +152,8 @@ class TestCINC2018:
         )
         assert isinstance(data, np.ndarray)
         assert data.shape == (80000,)
+        data, data_fs = reader.load_data(0, fs=100, return_fs=True)
+        assert data_fs == 100
 
     def test_load_ecg_data(self):
         # alias of `load_data`

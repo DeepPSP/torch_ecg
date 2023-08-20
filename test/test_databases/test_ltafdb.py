@@ -67,6 +67,10 @@ class TestLTAFDB:
             rec, leads=[0], data_format="flat", sampfrom=1000, sampto=2000
         )
         assert data.shape == (1000,)
+        data = reader.load_data(rec)
+        data_1, data_1_fs = reader.load_data(rec, fs=2 * reader.fs, return_fs=True)
+        assert data_1_fs == 2 * reader.fs
+        assert data_1.shape[1] == data.shape[1] * 2
 
     def test_load_ann(self):
         ann = reader.load_ann(0)

@@ -65,6 +65,8 @@ class TestCPSC2019:
         assert np.allclose(data, data_1.reshape(1, -1) / 1000, atol=1e-2)
         data_1 = reader.load_data(0, data_format="flat", fs=2 * reader.fs)
         assert data_1.shape[0] == 2 * data.shape[1]
+        data_1, data_1_fs = reader.load_data(0, fs=2 * reader.fs, return_fs=True)
+        assert data_1_fs == 2 * reader.fs
 
         with pytest.raises(ValueError, match="Invalid `data_format`: xxx"):
             reader.load_data(0, data_format="xxx")

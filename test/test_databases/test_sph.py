@@ -70,6 +70,8 @@ class TestSPH:
             assert np.allclose(data_1, data * 1000)
             data_1 = reader.load_data(rec, data_format="lead_last")
             assert data.shape == data_1.T.shape
+            data_1, data_1_fs = reader.load_data(rec, return_fs=True)
+            assert data_1_fs == reader.fs
 
         with pytest.raises(AssertionError, match="Invalid data_format: `flat`"):
             reader.load_data(rec, data_format="flat")

@@ -64,6 +64,8 @@ class TestCPSC2018:
             assert np.allclose(data_1, data * 1000)
             data_1 = reader.load_data(rec, data_format="lead_last")
             assert data.shape == data_1.T.shape
+            data, data_fs = reader.load_data(rec, return_fs=True)
+            assert data_fs == reader.fs
         reader.load_data(0)
 
     def test_load_ann(self):

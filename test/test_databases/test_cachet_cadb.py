@@ -66,6 +66,8 @@ class TestCACHET_CADB:
             data_1 = reader.load_data(rec, sampfrom=1000, sampto=5000)
             assert data_1.shape[1] == 4000
             assert np.allclose(data_1, data[:, 1000:5000])
+            data_1, data_1_fs = reader.load_data(rec, fs=2 * reader.fs, return_fs=True)
+            assert data_1_fs == 2 * reader.fs
 
         with pytest.raises(ValueError, match="Invalid `data_format`: xxx"):
             reader.load_data(0, data_format="xxx")
