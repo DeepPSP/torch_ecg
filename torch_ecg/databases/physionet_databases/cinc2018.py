@@ -466,6 +466,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
             with given `units` and `data_format`.
         data_fs : numbers.Real, optional
             Sampling frequency of the output signal.
+            Returned if `return_fs` is True.
 
         """
         available_signals = self.get_available_signals(rec)

@@ -1067,6 +1067,7 @@ class SHHS(NSRRDataBase, PSGDataBaseMixin):
             The loaded ECG data.
         data_fs : numbers.Real
             Sampling frequency of the loaded ECG data.
+            Returned if `return_fs` is True.
 
         """
         allowed_data_format = [

@@ -57,6 +57,7 @@ class TestCPSC2020:
             CPSC2020(_CWD, subsample=-0.1)
 
     def test_load_data(self):
+        # reader.fs is 400
         data_1 = reader.load_data(0, sampfrom=2000, sampto=4000, data_format="flat")
         data_2 = reader.load_data(
             0, sampfrom=2000, sampto=4000, data_format="channel_last"
@@ -68,8 +69,10 @@ class TestCPSC2020:
         assert np.allclose(data_1, data_2[:, 0])
         assert np.allclose(data_1, data_3 / 1000, atol=1e-2)
         assert data_4.shape == (1, 4000)
-        data, data_fs = reader.load_data(0, fs=reader.fs * 2, return_fs=True)
-        assert data_fs == reader.fs * 2
+        data, data_fs = reader.load_data(
+            0, sampfrom=2000, sampto=4000, fs=reader.fs // 4, return_fs=True
+        )
+        assert data_fs == reader.fs // 4
 
         with pytest.raises(ValueError, match="Invalid `data_format`"):
             reader.load_data(0, data_format="invalid")

@@ -220,6 +220,7 @@ class SPH(_DataBase):
             The loaded ECG data.
         data_fs : numbers.Real, optional
             Sampling frequency of the output signal.
+            Returned if `return_fs` is True.
 
         """
         assert data_format.lower() in [

@@ -407,6 +407,7 @@ class CACHET_CADB(_DataBase):
             The loaded ECG data.
         data_fs : numbers.Real, optional
             Sampling frequency of the output signal.
+            Returned if `return_fs` is True.
 
         """
         if isinstance(rec, int):

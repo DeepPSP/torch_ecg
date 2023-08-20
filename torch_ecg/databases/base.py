@@ -672,6 +672,7 @@ class PhysioNetDataBase(_DataBase):
             with given `units` and `data_format`.
         data_fs : numbers.Real, optional
             Sampling frequency of the output signal.
+            Returned if `return_fs` is True.
 
         """
         fp = str(self.get_absolute_path(rec))
