@@ -111,7 +111,9 @@ class TestSHHS:
         assert fs_1 == fs
         assert data_1.shape[0] == int(10 * fs)
         assert np.allclose(data_1, data[0, int(10 * fs) : int(20 * fs)])
-        data_1 = reader.load_data(0, return_fs=False)
+        data_1 = reader.load_data(
+            0, sampfrom=10, sampto=20, data_format="flat", return_fs=False
+        )
         assert isinstance(data_1, np.ndarray) and np.allclose(data_1, data)
 
         data_2, _ = reader.load_data(
