@@ -27,7 +27,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from string import punctuation
-from typing import Any, List, Optional, Union, Sequence, Dict
+from typing import Any, List, Optional, Union, Sequence, Dict, Tuple
 from numbers import Real
 
 import numpy as np
@@ -632,9 +632,9 @@ class PhysioNetDataBase(_DataBase):
         data_format: str = "channel_first",
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
-        """
-        Load physical (converted from digital) ECG data,
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+        """Load physical (converted from digital) ECG data,
         which is more understandable for humans;
         or load digital signal directly.
 
@@ -659,14 +659,20 @@ class PhysioNetDataBase(_DataBase):
             None for digital data, without digital-to-physical conversion.
         fs : numbers.Real, optional
             Sampling frequency of the output signal.
-            If not None, the loaded data will be resampled to this frequency,
+            If not None, the loaded data will be resampled to this frequency;
+            if None, `self.fs` will be used if available and not None;
             otherwise, the original sampling frequency will be used.
+        return_fs : bool, default False
+            Whether to return the sampling frequency of the output signal.
 
         Returns
         -------
-        numpy.ndarray
+        data : numpy.ndarray
             The ECG data loaded from the record,
             with given `units` and `data_format`.
+        data_fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            Returned if `return_fs` is True.
 
         """
         fp = str(self.get_absolute_path(rec))
@@ -721,14 +727,24 @@ class PhysioNetDataBase(_DataBase):
         elif units.lower() in ["μv", "uv", "muv"]:
             data = 1000 * wfdb_rec.p_signal
 
-        if fs is not None and hasattr(self, "fs") and fs != self.fs:
-            data = SS.resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+        if fs is not None:
+            data_fs = fs
+        elif hasattr(self, "fs"):
+            data_fs = self.fs
+        else:
+            data_fs = wfdb_rec.fs
+        if data_fs != wfdb_rec.fs:
+            data = SS.resample_poly(data, data_fs, wfdb_rec.fs, axis=0).astype(
+                data.dtype
+            )
 
         if data_format.lower() in ["channel_first", "lead_first"]:
             data = data.T
         elif data_format.lower() in ["flat", "plain"]:
             data = data.flatten()
 
+        if return_fs:
+            return data, data_fs
         return data
 
     def helper(self, items: Union[List[str], str, type(None)] = None) -> None:

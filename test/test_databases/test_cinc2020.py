@@ -83,6 +83,8 @@ class TestCINC2020:
             assert data_1.shape[1] == 2 * data.shape[1]
             data_1 = reader.load_data(rec, backend="scipy")
             assert np.allclose(data_1, data)
+            data_1, data_1_fs = reader.load_data(rec, fs=300, return_fs=True)
+            assert data_1_fs == 300
 
         with pytest.raises(AssertionError, match="Invalid data_format: `flat`"):
             reader.load_data(rec, data_format="flat")

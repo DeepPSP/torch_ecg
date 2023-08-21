@@ -3,7 +3,7 @@
 import json
 from numbers import Real
 from pathlib import Path
-from typing import Any, Optional, Sequence, Union, List
+from typing import Any, Optional, Sequence, Union, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -233,7 +233,8 @@ class CPSC2019(CPSCDataBase):
         data_format: str = "channel_first",
         units: str = "mV",
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
         """Load the ECG data of the record `rec`.
 
         Parameters
@@ -250,17 +251,25 @@ class CPSC2019(CPSCDataBase):
         fs : numbers.Real, optional
             If provided, the loaded data will be resampled to this frequency,
             otherwise the original sampling frequency will be used.
+        return_fs : bool, default False
+            Whether to return the sampling frequency of the output signal.
 
         Returns
         -------
         data : numpy.ndarray,
             The loaded ECG data.
+        data_fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            Returned if `return_fs` is True.
 
         """
         fp = self.get_absolute_path(rec, self.rec_ext)
         data = loadmat(str(fp))["ecg"].astype(DEFAULTS.DTYPE.NP)
         if fs is not None and fs != self.fs:
             data = SS.resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+            data_fs = fs
+        else:
+            data_fs = self.fs
         if data_format.lower() in ["channel_first", "lead_first"]:
             data = data.T
         elif data_format.lower() in ["flat", "plain"]:
@@ -271,6 +280,9 @@ class CPSC2019(CPSCDataBase):
             data = (1000 * data).astype(int)
         elif units.lower() != "mv":
             raise ValueError(f"Invalid `units`: {units}")
+
+        if return_fs:
+            return data, data_fs
         return data
 
     def load_ann(self, rec: Union[int, str]) -> np.ndarray:

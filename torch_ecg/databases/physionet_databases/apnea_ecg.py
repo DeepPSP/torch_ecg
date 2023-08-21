@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional, Union, Sequence, List
+from typing import Any, Optional, Union, Sequence, List, Tuple
 from numbers import Real
 
 import numpy as np
@@ -208,8 +208,11 @@ class ApneaECG(PhysioNetDataBase):
         data_format: str = "channel_first",
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
-        return super().load_data(rec, leads, sampfrom, sampto, data_format, units, fs)
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
+        return super().load_data(
+            rec, leads, sampfrom, sampto, data_format, units, fs, return_fs
+        )
 
     @add_docstring(PhysioNetDataBase.load_data.__doc__)
     def load_ecg_data(
@@ -220,7 +223,8 @@ class ApneaECG(PhysioNetDataBase):
         data_format: str = "channel_first",
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
         if isinstance(rec, int):
             rec = self[rec]
         if rec not in self.ecg_records:
@@ -232,6 +236,7 @@ class ApneaECG(PhysioNetDataBase):
             data_format=data_format,
             units=units,
             fs=fs,
+            return_fs=return_fs,
         )
 
     @add_docstring(
@@ -249,6 +254,7 @@ class ApneaECG(PhysioNetDataBase):
         data_format: str = "channel_first",
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
+        return_fs: bool = False,
     ) -> np.ndarray:
         if rec not in self.rsp_records:
             raise ValueError(f"`{rec}` is not a record of RSP signals")
@@ -260,6 +266,7 @@ class ApneaECG(PhysioNetDataBase):
             data_format=data_format,
             units=units,
             fs=fs,
+            return_fs=return_fs,
         )
         return data
 

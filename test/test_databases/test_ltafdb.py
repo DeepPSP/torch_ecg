@@ -67,6 +67,9 @@ class TestLTAFDB:
             rec, leads=[0], data_format="flat", sampfrom=1000, sampto=2000
         )
         assert data.shape == (1000,)
+        data = reader.load_data(rec)
+        data, data_fs = reader.load_data(rec, fs=100, return_fs=True)
+        assert data_fs == 100
 
     def test_load_ann(self):
         ann = reader.load_ann(0)

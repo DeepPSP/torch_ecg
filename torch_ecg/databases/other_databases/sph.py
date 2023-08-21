@@ -194,6 +194,7 @@ class SPH(_DataBase):
         leads: Optional[Union[str, int, List[Union[str, int]]]] = None,
         data_format: str = "channel_first",
         units: str = "mV",
+        return_fs: bool = False,
     ) -> np.ndarray:
         """Load ECG data from h5 file of the record.
 
@@ -210,11 +211,16 @@ class SPH(_DataBase):
         units : str, default "mV"
             Units of the output signal,
             can also be "μV" (alias "uV", "muV").
+        return_fs : bool, default False
+            Whether to return the sampling frequency of the output signal.
 
         Returns
         -------
         data : numpy.ndarray
             The loaded ECG data.
+        data_fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            Returned if `return_fs` is True.
 
         """
         assert data_format.lower() in [
@@ -237,6 +243,8 @@ class SPH(_DataBase):
         if data_format.lower() in ["channel_last", "lead_last"]:
             data = data.T
 
+        if return_fs:
+            return data, self.fs
         return data
 
     def load_ann(

@@ -68,6 +68,8 @@ class TestApneaECG:
             0, leads=0, data_format="flat", sampfrom=1000, sampto=2000
         )
         assert data.shape == (1000,)
+        data, data_fs = reader.load_data(0, fs=100, return_fs=True)
+        assert data_fs == 100
 
     def test_load_ecg_data(self):
         rec = reader.ecg_records[0]

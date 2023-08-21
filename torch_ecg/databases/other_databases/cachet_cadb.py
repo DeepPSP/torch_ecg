@@ -5,7 +5,7 @@ import warnings
 from copy import deepcopy
 from pathlib import Path
 import xml.etree.ElementTree as ET
-from typing import Any, Optional, Sequence, Dict, List, Union
+from typing import Any, Optional, Sequence, Dict, List, Union, Tuple
 from numbers import Real
 
 import numpy as np
@@ -372,7 +372,8 @@ class CACHET_CADB(_DataBase):
         data_format: str = "channel_first",
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
         """Load physical (converted from digital) ECG data,
         or load digital signal directly.
 
@@ -397,11 +398,16 @@ class CACHET_CADB(_DataBase):
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
+        return_fs : bool, default False
+            Whether to return the sampling frequency of the output signal.
 
         Returns
         -------
         data : numpy.ndarray
             The loaded ECG data.
+        data_fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            Returned if `return_fs` is True.
 
         """
         if isinstance(rec, int):
@@ -437,7 +443,12 @@ class CACHET_CADB(_DataBase):
 
         if fs is not None and fs != self.fs:
             data = SS.resample_poly(data, fs, self.fs, axis=0).astype(data.dtype)
+            data_fs = fs
+        else:
+            data_fs = self.fs
 
+        if return_fs:
+            return data, data_fs
         return data
 
     def load_context_data(

@@ -3,7 +3,7 @@
 from collections import defaultdict
 from numbers import Real
 from pathlib import Path
-from typing import Any, Optional, Union, Sequence, List, Dict
+from typing import Any, Optional, Union, Sequence, List, Dict, Tuple
 
 import numpy as np
 import pandas as pd
@@ -326,7 +326,8 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         data_format: str = "channel_first",
         physical: bool = True,
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
         """Load PSG data of the record.
 
         Parameters
@@ -353,11 +354,15 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
+        return_fs : bool, default False
+            Whether to return the sampling frequency of the output signal.
 
         Returns
         -------
-        numpy.ndarray
+        data : numpy.ndarray
             PSG data corr. to the given `channel` of the record.
+        data_fs : numbers.Real, optional
+            Sampling frequency of the output signal.
 
         """
         available_signals = self.get_available_signals(rec)
@@ -403,12 +408,17 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
 
         if fs is not None and fs != wfdb_header.fs:
             ret_data = SS.resample_poly(ret_data, fs, wfdb_header.fs, axis=-1)
+            data_fs = fs
+        else:
+            data_fs = wfdb_header.fs
 
         if data_format.lower() in ["channel_last", "lead_last"]:
             ret_data = ret_data.T
         elif data_format.lower() in ["flat", "plain"]:
             ret_data = ret_data.flatten()
 
+        if return_fs:
+            return ret_data, data_fs
         return ret_data
 
     def load_data(
@@ -419,7 +429,8 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         data_format: str = "channel_first",
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
         """Load ECG data of the record.
 
         Parameters
@@ -445,12 +456,17 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
             Sampling frequency of the output signal.
             If not None, the loaded data will be resampled to this frequency,
             otherwise, the original sampling frequency will be used.
+        return_fs : bool, default False
+            Whether to return the sampling frequency of the output signal.
 
         Returns
         -------
-        numpy.ndarray
+        data : numpy.ndarray
             The ECG data loaded from the record,
             with given `units` and `data_format`.
+        data_fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            Returned if `return_fs` is True.
 
         """
         available_signals = self.get_available_signals(rec)
@@ -461,7 +477,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         assert (
             units is None or units.lower() in allowed_units
         ), f"`units` should be one of `{allowed_units}` or None, but got `{units}`"
-        data = self.load_psg_data(
+        data, data_fs = self.load_psg_data(
             rec=rec,
             channel="ECG",
             sampfrom=sampfrom,
@@ -469,9 +485,13 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
             data_format=data_format,
             physical=units is not None,
             fs=fs,
+            return_fs=True,
         )
         if units.lower() in ["μv", "uv", "muv"]:
             data = 1000 * data
+
+        if return_fs:
+            return data, data_fs
         return data
 
     @add_docstring(load_data.__doc__)
@@ -483,7 +503,8 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
         data_format: str = "channel_first",
         units: Union[str, type(None)] = "mV",
         fs: Optional[Real] = None,
-    ) -> np.ndarray:
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
         """alias of `load_data`"""
         return self.load_data(
             rec=rec,
@@ -492,6 +513,7 @@ class CINC2018(PhysioNetDataBase, PSGDataBaseMixin):
             data_format=data_format,
             units=units,
             fs=fs,
+            return_fs=return_fs,
         )
 
     def load_ann(

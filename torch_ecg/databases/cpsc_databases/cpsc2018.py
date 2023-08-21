@@ -2,8 +2,9 @@
 
 import re
 import warnings
+from numbers import Real
 from pathlib import Path
-from typing import Any, List, Optional, Union, Sequence
+from typing import Any, List, Optional, Union, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
@@ -274,7 +275,8 @@ class CPSC2018(CPSCDataBase):
         leads: Optional[Union[str, int, Sequence[Union[str, int]]]] = None,
         data_format="channel_first",
         units: str = "mV",
-    ) -> np.ndarray:
+        return_fs: bool = False,
+    ) -> Union[np.ndarray, Tuple[np.ndarray, Real]]:
         """Load the ECG data of a record.
 
         Parameters
@@ -289,11 +291,16 @@ class CPSC2018(CPSCDataBase):
         units : str, default "mV"
             Units of the output signal, can also be "μV" (with an alias "uV"),
             case insensitive.
+        return_fs : bool, default False
+            Whether to return the sampling frequency of the output signal.
 
         Returns
         -------
         data : numpy.ndarray
             The loaded ECG data.
+        data_fs : numbers.Real, optional
+            Sampling frequency of the output signal.
+            Returned if `return_fs` is True.
 
         """
         if isinstance(rec, int):
@@ -327,6 +334,8 @@ class CPSC2018(CPSCDataBase):
         ):
             data *= 1000
 
+        if return_fs:
+            return data, self.fs
         return data
 
     def load_ann(self, rec: Union[str, int], ann_format: str = "n") -> List[str]:
