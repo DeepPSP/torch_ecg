@@ -44,6 +44,9 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip' # caching pip dependencies
+    - name: List existing Python packages
+      run: |
+        python -m pip list
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip setuptools wheel
@@ -53,6 +56,9 @@ jobs:
         python setup.py install_egg_info # Workaround https://github.com/pypa/pip/issues/4537
         python -m pip install -e .[dev]
         python -m pip freeze
+    - name: List installed Python packages
+      run: |
+        python -m pip list
     - name: Install nsrr and download a samll part of SHHS to do test
     # ref. https://github.com/DeepPSP/nsrr-automate
       run: |
