@@ -1,4 +1,4 @@
-sphinx
+sphinx<7.0
 nbsphinx
 sphinx-theme
 pydata-sphinx-theme
