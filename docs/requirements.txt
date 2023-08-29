@@ -2,8 +2,9 @@ sphinx<7.0
 nbsphinx
 sphinx-theme
 pydata-sphinx-theme
-sphinx-autobuild
 sphinx-rtd-theme
+sphinx-book-theme
+sphinx-autobuild
 sphinx-markdown-tables
 sphinx-copybutton
 sphinx-multiversion

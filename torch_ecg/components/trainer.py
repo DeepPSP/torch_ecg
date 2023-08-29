@@ -30,6 +30,7 @@ from ..utils.misc import ReprMixin, dict_to_str, dicts_equal, get_date_str, get_
 from ..utils.utils_nn import default_collate_fn
 from .loggers import LoggerManager
 
+
 __all__ = [
     "BaseTrainer",
 ]

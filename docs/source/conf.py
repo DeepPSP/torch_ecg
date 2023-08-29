@@ -15,11 +15,9 @@ import sys
 from pathlib import Path
 
 import sphinx_rtd_theme
-
-try:
-    import stanford_theme
-except Exception:
-    stanford_theme = None
+import sphinx_theme
+import sphinx_book_theme
+import pydata_sphinx_theme
 
 import recommonmark  # noqa: F401
 from recommonmark.transform import AutoStructify
@@ -54,6 +52,8 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
+    "sphinx_copybutton",
+    "nbsphinx",
     "recommonmark",
     # 'sphinx.ext.autosectionlabel',
     "sphinx_multiversion",
@@ -94,7 +94,7 @@ html_context = {
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
-html_sidebars = {"*": ["versions.html"]}
+# html_sidebars = {"*": ["versions.html"]}
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -118,19 +118,44 @@ napoleon_custom_sections = [
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-if stanford_theme:
+_theme_name = "stanford_theme"  # "sphinx_book_theme", "pydata_sphinx_theme", etc.
+
+if _theme_name == "stanford_theme":
     html_theme = "stanford_theme"
-    html_theme_path = [stanford_theme.get_html_theme_path()]
-else:
+    html_theme_path = [sphinx_theme.get_html_theme_path("stanford-theme")]
+    html_theme_options = {
+        "collapse_navigation": False,
+        "display_version": True,
+    }
+elif _theme_name == "sphinx_rtd_theme":
     html_theme = "sphinx_rtd_theme"
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-# htmlhelp_basename = "Recommonmarkdoc"
-
-html_theme_options = {
-    "collapse_navigation": False,
-    "display_version": True,
-}
+    html_theme_options = {
+        "collapse_navigation": False,
+        "display_version": True,
+    }
+elif _theme_name == "sphinx_book_theme":
+    html_theme = "sphinx_book_theme"
+    html_theme_path = [sphinx_book_theme.get_html_theme_path()]
+    html_theme_options = {
+        "repository_url": "https://github.com/DeepPSP/torch_ecg",
+        "use_repository_button": True,
+        "use_issues_button": True,
+        "use_edit_page_button": True,
+        "use_download_button": True,
+        "use_fullscreen_button": True,
+        "path_to_docs": "docs/source",
+        "repository_branch": "master",
+    }
+elif _theme_name == "pydata_sphinx_theme":
+    html_theme = "pydata_sphinx_theme"
+    html_theme_path = [pydata_sphinx_theme.get_html_theme_path()]
+    html_theme_options = {
+        "collapse_navigation": False,
+        "display_version": True,
+    }
+else:
+    raise ValueError(f"Unknown theme name: {_theme_name}")
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
