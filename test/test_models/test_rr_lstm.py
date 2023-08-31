@@ -17,26 +17,27 @@ from torch_ecg.model_configs.rr_lstm import (
 
 _TMP_DIR = Path(__file__).parents[1] / "tmp"
 _TMP_DIR.mkdir(exist_ok=True)
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 @torch.no_grad()
 def test_rr_lstm():
     in_channels = 1
     classes = ["NSR", "AF", "PVC", "LBBB", "RBBB", "PAB", "VFL"]
-    inp = torch.randn(100, 2, in_channels)
-    inp_bf = torch.randn(2, in_channels, 100)
+    inp = torch.randn(100, 2, in_channels).to(DEVICE)
+    inp_bf = torch.randn(2, in_channels, 100).to(DEVICE)
 
     config = deepcopy(RR_LSTM_CONFIG)
     config.clf.name = "crf"
     for attn_name in ["none"]:
         config.attn.name = attn_name
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
             seq_len=inp.shape[0], batch_size=inp.shape[1]
         )
-        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
         model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
@@ -49,7 +50,7 @@ def test_rr_lstm():
     config.batch_first = True
     for attn_name in ["none"]:
         config.attn.name = attn_name
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
         assert out.shape == model.compute_output_shape(
@@ -60,13 +61,13 @@ def test_rr_lstm():
     config.clf.name = "linear"
     for attn_name in ["none", "gc", "nl", "se"]:
         config.attn.name = attn_name
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
             seq_len=inp.shape[0], batch_size=inp.shape[1]
         )
-        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
         model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
@@ -79,7 +80,7 @@ def test_rr_lstm():
     config.batch_first = True
     for attn_name in ["none", "gc", "nl", "se"]:
         config.attn.name = attn_name
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
         assert out.shape == model.compute_output_shape(
@@ -89,13 +90,13 @@ def test_rr_lstm():
     config = deepcopy(RR_AF_VANILLA_CONFIG)
     for attn_name in ["none", "gc", "nl", "se"]:
         config.attn.name = attn_name
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
             seq_len=inp.shape[0], batch_size=inp.shape[1]
         )
-        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
         model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
@@ -107,7 +108,7 @@ def test_rr_lstm():
     config.batch_first = True
     for attn_name in ["none", "gc", "nl", "se"]:
         config.attn.name = attn_name
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
         assert out.shape == model.compute_output_shape(
@@ -117,13 +118,13 @@ def test_rr_lstm():
     config = deepcopy(RR_AF_CRF_CONFIG)
     for attn_name in ["none"]:
         config.attn.name = attn_name
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
             seq_len=inp.shape[0], batch_size=inp.shape[1]
         )
-        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
         model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
@@ -135,7 +136,7 @@ def test_rr_lstm():
     config.batch_first = True
     for attn_name in ["none"]:
         config.attn.name = attn_name
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp_bf)
         assert out.shape == model.compute_output_shape(
@@ -146,13 +147,13 @@ def test_rr_lstm():
     config.lstm.retseq = False
     config.clf.name = "linear"
     config.attn.name = "none"
-    model = RR_LSTM(classes=classes, config=config)
+    model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     model = model.eval()
     out = model(inp)
     assert out.shape == model.compute_output_shape(
         seq_len=inp.shape[0], batch_size=inp.shape[1]
     )
-    model_v1 = RR_LSTM_v1(classes=classes, config=config)
+    model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
     model_v1 = model_v1.eval()
     out_v1 = model_v1(inp)
     model_v1.compute_output_shape(seq_len=inp.shape[0], batch_size=inp.shape[1])
@@ -165,7 +166,7 @@ def test_rr_lstm():
     config.clf.name = "linear"
     config.batch_first = True
     config.attn.name = "none"
-    model = RR_LSTM(classes=classes, config=config)
+    model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     model = model.eval()
     out = model(inp_bf)
     assert out.shape == model.compute_output_shape(
@@ -184,16 +185,16 @@ def test_rr_lstm():
 def test_warns_errors():
     in_channels = 1
     classes = ["NSR", "AF", "PVC", "LBBB", "RBBB", "PAB", "VFL"]
-    inp = torch.randn(100, 2, in_channels)
+    inp = torch.randn(100, 2, in_channels).to(DEVICE)
 
     with pytest.warns(
         RuntimeWarning, match="No config is provided, using default config"
     ):
-        model = RR_LSTM(classes=classes)
+        model = RR_LSTM(classes=classes).to(DEVICE)
     with pytest.warns(
         RuntimeWarning, match="No config is provided, using default config"
     ):
-        model_v1 = RR_LSTM_v1(classes=classes)
+        model_v1 = RR_LSTM_v1(classes=classes).to(DEVICE)
 
     config = deepcopy(RR_LSTM_CONFIG)
     config.lstm.retseq = False
@@ -203,12 +204,12 @@ def test_warns_errors():
         RuntimeWarning,
         match="Attention is not supported when lstm is not returning sequences",
     ):
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     with pytest.warns(
         RuntimeWarning,
         match="Attention is not supported when lstm is not returning sequences",
     ):
-        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
     config = deepcopy(RR_LSTM_CONFIG)
     config.lstm.retseq = False
@@ -218,12 +219,12 @@ def test_warns_errors():
         RuntimeWarning,
         match="CRF layer is not supported in non-sequence mode, using linear instead",
     ):
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     with pytest.warns(
         RuntimeWarning,
         match="CRF layer is not supported in non-sequence mode, using linear instead",
     ):
-        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
     config = deepcopy(RR_AF_CRF_CONFIG)
     config.global_pool = "max"
@@ -231,12 +232,12 @@ def test_warns_errors():
         RuntimeWarning,
         match="Global pooling \042.+\042 is ignored for CRF prediction head",
     ):
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     with pytest.warns(
         RuntimeWarning,
         match="Global pooling \042.+\042 is ignored for CRF prediction head",
     ):
-        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
     with pytest.raises(
         NotImplementedError, match="implement a task specific inference method"
@@ -253,11 +254,11 @@ def test_warns_errors():
     with pytest.raises(
         NotImplementedError, match="Attn module \042.+\042 not implemented yet"
     ):
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     with pytest.raises(
         NotImplementedError, match="Attn module \042.+\042 not implemented yet"
     ):
-        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
     config = deepcopy(RR_LSTM_CONFIG)
     config.clf.name = "linear"
@@ -265,11 +266,11 @@ def test_warns_errors():
     with pytest.raises(
         NotImplementedError, match="Pooling type \042.+\042 not supported"
     ):
-        model = RR_LSTM(classes=classes, config=config)
+        model = RR_LSTM(classes=classes, config=config).to(DEVICE)
     with pytest.raises(
         NotImplementedError, match="Pooling type \042.+\042 not supported"
     ):
-        model_v1 = RR_LSTM_v1(classes=classes, config=config)
+        model_v1 = RR_LSTM_v1(classes=classes, config=config).to(DEVICE)
 
 
 def test_from_v1():

@@ -13,20 +13,25 @@ from torch_ecg.models.loss import (
 )
 
 
-inp = torch.tensor([[10.0, -10.0], [-10.0, 10.0], [-10.0, 10.0]])
-targ_1 = torch.tensor([[1.0, 0.0], [0.0, 1.0], [0.0, 1.0]])
-targ_0 = torch.tensor([[0.0, 1.0], [1.0, 0.0], [1.0, 0.0]])
-targ_mixed = torch.tensor([[1.0, 0.0], [0.0, 1.0], [1.0, 0.0]])
-targ_1_soft = torch.tensor([[0.9, 0.1], [0.1, 0.9], [0.1, 0.9]])
-targ_0_soft = torch.tensor([[0.1, 0.9], [0.9, 0.1], [0.9, 0.1]])
-targ_mixed_soft = torch.tensor([[0.9, 0.1], [0.1, 0.9], [0.9, 0.1]])
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-class_weight = torch.tensor([1.0, 2.0])
+
+inp = torch.tensor([[10.0, -10.0], [-10.0, 10.0], [-10.0, 10.0]]).to(DEVICE)
+targ_1 = torch.tensor([[1.0, 0.0], [0.0, 1.0], [0.0, 1.0]]).to(DEVICE)
+targ_0 = torch.tensor([[0.0, 1.0], [1.0, 0.0], [1.0, 0.0]]).to(DEVICE)
+targ_mixed = torch.tensor([[1.0, 0.0], [0.0, 1.0], [1.0, 0.0]]).to(DEVICE)
+targ_1_soft = torch.tensor([[0.9, 0.1], [0.1, 0.9], [0.1, 0.9]]).to(DEVICE)
+targ_0_soft = torch.tensor([[0.1, 0.9], [0.9, 0.1], [0.9, 0.1]]).to(DEVICE)
+targ_mixed_soft = torch.tensor([[0.9, 0.1], [0.1, 0.9], [0.9, 0.1]]).to(DEVICE)
+
+class_weight = torch.tensor([1.0, 2.0]).to(DEVICE)
 
 
 def test_wbce():
     """ """
-    criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), PosWeightIsDynamic=True)
+    criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), PosWeightIsDynamic=True).to(
+        DEVICE
+    )
     assert criterion_wbce(torch.sigmoid(inp), targ_1).item() == pytest.approx(
         0.0, abs=1e-4
     )
@@ -51,7 +56,7 @@ def test_wbce():
         < criterion_wbce(torch.sigmoid(inp), targ_0_soft).item()
     )
 
-    criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), reduce=False)
+    criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), reduce=False).to(DEVICE)
     criterion_wbce(torch.sigmoid(inp), targ_1)
     criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), size_average=False)
     criterion_wbce(torch.sigmoid(inp), targ_1)
@@ -59,13 +64,15 @@ def test_wbce():
     with pytest.raises(
         ValueError, match="Target size \\(.+\\) must be the same as input size \\(.+\\)"
     ):
-        criterion_wbce = WeightedBCELoss(torch.ones((1, 2)))
+        criterion_wbce = WeightedBCELoss(torch.ones((1, 2))).to(DEVICE)
         criterion_wbce(torch.sigmoid(inp), targ_1[:, 0:1])
 
 
 def test_bce_cw():
     """ """
-    criterion_bce_cw = BCEWithLogitsWithClassWeightLoss(class_weight=class_weight)
+    criterion_bce_cw = BCEWithLogitsWithClassWeightLoss(class_weight=class_weight).to(
+        DEVICE
+    )
     for targ in [targ_1, targ_0, targ_1_soft, targ_0_soft]:
         loss_1 = criterion_bce_cw(inp, targ)
         loss_2 = -class_weight * (
@@ -78,7 +85,7 @@ def test_bce_cw():
 
 def test_focal():
     """ """
-    criterion_focal = FocalLoss(class_weight=class_weight, multi_label=True)
+    criterion_focal = FocalLoss(class_weight=class_weight, multi_label=True).to(DEVICE)
     assert criterion_focal(inp, targ_1).item() == pytest.approx(0.0, abs=1e-6)
     assert criterion_focal(inp, targ_0).item() > 1.0
     assert criterion_focal(inp, targ_mixed).item() > 1.0 / 3
@@ -102,13 +109,13 @@ def test_focal():
 
     criterion_focal = FocalLoss(
         class_weight=class_weight.unsqueeze(0), multi_label=False, reduction="sum"
-    )
+    ).to(DEVICE)
     criterion_focal(inp, targ_1)
 
 
 def test_asl():
     """ """
-    criterion_asl = AsymmetricLoss()
+    criterion_asl = AsymmetricLoss().to(DEVICE)
     assert criterion_asl(inp, targ_1).item() == pytest.approx(0.0, abs=1e-6)
     assert criterion_asl(inp, targ_0).item() > 1.0
     assert criterion_asl(inp, targ_mixed).item() > 1.0 / 3
@@ -125,7 +132,7 @@ def test_asl():
         < criterion_asl(inp, targ_0_soft).item()
     )
 
-    criterion_asl = AsymmetricLoss(implementation="deep-psp")
+    criterion_asl = AsymmetricLoss(implementation="deep-psp").to(DEVICE)
     assert criterion_asl(inp, targ_1).item() == pytest.approx(0.0, abs=1e-6)
     assert criterion_asl(inp, targ_0).item() > 1.0
     assert criterion_asl(inp, targ_mixed).item() > 1.0 / 3
@@ -142,10 +149,14 @@ def test_asl():
         < criterion_asl(inp, targ_0_soft).item()
     )
 
-    criterion_asl = AsymmetricLoss(disable_torch_grad_focal_loss=True, reduction="sum")
+    criterion_asl = AsymmetricLoss(
+        disable_torch_grad_focal_loss=True, reduction="sum"
+    ).to(DEVICE)
     criterion_asl(inp, targ_1)
 
-    criterion_asl = AsymmetricLoss(disable_torch_grad_focal_loss=True, reduction="none")
+    criterion_asl = AsymmetricLoss(
+        disable_torch_grad_focal_loss=True, reduction="none"
+    ).to(DEVICE)
     criterion_asl(inp, targ_1)
 
     with pytest.raises(ValueError, match="`prob_margin` must be non-negative"):
@@ -153,8 +164,8 @@ def test_asl():
 
 
 def test_mbce():
-    criterion_mbce = MaskedBCEWithLogitsLoss()
-    weight_mask = torch.ones_like(inp)
+    criterion_mbce = MaskedBCEWithLogitsLoss().to(DEVICE)
+    weight_mask = torch.ones_like(inp).to(DEVICE)
     weight_mask[:, 0] = 10.0
     assert criterion_mbce(inp, targ_1, weight_mask).item() == pytest.approx(
         0.0, abs=1e-3

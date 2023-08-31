@@ -59,10 +59,11 @@ from torch_ecg.models._nets import (
 from torch_ecg.utils.utils_nn import compute_receptive_field
 
 
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 4
 IN_CHANNELS = 12
 SEQ_LEN = 2000
-SAMPLE_INPUT = torch.randn(BATCH_SIZE, IN_CHANNELS, SEQ_LEN)
+SAMPLE_INPUT = torch.randn(BATCH_SIZE, IN_CHANNELS, SEQ_LEN).to(DEVICE)
 
 
 @torch.no_grad()
@@ -75,7 +76,7 @@ def test_activations():
             kw = dict(dim=-1)
         else:
             kw = {}
-        act = get_activation(name, kw)
+        act = get_activation(name, kw).to(DEVICE)
         if name not in ["glu"]:
             assert act(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
@@ -105,7 +106,7 @@ def test_activations():
 def test_normalization():
     assert get_normalization(None) is None
 
-    bn = torch.nn.BatchNorm1d(IN_CHANNELS)
+    bn = torch.nn.BatchNorm1d(IN_CHANNELS).to(DEVICE)
 
     assert get_normalization("batch_norm") == torch.nn.BatchNorm1d
     assert isinstance(
@@ -122,27 +123,33 @@ def test_normalization():
 
     norm = get_normalization(
         "batch_norm", kw_norm=dict(num_features=IN_CHANNELS, momentum=0.01)
-    )
+    ).to(DEVICE)
     assert norm.momentum == 0.01
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
     norm = get_normalization(
         "group_norm", kw_norm=dict(num_channels=IN_CHANNELS, num_groups=IN_CHANNELS)
-    )
+    ).to(DEVICE)
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
     norm = get_normalization(
         "group_norm", kw_norm=dict(num_features=IN_CHANNELS, num_groups=IN_CHANNELS)
+    ).to(DEVICE)
+    assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
+
+    norm = get_normalization("layer_norm", kw_norm=dict(normalized_shape=SEQ_LEN)).to(
+        DEVICE
     )
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
-    norm = get_normalization("layer_norm", kw_norm=dict(normalized_shape=SEQ_LEN))
+    norm = get_normalization(
+        "instance_norm", kw_norm=dict(num_features=IN_CHANNELS)
+    ).to(DEVICE)
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
-    norm = get_normalization("instance_norm", kw_norm=dict(num_features=IN_CHANNELS))
-    assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
-
-    norm = get_normalization("local_response_norm", kw_norm=dict(size=IN_CHANNELS // 4))
+    norm = get_normalization(
+        "local_response_norm", kw_norm=dict(size=IN_CHANNELS // 4)
+    ).to(DEVICE)
     assert norm(SAMPLE_INPUT).shape == SAMPLE_INPUT.shape
 
     class SomeClass:
@@ -183,7 +190,7 @@ def test_ba():
             activation=activation,
             kw_norm=kw_norm,
             dropout=dropout,
-        )
+        ).to(DEVICE)
         ba.eval()
         assert ba(SAMPLE_INPUT).shape == ba.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -263,7 +270,7 @@ def test_cba():
             in_channels=IN_CHANNELS,
             out_channels=IN_CHANNELS * 8,
             **config,
-        )
+        ).to(DEVICE)
         cba.eval()
         assert cba(SAMPLE_INPUT).shape == cba.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -281,7 +288,7 @@ def test_cba():
         stride=3,
         activation="relu6",
         groups=1,
-    )
+    ).to(DEVICE)
     assert [item.__class__.__name__ for item in cba.children()] == [
         "Conv1d",
         "BatchNorm1d",
@@ -298,7 +305,7 @@ def test_cba():
         activation="relu6",
         groups=12,
         ordering="cab",
-    )
+    ).to(DEVICE)
     assert [item.__class__.__name__ for item in cab.children()] == [
         "Conv1d",
         "ReLU6",
@@ -315,7 +322,7 @@ def test_cba():
         activation="mish",
         groups=12,
         ordering="bac",
-    )
+    ).to(DEVICE)
     assert [item.__class__.__name__ for item in bac.children()] == [
         "BatchNorm1d",
         "Mish",
@@ -462,7 +469,7 @@ def test_multi_conv():
         groups=IN_CHANNELS // 2,
         dropouts=[0.1, {"p": 0.3, "type": None}, {"p": 0.3, "type": "1d"}],
         activation="mish",
-    )
+    ).to(DEVICE)
     mc.eval()
     assert mc(SAMPLE_INPUT).shape == mc.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -489,7 +496,7 @@ def test_branched_conv():
         groups=IN_CHANNELS // 2,
         dropouts=[[0.0, 0.2, 0.2, {"p": 0.1, "type": "1d"}], {"p": 0.3, "type": "1d"}],
     )
-    bc = BranchedConv(**bc_config)
+    bc = BranchedConv(**bc_config).to(DEVICE)
     bc.eval()
     out_tensors = bc(SAMPLE_INPUT)
     assert isinstance(out_tensors, list) and len(out_tensors) == 2
@@ -499,7 +506,7 @@ def test_branched_conv():
     )
     assert bc.in_channels == IN_CHANNELS
     bc_config["dropouts"] = {"p": 0.2, "type": "1d"}
-    bc = BranchedConv(**bc_config)
+    bc = BranchedConv(**bc_config).to(DEVICE)
     bc.eval()
     out_tensors = bc(SAMPLE_INPUT)
     assert isinstance(out_tensors, list) and len(out_tensors) == 2
@@ -533,7 +540,7 @@ def test_separable_conv():
         padding=3,
         dilation=2,
         groups=IN_CHANNELS // 3,
-    )
+    ).to(DEVICE)
     sc.eval()
     assert sc(SAMPLE_INPUT).shape == sc.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -561,7 +568,7 @@ def test_blur_pool():
             filt_size=filt_size,
             pad_type=pad_type,
             pad_off=pad_off,
-        )
+        ).to(DEVICE)
         bp.eval()
         assert bp(SAMPLE_INPUT).shape == bp.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -589,7 +596,7 @@ def test_anti_alias_conv():
         padding=5,
         dilation=2,
         groups=IN_CHANNELS // 4,
-    )
+    ).to(DEVICE)
     aac.eval()
     assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -602,7 +609,7 @@ def test_anti_alias_conv():
         padding=None,
         dilation=2,
         groups=IN_CHANNELS // 2,
-    )
+    ).to(DEVICE)
     aac.eval()
     assert aac(SAMPLE_INPUT).shape == aac.compute_output_shape(
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -631,7 +638,7 @@ def test_down_sample():
             kernel_size=kernel_size,
             out_channels=out_channels,
             padding=padding,
-        )
+        ).to(DEVICE)
         ds.eval()
         assert ds(SAMPLE_INPUT).shape == ds.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -651,7 +658,7 @@ def test_bidirectional_lstm():
         [0.0, 0.1, 0.5],  # dropout
         [True, False],  # return_sequences
     )
-    sample_input = torch.randn(SEQ_LEN // 50, BATCH_SIZE, IN_CHANNELS)
+    sample_input = torch.randn(SEQ_LEN // 50, BATCH_SIZE, IN_CHANNELS).to(DEVICE)
     for num_layers, bias, dropout, return_sequences in grid:
         if num_layers == 1:
             dropout = 0.0
@@ -662,7 +669,7 @@ def test_bidirectional_lstm():
             bias=bias,
             dropout=dropout,
             return_sequences=return_sequences,
-        )
+        ).to(DEVICE)
         bi_lstm.eval()
         assert bi_lstm(sample_input).shape == bi_lstm.compute_output_shape(
             seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
@@ -682,7 +689,7 @@ def test_stacked_lstm():
         [True, False],  # bidirectional
         [True, False],  # return_sequences
     )
-    sample_input = torch.randn(SEQ_LEN // 50, BATCH_SIZE, IN_CHANNELS)
+    sample_input = torch.randn(SEQ_LEN // 50, BATCH_SIZE, IN_CHANNELS).to(DEVICE)
     for hidden_sizes, bias, dropouts, bidirectional, return_sequences in grid:
         slstm = StackedLSTM(
             input_size=IN_CHANNELS,
@@ -691,7 +698,7 @@ def test_stacked_lstm():
             dropout=dropouts,
             bidirectional=bidirectional,
             return_sequences=return_sequences,
-        )
+        ).to(DEVICE)
         slstm.eval()
         assert slstm(sample_input).shape == slstm.compute_output_shape(
             seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
@@ -702,7 +709,8 @@ def test_stacked_lstm():
         hidden_sizes=[IN_CHANNELS * 2, IN_CHANNELS * 4, IN_CHANNELS * 8],
         bias=[True, False, True],
         dropout=[0.0, 0.2, 0.1],
-    )
+    ).to(DEVICE)
+    slstm.eval()
     assert slstm(sample_input).shape == slstm.compute_output_shape(
         seq_len=SEQ_LEN // 50, batch_size=BATCH_SIZE
     )
@@ -729,7 +737,7 @@ def test_attention_with_context():
             in_channels=IN_CHANNELS,
             bias=bias,
             initializer=initializer,
-        )
+        ).to(DEVICE)
         awc.eval()
         assert awc(SAMPLE_INPUT).shape == awc.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -750,15 +758,18 @@ def test_multi_head_attention():
     )
     target_seq_len = SEQ_LEN // 10
     source_seq_len = SEQ_LEN // 5
-    q = torch.randn(target_seq_len, BATCH_SIZE, IN_CHANNELS)
-    k, v = (torch.randn(source_seq_len, BATCH_SIZE, IN_CHANNELS) for _ in range(2))
+    q = torch.randn(target_seq_len, BATCH_SIZE, IN_CHANNELS).to(DEVICE)
+    k, v = (
+        torch.randn(source_seq_len, BATCH_SIZE, IN_CHANNELS).to(DEVICE)
+        for _ in range(2)
+    )
     for bias, num_heads, batch_first in grid:
         mha = MultiHeadAttention(
             embed_dim=IN_CHANNELS,
             num_heads=num_heads,
             bias=bias,
             batch_first=batch_first,
-        )
+        ).to(DEVICE)
         mha.eval()
         if batch_first:
             attn_output, attn_output_weights = mha(
@@ -782,7 +793,7 @@ def test_self_attention():
         [0.0, 0.1],  # dropout
         [True, False],  # batch_first
     )
-    sample_input = torch.randn(SEQ_LEN // 10, BATCH_SIZE, IN_CHANNELS)
+    sample_input = torch.randn(SEQ_LEN // 10, BATCH_SIZE, IN_CHANNELS).to(DEVICE)
     for bias, num_heads, dropout, batch_first in grid:
         if batch_first and not bias:
             # currently, pytorch has bugs in `torch.nn.MultiheadAttention` when
@@ -796,7 +807,7 @@ def test_self_attention():
             bias=bias,
             dropout=dropout,
             batch_first=batch_first,
-        )
+        ).to(DEVICE)
         sa.eval()
         if batch_first:
             sa_output = sa(sample_input.transpose(0, 1))
@@ -831,7 +842,7 @@ def test_attentive_pooling():
             activation=activation,
             dropout=dropout,
             kw_activation=kw_activation,
-        )
+        ).to(DEVICE)
         ap.eval()
         assert ap(SAMPLE_INPUT).shape == ap.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -850,7 +861,7 @@ def test_zero_padding():
             in_channels=IN_CHANNELS,
             out_channels=out_channels,
             loc=loc,
-        )
+        ).to(DEVICE)
         zp.eval()
         assert zp(SAMPLE_INPUT).shape == zp.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -868,7 +879,7 @@ def test_zero_padding():
 @torch.no_grad()
 def test_zero_pad_1d():
     for padding in [2, [1, 1], [0, 3]]:
-        zp = ZeroPad1d(padding=padding)
+        zp = ZeroPad1d(padding=padding).to(DEVICE)
         zp.eval()
         assert zp(SAMPLE_INPUT).shape == zp.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE, in_channels=IN_CHANNELS
@@ -913,7 +924,7 @@ def test_mlp():
             kernel_initializer=kernel_initializer,
             bias=bias,
             dropout=dropout,
-        )
+        ).to(DEVICE)
         mlp.eval()
         assert mlp(SAMPLE_INPUT.permute(0, 2, 1)).shape == mlp.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -947,12 +958,12 @@ def test_attention_blocks():
             filter_lengths=filter_lengths,
             subsample_length=subsample_length,
         )
-        nl = NonLocalBlock(in_channels=IN_CHANNELS, **config)
+        nl = NonLocalBlock(in_channels=IN_CHANNELS, **config).to(DEVICE)
         nl.eval()
         assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
-        nl = make_attention_layer(IN_CHANNELS, name="non_local", **config)
+        nl = make_attention_layer(IN_CHANNELS, name="non_local", **config).to(DEVICE)
         nl.eval()
         assert nl(SAMPLE_INPUT).shape == nl.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -980,12 +991,14 @@ def test_attention_blocks():
         )
 
     for reduction in [2, 4, 8]:
-        se = SEBlock(in_channels=IN_CHANNELS, reduction=reduction)
+        se = SEBlock(in_channels=IN_CHANNELS, reduction=reduction).to(DEVICE)
         se.eval()
         assert se(SAMPLE_INPUT).shape == se.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
-        se = make_attention_layer(IN_CHANNELS, name="se", reduction=reduction)
+        se = make_attention_layer(IN_CHANNELS, name="se", reduction=reduction).to(
+            DEVICE
+        )
         se.eval()
         assert se(SAMPLE_INPUT).shape == se.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -998,7 +1011,7 @@ def test_attention_blocks():
         GlobalContextBlock.__POOLING_TYPES__,  # pooling_type
         [["add", "mul"], ["add"], ["mul"]],  # fusion_types
     )
-    sample_input = torch.randn(BATCH_SIZE, IN_CHANNELS * 16, SEQ_LEN // 8)
+    sample_input = torch.randn(BATCH_SIZE, IN_CHANNELS * 16, SEQ_LEN // 8).to(DEVICE)
     for ratio, reduction, pooling_type, fusion_types in grid_gc:
         config = dict(
             ratio=ratio,
@@ -1006,12 +1019,12 @@ def test_attention_blocks():
             pooling_type=pooling_type,
             fusion_types=fusion_types,
         )
-        gc = GlobalContextBlock(in_channels=IN_CHANNELS * 16, **config)
+        gc = GlobalContextBlock(in_channels=IN_CHANNELS * 16, **config).to(DEVICE)
         gc.eval()
         assert gc(sample_input).shape == gc.compute_output_shape(
             seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
         )
-        gc = make_attention_layer(IN_CHANNELS * 16, name="gc", **config)
+        gc = make_attention_layer(IN_CHANNELS * 16, name="gc", **config).to(DEVICE)
         gc.eval()
         assert gc(sample_input).shape == gc.compute_output_shape(
             seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
@@ -1043,7 +1056,7 @@ def test_attention_blocks():
         [["avg", "max"], ["avg"], ["max"], ["lp", "lse"]],  # pool_types
         [True, False],  # no_spatial
     )
-    sample_input = torch.randn(BATCH_SIZE, IN_CHANNELS * 16, SEQ_LEN // 8)
+    sample_input = torch.randn(BATCH_SIZE, IN_CHANNELS * 16, SEQ_LEN // 8).to(DEVICE)
     for reduction, gate, pool_types, no_spatial in grid_cbam:
         config = dict(
             reduction=reduction,
@@ -1051,12 +1064,12 @@ def test_attention_blocks():
             pool_types=pool_types,
             no_spatial=no_spatial,
         )
-        cbam = CBAMBlock(gate_channels=IN_CHANNELS * 16, **config)
+        cbam = CBAMBlock(gate_channels=IN_CHANNELS * 16, **config).to(DEVICE)
         cbam.eval()
         assert cbam(sample_input).shape == cbam.compute_output_shape(
             seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
         )
-        cbam = make_attention_layer(IN_CHANNELS * 16, name="cbam", **config)
+        cbam = make_attention_layer(IN_CHANNELS * 16, name="cbam", **config).to(DEVICE)
         cbam.eval()
         assert cbam(sample_input).shape == cbam.compute_output_shape(
             seq_len=SEQ_LEN // 8, batch_size=BATCH_SIZE
@@ -1076,13 +1089,13 @@ def test_attention_blocks():
 def test_crf():
     # CRF
     num_tags = 26
-    sample_input = torch.randn(SEQ_LEN // 20, BATCH_SIZE, num_tags)
-    labels = torch.randint(0, num_tags, (SEQ_LEN // 20, BATCH_SIZE))
-    mask = torch.randint(0, 2, (SEQ_LEN // 20, BATCH_SIZE))
+    sample_input = torch.randn(SEQ_LEN // 20, BATCH_SIZE, num_tags).to(DEVICE)
+    labels = torch.randint(0, num_tags, (SEQ_LEN // 20, BATCH_SIZE)).to(DEVICE)
+    mask = torch.randint(0, 2, (SEQ_LEN // 20, BATCH_SIZE)).to(DEVICE)
     mask[0, :] = 1
     mask = mask.bool()
 
-    crf = CRF(num_tags=num_tags, batch_first=False)
+    crf = CRF(num_tags=num_tags, batch_first=False).to(DEVICE)
     crf.eval()
     assert crf(sample_input).shape == crf.compute_output_shape(
         seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
@@ -1109,7 +1122,7 @@ def test_crf():
     sample_input = sample_input.permute(1, 0, 2)
     labels = labels.permute(1, 0)
     mask = mask.permute(1, 0)
-    crf = CRF(num_tags=num_tags, batch_first=True)
+    crf = CRF(num_tags=num_tags, batch_first=True).to(DEVICE)
     crf.eval()
     assert crf(sample_input).shape == crf.compute_output_shape(
         seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
@@ -1135,9 +1148,11 @@ def test_crf():
         CRF(num_tags=-1)
 
     # ExtendedCRF
-    sample_input = torch.randn(BATCH_SIZE, SEQ_LEN // 20, IN_CHANNELS)
+    sample_input = torch.randn(BATCH_SIZE, SEQ_LEN // 20, IN_CHANNELS).to(DEVICE)
     for bias in [True, False]:
-        crf = ExtendedCRF(in_channels=IN_CHANNELS, num_tags=num_tags, bias=bias)
+        crf = ExtendedCRF(in_channels=IN_CHANNELS, num_tags=num_tags, bias=bias).to(
+            DEVICE
+        )
         assert crf(sample_input).shape == crf.compute_output_shape(
             seq_len=SEQ_LEN // 20, batch_size=BATCH_SIZE
         )
@@ -1152,7 +1167,7 @@ def test_s2d():
             in_channels=IN_CHANNELS,
             out_channels=IN_CHANNELS * 8,
             block_size=block_size,
-        )
+        ).to(DEVICE)
         s2d.eval()
         assert s2d(SAMPLE_INPUT).shape == s2d.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -1173,7 +1188,7 @@ def test_mldecoder():
             out_channels=IN_CHANNELS * 8,
             num_groups=num_groups,
             zsl=zsl,
-        )
+        ).to(DEVICE)
         mldecoder.eval()
         assert mldecoder(SAMPLE_INPUT).shape == mldecoder.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
@@ -1184,10 +1199,10 @@ def test_mldecoder():
         MLDecoder(in_channels=IN_CHANNELS, out_channels=IN_CHANNELS * 8, zsl=True)
 
 
-@torch.no_grad()
+# @torch.no_grad()
 def test_droppath():
     # DropPath
-    dp = DropPath()
+    dp = DropPath().to(DEVICE)
     dp.train()
     assert dp(SAMPLE_INPUT).shape == dp.compute_output_shape(
         input_shape=SAMPLE_INPUT.shape

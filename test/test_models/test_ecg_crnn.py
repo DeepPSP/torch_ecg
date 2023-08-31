@@ -16,13 +16,14 @@ from torch_ecg.model_configs.ati_cnn import ATI_CNN_CONFIG
 
 _TMP_DIR = Path(__file__).parents[1] / "tmp"
 _TMP_DIR.mkdir(exist_ok=True)
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 @torch.no_grad()
 def test_ecg_crnn():
     n_leads = 12
     classes = ["NSR", "AF", "PVC", "LBBB", "RBBB", "PAB", "VFL"]
-    inp = torch.randn(2, n_leads, 2000)
+    inp = torch.randn(2, n_leads, 2000).to(DEVICE)
 
     grid = itertools.product(
         [cnn_name for cnn_name in ECG_CRNN_CONFIG.cnn.keys() if cnn_name != "name"],
@@ -48,14 +49,16 @@ def test_ecg_crnn():
         config.attn.name = attn_name
         config.global_pool = global_pool
 
-        model = ECG_CRNN(classes=classes, n_leads=n_leads, config=config)
+        model = ECG_CRNN(classes=classes, n_leads=n_leads, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
             seq_len=inp.shape[-1], batch_size=inp.shape[0]
         )
 
-        model_v1 = ECG_CRNN_v1(classes=classes, n_leads=n_leads, config=config)
+        model_v1 = ECG_CRNN_v1(classes=classes, n_leads=n_leads, config=config).to(
+            DEVICE
+        )
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
         # the `compute_output_shape` method is not fully correct for v1
@@ -83,16 +86,16 @@ def test_ecg_crnn():
 def test_warns_errors():
     n_leads = 12
     classes = ["NSR", "AF", "PVC", "LBBB", "RBBB", "PAB", "VFL"]
-    inp = torch.randn(2, n_leads, 2000)
+    inp = torch.randn(2, n_leads, 2000).to(DEVICE)
 
     with pytest.warns(
         RuntimeWarning, match="No config is provided, using default config"
     ):
-        model = ECG_CRNN(classes=classes, n_leads=n_leads)
+        model = ECG_CRNN(classes=classes, n_leads=n_leads).to(DEVICE)
     with pytest.warns(
         RuntimeWarning, match="No config is provided, using default config"
     ):
-        model_v1 = ECG_CRNN_v1(classes=classes, n_leads=n_leads)
+        model_v1 = ECG_CRNN_v1(classes=classes, n_leads=n_leads).to(DEVICE)
 
     with pytest.raises(
         NotImplementedError, match="implement a task specific inference method"
@@ -172,7 +175,7 @@ def test_ati_cnn():
     n_leads = 12
     classes = ["NSR", "AF", "PVC", "LBBB", "RBBB", "PAB", "VFL"]
     config = deepcopy(ATI_CNN_CONFIG)
-    model = ECG_CRNN(classes=classes, n_leads=n_leads, config=config)
-    inp = torch.randn(2, n_leads, 2000)
+    model = ECG_CRNN(classes=classes, n_leads=n_leads, config=config).to(DEVICE)
+    inp = torch.randn(2, n_leads, 2000).to(DEVICE)
     out = model(inp)
     assert out.shape == model.compute_output_shape(inp.shape[-1], inp.shape[0])

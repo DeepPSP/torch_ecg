@@ -11,15 +11,18 @@ from torch_ecg.model_configs import ECG_UNET_VANILLA_CONFIG
 from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
 
 
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 @torch.no_grad()
 def test_ecg_unet():
-    inp = torch.randn(2, 12, 5000)
+    inp = torch.randn(2, 12, 5000).to(DEVICE)
     fs = 400
     classes = ["p", "N", "t", "i"]
 
     config = adjust_cnn_filter_lengths(ECG_UNET_VANILLA_CONFIG, fs)
 
-    model = ECG_UNET(classes=classes, n_leads=12, config=config)
+    model = ECG_UNET(classes=classes, n_leads=12, config=config).to(DEVICE)
     model = model.eval()
     out = model(inp)
     assert out.shape == model.compute_output_shape(
@@ -29,7 +32,7 @@ def test_ecg_unet():
     with pytest.warns(
         RuntimeWarning, match="No config is provided, using default config"
     ):
-        model = ECG_UNET(classes=classes, n_leads=12)
+        model = ECG_UNET(classes=classes, n_leads=12).to(DEVICE)
         model = model.eval()
 
     doi = model.doi
@@ -44,13 +47,13 @@ def test_ecg_unet():
 
 @torch.no_grad()
 def test_ecg_subtract_unet():
-    inp = torch.randn(2, 12, 5000)
+    inp = torch.randn(2, 12, 5000).to(DEVICE)
     fs = 400
     classes = ["p", "N", "t", "i"]
 
     config = adjust_cnn_filter_lengths(ECG_SUBTRACT_UNET_CONFIG, fs)
 
-    model = ECG_SUBTRACT_UNET(classes=classes, n_leads=12, config=config)
+    model = ECG_SUBTRACT_UNET(classes=classes, n_leads=12, config=config).to(DEVICE)
     model = model.eval()
     out = model(inp)
     assert out.shape == model.compute_output_shape(
@@ -60,7 +63,7 @@ def test_ecg_subtract_unet():
     with pytest.warns(
         RuntimeWarning, match="No config is provided, using default config"
     ):
-        model = ECG_SUBTRACT_UNET(classes=classes, n_leads=12)
+        model = ECG_SUBTRACT_UNET(classes=classes, n_leads=12).to(DEVICE)
         model = model.eval()
 
     doi = model.doi

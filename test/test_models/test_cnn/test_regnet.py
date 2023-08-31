@@ -17,11 +17,12 @@ from torch_ecg.model_configs.cnn.regnet import (
 
 
 IN_CHANNELS = 12
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 @torch.no_grad()
 def test_regnet():
-    inp = torch.randn(2, IN_CHANNELS, 2000)
+    inp = torch.randn(2, IN_CHANNELS, 2000).to(DEVICE)
 
     for item in tqdm(
         [regnet_16_8, regnet_27_24, regnet_23_168, regnet_S],
@@ -29,7 +30,7 @@ def test_regnet():
         desc="Testing RegNet",
     ):
         config = deepcopy(item)
-        model = RegNet(IN_CHANNELS, **config)
+        model = RegNet(IN_CHANNELS, **config).to(DEVICE)
         model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(2000, 2)
@@ -77,7 +78,7 @@ def test_regnet():
     regnet_config.subsample_lengths = 2
     regnet_config.group_widths = 16
     regnet_config.dropouts = [0.1, 0.2, 0.2, 0.1]
-    model = RegNet(IN_CHANNELS, **regnet_config)
+    model = RegNet(IN_CHANNELS, **regnet_config).to(DEVICE)
     model = model.eval()
     out = model(inp)
     assert out.shape == model.compute_output_shape(2000, 2)

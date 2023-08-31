@@ -14,11 +14,12 @@ from torch_ecg.utils.misc import list_sum
 
 
 IN_CHANNELS = 12
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 @torch.no_grad()
 def test_multi_scopic():
-    inp = torch.randn(2, IN_CHANNELS, 2000)
+    inp = torch.randn(2, IN_CHANNELS, 2000).to(DEVICE)
 
     for item in [multi_scopic, multi_scopic_leadwise]:
         config = deepcopy(item)
@@ -27,7 +28,7 @@ def test_multi_scopic():
             [0, {"p": 0.2, "type": "1d"}, 0],
             [0, {"p": 0.2, "type": None}, 0],
         ]
-        model = MultiScopicCNN(in_channels=IN_CHANNELS, **config)
+        model = MultiScopicCNN(in_channels=IN_CHANNELS, **config).to(DEVICE)
         model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
@@ -55,13 +56,13 @@ def test_assign_weights_lead_wise():
         .tolist()
     )
     # we assume that model12 is a trained model on 12-lead ECGs
-    model12 = ECG_CRNN(["AF", "PVC", "NSR"], 12, lead_12_config)
-    model6 = ECG_CRNN(["AF", "PVC", "NSR"], 6, lead_6_config)
+    model12 = ECG_CRNN(["AF", "PVC", "NSR"], 12, lead_12_config).to(DEVICE)
+    model6 = ECG_CRNN(["AF", "PVC", "NSR"], 6, lead_6_config).to(DEVICE)
     model12.eval()
     model6.eval()
     # we create tensor12, tensor6 to check the correctness of the assignment of the weights
-    tensor12 = torch.zeros(1, 12, 200)  # batch, leads, seq_len
-    tensor6 = torch.randn(1, 6, 200)
+    tensor12 = torch.zeros(1, 12, 200).to(DEVICE)  # batch, leads, seq_len
+    tensor6 = torch.randn(1, 6, 200).to(DEVICE)
     # we make tensor12 has identical values as tensor6 at the given leads, and let the other leads have zero values
     tensor12[:, indices, :] = tensor6
     b = "branch_0"  # similarly for other branches

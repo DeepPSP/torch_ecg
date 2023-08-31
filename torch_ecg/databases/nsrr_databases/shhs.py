@@ -74,7 +74,7 @@ _SHHS_INFO = DataBaseInfo(
 
           .. math::
 
-            NEWVA = log(OLDVAR + 0.1)
+            NEWVA = \log(OLDVAR + 0.1)
 
     2. Obstructive Apnea Index (OAI):
 
@@ -93,7 +93,7 @@ _SHHS_INFO = DataBaseInfo(
 
           .. math::
 
-            –log(-log(val/100+0.001))
+            –\log(-\log(val/100+0.001))
 
     5. Sleep time below 90% O2:
 

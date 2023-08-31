@@ -16,11 +16,12 @@ from torch_ecg.utils.utils_nn import adjust_cnn_filter_lengths
 
 _TMP_DIR = Path(__file__).parents[1] / "tmp"
 _TMP_DIR.mkdir(exist_ok=True)
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 @torch.no_grad()
 def test_ecg_seq_lab_net():
-    inp = torch.randn(2, 12, 2000)
+    inp = torch.randn(2, 12, 2000).to(DEVICE)
     fs = 400
     classes = ["N"]
 
@@ -39,7 +40,7 @@ def test_ecg_seq_lab_net():
         config.attn.name = attn
         config.recover_length = recover_length
 
-        model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12, config=config)
+        model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12, config=config).to(DEVICE)
         model = model.eval()
         out = model(inp)
         assert out.shape == model.compute_output_shape(
@@ -48,7 +49,9 @@ def test_ecg_seq_lab_net():
         if recover_length:
             assert out.shape[1] == inp.shape[-1]
 
-        model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12, config=config)
+        model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12, config=config).to(
+            DEVICE
+        )
         model_v1 = model_v1.eval()
         out_v1 = model_v1(inp)
         model.cnn.load_state_dict(model_v1.cnn.state_dict())
@@ -74,11 +77,11 @@ def test_warns_errors():
     with pytest.warns(
         RuntimeWarning, match="No config is provided, using default config"
     ):
-        model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12)
+        model = ECG_SEQ_LAB_NET(classes=classes, n_leads=12).to(DEVICE)
     with pytest.warns(
         RuntimeWarning, match="No config is provided, using default config"
     ):
-        model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12)
+        model_v1 = ECG_SEQ_LAB_NET_v1(classes=classes, n_leads=12).to(DEVICE)
 
     with pytest.raises(
         NotImplementedError, match="implement a task specific inference method"

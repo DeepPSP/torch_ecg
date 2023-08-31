@@ -230,7 +230,7 @@ class ZScoreNormalize(Normalize):
 
     .. math::
 
-        \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+        \left(\frac{sig - \operatorname{mean}(sig)}{\operatorname{std}(sig)}\right) \cdot s + m
 
     Parameters
     ----------

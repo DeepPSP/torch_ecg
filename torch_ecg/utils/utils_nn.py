@@ -853,6 +853,8 @@ def compute_receptive_field(
         receptive_field = min(receptive_field, input_len)
     if fs is not None:
         receptive_field /= fs
+    if isinstance(receptive_field, np.generic):
+        receptive_field = receptive_field.item()
     return receptive_field
 
 

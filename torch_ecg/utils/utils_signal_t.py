@@ -35,9 +35,9 @@ def normalize(
     .. math::
 
         \begin{align*}
-        \text{Min-Max normalization:} & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
-        \text{Naive normalization:} & \frac{sig - m}{s} \\
-        \text{Z-score normalization:} & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
+        \text{Min-Max normalization:}\quad & \frac{sig - \min(sig)}{\max(sig) - \min(sig)} \\
+        \text{Naive normalization:}\quad & \frac{sig - m}{s} \\
+        \text{Z-score normalization:}\quad & \left(\frac{sig - mean(sig)}{std(sig)}\right) \cdot s + m
         \end{align*}
 
     Parameters
