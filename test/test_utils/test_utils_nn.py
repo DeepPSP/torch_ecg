@@ -469,6 +469,14 @@ def test_compute_receptive_field():
         )
         == 1984
     )
+    assert (
+        compute_receptive_field(
+            kernel_sizes=[11, 2, 7, 7, 2, 5, 5, 5, 2],
+            strides=[1, 2, 1, 1, 2, 1, 1, 1, 2],
+            fs=500,
+        )
+        == 0.18
+    )
 
 
 def test_adjust_cnn_filter_lengths():

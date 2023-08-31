@@ -760,6 +760,7 @@ def compute_receptive_field(
     strides: Union[Sequence[int], int] = 1,
     dilations: Union[Sequence[int], int] = 1,
     input_len: Optional[int] = None,
+    fs: Optional[Real] = None,
 ) -> Union[int, float]:
     """Compute the receptive field of several types of
     :class:`~torch.nn.Module`.
@@ -805,16 +806,22 @@ def compute_receptive_field(
         The sequence of strides for all the layers in the flow
     input_len : int, optional
         Length of the first feature map in the flow.
+    fs : numbers.Real, optional
+        Sampling frequency of the input signal.
+        If is not ``None``, then the receptive field is returned in seconds.
 
     Returns
     -------
     receptive_field : int or float
-        (Length) of the receptive field.
+        (Length of) the receptive field, in samples if `fs` is ``None``,
+        otherwise in seconds.
 
     Examples
     --------
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2])
     90
+    >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],fs=500)
+    0.18
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[2,1,2,4,1,8,8,8,1])
     484
     >>> compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[4,1,4,8,1,16,32,64,1])
@@ -844,6 +851,8 @@ def compute_receptive_field(
         receptive_field += d * (k - 1) * s
     if input_len is not None:
         receptive_field = min(receptive_field, input_len)
+    if fs is not None:
+        receptive_field /= fs
     return receptive_field
 
 
