@@ -4,7 +4,7 @@ torch_ecg.models
 
 This module contains the model architectures for ECG various tasks.
 
-.. contents:: torch_ecg.models
+.. contents::
     :depth: 2
     :local:
     :backlinks: top

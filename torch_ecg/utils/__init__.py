@@ -5,7 +5,7 @@ torch_ecg.utils
 This module contains a collection of utility functions and classes that are used
 throughout the package.
 
-.. contents:: torch_ecg.utils
+.. contents::
     :depth: 2
     :local:
     :backlinks: top

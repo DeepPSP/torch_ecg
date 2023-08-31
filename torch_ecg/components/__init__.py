@@ -4,7 +4,7 @@ torch_ecg.components
 
 This module contains the components for training and evaluating models.
 
-.. contents:: torch_ecg.components
+.. contents::
     :depth: 2
     :local:
     :backlinks: top

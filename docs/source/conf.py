@@ -53,11 +53,12 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
     "sphinx_copybutton",
+    "sphinx_design",
     "nbsphinx",
     "recommonmark",
     # 'sphinx.ext.autosectionlabel',
     "sphinx_multiversion",
-    "sphinx_toolbox.collapse",
+    # "sphinx_toolbox.collapse",  # replaced by dropdown of sphinx_design
     # "numpydoc",
     "sphinxcontrib.tikz",
     "sphinxcontrib.bibtex",
@@ -217,7 +218,7 @@ texinfo_documents = [
     ),
 ]
 
-numfig = True
+numfig = False
 
 linkcheck_ignore = [
     r"https://doi.org/*",  # 418 Client Error

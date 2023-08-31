@@ -4,7 +4,7 @@ torch_ecg._preprocessors
 
 This module contains a set of preprocessors for signals of numpy array format.
 
-.. contents:: torch_ecg._preprocessors
+.. contents::
     :depth: 2
     :local:
     :backlinks: top

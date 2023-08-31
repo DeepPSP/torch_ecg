@@ -4,7 +4,7 @@ torch_ecg.preprocessors
 
 This module contains the preprocessors for signals of torch Tensor format.
 
-.. contents:: torch_ecg.preprocessors
+.. contents::
     :depth: 2
     :local:
     :backlinks: top
