@@ -170,6 +170,7 @@ from .misc import (
     get_kwargs,
     get_required_args,
     add_kwargs,
+    make_serializable,
 )
 from .utils_data import (
     get_mask,
@@ -262,6 +263,7 @@ __all__ = [
     "get_kwargs",
     "get_required_args",
     "add_kwargs",
+    "make_serializable",
     "get_mask",
     "class_weight_to_sample_weight",
     "ensure_lead_fmt",

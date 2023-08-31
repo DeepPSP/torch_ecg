@@ -37,6 +37,7 @@ from torch_ecg.utils.misc import (
     get_kwargs,
     get_required_args,
     add_kwargs,
+    make_serializable,
 )
 from torch_ecg.cfg import DEFAULTS, _DATA_CACHE
 from torch_ecg.utils.download import http_get
@@ -588,3 +589,16 @@ def test_add_kwargs():
 
     assert new_func(2) == new_func(2, xxx="a", zzz=100) == 3
     assert get_kwargs(new_func) == {"b": 1, "xxx": "yyy", "zzz": None}
+
+
+def test_make_serializable():
+    x = np.array([1, 2, 3])
+    assert make_serializable(x) == [1, 2, 3]
+    x = {"a": np.array([1, 2, 3]), "b": [np.array([4, 5, 6]), np.array([7, 8, 9])]}
+    assert make_serializable(x) == {"a": [1, 2, 3], "b": [[4, 5, 6], [7, 8, 9]]}
+    x = [np.array([1, 2, 3]), np.array([4, 5, 6])]
+    assert make_serializable(x) == [[1, 2, 3], [4, 5, 6]]
+    x = (np.array([1, 2, 3]), np.array([4, 5, 6]).mean())
+    obj = make_serializable(x)
+    assert obj == [[1, 2, 3], 5.0]
+    assert isinstance(obj[1], float) and isinstance(x[1], np.float64)

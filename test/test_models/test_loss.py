@@ -58,7 +58,7 @@ def test_wbce():
 
     criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), reduce=False).to(DEVICE)
     criterion_wbce(torch.sigmoid(inp), targ_1)
-    criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), size_average=False)
+    criterion_wbce = WeightedBCELoss(torch.ones((1, 2)), size_average=False).to(DEVICE)
     criterion_wbce(torch.sigmoid(inp), targ_1)
 
     with pytest.raises(

@@ -64,6 +64,7 @@ __all__ = [
     "get_kwargs",
     "get_required_args",
     "add_kwargs",
+    "make_serializable",
 ]
 
 
@@ -218,8 +219,8 @@ def get_record_list_recursive3(
 def dict_to_str(
     d: Union[dict, list, tuple], current_depth: int = 1, indent_spaces: int = 4
 ) -> str:
-    """
-    Convert a (possibly) nested dict into a `str` of json-like formatted form.
+    """Convert a (possibly) nested dict into a `str` of json-like formatted form.
+
     This nested dict might also contain lists or tuples of dict (and of str, int, etc.)
 
     Parameters
@@ -1540,3 +1541,58 @@ def add_kwargs(func: callable, **kwargs: Any) -> callable:
         return func(*args, **filtered_kwargs)
 
     return wrapper
+
+
+def make_serializable(
+    x: Union[np.ndarray, np.generic, dict, list, tuple]
+) -> Union[list, dict, Number]:
+    """Make an object serializable.
+
+    This function is used to convert all numpy arrays to list in an object,
+    and also convert numpy data types to python data types in the object,
+    so that it can be serialized by :mod:`json`.
+
+    Parameters
+    ----------
+    x : Union[numpy.ndarray, numpy.generic, dict, list, tuple]
+        Input data, which can be numpy array (or numpy data type),
+        or dict, list, tuple containing numpy arrays (or numpy data type).
+
+    Returns
+    -------
+    Union[list, dict, numbers.Number]
+        Converted data.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from fl_sim.utils.misc import make_serializable
+    >>> x = np.array([1, 2, 3])
+    >>> make_serializable(x)
+    [1, 2, 3]
+    >>> x = {"a": np.array([1, 2, 3]), "b": np.array([4, 5, 6])}
+    >>> make_serializable(x)
+    {'a': [1, 2, 3], 'b': [4, 5, 6]}
+    >>> x = [np.array([1, 2, 3]), np.array([4, 5, 6])]
+    >>> make_serializable(x)
+    [[1, 2, 3], [4, 5, 6]]
+    >>> x = (np.array([1, 2, 3]), np.array([4, 5, 6]).mean())
+    >>> obj = make_serializable(x)
+    >>> obj
+    [[1, 2, 3], 5.0]
+    >>> type(obj[1]), type(x[1])
+    (float, numpy.float64)
+
+    """
+    if isinstance(x, np.ndarray):
+        return x.tolist()
+    elif isinstance(x, (list, tuple)):
+        # to avoid cases where the list contains numpy data types
+        return [make_serializable(v) for v in x]
+    elif isinstance(x, dict):
+        for k, v in x.items():
+            x[k] = make_serializable(v)
+    elif isinstance(x, np.generic):
+        return x.item()
+    # the other types will be returned directly
+    return x
