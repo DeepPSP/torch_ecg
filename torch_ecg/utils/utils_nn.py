@@ -771,22 +771,29 @@ def compute_receptive_field(
     "generic" refers to a general position, rather than specific positions,
     like on the edges, whose receptive field is definitely different.
 
+    The receptive field is computed as follows.
+    Let the layers has kernel size, stride, dilation :math:`(k_n, s_n, d_n)` respectively.
+    Let each feature map has receptive field length :math:`r_n`,
+    and the difference of receptive fields of adjacent positions (layers) be :math:`f_n`.
+    By convention, :math:`(r_0, f_0) = (1, 1)`. Then one has
+
     .. math::
 
-        Let the layers has kernel size, stride, dilation $(k_n, s_n, d_n)$ respectively.
-        Let each feature map has receptive field length $r_n$,
-        and difference of receptive fields of adjacent positions be $f_n$.
-        By convention, $(r_0, f_0) = (1, 1)$. Then one has
         \\begin{eqnarray}
         r_{n+1} & = & r_n + d_n(k_n-1)f_n, \\\\
         f_{n+1} & = & s_n f_n.
         \\end{eqnarray}
-        Hence
+
+    Hence
+
+    .. math::
+
         \\begin{eqnarray}
         f_{n} & = & \\prod\\limits_{i=0}^{n-1} s_i, \\\\
         r_{n} & = & 1 + \\sum\\limits_{i=0}^{n-1} d_i(k_i-1) \\prod\\limits_{i=0}^{j-1} s_j,
         \\end{eqnarray}
-        with empty products equaling 1 by convention.
+
+    with empty products equaling 1 by convention.
 
     Parameters
     ----------
