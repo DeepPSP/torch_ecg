@@ -30,6 +30,7 @@ from ..utils.utils_nn import (
     compute_avgpool_output_shape,
     compute_conv_output_shape,
     compute_maxpool_output_shape,
+    compute_receptive_field,
 )
 
 __all__ = [
@@ -271,6 +272,25 @@ _COMPUTE_OUTPUT_SHAPE_DOC = """Compute the output shape of the layer.
         """
 
 
+_COMPUTE_RECEPTIVE_FIELD_DOC = """Compute the receptive field of the layer.
+
+        Parameters
+        ----------
+        input_len : int, optional
+            The length of the input.
+        fs : numbers.Real, optional
+            The sampling frequency of the input signal.
+            If is not ``None``, then the receptive field is returned in seconds.
+
+        Returns
+        -------
+        receptive_field : int or float
+            The receptive field of the layer, in samples if `fs` is ``None``,
+            otherwise in seconds.
+
+        """
+
+
 # ---------------------------------------------
 # basic building blocks of CNN
 class Bn_Activation(nn.Sequential, SizeMixin):
@@ -359,6 +379,12 @@ class Bn_Activation(nn.Sequential, SizeMixin):
     ) -> Sequence[Union[int, None]]:
         output_shape = (batch_size, self.__num_features, seq_len)
         return output_shape
+
+    @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
+    def compute_receptive_field(
+        self, input_len: Optional[int] = None, fs: Optional[Real] = None
+    ) -> Union[int, float]:
+        return 1
 
 
 class Conv_Bn_Activation(nn.Sequential, SizeMixin):
@@ -763,6 +789,18 @@ class Conv_Bn_Activation(nn.Sequential, SizeMixin):
                 )
         return output_shape
 
+    @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
+    def compute_receptive_field(
+        self, input_len: Optional[int] = None, fs: Optional[Real] = None
+    ) -> Union[int, float]:
+        return compute_receptive_field(
+            kernel_sizes=self.__kernel_size,
+            strides=self.__stride,
+            dilations=self.__dilation,
+            input_len=input_len,
+            fs=fs,
+        )
+
     @property
     def in_channels(self) -> int:
         return self.__in_channels
@@ -969,6 +1007,27 @@ class MultiConv(nn.Sequential, SizeMixin):
                 _, _, _seq_len = output_shape
         return output_shape
 
+    @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
+    def compute_receptive_field(
+        self, input_len: Optional[int] = None, fs: Optional[Real] = None
+    ) -> Union[int, float]:
+        kernel_sizes, strides, dilations = [], [], []
+        for module in self:
+            if (
+                hasattr(module, "__name__")
+                and module.__name__ == Conv_Bn_Activation.__name__
+            ):
+                kernel_sizes.append(module.kernel_size)
+                strides.append(module.stride)
+                dilations.append(module.dilation)
+        return compute_receptive_field(
+            kernel_sizes=kernel_sizes,
+            strides=strides,
+            dilations=dilations,
+            input_len=input_len,
+            fs=fs,
+        )
+
     @property
     def in_channels(self) -> int:
         return self.__in_channels
@@ -1122,6 +1181,34 @@ class BranchedConv(nn.Module, SizeMixin):
             ].compute_output_shape(seq_len, batch_size)
             output_shapes.append(branch_output_shape)
         return output_shapes
+
+    def compute_receptive_field(
+        self, input_len: Optional[int] = None, fs: Optional[Real] = None
+    ) -> Tuple[Union[int, float]]:
+        """Compute the receptive field of each branch.
+
+        Parameters
+        ----------
+        input_len : int, optional
+            Length of the input.
+        fs : numbers.Real, optional
+            The sampling frequency of the input signal.
+            If is not ``None``, then the receptive field is returned in seconds.
+
+        Returns
+        -------
+        receptive_fields : Tuple[Union[int, float]]
+            The receptive fields of each branch,
+            in samples if `fs` is ``None``, otherwise in seconds.
+
+        """
+        receptive_fields = []
+        for idx in range(self.__num_branches):
+            branch_receptive_field = self.branches[
+                f"multi_conv_{idx}"
+            ].compute_receptive_field(input_len, fs)
+            receptive_fields.append(branch_receptive_field)
+        return tuple(receptive_fields)
 
     @property
     def in_channels(self) -> int:

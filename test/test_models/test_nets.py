@@ -56,6 +56,7 @@ from torch_ecg.models._nets import (
     # internal
     _ScaledDotProductAttention,
 )
+from torch_ecg.utils.utils_nn import compute_receptive_field
 
 
 BATCH_SIZE = 4
@@ -187,6 +188,7 @@ def test_ba():
         assert ba(SAMPLE_INPUT).shape == ba.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
         )
+        assert ba.compute_receptive_field() == 1
 
     with pytest.raises(ValueError, match="normalization `.+` not supported"):
         Bn_Activation(num_features=IN_CHANNELS, norm="not_supported")
@@ -265,6 +267,11 @@ def test_cba():
         cba.eval()
         assert cba(SAMPLE_INPUT).shape == cba.compute_output_shape(
             seq_len=SEQ_LEN, batch_size=BATCH_SIZE
+        )
+        assert cba.compute_receptive_field() == compute_receptive_field(
+            kernel_sizes=kernel_size,
+            strides=stride,
+            dilations=dilation,
         )
 
     cba = CBA(
@@ -461,6 +468,11 @@ def test_multi_conv():
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
     assert mc.in_channels == IN_CHANNELS
+    assert mc.compute_receptive_field() == compute_receptive_field(
+        kernel_sizes=[5, 5, 5],
+        strides=[1, 2, 1],
+        dilations=[2, 2, 2],
+    )
 
 
 @torch.no_grad()
@@ -496,6 +508,19 @@ def test_branched_conv():
         seq_len=SEQ_LEN, batch_size=BATCH_SIZE
     )
     assert bc.in_channels == IN_CHANNELS
+    receptive_fields = bc.compute_receptive_field()
+    assert isinstance(receptive_fields, tuple) and len(receptive_fields) == 2
+    assert all(isinstance(t, int) for t in receptive_fields)
+    assert receptive_fields[0] == compute_receptive_field(
+        kernel_sizes=[5, 5, 5, 5],
+        strides=[2, 2, 2, 2],
+        dilations=[1, 2, 1, 2],
+    )
+    assert receptive_fields[1] == compute_receptive_field(
+        kernel_sizes=[3, 7],
+        strides=[2, 2],
+        dilations=[4, 8],
+    )
 
 
 @torch.no_grad()
