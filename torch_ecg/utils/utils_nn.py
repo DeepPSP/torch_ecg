@@ -774,7 +774,7 @@ def compute_receptive_field(
 
     In CNNs, for any element of some layer, its receptive field refers to
     all the elements (from all the previous layers) that may affect the calculation of
-    during the forward propagation :cite:p:`zhang2023dive`.
+    during the forward propagation [:footcite:ct:`zhang2023dive`].
     (See `this url <https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html#feature-map-and-receptive-field>`_)
 
     The receptive field is computed as follows.
@@ -836,8 +836,8 @@ def compute_receptive_field(
     of the 3 branches of the multi-scopic net, using its original hyper-parameters,
     (note the 3 max pooling layers).
 
-    .. bibliography::
-        :filter: docname in docnames
+
+    .. footbibliography::
 
     """
     _kernel_sizes = (

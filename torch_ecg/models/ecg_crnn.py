@@ -43,9 +43,9 @@ __all__ = [
 class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     """Convolutional (Recurrent) Neural Network for ECG tasks.
 
-    This C(R)NN architecture is adapted from :cite:p:`yao2018ti_cnn,yao2020ati_cnn`
+    This C(R)NN architecture is adapted from [:footcite:ct:`yao2018ti_cnn,yao2020ati_cnn`]
     in the first place,and then modified to be more general, and more flexible.
-    The most famous model is perhaps :cite:p:`awni2019stanford_ecg`,
+    The most famous model is perhaps [:footcite:ct:`awni2019stanford_ecg`],
     which is a modified 1D-ResNet34 model. The website of this model is
     `<https://stanfordmlgroup.github.io/projects/ecg2/>`_, and the code is hosted on
     `<https://github.com/awni/ecg>`_.
@@ -64,8 +64,8 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         Other hyper-parameters, including kernel sizes, etc.
         Refer to corresponding config files.
 
-    .. bibliography::
-        :filter: docname in docnames
+
+    .. footbibliography::
 
     """
 

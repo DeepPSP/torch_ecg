@@ -24,7 +24,7 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
     """SOTA model from CPSC2019 challenge.
 
     Sequence labeling nets, for wave delineation, QRS complex detection, etc.
-    Proposed in :cite:p:`cai2020rpeak_seq_lab_net`.
+    Proposed in [:footcite:ct:`cai2020rpeak_seq_lab_net`].
 
     pipeline
     --------
@@ -40,8 +40,8 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         Other hyper-parameters, including kernel sizes, etc.
         Refer to corresponding config file.
 
-    .. bibliography::
-        :filter: docname in docnames
+
+    .. footbibliography::
 
     """
 

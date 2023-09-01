@@ -19,8 +19,8 @@ import sphinx_theme
 import sphinx_book_theme
 import pydata_sphinx_theme
 
-import recommonmark  # noqa: F401
-from recommonmark.transform import AutoStructify
+# import recommonmark  # noqa: F401
+# from recommonmark.transform import AutoStructify
 
 
 project_root = Path(__file__).resolve().parents[2]
@@ -55,7 +55,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "nbsphinx",
-    "recommonmark",
+    # "recommonmark",
     # 'sphinx.ext.autosectionlabel',
     "sphinx_multiversion",
     # "sphinx_toolbox.collapse",  # replaced by dropdown of sphinx_design
@@ -64,7 +64,7 @@ extensions = [
     "sphinxcontrib.bibtex",
 ]
 
-bibtex_bibfiles = ["references.bib"]
+bibtex_bibfiles = [str(docs_root / "references.bib")]
 bibtex_bibliography_header = ".. rubric:: References"
 bibtex_footbibliography_header = bibtex_bibliography_header
 
@@ -173,15 +173,15 @@ master_doc = "index"
 
 
 def setup(app):
-    app.add_config_value(
-        "recommonmark_config",
-        {
-            "url_resolver": lambda url: github_doc_root + url,  # noqa: F821
-            "auto_toc_tree_section": "Contents",
-        },
-        True,
-    )
-    app.add_transform(AutoStructify)
+    # app.add_config_value(
+    #     "recommonmark_config",
+    #     {
+    #         "url_resolver": lambda url: github_doc_root + url,  # noqa: F821
+    #         "auto_toc_tree_section": "Contents",
+    #     },
+    #     True,
+    # )
+    # app.add_transform(AutoStructify)
     app.add_css_file("css/custom.css")
 
 

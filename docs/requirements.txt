@@ -14,4 +14,3 @@ sphinxcontrib-napoleon
 sphinxcontrib-tikz
 sphinxcontrib-bibtex
 numpydoc
-recommonmark

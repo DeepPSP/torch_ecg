@@ -369,9 +369,9 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
 
     This architecture is a multi-branch CNN with multi-scopic convolutions,
     proposed by the winning team of the CPSC2019 challenge and described in
-    :cite:p:`cai2020rpeak_seq_lab_net`. The multi-scopic convolutions are
+    [:footcite:ct:`cai2020rpeak_seq_lab_net`]. The multi-scopic convolutions are
     implemented via different dilations. Similar architectures can be found
-    in the model DeepLabv3 :cite:p:`chen2017_deeplabv3`.
+    in the model DeepLabv3 [:footcite:ct:`chen2017_deeplabv3`].
 
     Parameters
     ----------
@@ -406,8 +406,8 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
 
         For a full list of configurable parameters, ref. corr. config file.
 
-    .. bibliography::
-        :filter: docname in docnames
+
+    .. footbibliography::
 
     """
 

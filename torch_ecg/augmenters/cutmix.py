@@ -23,7 +23,7 @@ class CutMix(Augmenter):
     """CutMix augmentation.
 
     CutMix is a data augmentation technique originally proposed in
-    :cite:p:`yun2019cutmix`, with official implementation in
+    [:footcite:ct:`yun2019cutmix`], with official implementation in
     `clovaai/CutMix-PyTorch <https://github.com/clovaai/CutMix-PyTorch/blob/master/train.py>`_,
     and an unofficial implementation in
     `ildoonet/cutmix <https://github.com/ildoonet/cutmix/blob/master/cutmix/cutmix.py>`_.
@@ -58,8 +58,8 @@ class CutMix(Augmenter):
         lb = torch.randint(0, 2, (32, 5000, 2), dtype=torch.float32)  # 2 classes mask
         sig, lb = cm(sig, lb)
 
-    .. bibliography::
-        :filter: docname in docnames
+
+    .. footbibliography::
 
     """
 
