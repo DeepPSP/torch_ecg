@@ -772,6 +772,11 @@ def compute_receptive_field(
     "generic" refers to a general position, rather than specific positions,
     like on the edges, whose receptive field is definitely different.
 
+    In CNNs, for any element of some layer, its receptive field refers to
+    all the elements (from all the previous layers) that may affect the calculation of
+    during the forward propagation :cite:p:`zhang2023dive`.
+    (See `this url <https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html#feature-map-and-receptive-field>`_)
+
     The receptive field is computed as follows.
     Let the layers has kernel size, stride, dilation :math:`(k_n, s_n, d_n)` respectively.
     Let each feature map has receptive field length :math:`r_n`,
@@ -830,6 +835,9 @@ def compute_receptive_field(
     The above example exhibits the receptive fields of the output feature maps
     of the 3 branches of the multi-scopic net, using its original hyper-parameters,
     (note the 3 max pooling layers).
+
+    .. bibliography::
+        :filter: docname in docnames
 
     """
     _kernel_sizes = (

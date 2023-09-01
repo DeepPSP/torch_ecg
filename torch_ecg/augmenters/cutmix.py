@@ -1,6 +1,4 @@
 """
-Cutmix augmentation, for segmentation tasks.
-This technique is very successful in CPSC2021 challenge of paroxysmal AF events detection.
 """
 
 from copy import deepcopy
@@ -24,27 +22,31 @@ __all__ = [
 class CutMix(Augmenter):
     """CutMix augmentation.
 
-    CutMix is a data augmentation technique originally proposed in [1]_,
-    with official implementation in [2]_, and an unofficial implementation in [3]_.
+    CutMix is a data augmentation technique originally proposed in
+    :cite:p:`yun2019cutmix`, with official implementation in
+    `clovaai/CutMix-PyTorch <https://github.com/clovaai/CutMix-PyTorch/blob/master/train.py>`_,
+    and an unofficial implementation in
+    `ildoonet/cutmix <https://github.com/ildoonet/cutmix/blob/master/cutmix/cutmix.py>`_.
+
     This technique was designed for image classification tasks, but it can also be used
     for ECG tasks. This technique was very successful
     in CPSC2021 challenge of paroxysmal AF events detection.
 
     Parameters
     ----------
-    fs: int, optional
+    fs : int, optional
         Sampling frequency, by default None.
-    num_mix: int, default 1
+    num_mix : int, default 1
         Number of mixtures.
-    alpha: float, default 0.5
+    alpha : float, default 0.5
         Beta distribution parameter.
-    beta: float, optional
+    beta : float, optional
         Beta distribution parameter, by default equal to `alpha`.
-    prob: float, default 0.5
+    prob : float, default 0.5
         Probability of applying this augmenter.
-    inplace: bool, default True
+    inplace : bool, default True
         Whether to perform this augmentation in-place.
-    **kwargs: dict, optional
+    **kwargs : dict, optional
         Additional keyword arguments.
 
     Examples
@@ -56,13 +58,8 @@ class CutMix(Augmenter):
         lb = torch.randint(0, 2, (32, 5000, 2), dtype=torch.float32)  # 2 classes mask
         sig, lb = cm(sig, lb)
 
-    References
-    ----------
-    .. [1] Yun, S., Han, D., Oh, S. J., Chun, S., Choe, J., & Yoo, Y. (2019).
-       CutMix: Regularization strategy to train strong classifiers with localizable features.
-       In Proceedings of the IEEE/CVF International Conference on Computer Vision (pp. 6023-6032).
-    .. [2] https://github.com/clovaai/CutMix-PyTorch/blob/master/train.py
-    .. [3] https://github.com/ildoonet/cutmix/blob/master/cutmix/cutmix.py
+    .. bibliography::
+        :filter: docname in docnames
 
     """
 

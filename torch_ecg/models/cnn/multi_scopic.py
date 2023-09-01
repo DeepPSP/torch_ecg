@@ -369,47 +369,45 @@ class MultiScopicCNN(nn.Module, SizeMixin, CitationMixin):
 
     This architecture is a multi-branch CNN with multi-scopic convolutions,
     proposed by the winning team of the CPSC2019 challenge and described in
-    [1]_. The multi-scopic convolutions are implemented via different dilations.
-    Similar architectures can be found in the model DeepLabv3 [2]_.
+    :cite:p:`cai2020rpeak_seq_lab_net`. The multi-scopic convolutions are
+    implemented via different dilations. Similar architectures can be found
+    in the model DeepLabv3 :cite:p:`chen2017_deeplabv3`.
 
     Parameters
     ----------
     in_channels : int
         Number of channels (leads) in the input signal tensor.
-    config: dict
+    config : dict
         Other hyper-parameters of the Module, ref. corr. config file.
         Key word arguments that must be set:
 
-            - scopes: sequence of sequences of sequences of int,
+            - scopes: sequence of sequences of sequences of :obj:`int`,
               scopes (in terms of dilation) of each convolution.
-            - num_filters: sequence of sequences (of int or of sequences of int),
+            - num_filters: sequence of sequences (of :obj:`int` or of sequences of :obj:`int`),
               number of filters of the convolutional layers,
               with granularity to each block of each branch,
               or to each convolution of each block of each branch.
-            - filter_lengths: sequence of sequences (of int or of sequences of int),
+            - filter_lengths: sequence of sequences (of :obj:`int` or of sequences of :obj:`int`),
               filter length(s) (kernel size(s)) of the convolutions,
               with granularity to each block of each branch,
               or to each convolution of each block of each branch.
-            - subsample_lengths: sequence of int or sequence of sequences of int,
+            - subsample_lengths: sequence of :obj:`int` or sequence of sequences of :obj:`int`,
               subsampling length(s) (ratio(s)) of all blocks,
               with granularity to each branch or to each block of each branch,
               each subsamples after the last convolution of each block.
-            - dropouts: sequence of int or sequence of sequences of int,
+            - dropouts: sequence of :obj:`int` or sequence of sequences of :obj:`int`,
               dropout rates of all blocks,
               with granularity to each branch or to each block of each branch,
               each dropouts at the last of each block.
-            - groups: int,
+            - groups: :obj:`int`,
               connection pattern (of channels) of the inputs and outputs.
-            - block: dict,
+            - block: :obj:`dict`,
               other parameters that can be set for the building blocks.
 
         For a full list of configurable parameters, ref. corr. config file.
 
-    References
-    ----------
-    .. [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
-    .. [2] Chen, Liang-Chieh, et al. "Rethinking atrous convolution for semantic image segmentation."
-          Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.
+    .. bibliography::
+        :filter: docname in docnames
 
     """
 

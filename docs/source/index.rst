@@ -85,7 +85,8 @@ Citation
 =========
 If you find this project useful, please cite our paper
 
-.. collapse:: Click to show citation\
+.. dropdown:: Click to show citation
+   :animate: fade-in-slide-down
 
    .. code-block:: latex
 

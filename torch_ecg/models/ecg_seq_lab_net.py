@@ -1,17 +1,4 @@
 """
-Sequence labeling nets, for wave delineation,
-
-the labeling granularity is the frequency of the input signal,
-divided by the length (counted by the number of basic blocks) of each branch
-
-Pipeline
---------
-multi-scopic cnn --> (bidi-lstm -->) "attention" (se block) --> seq linear
-
-References
-----------
-[1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
-
 """
 
 import warnings
@@ -37,12 +24,11 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
     """SOTA model from CPSC2019 challenge.
 
     Sequence labeling nets, for wave delineation, QRS complex detection, etc.
-    Proposed in [1]_.
+    Proposed in :cite:p:`cai2020rpeak_seq_lab_net`.
 
     pipeline
     --------
     (multi-scopic, etc.) cnn --> head ((bidi-lstm -->) "attention" --> seq linear) -> output
-
 
     Parameters
     ----------
@@ -54,9 +40,8 @@ class ECG_SEQ_LAB_NET(ECG_CRNN):
         Other hyper-parameters, including kernel sizes, etc.
         Refer to corresponding config file.
 
-    References
-    ----------
-    .. [1] Cai, Wenjie, and Danqin Hu. "QRS complex detection using novel deep learning neural networks." IEEE Access (2020).
+    .. bibliography::
+        :filter: docname in docnames
 
     """
 

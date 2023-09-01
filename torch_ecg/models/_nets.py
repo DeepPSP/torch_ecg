@@ -1379,6 +1379,18 @@ class SeparableConv(nn.Sequential, SizeMixin):
         )
         return output_shape
 
+    @add_docstring(_COMPUTE_RECEPTIVE_FIELD_DOC.replace("layer", "block"))
+    def compute_receptive_field(
+        self, input_len: Optional[int] = None, fs: Optional[Real] = None
+    ) -> Union[int, float]:
+        return compute_receptive_field(
+            kernel_sizes=[self.__kernel_size, 1],
+            strides=[self.__stride, 1],
+            dilations=[self.__dilation, 1],
+            input_len=input_len,
+            fs=fs,
+        )
+
     @property
     def in_channels(self) -> int:
         return self.__in_channels

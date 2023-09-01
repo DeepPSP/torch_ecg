@@ -43,12 +43,16 @@ __all__ = [
 class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     """Convolutional (Recurrent) Neural Network for ECG tasks.
 
-    This C(R)NN architecture is adapted from [1]_, [2]_ in the first place,
-    and then modified to be more general, and more flexible.
-    The most famous model is perhaps [3]_, which is a modified 1D-ResNet34 model.
-    The website of this model is [4]_, and the code is hosted on [5]_.
+    This C(R)NN architecture is adapted from :cite:p:`yao2018ti_cnn,yao2020ati_cnn`
+    in the first place,and then modified to be more general, and more flexible.
+    The most famous model is perhaps :cite:p:`awni2019stanford_ecg`,
+    which is a modified 1D-ResNet34 model. The website of this model is
+    `<https://stanfordmlgroup.github.io/projects/ecg2/>`_, and the code is hosted on
+    `<https://github.com/awni/ecg>`_.
+
     The C(R)NN models have long been competitive in various ECG tasks,
-    e.g. [6]_, [7]_. The models are also used in the PhysioNet/CinC Challenges.
+    e.g. CPSC2018 entry 0236, CPSC2019 entry 0416.
+    The models are also used in the PhysioNet/CinC Challenges.
 
     Parameters
     ----------
@@ -60,24 +64,8 @@ class ECG_CRNN(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         Other hyper-parameters, including kernel sizes, etc.
         Refer to corresponding config files.
 
-    References
-    ----------
-    .. [1] Yao, Qihang, et al.
-           "Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram."
-           2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing,
-           16th Intl Conf on Pervasive Intelligence and Computing,
-           4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress
-           (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.
-    .. [2] Yao, Qihang, et al.
-           "Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based
-           Time-Incremental Convolutional Neural Network." Information Fusion 53 (2020): 174-182.
-    .. [3] Hannun, Awni Y., et al.
-           "Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms
-           using a deep neural network." Nature medicine 25.1 (2019): 65.
-    .. [4] https://stanfordmlgroup.github.io/projects/ecg2/
-    .. [5] https://github.com/awni/ecg
-    .. [6] CPSC2018 entry 0236
-    .. [7] CPSC2019 entry 0416
+    .. bibliography::
+        :filter: docname in docnames
 
     """
 
