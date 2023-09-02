@@ -41,8 +41,9 @@ __all__ = [
 class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
     """LSTM model for RR time series classification or sequence labeling.
 
-    LSTM model using RR time series as input is studied in [1]_ for
-    atrial fibrillation detection. It is further improved in [2]_ via
+    LSTM model using RR time series as input is studied in
+    [:footcite:ct:`faust2018automated`] for atrial fibrillation detection.
+    It is further improved in [:footcite:ct:`af_detection`] via
     incorporating attention mechanism and conditional random fields.
 
     Parameters
@@ -53,13 +54,8 @@ class RR_LSTM(nn.Module, CkptMixin, SizeMixin, CitationMixin):
         Other hyper-parameters, including kernel sizes, etc.
         Refer to corresponding config file for details.
 
-    References
-    ----------
-    .. [1] Faust, Oliver, et al. "Automated detection of atrial fibrillation
-           using long short-term memory network with RR interval signals."
-           Computers in biology and medicine 102 (2018): 327-335.
-    .. [2] Wen, Hao, et al. "A Scalable Hybrid Model for Atrial Fibrillation Detection."
-           Journal of Mechanics in Medicine and Biology 21.05 (2021): 2140021.
+
+    .. footbibliography::
 
     """
 

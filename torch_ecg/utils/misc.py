@@ -302,6 +302,8 @@ def str2bool(v: Union[str, bool]) -> bool:
     """Converts a "boolean" value possibly
     in the format of :class:`str` to :class:`bool`.
 
+    Modified from [#str2bool]_.
+
     Parameters
     ----------
     v : str or bool
@@ -314,7 +316,7 @@ def str2bool(v: Union[str, bool]) -> bool:
 
     References
     ----------
-    https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
+    .. [#str2bool] https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
 
     """
     if isinstance(v, bool):
@@ -1275,6 +1277,8 @@ def timeout(duration: float):
     """A context manager that raises a
     :class:`TimeoutError` after a specified time.
 
+    Modified from [#timeout]_.
+
     Parameters
     ----------
     duration : float
@@ -1283,7 +1287,7 @@ def timeout(duration: float):
 
     References
     ----------
-    https://stackoverflow.com/questions/492519/timeout-on-a-function-call
+    .. [#timeout] https://stackoverflow.com/questions/492519/timeout-on-a-function-call
 
     """
     if np.isinf(duration):

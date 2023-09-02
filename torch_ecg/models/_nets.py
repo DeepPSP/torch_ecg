@@ -1218,6 +1218,15 @@ class BranchedConv(nn.Module, SizeMixin):
 class SeparableConv(nn.Sequential, SizeMixin):
     """(Super-)Separable Convolution.
 
+    Separable convolution
+    [:footcite:ct:`kaiser2017separable_conv,kaiser2018separable_conv,gomez2020separable_conv_patent`]
+    is a form of factorized convolution,
+    where a convolutional filter of length `L` is decomposed into
+    a depthwise convolutional filter of length `L` and
+    a pointwise convolutional filter of length 1.
+    The implementation here is based on
+    `<https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py>`_.
+
     Parameters
     ----------
     in_channels : int
@@ -1243,11 +1252,8 @@ class SeparableConv(nn.Sequential, SizeMixin):
         Extra parameters, including
         `depth_multiplier`, `width_multiplier` (alias `alpha`), etc.
 
-    References
-    ----------
-    .. [1] Kaiser, Lukasz, Aidan N. Gomez, and Francois Chollet.
-           "Depthwise separable convolutions for neural machine translation." arXiv preprint arXiv:1706.03059 (2017).
-    .. [2] https://github.com/Cadene/pretrained-models.pytorch/blob/master/pretrainedmodels/models/xception.py
+
+    .. footbibliography::
 
     """
 
@@ -1811,6 +1817,14 @@ class ZeroPad1d(nn.ConstantPad1d, SizeMixin):
 class BlurPool(nn.Module, SizeMixin):
     """Blur Pooling, also named as ``AntiAliasDownsample``.
 
+    Blur pooling is a learnable pooling layer
+    [:footcite:ct:`zhang2019blur_pool`] that can be used as a replacement of
+    max pooling or average pooling.
+    This implementation is based on
+    `<https://github.com/adobe/antialiased-cnns/blob/master/antialiased_cnns/blurpool.py>`_,
+    `<https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py>`_,
+    and `<https://github.com/kornia/kornia/blob/master/kornia/filters/blur_pool.py>`_.
+
     Parameters
     ----------
     down_scale : int
@@ -1827,13 +1841,8 @@ class BlurPool(nn.Module, SizeMixin):
         Optional keyword arguments.
         Not used currently but kept for compatibility.
 
-    References
-    ----------
-    .. [1] Zhang, Richard. "Making convolutional networks shift-invariant again."
-           International conference on machine learning. PMLR, 2019.
-    .. [2] https://github.com/adobe/antialiased-cnns/blob/master/antialiased_cnns/blurpool.py
-    .. [3] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/layers/blur_pool.py
-    .. [4] https://github.com/kornia/kornia/blob/master/kornia/filters/blur_pool.py
+
+    .. footbibliography::
 
     """
 
@@ -3022,13 +3031,29 @@ class MLP(SeqLin):
 
 
 class NonLocalBlock(nn.Module, SizeMixin):
-    """Non-local Attention Block [1]_.
+    """Non-local Attention Block.
 
-    References
+    A form of attention mechanism proposed in [:footcite:ct:`wang2018non_local_net`].
+    This implementation is based on `<https://github.com/AlexHex7/Non-local_pytorch>`_.
+
+    Parameters
     ----------
-    .. [1] Wang, Xiaolong, et al. "Non-local neural networks."
-           Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.
-    .. [2] https://github.com/AlexHex7/Non-local_pytorch
+    in_channels : int
+        Number of channels in the input.
+    mid_channels : int, optional
+        Number of output channels for the mid layers
+        ("g", "phi", "theta").
+    filter_lengths : dict or int, default 1
+        Filter lengths (kernel sizes) for each convolutional
+        layers ("g", "phi", "theta", "W")
+    subsample_length : int, default 2
+        Subsample length (max pool size) of the "g" and "phi" layers.
+    **config : dict, optional
+        Other parameters, including
+        batch normalization choices, etc.
+
+
+    .. footbibliography::
 
     """
 
@@ -3043,22 +3068,6 @@ class NonLocalBlock(nn.Module, SizeMixin):
         subsample_length: int = 2,
         **config,
     ) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        mid_channels: int, optional,
-            number of output channels for the mid layers ("g", "phi", "theta")
-        filter_lengths: dict or int, default 1,
-            filter lengths (kernel sizes) for each convolutional layers ("g", "phi", "theta", "W")
-        subsample_length: int, default 2,
-            subsample length (max pool size) of the "g" and "phi" layers
-        config: dict,
-            other parameters, including
-            batch normalization choices, etc.
-
-        """
         super().__init__()
         self.__in_channels = in_channels
         self.__mid_channels = (mid_channels or self.__in_channels // 2) or 1
@@ -3151,19 +3160,35 @@ class NonLocalBlock(nn.Module, SizeMixin):
 
 
 class SEBlock(nn.Module, SizeMixin):
-    """
-    Squeeze-and-Excitation Block
+    """Squeeze-and-Excitation Block.
 
-    References
+    Squeeze-and-Excitation (SE) is a form of attention mechanism proposed in
+    [:footcite:ct:`hu2018senet,hu2020senet`].
+    It first squeezes the input tensor along the channel axis to obtain
+    a channel descriptor achieved by using global average pooling to
+    generate channel-wise statistics. Then, it applies two fully-connected
+    layers to the channel descriptor to generate a channel-wise attention vector,
+    which is finally used to re-weight the input channels.
+    SE block are fairly lightweight and flexible, and can be inserted into
+    any place of a network.
+
+    This implementation is based on
+    `<https://github.com/hujie-frank/SENet>`_ and
+    `<https://github.com/moskomule/senet.pytorch/blob/master/senet/se_module.py>`_.
+
+    Parameters
     ----------
-    .. [1] J. Hu, L. Shen, S. Albanie, G. Sun and E. Wu, "Squeeze-and-Excitation Networks,"
-           in IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 42, no. 8,
-           pp. 2011-2023, 1 Aug. 2020, doi: 10.1109/TPAMI.2019.2913372.
-    .. [2] J. Hu, L. Shen and G. Sun, "Squeeze-and-Excitation Networks,"
-           2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition, Salt Lake City, UT,
-           2018, pp. 7132-7141, doi: 10.1109/CVPR.2018.00745.
-    .. [3] https://github.com/hujie-frank/SENet
-    .. [4] https://github.com/moskomule/senet.pytorch/blob/master/senet/se_module.py
+    in_channels : int
+        Number of channels in the input.
+    reduction : int, default 16
+        Reduction ratio of mid-channels to `in_channels`.
+    **config : dict, optional
+        Other parameters, including
+        activation choices, weight initializer, dropouts, etc.
+        for the linear layers.
+
+
+    .. footbibliography::
 
     """
 
@@ -3173,19 +3198,6 @@ class SEBlock(nn.Module, SizeMixin):
     )
 
     def __init__(self, in_channels: int, reduction: int = 16, **config) -> None:
-        """
-        Parameters
-        ----------
-        in_channels: int,
-            number of channels in the input
-        reduction: int, default 16,
-            reduction ratio of mid-channels to `in_channels`
-        config: dict,
-            other parameters, including
-            activation choices, weight initializer, dropouts, etc.
-            for the linear layers
-
-        """
         super().__init__()
         self.__in_channels = in_channels
         self.__mid_channels = in_channels // reduction
@@ -3262,28 +3274,33 @@ class GEBlock(nn.Module, SizeMixin):
 
 
 class SKBlock(nn.Module, SizeMixin):
-    """
-    Selective Kernel Networks
+    """Selective Kernel Networks.
 
-    References
-    ----------
-    .. [1] Li, X., Wang, W., Hu, X., & Yang, J. (2019). Selective kernel networks.
-           In Proceedings of the IEEE conference on computer vision and pattern recognition (pp. 510-519).
-    .. [2] https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/sknet.py
+    Selective Kernel (SK) block is a form of attention mechanism proposed in
+    [:footcite:ct:`li2019sknet`]. It first splits the input tensor along the
+    channel axis into multiple groups, and then applies a group-wise pooling
+    operation to each group to obtain a group descriptor. Next, it applies
+    a group-wise fully-connected layer to each group descriptor to generate
+    a group-wise attention vector, which is finally used to re-weight the
+    input channels.
+
+    This implementation is based on
+    `<https://github.com/rwightman/pytorch-image-models/blob/master/timm/models/sknet.py>`_.
+
+
+    .. footbibliography::
 
     """
 
     __name__ = "SKBlock"
 
     def __init__(self, in_channels: int, **kwargs: Any) -> None:
-        """ """
         super().__init__()
         raise NotImplementedError
 
 
 class GlobalContextBlock(nn.Module, SizeMixin):
-    """
-    Global Context Block
+    """Global Context Block.
 
     References
     ----------
@@ -3436,8 +3453,7 @@ class GlobalContextBlock(nn.Module, SizeMixin):
 
 
 class BAMBlock(nn.Module, SizeMixin):
-    """
-    Bottleneck Attention Module (BMVC2018)
+    """Bottleneck Attention Module (BMVC2018).
 
     References
     ----------
@@ -3454,8 +3470,7 @@ class BAMBlock(nn.Module, SizeMixin):
 
 
 class CBAMBlock(nn.Module, SizeMixin):
-    """
-    Convolutional Block Attention Module (ECCV2018)
+    """Convolutional Block Attention Module (ECCV2018).
 
     References
     ----------
@@ -3678,8 +3693,7 @@ class CBAMBlock(nn.Module, SizeMixin):
 
 
 class CoordAttention(nn.Module, SizeMixin):
-    """
-    Coordinate attention
+    """Coordinate attention module.
 
     References
     ----------
@@ -3697,8 +3711,7 @@ class CoordAttention(nn.Module, SizeMixin):
 
 
 class CRF(nn.Module, SizeMixin):
-    """
-    Conditional random field, modified from [1]
+    """Conditional random field.
 
     This module implements a conditional random field [2]. The forward computation
     of this class computes the log likelihood of the given sequence of tags and
