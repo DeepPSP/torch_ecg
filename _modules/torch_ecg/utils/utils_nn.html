@@ -32,6 +32,12 @@
   
     <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   
+    <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
 
@@ -553,7 +559,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
@@ -1094,7 +1100,7 @@
 <span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">nn</span>
 
 <span class="kn">from</span> <span class="nn">..cfg</span> <span class="kn">import</span> <span class="n">CFG</span><span class="p">,</span> <span class="n">DEFAULTS</span>
-<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">add_docstring</span>
+<span class="kn">from</span> <span class="nn">.misc</span> <span class="kn">import</span> <span class="n">add_docstring</span><span class="p">,</span> <span class="n">make_serializable</span>
 <span class="kn">from</span> <span class="nn">.utils_data</span> <span class="kn">import</span> <span class="n">cls_to_bin</span>
 
 
@@ -1837,6 +1843,7 @@
     <span class="n">strides</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">dilations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">input_len</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the receptive field of several types of</span>
 <span class="sd">    :class:`~torch.nn.Module`.</span>
@@ -1848,22 +1855,34 @@
 <span class="sd">    &quot;generic&quot; refers to a general position, rather than specific positions,</span>
 <span class="sd">    like on the edges, whose receptive field is definitely different.</span>
 
+<span class="sd">    In CNNs, for any element of some layer, its receptive field refers to</span>
+<span class="sd">    all the elements (from all the previous layers) that may affect the calculation of</span>
+<span class="sd">    during the forward propagation [:footcite:ct:`zhang2023dive`].</span>
+<span class="sd">    (See `this url &lt;https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html#feature-map-and-receptive-field&gt;`_)</span>
+
+<span class="sd">    The receptive field is computed as follows.</span>
+<span class="sd">    Let the layers has kernel size, stride, dilation :math:`(k_n, s_n, d_n)` respectively.</span>
+<span class="sd">    Let each feature map has receptive field length :math:`r_n`,</span>
+<span class="sd">    and the difference of receptive fields of adjacent positions (layers) be :math:`f_n`.</span>
+<span class="sd">    By convention, :math:`(r_0, f_0) = (1, 1)`. Then one has</span>
+
 <span class="sd">    .. math::</span>
 
-<span class="sd">        Let the layers has kernel size, stride, dilation $(k_n, s_n, d_n)$ respectively.</span>
-<span class="sd">        Let each feature map has receptive field length $r_n$,</span>
-<span class="sd">        and difference of receptive fields of adjacent positions be $f_n$.</span>
-<span class="sd">        By convention, $(r_0, f_0) = (1, 1)$. Then one has</span>
 <span class="sd">        \\begin{eqnarray}</span>
 <span class="sd">        r_{n+1} &amp; = &amp; r_n + d_n(k_n-1)f_n, \\\\</span>
 <span class="sd">        f_{n+1} &amp; = &amp; s_n f_n.</span>
 <span class="sd">        \\end{eqnarray}</span>
-<span class="sd">        Hence</span>
+
+<span class="sd">    Hence</span>
+
+<span class="sd">    .. math::</span>
+
 <span class="sd">        \\begin{eqnarray}</span>
 <span class="sd">        f_{n} &amp; = &amp; \\prod\\limits_{i=0}^{n-1} s_i, \\\\</span>
 <span class="sd">        r_{n} &amp; = &amp; 1 + \\sum\\limits_{i=0}^{n-1} d_i(k_i-1) \\prod\\limits_{i=0}^{j-1} s_j,</span>
 <span class="sd">        \\end{eqnarray}</span>
-<span class="sd">        with empty products equaling 1 by convention.</span>
+
+<span class="sd">    with empty products equaling 1 by convention.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1875,16 +1894,22 @@
 <span class="sd">        The sequence of strides for all the layers in the flow</span>
 <span class="sd">    input_len : int, optional</span>
 <span class="sd">        Length of the first feature map in the flow.</span>
+<span class="sd">    fs : numbers.Real, optional</span>
+<span class="sd">        Sampling frequency of the input signal.</span>
+<span class="sd">        If is not ``None``, then the receptive field is returned in seconds.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    receptive_field : int or float</span>
-<span class="sd">        (Length) of the receptive field.</span>
+<span class="sd">        (Length of) the receptive field, in samples if `fs` is ``None``,</span>
+<span class="sd">        otherwise in seconds.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2])</span>
 <span class="sd">    90</span>
+<span class="sd">    &gt;&gt;&gt; compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],fs=500)</span>
+<span class="sd">    0.18</span>
 <span class="sd">    &gt;&gt;&gt; compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[2,1,2,4,1,8,8,8,1])</span>
 <span class="sd">    484</span>
 <span class="sd">    &gt;&gt;&gt; compute_receptive_field([11,2,7,7,2,5,5,5,2],[1,2,1,1,2,1,1,1,2],[4,1,4,8,1,16,32,64,1])</span>
@@ -1893,6 +1918,9 @@
 <span class="sd">    The above example exhibits the receptive fields of the output feature maps</span>
 <span class="sd">    of the 3 branches of the multi-scopic net, using its original hyper-parameters,</span>
 <span class="sd">    (note the 3 max pooling layers).</span>
+
+
+<span class="sd">    .. footbibliography::</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_kernel_sizes</span> <span class="o">=</span> <span class="p">(</span>
@@ -1914,7 +1942,9 @@
         <span class="n">receptive_field</span> <span class="o">+=</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">s</span>
     <span class="k">if</span> <span class="n">input_len</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">receptive_field</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">receptive_field</span><span class="p">,</span> <span class="n">input_len</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">receptive_field</span></div>
+    <span class="k">if</span> <span class="n">fs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">receptive_field</span> <span class="o">/=</span> <span class="n">fs</span>
+    <span class="k">return</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">receptive_field</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="default_collate_fn"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.default_collate_fn.html#torch_ecg.utils.default_collate_fn">[docs]</a><span class="k">def</span> <span class="nf">default_collate_fn</span><span class="p">(</span>
@@ -2212,7 +2242,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -2240,6 +2270,10 @@
       <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
       <script type="text/javascript" src="../../../_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="../../../_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+      <script type="text/javascript" src="../../../_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
   
 

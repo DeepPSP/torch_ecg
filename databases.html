@@ -33,6 +33,12 @@
   
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   
+    <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  
     <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
   
 
@@ -555,7 +561,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
@@ -1077,19 +1083,18 @@
   <span class="target" id="module-torch_ecg.databases"><span id="databases"></span></span><section id="torch-ecg-databases">
 <h1>torch_ecg.databases<a class="headerlink" href="#torch-ecg-databases" title="Permalink to this heading">¶</a></h1>
 <p>This module contains ECG database readers.</p>
-<nav class="contents local" id="id1">
-<p class="topic-title">torch_ecg.databases</p>
+<nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#base-classes" id="id3">Base classes</a></p></li>
-<li><p><a class="reference internal" href="#physionet-database-readers" id="id4">PhysioNet database readers</a></p></li>
-<li><p><a class="reference internal" href="#cpsc-database-readers" id="id5">CPSC database readers</a></p></li>
-<li><p><a class="reference internal" href="#nsrr-database-readers" id="id6">NSRR database readers</a></p></li>
-<li><p><a class="reference internal" href="#other-database-readers" id="id7">Other database readers</a></p></li>
-<li><p><a class="reference internal" href="#miscellaneous" id="id8">Miscellaneous</a></p></li>
+<li><p><a class="reference internal" href="#base-classes" id="id2">Base classes</a></p></li>
+<li><p><a class="reference internal" href="#physionet-database-readers" id="id3">PhysioNet database readers</a></p></li>
+<li><p><a class="reference internal" href="#cpsc-database-readers" id="id4">CPSC database readers</a></p></li>
+<li><p><a class="reference internal" href="#nsrr-database-readers" id="id5">NSRR database readers</a></p></li>
+<li><p><a class="reference internal" href="#other-database-readers" id="id6">Other database readers</a></p></li>
+<li><p><a class="reference internal" href="#miscellaneous" id="id7">Miscellaneous</a></p></li>
 </ul>
 </nav>
 <section id="base-classes">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Base classes</a><a class="headerlink" href="#base-classes" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">Base classes</a><a class="headerlink" href="#base-classes" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.databases.PhysioNetDataBase.html#torch_ecg.databases.PhysioNetDataBase" title="torch_ecg.databases.PhysioNetDataBase"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PhysioNetDataBase</span></code></a>(db_name[, db_dir, ...])</p></td>
@@ -1108,7 +1113,7 @@
 </table>
 </section>
 <section id="physionet-database-readers">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">PhysioNet database readers</a><a class="headerlink" href="#physionet-database-readers" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">PhysioNet database readers</a><a class="headerlink" href="#physionet-database-readers" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.databases.AFDB.html#torch_ecg.databases.AFDB" title="torch_ecg.databases.AFDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AFDB</span></code></a>([db_dir, working_dir, verbose])</p></td>
@@ -1145,7 +1150,7 @@
 </table>
 </section>
 <section id="cpsc-database-readers">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">CPSC database readers</a><a class="headerlink" href="#cpsc-database-readers" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">CPSC database readers</a><a class="headerlink" href="#cpsc-database-readers" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.databases.CPSC2018.html#torch_ecg.databases.CPSC2018" title="torch_ecg.databases.CPSC2018"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CPSC2018</span></code></a>([db_dir, working_dir, verbose])</p></td>
@@ -1164,7 +1169,7 @@
 </table>
 </section>
 <section id="nsrr-database-readers">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">NSRR database readers</a><a class="headerlink" href="#nsrr-database-readers" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">NSRR database readers</a><a class="headerlink" href="#nsrr-database-readers" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.databases.SHHS.html#torch_ecg.databases.SHHS" title="torch_ecg.databases.SHHS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SHHS</span></code></a>([db_dir, working_dir, verbose])</p></td>
@@ -1174,7 +1179,7 @@
 </table>
 </section>
 <section id="other-database-readers">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Other database readers</a><a class="headerlink" href="#other-database-readers" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">Other database readers</a><a class="headerlink" href="#other-database-readers" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.databases.CACHET_CADB.html#torch_ecg.databases.CACHET_CADB" title="torch_ecg.databases.CACHET_CADB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CACHET_CADB</span></code></a>([db_dir, working_dir, verbose])</p></td>
@@ -1187,7 +1192,7 @@
 </table>
 </section>
 <section id="miscellaneous">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Miscellaneous</a><a class="headerlink" href="#miscellaneous" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">Miscellaneous</a><a class="headerlink" href="#miscellaneous" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.databases.BeatAnn.html#torch_ecg.databases.BeatAnn" title="torch_ecg.databases.BeatAnn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BeatAnn</span></code></a>(index, symbol)</p></td>
@@ -1247,7 +1252,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1275,6 +1280,10 @@
       <script type="text/javascript" src="_static/documentation_options.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
       <script type="text/javascript" src="_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+      <script type="text/javascript" src="_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
   
 

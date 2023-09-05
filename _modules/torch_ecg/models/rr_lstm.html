@@ -32,6 +32,12 @@
   
     <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   
+    <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
 
@@ -553,7 +559,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
@@ -1118,8 +1124,9 @@
 <div class="viewcode-block" id="RR_LSTM"><a class="viewcode-back" href="../../../generated/torch_ecg.models.RR_LSTM.html#torch_ecg.models.RR_LSTM">[docs]</a><span class="k">class</span> <span class="nc">RR_LSTM</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">CkptMixin</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;LSTM model for RR time series classification or sequence labeling.</span>
 
-<span class="sd">    LSTM model using RR time series as input is studied in [1]_ for</span>
-<span class="sd">    atrial fibrillation detection. It is further improved in [2]_ via</span>
+<span class="sd">    LSTM model using RR time series as input is studied in</span>
+<span class="sd">    [:footcite:ct:`faust2018automated`] for atrial fibrillation detection.</span>
+<span class="sd">    It is further improved in [:footcite:ct:`af_detection`] via</span>
 <span class="sd">    incorporating attention mechanism and conditional random fields.</span>
 
 <span class="sd">    Parameters</span>
@@ -1130,13 +1137,8 @@
 <span class="sd">        Other hyper-parameters, including kernel sizes, etc.</span>
 <span class="sd">        Refer to corresponding config file for details.</span>
 
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [1] Faust, Oliver, et al. &quot;Automated detection of atrial fibrillation</span>
-<span class="sd">           using long short-term memory network with RR interval signals.&quot;</span>
-<span class="sd">           Computers in biology and medicine 102 (2018): 327-335.</span>
-<span class="sd">    .. [2] Wen, Hao, et al. &quot;A Scalable Hybrid Model for Atrial Fibrillation Detection.&quot;</span>
-<span class="sd">           Journal of Mechanics in Medicine and Biology 21.05 (2021): 2140021.</span>
+
+<span class="sd">    .. footbibliography::</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1723,7 +1725,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1751,6 +1753,10 @@
       <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
       <script type="text/javascript" src="../../../_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="../../../_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+      <script type="text/javascript" src="../../../_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
   
 

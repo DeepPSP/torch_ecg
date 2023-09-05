@@ -33,6 +33,12 @@
   
     <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   
+    <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  
     <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
   
 
@@ -556,7 +562,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
@@ -1086,8 +1092,9 @@
 <p>CNN part of the SOTA model from CPSC2019 challenge (entry 0416).</p>
 <p>This architecture is a multi-branch CNN with multi-scopic convolutions,
 proposed by the winning team of the CPSC2019 challenge and described in
-<a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. The multi-scopic convolutions are implemented via different dilations.
-Similar architectures can be found in the model DeepLabv3 <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+[Cai and Hu<a class="footnote-reference brackets" href="#footcite-cai2020rpeak-seq-lab-net" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>]. The multi-scopic convolutions are
+implemented via different dilations. Similar architectures can be found
+in the model DeepLabv3 [Chen <em>et al.</em><a class="footnote-reference brackets" href="#footcite-chen2017-deeplabv3" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1096,27 +1103,27 @@ Similar architectures can be found in the model DeepLabv3 <a class="footnote-ref
 Key word arguments that must be set:</p>
 <blockquote>
 <div><ul>
-<li><p>scopes: sequence of sequences of sequences of int,
+<li><p>scopes: sequence of sequences of sequences of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>,
 scopes (in terms of dilation) of each convolution.</p></li>
-<li><p>num_filters: sequence of sequences (of int or of sequences of int),
+<li><p>num_filters: sequence of sequences (of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> or of sequences of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>),
 number of filters of the convolutional layers,
 with granularity to each block of each branch,
 or to each convolution of each block of each branch.</p></li>
-<li><p>filter_lengths: sequence of sequences (of int or of sequences of int),
+<li><p>filter_lengths: sequence of sequences (of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> or of sequences of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>),
 filter length(s) (kernel size(s)) of the convolutions,
 with granularity to each block of each branch,
 or to each convolution of each block of each branch.</p></li>
-<li><p>subsample_lengths: sequence of int or sequence of sequences of int,
+<li><p>subsample_lengths: sequence of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> or sequence of sequences of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>,
 subsampling length(s) (ratio(s)) of all blocks,
 with granularity to each branch or to each block of each branch,
 each subsamples after the last convolution of each block.</p></li>
-<li><p>dropouts: sequence of int or sequence of sequences of int,
+<li><p>dropouts: sequence of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a> or sequence of sequences of <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>,
 dropout rates of all blocks,
 with granularity to each branch or to each block of each branch,
 each dropouts at the last of each block.</p></li>
-<li><p>groups: int,
+<li><p>groups: <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>,
 connection pattern (of channels) of the inputs and outputs.</p></li>
-<li><p>block: dict,
+<li><p>block: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>,
 other parameters that can be set for the building blocks.</p></li>
 </ul>
 </div></blockquote>
@@ -1125,18 +1132,19 @@ other parameters that can be set for the building blocks.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="docutils container" id="id3">
 <p class="rubric">References</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id3" role="note">
+<aside class="footnote brackets" id="footcite-cai2020rpeak-seq-lab-net" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Cai, Wenjie, and Danqin Hu. “QRS complex detection using novel deep learning neural networks.” IEEE Access (2020).</p>
+<p>Wenjie Cai and Danqin Hu. QRS Complex Detection using Novel Deep Learning Neural Networks. <em>IEEE Access</em>, 8:97082–97089, 2020. <a class="reference external" href="https://doi.org/10.1109/access.2020.2997473">doi:10.1109/access.2020.2997473</a>.</p>
 </aside>
-<aside class="footnote brackets" id="id4" role="note">
+<aside class="footnote brackets" id="footcite-chen2017-deeplabv3" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
-<p>Chen, Liang-Chieh, et al. “Rethinking atrous convolution for semantic image segmentation.”
-Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.</p>
+<p>Liang-Chieh Chen, George Papandreou, Florian Schroff, and Hartwig Adam. Rethinking Atrous Convolution for Semantic Image Segmentation. <em>arXiv preprint arXiv:1706.05587v3</em>, 6 2017. <a class="reference external" href="https://doi.org/10.48550/ARXIV.1706.05587">doi:10.48550/ARXIV.1706.05587</a>.</p>
 </aside>
 </aside>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="torch_ecg.models.MultiScopicCNN.assign_weights_lead_wise">
 <span class="sig-name descname"><span class="pre">assign_weights_lead_wise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#torch_ecg.models.MultiScopicCNN" title="torch_ecg.models.cnn.multi_scopic.MultiScopicCNN"><span class="pre">MultiScopicCNN</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/torch_ecg/models/cnn/multi_scopic.html#MultiScopicCNN.assign_weights_lead_wise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torch_ecg.models.MultiScopicCNN.assign_weights_lead_wise" title="Permalink to this definition">¶</a></dt>
@@ -1260,7 +1268,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(batch_siz
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1288,6 +1296,10 @@ of shape <code class="docutils literal notranslate"><span class="pre">(batch_siz
       <script type="text/javascript" src="../_static/documentation_options.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
       <script type="text/javascript" src="../_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="../_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="../_static/copybutton.js"></script>
+      <script type="text/javascript" src="../_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
   
 

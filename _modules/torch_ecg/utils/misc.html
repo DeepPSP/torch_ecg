@@ -32,6 +32,12 @@
   
     <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   
+    <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
 
@@ -553,7 +559,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
@@ -1141,6 +1147,7 @@
     <span class="s2">&quot;get_kwargs&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_required_args&quot;</span><span class="p">,</span>
     <span class="s2">&quot;add_kwargs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;make_serializable&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -1295,8 +1302,8 @@
 <div class="viewcode-block" id="dict_to_str"><a class="viewcode-back" href="../../../generated/torch_ecg.utils.dict_to_str.html#torch_ecg.utils.dict_to_str">[docs]</a><span class="k">def</span> <span class="nf">dict_to_str</span><span class="p">(</span>
     <span class="n">d</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">],</span> <span class="n">current_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">indent_spaces</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert a (possibly) nested dict into a `str` of json-like formatted form.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a (possibly) nested dict into a `str` of json-like formatted form.</span>
+
 <span class="sd">    This nested dict might also contain lists or tuples of dict (and of str, int, etc.)</span>
 
 <span class="sd">    Parameters</span>
@@ -1378,6 +1385,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a &quot;boolean&quot; value possibly</span>
 <span class="sd">    in the format of :class:`str` to :class:`bool`.</span>
 
+<span class="sd">    Modified from [#str2bool]_.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    v : str or bool</span>
@@ -1390,7 +1399,7 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse</span>
+<span class="sd">    .. [#str2bool] https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
@@ -2351,6 +2360,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A context manager that raises a</span>
 <span class="sd">    :class:`TimeoutError` after a specified time.</span>
 
+<span class="sd">    Modified from [#timeout]_.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    duration : float</span>
@@ -2359,7 +2370,7 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    https://stackoverflow.com/questions/492519/timeout-on-a-function-call</span>
+<span class="sd">    .. [#timeout] https://stackoverflow.com/questions/492519/timeout-on-a-function-call</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">duration</span><span class="p">):</span>
@@ -2617,6 +2628,61 @@
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">filtered_kwargs</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<span class="k">def</span> <span class="nf">make_serializable</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">Number</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make an object serializable.</span>
+
+<span class="sd">    This function is used to convert all numpy arrays to list in an object,</span>
+<span class="sd">    and also convert numpy data types to python data types in the object,</span>
+<span class="sd">    so that it can be serialized by :mod:`json`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : Union[numpy.ndarray, numpy.generic, dict, list, tuple]</span>
+<span class="sd">        Input data, which can be numpy array (or numpy data type),</span>
+<span class="sd">        or dict, list, tuple containing numpy arrays (or numpy data type).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Union[list, dict, numbers.Number]</span>
+<span class="sd">        Converted data.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from fl_sim.utils.misc import make_serializable</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; make_serializable(x)</span>
+<span class="sd">    [1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; x = {&quot;a&quot;: np.array([1, 2, 3]), &quot;b&quot;: np.array([4, 5, 6])}</span>
+<span class="sd">    &gt;&gt;&gt; make_serializable(x)</span>
+<span class="sd">    {&#39;a&#39;: [1, 2, 3], &#39;b&#39;: [4, 5, 6]}</span>
+<span class="sd">    &gt;&gt;&gt; x = [np.array([1, 2, 3]), np.array([4, 5, 6])]</span>
+<span class="sd">    &gt;&gt;&gt; make_serializable(x)</span>
+<span class="sd">    [[1, 2, 3], [4, 5, 6]]</span>
+<span class="sd">    &gt;&gt;&gt; x = (np.array([1, 2, 3]), np.array([4, 5, 6]).mean())</span>
+<span class="sd">    &gt;&gt;&gt; obj = make_serializable(x)</span>
+<span class="sd">    &gt;&gt;&gt; obj</span>
+<span class="sd">    [[1, 2, 3], 5.0]</span>
+<span class="sd">    &gt;&gt;&gt; type(obj[1]), type(x[1])</span>
+<span class="sd">    (float, numpy.float64)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="c1"># to avoid cases where the list contains numpy data types</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">make_serializable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">make_serializable</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="c1"># the other types will be returned directly</span>
+    <span class="k">return</span> <span class="n">x</span>
 </pre></div>
 
            </div>
@@ -2632,7 +2698,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -2660,6 +2726,10 @@
       <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
       <script type="text/javascript" src="../../../_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="../../../_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+      <script type="text/javascript" src="../../../_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
   
 

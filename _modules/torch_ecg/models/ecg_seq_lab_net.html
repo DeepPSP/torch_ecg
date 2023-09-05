@@ -32,6 +32,12 @@
   
     <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   
+    <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
 
@@ -553,7 +559,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
@@ -1076,19 +1082,6 @@
             
   <h1>Source code for torch_ecg.models.ecg_seq_lab_net</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Sequence labeling nets, for wave delineation,</span>
-
-<span class="sd">the labeling granularity is the frequency of the input signal,</span>
-<span class="sd">divided by the length (counted by the number of basic blocks) of each branch</span>
-
-<span class="sd">Pipeline</span>
-<span class="sd">--------</span>
-<span class="sd">multi-scopic cnn --&gt; (bidi-lstm --&gt;) &quot;attention&quot; (se block) --&gt; seq linear</span>
-
-<span class="sd">References</span>
-<span class="sd">----------</span>
-<span class="sd">[1] Cai, Wenjie, and Danqin Hu. &quot;QRS complex detection using novel deep learning neural networks.&quot; IEEE Access (2020).</span>
-
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -1114,12 +1107,11 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;SOTA model from CPSC2019 challenge.</span>
 
 <span class="sd">    Sequence labeling nets, for wave delineation, QRS complex detection, etc.</span>
-<span class="sd">    Proposed in [1]_.</span>
+<span class="sd">    Proposed in [:footcite:ct:`cai2020rpeak_seq_lab_net`].</span>
 
 <span class="sd">    pipeline</span>
 <span class="sd">    --------</span>
 <span class="sd">    (multi-scopic, etc.) cnn --&gt; head ((bidi-lstm --&gt;) &quot;attention&quot; --&gt; seq linear) -&gt; output</span>
-
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1131,9 +1123,8 @@
 <span class="sd">        Other hyper-parameters, including kernel sizes, etc.</span>
 <span class="sd">        Refer to corresponding config file.</span>
 
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [1] Cai, Wenjie, and Danqin Hu. &quot;QRS complex detection using novel deep learning neural networks.&quot; IEEE Access (2020).</span>
+
+<span class="sd">    .. footbibliography::</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1330,7 +1321,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1358,6 +1349,10 @@
       <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
       <script type="text/javascript" src="../../../_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="../../../_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+      <script type="text/javascript" src="../../../_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
   
 

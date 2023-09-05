@@ -32,6 +32,12 @@
   
     <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   
+    <link rel="stylesheet" href="../../../../_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  
     <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
   
 
@@ -553,7 +559,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
@@ -1446,47 +1452,45 @@
 
 <span class="sd">    This architecture is a multi-branch CNN with multi-scopic convolutions,</span>
 <span class="sd">    proposed by the winning team of the CPSC2019 challenge and described in</span>
-<span class="sd">    [1]_. The multi-scopic convolutions are implemented via different dilations.</span>
-<span class="sd">    Similar architectures can be found in the model DeepLabv3 [2]_.</span>
+<span class="sd">    [:footcite:ct:`cai2020rpeak_seq_lab_net`]. The multi-scopic convolutions are</span>
+<span class="sd">    implemented via different dilations. Similar architectures can be found</span>
+<span class="sd">    in the model DeepLabv3 [:footcite:ct:`chen2017_deeplabv3`].</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    in_channels : int</span>
 <span class="sd">        Number of channels (leads) in the input signal tensor.</span>
-<span class="sd">    config: dict</span>
+<span class="sd">    config : dict</span>
 <span class="sd">        Other hyper-parameters of the Module, ref. corr. config file.</span>
 <span class="sd">        Key word arguments that must be set:</span>
 
-<span class="sd">            - scopes: sequence of sequences of sequences of int,</span>
+<span class="sd">            - scopes: sequence of sequences of sequences of :obj:`int`,</span>
 <span class="sd">              scopes (in terms of dilation) of each convolution.</span>
-<span class="sd">            - num_filters: sequence of sequences (of int or of sequences of int),</span>
+<span class="sd">            - num_filters: sequence of sequences (of :obj:`int` or of sequences of :obj:`int`),</span>
 <span class="sd">              number of filters of the convolutional layers,</span>
 <span class="sd">              with granularity to each block of each branch,</span>
 <span class="sd">              or to each convolution of each block of each branch.</span>
-<span class="sd">            - filter_lengths: sequence of sequences (of int or of sequences of int),</span>
+<span class="sd">            - filter_lengths: sequence of sequences (of :obj:`int` or of sequences of :obj:`int`),</span>
 <span class="sd">              filter length(s) (kernel size(s)) of the convolutions,</span>
 <span class="sd">              with granularity to each block of each branch,</span>
 <span class="sd">              or to each convolution of each block of each branch.</span>
-<span class="sd">            - subsample_lengths: sequence of int or sequence of sequences of int,</span>
+<span class="sd">            - subsample_lengths: sequence of :obj:`int` or sequence of sequences of :obj:`int`,</span>
 <span class="sd">              subsampling length(s) (ratio(s)) of all blocks,</span>
 <span class="sd">              with granularity to each branch or to each block of each branch,</span>
 <span class="sd">              each subsamples after the last convolution of each block.</span>
-<span class="sd">            - dropouts: sequence of int or sequence of sequences of int,</span>
+<span class="sd">            - dropouts: sequence of :obj:`int` or sequence of sequences of :obj:`int`,</span>
 <span class="sd">              dropout rates of all blocks,</span>
 <span class="sd">              with granularity to each branch or to each block of each branch,</span>
 <span class="sd">              each dropouts at the last of each block.</span>
-<span class="sd">            - groups: int,</span>
+<span class="sd">            - groups: :obj:`int`,</span>
 <span class="sd">              connection pattern (of channels) of the inputs and outputs.</span>
-<span class="sd">            - block: dict,</span>
+<span class="sd">            - block: :obj:`dict`,</span>
 <span class="sd">              other parameters that can be set for the building blocks.</span>
 
 <span class="sd">        For a full list of configurable parameters, ref. corr. config file.</span>
 
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [1] Cai, Wenjie, and Danqin Hu. &quot;QRS complex detection using novel deep learning neural networks.&quot; IEEE Access (2020).</span>
-<span class="sd">    .. [2] Chen, Liang-Chieh, et al. &quot;Rethinking atrous convolution for semantic image segmentation.&quot;</span>
-<span class="sd">          Proceedings of the IEEE conference on computer vision and pattern recognition. 2018.</span>
+
+<span class="sd">    .. footbibliography::</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1671,7 +1675,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1699,6 +1703,10 @@
       <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
       <script type="text/javascript" src="../../../../_static/doctools.js"></script>
       <script type="text/javascript" src="../../../../_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="../../../../_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="../../../../_static/copybutton.js"></script>
+      <script type="text/javascript" src="../../../../_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
   
 

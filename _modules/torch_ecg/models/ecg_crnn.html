@@ -32,6 +32,12 @@
   
     <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   
+    <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
 
@@ -553,7 +559,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
@@ -1120,12 +1126,16 @@
 <div class="viewcode-block" id="ECG_CRNN"><a class="viewcode-back" href="../../../generated/torch_ecg.models.ECG_CRNN.html#torch_ecg.models.ECG_CRNN">[docs]</a><span class="k">class</span> <span class="nc">ECG_CRNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">CkptMixin</span><span class="p">,</span> <span class="n">SizeMixin</span><span class="p">,</span> <span class="n">CitationMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convolutional (Recurrent) Neural Network for ECG tasks.</span>
 
-<span class="sd">    This C(R)NN architecture is adapted from [1]_, [2]_ in the first place,</span>
-<span class="sd">    and then modified to be more general, and more flexible.</span>
-<span class="sd">    The most famous model is perhaps [3]_, which is a modified 1D-ResNet34 model.</span>
-<span class="sd">    The website of this model is [4]_, and the code is hosted on [5]_.</span>
+<span class="sd">    This C(R)NN architecture is adapted from [:footcite:ct:`yao2018ti_cnn,yao2020ati_cnn`]</span>
+<span class="sd">    in the first place,and then modified to be more general, and more flexible.</span>
+<span class="sd">    The most famous model is perhaps [:footcite:ct:`awni2019stanford_ecg`],</span>
+<span class="sd">    which is a modified 1D-ResNet34 model. The website of this model is</span>
+<span class="sd">    `&lt;https://stanfordmlgroup.github.io/projects/ecg2/&gt;`_, and the code is hosted on</span>
+<span class="sd">    `&lt;https://github.com/awni/ecg&gt;`_.</span>
+
 <span class="sd">    The C(R)NN models have long been competitive in various ECG tasks,</span>
-<span class="sd">    e.g. [6]_, [7]_. The models are also used in the PhysioNet/CinC Challenges.</span>
+<span class="sd">    e.g. CPSC2018 entry 0236, CPSC2019 entry 0416.</span>
+<span class="sd">    The models are also used in the PhysioNet/CinC Challenges.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1137,24 +1147,8 @@
 <span class="sd">        Other hyper-parameters, including kernel sizes, etc.</span>
 <span class="sd">        Refer to corresponding config files.</span>
 
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [1] Yao, Qihang, et al.</span>
-<span class="sd">           &quot;Time-Incremental Convolutional Neural Network for Arrhythmia Detection in Varied-Length Electrocardiogram.&quot;</span>
-<span class="sd">           2018 IEEE 16th Intl Conf on Dependable, Autonomic and Secure Computing,</span>
-<span class="sd">           16th Intl Conf on Pervasive Intelligence and Computing,</span>
-<span class="sd">           4th Intl Conf on Big Data Intelligence and Computing and Cyber Science and Technology Congress</span>
-<span class="sd">           (DASC/PiCom/DataCom/CyberSciTech). IEEE, 2018.</span>
-<span class="sd">    .. [2] Yao, Qihang, et al.</span>
-<span class="sd">           &quot;Multi-class Arrhythmia detection from 12-lead varied-length ECG using Attention-based</span>
-<span class="sd">           Time-Incremental Convolutional Neural Network.&quot; Information Fusion 53 (2020): 174-182.</span>
-<span class="sd">    .. [3] Hannun, Awni Y., et al.</span>
-<span class="sd">           &quot;Cardiologist-level arrhythmia detection and classification in ambulatory electrocardiograms</span>
-<span class="sd">           using a deep neural network.&quot; Nature medicine 25.1 (2019): 65.</span>
-<span class="sd">    .. [4] https://stanfordmlgroup.github.io/projects/ecg2/</span>
-<span class="sd">    .. [5] https://github.com/awni/ecg</span>
-<span class="sd">    .. [6] CPSC2018 entry 0236</span>
-<span class="sd">    .. [7] CPSC2019 entry 0416</span>
+
+<span class="sd">    .. footbibliography::</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -2003,7 +1997,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -2031,6 +2025,10 @@
       <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
       <script type="text/javascript" src="../../../_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="../../../_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+      <script type="text/javascript" src="../../../_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
   
 

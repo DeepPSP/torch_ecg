@@ -33,6 +33,12 @@
   
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   
+    <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  
     <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
   
 
@@ -555,7 +561,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
@@ -1077,18 +1083,17 @@
   <span class="target" id="module-torch_ecg.components"><span id="components"></span></span><section id="torch-ecg-components">
 <h1>torch_ecg.components<a class="headerlink" href="#torch-ecg-components" title="Permalink to this heading">¶</a></h1>
 <p>This module contains the components for training and evaluating models.</p>
-<nav class="contents local" id="id1">
-<p class="topic-title">torch_ecg.components</p>
+<nav class="contents local" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#input-classes" id="id2">Input classes</a></p></li>
-<li><p><a class="reference internal" href="#output-classes" id="id3">Output classes</a></p></li>
-<li><p><a class="reference internal" href="#loggers" id="id4">Loggers</a></p></li>
-<li><p><a class="reference internal" href="#metrics" id="id5">Metrics</a></p></li>
-<li><p><a class="reference internal" href="#trainer" id="id6">Trainer</a></p></li>
+<li><p><a class="reference internal" href="#input-classes" id="id1">Input classes</a></p></li>
+<li><p><a class="reference internal" href="#output-classes" id="id2">Output classes</a></p></li>
+<li><p><a class="reference internal" href="#loggers" id="id3">Loggers</a></p></li>
+<li><p><a class="reference internal" href="#metrics" id="id4">Metrics</a></p></li>
+<li><p><a class="reference internal" href="#trainer" id="id5">Trainer</a></p></li>
 </ul>
 </nav>
 <section id="input-classes">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Input classes</a><a class="headerlink" href="#input-classes" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">Input classes</a><a class="headerlink" href="#input-classes" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.components.InputConfig.html#torch_ecg.components.InputConfig" title="torch_ecg.components.InputConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InputConfig</span></code></a>(*args, input_type, n_channels[, ...])</p></td>
@@ -1107,7 +1112,7 @@
 </table>
 </section>
 <section id="output-classes">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Output classes</a><a class="headerlink" href="#output-classes" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">Output classes</a><a class="headerlink" href="#output-classes" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.components.ClassificationOutput.html#torch_ecg.components.ClassificationOutput" title="torch_ecg.components.ClassificationOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClassificationOutput</span></code></a>(*args, **kwargs)</p></td>
@@ -1132,7 +1137,7 @@
 </table>
 </section>
 <section id="loggers">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Loggers</a><a class="headerlink" href="#loggers" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">Loggers</a><a class="headerlink" href="#loggers" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.components.LoggerManager.html#torch_ecg.components.LoggerManager" title="torch_ecg.components.LoggerManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LoggerManager</span></code></a>([log_dir, log_suffix])</p></td>
@@ -1142,7 +1147,7 @@
 </table>
 </section>
 <section id="metrics">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Metrics</a><a class="headerlink" href="#metrics" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">Metrics</a><a class="headerlink" href="#metrics" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.components.ClassificationMetrics.html#torch_ecg.components.ClassificationMetrics" title="torch_ecg.components.ClassificationMetrics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ClassificationMetrics</span></code></a>([multi_label, macro, ...])</p></td>
@@ -1158,7 +1163,7 @@
 </table>
 </section>
 <section id="trainer">
-<h2><a class="toc-backref" href="#id1" role="doc-backlink">Trainer</a><a class="headerlink" href="#trainer" title="Permalink to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#contents" role="doc-backlink">Trainer</a><a class="headerlink" href="#trainer" title="Permalink to this heading">¶</a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/torch_ecg.components.BaseTrainer.html#torch_ecg.components.BaseTrainer" title="torch_ecg.components.BaseTrainer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseTrainer</span></code></a>(model, dataset_cls, ...[, ...])</p></td>
@@ -1192,7 +1197,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1220,6 +1225,10 @@
       <script type="text/javascript" src="_static/documentation_options.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
       <script type="text/javascript" src="_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+      <script type="text/javascript" src="_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
   
 

@@ -32,6 +32,12 @@
   
     <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   
+    <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+  
+    <link rel="stylesheet" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  
     <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
   
 
@@ -553,7 +559,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id2">torch_ecg.preprocessors</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors.html#id1">torch_ecg.preprocessors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html">PreprocManager</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager"><code class="docutils literal notranslate"><span class="pre">PreprocManager</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../generated/torch_ecg.preprocessors.PreprocManager.html#torch_ecg.preprocessors.PreprocManager.add_"><code class="docutils literal notranslate"><span class="pre">PreprocManager.add_()</span></code></a></li>
@@ -1076,8 +1082,6 @@
             
   <h1>Source code for torch_ecg.augmenters.cutmix</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Cutmix augmentation, for segmentation tasks.</span>
-<span class="sd">This technique is very successful in CPSC2021 challenge of paroxysmal AF events detection.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
@@ -1101,27 +1105,31 @@
 <div class="viewcode-block" id="CutMix"><a class="viewcode-back" href="../../../generated/torch_ecg.augmenters.CutMix.html#torch_ecg.augmenters.CutMix">[docs]</a><span class="k">class</span> <span class="nc">CutMix</span><span class="p">(</span><span class="n">Augmenter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;CutMix augmentation.</span>
 
-<span class="sd">    CutMix is a data augmentation technique originally proposed in [1]_,</span>
-<span class="sd">    with official implementation in [2]_, and an unofficial implementation in [3]_.</span>
+<span class="sd">    CutMix is a data augmentation technique originally proposed in</span>
+<span class="sd">    [:footcite:ct:`yun2019cutmix`], with official implementation in</span>
+<span class="sd">    `clovaai/CutMix-PyTorch &lt;https://github.com/clovaai/CutMix-PyTorch/blob/master/train.py&gt;`_,</span>
+<span class="sd">    and an unofficial implementation in</span>
+<span class="sd">    `ildoonet/cutmix &lt;https://github.com/ildoonet/cutmix/blob/master/cutmix/cutmix.py&gt;`_.</span>
+
 <span class="sd">    This technique was designed for image classification tasks, but it can also be used</span>
 <span class="sd">    for ECG tasks. This technique was very successful</span>
 <span class="sd">    in CPSC2021 challenge of paroxysmal AF events detection.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    fs: int, optional</span>
+<span class="sd">    fs : int, optional</span>
 <span class="sd">        Sampling frequency, by default None.</span>
-<span class="sd">    num_mix: int, default 1</span>
+<span class="sd">    num_mix : int, default 1</span>
 <span class="sd">        Number of mixtures.</span>
-<span class="sd">    alpha: float, default 0.5</span>
+<span class="sd">    alpha : float, default 0.5</span>
 <span class="sd">        Beta distribution parameter.</span>
-<span class="sd">    beta: float, optional</span>
+<span class="sd">    beta : float, optional</span>
 <span class="sd">        Beta distribution parameter, by default equal to `alpha`.</span>
-<span class="sd">    prob: float, default 0.5</span>
+<span class="sd">    prob : float, default 0.5</span>
 <span class="sd">        Probability of applying this augmenter.</span>
-<span class="sd">    inplace: bool, default True</span>
+<span class="sd">    inplace : bool, default True</span>
 <span class="sd">        Whether to perform this augmentation in-place.</span>
-<span class="sd">    **kwargs: dict, optional</span>
+<span class="sd">    **kwargs : dict, optional</span>
 <span class="sd">        Additional keyword arguments.</span>
 
 <span class="sd">    Examples</span>
@@ -1133,13 +1141,8 @@
 <span class="sd">        lb = torch.randint(0, 2, (32, 5000, 2), dtype=torch.float32)  # 2 classes mask</span>
 <span class="sd">        sig, lb = cm(sig, lb)</span>
 
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    .. [1] Yun, S., Han, D., Oh, S. J., Chun, S., Choe, J., &amp; Yoo, Y. (2019).</span>
-<span class="sd">       CutMix: Regularization strategy to train strong classifiers with localizable features.</span>
-<span class="sd">       In Proceedings of the IEEE/CVF International Conference on Computer Vision (pp. 6023-6032).</span>
-<span class="sd">    .. [2] https://github.com/clovaai/CutMix-PyTorch/blob/master/train.py</span>
-<span class="sd">    .. [3] https://github.com/ildoonet/cutmix/blob/master/cutmix/cutmix.py</span>
+
+<span class="sd">    .. footbibliography::</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1300,7 +1303,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Stanford-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> and ❤️  using a custom <a href="https://github.com/LinxiFan/Sphinx-theme">theme</a> based on <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1328,6 +1331,10 @@
       <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
       <script type="text/javascript" src="../../../_static/doctools.js"></script>
       <script type="text/javascript" src="../../../_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="../../../_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+      <script type="text/javascript" src="../../../_static/design-tabs.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
 
   
 
